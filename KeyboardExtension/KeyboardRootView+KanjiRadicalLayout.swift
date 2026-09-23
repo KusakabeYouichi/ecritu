@@ -27,6 +27,8 @@ extension KeyboardRootView {
             onSwitchToKana: { switchInputMode(.kana) },
             onSelectModePalette: { _ = selectModePalette($0) },
             paletteColumnCount: modePaletteColumnCount,
+            returnKeyWidth: modePanelReturnKeyWidth,
+            deleteKeyWidth: modePanelDeleteKeyWidth,
             onDeleteBackward: onDeleteBackward,
             onAdvanceKeyboard: showsNextKeyboardKey ? onAdvanceKeyboard : nil
         )
@@ -544,6 +546,9 @@ struct KeyboardRootKanjiRadicalSectionView: View {
     let onSelectModePalette: (String) -> Void
     // 横画面は 2 列に折る(3171)
     var paletteColumnCount: Int = 1
+    // 下段バーの端のキー幅(3189)
+    var returnKeyWidth: CGFloat = 56
+    var deleteKeyWidth: CGFloat = 56
     let onDeleteBackward: () -> Void
     var onAdvanceKeyboard: (() -> Void)? = nil
 
@@ -643,6 +648,7 @@ struct KeyboardRootKanjiRadicalSectionView: View {
             HStack(spacing: keyboardRowSpacing) {
                 ReturnToKanaPaletteKey(
                     title: "あい",
+                    fixedWidth: returnKeyWidth,
                     candidates: KeyboardRootView.modePaletteLabels,
                     paletteColumnCount: paletteColumnCount,
                     onReturn: onSwitchToKana,
@@ -665,7 +671,7 @@ struct KeyboardRootKanjiRadicalSectionView: View {
 
                 ActionKeyButton(
                     title: "⌫",
-                    fixedWidth: 56,
+                    fixedWidth: deleteKeyWidth,
                     repeatInitialDelay: keyRepeatInitialDelay,
                     repeatInterval: keyRepeatInterval,
                     action: onDeleteBackward

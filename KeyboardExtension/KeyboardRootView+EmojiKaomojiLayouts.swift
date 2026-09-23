@@ -222,6 +222,8 @@ extension KeyboardRootView {
             onSwitchToKana: { switchInputMode(.kana) },
             onSelectModePalette: { _ = selectModePalette($0) },
             paletteColumnCount: modePaletteColumnCount,
+            returnKeyWidth: modePanelReturnKeyWidth,
+            deleteKeyWidth: modePanelDeleteKeyWidth,
             onDeleteBackward: onDeleteBackward,
             onAdvanceKeyboard: showsNextKeyboardKey ? onAdvanceKeyboard : nil,
             deleteKeyBackgroundColorOverride: memoryPressureDeleteKeyColor,
@@ -250,6 +252,8 @@ extension KeyboardRootView {
             onSwitchToKana: { switchInputMode(.kana) },
             onSelectModePalette: { _ = selectModePalette($0) },
             paletteColumnCount: modePaletteColumnCount,
+            returnKeyWidth: modePanelReturnKeyWidth,
+            deleteKeyWidth: modePanelDeleteKeyWidth,
             onDeleteBackward: onDeleteBackward,
             onAdvanceKeyboard: showsNextKeyboardKey ? onAdvanceKeyboard : nil
         )
@@ -463,6 +467,7 @@ extension KeyboardRootView {
                 HStack(spacing: keyboardRowSpacing) {
                     ReturnToKanaPaletteKey(
                         title: "あい",
+                        fixedWidth: modePanelReturnKeyWidth,
                         candidates: KeyboardRootView.modePaletteLabels,
                         paletteColumnCount: modePaletteColumnCount,
                         onReturn: { switchInputMode(.kana) },
@@ -490,7 +495,7 @@ extension KeyboardRootView {
                     }
                     .frame(maxWidth: .infinity)
 
-                    deleteActionKey(fixedWidth: 56)
+                    deleteActionKey(fixedWidth: modePanelDeleteKeyWidth)
                         .frame(height: mainFlickKeyHeight)
                 }
                 .frame(height: mainFlickKeyHeight)
