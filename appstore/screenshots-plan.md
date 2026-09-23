@@ -68,3 +68,32 @@ ContentView に一時的な scroll フック(環境変数 `ECRITU_SCREENSHOT_SCR
 4. `xcrun simctl status_bar … override --time 9:41 --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularBars 4`
 5. `SIMCTL_CHILD_ECRITU_SCREENSHOT_SCROLL_TO=1 xcrun simctl launch … jp.or.pleiades.merope.ecritu` → 6 秒待って `simctl io … screenshot`
 アプリはホーム画面(simctl launch)から起動するので「◀ Safari」は出ない。
+
+## 01〜05 の撮り直しで分かったこと(2026-09-24)
+
+今日の縦画面の寸法変更(候補欄の上余白 13→10pt、ヘッダー 35→31pt、最下段とホームインジケーターの
+間 20→7pt、キー高さ +1pt)で、01〜05 の鍵盤の見た目がわずかに古くなった(最下段が実機では 13pt 下がる)。
+文字や名前(単漢字入力など)は写っていないので、内容としての誤りは無い。
+
+**撮り直しの障害**: 打鍵・フリック・長押しを起こす手段が無い。
+- Xcode 27 には Simulator.app が無い(`Contents/Developer/Applications` 自体が無い)。DeviceHub.app は
+  デバイス一覧で、シミュレーターの画面は出ない。CGEvent/AppleScript の対象が存在しない。
+- `simctl` に触点注入は無い(`io` は録画・スクショ・画面列挙だけ、`ui` は外観設定だけ)。
+- CoreSimulator から `SimDeviceLegacyHIDClient` が消えており、idb 方式(Indigo HID)も使えない。
+- 残る道は XCUITest 用ターゲットの新設(pbxproj 手術)か、拡張に一時的な自動打鍵フックを入れる
+  (06 の scroll フックと同じ流儀)。02(2段階フリックの泡)と 03(長押しの泡)は FlickKeyView の
+  内部 @State を外から起こす必要があり、特に重い。
+
+**前進した点**: 触らずにキーボードを出すところまでは自動化できた。
+1. `~/Library/Developer/CoreSimulator/Devices/<UD>/data/Library/Preferences/.GlobalPreferences.plist` の
+   `AppleKeyboards` に `jp.or.pleiades.merope.ecritu.keyboard` を入れる(旧 ID `com.kusakabe.ecritu.keyboard`
+   が残っていたので置換した)。
+2. 同 `com.apple.keyboard.preferences.plist` の `KeyboardLastUsed` /
+   `KeyboardLastUsedForLanguage:ja_JP` / `:NonASCII` / `KeyboardsCurrentAndNext:0,1` を同じ ID にする。
+   **どちらもシミュレーター停止中に書く**(起動中は cfprefsd が上書きする)。
+3. 起動 → `simctl openurl` で `capture-page.html` を開くと autofocus で鍵盤が出て、écritu が選ばれている。
+
+**フルアクセスだけ未解決**: 「フルアクセスがオフです」の帯が出る。旧 ID の許可は
+`data/Library/TCC/TCC.db` の `kTCCServiceKeyboardNetwork | com.kusakabe.ecritu | 2` に入っていた。
+`simctl privacy` にこのサービスは無いので、TCC.db へ新 ID の行を入れるしかない(要ユーザー許可)。
+一時ビルドで帯と設定読みを差し替える手もある。
