@@ -3217,6 +3217,10 @@ extension KanaKanjiConverter {
                                     prevPersonNameKind: personNameKindByNodeKey[prevNode.key]
                                 ) {
                                 cost -= Self.multiClauseRegionalProduceBonus
+                            } else if node.surfaceID == SID.様,
+                                personNameKindByNodeKey[prevNode.key] != nil {
+                                // 人名+様(定数コメント参照。3187)
+                                cost -= Self.multiClauseHonorificSamaAfterPersonNameBonus
                             } else {
                                 cost += Self.multiClauseHonorificKanjiPenalty
                             }
