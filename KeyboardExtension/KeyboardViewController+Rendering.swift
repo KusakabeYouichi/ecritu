@@ -456,9 +456,12 @@ extension KeyboardViewController {
                     MemoryForensics.noteSpikeWindow("絵文字退出", minDeltaMB: -1_000)
                     MemoryForensics.noteSpikeWindow("絵文字退出+5s", delaySeconds: 5.0, minDeltaMB: -1_000)
                 }
+                // 面を開く前の整理。横画面は同じ上限に早く近づくので閾値を下げる(3186)
+                let isLandscape = self.view.window?.windowScene?.interfaceOrientation.isLandscape
+                    ?? (self.traitCollection.verticalSizeClass == .compact)
                 if mode == .emoji,
                     let footprintMB = self.currentFootprintMB(),
-                    footprintMB >= 50 {
+                    footprintMB >= (isLandscape ? 42 : 50) {
                     self.kanaKanjiConverter.store.clearSystemDictionaryJSONCaches()
                     // free 済み dirty ページも OS へ返す(census 実測でアリーナ保持が
                     // footprint の主成分だったため。メモリ警告時と同じ処方)
