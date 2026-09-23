@@ -223,10 +223,15 @@ extension KeyboardLayoutMetrics {
 
     func preferredHeight(_ inputs: HeightInputs) -> CGFloat {
         if usesCompactLandscapeLayout(isLandscapeOrientation: inputs.isLandscapeOrientation) {
-            let profile = effectiveLandscapeProfile(
+            // 横画面は面ごとに高さを変えない(3175)。ホストは表示中の枠の拡大を受け付けないうえ
+            // (3156-3162 の実測)、かなだけ 176pt で他が 188pt だと面を切り替えるたびに高さが
+            // 跳ねて見える(ユーザー報告)。書式化は高さ計算では emoji に写るのでここには来ない
+            let requested = effectiveLandscapeProfile(
                 inputs.profile,
                 usesKanaLandscapeHeightForCompactGrid: inputs.usesKanaLandscapeHeightForCompactGrid
             )
+            let profile: KeyboardViewController.PortraitHeightProfile =
+                requested == .formattedNumber ? .formattedNumber : .emoji
             let scale = clamp(
                 inputs.shorterScreenEdge / baselineLandscapeScreenHeight,
                 to: landscapeScaleRange
