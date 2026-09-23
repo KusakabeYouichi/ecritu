@@ -187,8 +187,21 @@ extension KeyboardRootView {
     }
 
     // 記号/絵文字と同じ基準クラスタ高さ+畳んだヘッダー分の余白(上部エリアに回す)。
+    // 横画面では枠から逆算する(3192)。他の面は「外周+ヘッダー+段間+クラスタ」で枠ちょうどに
+    // なるのに、書式化はヘッダーを畳むぶんの足し戻しがずれて下段バーが少し上に来ていた
     private var formattedNumberClusterHeight: CGFloat {
-        fourRowAlignedClusterHeight + candidateHeaderHeight
+        let designed = fourRowAlignedClusterHeight + candidateHeaderHeight
+        guard isLandscapeLayout, containerFrame.height > 0 else {
+            return designed
+        }
+        let available = containerFrame.height
+            - keyboardTopPaddingForCluster
+            - keyboardBottomPaddingForCluster
+            - keyboardRowSpacing
+        guard available > mainFlickKeyHeight * 2 else {
+            return designed
+        }
+        return min(designed, available)
     }
 
     private var formattedNumberTopContentHeight: CGFloat {
