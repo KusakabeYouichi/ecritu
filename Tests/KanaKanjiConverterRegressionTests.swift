@@ -18850,6 +18850,10 @@ extension KanaKanjiConverterRegressionTests {
             precedingCharacter: "1"
         )
         XCTAssertEqual(afterDigit.first, "階層")
+        // だけで: エンジンの点数では かなが先頭でも、かな識別は候補チップへ回されるので
+        // 変換候補の先頭は 抱けで だった。かな正書として登録して先頭に立たせる(ユーザー報告 3186)
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "だけで"))
+        XCTAssertEqual(converter.candidates(for: "だけで", limit: 3, systemCandidateMode: .surface).first, "だけで")
         XCTAssertEqual(Set(afterDigit).count, afterDigit.count, "重複が混じっている: \(afterDigit)")
         XCTAssertEqual(converter.multiClauseCandidates(for: "かげがおしい", systemCandidateMode: .surface).first, "影が惜しい")
         // 押井 は残すが、惜しい・おしい より後ろ
