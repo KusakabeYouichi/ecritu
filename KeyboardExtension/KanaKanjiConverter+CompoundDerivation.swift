@@ -581,6 +581,13 @@ extension KanaKanjiConverter {
             .union(supplementalCounterSurfacesByReading.keys)
     }
 
+    // 助数詞ではないが、数字の直後では先頭に来るべき語(ユーザー指定 3185)。
+    // 1かいそう→1階層(既定では 回想 が先頭)。助数詞の表に入れると 第1階層/何階層 の複合生成に
+    // 波及するので別表にする
+    static let digitContextPreferredSurfacesByReading: [String: [String]] = [
+        "かいそう": ["階層"]
+    ]
+
     static func digitBoostCounterSurfaces(for reading: String) -> [String]? {
         let base = numericCounterSuffixCandidatesByReading[reading]
         let extra = digitContextAdditionalCounterSurfacesByReading[reading]
@@ -630,6 +637,9 @@ extension KanaKanjiConverter {
         // 数字文脈限定の助数詞供給(定数コメント参照)。抑制済み表層は復活させない。
         var boosted: [String] = (Self.supplementalCounterSurfacesByReading[reading] ?? [])
             .filter { !present.contains($0) && !suppressedCandidates.contains($0) }
+        // 助数詞ではないが数字の直後なら先頭に来るべき語(定数コメント参照。3185)
+        boosted += (Self.digitContextPreferredSurfacesByReading[reading] ?? [])
+            .filter { !boosted.contains($0) && !suppressedCandidates.contains($0) }
         if let counterSurfaces = Self.digitBoostCounterSurfaces(for: reading) {
             // 助数詞マップの順(か国,箇国,…)で前置する(候補列の順ではなく人手の優先順を採用)。
             // 候補列に無い助数詞も数字文脈なら供給する(抑制済みは復活させない)。
@@ -730,7 +740,10 @@ extension KanaKanjiConverter {
         guard !boosted.isEmpty else {
             return candidates
         }
-        let boostSet = Set(boosted)
+        // 供給元が複数(助数詞表・追加表・合成)なので同じ表層が二度入り得る(3185)。先勝ちで畳む
+        var seenBoost = Set<String>()
+        boosted = boosted.filter { seenBoost.insert($0).inserted }
+        let boostSet = seenBoost
         var rest = candidates.filter { !boostSet.contains($0) }
         // 数字直後で助数詞が立つ文脈では、読みそのもの(かなエコー)を助数詞より前に
         // 出したい状況が無い(2さい で さい が先頭に居座る対策)。末尾へ送る。
