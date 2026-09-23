@@ -456,6 +456,22 @@ extension KeyboardViewController {
                     MemoryForensics.noteSpikeWindow("絵文字退出", minDeltaMB: -1_000)
                     MemoryForensics.noteSpikeWindow("絵文字退出+5s", delaySeconds: 5.0, minDeltaMB: -1_000)
                 }
+                // 面(記号・絵文字・顔文字・部首・書式化)から出るときは、その面で膨らんだぶんを
+                // その場で返す(3191)。実機の Jetsam 記録では拡張が 51MB、前面のメモアプリが 78MB で
+                // 端末全体が逼迫し、前面アプリが落とされていた。面の閲覧はグリフ・セルの保持が大きく、
+                // 戻った直後が最も捨てやすい
+                if previousMode == .emoji || previousMode == .formattedNumber,
+                    mode != .emoji, mode != .formattedNumber {
+                    self.kanaKanjiConverter.store.clearSystemDictionaryJSONCaches()
+                    malloc_zone_pressure_relief(nil, 0)
+                    if let footprintMB = self.currentFootprintMB() {
+                        self.updateKeyboardDiagnosticsHeartbeat(
+                            event: "面から出るときの整理 footprintMB=\(String(format: "%.1f", footprintMB))"
+                                + "→\(self.diagnosticsFootprintMBText())",
+                            appendLog: true
+                        )
+                    }
+                }
                 // 面を開く前の整理。横画面は同じ上限に早く近づくので閾値を下げる(3186)
                 let isLandscape = self.view.window?.windowScene?.interfaceOrientation.isLandscape
                     ?? (self.traitCollection.verticalSizeClass == .compact)
