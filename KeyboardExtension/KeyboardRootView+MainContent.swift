@@ -282,6 +282,7 @@ extension KeyboardRootView {
                             title: "あい",
                             fixedWidth: 58,
                             candidates: KeyboardRootView.modePaletteLabels,
+                            paletteColumnCount: modePaletteColumnCount,
                             onReturn: { switchInputMode(.kana) },
                             onSelectCandidate: { _ = selectModePalette($0) }
                         )
@@ -310,6 +311,7 @@ extension KeyboardRootView {
                             title: "あい",
                             fixedWidth: 58,
                             candidates: KeyboardRootView.modePaletteLabels,
+                            paletteColumnCount: modePaletteColumnCount,
                             onReturn: { switchInputMode(.kana) },
                             onSelectCandidate: { _ = selectModePalette($0) }
                         )
