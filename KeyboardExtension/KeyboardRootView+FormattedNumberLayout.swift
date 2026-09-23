@@ -1165,6 +1165,7 @@ extension KeyboardRootView {
         HStack(spacing: keyboardRowSpacing) {
             ReturnToKanaPaletteKey(
                 title: "あい",
+                fixedWidth: modePanelReturnKeyWidth,
                 candidates: KeyboardRootView.modePaletteLabels,
                 paletteColumnCount: modePaletteColumnCount,
                 onReturn: { switchInputMode(.kana) },
@@ -1181,7 +1182,7 @@ extension KeyboardRootView {
 
             // カレンダーは数値バッファを使わないので削除キーは無効(淡色+操作不可で明示)。
             let deleteDisabled = selectedFormattedNumberCategory == .calendar
-            deleteActionKey(fixedWidth: 56, action: deleteFormattedNumberBackward)
+            deleteActionKey(fixedWidth: modePanelDeleteKeyWidth, action: deleteFormattedNumberBackward)
             .frame(height: height)
             .disabled(deleteDisabled)
             .opacity(deleteDisabled ? 0.35 : 1)

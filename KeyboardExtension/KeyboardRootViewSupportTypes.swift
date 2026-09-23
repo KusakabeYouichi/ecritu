@@ -759,6 +759,9 @@ extension KeyboardRootView {
         let onSelectModePalette: (String) -> Void
         // 横画面は 2 列に折る(3171)
         var paletteColumnCount: Int = 1
+        // 下段バーの端のキー幅(3189)
+        var returnKeyWidth: CGFloat = 56
+        var deleteKeyWidth: CGFloat = 56
         let onDeleteBackward: () -> Void
         // 地球儀キーが要る機種(ホームボタン機)だけ非 nil。あい の右に 🌐 を置く(4.4.1。2785)
         var onAdvanceKeyboard: (() -> Void)? = nil
@@ -786,6 +789,7 @@ extension KeyboardRootView {
                 HStack(spacing: keyboardRowSpacing) {
                     ReturnToKanaPaletteKey(
                         title: "あい",
+                        fixedWidth: returnKeyWidth,
                         candidates: KeyboardRootView.modePaletteLabels,
                         paletteColumnCount: paletteColumnCount,
                         onReturn: onSwitchToKana,
@@ -808,7 +812,7 @@ extension KeyboardRootView {
                         title: "⌫",
                         accessibilityLabel: "削除",
                         fontSize: 26,
-                        fixedWidth: 56,
+                        fixedWidth: deleteKeyWidth,
                         repeatsWhileHolding: true,
                         repeatInitialDelay: keyRepeatInitialDelay,
                         repeatInterval: keyRepeatInterval,
@@ -888,6 +892,9 @@ extension KeyboardRootView {
         let onSelectModePalette: (String) -> Void
         // 横画面は 2 列に折る(3171)
         var paletteColumnCount: Int = 1
+        // 下段バーの端のキー幅(3189)
+        var returnKeyWidth: CGFloat = 56
+        var deleteKeyWidth: CGFloat = 56
         let onDeleteBackward: () -> Void
         var onAdvanceKeyboard: (() -> Void)? = nil
 
@@ -904,6 +911,7 @@ extension KeyboardRootView {
                 HStack(spacing: keyboardRowSpacing) {
                     ReturnToKanaPaletteKey(
                         title: "あい",
+                        fixedWidth: returnKeyWidth,
                         candidates: KeyboardRootView.modePaletteLabels,
                         paletteColumnCount: paletteColumnCount,
                         onReturn: onSwitchToKana,
@@ -928,7 +936,7 @@ extension KeyboardRootView {
                         title: "⌫",
                         accessibilityLabel: "削除",
                         fontSize: 26,
-                        fixedWidth: 56,
+                        fixedWidth: deleteKeyWidth,
                         repeatsWhileHolding: true,
                         repeatInitialDelay: keyRepeatInitialDelay,
                         repeatInterval: keyRepeatInterval,
