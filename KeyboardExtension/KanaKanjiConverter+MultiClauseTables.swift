@@ -1001,7 +1001,9 @@ extension KanaKanjiConverter {
     static let multiClauseHonorificSuffixReadings: Set<String> = ["さん", "さま"]
     // 人名の直後の さま は 様 が正書(松尾様)。敬称の漢字化減点(山/三/桟/讃 対策)から外し、
     // かな さま より前に出す(ユーザー指定 3187)。人名でない語の直後(愛知県さま 等)は従来どおり
-    static let multiClauseHonorificSamaAfterPersonNameBonus = 900
+    // 文末の さま(松尾さま)でも 様 が先に来るように、EOS 遷移の差(さま→EOS の方が安い)も跨ぐ
+    // 値にする(3187 の 900 では まつおさま 単独で かなが勝っていた。ユーザー指定 3188)
+    static let multiClauseHonorificSamaAfterPersonNameBonus = 2200
     static let multiClauseHonorificKanjiPenalty = 3000
     // 地域接尾+産(産地表記)を かな敬称さん より優先するボーナス(2410)
     static let multiClauseRegionalProduceBonus = 3000
