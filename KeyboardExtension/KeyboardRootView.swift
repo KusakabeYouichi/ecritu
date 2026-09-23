@@ -168,6 +168,10 @@ struct KeyboardRootView: View {
     var keyboardRowSpacing: CGFloat {
         frameMetrics.rowSpacing - (trimsPortraitContentForHomeIndicator ? 1 : 0)
     }
+    // 上のクラスタ高さの逆算で使う外周(private の keyboardTopPadding/BottomPadding と同じ値)
+    var keyboardTopPaddingForCluster: CGFloat { keyboardTopPadding }
+    var keyboardBottomPaddingForCluster: CGFloat { keyboardBottomPadding }
+
     private var keyboardTopPadding: CGFloat {
         // 帯のぶんの詰め(定義コメント参照。3166): キーを 1pt 戻したぶんを上の 3pt から出す
         if trimsPortraitContentForHomeIndicator {
@@ -671,6 +675,11 @@ struct KeyboardRootView: View {
     // 上下で同じだけ空くように中央寄せにする(ユーザー指定 3176)
     var keyboardContentAlignment: Alignment { isLandscapeLayout ? .center : .bottom }
 
+    // 面(記号・絵文字・顔文字・部首・書式化)の下段バーの端のキー幅。横画面では かな面の
+    // ⌘ キー・削除キーと位置を揃えたい(ユーザー指定 3189)。右は余裕があるので少し広くする
+    var modePanelReturnKeyWidth: CGFloat { isLandscapeLayout ? leftModeSwitchButtonWidth : 56 }
+    var modePanelDeleteKeyWidth: CGFloat { isLandscapeLayout ? 76 : 56 }
+
     // 面選択のパレットの列数。横画面は盤の高さが足りないので 2 列に折る(ユーザー指定 3171)
     var modePaletteColumnCount: Int { isLandscapeLayout ? 2 : 1 }
 
@@ -817,8 +826,23 @@ struct KeyboardRootView: View {
         return 46
     }
 
+    // 記号・絵文字・顔文字・部首・書式化の面の「4 段ぶん」の高さ。横画面では枠が足りず、
+    // 3170 の縮小が働いて下段バーが上へずれていた(かな面の ⌘ キーと高さが揃わない)。
+    // 枠から逆算した値に収めて、下段バーがかな面の最下段と同じ位置に来るようにする(3189)
     var fourRowAlignedClusterHeight: CGFloat {
-        mainFlickKeyHeight * 4 + keyboardRowSpacing * 3
+        let designed = mainFlickKeyHeight * 4 + keyboardRowSpacing * 3
+        guard isLandscapeLayout, containerFrame.height > 0 else {
+            return designed
+        }
+        let available = containerFrame.height
+            - keyboardTopPaddingForCluster
+            - keyboardBottomPaddingForCluster
+            - candidateHeaderHeight
+            - keyboardRowSpacing
+        guard available > mainFlickKeyHeight * 2 else {
+            return designed
+        }
+        return min(designed, available)
     }
 
     var fourRowAlignedTopContentHeight: CGFloat {
