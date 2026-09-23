@@ -666,6 +666,11 @@ struct KeyboardRootView: View {
         inputMode == .kana && kanaLayoutMode == .fiveByTwo
     }
 
+    // 中身の寄せ。縦画面は下揃え(最下段を枠の下端に合わせる)。横画面は全ての面を同じ高さに
+    // 揃えた(3175)ぶん、かな・ラテン・数字では中身より枠が高く、余りが全部上に付いていた。
+    // 上下で同じだけ空くように中央寄せにする(ユーザー指定 3176)
+    var keyboardContentAlignment: Alignment { isLandscapeLayout ? .center : .bottom }
+
     // 面選択のパレットの列数。横画面は盤の高さが足りないので 2 列に折る(ユーザー指定 3171)
     var modePaletteColumnCount: Int { isLandscapeLayout ? 2 : 1 }
 
@@ -1244,12 +1249,12 @@ struct KeyboardRootView: View {
             .padding(.horizontal, keyboardHorizontalPadding)
             .padding(.bottom, keyboardBottomPadding)
             #if DEBUG
-            // 調査用(3163): 中身の実寸。下揃えなので、中身が枠より高いと上へはみ出す
+            // 調査用(3163): 中身の実寸。枠より高いとはみ出す
             .modifier(KeyboardRootOverflowProbe())
             #endif
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: keyboardContentAlignment)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: keyboardContentAlignment)
         .onAppear {
             if inputMode != initialInputMode {
                 inputMode = initialInputMode
