@@ -1356,6 +1356,9 @@ final class KeyboardViewController: UIInputViewController {
             pendingSizeTransitionTargetSize = nil
             installKeyboardHeightConstraintIfNeeded()
             updateKeyboardHeightIfNeeded()
+            // 回転は面を丸ごと組み直す。前の向きのぶんは解放されても malloc が
+            // ページを抱えたままで footprint が下がらない(横画面で警告が出やすかった。3186)
+            performRotationMemoryTrim()
         }
     }
 
