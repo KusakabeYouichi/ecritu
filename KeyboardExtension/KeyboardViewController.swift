@@ -961,6 +961,9 @@ final class KeyboardViewController: UIInputViewController {
             sampleCount: 16
         )
         commitStaleHostMarkedTextOnAppear()
+        // 窓に載っている今なら「別に表示中の個体が実在する」が自明なので、忘れられた離脱個体を
+        // 安全に掃除できる(3199)。センサスは降格が起きたときにしか走らないため、こちらも入り口にする
+        sweepForgottenDetachedControllers(trigger: "viewDidAppear")
 
         if keyboardLaunchViewDidLoadAt > 0 {
             let toAppearMs = Int((CFAbsoluteTimeGetCurrent() - keyboardLaunchViewDidLoadAt) * 1000)
@@ -1227,10 +1230,20 @@ final class KeyboardViewController: UIInputViewController {
             for controller in KeyboardViewController.liveControllerCensus.allObjects
             where controller !== self && controller.viewIfLoaded?.window == nil {
                 controller.kanaKanjiConverter.clearAllCaches()
-                controller.releaseHostingViewIfZombie(
-                    reason: "memoryWarning×\(diagnosticsState.memoryWarningCountThisSession)",
-                    ignoringWindowAttachment: true
-                )
+                let warningReason = "memoryWarning×\(diagnosticsState.memoryWarningCountThisSession)"
+                if controller.lostActiveOwnershipAt > 0 {
+                    controller.releaseHostingViewIfZombie(
+                        reason: warningReason,
+                        ignoringWindowAttachment: true
+                    )
+                } else {
+                    // 降格経路を通っていない個体は releaseHostingViewIfZombie が先頭で弾く(3199)。
+                    // 警告3回目まで来たら、忘れられた離脱個体こそ真っ先に手放したい
+                    controller.releaseDetachedKeyboardResources(
+                        reason: "forgottenDetached-\(warningReason)",
+                        logLabel: "忘れられた離脱個体の保持物を解放"
+                    )
+                }
                 releasedCount += 1
             }
             if releasedCount > 0 {
