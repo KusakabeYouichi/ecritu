@@ -935,6 +935,8 @@ final class KeyboardViewController: UIInputViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         setNeedsUpdateOfScreenEdgesDeferringSystemGestures()
+        // 門番は窓に付くので、窓に載ってから外す(定義コメント参照。3172)
+        relaxSystemGestureGateDelayIfNeeded()
         updateKeyboardDiagnosticsHeartbeat(event: "viewDidAppear", appendLog: true)
         // ホスト接続が確立した後に地球儀キーの要否を 1 回だけ読む(定義コメント参照。2824)。変わっていれば再描画
         let needsSwitchKey = needsInputModeSwitchKey
@@ -1424,6 +1426,44 @@ final class KeyboardViewController: UIInputViewController {
             KeyboardStuckTouchDiagnostics.onTouchForensics?("生タッチ ended")
             super.touchesEnded(touches, with: event)
         }
+    }
+
+    // 画面下端のシステム操作の門番(_UISystemGestureGate…)は、触れてから約 0.75 秒 touch を
+    // 保留してから配る。縦画面では最下段がその帯に入るため、キーが緑になるまで 750ms かかっていた
+    // (実測: 縦 753〜756ms / 横 78〜85ms。事象の時刻から数えても 775ms。3161 で名指しした)。
+    // 純正キーボードにこの遅れは無い。拡張からは preferredScreenEdgesDeferringSystemGestures が
+    // 効かない(3150 で実証)ので、キーボードの窓に付いている門番の「配る前に待つ」指定だけを外す。
+    // システム操作そのものは生きたままで、認識されれば従来どおりこちらの touch は取り消される(3172)
+    func relaxSystemGestureGateDelayIfNeeded() {
+        var views: [UIView] = []
+        var node: UIView? = view
+        while let current = node {
+            views.append(current)
+            node = current.superview
+        }
+        if let window = view.window {
+            views.append(window)
+        }
+
+        var relaxed = 0
+        for target in views {
+            for recognizer in target.gestureRecognizers ?? [] {
+                guard recognizer.delaysTouchesBegan,
+                    String(describing: type(of: recognizer)).contains("SystemGestureGate") else {
+                    continue
+                }
+                recognizer.delaysTouchesBegan = false
+                relaxed += 1
+            }
+        }
+
+        guard relaxed > 0 else {
+            return
+        }
+        appendKeyboardDiagnosticsLog(
+            "システム操作の門番の待ちを外した \(relaxed)個",
+            critical: true
+        )
     }
 
     private func installRawTouchProbeIfNeeded() {
