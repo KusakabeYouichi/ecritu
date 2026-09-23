@@ -18871,6 +18871,8 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.candidates(for: "おぞうに", limit: 3, systemCandidateMode: .surface).first, "お雑煮")
         // したいね: 辞書は 死体/支隊/肢体 ばかりで、動詞の したい が無かった(ユーザー報告 3197)
         XCTAssertEqual(converter.candidates(for: "したいね", limit: 3, systemCandidateMode: .surface).first, "したいね")
+        XCTAssertEqual(converter.candidates(for: "したい", limit: 3, systemCandidateMode: .surface).first, "したい")
+        XCTAssertEqual(converter.candidates(for: "したいこと", limit: 3, systemCandidateMode: .surface).first, "したいこと")
         XCTAssertFalse(converter.candidates(for: "おしわける", limit: 8, systemCandidateMode: .surface).contains("おし分る"))
         XCTAssertEqual(Set(afterDigit).count, afterDigit.count, "重複が混じっている: \(afterDigit)")
         XCTAssertEqual(converter.multiClauseCandidates(for: "かげがおしい", systemCandidateMode: .surface).first, "影が惜しい")
