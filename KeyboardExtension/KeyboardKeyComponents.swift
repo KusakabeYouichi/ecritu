@@ -864,6 +864,8 @@ struct LongPressVerticalCandidatePanel: View {
     let candidates: [String]
     let highlightedIndex: Int
     var cellWidth: CGFloat = 116
+    // 横画面は盤の高さが足りず、縦 1 列だと最上段が画面の外へ出る。2 列に折る(ユーザー指定 3171)
+    var columnCount: Int = 1
 
     // 名前だけだと分かりにくいので、面のアイコンを頭に付ける(ユーザ指定 3126/3135)。
     // 絵文字は他より大きく、部首は康熙字典の 熙 を明朝で、書式化は桁区切りの見本を小さく出す
@@ -902,9 +904,20 @@ struct LongPressVerticalCandidatePanel: View {
     // キーに接するまで下げた(ユーザ指定 3132。段の判定もこの値を基準にしているので自動で追従する)
     static let gap: CGFloat = 0
 
-    static func panelHeight(count: Int) -> CGFloat {
-        let n = CGFloat(max(0, count))
+    // 列数ぶんに折ったときの段数
+    static func rowCount(count: Int, columns: Int) -> Int {
+        let columns = max(1, columns)
+        return (max(0, count) + columns - 1) / columns
+    }
+
+    static func panelHeight(count: Int, columns: Int = 1) -> CGFloat {
+        let n = CGFloat(rowCount(count: count, columns: columns))
         return n * cellHeight + max(0, n - 1) * spacing + verticalPadding * 2
+    }
+
+    static func panelWidth(cellWidth: CGFloat, columns: Int) -> CGFloat {
+        let columns = CGFloat(max(1, columns))
+        return columns * cellWidth + (columns - 1) * spacing + horizontalPadding * 2
     }
 
     // 何段目かは指の位置(キー上辺 y=0 のローカル座標)で決める。盤を overlay に変えてキーの
@@ -913,22 +926,75 @@ struct LongPressVerticalCandidatePanel: View {
     // 指が盤に入っていなければ noSelection(どれも選ばれていない。ユーザ指定 3138)
     static let noSelection = -1
 
-    static func index(forLocalY y: CGFloat, count: Int) -> Int {
+    static func index(
+        forLocalX x: CGFloat = 0,
+        localY y: CGFloat,
+        count: Int,
+        columns: Int = 1,
+        cellWidth: CGFloat = 116
+    ) -> Int {
         guard count > 0 else {
             return noSelection
         }
+        let columns = max(1, columns)
         let slot = cellHeight + spacing
         let distance = -y - gap
         guard distance >= 0 else {
             return noSelection
         }
-        return min(count - 1, Int(floor(distance / slot)))
+        let row = min(rowCount(count: count, columns: columns) - 1, Int(floor(distance / slot)))
+        guard columns > 1 else {
+            return min(count - 1, row)
+        }
+        // 盤はキーの左辺 + keyLeadingInset に置いてある。横は指の x から列を決める
+        let columnSlot = cellWidth + spacing
+        let inPanelX = x - keyLeadingInset - horizontalPadding
+        let column = max(0, min(columns - 1, Int(floor(inPanelX / columnSlot))))
+        return min(count - 1, row * columns + column)
+    }
+
+    // 下の段から順に、列数ぶんずつ折った並び(index 0 = 最下段の左)
+    private var rows: [[(index: Int, candidate: String)]] {
+        let columns = max(1, columnCount)
+        let indexed = Array(candidates.enumerated()).map { (index: $0.offset, candidate: $0.element) }
+        return stride(from: 0, to: indexed.count, by: columns)
+            .map { Array(indexed[$0..<min($0 + columns, indexed.count)]) }
+            .reversed()
     }
 
     var body: some View {
         VStack(spacing: Self.spacing) {
-            ForEach(Array(candidates.enumerated()).reversed(), id: \.offset) { index, candidate in
-                let icon = Self.iconByLabel[candidate]
+            ForEach(Array(rows.enumerated()), id: \.offset) { _, row in
+                HStack(spacing: Self.spacing) {
+                    ForEach(row, id: \.index) { entry in
+                        cell(index: entry.index, candidate: entry.candidate)
+                    }
+
+                    // 端数の段(5 項目を 2 列に折ると最上段が 1 つ)は左に寄せる
+                    if row.count < max(1, columnCount) {
+                        Spacer(minLength: 0)
+                            .frame(width: cellWidth * CGFloat(max(1, columnCount) - row.count))
+                    }
+                }
+            }
+        }
+        .padding(.horizontal, Self.horizontalPadding)
+        .padding(.vertical, Self.verticalPadding)
+        .background(
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .fill(KeyboardThemePalette.longPressPanelBackground)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .stroke(KeyboardThemePalette.longPressPanelBorder, lineWidth: 1)
+        )
+        .shadow(color: KeyboardThemePalette.longPressPanelShadow, radius: 4, y: 1)
+        .allowsHitTesting(false)
+    }
+
+    private func cell(index: Int, candidate: String) -> some View {
+        let icon = Self.iconByLabel[candidate]
+        return AnyView(
                 HStack(spacing: 6) {
                     Text(icon?.text ?? "")
                         .font(
@@ -960,20 +1026,7 @@ struct LongPressVerticalCandidatePanel: View {
                         RoundedRectangle(cornerRadius: 8, style: .continuous)
                             .stroke(KeyboardThemePalette.keyBorder, lineWidth: 1)
                     )
-            }
-        }
-        .padding(.horizontal, Self.horizontalPadding)
-        .padding(.vertical, Self.verticalPadding)
-        .background(
-            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .fill(KeyboardThemePalette.longPressPanelBackground)
         )
-        .overlay(
-            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .stroke(KeyboardThemePalette.longPressPanelBorder, lineWidth: 1)
-        )
-        .shadow(color: KeyboardThemePalette.longPressPanelShadow, radius: 4, y: 1)
-        .allowsHitTesting(false)
     }
 }
 
@@ -985,6 +1038,8 @@ struct ReturnToKanaPaletteKey: View {
     var fontSize: CGFloat = 16
     var fixedWidth: CGFloat? = 56
     let candidates: [String]
+    // 横画面では 2 列に折る(ユーザー指定 3171)
+    var paletteColumnCount: Int = 1
     let onReturn: () -> Void
     let onSelectCandidate: (String) -> Void
 
@@ -993,6 +1048,7 @@ struct ReturnToKanaPaletteKey: View {
     @State private var longPressWorkItem: DispatchWorkItem?
 
     @State private var latestLocationY: CGFloat = 0
+    @State private var latestLocationX: CGFloat = 0
     @State private var anchorLocationY: CGFloat = 0
 
     // 面の切り替えは「選び直し」ではないので待たせない(ユーザ指定 3125)
@@ -1019,12 +1075,15 @@ struct ReturnToKanaPaletteKey: View {
             if paletteIsActive {
                 LongPressVerticalCandidatePanel(
                     candidates: candidates,
-                    highlightedIndex: highlightedIndex
+                    highlightedIndex: highlightedIndex,
+                    columnCount: paletteColumnCount
                 )
                     .offset(
                         x: LongPressVerticalCandidatePanel.keyLeadingInset,
-                        y: -(LongPressVerticalCandidatePanel.panelHeight(count: candidates.count)
-                            + LongPressVerticalCandidatePanel.gap)
+                        y: -(LongPressVerticalCandidatePanel.panelHeight(
+                            count: candidates.count,
+                            columns: paletteColumnCount
+                        ) + LongPressVerticalCandidatePanel.gap)
                     )
                     .zIndex(KeyboardLayerZIndex.floatingOverlay)
             }
@@ -1036,10 +1095,13 @@ struct ReturnToKanaPaletteKey: View {
             DragGesture(minimumDistance: 0)
                 .onChanged { value in
                     latestLocationY = value.location.y
+                    latestLocationX = value.location.x
                     if paletteIsActive {
                         highlightedIndex = LongPressVerticalCandidatePanel.index(
-                            forLocalY: value.location.y,
-                            count: candidates.count
+                            forLocalX: value.location.x,
+                            localY: value.location.y,
+                            count: candidates.count,
+                            columns: paletteColumnCount
                         )
                         return
                     }
