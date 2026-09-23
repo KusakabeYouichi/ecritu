@@ -121,6 +121,8 @@ struct FlickKeyView: View {
     var longPressCandidateAxis: LongPressCandidateAxis = .horizontal
     // 縦並びのときの 1 項目の幅(語のラベル用)。横並びでは使わない
     var longPressCandidateCellWidth: CGFloat? = nil
+    // 縦の盤(面選択のパレット)の列数。横画面は高さが足りないので 2 列に折る(ユーザー指定 3171)
+    var longPressCandidateColumnCount: Int = 1
     // 長押し成立までの待ち時間の上書き(面選択のパレットは待たせない。3125)
     var longPressDelayOverride: TimeInterval? = nil
     var onLongPress: (() -> Void)? = nil
@@ -273,12 +275,15 @@ struct FlickKeyView: View {
                 LongPressVerticalCandidatePanel(
                     candidates: longPressCandidates,
                     highlightedIndex: highlightedLongPressIndex,
-                    cellWidth: longPressCandidateCellWidth ?? Metrics.candidateCellWidth
+                    cellWidth: longPressCandidateCellWidth ?? Metrics.candidateCellWidth,
+                    columnCount: longPressCandidateColumnCount
                 )
                     .offset(
                         x: LongPressVerticalCandidatePanel.keyLeadingInset,
-                        y: -(LongPressVerticalCandidatePanel.panelHeight(count: longPressCandidates.count)
-                            + LongPressVerticalCandidatePanel.gap)
+                        y: -(LongPressVerticalCandidatePanel.panelHeight(
+                            count: longPressCandidates.count,
+                            columns: longPressCandidateColumnCount
+                        ) + LongPressVerticalCandidatePanel.gap)
                     )
                     .zIndex(KeyboardLayerZIndex.floatingOverlay)
             }
@@ -969,7 +974,13 @@ struct FlickKeyView: View {
             return 0
         }
 
-        return LongPressVerticalCandidatePanel.index(forLocalY: locationY, count: longPressCandidates.count)
+        return LongPressVerticalCandidatePanel.index(
+            forLocalX: latestTouchLocationX,
+            localY: locationY,
+            count: longPressCandidates.count,
+            columns: longPressCandidateColumnCount,
+            cellWidth: longPressCandidateCellWidth ?? Metrics.candidateCellWidth
+        )
     }
 
     private func longPressIndex(for locationX: CGFloat) -> Int {

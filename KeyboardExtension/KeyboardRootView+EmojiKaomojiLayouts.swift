@@ -221,6 +221,7 @@ extension KeyboardRootView {
             onTextInput: commitEmojiKaomojiSymbolText,
             onSwitchToKana: { switchInputMode(.kana) },
             onSelectModePalette: { _ = selectModePalette($0) },
+            paletteColumnCount: modePaletteColumnCount,
             onDeleteBackward: onDeleteBackward,
             onAdvanceKeyboard: showsNextKeyboardKey ? onAdvanceKeyboard : nil,
             deleteKeyBackgroundColorOverride: memoryPressureDeleteKeyColor,
@@ -248,6 +249,7 @@ extension KeyboardRootView {
             onTextInput: commitEmojiKaomojiSymbolText,
             onSwitchToKana: { switchInputMode(.kana) },
             onSelectModePalette: { _ = selectModePalette($0) },
+            paletteColumnCount: modePaletteColumnCount,
             onDeleteBackward: onDeleteBackward,
             onAdvanceKeyboard: showsNextKeyboardKey ? onAdvanceKeyboard : nil
         )
@@ -462,6 +464,7 @@ extension KeyboardRootView {
                     ReturnToKanaPaletteKey(
                         title: "あい",
                         candidates: KeyboardRootView.modePaletteLabels,
+                        paletteColumnCount: modePaletteColumnCount,
                         onReturn: { switchInputMode(.kana) },
                         onSelectCandidate: { _ = selectModePalette($0) }
                     )
