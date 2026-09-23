@@ -201,7 +201,10 @@ extension KeyboardRootView {
         guard available > mainFlickKeyHeight * 2 else {
             return designed
         }
-        return min(designed, available)
+        // 余りは上部エリアへ回して枠を埋める。min を取ると 7pt 足りず、中央寄せのぶん
+        // 下段バーが 3〜4pt 上がって他の面と揃わなかった(3192→3195)。
+        // 横画面のヘッダーは emoji 面だけ 26pt で、書式化は 0 ─ その差がここに出る
+        return available
     }
 
     private var formattedNumberTopContentHeight: CGFloat {
