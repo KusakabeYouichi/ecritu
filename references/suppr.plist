@@ -9,6 +9,7 @@
 	<dict><key>phrase</key><string>紹待</string><key>shortcut</key><string>しょうたい</string></dict>	<!-- 招待 の誤字(Sudachi の surface 異表記、正規化先は 招待)。しょうたい の 4 番手に出ていた(ユーザ指摘 2900) -->
 	<dict><key>phrase</key><string>しょう待</string><key>shortcut</key><string>しょうたい</string></dict>	<!-- 同じく 招待 の交ぜ書き異表記 -->
 	<dict><key>phrase</key><string>眼ぶた</string><key>shortcut</key><string>まぶた</string></dict>	<!-- 瞼 の交ぜ書き異表記。実機で先頭に出ていた(ユーザ指摘 2905) -->
+	<dict><key>phrase</key><string>池内</string><key>shortcut</key><string>いけない</string></dict>	<!-- 池内 の読みは いけうち/いけのうち/ちね で いけない とは読まない(Sudachi の誤エントリ)。いけない の唯一の辞書エントリとして rank0 に居座り、いけないのかも→池内のかも を先頭にしていた(ユーザ指摘 3202) -->
 	<dict><key>phrase</key><string>麻実</string><key>shortcut</key><string>あさのみ</string></dict>	<!-- 麻の実 の表層異表記(Sudachi、正規化先 麻の実)。読みとして一般的でない(ユーザ指定 2912) -->
 	<dict><key>phrase</key><string>掛ケる</string><key>shortcut</key><string>かける</string></dict>	<!-- 掛ける の漢字+カタカナ混じり異表記(Sudachi 収穫)。掛ケてる/掛ケた が並んでいた(ユーザ指摘 3086) -->
 	<dict><key>phrase</key><string>カケる</string><key>shortcut</key><string>かける</string></dict>	<!-- 同じくカタカナ+かな混じりの異表記 -->
