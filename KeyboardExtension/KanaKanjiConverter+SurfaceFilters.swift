@@ -216,21 +216,36 @@ extension KanaKanjiConverter {
     // 一致するルールと、空 readingSuffix のルール(どの読みにも掛かる)を添字昇順に併合する。
     // 全ルール(約850件)の線形走査は removingSuffix(hasSuffix)が支配的で、連文節は span ごとに
     // 呼ぶため活用派生が処理時間の6割を占めていた(2805 プロファイル)。結果は全走査と同一
-    static func candidateInflectionRuleIndices(forReadingEndingWith last: Character?) -> [Int] {
+    // 併合済みの添字列を末尾文字ごとに前計算しておく(3201)。入力が Character だけの純関数なので
+    // 呼ぶたびに作る必要が無い。ここは連文節の span ごとに呼ばれ、確保センサスで打鍵 1 回あたり
+    // 4KB 超の確保 3 個(=アリーナが 4MB 刻みで伸びる側の大きさ)を占めていた
+    static let mergedInflectionRuleIndicesByReadingLastCharacter: [Character: [Int]] = {
         let empty = deinflectionRuleIndicesWithEmptyReadingSuffix
-        guard let last, let matched = deinflectionRulesByReadingLastCharacter[last] else {
-            return empty
-        }
-        if empty.isEmpty { return matched }
-        var merged: [Int] = []
-        merged.reserveCapacity(matched.count + empty.count)
-        var i = 0, j = 0
-        while i < matched.count || j < empty.count {
-            if j >= empty.count || (i < matched.count && matched[i] < empty[j]) {
-                merged.append(matched[i]); i += 1
-            } else {
-                merged.append(empty[j]); j += 1
+        var table: [Character: [Int]] = [:]
+        table.reserveCapacity(deinflectionRulesByReadingLastCharacter.count)
+        for (last, matched) in deinflectionRulesByReadingLastCharacter {
+            if empty.isEmpty {
+                table[last] = matched
+                continue
             }
+            var merged: [Int] = []
+            merged.reserveCapacity(matched.count + empty.count)
+            var i = 0, j = 0
+            while i < matched.count || j < empty.count {
+                if j >= empty.count || (i < matched.count && matched[i] < empty[j]) {
+                    merged.append(matched[i]); i += 1
+                } else {
+                    merged.append(empty[j]); j += 1
+                }
+            }
+            table[last] = merged
+        }
+        return table
+    }()
+
+    static func candidateInflectionRuleIndices(forReadingEndingWith last: Character?) -> [Int] {
+        guard let last, let merged = mergedInflectionRuleIndicesByReadingLastCharacter[last] else {
+            return deinflectionRuleIndicesWithEmptyReadingSuffix
         }
         return merged
     }
