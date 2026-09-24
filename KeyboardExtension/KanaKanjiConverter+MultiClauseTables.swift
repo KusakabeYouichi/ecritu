@@ -237,6 +237,16 @@ extension KanaKanjiConverter {
     // 安いのに読み別 wc 7924 で床上げされ、こっちむき→こっち無機/こっちむきに→こっち剥きに に
     // なっていた。seed 掲載語を一律免除する案は いくのが好き/いるので/うちで水を使う/
     // とり忘れてる 等7件が退行したため不可(2499)。
+    // 逆に、辞書形述語の床上げ免除を取り消す語(読み→表層)。読み 2 字以下の辞書形述語は
+    // 短spanレア読み床(isDictionaryFormPredicate 免除)からも読み跨ぎ遮断(reading.count >= 3)からも
+    // 漏れて、主読みの unigram をそのまま借りる(1662 のコメント参照。2923 で一般化を見送った穴)。
+    // 得る(える) は word_cost 9263/うる 9751 とどちらの読みも高いのに LM unigram 4907 が安く、
+    // たっぷするときえる→タップするとき得る のように 形式名詞+得る の分割を勝たせていた
+    // (ユーザ報告 3204)。実勢のある読み(居る(おる)/打つ(ぶつ))は入れない
+    static let multiClauseRareReadingFloorForcedSurfacesByReading: [String: Set<String>] = [
+        "える": ["得る"]
+    ]
+
     static let multiClauseRareReadingFloorExemptSurfacesByReading: [String: Set<String>] = [
         "むき": ["向き"],
         // 岐阜(ぎふ) は読み別 wc 9219(収穫底値手前)で床上げされ、義父(7399)に負ける。
@@ -2631,6 +2641,7 @@ extension KanaKanjiConverter {
             for s in KanaKanjiConverter.multiClauseOutgoingBigramBorrowDeniedReadingsBySurface.keys.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClausePrenominalVerbNounPreferences.keys.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseRareReadingFloorExemptSurfacesByReading.keys.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseRareReadingFloorForcedSurfacesByReading.keys.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseSeedOrderNounBonusesByReading.keys.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseSeedSupplyCostFloors.keys.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseUnmodifiableRareReadingSurfacesByReading.keys.sorted() { add(s) }
@@ -2853,6 +2864,7 @@ extension KanaKanjiConverter {
     static let multiClauseOutgoingBigramBorrowDeniedReadingsBySurfaceByID = MultiClauseSymbols.byID(multiClauseOutgoingBigramBorrowDeniedReadingsBySurface)
     static let multiClausePrenominalVerbNounPreferencesByID = MultiClauseSymbols.byID(multiClausePrenominalVerbNounPreferences)
     static let multiClauseRareReadingFloorExemptSurfacesByReadingByID = MultiClauseSymbols.byID(multiClauseRareReadingFloorExemptSurfacesByReading)
+    static let multiClauseRareReadingFloorForcedSurfacesByReadingByID = MultiClauseSymbols.byID(multiClauseRareReadingFloorForcedSurfacesByReading)
     static let multiClauseSeedOrderNounBonusesByReadingByID = MultiClauseSymbols.byID(multiClauseSeedOrderNounBonusesByReading)
     static let multiClauseSeedSupplyCostFloorsByID = MultiClauseSymbols.byID(multiClauseSeedSupplyCostFloors)
     static let multiClauseUnmodifiableRareReadingSurfacesByReadingByID = MultiClauseSymbols.byID(multiClauseUnmodifiableRareReadingSurfacesByReading)

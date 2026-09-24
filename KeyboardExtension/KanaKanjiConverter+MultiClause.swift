@@ -1607,7 +1607,9 @@ extension KanaKanjiConverter {
                 // 辞書形述語(inflection_classes 登録)は床上げを免除(ノード定義コメント参照)。
                 // 床上げの opt-in 免除(定数コメント参照)。seed 全体の免除は退行するため語別。
                 if let wordCost,
-                    !isDictionaryFormPredicate,
+                    !isDictionaryFormPredicate
+                        || (Self.multiClauseRareReadingFloorForcedSurfacesByReadingByID[readingID]?
+                            .contains(surface) ?? false),
                     !(Self.multiClauseRareReadingFloorExemptSurfacesByReadingByID[readingID]?
                         .contains(surface) ?? false),
                     reading.count <= Self.multiClauseRareReadingFloorMaxReadingCount,
