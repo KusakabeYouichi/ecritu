@@ -53,6 +53,8 @@ enum SettingsKeys {
     static let keyRepeatInterval = "keyRepeatInterval"
     static let idleCommitEnabled = "idleCommitEnabled"
     static let idleCommitInterval = "idleCommitInterval"
+    // 未確定の方式(3209): écritu(下線) / mountain view(本文に確定文字) / tokushima(キーボード内)
+    static let composingTextStyle = "composingTextStyle"
     static let kanaModeSwitcherTapAction = "kanaModeSwitcherTapAction"
     static let kanaModeSwitcherRightFlickAction = "kanaModeSwitcherRightFlickAction"
     static let kanaModeSwitcherUpFlickAction = "kanaModeSwitcherUpFlickAction"
@@ -218,6 +220,44 @@ enum DirectionOption: String, CaseIterable, Identifiable {
         case .littlebear: return "littlebear"
         case .hanabi: return "hanabi"
         case .ecritu: return "écritu"
+        }
+    }
+}
+
+// 未確定文字の方式(3209)。画面上の名前をそのまま永続値にする(フリック方向と同じ流儀)。
+// 名前は各方式の出身地: écritu(下線付きの未確定=iOS 標準の仕組み) / mountain view(未確定を本文に
+// 確定文字として置く。Google 日本語入力の方式) / tokushima(未確定をキーボードの中に表示。ATOK の方式)。
+// tokushima は実装前なので選べない(isAvailable=false)。mountain view は 3210 で実装
+enum ComposingTextStyleOption: String, CaseIterable, Identifiable {
+    case ecritu = "écritu"
+    case mountainView = "mountain view"
+    case tokushima
+
+    init?(rawValue: String) {
+        switch rawValue {
+        case "écritu", "ecritu": self = .ecritu
+        case "mountain view", "mountainview", "mountainView": self = .mountainView
+        case "tokushima": self = .tokushima
+        default: return nil
+        }
+    }
+
+    var id: String { rawValue }
+    var title: String { rawValue }
+
+    var isAvailable: Bool {
+        self != .tokushima
+    }
+
+    // 選択肢の下に出す 1 行ずつの解説
+    var summary: String {
+        switch self {
+        case .ecritu:
+            return "écritu式: 入力中の文字を本文に下線付きで表示します(iOS 標準の仕組み)。入力欄をタップすると表示が消えることがありますが、次の打鍵で戻ります。先行する確定文字があると、未確定は送信時に切り捨てられます。"
+        case .mountainView:
+            return "mountain view式: 入力中の文字を本文に普通の文字として置き、変換のときに置き換えます。下線は出ません。タップでカーソルを動かせ、カーソルより左だけを変換して、残りは次の変換対象になります。送信でも消えません。"
+        case .tokushima:
+            return "tokushima式: 入力中の文字をキーボードの中に表示し、確定したときだけ本文へ入れます。本文のカーソル位置には入力中の文字が出ません。(準備中)"
         }
     }
 }

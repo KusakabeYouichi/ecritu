@@ -127,6 +127,62 @@ struct KeyRepeatSettingsSection: View {
     }
 }
 
+struct ComposingTextStyleSettingsSection: View {
+    @Binding var rawValue: String
+
+    private var selection: ComposingTextStyleOption {
+        ComposingTextStyleOption(rawValue: rawValue) ?? .ecritu
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("未確定の方式")
+                .font(.headline)
+
+            // 選べない方式は灰色で押せない(準備中)。segmented Picker は項目単位で無効化できないので自前の並び
+            HStack(spacing: 8) {
+                ForEach(ComposingTextStyleOption.allCases) { option in
+                    let isSelected = option == selection
+                    Button {
+                        rawValue = option.rawValue
+                    } label: {
+                        Text(option.title)
+                            .font(.subheadline.weight(isSelected ? .semibold : .regular))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.8)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 8)
+                            .background(
+                                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                    .fill(isSelected ? Color.accentColor.opacity(0.18) : Color.secondary.opacity(0.08))
+                            )
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                    .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: 1)
+                            )
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(!option.isAvailable)
+                    .foregroundStyle(option.isAvailable ? Color.primary : Color.secondary)
+                    .accessibilityLabel(option.title + (option.isAvailable ? "" : "(準備中)"))
+                }
+            }
+
+            VStack(alignment: .leading, spacing: 6) {
+                ForEach(ComposingTextStyleOption.allCases) { option in
+                    Text(option.summary)
+                        .font(.footnote)
+                        .foregroundStyle(option.isAvailable ? .secondary : .tertiary)
+                }
+                Text("初期設定は écritu です。tokushima は実装中で、今は選べません。")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .settingsCardStyle()
+    }
+}
+
 struct IdleCommitSettingsSection: View {
     @Binding var idleCommitEnabled: Bool
     @Binding var idleCommitInterval: Double

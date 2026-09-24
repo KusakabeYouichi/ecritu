@@ -260,6 +260,12 @@ final class KeyboardViewController: UIInputViewController {
     var lastSynchronizedContextBeforeInputTail = ""
     var lastSynchronizedContextBeforeInputLength = 0
     var composingContextPrefixTail = ""
+    // 未確定の方式 mountain view(3210)。ホストに確定文字として置いてある未確定と、その中のカーソル位置(nil=末尾)。
+    // 設定の読みは 1 秒だけ覚える(KeyboardViewController+PlainTextComposition.swift)
+    var plainCompositionPresentedText = ""
+    var plainCompositionCursorOffset: Int?
+    var plainTextCompositionModeCached = false
+    var plainTextCompositionModeCheckedAt: CFAbsoluteTime = 0
     var pendingHostCallbackUnderlineClearNudgeWidth: Int?
     var pendingHostCallbackUnderlineClearDeadline: CFAbsoluteTime = 0
     var cachedContextBeforeInput: String?
@@ -419,6 +425,8 @@ final class KeyboardViewController: UIInputViewController {
         static let keyRepeatInterval = "keyRepeatInterval"
         static let idleCommitEnabled = "idleCommitEnabled"
         static let idleCommitInterval = "idleCommitInterval"
+        // 未確定の方式(3209)。値は écritu / mountain view / tokushima。拡張側の分岐は方式の実装時に足す
+        static let composingTextStyle = "composingTextStyle"
         static let kanaModeSwitcherTapAction = "kanaModeSwitcherTapAction"
         static let kanaModeSwitcherRightFlickAction = "kanaModeSwitcherRightFlickAction"
         static let kanaModeSwitcherUpFlickAction = "kanaModeSwitcherUpFlickAction"
@@ -792,6 +800,10 @@ final class KeyboardViewController: UIInputViewController {
     static let externalCommitKeystrokeQuiescenceSec: TimeInterval = 1.0
 
     func commitComposingTextOnExternalTextWillChangeIfNeeded(trigger: String) {
+        // mountain view では未確定は本文にあり、ホストが捨てることも無い。確定するものが無い(3210)
+        if usesPlainTextComposition {
+            return
+        }
         guard shouldTreatAsExternalTextChange(),
             activeConversion != nil || !composingRawText.isEmpty else {
             return
