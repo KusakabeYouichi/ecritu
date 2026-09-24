@@ -2428,7 +2428,11 @@ extension KanaKanjiConverter {
         // 旧字優先の同音語も同じ枠(2896): 日蝕/月蝕 を 食 より優先するには seed 順ボーナスだけでは足りず、
         // 金環→日食 272 のような強い bigram に負ける。食 側の bigram を遮断して unigram+バックオフで評価する
         "にっしょく": ["日食"],
-        "げっしょく": ["月食"]
+        "げっしょく": ["月食"],
+        // ナッタ は Sudachi の 名詞,固有名詞,人名,一般(外国人姓 Natta。wc5496)で、なった の辞書
+        // エントリはこれ 1 件だけ。単文節は seed で 5 番目へ落としてある(3081)が、連文節は
+        // なったな→ナッタな を先頭にしていた。連文節側だけ下げる(ユーザ報告 3205)
+        "なった": ["ナッタ"]
     ]
     static func isKanaOrthodoxDemotedSurface(surface: String, reading: String) -> Bool {
         guard surface != reading else { return false }
