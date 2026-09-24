@@ -18908,5 +18908,15 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(candidates.first, "しめじ", "candidates=\(candidates)")
     }
 
+    // ユーザ報告 3202: 連体詞(そんな/こんな)直後の こと は形式名詞でかなが正書。
+    // 述語直後と同じ扱いにするまで そんな事しない が最良だった
+    func testRegression3202FormalNounAfterDemonstrativeKeepsKana() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let multi = converter.multiClauseCandidates(for: "そんなことしない", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "そんなことしない", "multi=\(multi)")
+        let konna = converter.multiClauseCandidates(for: "こんなことがある", systemCandidateMode: .surface)
+        XCTAssertEqual(konna.first, "こんなことがある", "konna=\(konna)")
+    }
 
 }
