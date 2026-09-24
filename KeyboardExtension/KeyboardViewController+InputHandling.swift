@@ -706,8 +706,9 @@ extension KeyboardViewController {
     func scheduleIdleCommitIfNeeded() {
         cancelIdleCommit()
 
-        // mountain view では未確定は最初から本文にあるので、アイドル確定は不要(3210)
-        guard !usesPlainTextComposition,
+        // mountain view では未確定は最初から本文にあり、tokushima では未確定はキーボードの中に
+        // ある(送信で消えるものが無い)ので、アイドル確定は不要(3210/3211)
+        guard !usesPlainTextComposition, !usesInternalCompositionPreview,
             currentInputMode == .kana,
             activeConversion == nil,
             !composingRawText.isEmpty,

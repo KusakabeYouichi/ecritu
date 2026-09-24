@@ -38,6 +38,8 @@ enum KeyboardCandidateBarLayoutForensics {
 // ここだけなので、rootView 差し替えではなく publish で更新して SwiftUI に差分再評価させる。
 final class KeyboardCandidateBarModel: ObservableObject {
     @Published var composingText: String = ""
+    // tokushima(3211): 候補欄に出す未確定(下線付き)。他の方式では空
+    @Published var internalCompositionPreviewText: String = ""
     @Published var conversionCandidates: [String] = []
     @Published var selectedConversionCandidateIndex: Int? = nil
     @Published var latinSuggestionQuery: String = ""
@@ -1093,6 +1095,8 @@ extension KeyboardRootView {
     struct KeyboardRootKanaCandidateHeaderView: View {
         let showsParenthesesWrapper: Bool
         let composingText: String
+        // tokushima(3211): 候補の上に小さく出す未確定(下線付き)。空なら従来どおり
+        var internalCompositionPreviewText: String = ""
         let conversionStateLabel: String
         let conversionStateIconName: String
         let conversionStateColor: Color
@@ -1117,7 +1121,7 @@ extension KeyboardRootView {
                         .font(.system(size: candidateTextFontSize, weight: .regular))
                         .foregroundStyle(keyLabelColor.opacity(0.6))
                         .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
+                        .padding(.vertical, showsInternalCompositionPreview ? 2 : 4)
                         .background(
                             RoundedRectangle(cornerRadius: 7, style: .continuous)
                                 .fill(KeyboardThemePalette.candidateHeaderPlaceholderBackground)
@@ -1149,7 +1153,7 @@ extension KeyboardRootView {
                     }
                     .lineLimit(1)
                     .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
+                    .padding(.vertical, showsInternalCompositionPreview ? 2 : 4)
                     .background(
                         RoundedRectangle(cornerRadius: 7, style: .continuous)
                             .fill(
@@ -1191,7 +1195,7 @@ extension KeyboardRootView {
                 .foregroundStyle(showsKatakanaCommitFeedback ? Color.white : keyLabelColor)
                 .lineLimit(1)
                 .padding(.horizontal, 8)
-                .padding(.vertical, 4)
+                .padding(.vertical, showsInternalCompositionPreview ? 2 : 4)
                 .background(
                     RoundedRectangle(cornerRadius: 7, style: .continuous)
                         .fill(
@@ -1209,10 +1213,28 @@ extension KeyboardRootView {
                 )
         }
 
+        // tokushima(3211): 未確定の行を上に足すぶん、チップ側の余白を詰めて 35pt の枠に収める
+        private var showsInternalCompositionPreview: Bool {
+            !internalCompositionPreviewText.isEmpty
+        }
+
         var body: some View {
             // 変換キー連打で選択を送ると、選択チップが画面外のままになっていた(2605)。
             // スワイプで手動スクロールしていると気づけない。選択が変わったら追従させる。
             ScrollViewReader { proxy in
+            VStack(alignment: .leading, spacing: 0) {
+            if showsInternalCompositionPreview {
+                Text(internalCompositionPreviewText)
+                    .font(.system(size: 10, weight: .semibold, design: .rounded))
+                    .underline()
+                    .lineLimit(1)
+                    .truncationMode(.head)
+                    .foregroundStyle(keyLabelColor.opacity(0.9))
+                    .padding(.leading, 4)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .allowsHitTesting(false)
+                    .accessibilityLabel("未確定 \(internalCompositionPreviewText)")
+            }
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 6) {
                     let showsWrapperOnly = showsParenthesesWrapper && composingText.isEmpty
@@ -1267,13 +1289,14 @@ extension KeyboardRootView {
                     }
 
                 }
-                .modifier(CandidateBarTopMarginProbe(expected: kanaCandidateHeaderTopPadding, isContent: true))
+                .modifier(CandidateBarTopMarginProbe(expected: showsInternalCompositionPreview ? 0 : kanaCandidateHeaderTopPadding, isContent: true))
                 .padding(.horizontal, 2)
-                .padding(.top, kanaCandidateHeaderTopPadding)
+                .padding(.top, showsInternalCompositionPreview ? 0 : kanaCandidateHeaderTopPadding)
                 .padding(.bottom, 0)
                 .frame(maxHeight: .infinity, alignment: .top)
             }
-            .modifier(CandidateBarTopMarginProbe(expected: kanaCandidateHeaderTopPadding, isContent: false))
+            .modifier(CandidateBarTopMarginProbe(expected: showsInternalCompositionPreview ? 0 : kanaCandidateHeaderTopPadding, isContent: false))
+            }
             .onChange(of: selectedConversionCandidateIndex) { index in
                 guard let index else {
                     return

@@ -70,6 +70,7 @@ extension KeyboardRootView {
         KeyboardRootKanaCandidateHeaderView(
             showsParenthesesWrapper: showsParenthesesWrapper,
             composingText: composingText,
+            internalCompositionPreviewText: internalCompositionPreviewText,
             conversionStateLabel: conversionStateLabel,
             conversionStateIconName: conversionStateIconName,
             conversionStateColor: conversionStateColor,

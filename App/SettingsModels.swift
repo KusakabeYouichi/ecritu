@@ -227,7 +227,7 @@ enum DirectionOption: String, CaseIterable, Identifiable {
 // 未確定文字の方式(3209)。画面上の名前をそのまま永続値にする(フリック方向と同じ流儀)。
 // 名前は各方式の出身地: écritu(下線付きの未確定=iOS 標準の仕組み) / mountain view(未確定を本文に
 // 確定文字として置く。Google 日本語入力の方式) / tokushima(未確定をキーボードの中に表示。ATOK の方式)。
-// tokushima は実装前なので選べない(isAvailable=false)。mountain view は 3210 で実装
+// mountain view は 3210、tokushima は 3211 で実装。isAvailable は今後の方式追加に備えて残す
 enum ComposingTextStyleOption: String, CaseIterable, Identifiable {
     case ecritu = "écritu"
     case mountainView = "mountain view"
@@ -246,7 +246,7 @@ enum ComposingTextStyleOption: String, CaseIterable, Identifiable {
     var title: String { rawValue }
 
     var isAvailable: Bool {
-        self != .tokushima
+        true
     }
 
     // 選択肢の下に出す 1 行ずつの解説
@@ -257,7 +257,7 @@ enum ComposingTextStyleOption: String, CaseIterable, Identifiable {
         case .mountainView:
             return "mountain view式: 入力中の文字を本文に普通の文字として置き、変換のときに置き換えます。下線は出ません。タップでカーソルを動かせ、カーソルより左だけを変換して、残りは次の変換対象になります。送信でも消えません。"
         case .tokushima:
-            return "tokushima式: 入力中の文字をキーボードの中に表示し、確定したときだけ本文へ入れます。本文のカーソル位置には入力中の文字が出ません。(準備中)"
+            return "tokushima式: 入力中の文字をキーボードの中(縦画面は候補の上、横画面は候補列の一番上)に下線付きで表示し、確定したときだけ本文へ入れます。本文のカーソル位置には入力中の文字が出ません。タップや送信で未確定が消えることはありません。"
         }
     }
 }

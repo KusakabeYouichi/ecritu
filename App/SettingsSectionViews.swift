@@ -174,7 +174,7 @@ struct ComposingTextStyleSettingsSection: View {
                         .font(.footnote)
                         .foregroundStyle(option.isAvailable ? .secondary : .tertiary)
                 }
-                Text("初期設定は écritu です。tokushima は実装中で、今は選べません。")
+                Text("初期設定は écritu です。")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
