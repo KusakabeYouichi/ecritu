@@ -19012,3 +19012,18 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(single.firstIndex(of: "ナッタ"), 4, "single=\(single)")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // ユーザ指定 3207: どうき の並び。辞書 rank は 動悸0/同期1/同機2/動気3/同気4/銅器5/動機6 で、
+    // 日常最頻の 同期・動機 が下にいた
+    func testRegression3207DoukiOrder() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let candidates = converter.candidates(for: "どうき", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(
+            Array(candidates.prefix(7)),
+            ["同期", "動機", "動悸", "銅器", "同機", "動気", "同気"],
+            "candidates=\(candidates)"
+        )
+    }
+}
