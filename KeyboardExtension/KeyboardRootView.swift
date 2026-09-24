@@ -70,6 +70,8 @@ struct KeyboardRootView: View {
     // computed プロパティで無改修のまま互換にする。
     @ObservedObject var candidateBarModel: KeyboardCandidateBarModel
     var composingText: String { candidateBarModel.composingText }
+    // tokushima(3211): 候補欄に出す未確定(下線付き)
+    var internalCompositionPreviewText: String { candidateBarModel.internalCompositionPreviewText }
     var conversionCandidates: [String] { candidateBarModel.conversionCandidates }
     var selectedConversionCandidateIndex: Int? { candidateBarModel.selectedConversionCandidateIndex }
     var latinSuggestionQuery: String { candidateBarModel.latinSuggestionQuery }

@@ -49,6 +49,8 @@ extension KeyboardViewController {
         let bottomSafeAreaOutsideFrame: CGFloat
         let shortcutVocabulary: [String]
         var composingText: String
+        // tokushima(3211): 候補欄に下線付きで出す未確定(他の方式では空)
+        var internalCompositionPreviewText: String
         var conversionCandidates: [String]
         var selectedConversionCandidateIndex: Int?
         var latinSuggestionQuery: String
@@ -72,6 +74,7 @@ extension KeyboardViewController {
         // 候補バー系 5 フィールドだけ空にする(比較用)。以前は全 45 フィールドを転記して再構築していた
         private mutating func clearCandidateBarFields() {
             composingText = ""
+            internalCompositionPreviewText = ""
             conversionCandidates = []
             selectedConversionCandidateIndex = nil
             latinSuggestionQuery = ""
@@ -92,6 +95,9 @@ extension KeyboardViewController {
         }
         if model.composingText != configuration.composingText {
             model.composingText = configuration.composingText
+        }
+        if model.internalCompositionPreviewText != configuration.internalCompositionPreviewText {
+            model.internalCompositionPreviewText = configuration.internalCompositionPreviewText
         }
         if model.conversionCandidates != configuration.conversionCandidates {
             model.conversionCandidates = configuration.conversionCandidates
@@ -335,6 +341,7 @@ extension KeyboardViewController {
             bottomSafeAreaOutsideFrame: bottomSafeAreaOutsideKeyboardFrame(),
             shortcutVocabulary: effectiveShortcutVocabularyForRender(),
             composingText: candidatePresentation.composingText,
+            internalCompositionPreviewText: internalCompositionPreviewTextForRender,
             conversionCandidates: candidatePresentation.candidates,
             selectedConversionCandidateIndex: candidatePresentation.selectedIndex,
             latinSuggestionQuery: latinSuggestionQuery,

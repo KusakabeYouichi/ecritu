@@ -72,3 +72,14 @@ final class PlainTextCompositionTests: XCTestCase {
         XCTAssertFalse(PlainTextComposition.isMountainView(rawValue: "tokushima"))
     }
 }
+
+extension PlainTextCompositionTests {
+    func testComposingTextStyleParsing() {
+        XCTAssertEqual(ComposingTextStyle(rawValue: "écritu"), .ecritu)
+        XCTAssertEqual(ComposingTextStyle(rawValue: "ecritu"), .ecritu)
+        XCTAssertEqual(ComposingTextStyle(rawValue: "mountain view"), .mountainView)
+        XCTAssertEqual(ComposingTextStyle(rawValue: "tokushima"), .tokushima)
+        XCTAssertEqual(ComposingTextStyle(rawValue: "なにか"), .ecritu)
+        XCTAssertTrue(PlainTextComposition.isTokushima(rawValue: "tokushima"))
+    }
+}
