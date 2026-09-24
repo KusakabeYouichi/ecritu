@@ -19027,3 +19027,50 @@ extension KanaKanjiConverterRegressionTests {
         )
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 一時診断(3208): 常駐メモリの内訳。長い入力セッションを模して、どの構造が育つかを見る
+    func testDiagnosticResidentMemoryBreakdown() throws {
+        guard ProcessInfo.processInfo.environment["MEMBREAK"] != nil else {
+            throw XCTSkip("MEMBREAK=1 のときだけ実行")
+        }
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+
+        func zones() -> (used: Double, alloc: Double) {
+            var stats = malloc_statistics_t()
+            malloc_zone_statistics(nil, &stats)
+            return (Double(stats.size_in_use) / 1_048_576, Double(stats.size_allocated) / 1_048_576)
+        }
+        func report(_ label: String) {
+            let z = zones()
+            print(String(format: "MEMBREAK %@ used=%.1fMB alloc=%.1fMB", label, z.used, z.alloc))
+            print("MEMBREAK   counts " + converter.store.diagnosticsCacheCountsSummary())
+            print("MEMBREAK   struct " + converter.store.diagnosticsStructureBytesSummary())
+        }
+
+        report("起動直後")
+        let readings = [
+            "としによる", "たとえていうなら", "さくじょしておきながら", "きょうはてんきがいいのででかけよう",
+            "かねもってて", "おんどをはかる", "すうかこくたいおう", "まともにかけんのか",
+            "でないようにした", "かいさつとおって", "せいこうすべく", "めがねをかけてる",
+            "じっしつできなくなった", "そんなことしない", "たっぷするときえる", "さんかのしかた"
+        ]
+        for round in 1...6 {
+            for reading in readings {
+                let chars = Array(reading)
+                for length in 4...chars.count {
+                    let prefix = String(chars[0..<length])
+                    _ = converter.multiClauseCandidates(for: prefix, systemCandidateMode: .surface)
+                    _ = converter.candidates(for: prefix, limit: 8, systemCandidateMode: .surface)
+                }
+            }
+            if round % 2 == 0 { report("\(round)周後") }
+        }
+        converter.invalidateCandidateCache()
+        report("変換キャッシュ破棄後")
+        converter.clearAllCaches()
+        malloc_zone_pressure_relief(nil, 0)
+        report("全キャッシュ破棄+返却後")
+    }
+}

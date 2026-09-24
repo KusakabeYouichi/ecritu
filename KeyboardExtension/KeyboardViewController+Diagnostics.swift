@@ -581,6 +581,16 @@ extension KeyboardViewController {
                     "MEMFORENSICS帰属@非表示 fp=\(String(format: "%.1f", fp)) \(MemoryForensics.loadSummary) \(MemoryForensics.vmRegionSummaryByTag())",
                     critical: true
                 )
+                // 内訳(3208): used 28〜31MB のうち変換キャッシュは Mac の模擬で 7.5MB 止まりだった。
+                // 残りが UI 側か自前構造かを実機で切り分けるため、ゾーン別 used/alloc・キャッシュ件数・
+                // 常駐構造の概算・静的表の概算を同じタイミングで残す(件数の集計だけで軽い)
+                appendKeyboardDiagnosticsLog(
+                    "MEMFORENSICS内訳@非表示 \(Self.diagnosticsAllMallocZonesSummary())"
+                        + " | \(kanaKanjiConverter.diagnosticsCacheCountsSummary())"
+                        + " | \(kanaKanjiConverter.store.diagnosticsStructureBytesSummary())"
+                        + " | \(Self.diagnosticsStaticCatalogBytesSummary())",
+                    critical: true
+                )
             }
             // MEMFORENSICS(時限計測 2640): スリム化の返却量(1MB以上動いたときだけ記録)
             MemoryForensics.noteSpikeWindow("スリム化(\(reason))")
