@@ -1153,13 +1153,20 @@ final class KanaKanjiConverter {
             return []
         }
 
-        let candidates = uniqueCandidates(
-            from: combinedUserCandidates(
-                for: normalizedReading,
-                ajoutVocabulary: ajoutVocabulary
-            ) + (initialAjoutVocabulary[normalizedReading] ?? [])
-                + systemCandidates(for: normalizedReading, mode: systemCandidateMode)
+        // 3 本の連結(a + b + c)は中間配列を 2 本作る。区間ごとに呼ぶ場所なので、
+        // 容量を先に取って 1 本へ詰める(3201。確保センサスで array の成長が上位だった)
+        let userCandidates = combinedUserCandidates(
+            for: normalizedReading,
+            ajoutVocabulary: ajoutVocabulary
         )
+        let initialAjout = initialAjoutVocabulary[normalizedReading] ?? []
+        let system = systemCandidates(for: normalizedReading, mode: systemCandidateMode)
+        var collected: [String] = []
+        collected.reserveCapacity(userCandidates.count + initialAjout.count + system.count)
+        collected.append(contentsOf: userCandidates)
+        collected.append(contentsOf: initialAjout)
+        collected.append(contentsOf: system)
+        let candidates = uniqueCandidates(from: collected)
 
         let suppressedByReading = store.suppressedCandidatesByReading()
 
