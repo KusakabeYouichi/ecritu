@@ -2832,7 +2832,10 @@ extension KanaKanjiConverter {
                         }
                         // 述語(活用派生・辞書形)直後の形式名詞・副助詞はかな表記が正書
                         // (行ったとき/貸し出すだけ 等)。漢字表記に減点。
-                        if prevNode.isInflectionDerived || prevNode.isDictionaryFormPredicate,
+                        // 連体詞(こんな/そんな/あんな/どんな)直後も同じ(そんなことしない/こんなときは)。
+                        // 述語と同じく連体修飾を受けた形式名詞なので かな が正書(ユーザ指定 3202)
+                        if prevNode.isInflectionDerived || prevNode.isDictionaryFormPredicate
+                            || Self.multiClauseDemonstrativeSurfacesID.contains(prevNode.surfaceID),
                             Self.multiClauseFormalNounKanaReadingsID.contains(node.readingID) {
                             if node.isKanaIdentity {
                                 // かな側にも加点(3108): やすいもん は競合が 安い門 でなく人名 安井+門 で、漢字側の減点だけでは
