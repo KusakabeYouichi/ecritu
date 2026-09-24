@@ -320,6 +320,11 @@ extension KanaKanjiConverter {
     // 前の語が漢字 2 字以上かカタカナ語のときに加点する。bigram の有無では分けない ─ 樹脂→製 は観測済み(1194)
     // なのに短span床が勝って使われず、床免除を入れてもなお かな せい(6066)に 701 差で負けたため。
     // 実在の 1 語(特製/精製/混乱)は 1 ノードで立つのでこの規則に掛からない
+    // 接尾の 家(か)は 1 字の漢字には付かない。画家/医家/一家/旧家 のような 1 字+家 の語は
+    // すべて辞書に 1 語として在るので、分割で 1 字漢字+家 が組まれたらまず誤り
+    // (さんかのしかた→三家の仕方。三(さん)+家(か) の 2 ノードが 参加 に 362 差で勝っていた。
+    // ユーザ指摘 3203)
+    static let multiClauseKaSuffixAfterSingleKanjiPenalty = 2000
     static let multiClauseNounKanjiSuffixAfterNounBonus = 1500
     // 格助詞の直後で係助詞 は/も を呑んだ活用派生(に+食もう ← にはもう)の減点(2859、抜き取り検査)。
     // 格助詞+係助詞(には/にも/では/でも)は最頻の並びで、そこを跨いで動詞が始まる読みは稀。
@@ -2546,6 +2551,8 @@ extension KanaKanjiConverter {
             add(KanaKanjiConverter.multiClauseEOSMarker)
             // 名詞+欄/製 の接尾(3123)
             for s in ["らん", "せい", "欄", "製"] { add(s) }
+            // 1 字漢字+家(か)の分割を抑える(3203)
+            for s in ["家"] { add(s) }
             for s in ["ある", "いう", "いち", "いって", "う", "お", "おそい", "か", "かち", "かん", "かんじ", "が", "きた", "くらい", "ぐらい", "こと", "ご", "ごと", "さ", "さん", "し", "した", "して", "します", "じん", "すぎ", "する", "そい", "そう", "た", "たい", "ため", "だ", "っけ", "であっても", "でも", "と", "な", "ない", "ないで", "なん", "に", "にも", "の", "のか", "は", "ひと", "ほうが", "ほうがいい", "ほしい", "まだ", "まち", "も", "もう", "や", "よう", "を", "ん", "ー", "一", "一手", "人", "位置", "価値", "化", "屋", "待ち", "感", "来た", "漢字", "産", "用", "様", "行って"] { add(s) }
             for s in KanaKanjiConverter.multiClauseAdverbKanjiAfterNounSurfaces.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseAuVerbReadings.sorted() { add(s) }
@@ -2756,6 +2763,7 @@ extension KanaKanjiConverter {
         static let 位置 = MultiClauseSymbols.id("位置")
         static let 価値 = MultiClauseSymbols.id("価値")
         static let 化 = MultiClauseSymbols.id("化")
+        static let 家 = MultiClauseSymbols.id("家")
         static let 屋 = MultiClauseSymbols.id("屋")
         static let 待ち = MultiClauseSymbols.id("待ち")
         static let 感 = MultiClauseSymbols.id("感")

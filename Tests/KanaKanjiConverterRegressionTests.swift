@@ -18920,6 +18920,18 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(konna.first, "こんなことがある", "konna=\(konna)")
     }
 
+    // ユーザ指摘 3203: 接尾の 家(か)は 1 字漢字には付かない(画家/医家/一家 は 1 語で辞書に在る)。
+    // さん+か が 三+家 に割れて 三家の仕方 が 参加の仕方 に勝っていた
+    func testRegression3203KaSuffixDoesNotFollowSingleKanji() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let multi = converter.multiClauseCandidates(for: "さんかのしかた", systemCandidateMode: .surface)
+        XCTAssertFalse(multi.contains { $0.hasPrefix("三家") }, "multi=\(multi)")
+        // 1 語として辞書に在る 1 字+家 は従来どおり(画家/一家)
+        XCTAssertEqual(converter.candidates(for: "がか", limit: 3, systemCandidateMode: .surface).first, "画家")
+        XCTAssertTrue(converter.candidates(for: "いっか", limit: 5, systemCandidateMode: .surface).contains("一家"))
+    }
+
     // ユーザ報告 3202: 池内 の読みは いけうち/いけのうち/ちね で、いけない とは読まない
     // (Sudachi の誤エントリ)。いけない の唯一の辞書エントリだったため 池内のかも が先頭だった
     func testRegression3202IkenaiIsNotIkeuchi() throws {
