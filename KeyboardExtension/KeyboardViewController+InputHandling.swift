@@ -32,10 +32,13 @@ extension KeyboardViewController {
                 rememberComposingContextPrefixTail()
             }
 
-            composingRawText.append(text)
-            composingReading.append(normalizedKana)
+            // mountain view でカーソルが未確定の中にあるときは、その位置へ差し込む(3210)
+            if !insertPlainCompositionCharacterAtCursor(raw: text, normalized: String(normalizedKana)) {
+                composingRawText.append(text)
+                composingReading.append(normalizedKana)
 
-            setMarkedComposingText(composingRawText)
+                setMarkedComposingText(composingRawText)
+            }
         } else {
             if currentInputMode == .kana,
                 !composingReading.isEmpty,
@@ -185,6 +188,11 @@ extension KeyboardViewController {
         }
 
         if !composingRawText.isEmpty {
+            // mountain view でカーソルが未確定の中にあるときは、その左 1 字を消す(3210)
+            if deletePlainCompositionCharacterBeforeCursor() {
+                refreshKeyboardStateAsync()
+                return
+            }
             composingRawText.removeLast()
 
             if !composingReading.isEmpty {
@@ -323,7 +331,7 @@ extension KeyboardViewController {
         if currentInputMode == .kana,
             activeConversion == nil,
             !composingReading.isEmpty,
-            settledCandidatePresentationKey?.reading != composingReading {
+            settledCandidatePresentationKey?.reading != effectiveComposingReading {
             return
         }
 
@@ -380,9 +388,10 @@ extension KeyboardViewController {
             return
         }
 
+        // mountain view でカーソルが未確定の中にあるときは、左区間だけが対象(3210)
         commitComposingText(
-            sourceText: composingRawText,
-            sourceReading: composingReading,
+            sourceText: effectiveComposingRawText,
+            sourceReading: effectiveComposingReading,
             committedText: presentation.candidates[index],
             learn: true
         )
@@ -629,6 +638,26 @@ extension KeyboardViewController {
             return false
         }
 
+        // mountain view でカーソルが未確定の中にあるときは、左区間を先頭候補で確定する(循環はしない。3210)
+        if usesPlainTextComposition, plainCompositionCursorOffset != nil {
+            let reading = effectiveComposingReading
+            guard !reading.isEmpty,
+                let first = kanaKanjiCandidates(
+                    for: reading,
+                    limit: 1,
+                    systemCandidateMode: currentKanaKanjiCandidateSourceModeFromSharedDefaults()
+                ).first else {
+                return false
+            }
+            commitComposingText(
+                sourceText: effectiveComposingRawText,
+                sourceReading: reading,
+                committedText: first,
+                learn: true
+            )
+            return true
+        }
+
         let candidates = kanaKanjiCandidates(
             for: composingReading,
             limit: effectiveKanaConversionCandidateLimit(),
@@ -677,7 +706,9 @@ extension KeyboardViewController {
     func scheduleIdleCommitIfNeeded() {
         cancelIdleCommit()
 
-        guard currentInputMode == .kana,
+        // mountain view では未確定は最初から本文にあるので、アイドル確定は不要(3210)
+        guard !usesPlainTextComposition,
+            currentInputMode == .kana,
             activeConversion == nil,
             !composingRawText.isEmpty,
             currentIdleCommitEnabled(from: sharedDefaults) else {
@@ -791,6 +822,8 @@ extension KeyboardViewController {
     func clearComposingState() {
         composingRawText = ""
         composingReading = ""
+        plainCompositionPresentedText = ""
+        plainCompositionCursorOffset = nil
         hasParenthesesWrapper = false
         composingContextPrefixTail = ""
         invalidateSettledCandidatePresentation()
@@ -853,6 +886,13 @@ extension KeyboardViewController {
     ) {
         MemoryForensics.noteCommitted(characters: committedText.count + trailingText.count)
         let committedTextForInsertion = wrappedCommittedTextIfNeeded(committedText) + trailingText
+        // mountain view: 確定は左区間だけ。右側に残りがあれば次の未確定として引き継ぐ(3210)
+        let plainRemainderRaw: String = usesPlainTextComposition
+            ? String(composingRawText.dropFirst(min(sourceText.count, composingRawText.count)))
+            : ""
+        let plainRemainderReading: String = usesPlainTextComposition
+            ? String(composingReading.dropFirst(min(sourceReading.count, composingReading.count)))
+            : ""
         commitMarkedTextByReplacingCurrentMarkedText(
             currentMarkedText: sourceText,
             committedText: committedTextForInsertion,
@@ -867,6 +907,10 @@ extension KeyboardViewController {
             )
         }
 
+        if usesPlainTextComposition, !plainRemainderRaw.isEmpty {
+            adoptPlainCompositionRemainder(rawRemainder: plainRemainderRaw, readingRemainder: plainRemainderReading)
+            return
+        }
         clearComposingState()
     }
 

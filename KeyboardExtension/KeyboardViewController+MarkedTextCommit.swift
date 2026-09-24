@@ -57,6 +57,11 @@ extension KeyboardViewController {
     }
 
     func setMarkedComposingText(_ text: String) {
+        // 未確定の方式 mountain view(3210): 下線ではなく確定文字の差分で表示する
+        if usesPlainTextComposition {
+            presentPlainComposition(text)
+            return
+        }
         // setMarkedText は documentContextBeforeInput/AfterInput を変えないため
         // キャッシュ無効化は不要(タイムスタンプのみ更新)。
         noteOwnTextProxyEditTimestamp()
@@ -77,6 +82,10 @@ extension KeyboardViewController {
     }
 
     func startMarkedTextWatchdogIfNeeded() {
+        // marked text が無い方式では監視するものが無い(3210)
+        if usesPlainTextComposition {
+            return
+        }
         guard markedTextWatchdogTimer == nil else {
             return
         }
@@ -136,6 +145,10 @@ extension KeyboardViewController {
     }
 
     func clearMarkedComposingText() {
+        if usesPlainTextComposition {
+            presentPlainComposition("")
+            return
+        }
         // setMarkedText("", ...) と unmarkText は marked text が空の状態では
         // documentContextBeforeInput/AfterInput を変えないため、キャッシュ無効化は不要。
         noteOwnTextProxyEditTimestamp()
@@ -155,6 +168,10 @@ extension KeyboardViewController {
     // 未確定を捨てられた(文字が消える)側は context が変わらないため検知不能=従来どおり続きになる。
     @discardableResult
     func reconcileHostCommittedMarkedTextIfNeeded(trigger: String) -> Bool {
+        // mountain view では未確定は常に本文にあるので、この照合は成立してしまう。カーソル追跡で代替(3210)
+        if usesPlainTextComposition {
+            return false
+        }
         let marked = activeConversion?.committedText ?? composingRawText
         guard !marked.isEmpty else {
             return false
@@ -190,6 +207,10 @@ extension KeyboardViewController {
         stage: String,
         nudgeWidth: Int
     ) {
+        // 下線が無い方式では消す下線も無い(3210)
+        if usesPlainTextComposition {
+            return
+        }
         let resolvedNudgeWidth = max(0, nudgeWidth)
 
         appendCommitUnderlineDiagnostics(
@@ -570,6 +591,11 @@ extension KeyboardViewController {
         committedText: String,
         sourceTextForFallbackReplacement: String? = nil
     ) {
+        // 未確定の方式 mountain view(3210): 変換対象の区間(カーソルまで)を置き換える。残りは呼び元が引き継ぐ
+        if usesPlainTextComposition {
+            commitPlainComposition(committedText)
+            return
+        }
         appendCommitUnderlineDiagnostics(
             "commitReplace:start",
             committedTextLength: committedText.count,
@@ -681,6 +707,14 @@ extension KeyboardViewController {
                 contextBeforeInput.suffix(TextContextLimits.synchronizedContextTailLength)
             )
             lastSynchronizedContextBeforeInputLength = contextBeforeInput.count
+        }
+
+        // 未確定の方式 mountain view(3210): 未確定は本文にあるので、外部変化=カーソル移動として追跡する
+        if usesPlainTextComposition {
+            if triggeredByExternalChange {
+                trackPlainCompositionCursorIfNeeded(trigger: "synchronize")
+            }
+            return
         }
 
         // ホストがタップ等で未確定(marked)を実テキストに確定した(実機 TAPTRACE 2676: メモ帳の
