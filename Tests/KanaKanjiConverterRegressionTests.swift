@@ -3156,7 +3156,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             ("きかんない", ["期間内", "機関ない"]),
             ("かていない", ["家庭内", "課程ない", "仮定ない", "過程ない"]),
             ("しせつない", ["施設内", "使節ない"]),
-            ("いけない", ["いけない", "行けない", "逝けない", "池内"]),
+            // 池内 は 3202 で抑制した(いけない とは読まない Sudachi の誤エントリ)
+            ("いけない", ["いけない", "行けない", "逝けない"]),
             ("ぐるーぷない", ["グループ内"]),
             ("かいから", ["回から", "会から", "貝殻"]),
             ("そしきない", ["組織内"]),
@@ -18917,6 +18918,18 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi.first, "そんなことしない", "multi=\(multi)")
         let konna = converter.multiClauseCandidates(for: "こんなことがある", systemCandidateMode: .surface)
         XCTAssertEqual(konna.first, "こんなことがある", "konna=\(konna)")
+    }
+
+    // ユーザ報告 3202: 池内 の読みは いけうち/いけのうち/ちね で、いけない とは読まない
+    // (Sudachi の誤エントリ)。いけない の唯一の辞書エントリだったため 池内のかも が先頭だった
+    func testRegression3202IkenaiIsNotIkeuchi() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let single = converter.candidates(for: "いけない", limit: 8, systemCandidateMode: .surface)
+        XCTAssertFalse(single.contains("池内"), "single=\(single)")
+        let multi = converter.multiClauseCandidates(for: "いけないのかも", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "いけないのかも", "multi=\(multi)")
+        XCTAssertEqual(multi.dropFirst().first, "行けないのかも", "multi=\(multi)")
     }
 
     // ユーザ報告 3202: さんか の並びを頻度順に(辞書 rank は 賛歌0/山窩1/参加2/傘下3…)。
