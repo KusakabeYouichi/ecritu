@@ -18927,6 +18927,7 @@ extension KanaKanjiConverterRegressionTests {
         try loadDeviceAddedVocabulary()
         let multi = converter.multiClauseCandidates(for: "さんかのしかた", systemCandidateMode: .surface)
         XCTAssertFalse(multi.contains { $0.hasPrefix("三家") }, "multi=\(multi)")
+        XCTAssertEqual(multi.first, "参加の仕方", "multi=\(multi)")
         // 1 語として辞書に在る 1 字+家 は従来どおり(画家/一家)
         XCTAssertEqual(converter.candidates(for: "がか", limit: 3, systemCandidateMode: .surface).first, "画家")
         XCTAssertTrue(converter.candidates(for: "いっか", limit: 5, systemCandidateMode: .surface).contains("一家"))
