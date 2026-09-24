@@ -1,0 +1,6 @@
+# 誤検知の除外(commit-guard hook)。glob を 1 行 1 パターン、case 文で照合される。
+# App Store 提出素材とマニュアルの図版は画像なので「一時/検証ファイル」と判定されるが、
+# リポジトリで管理する成果物(2026-09-24)。
+appstore/screenshots-plan.md
+appstore/screenshots/*
+docs/manual/assets/*
