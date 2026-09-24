@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260924135722"
+    private static let editionUpdatedAtRaw: String = "20260924143258"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -470,6 +470,11 @@ struct ContentView: View {
     @State var settingsToastMessage: String?
     // 初回フレーム軽量化: 設定カード群は最初の描画後に構築する(起動直後の白背景 Loading 対策)。
     @State private var didRenderInitialFrame = false
+    // ナビバーのタイトル(筆記体の écritu)タップで先頭へ戻す(3205)。設定は縦に長く、
+    // 一番上のロゴやテーマ選択まで指で戻すのが大変というユーザ要望。値の増減が合図で、
+    // ScrollViewReader 側の onChange が受ける
+    @State private var scrollToTopTrigger = 0
+    static let scrollTopAnchorID = "container-scroll-top"
     // 設定カード群の構築計測(2587)。didRenderInitialFrame を立てた時刻と、カード群の
     // 最後の要素が画面に載った時刻の差が構築コストそのもの。
     // 1起動ぶんの計測断片。bootstrap完了で1行にまとめて履歴キーへ流す。
@@ -1401,11 +1406,17 @@ struct ContentView: View {
                 // UI は初期化(snapshot/migration)完了を待たず即表示する。初期化中は下の
                 // initialLoadingToast(小さいトースト)を重ね、.disabled で操作だけ止める
                 // (白背景の全画面 Loading で待たせない。ユーザ方針)。
+                ScrollViewReader { scrollProxy in
                 ScrollView {
                         // LazyVStack: 設定カードは約 290 個のコントロールを 8 群に持つ。VStack だと初回フレームで
                         // 全部を構築し、実機で初回フレームまで 400〜900ms(OS のハング検出 0.44s)だった。
                         // 画面に入る分だけ構築させる(2849)。実測は 44〜51ms へ短縮
                         LazyVStack(alignment: .leading, spacing: 16) {
+                            // 先頭へ戻すときの目印(高さ 0。タイトルタップで ここへ scrollTo する)
+                            Color.clear
+                                .frame(height: 0)
+                                .id(Self.scrollTopAnchorID)
+
                             HStack {
                                 Spacer(minLength: 0)
 
@@ -1488,6 +1499,12 @@ struct ContentView: View {
                     // ロゴ長押しメニューの表示中はスクロールを止める。止めないと指を項目へ下ろした
                     // 瞬間に ScrollView のパンがドラッグを奪い、メニューは残るが項目が選ばれない(2762)
                     .scrollDisabled(logoMenuGesture.isActive)
+                    .onChange(of: scrollToTopTrigger) { _ in
+                        withAnimation(.easeOut(duration: 0.3)) {
+                            scrollProxy.scrollTo(Self.scrollTopAnchorID, anchor: .top)
+                        }
+                    }
+                }
             }
             .task {
                 guard !didRenderInitialFrame else {
@@ -1546,10 +1563,18 @@ struct ContentView: View {
             // 隠したままだと初期化完了時にナビバーが現れてロゴ以下がガクンと下がる(2766)
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    Text("écritu")
-                        .font(.custom("SnellRoundhand-Bold", size: 34))
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.65)
+                    // タップで先頭へ戻る。見た目は変えたくないので .plain(3205)
+                    Button {
+                        scrollToTopTrigger += 1
+                    } label: {
+                        Text("écritu")
+                            .font(.custom("SnellRoundhand-Bold", size: 34))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.65)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("écritu")
+                    .accessibilityHint("一番上へ戻る")
                 }
             }
 #endif
