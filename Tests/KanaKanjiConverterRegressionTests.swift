@@ -18990,3 +18990,25 @@ extension KanaKanjiConverterRegressionTests {
         )
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // ユーザ報告 3205: なったな の連文節が ナッタな を先頭にしていた。ナッタ は Sudachi の
+    // 名詞,固有名詞,人名,一般(外国人姓 Natta。wc5496)で、なった の辞書エントリはこれ 1 件だけ。
+    // 単文節は 3081 の指定で 5 番目に置いてあるので、連文節側だけ かな正書の枠で下げる
+    func testRegression3205NattanaPrefersKana() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "なったな", systemCandidateMode: .surface).first,
+            "なったな"
+        )
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "そうなったな", systemCandidateMode: .surface).first,
+            "そうなったな"
+        )
+        // 単文節は 3081 のまま(かな先頭・ナッタ は 5 番目)
+        let single = converter.candidates(for: "なった", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "なった", "single=\(single)")
+        XCTAssertEqual(single.firstIndex(of: "ナッタ"), 4, "single=\(single)")
+    }
+}
