@@ -117,14 +117,17 @@ extension KeyboardViewController {
             )
         }
 
-        guard !composingReading.isEmpty else {
+        // mountain view でカーソルが未確定の中にあるときは、左区間だけを変換対象にする(3210)
+        let targetReading = effectiveComposingReading
+        let targetRawText = effectiveComposingRawText
+        guard !targetReading.isEmpty else {
             invalidateSettledCandidatePresentation()
             return CandidatePresentation(composingText: "", candidates: [], selectedIndex: nil)
         }
 
         let cacheKey = CandidatePresentationCacheKey(
-            reading: composingReading,
-            composingRawText: composingRawText,
+            reading: targetReading,
+            composingRawText: targetRawText,
             modeRawValue: systemCandidateMode.rawValue
         )
 
@@ -134,8 +137,8 @@ extension KeyboardViewController {
         }
 
         kickOffAsyncCandidateGeneration(
-            reading: composingReading,
-            composingRawText: composingRawText,
+            reading: targetReading,
+            composingRawText: targetRawText,
             systemCandidateMode: systemCandidateMode
         )
 
@@ -152,7 +155,7 @@ extension KeyboardViewController {
             var carried: [String] = []
             for candidate in cached.candidates {
                 let replaced = (candidate == cached.composingText || candidate == previousReading)
-                    ? composingRawText
+                    ? targetRawText
                     : candidate
                 if seen.insert(replaced).inserted {
                     carried.append(replaced)
@@ -161,17 +164,17 @@ extension KeyboardViewController {
             // 残せる候補が無いとき列を空にすると、行の畳み込みで未確定ラベルと先頭候補が瞬く(ユーザ報告 3043 の 2 巡目:
             // く→ぐ/か/が の打鍵)。新しい読みのかな(結果でもほぼ必ず出る)を仮に置いて行の形を保つ
             if carried.isEmpty {
-                carried = [composingRawText]
+                carried = [targetRawText]
             }
             return CandidatePresentation(
-                composingText: composingRawText,
+                composingText: targetRawText,
                 candidates: carried,
                 selectedIndex: nil
             )
         }
 
         return CandidatePresentation(
-            composingText: composingRawText,
+            composingText: targetRawText,
             candidates: [],
             selectedIndex: nil
         )
@@ -354,8 +357,8 @@ extension KeyboardViewController {
             return
         }
 
-        guard cacheKey.reading == composingReading,
-            cacheKey.composingRawText == composingRawText,
+        guard cacheKey.reading == effectiveComposingReading,
+            cacheKey.composingRawText == effectiveComposingRawText,
             currentInputMode == .kana,
             activeConversion == nil else {
             return
