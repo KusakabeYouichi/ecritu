@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260924172022"
+    private static let editionUpdatedAtRaw: String = "20260925000657"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -228,6 +228,12 @@ struct ContentView: View {
         store: Self.sharedDefaults
     )
     private var idleCommitInterval: Double = IdleCommitSettings.intervalDefault
+
+    @AppStorage(
+        SettingsKeys.composingTextStyle,
+        store: Self.sharedDefaults
+    )
+    private var composingTextStyleRawValue: String = ComposingTextStyleOption.ecritu.rawValue
 
     @AppStorage(
         SettingsKeys.kanaModeSwitcherTapAction,
@@ -628,6 +634,7 @@ struct ContentView: View {
         num(SettingsKeys.keyRepeatInterval, keyRepeatInterval, "削除キーリピート: リピート速度(間隔)(秒)")
         bool(SettingsKeys.idleCommitEnabled, idleCommitEnabled, "自動確定(アイドル): 入力が止まったら未確定を自動確定")
         num(SettingsKeys.idleCommitInterval, idleCommitInterval, "自動確定(アイドル): 確定までの待ち時間(秒)")
+        str(SettingsKeys.composingTextStyle, composingTextStyleRawValue, "未確定の方式")
         str(SettingsKeys.kanaModeSwitcherTapAction, kanaModeSwitcherTapActionRawValue, "かな左下キー割り当て: タップ")
         str(SettingsKeys.kanaModeSwitcherRightFlickAction, kanaModeSwitcherRightFlickActionRawValue, "かな左下キー割り当て: 右フリック")
         str(SettingsKeys.kanaModeSwitcherUpFlickAction, kanaModeSwitcherUpFlickActionRawValue, "かな左下キー割り当て: 上フリック")
@@ -1117,6 +1124,8 @@ struct ContentView: View {
             idleCommitEnabled: $idleCommitEnabled,
             idleCommitInterval: idleCommitIntervalBinding
         )
+
+        ComposingTextStyleSettingsSection(rawValue: $composingTextStyleRawValue)
 
         KanaModeSwitcherAssignmentSection(
             tapSelection: kanaModeSwitcherTapActionSelection,
