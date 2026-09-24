@@ -13,7 +13,7 @@
 3. 下記「撮影用の入力ページ」をホーム画面に追加し、そのアイコンから起動
 4. 地球儀で écritu に切替 → `xcrun simctl io <UD> screenshot appstore/screenshots/NN-name.png`
 
-## 撮影状態(take 3 = 現行、2026-09-02)
+## 撮影状態(take 5 = 現行、2026-09-24。01〜05 を無操作手順で撮り直し)
 
 6枚すべて撮影済み・1320×2868。ホーム画面に追加した `capture-page.html` から起動して撮ったため、
 Safari のドメイン表示ピルもツールバーも写っていない。音声入力はオフでマイクも無し。
@@ -25,7 +25,11 @@ Safari のドメイン表示ピルもツールバーも写っていない。音�
 | 03 | 03-flags.png | 本文に🇭🇺を入れた状態で🇸🇰を長押し(Slovaquie バブル) |
 | 04 | 04-kaomoji-search.png | 顔文字検索 よみ「わーい」の候補 |
 | 05 | 05-number-unit.png | 書式化数値の単位 `36 200 000 hℓ`(sep mil + espace + 接頭辞 h + ℓ) |
-| 06 | 06-settings.png | 設定アプリのアクセントカラー/テーマカラー(take 4、2026-09-19: ステータスバーの「◀ Safari」を消すため撮り直し) |
+| 06 | 06-settings.png | 設定アプリのアクセントカラー/テーマカラー(take 4、2026-09-19: ステータスバーの「◀ Safari」を消すため撮り直し。今日の寸法変更の影響を受けないので据え置き) |
+
+01〜05 は 2026-09-24(edition 3200)に撮り直した。縦画面の寸法変更(候補欄の上余白 13→10pt、
+ヘッダー 35→31pt、最下段とホームインジケーターの間 20→7pt、キー高さ +1pt)と「あいう」→「あい」を反映。
+構図・本文・設定は take 3 と同じに揃えてある。撮り方は末尾の「無操作での撮影手順」。
 
 **02 の設定**(撮影時だけ変更し、撮影後に既定へ戻した):
 `keyboardBackgroundTheme=sakura` / `flickDirectionProfile=apple` /
@@ -69,31 +73,54 @@ ContentView に一時的な scroll フック(環境変数 `ECRITU_SCREENSHOT_SCR
 5. `SIMCTL_CHILD_ECRITU_SCREENSHOT_SCROLL_TO=1 xcrun simctl launch … jp.or.pleiades.merope.ecritu` → 6 秒待って `simctl io … screenshot`
 アプリはホーム画面(simctl launch)から起動するので「◀ Safari」は出ない。
 
-## 01〜05 の撮り直しで分かったこと(2026-09-24)
+## 無操作での撮影手順(2026-09-24 確立、take 5)
 
-今日の縦画面の寸法変更(候補欄の上余白 13→10pt、ヘッダー 35→31pt、最下段とホームインジケーターの
-間 20→7pt、キー高さ +1pt)で、01〜05 の鍵盤の見た目がわずかに古くなった(最下段が実機では 13pt 下がる)。
-文字や名前(単漢字入力など)は写っていないので、内容としての誤りは無い。
+Xcode 27 には Simulator.app が無く、`simctl` にも触点注入が無い(CoreSimulator から
+`SimDeviceLegacyHIDClient` も消えており idb 方式も不可)。**代わりに、指を使わずに撮る道を作った。**
+01〜05 と マニュアルの hero-kana はこの手順で撮り直した。
 
-**撮り直しの障害**: 打鍵・フリック・長押しを起こす手段が無い。
-- Xcode 27 には Simulator.app が無い(`Contents/Developer/Applications` 自体が無い)。DeviceHub.app は
-  デバイス一覧で、シミュレーターの画面は出ない。CGEvent/AppleScript の対象が存在しない。
-- `simctl` に触点注入は無い(`io` は録画・スクショ・画面列挙だけ、`ui` は外観設定だけ)。
-- CoreSimulator から `SimDeviceLegacyHIDClient` が消えており、idb 方式(Indigo HID)も使えない。
-- 残る道は XCUITest 用ターゲットの新設(pbxproj 手術)か、拡張に一時的な自動打鍵フックを入れる
-  (06 の scroll フックと同じ流儀)。02(2段階フリックの泡)と 03(長押しの泡)は FlickKeyView の
-  内部 @State を外から起こす必要があり、特に重い。
+### 1. シミュレーターの仕込み(**必ず停止中に書く**。起動中は cfprefsd が上書きする)
 
-**前進した点**: 触らずにキーボードを出すところまでは自動化できた。
-1. `~/Library/Developer/CoreSimulator/Devices/<UD>/data/Library/Preferences/.GlobalPreferences.plist` の
-   `AppleKeyboards` に `jp.or.pleiades.merope.ecritu.keyboard` を入れる(旧 ID `com.kusakabe.ecritu.keyboard`
-   が残っていたので置換した)。
-2. 同 `com.apple.keyboard.preferences.plist` の `KeyboardLastUsed` /
-   `KeyboardLastUsedForLanguage:ja_JP` / `:NonASCII` / `KeyboardsCurrentAndNext:0,1` を同じ ID にする。
-   **どちらもシミュレーター停止中に書く**(起動中は cfprefsd が上書きする)。
-3. 起動 → `simctl openurl` で `capture-page.html` を開くと autofocus で鍵盤が出て、écritu が選ばれている。
+`~/Library/Developer/CoreSimulator/Devices/<UD>/data` を `D` として:
 
-**フルアクセスだけ未解決**: 「フルアクセスがオフです」の帯が出る。旧 ID の許可は
-`data/Library/TCC/TCC.db` の `kTCCServiceKeyboardNetwork | com.kusakabe.ecritu | 2` に入っていた。
-`simctl privacy` にこのサービスは無いので、TCC.db へ新 ID の行を入れるしかない(要ユーザー許可)。
-一時ビルドで帯と設定読みを差し替える手もある。
+| 仕込み | 場所 |
+|---|---|
+| キーボードの有効化 | `D/Library/Preferences/.GlobalPreferences.plist` の `AppleKeyboards` に `jp.or.pleiades.merope.ecritu.keyboard` |
+| 起動時に écritu が出る | `D/Library/Preferences/com.apple.keyboard.preferences.plist` の `KeyboardLastUsed` / `KeyboardLastUsedForLanguage:ja_JP` / `:NonASCII` / `KeyboardsCurrentAndNext:0,1` |
+| 音声入力オフ(マイクを消す) | `D/Library/Preferences/com.apple.assistant.support.plist` の `Dictation Enabled = false` |
+| フルアクセス帯を消す | 拡張の `UserDefaults.standard`(`D/Containers/Data/PluginKitPlugin/<拡張のUUID>/Library/Preferences/jp.or.pleiades.merope.ecritu.keyboard.plist`)に `didDismissFullAccessNotice = true` |
+| 撮影用の設定 | App Group の plist(`simctl get_app_container <UD> jp.or.pleiades.merope.ecritu group.jp.or.pleiades.merope.ecritu`)に直接書く |
+
+**フルアクセスが無くても設定の読み取りは効く**(書き込みだけ不可)ので、TCC を触る必要は無い。
+拡張の UUID は各コンテナの `.com.apple.mobile_container_manager.metadata.plist` の
+`MCMMetadataIdentifier` で引く。
+
+### 2. ホーム画面の web クリップを単独起動する
+
+`xcrun simctl launch <UD> com.apple.webapp` でホーム画面に追加済みの「メモ」が開く。
+**ドメイン表示ピルも Safari のバーも出ない。** `simctl openurl` で Safari に開くとピルが写る。
+ページの autofocus で入力欄に入り、上の仕込みにより écritu が出た状態になる。
+
+### 3. 打鍵と画面状態は一時フックで作る(コミットしない)
+
+拡張に使い捨てのコードを入れ、App Group のキーを読んで状態を作る。撮影後 `git checkout -- KeyboardExtension/` で外す。
+
+| キー | 効果 | 仕込んだ場所 |
+|---|---|---|
+| `screenshotScript` | 本文の挿入と読みの打鍵(`handleTextInput` を 0.12 秒ごと) | `KeyboardViewController+Diagnostics.swift` / 呼び出しは `viewDidAppear` |
+| `screenshot_inputMode` / `_emojiSubmode` / `_emojiCategory` | 面の初期状態 | `KeyboardRootView` の `@State` 初期値と `.onAppear` |
+| `screenshot_kaomojiCategory` / `_kaomojiPrefix` / `_kaomojiReading` | 顔文字検索の状態(読み行のスクロールも `ScrollViewReader` で) | 同上 / `KeyboardRootView+EmojiKaomojiLayouts.swift` |
+| `screenshot_numberBuffer` | 書式化数値の入力値。カテゴリー・単位・接頭辞は `FormattedNumberPreferences` が App Group に永続化しているのでそのまま書ける | `KeyboardRootView` |
+| `screenshot_emojiBubble` | 国旗の国名吹き出しを出したままにする(`didHighlightItemAt` を直接呼ぶ) | `KeyboardKeyComponents.swift` |
+| `screenshot_flickKey` | 2段階フリックの吹き出し(`isTouching` + `secondaryFlickPrimaryDirection=.gauche` + `secondaryFlickVerticalDirection=.haut`) | `FlickKeyView.swift` |
+
+**でばぐ可視化を切ること**: `KeyboardRootView.memoryPressureVisualizationEnabled` を一時的に false に
+する(シミュレーターは fp が 45 を超えるので削除キーに数値バッジが写る)。
+
+### 4. つまずいた点
+
+- 拡張の attach 失敗(`表示未到達`)が出ると純正キーボードが写る。web クリップを 2〜3 回起動し直せば通る
+- 撮影のたびに `xcrun simctl status_bar <UD> override --time 9:41 …` を打ち直す(再起動で消える)
+- マニュアルの hero-kana は **iPhone 17 Pro**(1206×2622)から撮って `(0,1630)-(1206,2446)` を切り抜く。
+  App Store の 6.9 インチは iPhone 17 Pro Max(1320×2868)なので別のシミュレーターで撮る
+
