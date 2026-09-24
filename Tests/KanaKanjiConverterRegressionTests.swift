@@ -18919,4 +18919,20 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(konna.first, "こんなことがある", "konna=\(konna)")
     }
 
+    // ユーザ報告 3202: さんか の並びを頻度順に(辞書 rank は 賛歌0/山窩1/参加2/傘下3…)。
+    // 旧字体の 讚歌 は同時に抑制した(讃 との誤確定防止。姓の 讚良/讚井 は残す)
+    func testRegression3202SankaFrequencyOrder() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for reading in ["さんか", "さんかの"] {
+            let candidates = converter.candidates(for: reading, limit: 10, systemCandidateMode: .surface)
+            let expected = reading == "さんか"
+                ? ["参加", "酸化", "傘下"]
+                : ["参加の", "酸化の", "傘下の"]
+            XCTAssertEqual(Array(candidates.prefix(3)), expected, "candidates=\(candidates)")
+            XCTAssertFalse(candidates.contains { $0.contains("讚") }, "旧字体 讚 が残っている candidates=\(candidates)")
+        }
+        let multi = converter.multiClauseCandidates(for: "さんかの", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "参加の", "multi=\(multi)")
+    }
 }
