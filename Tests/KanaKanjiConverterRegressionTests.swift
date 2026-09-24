@@ -18962,3 +18962,31 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi.first, "参加の", "multi=\(multi)")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // ユーザ報告 3204: たっぷするときえる が タップするとき得る になっていた。得る(える)は
+    // word_cost が える 9263 / うる 9751 とどちらの読みも高いのに LM unigram 4907 が安く、
+    // 読み 2 字の辞書形述語なので短spanレア読み床(辞書形述語は免除)からも
+    // 読み跨ぎ遮断(読み 3 字以上)からも漏れて、形式名詞+得る の分割が と+消える に勝っていた
+    func testRegression3204EruDoesNotUndercutKieru() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "たっぷするときえる", systemCandidateMode: .surface).first,
+            "タップすると消える"
+        )
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "するときえる", systemCandidateMode: .surface).first,
+            "すると消える"
+        )
+        // 得る 本来の用法は維持する(を+得る)
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "じょうほうをえる", systemCandidateMode: .surface).first,
+            "情報を得る"
+        )
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "りえきをえる", systemCandidateMode: .surface).first,
+            "利益を得る"
+        )
+    }
+}
