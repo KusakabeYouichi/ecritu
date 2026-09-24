@@ -58,12 +58,17 @@ enum KanaKanjiCandidateSourceMode: String {
     case surface
     case lesDeux
 
+    // 集合は使い回す(3200)。ここは供給段の最内で、11 かなの打鍵 1 回に 165 回呼ばれる。
+    // 毎回 Set を作ると確保だけで打鍵あたり 165 回(実測の _SetStorage.allocate 214 回の大半)になる
+    private static let normalisedSources: Set<String> = [KanaKanjiCandidateSourceTag.normalized]
+    private static let surfaceSources: Set<String> = [KanaKanjiCandidateSourceTag.surface]
+
     var requiredSystemSources: Set<String>? {
         switch self {
         case .normalise:
-            return [KanaKanjiCandidateSourceTag.normalized]
+            return Self.normalisedSources
         case .surface:
-            return [KanaKanjiCandidateSourceTag.surface]
+            return Self.surfaceSources
         case .lesDeux:
             return nil
         }
