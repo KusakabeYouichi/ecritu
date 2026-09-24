@@ -208,6 +208,24 @@
 	<!-- ■ 字形が似ていて間違えやすいので抑制する旧字体・異体字・紛らわし表記(誤確定防止) -->
 	<!-- 變 は 変 の旧字体。單漢字 變(へん)が 次(じ)と合成して へんじないし→變次ないし を先頭にしていた。Sudachi の 變 を含む全 9 語を抑制(ユーザ指定 2823) -->
 	<!-- 吞(U+541F)は 呑(U+541E)の異体字(康熙字典体/中国の字形)。日本語の標準は 呑 で、字形が似ていて候補で見分けられないので 吞 を含む Sudachi の全 22 語を抑制(ユーザ指定 2820) -->
+	<!-- 讚(U+8B9A)は 讃(U+8B83)の旧字体。讃歌 と 讚歌 は候補で見分けられず誤確定しやすいので、讚 を含む Sudachi の 17 語を抑制(ユーザ指定 3202)。姓の 讚良/讚井 は人名なので残す -->
+	<dict><key>phrase</key><string>画讚</string><key>shortcut</key><string>がさん</string></dict>
+	<dict><key>phrase</key><string>讚</string><key>shortcut</key><string>さん</string></dict>
+	<dict><key>phrase</key><string>讚歌</string><key>shortcut</key><string>さんか</string></dict>
+	<dict><key>phrase</key><string>讚仰</string><key>shortcut</key><string>さんぎょう</string></dict>
+	<dict><key>phrase</key><string>讚辞</string><key>shortcut</key><string>さんじ</string></dict>
+	<dict><key>phrase</key><string>讚歎</string><key>shortcut</key><string>さんたん</string></dict>
+	<dict><key>phrase</key><string>讚美</string><key>shortcut</key><string>さんび</string></dict>
+	<dict><key>phrase</key><string>讚美歌</string><key>shortcut</key><string>さんびか</string></dict>
+	<dict><key>phrase</key><string>称讚</string><key>shortcut</key><string>しょうさん</string></dict>
+	<dict><key>phrase</key><string>賞讚</string><key>shortcut</key><string>しょうさん</string></dict>
+	<dict><key>phrase</key><string>自讚</string><key>shortcut</key><string>じさん</string></dict>
+	<dict><key>phrase</key><string>絶讚</string><key>shortcut</key><string>ぜっさん</string></dict>
+	<dict><key>phrase</key><string>讚える</string><key>shortcut</key><string>たたえる</string></dict>
+	<dict><key>phrase</key><string>熱讚</string><key>shortcut</key><string>ねっさん</string></dict>
+	<dict><key>phrase</key><string>褒め讚える</string><key>shortcut</key><string>ほめたたえる</string></dict>
+	<dict><key>phrase</key><string>誉め讚える</string><key>shortcut</key><string>ほめたたえる</string></dict>
+	<dict><key>phrase</key><string>礼讚</string><key>shortcut</key><string>らいさん</string></dict>
 	<dict><key>phrase</key><string>あわせ吞む</string><key>shortcut</key><string>あわせのむ</string></dict>
 	<dict><key>phrase</key><string>併せ吞む</string><key>shortcut</key><string>あわせのむ</string></dict>
 	<dict><key>phrase</key><string>鵜吞み</string><key>shortcut</key><string>うのみ</string></dict>
