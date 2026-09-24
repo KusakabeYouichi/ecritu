@@ -237,9 +237,16 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--out", type=Path, help="候補一覧(TSV)の出力先")
     parser.add_argument("--apply", type=Path, help="確認済み TSV を vin.plist へ登録する")
+    parser.add_argument(
+        "--missing-latin", type=Path,
+        help="逆向きの一覧: カタカナだけでラテン表記が無い読みを TSV で出す(ラテン側は機械生成できない)"
+    )
     args = parser.parse_args()
 
     entries = load_entries()
+    if args.missing_latin:
+        write_missing_latin(entries, args.missing_latin)
+        return 0
     if args.apply:
         add_from_tsv(entries, args.apply)
         return 0
@@ -262,6 +269,24 @@ def main() -> int:
     for key, value in sorted(counts.items(), key=lambda x: -x[1]):
         print(f"  {key}: {value}")
     return 0
+
+
+def write_missing_latin(entries: list[dict], out: Path) -> None:
+    """カタカナ表記だけで、同じ読みのラテン表記が無いものを一覧にする(3207)。
+
+    ラテン表記は綴りが機械的に決まらない(カタカナからは復元できない)ので、読みとカタカナだけを出す。
+    """
+    latin_readings = {e["shortcut"] for e in entries if kind_of(e["phrase"]) == "latin"}
+    rows = [
+        (e["shortcut"], e["phrase"])
+        for e in entries
+        if kind_of(e["phrase"]) == "katakana" and e["shortcut"] not in latin_readings
+    ]
+    rows.sort()
+    lines = ["読み\tカタカナ表記"] + [f"{r}\t{p}" for r, p in rows]
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    print(f"wrote: {out} ({len(rows)} 件 / {len({r for r, _ in rows})} 読み)")
 
 
 def add_from_tsv(entries: list[dict], tsv: Path) -> None:
