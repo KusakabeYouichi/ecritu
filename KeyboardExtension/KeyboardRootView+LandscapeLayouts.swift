@@ -260,6 +260,21 @@ extension KeyboardRootView {
         VStack(alignment: .leading, spacing: 4) {
             let showsWrapperOnly = showsParenthesesWrapper && composingText.isEmpty
 
+            // tokushima(3211): 候補列の一番上を 1 行使って未確定を下線付きで出す(ScrollView 側が 1 行ぶん縮む)
+            if !internalCompositionPreviewText.isEmpty {
+                Text(internalCompositionPreviewText)
+                    .font(.system(size: candidateTextFontSize - 2, weight: .semibold, design: .rounded))
+                    .underline()
+                    .lineLimit(1)
+                    .truncationMode(.head)
+                    .foregroundStyle(keyLabelColor.opacity(0.9))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 8)
+                    .frame(height: 24)
+                    .allowsHitTesting(false)
+                    .accessibilityLabel("未確定 \(internalCompositionPreviewText)")
+            }
+
             if !composingText.isEmpty || showsWrapperOnly {
                 // 状態はアイコンのミニカプセルで示す(鉛筆=未確定/循環矢印=変換中)。
                 // 候補なしのとき状態は必ず未確定なので、カプセルは冗長 — 出さずに上へ詰める。

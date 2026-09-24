@@ -264,7 +264,7 @@ final class KeyboardViewController: UIInputViewController {
     // 設定の読みは 1 秒だけ覚える(KeyboardViewController+PlainTextComposition.swift)
     var plainCompositionPresentedText = ""
     var plainCompositionCursorOffset: Int?
-    var plainTextCompositionModeCached = false
+    var plainTextCompositionModeCached: ComposingTextStyle = .ecritu
     var plainTextCompositionModeCheckedAt: CFAbsoluteTime = 0
     var pendingHostCallbackUnderlineClearNudgeWidth: Int?
     var pendingHostCallbackUnderlineClearDeadline: CFAbsoluteTime = 0
@@ -800,8 +800,9 @@ final class KeyboardViewController: UIInputViewController {
     static let externalCommitKeystrokeQuiescenceSec: TimeInterval = 1.0
 
     func commitComposingTextOnExternalTextWillChangeIfNeeded(trigger: String) {
-        // mountain view では未確定は本文にあり、ホストが捨てることも無い。確定するものが無い(3210)
-        if usesPlainTextComposition {
+        // mountain view では未確定は本文にあり、ホストが捨てることも無い。tokushima では未確定は
+        // 拡張の中にあり、ホストが動いても消えない。どちらも確定するものが無い(3210/3211)
+        if usesPlainTextComposition || usesInternalCompositionPreview {
             return
         }
         guard shouldTreatAsExternalTextChange(),

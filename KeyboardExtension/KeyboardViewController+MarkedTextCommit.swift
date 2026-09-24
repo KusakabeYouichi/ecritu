@@ -62,6 +62,11 @@ extension KeyboardViewController {
             presentPlainComposition(text)
             return
         }
+        // tokushima(3211): ホストには渡さず、候補欄の表示だけ更新する(描画は refresh 側が拾う)
+        if usesInternalCompositionPreview {
+            lastMarkedTextUpdateAt = CFAbsoluteTimeGetCurrent()
+            return
+        }
         // setMarkedText は documentContextBeforeInput/AfterInput を変えないため
         // キャッシュ無効化は不要(タイムスタンプのみ更新)。
         noteOwnTextProxyEditTimestamp()
@@ -82,8 +87,8 @@ extension KeyboardViewController {
     }
 
     func startMarkedTextWatchdogIfNeeded() {
-        // marked text が無い方式では監視するものが無い(3210)
-        if usesPlainTextComposition {
+        // marked text が無い方式では監視するものが無い(3210/3211)
+        if usesPlainTextComposition || usesInternalCompositionPreview {
             return
         }
         guard markedTextWatchdogTimer == nil else {
@@ -149,6 +154,9 @@ extension KeyboardViewController {
             presentPlainComposition("")
             return
         }
+        if usesInternalCompositionPreview {
+            return
+        }
         // setMarkedText("", ...) と unmarkText は marked text が空の状態では
         // documentContextBeforeInput/AfterInput を変えないため、キャッシュ無効化は不要。
         noteOwnTextProxyEditTimestamp()
@@ -168,8 +176,9 @@ extension KeyboardViewController {
     // 未確定を捨てられた(文字が消える)側は context が変わらないため検知不能=従来どおり続きになる。
     @discardableResult
     func reconcileHostCommittedMarkedTextIfNeeded(trigger: String) -> Bool {
-        // mountain view では未確定は常に本文にあるので、この照合は成立してしまう。カーソル追跡で代替(3210)
-        if usesPlainTextComposition {
+        // mountain view では未確定は常に本文にあるので、この照合は成立してしまう。カーソル追跡で代替(3210)。
+        // tokushima は未確定が本文に無いので照合する対象が無い(3211)
+        if usesPlainTextComposition || usesInternalCompositionPreview {
             return false
         }
         let marked = activeConversion?.committedText ?? composingRawText
@@ -207,8 +216,8 @@ extension KeyboardViewController {
         stage: String,
         nudgeWidth: Int
     ) {
-        // 下線が無い方式では消す下線も無い(3210)
-        if usesPlainTextComposition {
+        // 下線が無い方式では消す下線も無い(3210/3211)
+        if usesPlainTextComposition || usesInternalCompositionPreview {
             return
         }
         let resolvedNudgeWidth = max(0, nudgeWidth)
@@ -596,6 +605,11 @@ extension KeyboardViewController {
             commitPlainComposition(committedText)
             return
         }
+        // tokushima(3211): 未確定はホストに無いので、確定文字を差し込むだけ
+        if usesInternalCompositionPreview {
+            commitInternalComposition(committedText)
+            return
+        }
         appendCommitUnderlineDiagnostics(
             "commitReplace:start",
             committedTextLength: committedText.count,
@@ -714,6 +728,10 @@ extension KeyboardViewController {
             if triggeredByExternalChange {
                 trackPlainCompositionCursorIfNeeded(trigger: "synchronize")
             }
+            return
+        }
+        // tokushima(3211): 未確定は拡張の中にあり、ホストの変化と無関係(ATOK と同じ)
+        if usesInternalCompositionPreview {
             return
         }
 

@@ -13,9 +13,25 @@ import UIKit
 // ホストへの窓口は 3 つに絞る: presentPlainComposition(表示の差分適用)/ commitPlainComposition(区間の置換)/
 // trackPlainCompositionCursorIfNeeded(カーソル位置の追跡)。marked 方式の下線掃除・watchdog・アイドル確定・
 // ホスト確定の照合はすべてこの方式では無効(呼び元の先頭で usesPlainTextComposition を見て抜ける)。
+// 未確定の方式(設定「未確定の方式」の値)。écritu=下線(marked text)/ mountain view=本文に確定文字 /
+// tokushima=キーボードの中に表示(ATOK の方式。3211)
+enum ComposingTextStyle: Equatable {
+    case ecritu
+    case mountainView
+    case tokushima
+
+    init(rawValue: String) {
+        switch rawValue {
+        case "mountain view", "mountainview", "mountainView": self = .mountainView
+        case "tokushima": self = .tokushima
+        default: self = .ecritu
+        }
+    }
+}
+
 extension KeyboardViewController {
     // 設定の読み。打鍵ごとに数回呼ばれるので 1 秒だけ覚える(UserDefaults の読みを毎回しない)
-    var usesPlainTextComposition: Bool {
+    var composingTextStyle: ComposingTextStyle {
         let now = CFAbsoluteTimeGetCurrent()
         if now - plainTextCompositionModeCheckedAt > 1.0 {
             let raw = sharedStringValue(
@@ -23,10 +39,40 @@ extension KeyboardViewController {
                 key: SharedDefaultsKeys.composingTextStyle,
                 fallback: "écritu"
             )
-            plainTextCompositionModeCached = PlainTextComposition.isMountainView(rawValue: raw)
+            plainTextCompositionModeCached = ComposingTextStyle(rawValue: raw)
             plainTextCompositionModeCheckedAt = now
         }
         return plainTextCompositionModeCached
+    }
+
+    var usesPlainTextComposition: Bool {
+        composingTextStyle == .mountainView
+    }
+
+    // tokushima(3211): 未確定をホストへ一切渡さず、キーボードの候補欄に下線付きで表示する。
+    // ホストに触るのは確定時の insertText 1 回だけ
+    var usesInternalCompositionPreview: Bool {
+        composingTextStyle == .tokushima
+    }
+
+    // 候補欄に出す未確定の文字列(tokushima のみ)。変換中は選択中の候補(確定されるもの)を見せる
+    var internalCompositionPreviewTextForRender: String {
+        guard usesInternalCompositionPreview else {
+            return ""
+        }
+        return activeConversion?.committedText ?? composingRawText
+    }
+
+    // tokushima の確定: 未確定はホストに無いので、確定文字を差し込むだけ
+    func commitInternalComposition(_ committedText: String) {
+        guard !committedText.isEmpty else {
+            return
+        }
+        markTextProxyEdit()
+        textDocumentProxy.insertText(committedText)
+        appendKeyboardDiagnosticsLogFromInputHandling(
+            "tokushima 確定 \(committedText.count)字"
+        )
     }
 
     // 変換の対象になる区間(カーソルが未確定の中にあれば、その左側だけ)
@@ -213,12 +259,11 @@ extension KeyboardViewController {
 // 純関数の部分。UIKit に触らないのでテストで固定する
 enum PlainTextComposition {
     static func isMountainView(rawValue: String) -> Bool {
-        switch rawValue {
-        case "mountain view", "mountainview", "mountainView":
-            return true
-        default:
-            return false
-        }
+        ComposingTextStyle(rawValue: rawValue) == .mountainView
+    }
+
+    static func isTokushima(rawValue: String) -> Bool {
+        ComposingTextStyle(rawValue: rawValue) == .tokushima
     }
 
     struct Plan: Equatable {
