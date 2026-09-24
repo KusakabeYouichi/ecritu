@@ -2021,6 +2021,13 @@ extension KanaKanjiConverter {
                 containsKanji(prev) || Self.isKatakanaString(prev) {
                 penalty -= Self.multiClauseNounKanjiSuffixAfterNounBonus
             }
+            // 接尾の 家(か)は 1 字の漢字には付かない(定数コメント参照。3203)
+            if surfaceID == SID.家, readingID == SID.か,
+                !prevIsBOS,
+                prev.count == 1,
+                containsKanji(prev) {
+                penalty += Self.multiClauseKaSuffixAfterSingleKanjiPenalty
+            }
             // 接尾の 屋 は bigram 実績のある相手にしか付かない(定数コメント参照。2873)
             if surfaceID == SID.屋, readingID == SID.や,
                 !prevIsBOS,
