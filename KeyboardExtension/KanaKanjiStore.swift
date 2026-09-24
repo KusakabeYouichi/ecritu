@@ -95,11 +95,19 @@ final class KanaKanjiStore {
     struct TwoGenerationCache<Key: Hashable, Value> {
         private var current: [Key: Value] = [:]
         private var previous: [Key: Value] = [:]
+        // 世代の 1 本目だけ reserveCapacity が掛かっていなかった(3201)。空から育つと
+        // rehash のたびに一回り大きい塊を確保して前のを捨てる成長列になり、長寿命の
+        // キャッシュがアリーナに穴を開ける側に回る。最初から上限ぶんを一度で取る
+        private var didReserveCurrent = false
         var count: Int { current.count + previous.count }
         subscript(key: Key) -> Value? {
             current[key] ?? previous[key]
         }
         mutating func set(_ value: Value, for key: Key, limit: Int) {
+            if !didReserveCurrent {
+                didReserveCurrent = true
+                current.reserveCapacity(max(1, limit / 2))
+            }
             if current.count >= max(1, limit / 2) {
                 previous = current
                 current = [:]
@@ -110,6 +118,8 @@ final class KanaKanjiStore {
         mutating func removeAll(keepingCapacity: Bool) {
             current.removeAll(keepingCapacity: keepingCapacity)
             previous.removeAll(keepingCapacity: false)
+            // 容量を手放したなら次の set で取り直す(3201)
+            didReserveCurrent = keepingCapacity
         }
     }
     typealias TwoGenerationLMCache = TwoGenerationCache<UInt64, Int>
@@ -549,8 +559,12 @@ final class KanaKanjiStore {
         guard let sqliteIndex = sqliteIndexIfAvailable() else {
             return [:]
         }
+        // 結果辞書と未取得リストの容量を先に取る(3201)。挿入で育つと 2KB 超の rehash が
+        // 毎打鍵に数回走り、長寿命キャッシュの隣に穴を作る
         var result: [String: Int] = [:]
+        result.reserveCapacity(surfaces.count)
         var uncached: [String] = []
+        uncached.reserveCapacity(surfaces.count)
         withCacheLock {
             for surface in surfaces {
                 if let cached = cachedWordLMUnigram[Self.lmCacheKey(surface)] {
@@ -588,7 +602,9 @@ final class KanaKanjiStore {
             return [:]
         }
         var result: [String: Int] = [:]
+        result.reserveCapacity(candidates.count)
         var uncached: [String] = []
+        uncached.reserveCapacity(candidates.count)
         withCacheLock {
             for candidate in candidates {
                 if let cached = cachedCandidateMinWordCosts[candidate] {
@@ -652,7 +668,9 @@ final class KanaKanjiStore {
         #if DEBUG
         Self.diagnosticsLMBigramRequested += pairs.count
         #endif
+        // append の成長列(4→8→16…)で中くらいの確保が毎打鍵に散るのを避ける(3201)
         var uncachedIndices: [Int] = []
+        uncachedIndices.reserveCapacity(pairs.count)
         withCacheLock {
             for (index, pair) in pairs.enumerated() {
                 if let cached = cachedWordLMBigram[Self.lmCacheKey(pair.0, pair.1)] {
@@ -670,7 +688,12 @@ final class KanaKanjiStore {
         #if DEBUG
         Self.diagnosticsLMBigramFetched += uncachedIndices.count
         #endif
-        let fetched = sqliteIndex.wordLMBigramCostsAligned(for: uncachedIndices.map { pairs[$0] })
+        var uncachedPairs: [(String, String)] = []
+        uncachedPairs.reserveCapacity(uncachedIndices.count)
+        for index in uncachedIndices {
+            uncachedPairs.append(pairs[index])
+        }
+        let fetched = sqliteIndex.wordLMBigramCostsAligned(for: uncachedPairs)
         withCacheLock {
             let limit = activeWordLMCacheLimit
             for (position, index) in uncachedIndices.enumerated() {
