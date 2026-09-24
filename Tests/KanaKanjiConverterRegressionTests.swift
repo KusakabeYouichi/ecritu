@@ -18900,6 +18900,13 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(candidates.dropFirst().first, "強いて", "candidates=\(candidates)")
     }
 
+    // ユーザ報告 3202: しめじ は食品としてかな書きが普通で、占地 はまず見ない(辞書 rank は 占地0)
+    func testRegression3202ShimejiLeadsWithKana() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let candidates = converter.candidates(for: "しめじ", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(candidates.first, "しめじ", "candidates=\(candidates)")
+    }
 
 
 }
