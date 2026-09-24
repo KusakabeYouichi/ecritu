@@ -77,9 +77,14 @@ final class KanaKanjiStore {
     private var cachedSystemCandidateSources: [String: [String: Set<String>]]?
     private var cachedInflectionDictionary: [String: [String: String]]?
     // 読み別の inflection_classes キャッシュ(連文節の辞書形述語判定用)
-    private var cachedInflectionClassMapsByReading: [String: [String: String]] = [:]
+    // 上限なしの [String: [String: String]] だった(3208)。区間ごとに読みが増えるので長いセッションで
+    // 単調増加し(Mac の模擬 1,500 読みで 1,720 / 3,694 件)、String キー+入れ子辞書の小片が一時確保の
+    // 間に散って malloc アリーナを返せなくする「くさび」になっていた。word_costs と同じ 2 世代方式で
+    // 上限を付ける(直近 limit/2 件は必ず残る)
+    private var cachedInflectionClassMapsByReading = TwoGenerationCache<String, [String: String]>()
     // 読み別の人名区分キャッシュ(連文節の人名判定用。表層→姓/名。空も覚える)
-    private var cachedPersonNameKindsByReading: [String: [String: String]] = [:]
+    private var cachedPersonNameKindsByReading = TwoGenerationCache<String, [String: String]>()
+    private static let readingMapCacheLimit = 2048
     // 連文節 DP の LM 点引きキャッシュ。前置き入力ではスパン/ペアの大半が毎キーストロークで
     // 再出現するため、点クエリ(1変換あたり unigram 数百+bigram 千超)を初出のみに抑える。
     // 「未観測」も番兵(-1)で覚える — LM のヒット率は低く、negative キャッシュが本体。
@@ -439,7 +444,7 @@ final class KanaKanjiStore {
         } else {
             classMap = loadInflectionDictionary()[reading] ?? [:]
         }
-        withCacheLock { cachedInflectionClassMapsByReading[reading] = classMap }
+        withCacheLock { cachedInflectionClassMapsByReading.set(classMap, for: reading, limit: Self.readingMapCacheLimit) }
         return classMap[candidate] != nil
     }
 
@@ -457,7 +462,7 @@ final class KanaKanjiStore {
         } else {
             classMap = loadInflectionDictionary()[reading] ?? [:]
         }
-        withCacheLock { cachedInflectionClassMapsByReading[reading] = classMap }
+        withCacheLock { cachedInflectionClassMapsByReading.set(classMap, for: reading, limit: Self.readingMapCacheLimit) }
         return classMap.values.contains { $0.hasPrefix("godan") }
     }
 
@@ -474,7 +479,7 @@ final class KanaKanjiStore {
         } else {
             classMap = loadInflectionDictionary()[reading] ?? [:]
         }
-        withCacheLock { cachedInflectionClassMapsByReading[reading] = classMap }
+        withCacheLock { cachedInflectionClassMapsByReading.set(classMap, for: reading, limit: Self.readingMapCacheLimit) }
         return classMap[candidate] == "suru"
     }
 
@@ -490,7 +495,7 @@ final class KanaKanjiStore {
         } else {
             classMap = loadInflectionDictionary()[reading] ?? [:]
         }
-        withCacheLock { cachedInflectionClassMapsByReading[reading] = classMap }
+        withCacheLock { cachedInflectionClassMapsByReading.set(classMap, for: reading, limit: Self.readingMapCacheLimit) }
         return classMap.values.contains("suru")
     }
 
@@ -506,10 +511,10 @@ final class KanaKanjiStore {
             classMap = cached
         } else if let sqliteIndex = sqliteIndexIfAvailable() {
             classMap = sqliteIndex.inflectionClassMap(for: dictionaryFormReading)
-            withCacheLock { cachedInflectionClassMapsByReading[dictionaryFormReading] = classMap }
+            withCacheLock { cachedInflectionClassMapsByReading.set(classMap, for: dictionaryFormReading, limit: Self.readingMapCacheLimit) }
         } else {
             classMap = loadInflectionDictionary()[dictionaryFormReading] ?? [:]
-            withCacheLock { cachedInflectionClassMapsByReading[dictionaryFormReading] = classMap }
+            withCacheLock { cachedInflectionClassMapsByReading.set(classMap, for: dictionaryFormReading, limit: Self.readingMapCacheLimit) }
         }
         return classMap.compactMap { surface, inflectionClass -> String? in
             guard inflectionClass == "suru", surface.hasSuffix("する"),
@@ -527,7 +532,7 @@ final class KanaKanjiStore {
             return cached
         }
         let kinds = sqliteIndexIfAvailable()?.personNameKindMap(for: reading) ?? [:]
-        withCacheLock { cachedPersonNameKindsByReading[reading] = kinds }
+        withCacheLock { cachedPersonNameKindsByReading.set(kinds, for: reading, limit: Self.readingMapCacheLimit) }
         return kinds
     }
 
@@ -1049,6 +1054,7 @@ final class KanaKanjiStore {
                 + " wc=\(cachedWordCostsByReading.count)"
                 + " infl=\(cachedInflectionDictionary?.count ?? -1)"
                 + " inflMap=\(cachedInflectionClassMapsByReading.count)"
+                + " personMap=\(cachedPersonNameKindsByReading.count)"
         }
     }
 
@@ -1066,8 +1072,8 @@ final class KanaKanjiStore {
             cachedKanjiRadicalIndex = nil
             cachedSystemCandidateSources = nil
             cachedInflectionDictionary = nil
-            cachedInflectionClassMapsByReading = [:]
-            cachedPersonNameKindsByReading = [:]
+            cachedInflectionClassMapsByReading.removeAll(keepingCapacity: false)
+            cachedPersonNameKindsByReading.removeAll(keepingCapacity: false)
             cachedWordLMUnigram = TwoGenerationLMCache()
             cachedWordLMBigram = TwoGenerationLMCache()
             cachedWordCostsByReading = TwoGenerationCache()
