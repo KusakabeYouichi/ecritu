@@ -18888,3 +18888,18 @@ extension KanaKanjiConverterRegressionTests {
         )
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // ユーザ報告 3202: しいて の先頭が 強いて だった(敷いて/布いて/施いて は 敷く/布く/施く の活用供給で、
+    // 辞書には 強いて0/しいて1 しか無い)。日常は 布団を敷いて 等の 敷いて が最頻
+    func testRegression3202ShiiteLeadsWithShiku() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let candidates = converter.candidates(for: "しいて", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(candidates.first, "敷いて", "candidates=\(candidates)")
+        XCTAssertEqual(candidates.dropFirst().first, "強いて", "candidates=\(candidates)")
+    }
+
+
+
+}
