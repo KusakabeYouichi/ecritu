@@ -664,7 +664,8 @@ enum KaomojiCategoryChoice {
     // Mirrored from KeyboardExtension/KeyboardRootViewSupportTypes.swift (KaomojiCategory)
     // and KeyboardExtension/KaomojiCatalog.swift (displayCategoryOrder).
     // 先頭3件(基本→ショートカット→検索)の順はこちらが正で、キーボード側をこれに合わせている。
-    static let defaultID = "existing"
+    // 初期設定は ショートカット(戦略的初期設定でも保守的でも同じ。ユーザ指定 3241)。キーボード側の fallback と揃える
+    static let defaultID = "shortcut"
 
     static let all: [CategoryChoiceDescriptor] = {
         var entries: [CategoryChoiceDescriptor] = [
