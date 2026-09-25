@@ -344,6 +344,61 @@ extension KeyboardViewController {
         requestKeyboardHeightAgainIfShrunk(expected: expected, actual: actual)
     }
 
+    #if DEBUG
+    // 調査用(3222): ホストが枠に足す 17pt(統合ログ: _UIKBCompatInputView が y=17)を拡張側から観測できる値を探す。
+    // 候補: window/scene の座標、安全領域、画面座標への変換、キーボード枠の通知。変わった瞬間だけ残す。原因が分かったら外す
+    func logHostGeometryProbeIfChanged(trigger: String) {
+        guard let window = view.window else {
+            return
+        }
+        func r(_ rect: CGRect) -> String { "(\(Int(rect.minX)),\(Int(rect.minY)) \(Int(rect.width))x\(Int(rect.height)))" }
+        func i(_ e: UIEdgeInsets) -> String { "t\(Int(e.top))b\(Int(e.bottom))" }
+        let scene = window.windowScene
+        var parts: [String] = []
+        parts.append("窓=" + r(window.frame))
+        parts.append("scene=" + (scene.map { r($0.coordinateSpace.bounds) } ?? "-"))
+        parts.append("安全 view=" + i(view.safeAreaInsets) + " 窓=" + i(window.safeAreaInsets) + " inputView=" + (inputView.map { i($0.safeAreaInsets) } ?? "-"))
+        if let screen = scene?.screen {
+            let onScreen = view.convert(view.bounds, to: screen.coordinateSpace)
+            parts.append("画面座標=" + r(onScreen) + " 画面=" + r(screen.bounds))
+            let fixed = view.convert(view.bounds, to: screen.fixedCoordinateSpace)
+            parts.append("固定座標=" + r(fixed))
+        }
+        if let root = window.rootViewController?.view {
+            parts.append("root=" + r(root.frame))
+        }
+        parts.append("layoutMargins=" + i(view.layoutMargins))
+        let signature = parts.joined(separator: " ")
+        guard signature != lastLoggedHostGeometrySignature else {
+            return
+        }
+        lastLoggedHostGeometrySignature = signature
+        appendKeyboardDiagnosticsLog("枠観測(\(trigger)) " + signature, critical: true)
+    }
+
+    // キーボード枠の通知が拡張プロセスにも届くなら、ホストが決めた枠(y と高さ)が取れるかもしれない
+    func installHostGeometryNotificationProbes() {
+        let names: [Notification.Name] = [
+            UIResponder.keyboardWillShowNotification, UIResponder.keyboardDidShowNotification,
+            UIResponder.keyboardWillChangeFrameNotification, UIResponder.keyboardDidChangeFrameNotification,
+            UIResponder.keyboardWillHideNotification
+        ]
+        for name in names {
+            let token = NotificationCenter.default.addObserver(forName: name, object: nil, queue: .main) { [weak self] note in
+                guard let self else { return }
+                let begin = (note.userInfo?[UIResponder.keyboardFrameBeginUserInfoKey] as? CGRect) ?? .null
+                let end = (note.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect) ?? .null
+                self.appendKeyboardDiagnosticsLog(
+                    "枠通知 \(name.rawValue.replacingOccurrences(of: "UIKeyboard", with: "")) begin=\(begin.integral) end=\(end.integral)",
+                    critical: true
+                )
+                self.logHostGeometryProbeIfChanged(trigger: "通知")
+            }
+            hostGeometryNotificationObservers.append(token)
+        }
+    }
+    #endif
+
     // 横画面で面を切り替えると、制約に 188 を入れてもホストが枠を 176 のままにすることがある
     // (実機実測 3156: 回転直後の 1 回目で再現。2 回目以降は 29ms で追随する)。中身は
     // 188 前提で組まれるので上下が切れる。ホストにもう一度要求を届けるため、制約の値を
