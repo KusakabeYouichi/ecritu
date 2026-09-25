@@ -176,12 +176,12 @@ extension KeyboardLayoutMetrics {
         // 上限をそのまま使うと 3219 の +13 が +30 になる。従来の上限を +13 して、どの面も iPhone と同じ +13 に揃える
         metrics.portraitHeightBounds = { profile in
             switch profile {
-            case .kanaThreeByThree: return 220...284
-            case .compactGrid: return 194...256
-            case .compactActionRow: return 200...264
-            case .kanaFiveByTwo: return 216...284
-            case .emoji: return 228...294
-            case .formattedNumber: return 300...344
+            case .kanaThreeByThree: return 220...282
+            case .compactGrid: return 194...254
+            case .compactActionRow: return 200...262
+            case .kanaFiveByTwo: return 216...282
+            case .emoji: return 228...292
+            case .formattedNumber: return 300...342
             }
         }
         // 基準短辺(390)とスケール上限(1.08)は iPhone のまま据え置く。iPad の短辺は
@@ -283,7 +283,8 @@ extension KeyboardLayoutMetrics {
 
     // 縦画面の上乗せ(3216→3219。候補欄 +9(未確定の行)、段 +1×4。candidateHeaderExpandedHeight のコメント参照)。
     // 面ごとに違えると切り替えで跳ねるので全プロファイル一律。横画面は 3175 で別に揃えてあり対象外
-    static let portraitAppleParityExtraHeight: CGFloat = 4
+    // 3228: 動画の画素比較で écritu(246+17)が純正より 2pt 高かった(純正の見た目は 261)。最下段〜帯を 7→5 で 244 に
+    static let portraitAppleParityExtraHeight: CGFloat = 2
 
     private func clamp(_ value: CGFloat, to range: ClosedRange<CGFloat>) -> CGFloat {
         min(max(value, range.lowerBound), range.upperBound)
