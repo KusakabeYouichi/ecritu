@@ -393,7 +393,11 @@ extension KanaKanjiConverter {
                 for surface in manualAjoutVocabulary[segmentReading] ?? [] {
                     add(surface, isDictWord: true, isCurated: true, exemptDecorative: true)
                 }
-                for surface in learnedDictionary[segmentReading] ?? [] where surface != segmentReading {
+                // 読み全体に一致する学習語彙は格子に載せない(3240)。載せると床 1500 の 1 ノードが最良になり、連文節は
+                // 「単文節に任せる」で空を返す。学習語彙は単文節側が先頭に出すので、格子は別解(漢字変換/感じ変換)を
+                // 担当する。カンジヘンカン を学習した途端 かんじへんかん が {カンジヘンカン, かんじへんかん} だけになっていた
+                // (ユーザ報告)。部分一致(かんじへんかん+を 等)は従来どおり
+                for surface in learnedDictionary[segmentReading] ?? [] where surface != segmentReading && len < n {
                     add(surface, isDictWord: true, isCurated: true)
                 }
 
