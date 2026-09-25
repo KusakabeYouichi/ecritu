@@ -19089,3 +19089,23 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "しんきよてい", systemCandidateMode: .surface).first, "新規予定")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // だ で終わる読みは活用形に見え、X+だ 合成(1260)とかな識別(1417)が辞書先頭の常用語(1200)を追い越す。
+    // はねだ→{ハネダ, 羽根だ, 羽だ, …, 羽田(23 位)} だった(ユーザ報告 3214)。読み全体が辞書先頭で LM 常用なら
+    // 合成の上へ出し、LM 未収録の純カタカナ(ハネダ/シマダ)は語尾 ダ の suffix 一致で +500 を得ない
+    func testRegressionRealLMCopulaLookingWholeWordLeads() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("はねだ", "羽田"), ("うえだ", "上田"), ("しまだ", "島田"), ("やまだ", "山田"), ("あいだ", "間"), ("からだ", "体")] {
+            let list = converter.candidates(for: reading, limit: 5, systemCandidateMode: .surface)
+            XCTAssertEqual(list.first, expected, "reading=\(reading) list=\(list)")
+        }
+        // カタカナは LM 実在(カナダ/オランダ)なら従来どおり先頭
+        XCTAssertEqual(converter.candidates(for: "かなだ", limit: 3, systemCandidateMode: .surface).first, "カナダ")
+        XCTAssertEqual(converter.candidates(for: "おらんだ", limit: 3, systemCandidateMode: .surface).first, "オランダ")
+        // 活用派生(噛んだ 1700)より上には出さない: 姓 seed の無い読みで確認
+        let hanada = converter.candidates(for: "はねだ", limit: 5, systemCandidateMode: .surface)
+        XCTAssertFalse(hanada.first == "ハネダ", "list=\(hanada)")
+    }
+}
