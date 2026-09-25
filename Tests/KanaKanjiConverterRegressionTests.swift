@@ -19233,3 +19233,13 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "なしか", systemCandidateMode: .surface).first ?? "なしか", "なしか")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // かくうち が {核ない, 覚内, 核家, 核うち, 角内} で 角打ち が無かった(ユーザ報告 3236)。Sudachi 未収録なので misc で供給
+    func testRegressionRealLMKakuuchiSupplied() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.candidates(for: "かくうち", limit: 3, systemCandidateMode: .surface).first, "角打ち")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "かくうちにいく", systemCandidateMode: .surface).first, "角打ちに行く")
+    }
+}
