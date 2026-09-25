@@ -229,6 +229,18 @@ extension KanaKanjiConverter {
     // 前部要素ボーナス(multiClauseCompoundVerbRenyouStemReadings)と対で 載せ忘れた を組む(2784)
     // まぜる: まぜぐあい が 馬瀬具合/間瀬具合(姓)にしかならず 混ぜ具合 が組めなかった(ユーザ報告 2834)
     static let ichidanRenyouNounBaseReadings: Set<String> = ["たべる", "のせる", "まぜる"]
+    // opt-in に加えて、語幹読み(3 かな以上、末尾がい段/え段)に辞書語が 1 つも無いときは一段の連用形を供給する(3215)。
+    // ひろげ が候補なし(ひろげて は 広げて が出る)だった(ユーザ報告)。中止法(広げ、〜)は普通の書き方。
+    // 辞書語のある語幹(ため/しめ/はじめ)は既存の並びを崩すので従来どおり opt-in のみ。該当 3576 語幹
+    static let ichidanStemTailCharacters: Set<Character> = [
+        "い", "き", "し", "ち", "に", "ひ", "み", "り", "ぎ", "じ", "び", "ぴ",
+        "え", "け", "せ", "て", "ね", "へ", "め", "れ", "げ", "ぜ", "で", "べ", "ぺ"
+    ]
+    static func ichidanRenyouSuppliedForEmptyStem(_ reading: String, wordCostsIsEmpty: () -> Bool) -> Bool {
+        reading.count >= 3
+            && reading.last.map { ichidanStemTailCharacters.contains($0) } == true
+            && wordCostsIsEmpty()
+    }
 
     // 一段命令形(ろ/よ)を供給しない基底読み。居ろ が 色 を、射ろ が 意呂 を跨ぐ等、
     // 命令形として使う頻度より同音語の実害が大きいもの(2026-08-27)
