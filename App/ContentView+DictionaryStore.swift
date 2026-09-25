@@ -714,6 +714,14 @@ extension ContentView {
         loadShortcutDictionaryEntries()
     }
 
+    // 並べ替え(3243)。保存順が表示順なので、動かした瞬間に共有領域へ書く
+    func moveShortcutDictionaryEntries(fromOffsets source: IndexSet, toOffset destination: Int) {
+        var candidates = loadShortcutVocabularyCandidates()
+        candidates.move(fromOffsets: source, toOffset: destination)
+        saveShortcutVocabularyCandidates(candidates)
+        loadShortcutDictionaryEntries()
+    }
+
     func removeShortcutDictionaryEntry(_ entry: VocabularyEntry) {
         var candidates = loadShortcutVocabularyCandidates()
         candidates.removeAll { $0 == entry.candidate }

@@ -20,6 +20,9 @@ struct KeyboardRootView: View {
     // 第2引数は調査用ログ(記号面切替 2838): 切替の引き金とサブモード。原因判明後に外す
     let onInputModeChanged: (KeyboardInputMode, String) -> Void
     var onFormattedNumberCategoryChanged: () -> Void = {}
+    // 絵文字/顔文字パネルで確定した文字列をショートカット語彙の先頭へ足す(3243。ユーザ指定)。
+    // ショートカット・カテゴリー自身からの確定は対象外(手で並べた順を崩さない)
+    var onShortcutCandidateCommitted: (String) -> Void = { _ in }
     let showsNextKeyboardKey: Bool
     // キーボードビューのウィンドウ座標の枠(KeyboardViewController が view.convert で測る)。
     // width が盤面の幅見積もり、minX/maxX が吹き出しのクランプに使われる。zero=未レイアウト

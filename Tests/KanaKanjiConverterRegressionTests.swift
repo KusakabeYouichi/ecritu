@@ -19312,3 +19312,19 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "かんじへんかんを", systemCandidateMode: .surface).first, "カンジヘンカンを")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // ショートカット語彙(3243): 保存順が表示順。絵文字/顔文字の確定で先頭へ(既に在れば先頭へ移す)。
+    // 初期一覧を常に先頭に置く旧動作はやめた。テストバンドルには初期一覧(InitialShortcutVocabMigration.json)が無いので、
+    // 保存一覧だけで順を検査する
+    func testShortcutVocabularyPrependKeepsSavedOrder() {
+        let store = converter.store
+        store.prependShortcutCandidate("(^^)")
+        store.prependShortcutCandidate("→")
+        XCTAssertEqual(store.shortcutVocabulary(), ["→", "(^^)"])
+        store.prependShortcutCandidate("(^^)")   // 既存項目は先頭へ移り、重複しない
+        XCTAssertEqual(store.shortcutVocabulary(), ["(^^)", "→"])
+        store.prependShortcutCandidate("   ")    // 空白は無視
+        XCTAssertEqual(store.shortcutVocabulary(), ["(^^)", "→"])
+    }
+}

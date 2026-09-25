@@ -109,6 +109,20 @@ extension KeyboardRootView {
     }
 
     func commitEmojiKaomojiSymbolText(_ text: String) {
+        // 絵文字/顔文字の確定はショートカット語彙の先頭へ(3243)。記号面・部首ピッカー・ショートカット・カテゴリーからは足さない
+        if inputMode == .emoji {
+            switch emojiInputSubmode {
+            case .emoji:
+                onShortcutCandidateCommitted(text)
+            case .kaomoji:
+                if case .shortcut = selectedKaomojiCategory.kind {
+                    break
+                }
+                onShortcutCandidateCommitted(text)
+            default:
+                break
+            }
+        }
         onTextInput(text)
         consumeReturnToKanaAfterNextCommitIfNeeded()
     }

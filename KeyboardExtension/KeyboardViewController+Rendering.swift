@@ -550,6 +550,10 @@ extension KeyboardViewController {
         )
         // 寸法・位置の端末別分岐(KeyboardLayoutMetrics)。引数順に依存しないよう生成後に渡す。
         rootView.layoutMetrics = layoutMetrics
+        // 絵文字/顔文字の確定をショートカット語彙の先頭へ(3243)。保存は共有領域、表示側はキャッシュ破棄で次の描画から反映
+        rootView.onShortcutCandidateCommitted = { [weak self] text in
+            self?.kanaKanjiStore.prependShortcutCandidate(text)
+        }
         return rootView
     }
 

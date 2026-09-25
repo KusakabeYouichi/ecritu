@@ -420,6 +420,10 @@ struct ShortcutDictionarySettingsSection: View {
     let onAddEntry: () -> Void
     let onUpdateEntry: (VocabularyEntry) -> Void
     let onDeleteEntry: (VocabularyEntry) -> Void
+    let onMoveEntries: (IndexSet, Int) -> Void
+
+    // 並べ替え中(3243): List を編集モードにしてつまみを出す。タップ編集とスワイプ削除は止める
+    @State private var isReordering = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -501,6 +505,22 @@ struct ShortcutDictionarySettingsSection: View {
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             } else {
+                HStack {
+                    Text(isReordering ? "つまみをドラッグして並べ替え(順はすぐ保存されます)" : "並びは顔文字パネルの表示順です。絵文字・顔文字を確定すると先頭に足されます。")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                    Spacer(minLength: 8)
+                    Button(isReordering ? "完了" : "並べ替え") {
+                        editingEntry = nil
+                        pendingDeletionEntry = nil
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            isReordering.toggle()
+                        }
+                    }
+                    .font(.footnote.weight(.semibold))
+                    .buttonStyle(.bordered)
+                    .accessibilityLabel(isReordering ? "並べ替えを終える" : "ショートカット語彙を並べ替える")
+                }
                 List {
                     ForEach(entries) { entry in
                         HStack(spacing: 8) {
@@ -534,6 +554,9 @@ struct ShortcutDictionarySettingsSection: View {
                         .listRowBackground(Color.clear)
                         .contentShape(Rectangle())
                         .onTapGesture {
+                            guard !isReordering else {
+                                return
+                            }
                             editingEntry = entry
                             candidateInput = entry.candidate
                             pendingDeletionEntry = nil
@@ -543,18 +566,22 @@ struct ShortcutDictionarySettingsSection: View {
                             }
                         }
                         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                            Button(role: .destructive) {
-                                if editingEntry?.id == entry.id {
-                                    editingEntry = nil
-                                    candidateInput = ""
+                            if !isReordering {
+                                Button(role: .destructive) {
+                                    if editingEntry?.id == entry.id {
+                                        editingEntry = nil
+                                        candidateInput = ""
+                                    }
+                                    pendingDeletionEntry = entry
+                                } label: {
+                                    Text("削除")
                                 }
-                                pendingDeletionEntry = entry
-                            } label: {
-                                Text("削除")
                             }
                         }
                     }
+                    .onMove(perform: onMoveEntries)
                 }
+                .environment(\.editMode, .constant(isReordering ? .active : .inactive))
                 .listStyle(.plain)
                 .environment(\.defaultMinListRowHeight, 30)
                 .scrollContentBackground(.hidden)
