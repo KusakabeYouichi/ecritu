@@ -19108,4 +19108,12 @@ extension KanaKanjiConverterRegressionTests {
         let hanada = converter.candidates(for: "はねだ", limit: 5, systemCandidateMode: .surface)
         XCTAssertFalse(hanada.first == "ハネダ", "list=\(hanada)")
     }
+
+    // おきにくい→起きにくい を先頭に(ユーザ報告 3214)。語幹 seed(おき→起き)は活用形に波及しない設計なので活用形 seed
+    func testRegressionRealLMOkinikuiLeadsOkiru() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let list = converter.candidates(for: "おきにくい", limit: 3, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(2)), ["起きにくい", "置きにくい"], "list=\(list)")
+    }
 }
