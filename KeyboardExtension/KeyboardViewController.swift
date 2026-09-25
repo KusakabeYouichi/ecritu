@@ -214,6 +214,11 @@ final class KeyboardViewController: UIInputViewController {
     // watchdog が「表示未到達」と数えた時刻。この後 viewWillAppear が来たら遅延復帰として
     // 数え直す(ホスト接続の再確立が遅いだけで attach 自体は成立している。2564)
     var keyboardAttachWatchdogFiredAt: CFAbsoluteTime?
+    // ホストの枠の 17pt をこちらで補う件(3219。KeyboardViewController+Layout の hostTopInsetCompensation 参照)
+    var viewDidLoadAt: CFAbsoluteTime = 0
+    var hostTopInsetCompensation: CGFloat = 0
+    var hostTopInsetCompensationResolved = false
+    var hostTopConstraint: NSLayoutConstraint?
     var supplementaryLexiconCandidatesByReading: [String: [String]] = [:]
     var supplementaryMergedCandidatesCacheByKey: [String: [String]] = [:]
     // 連絡先候補はプロセス共有(2655)。内容はコンテナが書く共有キャッシュそのもので全個体
@@ -549,6 +554,7 @@ final class KeyboardViewController: UIInputViewController {
     private var backgroundGradientLayer: CAGradientLayer?
 
     private static let hostTopOverlap: CGFloat = 0
+    static var hostTopOverlapForCompensation: CGFloat { hostTopOverlap }
     // 寸法・位置の定数は KeyboardLayoutMetrics に集約した(2609)。
     // 端末別の値はそちらの .phone / .pad を触る。
     var layoutMetrics: KeyboardLayoutMetrics {
@@ -638,6 +644,7 @@ final class KeyboardViewController: UIInputViewController {
         MemoryForensics.noteOperation("起動")
         updateKeyboardDiagnosticsHeartbeat(event: "viewDidLoad", appendLog: true)
         recordKeyboardDiagnosticsAppGroupHealth()
+        viewDidLoadAt = CFAbsoluteTimeGetCurrent()
         startKeyboardAttachWatchdog()
         configureKeyboardContainerSizing()
         beginKeyboardHeightLock()
@@ -696,6 +703,7 @@ final class KeyboardViewController: UIInputViewController {
         // 未到達と数えた後に表示が来たなら遅延復帰として数え直す(cancel より後に呼ぶ)
         recordKeyboardAttachLateRecoveryIfNeeded()
         Self.lastAttachedViewWillAppearAt = CFAbsoluteTimeGetCurrent()
+        resolveHostTopInsetCompensationIfNeeded()
         // 表示された時点でオーナー権を主張する(未表示の投機生成VCに奪われた状態からの復帰も
         // ここで行う)。この後の shouldSuppressHeavyOperations が誤って抑止に落ちないよう、
         // ビュー構築より前に済ませる必要がある。
@@ -1524,10 +1532,13 @@ final class KeyboardViewController: UIInputViewController {
 
         view.addSubview(host.view)
 
+        // 上端はホスト枠の補正(3219)ぶん下げる。補正は viewWillAppear で確定するので制約を保持する
+        let topConstraint = host.view.topAnchor.constraint(equalTo: view.topAnchor, constant: Self.hostTopOverlap + hostTopInsetCompensation)
+        hostTopConstraint = topConstraint
         NSLayoutConstraint.activate([
             host.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             host.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            host.view.topAnchor.constraint(equalTo: view.topAnchor, constant: Self.hostTopOverlap),
+            topConstraint,
             host.view.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
 
@@ -2057,7 +2068,8 @@ final class KeyboardViewController: UIInputViewController {
 
         CATransaction.begin()
         CATransaction.setDisableActions(true)
-        backgroundGradientLayer.frame = view.bounds
+        // ホスト枠の補正(3219)の帯は塗らず透明のまま(ホストが足す 17pt と同じ見え方=ホストの地が透ける)
+        backgroundGradientLayer.frame = view.bounds.inset(by: UIEdgeInsets(top: hostTopInsetCompensation, left: 0, bottom: 0, right: 0))
         let rawValue = lastRenderConfiguration?.keyboardBackgroundThemeRawValue
             ?? sharedStringValue(
                 from: sharedDefaults,

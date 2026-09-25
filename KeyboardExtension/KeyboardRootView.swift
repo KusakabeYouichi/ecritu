@@ -155,10 +155,10 @@ struct KeyboardRootView: View {
         layoutMetrics.candidateHeaderExpandedHeight - (trimsPortraitContentForHomeIndicator ? 4 : 0)
     }
     private let candidateHeaderContentDownshift: CGFloat = 4
-    // 縦画面の候補欄の先頭に常に確保する未確定の行の高さ(3216)。tokushima 方式はここに未確定文字を出し、
-    // écritu/mountain view は空のまま。常に確保するのは、入力中/確定後や方式の切り替えでチップの位置が
-    // 動かないようにするため(ユーザ指定 3213-3216)。候補欄を純正と同じ 54pt に広げた分の一部
-    static let candidateHeaderCompositionRowHeight: CGFloat = 12
+    // 縦画面の候補欄の先頭に常に確保する未確定の行の高さ(3216→3219 で 12→9、ユーザ指定)。tokushima 方式はここに
+    // 未確定文字(10pt)を上寄せで出し、はみ出す 2〜3pt はチップの上余白(6pt)に食い込ませる。écritu/mountain view は
+    // 空のまま。常に確保するのは、入力中/確定後や方式の切り替えでチップの位置が動かないようにするため(3213-3216)
+    static let candidateHeaderCompositionRowHeight: CGFloat = 9
     // 寸法・位置は KeyboardLayoutMetrics に集約(2609)。端末別の値はそちらで分岐する。
     private var frameMetrics: KeyboardLayoutMetrics.FrameMetrics {
         layoutMetrics.frame(usesCompactLandscapeLayout: isLandscapeLayout)
