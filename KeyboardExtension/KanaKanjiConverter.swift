@@ -811,8 +811,12 @@ final class KanaKanjiConverter {
         // 装飾表記(ちゃ〜んと/ち・ゃ・んと 等)と連濁収穫(墓(ばか)等)はどの生成経路
         // (学習含む)から入っても最終段で除去する。ただしユーザ明示登録(追加語彙/手動)は
         // 尊重して残す(あ・うん/ぱ・る・る 等、実在固有名の復活経路)。
+        // 補助語彙(personnalités/vin 等の手選別リスト=SecondVocab)も同じく免除する。あ〜ちゃん(Perfume)が
+        // 辞書 rank 0 で入っているのに 〜 の装飾判定で消えていた(ユーザ報告 3217)
+        let supplementalCandidates = Set(store.loadSupplementalSystemDictionary().candidates(for: context.reading))
         for candidate in Array(scores.keys)
         where !context.userCandidateSet.contains(candidate)
+            && !supplementalCandidates.contains(candidate)
             && (Self.isDecorativeVariantSurface(candidate, reading: context.reading)
                 // 単独入力の候補列では多字表層の連濁収穫(でま→手間/手ま)も弾く
                 || isRendakuHarvestSurface(
@@ -1136,11 +1140,13 @@ final class KanaKanjiConverter {
         // 装飾表記(〜水増し・中黒散らし)と連濁収穫(墓(ばか)等)はここで一括除去する。
         // candidates() の直接列挙のほか、postfix 語幹・活用基底(candidatesForReading)も
         // 本関数を通るため、ち・ゃ・ん+と→ち・ゃ・んと/墓+すぎる のような合成前に断てる。
+        // 補助語彙(手選別)の装飾表記(あ〜ちゃん)は残す(3217。最終段の免除と同じ)
+        let supplemental = store.loadSupplementalSystemDictionary()
         return filterHistoricalKanaSurfaceCandidates(
             for: reading,
             candidates: archaicAdjectiveFiltered
         ).filter {
-            !Self.isDecorativeVariantSurface($0, reading: reading)
+            !(Self.isDecorativeVariantSurface($0, reading: reading) && !supplemental.contains(reading: reading, surface: $0))
                 && !isRendakuHarvestSurface($0, reading: reading)
         }
     }

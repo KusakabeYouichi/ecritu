@@ -19176,3 +19176,18 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "てをひろげ", systemCandidateMode: .surface).first, "手を広げ")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // personnalités.plist の あ〜ちゃん(あーちゃん)が出なかった(ユーザ報告 3217)。辞書 rank 0 で入っているのに、
+    // 〜 の装飾表記(ちゃ〜んと 等)を弾くフィルタが補助語彙(手選別)まで巻き込んでいた。補助語彙は免除する
+    func testRegressionRealLMSupplementalWaveDashSurfaceSurvivesDecorativeFilter() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let single = converter.candidates(for: "あーちゃん", limit: 5, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "あ〜ちゃん", "list=\(single)")
+        let multi = converter.multiClauseCandidates(for: "あーちゃんが", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "あ〜ちゃんが", "list=\(multi)")
+        // 装飾表記そのものの除去は従来どおり(ちゃんと に ちゃ〜んと は出ない)
+        XCTAssertFalse(converter.candidates(for: "ちゃんと", limit: 10, systemCandidateMode: .surface).contains("ちゃ〜んと"))
+    }
+}
