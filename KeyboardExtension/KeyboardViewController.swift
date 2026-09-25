@@ -216,6 +216,11 @@ final class KeyboardViewController: UIInputViewController {
     var hostTopInsetCompensation: CGFloat = 0
     var hostTopInsetCompensationResolved = false
     var hostTopConstraint: NSLayoutConstraint?
+    #if DEBUG
+    // 調査用(3229): 地球儀での切り替えを拡張プロセスが観測できるか(切り替え後の再表示ではホストが 17 を足すので、
+    // 補正を二重にしないための手掛かり)。原因が分かったら外す
+    var inputModeChangeProbeObserver: NSObjectProtocol?
+    #endif
     var supplementaryLexiconCandidatesByReading: [String: [String]] = [:]
     var supplementaryMergedCandidatesCacheByKey: [String: [String]] = [:]
     // 連絡先候補はプロセス共有(2655)。内容はコンテナが書く共有キャッシュそのもので全個体
@@ -642,6 +647,9 @@ final class KeyboardViewController: UIInputViewController {
         updateKeyboardDiagnosticsHeartbeat(event: "viewDidLoad", appendLog: true)
         recordKeyboardDiagnosticsAppGroupHealth()
         startKeyboardAttachWatchdog()
+        #if DEBUG
+        installInputModeChangeProbe()
+        #endif
         configureKeyboardContainerSizing()
         beginKeyboardHeightLock()
         prepareKeyboardVisualForTransition()
