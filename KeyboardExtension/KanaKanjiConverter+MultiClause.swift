@@ -330,7 +330,9 @@ extension KanaKanjiConverter {
                     ) {
                         return
                     }
-                    if !exemptDecorative, Self.isDecorativeVariantSurface(surface, reading: segmentReading) {
+                    // 補助語彙(手選別)の装飾表記(あ〜ちゃん)は免除(3217。単文節の最終段と同じ)
+                    if !exemptDecorative, Self.isDecorativeVariantSurface(surface, reading: segmentReading),
+                        !supplementalSystemDictionary.contains(reading: segmentReading, surface: surface) {
                         return
                     }
                     // 連濁収穫(墓(ばか)等)もラティスに載せない(ばかすぎる→墓すぎる 対策)
