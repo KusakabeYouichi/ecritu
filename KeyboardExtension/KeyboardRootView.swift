@@ -202,8 +202,9 @@ struct KeyboardRootView: View {
             ? Self.portraitBottomGapOverHomeIndicator
             : frameMetrics.bottomPadding
     }
-    // 3165 は 8pt。キーを 1pt 戻したぶんを上 3pt・下 1pt から出す(ユーザー指定 3166)
-    static let portraitBottomGapOverHomeIndicator: CGFloat = 7
+    // 3165 は 8pt。キーを 1pt 戻したぶんを上 3pt・下 1pt から出す(ユーザー指定 3166)。
+    // 3228 で 7→5: 純正より 2pt 高かったぶん(動画の画素比較)をここから出す
+    static let portraitBottomGapOverHomeIndicator: CGFloat = 5
     let candidateStateFontSize: CGFloat = 15
     let candidateTextFontSize: CGFloat = 16
     var compactActionKeyHeight: CGFloat { frameMetrics.actionKeyHeight }
