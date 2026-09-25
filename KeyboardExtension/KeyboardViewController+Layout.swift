@@ -280,6 +280,20 @@ extension KeyboardViewController {
     // 補った回は透明な 17pt の帯を上に置き(ホストの地が透ける)、高さも +17 申告する
     static let hostPlaceholderTopInset: CGFloat = 17
 
+    #if DEBUG
+    func installInputModeChangeProbe() {
+        guard inputModeChangeProbeObserver == nil else {
+            return
+        }
+        inputModeChangeProbeObserver = NotificationCenter.default.addObserver(
+            forName: UITextInputMode.currentInputModeDidChangeNotification, object: nil, queue: .main
+        ) { [weak self] note in
+            let mode = (note.object as? UITextInputMode)?.primaryLanguage ?? (self?.textInputMode?.primaryLanguage ?? "-")
+            self?.appendKeyboardDiagnosticsLog("入力モード変更通知 mode=\(mode) 表示中=\(self?.view.window != nil)", critical: true)
+        }
+    }
+    #endif
+
     func resolveHostTopInsetCompensationFromLayoutIfNeeded() {
         guard !hostTopInsetCompensationResolved, let window = view.window else {
             return
