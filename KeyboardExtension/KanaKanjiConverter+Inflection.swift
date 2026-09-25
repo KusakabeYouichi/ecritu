@@ -638,6 +638,13 @@ extension KanaKanjiConverter {
             return nil
         }
 
+        // 接尾 化(X化、読みが か で終わる)は生産的なサ変名詞(正規化する/効率化した)。Sudachi はこの形の 458 語に
+        // サ変の印を付けていない(141 語には有る)ので、辞書語でも推論する。せいきかした が 正規化した にならず
+        // 世紀かした/正気化した に割れていた(ユーザ報告 3237)。読みが け(道化)等のものは対象外
+        if candidate.hasSuffix("化"), candidate.count >= 2, baseReading.hasSuffix("か"),
+            containsKanji(String(candidate.dropLast())) {
+            return InflectionClass.suru
+        }
         // システム辞書がサ変クラス情報を持っている前提では、明示的に classMap に
         // 載っていない候補(りんご→林檎、ぶどう→葡萄 等)は「辞書がサ変ではないと判定」
         // とみなして推論しない。ユーザ追加の候補のみ推論で救済する。
