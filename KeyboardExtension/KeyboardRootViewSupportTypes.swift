@@ -1218,47 +1218,63 @@ extension KeyboardRootView {
             !internalCompositionPreviewText.isEmpty
         }
 
+        // tokushima(3212): 状態カプセル(鉛筆/循環矢印)は未確定の行の左に置く。チップ行にはカプセルと
+        // 同じ幅の空きを置いて、未確定の書き始めと 1 つめの候補の左端を揃える(ユーザ指定)
+        private static let conversionStateCapsuleFixedWidth: CGFloat = 30
+
+        @ViewBuilder private var conversionStateCapsule: some View {
+            Group {
+                if showsParenthesesWrapper && composingText.isEmpty {
+                    Text("()")
+                } else {
+                    Image(systemName: conversionStateIconName)
+                }
+            }
+            .font(.system(size: candidateStateFontSize, weight: .bold))
+            .foregroundStyle(Color.white)
+            .lineLimit(1)
+            .padding(.horizontal, 7)
+            .padding(.vertical, 3)
+            .background(
+                Capsule(style: .continuous)
+                    .fill(conversionStateColor.opacity(0.95))
+            )
+            .accessibilityLabel(conversionStateLabel)
+        }
+
         var body: some View {
             // 変換キー連打で選択を送ると、選択チップが画面外のままになっていた(2605)。
             // スワイプで手動スクロールしていると気づけない。選択が変わったら追従させる。
             ScrollViewReader { proxy in
             VStack(alignment: .leading, spacing: 0) {
             if showsInternalCompositionPreview {
-                Text(internalCompositionPreviewText)
-                    .font(.system(size: 10, weight: .semibold, design: .rounded))
-                    .underline()
-                    .lineLimit(1)
-                    .truncationMode(.head)
-                    .foregroundStyle(keyLabelColor.opacity(0.9))
-                    .padding(.leading, 4)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .allowsHitTesting(false)
-                    .accessibilityLabel("未確定 \(internalCompositionPreviewText)")
+                HStack(spacing: 6) {
+                    conversionStateCapsule
+                        .frame(width: Self.conversionStateCapsuleFixedWidth)
+                    Text(internalCompositionPreviewText)
+                        .font(.system(size: 10, weight: .semibold, design: .rounded))
+                        .underline()
+                        .lineLimit(1)
+                        .truncationMode(.head)
+                        .foregroundStyle(keyLabelColor.opacity(0.9))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .allowsHitTesting(false)
+                        .accessibilityLabel("未確定 \(internalCompositionPreviewText)")
+                }
+                .padding(.horizontal, 2)
             }
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 6) {
                     let showsWrapperOnly = showsParenthesesWrapper && composingText.isEmpty
 
-                    // 候補なし(⊘)のとき状態は必ず未確定なので、カプセルは冗長 — 出さずに左へ詰める。
-                    if showsWrapperOnly || (!composingText.isEmpty && !conversionCandidates.isEmpty) {
+                    if showsInternalCompositionPreview {
+                        // tokushima: カプセルは上の行。同じ幅の空きで 1 つめの候補の左端を未確定の書き始めに揃える
+                        Color.clear
+                            .frame(width: Self.conversionStateCapsuleFixedWidth, height: 1)
+                    } else if showsWrapperOnly || (!composingText.isEmpty && !conversionCandidates.isEmpty) {
+                        // 候補なし(⊘)のとき状態は必ず未確定なので、カプセルは冗長 — 出さずに左へ詰める。
                         // 状態はアイコンのミニカプセルで示す(鉛筆=未確定/循環矢印=変換中)。
-                        Group {
-                            if showsWrapperOnly {
-                                Text("()")
-                            } else {
-                                Image(systemName: conversionStateIconName)
-                            }
-                        }
-                        .font(.system(size: candidateStateFontSize, weight: .bold))
-                        .foregroundStyle(Color.white)
-                        .lineLimit(1)
-                        .padding(.horizontal, 7)
-                        .padding(.vertical, 3)
-                        .background(
-                            Capsule(style: .continuous)
-                                .fill(conversionStateColor.opacity(0.95))
-                        )
-                        .accessibilityLabel(conversionStateLabel)
+                        conversionStateCapsule
                     }
 
                     conversionCandidateChips
