@@ -212,6 +212,11 @@ final class KeyboardViewController: UIInputViewController {
     // watchdog が「表示未到達」と数えた時刻。この後 viewWillAppear が来たら遅延復帰として
     // 数え直す(ホスト接続の再確立が遅いだけで attach 自体は成立している。2564)
     var keyboardAttachWatchdogFiredAt: CFAbsoluteTime?
+    #if DEBUG
+    // 調査用(3222): ホストが枠に足す 17pt を拡張側から観測できる値が無いか。変わった瞬間だけ残す
+    var lastLoggedHostGeometrySignature = ""
+    var hostGeometryNotificationObservers: [NSObjectProtocol] = []
+    #endif
     var supplementaryLexiconCandidatesByReading: [String: [String]] = [:]
     var supplementaryMergedCandidatesCacheByKey: [String: [String]] = [:]
     // 連絡先候補はプロセス共有(2655)。内容はコンテナが書く共有キャッシュそのもので全個体
@@ -637,6 +642,9 @@ final class KeyboardViewController: UIInputViewController {
         updateKeyboardDiagnosticsHeartbeat(event: "viewDidLoad", appendLog: true)
         recordKeyboardDiagnosticsAppGroupHealth()
         startKeyboardAttachWatchdog()
+        #if DEBUG
+        installHostGeometryNotificationProbes()
+        #endif
         configureKeyboardContainerSizing()
         beginKeyboardHeightLock()
         prepareKeyboardVisualForTransition()
@@ -1318,6 +1326,9 @@ final class KeyboardViewController: UIInputViewController {
 
         updateKeyboardVisualVisibility(using: configuration)
         logKeyboardHeightMismatchIfChanged()
+        #if DEBUG
+        logHostGeometryProbeIfChanged(trigger: "layout")
+        #endif
 
         guard lastRenderConfiguration != nil else {
             return
