@@ -216,9 +216,7 @@ final class KeyboardViewController: UIInputViewController {
     var hostTopInsetCompensation: CGFloat = 0
     var hostTopInsetCompensationResolved = false
     var hostTopConstraint: NSLayoutConstraint?
-    #if DEBUG
-    var disappearanceProbeLoggedAtAppear = false
-    #endif
+    var disappearanceKindRecorded = false
     var supplementaryLexiconCandidatesByReading: [String: [String]] = [:]
     var supplementaryMergedCandidatesCacheByKey: [String: [String]] = [:]
     // 連絡先候補はプロセス共有(2655)。内容はコンテナが書く共有キャッシュそのもので全個体
@@ -1005,9 +1003,7 @@ final class KeyboardViewController: UIInputViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        #if DEBUG
-        recordDisappearanceProbe(phase: "will", animated: animated)
-        #endif
+        recordDisappearanceKindIfNeeded(animated: animated)
         updateKeyboardDiagnosticsHeartbeat(event: "viewWillDisappear", appendLog: true)
         persistBufferedKeyboardDiagnostics()
 
@@ -1034,9 +1030,6 @@ final class KeyboardViewController: UIInputViewController {
 
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        #if DEBUG
-        recordDisappearanceProbe(phase: "did", animated: animated)
-        #endif
         updateKeyboardDiagnosticsHeartbeat(event: "viewDidDisappear", appendLog: true)
 
         performHiddenKeyboardMemoryTrim(
@@ -1329,12 +1322,6 @@ final class KeyboardViewController: UIInputViewController {
         let configuration = lastRenderConfiguration ?? makeRenderConfiguration()
         installKeyboardHeightConstraintIfNeeded()
         resolveHostTopInsetCompensationFromLayoutIfNeeded()
-        #if DEBUG
-        if hostTopInsetCompensationResolved, !disappearanceProbeLoggedAtAppear {
-            disappearanceProbeLoggedAtAppear = true
-            logDisappearanceProbeAtAppear()
-        }
-        #endif
         updateKeyboardHeightIfNeeded()
 
         updateKeyboardVisualVisibility(using: configuration)
