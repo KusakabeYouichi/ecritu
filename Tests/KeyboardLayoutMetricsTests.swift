@@ -33,12 +33,12 @@ final class KeyboardLayoutMetricsTests: XCTestCase {
     func testPhonePortraitHeightsAreUnchanged() {
         let metrics = KeyboardLayoutMetrics.phone
         let expected: [KeyboardViewController.PortraitHeightProfile: CGFloat] = [
-            .kanaThreeByThree: 255,
-            .compactGrid: 255,
-            .compactActionRow: 255,
-            .kanaFiveByTwo: 255,
-            .emoji: 255,
-            .formattedNumber: 345
+            .kanaThreeByThree: 246,
+            .compactGrid: 246,
+            .compactActionRow: 246,
+            .kanaFiveByTwo: 246,
+            .emoji: 246,
+            .formattedNumber: 336
         ]
 
         for profile in allProfiles {
@@ -150,12 +150,12 @@ final class KeyboardLayoutMetricsTests: XCTestCase {
         let metrics = KeyboardLayoutMetrics.pad
         let expected: [KeyboardViewController.PortraitHeightProfile: CGFloat] = [
             // 3219 の +13 を iPad にも一律に
-            .kanaThreeByThree: 286,
-            .compactGrid: 265,
-            .compactActionRow: 273,
-            .kanaFiveByTwo: 285,
-            .emoji: 286,
-            .formattedNumber: 353
+            .kanaThreeByThree: 277,
+            .compactGrid: 256,
+            .compactActionRow: 264,
+            .kanaFiveByTwo: 276,
+            .emoji: 277,
+            .formattedNumber: 344
         ]
 
         for profile in allProfiles {

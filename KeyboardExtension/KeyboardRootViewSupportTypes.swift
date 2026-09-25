@@ -1121,7 +1121,7 @@ extension KeyboardRootView {
                         .font(.system(size: candidateTextFontSize, weight: .regular))
                         .foregroundStyle(keyLabelColor.opacity(0.6))
                         .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
+                        .padding(.vertical, KeyboardRootView.candidateChipVerticalPadding)
                         .background(
                             RoundedRectangle(cornerRadius: 7, style: .continuous)
                                 .fill(KeyboardThemePalette.candidateHeaderPlaceholderBackground)
@@ -1153,7 +1153,7 @@ extension KeyboardRootView {
                     }
                     .lineLimit(1)
                     .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
+                    .padding(.vertical, KeyboardRootView.candidateChipVerticalPadding)
                     .background(
                         RoundedRectangle(cornerRadius: 7, style: .continuous)
                             .fill(
@@ -1195,7 +1195,7 @@ extension KeyboardRootView {
                 .foregroundStyle(showsKatakanaCommitFeedback ? Color.white : keyLabelColor)
                 .lineLimit(1)
                 .padding(.horizontal, 8)
-                .padding(.vertical, 4)
+                .padding(.vertical, KeyboardRootView.candidateChipVerticalPadding)
                 .background(
                     RoundedRectangle(cornerRadius: 7, style: .continuous)
                         .fill(
@@ -1254,13 +1254,12 @@ extension KeyboardRootView {
                     .frame(width: Self.conversionStateCapsuleFixedWidth, height: 1)
                 if showsInternalCompositionPreview {
                     Text(internalCompositionPreviewText)
-                        .font(.system(size: 10, weight: .semibold, design: .rounded))
+                        .font(.system(size: 9, weight: .semibold, design: .rounded))
                         .underline()
                         .lineLimit(1)
                         .truncationMode(.head)
                         .foregroundStyle(keyLabelColor.opacity(0.9))
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .offset(y: 1)  // 未確定の文字を 1pt 下げる(ユーザ指定 3220)
                         .allowsHitTesting(false)
                         .accessibilityLabel("未確定 \(internalCompositionPreviewText)")
                 } else {
@@ -1349,7 +1348,7 @@ extension KeyboardRootView {
                             .font(.system(size: candidateTextFontSize, weight: .regular))
                             .foregroundStyle(keyLabelColor.opacity(0.6))
                             .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
+                            .padding(.vertical, KeyboardRootView.candidateChipVerticalPadding)
                             .background(
                                 RoundedRectangle(cornerRadius: 7, style: .continuous)
                                     .fill(KeyboardThemePalette.candidateHeaderPlaceholderBackground)
@@ -1366,7 +1365,7 @@ extension KeyboardRootView {
                                 .foregroundStyle(keyLabelColor)
                                 .lineLimit(1)
                                 .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
+                                .padding(.vertical, KeyboardRootView.candidateChipVerticalPadding)
                                 .background(
                                     RoundedRectangle(cornerRadius: 7, style: .continuous)
                                         .fill(KeyboardThemePalette.candidateHeaderChipBackground)
