@@ -19208,3 +19208,15 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertFalse(converter.candidates(for: "にびゃっけん", limit: 6, systemCandidateMode: .surface).contains("200件"))
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // どうがもなしか が 動画も名しか/動画も名鹿 だった(ユーザ報告 3225)。なし を かな述語として扱い、直後の か を
+    // 終助詞としてクランプする
+    func testRegressionRealLMNashiKaFinalParticle() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let list = converter.multiClauseCandidates(for: "どうがもなしか", systemCandidateMode: .surface)
+        XCTAssertTrue(list.first == "動画もなしか" || list.first == "動画も無しか", "list=\(list)")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "なしか", systemCandidateMode: .surface).first ?? "なしか", "なしか")
+    }
+}
