@@ -280,33 +280,24 @@ extension KeyboardViewController {
     // 補った回は透明な 17pt の帯を上に置き(ホストの地が透ける)、高さも +17 申告する
     static let hostPlaceholderTopInset: CGFloat = 17
 
-    #if DEBUG
-    // 調査用(3233): 前の個体の「消え方」で、開き直し(キーボードが引っ込む)と切り替え(出たまま差し替え)を
-    // 見分けられるか。消えるときの animated/窓の高さ/表示からの経過をプロセス内に記録し、次の個体が表示時に残す
-    nonisolated(unsafe) static var lastDisappearanceDescription = "なし"
-    nonisolated(unsafe) static var lastDisappearanceAt: CFAbsoluteTime = 0
+    // 前の個体の消え方(3234)。開き直し(キーボードが引っ込む)は viewWillDisappear(animated: true)、切り替え(出たまま
+    // 差し替え)は animated: false で来る(実機ログ 3233)。切り替えの後の再表示ではホストが 17 を足すので、窓が前の
+    // 補正済みの高さを経由してきても補正しない。プロセス(=ホストアプリのセッション)単位で持つ
+    enum PreviousDisappearanceKind: String {
+        case unknown = "不明"
+        case dismissed = "引っ込めた"
+        case replaced = "差し替え"
+    }
+    nonisolated(unsafe) static var lastDisappearanceKind: PreviousDisappearanceKind = .unknown
 
-    func recordDisappearanceProbe(phase: String, animated: Bool) {
-        let shown = Self.lastAttachedViewWillAppearAt > 0 ? CFAbsoluteTimeGetCurrent() - Self.lastAttachedViewWillAppearAt : -1
-        let windowHeight = view.window.map { Int($0.bounds.height) } ?? -1
-        let desc = "\(phase) animated=\(animated) 窓=\(windowHeight) view=\(Int(view.bounds.height)) 表示から\(String(format: "%.1f", shown))秒"
-        if phase == "will" {
-            Self.lastDisappearanceDescription = desc
-            Self.lastDisappearanceAt = CFAbsoluteTimeGetCurrent()
-        } else {
-            Self.lastDisappearanceDescription += " / " + desc
+    func recordDisappearanceKindIfNeeded(animated: Bool) {
+        // 最初の viewWillDisappear(窓がまだある)だけを見る。引っ込めた後に窓が外れてから 2 回目が animated=false で来る
+        guard !disappearanceKindRecorded, view.window != nil else {
+            return
         }
-        appendKeyboardDiagnosticsLog("消え方 " + desc, critical: true)
+        disappearanceKindRecorded = true
+        Self.lastDisappearanceKind = animated ? .dismissed : .replaced
     }
-
-    func logDisappearanceProbeAtAppear() {
-        let elapsed = Self.lastDisappearanceAt > 0 ? CFAbsoluteTimeGetCurrent() - Self.lastDisappearanceAt : -1
-        appendKeyboardDiagnosticsLog(
-            "前回の消え方 \(Self.lastDisappearanceDescription) 経過=\(elapsed < 0 ? "なし" : String(format: "%.1f秒", elapsed)) 補正=\(Int(hostTopInsetCompensation))",
-            critical: true
-        )
-    }
-    #endif
 
 
     func resolveHostTopInsetCompensationFromLayoutIfNeeded() {
@@ -329,15 +320,21 @@ extension KeyboardViewController {
         hostTopInsetCompensationResolved = true
         let requested = preferredKeyboardHeight()
         let differs = abs(height - requested) > 0.5
-        hostTopInsetCompensation = differs ? Self.hostPlaceholderTopInset : 0
-        if differs {
+        // 前の補正済みの高さ(申告+17)を経由し、かつ前の個体が差し替えで消えていたら、ホストが 17 を足す回(3234)
+        let inheritsCompensatedHeight = abs(height - (requested + Self.hostPlaceholderTopInset)) <= 0.5
+        let hostAddsInset = inheritsCompensatedHeight && Self.lastDisappearanceKind == .replaced
+        let compensates = differs && !hostAddsInset
+        hostTopInsetCompensation = compensates ? Self.hostPlaceholderTopInset : 0
+        if compensates {
             hostTopConstraint?.constant = Self.hostTopOverlapForCompensation + hostTopInsetCompensation
             updateBackgroundGradientAppearance()
         }
         appendKeyboardDiagnosticsLog(
-            "ホスト枠の補正 \(differs ? "+17pt" : "なし") 窓の初期高さ=\(Int(height)) 申告=\(Int(requested))",
+            "ホスト枠の補正 \(compensates ? "+17pt" : "なし") 窓の初期高さ=\(Int(height)) 申告=\(Int(requested)) 前の消え方=\(Self.lastDisappearanceKind.rawValue)",
             critical: true
         )
+        // 消え方は 1 回ぶんだけ有効。次の個体は自分の直前の個体の消え方で判断する
+        Self.lastDisappearanceKind = .unknown
     }
 
     // 高さ要求が変わったときだけ critical で残す。メッセージ.app で回転を挟むと
