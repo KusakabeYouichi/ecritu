@@ -260,25 +260,40 @@ extension KeyboardRootView {
         VStack(alignment: .leading, spacing: 4) {
             let showsWrapperOnly = showsParenthesesWrapper && composingText.isEmpty
 
-            // tokushima(3211): 候補列の一番上を 1 行使って未確定を下線付きで出す(ScrollView 側が 1 行ぶん縮む)
+            // tokushima(3211): 候補列の一番上を 1 行使って未確定を下線付きで出す(ScrollView 側が 1 行ぶん縮む)。
+            // 状態カプセル(鉛筆/循環矢印)も同じ行の左に置き、消費する行を 1 つで済ませる(3212、ユーザ指定)
             if !internalCompositionPreviewText.isEmpty {
-                Text(internalCompositionPreviewText)
-                    .font(.system(size: candidateTextFontSize - 2, weight: .semibold, design: .rounded))
-                    .underline()
-                    .lineLimit(1)
-                    .truncationMode(.head)
-                    .foregroundStyle(keyLabelColor.opacity(0.9))
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, 8)
-                    .frame(height: 24)
-                    .allowsHitTesting(false)
-                    .accessibilityLabel("未確定 \(internalCompositionPreviewText)")
+                HStack(spacing: 6) {
+                    Image(systemName: conversionStateIconName)
+                        .font(.system(size: candidateStateFontSize, weight: .bold))
+                        .foregroundStyle(Color.white)
+                        .lineLimit(1)
+                        .padding(.horizontal, 7)
+                        .padding(.vertical, 3)
+                        .background(
+                            Capsule(style: .continuous)
+                                .fill(conversionStateColor.opacity(0.95))
+                        )
+                        .accessibilityLabel(conversionStateLabel)
+                    Text(internalCompositionPreviewText)
+                        .font(.system(size: candidateTextFontSize - 2, weight: .semibold, design: .rounded))
+                        .underline()
+                        .lineLimit(1)
+                        .truncationMode(.head)
+                        .foregroundStyle(keyLabelColor.opacity(0.9))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .accessibilityLabel("未確定 \(internalCompositionPreviewText)")
+                }
+                .padding(.horizontal, 4)
+                .frame(height: 24)
+                .allowsHitTesting(false)
             }
 
             if !composingText.isEmpty || showsWrapperOnly {
                 // 状態はアイコンのミニカプセルで示す(鉛筆=未確定/循環矢印=変換中)。
                 // 候補なしのとき状態は必ず未確定なので、カプセルは冗長 — 出さずに上へ詰める。
-                if showsWrapperOnly || !conversionCandidates.isEmpty {
+                // tokushima では未確定の行に載せたので、ここでは出さない(3212)
+                if internalCompositionPreviewText.isEmpty, showsWrapperOnly || !conversionCandidates.isEmpty {
                     Group {
                         if showsWrapperOnly {
                             Text("()")
