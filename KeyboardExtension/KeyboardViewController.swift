@@ -216,9 +216,6 @@ final class KeyboardViewController: UIInputViewController {
     var hostTopInsetCompensation: CGFloat = 0
     var hostTopInsetCompensationResolved = false
     var hostTopConstraint: NSLayoutConstraint?
-    #if DEBUG
-    var inputModeProbeLoggedAtAppear = false
-    #endif
     var supplementaryLexiconCandidatesByReading: [String: [String]] = [:]
     var supplementaryMergedCandidatesCacheByKey: [String: [String]] = [:]
     // 連絡先候補はプロセス共有(2655)。内容はコンテナが書く共有キャッシュそのもので全個体
@@ -645,9 +642,6 @@ final class KeyboardViewController: UIInputViewController {
         updateKeyboardDiagnosticsHeartbeat(event: "viewDidLoad", appendLog: true)
         recordKeyboardDiagnosticsAppGroupHealth()
         startKeyboardAttachWatchdog()
-        #if DEBUG
-        installInputModeChangeProbe()
-        #endif
         configureKeyboardContainerSizing()
         beginKeyboardHeightLock()
         prepareKeyboardVisualForTransition()
@@ -1326,12 +1320,6 @@ final class KeyboardViewController: UIInputViewController {
         let configuration = lastRenderConfiguration ?? makeRenderConfiguration()
         installKeyboardHeightConstraintIfNeeded()
         resolveHostTopInsetCompensationFromLayoutIfNeeded()
-        #if DEBUG
-        if hostTopInsetCompensationResolved, !inputModeProbeLoggedAtAppear {
-            inputModeProbeLoggedAtAppear = true
-            logInputModeChangeProbeAtAppear()
-        }
-        #endif
         updateKeyboardHeightIfNeeded()
 
         updateKeyboardVisualVisibility(using: configuration)
