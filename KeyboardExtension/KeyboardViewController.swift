@@ -217,9 +217,7 @@ final class KeyboardViewController: UIInputViewController {
     var hostTopInsetCompensationResolved = false
     var hostTopConstraint: NSLayoutConstraint?
     #if DEBUG
-    // 調査用(3229): 地球儀での切り替えを拡張プロセスが観測できるか(切り替え後の再表示ではホストが 17 を足すので、
-    // 補正を二重にしないための手掛かり)。原因が分かったら外す
-    var inputModeChangeProbeObserver: NSObjectProtocol?
+    var inputModeProbeLoggedAtAppear = false
     #endif
     var supplementaryLexiconCandidatesByReading: [String: [String]] = [:]
     var supplementaryMergedCandidatesCacheByKey: [String: [String]] = [:]
@@ -1328,6 +1326,12 @@ final class KeyboardViewController: UIInputViewController {
         let configuration = lastRenderConfiguration ?? makeRenderConfiguration()
         installKeyboardHeightConstraintIfNeeded()
         resolveHostTopInsetCompensationFromLayoutIfNeeded()
+        #if DEBUG
+        if hostTopInsetCompensationResolved, !inputModeProbeLoggedAtAppear {
+            inputModeProbeLoggedAtAppear = true
+            logInputModeChangeProbeAtAppear()
+        }
+        #endif
         updateKeyboardHeightIfNeeded()
 
         updateKeyboardVisualVisibility(using: configuration)
