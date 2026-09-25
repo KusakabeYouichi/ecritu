@@ -19160,3 +19160,19 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "ぴんくだし", systemCandidateMode: .surface).first, "ピンクだし")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // ひろげ(一段の連用形、中止法)が候補なしだった(ユーザ報告 3215)。語幹読みに辞書語が無いときだけ一段連用形を供給する。
+    // 辞書語のある語幹(ため→為、はじめ→初め/始め)は opt-in 設計のまま動かさない
+    func testRegressionRealLMIchidanRenyouSuppliedWhenStemHasNoDictionaryWord() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let hiroge = converter.candidates(for: "ひろげ", limit: 5, systemCandidateMode: .surface)
+        XCTAssertEqual(hiroge.first, "広げ", "list=\(hiroge)")
+        XCTAssertEqual(converter.candidates(for: "ひろげて", limit: 3, systemCandidateMode: .surface).first, "広げて")
+        XCTAssertEqual(converter.candidates(for: "つづけ", limit: 3, systemCandidateMode: .surface).first, "続け")
+        let tame = converter.candidates(for: "ため", limit: 3, systemCandidateMode: .surface)
+        XCTAssertNotEqual(tame.first, "溜め", "list=\(tame)")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "てをひろげ", systemCandidateMode: .surface).first, "手を広げ")
+    }
+}
