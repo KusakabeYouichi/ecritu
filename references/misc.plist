@@ -364,6 +364,7 @@
 	<dict><key>phrase</key><string>だよねえ</string><key>shortcut</key><string>だよねえ</string></dict>	<!-- 終助詞クラスタ「だよねえ/だよね」はかな。ねえ→姉/姐、だ→打/駄 等の漢字化やカタカナ混じりに割れるため かな全長curatedで供給 -->
 	<dict><key>phrase</key><string>だよね</string><key>shortcut</key><string>だよね</string></dict>
 	<dict><key>phrase</key><string>だよなあ</string><key>shortcut</key><string>だよなあ</string></dict>
+	<dict><key>phrase</key><string>言わんこっちゃない</string><key>shortcut</key><string>いわんこっちゃない</string></dict>	<!-- 慣用句。連文節が イワン(wc 安)+こっちゃ+ない や 言わん+凝っちゃ+ない に割れて 言わんこっちゃない が 3 位だった(ユーザ報告 3214)。1 ノードで供給 -->
 	<dict><key>phrase</key><string>かわいいね</string><key>shortcut</key><string>かわいいね</string></dict>	<!-- かわいいね: curated いいね(床1500)が 川+いいね 分割を作り かな かわいいね に勝つ(ろーま事件と同型)。分断される側も curated 化して文節数の少ない方を勝たせる -->
 	<dict><key>phrase</key><string>うまいね</string><key>shortcut</key><string>うまいね</string></dict>	<!-- うまいね: うま|いね 分割(馬+イネ/ウマ+イネ=ウマイネ)が勝つ。いいね/かわいいね と同処方 -->
 	<dict><key>phrase</key><string>しか知らない</string><key>shortcut</key><string>しかしらない</string></dict>	<!-- しか知らない(副助詞しか+知らない の慣用連語): 占い師+かしら+ないが 等の誤区切りに勝たせる -->
