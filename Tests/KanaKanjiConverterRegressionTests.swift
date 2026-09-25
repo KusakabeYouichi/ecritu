@@ -19124,4 +19124,15 @@ extension KanaKanjiConverterRegressionTests {
         let list = converter.candidates(for: "いわんこっちゃない", limit: 3, systemCandidateMode: .surface)
         XCTAssertEqual(list.first, "言わんこっちゃない", "list=\(list)")
     }
+
+    // 名詞+行き の接尾(那覇行き)。行き は unigram 最良でも読み別 wc の床上げで 息 に負けていた(ユーザ報告 3214)。
+    // 床免除でなく体言直後限定のボーナスなので 息を/息が の文脈は動かない
+    func testRegressionRealLMIkiSuffixAfterNoun() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.multiClauseCandidates(for: "なはいき", systemCandidateMode: .surface).first, "那覇行き")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "とうきょういき", systemCandidateMode: .surface).first, "東京行き")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "いきをする", systemCandidateMode: .surface).first, "息をする")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "いきがあらい", systemCandidateMode: .surface).first, "息が荒い")
+    }
 }

@@ -2569,6 +2569,8 @@ extension KanaKanjiConverter {
             add(KanaKanjiConverter.multiClauseEOSMarker)
             // 名詞+欄/製 の接尾(3123)
             for s in ["らん", "せい", "欄", "製"] { add(s) }
+            // 名詞+行き の接尾(3214)
+            for s in ["いき", "行き"] { add(s) }
             // 1 字漢字+家(か)の分割を抑える(3203)
             for s in ["家"] { add(s) }
             for s in ["ある", "いう", "いち", "いって", "う", "お", "おそい", "か", "かち", "かん", "かんじ", "が", "きた", "くらい", "ぐらい", "こと", "ご", "ごと", "さ", "さん", "し", "した", "して", "します", "じん", "すぎ", "する", "そい", "そう", "た", "たい", "ため", "だ", "っけ", "であっても", "でも", "と", "な", "ない", "ないで", "なん", "に", "にも", "の", "のか", "は", "ひと", "ほうが", "ほうがいい", "ほしい", "まだ", "まち", "も", "もう", "や", "よう", "を", "ん", "ー", "一", "一手", "人", "位置", "価値", "化", "屋", "待ち", "感", "来た", "漢字", "産", "用", "様", "行って"] { add(s) }
@@ -2769,6 +2771,8 @@ extension KanaKanjiConverter {
         static let せい = MultiClauseSymbols.id("せい")
         static let 欄 = MultiClauseSymbols.id("欄")
         static let 製 = MultiClauseSymbols.id("製")
+        static let いき = MultiClauseSymbols.id("いき")
+        static let 行き = MultiClauseSymbols.id("行き")
         static let も = MultiClauseSymbols.id("も")
         static let もう = MultiClauseSymbols.id("もう")
         static let や = MultiClauseSymbols.id("や")

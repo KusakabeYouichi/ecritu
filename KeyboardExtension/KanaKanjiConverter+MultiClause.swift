@@ -2023,6 +2023,16 @@ extension KanaKanjiConverter {
                 containsKanji(prev) || Self.isKatakanaString(prev) {
                 penalty -= Self.multiClauseNounKanjiSuffixAfterNounBonus
             }
+            // 名詞+行き は生産的な接尾(那覇行き/東京行き/成田行き)。行き(いき)は unigram 5030 で最良なのに読み別 wc 7173 で
+            // 床上げされ、息(wc 7064)に負けて なはいき→那覇息 になっていた(ユーザ報告 3214)。床免除だと 息が(bigram 1337)が
+            // 行きが(1299)に負けるので、体言直後(述語・助詞の直後は除く)に限る接尾ボーナスにする
+            if readingID == SID.いき, surfaceID == SID.行き,
+                !prevIsBOS,
+                !prevIsInflectionDerived, !prevIsDictionaryFormPredicate,
+                prev.count >= 2,
+                containsKanji(prev) || Self.isKatakanaString(prev) {
+                penalty -= Self.multiClauseNounKanjiSuffixAfterNounBonus
+            }
             // 接尾の 家(か)は 1 字の漢字には付かない(定数コメント参照。3203)
             if surfaceID == SID.家, readingID == SID.か,
                 !prevIsBOS,
