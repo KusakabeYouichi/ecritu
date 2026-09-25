@@ -258,14 +258,57 @@ extension KeyboardViewController {
                 usesKanaLandscapeHeightForCompactGrid: shouldUseKanaLandscapeHeightForCompactGrid()
             )
         )
+        // ホスト枠の補正(3227)は縦画面だけ
+        let compensated = height + (isLandscapeOrientation ? 0 : hostTopInsetCompensation)
         logPreferredKeyboardHeightIfChanged(
-            height: height,
+            height: compensated,
             profile: profile,
             isLandscapeOrientation: isLandscapeOrientation,
             screenBounds: screenBounds,
             shorterScreenEdge: shorterScreenEdge
         )
-        return height
+        return compensated
+    }
+
+    // ホストがサードパーティーの枠に足す 17pt(統合ログ 3218: _UIKBCompatInputView が y=17、非表示の入力アシスタント領域)を
+    // こちらで補って、見た目を常に「17+中身」にする(3227。ユーザ指定: 高さが変わるのは避けたい)。
+    // 経路と窓の初期高さの対応(実機ログ 3222〜3226):
+    //  - アプリで最初に出る回: ホストが既定 216 で枠を組んでから申告値に更新 → 窓が 852 → 216 → 申告値。17 は付かない
+    //  - その枠を引き継ぐ再表示: 前の枠の高さを一度当ててから更新 → 窓が 852 → 前の高さ → 申告値。17 は付かない
+    //  - 切り替え/スナップショット経由の再表示: 窓が 852 → 申告値 と直に来る。ホストが 17 を足す(Gboard も同じ)
+    // なので「最初の縦画面レイアウトで窓の高さが自分の申告値と違っていたら 17 を補う」で 3 経路とも揃う。
+    // 補った回は透明な 17pt の帯を上に置き(ホストの地が透ける)、高さも +17 申告する
+    static let hostPlaceholderTopInset: CGFloat = 17
+
+    func resolveHostTopInsetCompensationFromLayoutIfNeeded() {
+        guard !hostTopInsetCompensationResolved, let window = view.window else {
+            return
+        }
+        let isLandscape = window.windowScene?.interfaceOrientation.isLandscape
+            ?? (traitCollection.verticalSizeClass == .compact)
+        guard !isLandscape else {
+            hostTopInsetCompensationResolved = true
+            return
+        }
+        let screenBounds = window.windowScene?.screen.bounds ?? UIScreen.main.bounds
+        let screenHeight = max(screenBounds.width, screenBounds.height)
+        let height = view.bounds.height
+        // 表示前は窓が画面全体の寸法のまま(高さ実寸の 852)。実枠が来るまで待つ
+        guard height > 0, height < screenHeight - 1 else {
+            return
+        }
+        hostTopInsetCompensationResolved = true
+        let requested = preferredKeyboardHeight()
+        let differs = abs(height - requested) > 0.5
+        hostTopInsetCompensation = differs ? Self.hostPlaceholderTopInset : 0
+        if differs {
+            hostTopConstraint?.constant = Self.hostTopOverlapForCompensation + hostTopInsetCompensation
+            updateBackgroundGradientAppearance()
+        }
+        appendKeyboardDiagnosticsLog(
+            "ホスト枠の補正 \(differs ? "+17pt" : "なし") 窓の初期高さ=\(Int(height)) 申告=\(Int(requested))",
+            critical: true
+        )
     }
 
     // 高さ要求が変わったときだけ critical で残す。メッセージ.app で回転を挟むと
