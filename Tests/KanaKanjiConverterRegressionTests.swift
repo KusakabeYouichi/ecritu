@@ -19127,6 +19127,11 @@ extension KanaKanjiConverterRegressionTests {
         try loadDeviceAddedVocabulary(includeSuppression: true)
         let list = converter.candidates(for: "いわんこっちゃない", limit: 3, systemCandidateMode: .surface)
         XCTAssertEqual(list.first, "言わんこっちゃない", "list=\(list)")
+        // 打っている途中も 言わん(イワン が居座らない。ユーザ報告 3215)
+        for reading in ["いわんこっちゃ", "いわんこっちゃな"] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first?.hasPrefix("言わんこっちゃ"), true, "reading=\(reading) list=\(multi)")
+        }
     }
 
     // 名詞+行き の接尾(那覇行き)。行き は unigram 最良でも読み別 wc の床上げで 息 に負けていた(ユーザ報告 3214)。
