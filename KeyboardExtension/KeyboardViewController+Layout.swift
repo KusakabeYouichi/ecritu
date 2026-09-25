@@ -281,16 +281,32 @@ extension KeyboardViewController {
     static let hostPlaceholderTopInset: CGFloat = 17
 
     #if DEBUG
+    // 調査用(3230): 入力モード変更(地球儀の切り替え)の通知が拡張プロセスに届くか。個体(VC)は切り替えで消えるので、
+    // observer と記録はプロセス全体で 1 つ持ち、次の個体が表示時に「前回の通知からの経過」を残す
+    nonisolated(unsafe) static var inputModeChangeProbeObserver: NSObjectProtocol?
+    nonisolated(unsafe) static var lastInputModeChangeAt: CFAbsoluteTime = 0
+    nonisolated(unsafe) static var lastInputModeChangeLanguage = "-"
+    nonisolated(unsafe) static var inputModeChangeCount = 0
+
     func installInputModeChangeProbe() {
-        guard inputModeChangeProbeObserver == nil else {
+        guard Self.inputModeChangeProbeObserver == nil else {
             return
         }
-        inputModeChangeProbeObserver = NotificationCenter.default.addObserver(
+        Self.inputModeChangeProbeObserver = NotificationCenter.default.addObserver(
             forName: UITextInputMode.currentInputModeDidChangeNotification, object: nil, queue: .main
-        ) { [weak self] note in
-            let mode = (note.object as? UITextInputMode)?.primaryLanguage ?? (self?.textInputMode?.primaryLanguage ?? "-")
-            self?.appendKeyboardDiagnosticsLog("入力モード変更通知 mode=\(mode) 表示中=\(self?.view.window != nil)", critical: true)
+        ) { note in
+            Self.lastInputModeChangeAt = CFAbsoluteTimeGetCurrent()
+            Self.lastInputModeChangeLanguage = (note.object as? UITextInputMode)?.primaryLanguage ?? "-"
+            Self.inputModeChangeCount += 1
         }
+    }
+
+    func logInputModeChangeProbeAtAppear() {
+        let elapsed = Self.lastInputModeChangeAt > 0 ? CFAbsoluteTimeGetCurrent() - Self.lastInputModeChangeAt : -1
+        appendKeyboardDiagnosticsLog(
+            "入力モード変更通知 累計\(Self.inputModeChangeCount)回 前回=\(elapsed < 0 ? "なし" : String(format: "%.1f秒前", elapsed)) mode=\(Self.lastInputModeChangeLanguage) 自分=\(textInputMode?.primaryLanguage ?? "-")",
+            critical: true
+        )
     }
     #endif
 
