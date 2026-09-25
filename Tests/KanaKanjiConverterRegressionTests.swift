@@ -19135,4 +19135,19 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "いきをする", systemCandidateMode: .surface).first, "息をする")
         XCTAssertEqual(converter.multiClauseCandidates(for: "いきがあらい", systemCandidateMode: .surface).first, "息が荒い")
     }
+
+    // 漢字体言+かなコピュラ・クラスタ(だよね)は curated 床 1500 の定額で prev との bigram を見ず、だ 単独ノードでは
+    // 効いていた 妥当→だ の bigram が だよね で消えて 打倒だよね が先頭だった(ユーザ報告 3214)。
+    // prev→だ の bigram が無い漢字体言だけ床を上げる
+    func testRegressionRealLMCopulaClusterKeepsHeadBigramContext() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for reading in ["だとうだ", "だとうだよ", "だとうだよね"] {
+            let list = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(list.first?.hasPrefix("妥当"), true, "reading=\(reading) list=\(list)")
+        }
+        XCTAssertEqual(converter.multiClauseCandidates(for: "がくせいだよね", systemCandidateMode: .surface).first, "学生だよね")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "そうだよね", systemCandidateMode: .surface).first, "そうだよね")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "ぴんくだし", systemCandidateMode: .surface).first, "ピンクだし")
+    }
 }

@@ -336,6 +336,11 @@ extension KanaKanjiConverter {
     // ユーザ指摘 3203)
     static let multiClauseKaSuffixAfterSingleKanjiPenalty = 2000
     static let multiClauseNounKanjiSuffixAfterNounBonus = 1500
+    // 体言直後のかなコピュラ・クラスタ(だよね/ですね 等の curated)は床 1500 の定額で prev との bigram を見ない。
+    // だ 単独ノードなら 妥当→だ(1589)の bigram が効いて 妥当だ/妥当だよ が先頭なのに、だよね で 1 ノードになった途端
+    // unigram 順(打倒 5967 < 妥当 6203)に戻って だとうだよね→打倒だよね が先頭だった(ユーザ報告 3214)。
+    // 漢字体言の直後で prev→だ(です)の bigram が無いときだけ床を上げる(bigram のある prev は従来どおり 1500)
+    static let multiClauseCopulaClusterNoHeadBigramPenalty = 800
     // 格助詞の直後で係助詞 は/も を呑んだ活用派生(に+食もう ← にはもう)の減点(2859、抜き取り検査)。
     // 格助詞+係助詞(には/にも/では/でも)は最頻の並びで、そこを跨いで動詞が始まる読みは稀。
     // ただし 学校に入る(にはいる)のような正当例があるので、剥がした残りがかな1語として
@@ -2569,8 +2574,8 @@ extension KanaKanjiConverter {
             add(KanaKanjiConverter.multiClauseEOSMarker)
             // 名詞+欄/製 の接尾(3123)
             for s in ["らん", "せい", "欄", "製"] { add(s) }
-            // 名詞+行き の接尾(3214)
-            for s in ["いき", "行き"] { add(s) }
+            // 名詞+行き の接尾、コピュラ・クラスタの頭 です(3214)
+            for s in ["いき", "行き", "です"] { add(s) }
             // 1 字漢字+家(か)の分割を抑える(3203)
             for s in ["家"] { add(s) }
             for s in ["ある", "いう", "いち", "いって", "う", "お", "おそい", "か", "かち", "かん", "かんじ", "が", "きた", "くらい", "ぐらい", "こと", "ご", "ごと", "さ", "さん", "し", "した", "して", "します", "じん", "すぎ", "する", "そい", "そう", "た", "たい", "ため", "だ", "っけ", "であっても", "でも", "と", "な", "ない", "ないで", "なん", "に", "にも", "の", "のか", "は", "ひと", "ほうが", "ほうがいい", "ほしい", "まだ", "まち", "も", "もう", "や", "よう", "を", "ん", "ー", "一", "一手", "人", "位置", "価値", "化", "屋", "待ち", "感", "来た", "漢字", "産", "用", "様", "行って"] { add(s) }
@@ -2773,6 +2778,7 @@ extension KanaKanjiConverter {
         static let 製 = MultiClauseSymbols.id("製")
         static let いき = MultiClauseSymbols.id("いき")
         static let 行き = MultiClauseSymbols.id("行き")
+        static let です = MultiClauseSymbols.id("です")
         static let も = MultiClauseSymbols.id("も")
         static let もう = MultiClauseSymbols.id("もう")
         static let や = MultiClauseSymbols.id("や")
