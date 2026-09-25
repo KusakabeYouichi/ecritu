@@ -1329,7 +1329,7 @@ struct KeyboardRootView: View {
 
     var fullAccessNoticeHeaderView: some View {
         HStack(spacing: 8) {
-            Text("フルアクセスがオフです — 学習・設定の保存は反映されません(設定 › 一般 › キーボード › キーボード › 日本語入力 — écritu)")
+            Text("フルアクセスがオフです — 学習・設定の保存は反映されません(設定 › 一般 › キーボード › キーボード › écritu)")
                 .font(.system(size: 12, weight: .semibold, design: .rounded))
                 .foregroundStyle(keyLabelColor.opacity(0.75))
                 .lineLimit(2)
