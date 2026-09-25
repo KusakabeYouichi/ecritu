@@ -1785,6 +1785,23 @@ extension KanaKanjiConverter {
                 } else {
                     base = min(base, Self.multiClauseCuratedWordCost)
                 }
+                // 漢字体言直後のかなコピュラ・クラスタ(だよね 等)で prev→だ/です の bigram が無いときは床を上げる
+                // (定数コメント参照。3214)。助詞・述語の直後、かな識別/カタカナの直後は対象外
+                if isKanaIdentity,
+                    Self.multiClauseNounCopulaClusterReadingsID.contains(readingID),
+                    !prevIsBOS, !prevIsKanaIdentity,
+                    containsKanji(prev),
+                    !prevIsInflectionDerived, !prevIsDictionaryFormPredicate,
+                    !Self.multiClauseCaseParticleSurfacesID.contains(prevID),
+                    !Self.multiClauseCompoundParticlesID.contains(prevID) {
+                    // です 頭(ですね/ですよ)は prev→です が無くても prev→だ があればコピュラ適合の証拠とみなす(丁寧体は LM で薄い)
+                    let hasHeadBigram = bigramCostByIDPair[MultiClauseSymbols.pairKey(prevID, SID.だ)] != nil
+                        || (reading.hasPrefix("です")
+                            && bigramCostByIDPair[MultiClauseSymbols.pairKey(prevID, SID.です)] != nil)
+                    if !hasHeadBigram {
+                        base += Self.multiClauseCopulaClusterNoHeadBigramPenalty
+                    }
+                }
             }
             // 複合助詞(かな表層)を単位ノードとして安価にクランプ。ただし基底の格助詞
             // (には→に/では→で)が直前語からの bigram で期待される時だけに限定する。
