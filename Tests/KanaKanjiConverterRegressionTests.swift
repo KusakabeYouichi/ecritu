@@ -19191,3 +19191,20 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertFalse(converter.candidates(for: "ちゃんと", limit: 10, systemCandidateMode: .surface).contains("ちゃ〜んと"))
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // すうひゃっけん が {数百間, 数百軒, すう百間, 吸う百間} で 数百件 が出なかった(ユーザ報告 3224)。桁 百 の促音形
+    // (ひゃっ/びゃっ/ぴゃっ)が数詞複合の桁表に無く、数+百間(辞書語)にしか組めなかった。件 は 軒 より先(ユーザ指定)
+    func testRegressionRealLMSokuonHundredCounterCompounds() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let suu = converter.candidates(for: "すうひゃっけん", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(suu.prefix(2)), ["数百件", "数百軒"], "list=\(suu)")
+        XCTAssertEqual(converter.candidates(for: "さんびゃっけん", limit: 4, systemCandidateMode: .surface).first, "300件")
+        XCTAssertEqual(converter.candidates(for: "ろっぴゃっけん", limit: 4, systemCandidateMode: .surface).first, "600件")
+        XCTAssertEqual(converter.candidates(for: "なんびゃっけん", limit: 4, systemCandidateMode: .surface).first, "何百件")
+        XCTAssertEqual(converter.candidates(for: "にひゃっこ", limit: 4, systemCandidateMode: .surface).first, "200個")
+        // 連濁の桁は先行数字が固定(びゃっ=3、ぴゃっ=6/8): にびゃっけん は組まない
+        XCTAssertFalse(converter.candidates(for: "にびゃっけん", limit: 6, systemCandidateMode: .surface).contains("200件"))
+    }
+}
