@@ -197,6 +197,8 @@ final class KeyboardViewController: UIInputViewController {
     // 食い違うと面が縮み、真っ先に上の余白が食われる、という筋を確かめるための記録。
     // 食い違いの有無が変わったときだけ 1 行残す
     var lastLoggedKeyboardHeightMismatch: CGFloat = 0
+    // 調査用(3218): écritu の view の外側に 16pt が付く件。親の枠の実寸が変わった瞬間だけ残す
+    var lastLoggedKeyboardParentFramesSignature = ""
     // 枠がこちらの要求より小さいままのときに、もう一度要求を届けた回数(3158)。一致したら 0 に戻す
     var keyboardHeightRetryCount = 0
     // この表示で「その向きの最大の高さ」を一度通したか(3160)
@@ -1318,6 +1320,9 @@ final class KeyboardViewController: UIInputViewController {
 
         updateKeyboardVisualVisibility(using: configuration)
         logKeyboardHeightMismatchIfChanged()
+        #if DEBUG
+        logKeyboardParentFramesIfChanged()
+        #endif
 
         guard lastRenderConfiguration != nil else {
             return
