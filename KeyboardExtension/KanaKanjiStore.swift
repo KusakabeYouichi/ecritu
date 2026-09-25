@@ -1213,13 +1213,14 @@ final class KanaKanjiStore {
 
     // makeRenderConfiguration が打鍵ごとに呼ぶため、JSON デコードは初回のみにする
     // (設定変更時は clearSharedDataCaches で破棄)。
+    // 保存された一覧の順がそのまま表示順(3243)。以前は 初期一覧 + 保存分 で初期一覧を常に先頭にしていたが、
+    // 並べ替えと「確定した絵文字を先頭へ」を保存順で表すため、保存があるときは保存順だけを使う。
+    // 初期一覧はコンテナーアプリの初回移行で保存の末尾へ足される(migrateInitialShortcutVocabularyIfNeeded)
     private func resolveShortcutVocabulary() -> [String] {
         let userCandidates = decodedStringArray(forKey: KanaKanjiStorageKeys.shortcutVocabulary) ?? []
 
         if !userCandidates.isEmpty {
-            return uniqueShortcutCandidates(
-                from: initialShortcutVocabulary() + userCandidates
-            )
+            return uniqueShortcutCandidates(from: userCandidates)
         }
 
         if let legacyDictionary = decodedStringArrayDictionary(forKey: KanaKanjiStorageKeys.shortcutVocabulary) {
@@ -1229,13 +1230,36 @@ final class KanaKanjiStore {
                 .flatMap { legacyDictionary[$0] ?? [] }
 
             if !legacyCandidates.isEmpty {
-                return uniqueShortcutCandidates(
-                    from: initialShortcutVocabulary() + legacyCandidates
-                )
+                return uniqueShortcutCandidates(from: legacyCandidates)
             }
         }
 
         return initialShortcutVocabulary()
+    }
+
+    // 絵文字/顔文字パネルで確定した文字列をショートカット語彙の先頭へ(3243)。既に在れば先頭へ移す。
+    // 保存が無い/空(コンテナーアプリ未起動、全削除)ときは表示と同じく初期一覧を土台にする。上限はアプリ側の登録と同じ 128
+    static let shortcutVocabularyMaxCount = 128
+
+    func prependShortcutCandidate(_ candidate: String) {
+        let trimmed = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty, let defaults else {
+            return
+        }
+        var current = decodedStringArray(forKey: KanaKanjiStorageKeys.shortcutVocabulary) ?? []
+        if current.isEmpty {
+            current = initialShortcutVocabulary()
+        }
+        current.removeAll { $0 == trimmed }
+        current.insert(trimmed, at: 0)
+        if current.count > Self.shortcutVocabularyMaxCount {
+            current = Array(current.prefix(Self.shortcutVocabularyMaxCount))
+        }
+        guard let encoded = try? JSONEncoder().encode(current) else {
+            return
+        }
+        defaults.set(encoded, forKey: KanaKanjiStorageKeys.shortcutVocabulary)
+        withCacheLock { cachedShortcutVocabulary = nil }
     }
 
     func initialShortcutVocabulary() -> [String] {

@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260926060611"
+    private static let editionUpdatedAtRaw: String = "20260926064837"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -1316,7 +1316,8 @@ struct ContentView: View {
             listHeight: userVocabularyListHeight(for: shortcutDictionaryEntries.count),
             onAddEntry: addShortcutDictionaryEntry,
             onUpdateEntry: updateShortcutDictionaryEntry,
-            onDeleteEntry: removeShortcutDictionaryEntry
+            onDeleteEntry: removeShortcutDictionaryEntry,
+            onMoveEntries: moveShortcutDictionaryEntries
         )
 
         ReadOnlyDictionarySettingsSection(
@@ -1558,6 +1559,8 @@ struct ContentView: View {
                 // アプリを背景に置いて打っている間の学習(ぴの→ピノ)が一覧に出ず「学習されていないのに
                 // 候補順が変わった」ように見える(ユーザ報告 3113)。追加/抑制はこのアプリしか書かないので対象外
                 loadLearnedDictionaryEntries()
+                // ショートカット語彙も拡張が書く(絵文字/顔文字の確定を先頭へ足す。3243)ので読み直す
+                loadShortcutDictionaryEntries()
 
                 if shouldUseContactCandidates {
                     syncContactCandidatesCacheFromContainerApp()
