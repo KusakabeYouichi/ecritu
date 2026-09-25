@@ -19074,3 +19074,18 @@ extension KanaKanjiConverterRegressionTests {
         report("全キャッシュ破棄+返却後")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // しんきよてい→新奇予定(ユーザ報告 3213): 新規 は Sudachi の wc 7868 で 24 表記中 17 位、連文節の (b) 供給
+    // (wc 順 TopK=14)から漏れて格子に無く、単文節(LM unigram 5242 で先頭)と食い違っていた。seed で供給する
+    func testRegressionRealLMShinkiYoteiSuppliesShinki() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.candidates(for: "しんき", limit: 3, systemCandidateMode: .surface).first, "新規")
+        for reading in ["しんきよ", "しんきよて", "しんきよてい"] {
+            let list = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(list.first?.hasPrefix("新規"), true, "reading=\(reading) list=\(list)")
+        }
+        XCTAssertEqual(converter.multiClauseCandidates(for: "しんきよてい", systemCandidateMode: .surface).first, "新規予定")
+    }
+}
