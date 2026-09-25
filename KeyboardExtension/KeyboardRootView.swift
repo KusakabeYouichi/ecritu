@@ -159,8 +159,8 @@ struct KeyboardRootView: View {
     // 未確定文字(10pt)を上寄せで出し、はみ出す 2〜3pt はチップの上余白(6pt)に食い込ませる。écritu/mountain view は
     // 空のまま。常に確保するのは、入力中/確定後や方式の切り替えでチップの位置が動かないようにするため(3213-3216)
     static let candidateHeaderCompositionRowHeight: CGFloat = 8
-    // 候補チップの内側の上下余白(3226 で 4→2。候補欄 31pt に未確定の行を詰め込むため。欧文サジェストも同じ)
-    static let candidateChipVerticalPadding: CGFloat = 2
+    // 候補チップの内側の上下余白(3226 で 4→2、3239 で 2→1。候補欄 31pt に未確定の行を詰め込むため。欧文サジェストも同じ)
+    static let candidateChipVerticalPadding: CGFloat = 1
     // 寸法・位置は KeyboardLayoutMetrics に集約(2609)。端末別の値はそちらで分岐する。
     private var frameMetrics: KeyboardLayoutMetrics.FrameMetrics {
         layoutMetrics.frame(usesCompactLandscapeLayout: isLandscapeLayout)
@@ -696,8 +696,9 @@ struct KeyboardRootView: View {
         // 枠を 4pt 詰めた縦向き(3169)ではチップの上余白も詰める。中身が枠に収まるようになって
         // 以前は隠れていた余白が全部見えるようになったため(ユーザー報告)
         let downshift = trimsPortraitContentForHomeIndicator ? 0 : candidateHeaderContentDownshift
-        // 3226: 候補欄 31pt = 未確定の行 8 + 余白 2 + チップ 21。かな面以外も同じ(面の切り替えでチップが動かないように)
-        return 2 + downshift
+        // 3226: 候補欄 31pt = 未確定の行 8 + 余白 + チップ。3239 でチップ 21→19、余白 2→4 にして、未確定の下線(11pt 文字、
+        // 行の上端から約 11pt)がチップの上縁(12pt)に重ならないようにした(ユーザ報告)。かな面以外も同じ余白
+        return 4 + downshift
     }
 
     var usesThreeByThreeGridForNumberOrLatin: Bool {
