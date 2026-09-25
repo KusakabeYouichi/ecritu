@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260925192337"
+    private static let editionUpdatedAtRaw: String = "20260925193235"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -493,8 +493,8 @@ struct ContentView: View {
 
     private let setupSteps: [String] = [
         "iOS の 設定 › 一般 › キーボード › キーボード › 新しいキーボードを追加 で「écritu」を追加",
-        "一覧の「日本語入力 — écritu」をタップし、[フルアクセスを許可] をオン(任意。学習と設定の反映に使います)",
-        "文字を打つ画面で地球儀 🌐 を長押しして「日本語入力 — écritu」を選ぶ"
+        "一覧の「écritu」をタップし、[フルアクセスを許可] をオン(任意。学習と設定の反映に使います)",
+        "文字を打つ画面で地球儀 🌐 を長押しして「écritu」を選ぶ"
     ]
 
     // 操作マニュアルとプライバシーポリシー(GitHub Pages)。アイコン長押しメニューから Safari で開く
