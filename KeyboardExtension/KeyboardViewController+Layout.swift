@@ -319,11 +319,13 @@ extension KeyboardViewController {
         }
         hostTopInsetCompensationResolved = true
         let requested = preferredKeyboardHeight()
-        let differs = abs(height - requested) > 0.5
-        // 前の補正済みの高さ(申告+17)を経由し、かつ前の個体が差し替えで消えていたら、ホストが 17 を足す回(3234)
-        let inheritsCompensatedHeight = abs(height - (requested + Self.hostPlaceholderTopInset)) <= 0.5
-        let hostAddsInset = inheritsCompensatedHeight && Self.lastDisappearanceKind == .replaced
-        let compensates = differs && !hostAddsInset
+        // 既定(216)経由=アプリで最初の回: 17 は付かない → 補う。
+        // それ以外(前の枠の高さを引き継ぐ回。前の申告が 244 でも 261 でも)は前の個体の消え方で決める(3234→3239):
+        // 引っ込めて消えた後の開き直しは 17 が付かない → 補う。差し替え(切り替え)で消えた後はホストが 17 を足す → 補わない。
+        // 3234 は「初期高さが申告と同じなら補わない」としていて、引っ込めた後の開き直しで前の個体が未補正だった回
+        // (初期 244=申告 244)が低いままだった(実機ログ 05:02)
+        let isDefaultPlaceholderHeight = height < requested - 0.5
+        let compensates = isDefaultPlaceholderHeight || Self.lastDisappearanceKind == .dismissed
         hostTopInsetCompensation = compensates ? Self.hostPlaceholderTopInset : 0
         if compensates {
             hostTopConstraint?.constant = Self.hostTopOverlapForCompensation + hostTopInsetCompensation
