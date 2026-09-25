@@ -280,6 +280,34 @@ extension KeyboardViewController {
     // 補った回は透明な 17pt の帯を上に置き(ホストの地が透ける)、高さも +17 申告する
     static let hostPlaceholderTopInset: CGFloat = 17
 
+    #if DEBUG
+    // 調査用(3233): 前の個体の「消え方」で、開き直し(キーボードが引っ込む)と切り替え(出たまま差し替え)を
+    // 見分けられるか。消えるときの animated/窓の高さ/表示からの経過をプロセス内に記録し、次の個体が表示時に残す
+    nonisolated(unsafe) static var lastDisappearanceDescription = "なし"
+    nonisolated(unsafe) static var lastDisappearanceAt: CFAbsoluteTime = 0
+
+    func recordDisappearanceProbe(phase: String, animated: Bool) {
+        let shown = Self.lastAttachedViewWillAppearAt > 0 ? CFAbsoluteTimeGetCurrent() - Self.lastAttachedViewWillAppearAt : -1
+        let windowHeight = view.window.map { Int($0.bounds.height) } ?? -1
+        let desc = "\(phase) animated=\(animated) 窓=\(windowHeight) view=\(Int(view.bounds.height)) 表示から\(String(format: "%.1f", shown))秒"
+        if phase == "will" {
+            Self.lastDisappearanceDescription = desc
+            Self.lastDisappearanceAt = CFAbsoluteTimeGetCurrent()
+        } else {
+            Self.lastDisappearanceDescription += " / " + desc
+        }
+        appendKeyboardDiagnosticsLog("消え方 " + desc, critical: true)
+    }
+
+    func logDisappearanceProbeAtAppear() {
+        let elapsed = Self.lastDisappearanceAt > 0 ? CFAbsoluteTimeGetCurrent() - Self.lastDisappearanceAt : -1
+        appendKeyboardDiagnosticsLog(
+            "前回の消え方 \(Self.lastDisappearanceDescription) 経過=\(elapsed < 0 ? "なし" : String(format: "%.1f秒", elapsed)) 補正=\(Int(hostTopInsetCompensation))",
+            critical: true
+        )
+    }
+    #endif
+
 
     func resolveHostTopInsetCompensationFromLayoutIfNeeded() {
         guard !hostTopInsetCompensationResolved, let window = view.window else {
