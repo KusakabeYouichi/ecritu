@@ -19286,3 +19286,13 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertFalse(converter.candidates(for: "かきい", limit: 5, systemCandidateMode: .surface).contains("角い"))
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // もね は かな もね を先頭、画家 モネ を 2 位に(ユーザ指定 3238)
+    func testRegressionRealLMMoneKanaFirst() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let list = converter.candidates(for: "もね", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(2)), ["もね", "モネ"], "list=\(list)")
+    }
+}
