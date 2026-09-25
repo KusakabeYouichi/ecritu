@@ -612,6 +612,10 @@ extension KanaKanjiConverter {
         }
 
         let trustedDirectCandidates = Set(systemCandidates.prefix(3))
+        // 純カタカナの suffix 一致語(ハネダ/シマダ: 語尾 ダ がかな だ に一致)は Sudachi の強調収穫で、
+        // LM 未収録なら +500 の対象にしない(+220 のかな識別と同じ扱い)。LM に在る カナダ/オランダ/ホンダ は従来どおり(3214)
+        let katakanaCandidates = scores.keys.filter { KanaKanjiConverter.isPureKatakanaCandidate($0) }
+        let katakanaUnigrams = katakanaCandidates.isEmpty ? [:] : store.wordLMUnigramCosts(for: katakanaCandidates)
 
         for candidate in Array(scores.keys) {
             var delta = 0
@@ -624,7 +628,8 @@ extension KanaKanjiConverter {
                 // 読み全体が1語として辞書に実在する suffix 一致語(少ない/危ない 等)は、
                 // 派生の +500(酸くない/漉くない)に逆転されないよう同等のブーストを与える。
                 // かな識別(すくない 等)は 220 のままにして辞書順(漢字先頭)を保つ。
-                if candidate != reading, systemCandidates.contains(candidate) {
+                if candidate != reading, systemCandidates.contains(candidate),
+                    !KanaKanjiConverter.isPureKatakanaCandidate(candidate) || katakanaUnigrams[candidate] != nil {
                     delta += 500
                 } else {
                     delta += 220
@@ -641,6 +646,12 @@ extension KanaKanjiConverter {
             }
         }
 
+        applyCopulaLookingWholeWordBoost(
+            for: reading,
+            systemCandidates: systemCandidates,
+            inflectionDerivedCandidates: inflectionDerivedCandidates,
+            to: &scores
+        )
         applyKuruCandidateBoost(for: reading, to: &scores)
         applyGodanImperativeBoost(
             for: reading,
@@ -656,6 +667,32 @@ extension KanaKanjiConverter {
             systemCandidateMode: systemCandidateMode,
             to: &scores
         )
+    }
+
+    // 読みが だ で終わる(コピュラに見える)とき、読み全体が辞書先頭の常用語(羽田/上田/島田 等の姓、体/涙/間)なら
+    // X+だ 合成(1260)とかな識別(1417)の上へ出す幅。活用派生(噛んだ 1700)には勝たせない(かんだ は 噛んだ が先)。
+    // 該当は 135 読み(だ 終わりで辞書先頭の unigram≤6800)。池田/岡田/山田/浜田 は個別 seed で救済されていたが
+    // はねだ→ハネダ/羽根だ、うえだ→うえだ/上だ、しまだ→シマダ/島だ のように 羽田/上田/島田 が 12〜23 位に沈む
+    // 氷山の一角型だった(ユーザ報告 3214)
+    static let copulaLookingWholeWordBoost = 300
+
+    func applyCopulaLookingWholeWordBoost(
+        for reading: String,
+        systemCandidates: [String],
+        inflectionDerivedCandidates: Set<String>,
+        to scores: inout [String: Int]
+    ) {
+        guard reading.count >= 3, reading.hasSuffix("だ"),
+            let rank0 = systemCandidates.first,
+            rank0 != reading,
+            !KanaKanjiConverter.isPureKatakanaCandidate(rank0),
+            !inflectionDerivedCandidates.contains(rank0),
+            scores[rank0] != nil,
+            let unigram = store.wordLMUnigramCosts(for: [rank0])[rank0],
+            unigram <= Self.lmDominantDictBoostMaxBestUnigram else {
+            return
+        }
+        scores[rank0, default: 0] += Self.copulaLookingWholeWordBoost
     }
 
     // 様態そう(連用形+そう=「買いそう/降りそう/来そう」looks like ~ing)は活用派生スコア
