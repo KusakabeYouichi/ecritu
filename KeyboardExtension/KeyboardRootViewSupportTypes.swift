@@ -1260,6 +1260,7 @@ extension KeyboardRootView {
                         .truncationMode(.head)
                         .foregroundStyle(keyLabelColor.opacity(0.9))
                         .frame(maxWidth: .infinity, alignment: .leading)
+                        .offset(y: 1)  // 未確定の文字を 1pt 下げる(ユーザ指定 3220)
                         .allowsHitTesting(false)
                         .accessibilityLabel("未確定 \(internalCompositionPreviewText)")
                 } else {
