@@ -106,7 +106,9 @@ extension KeyboardLayoutMetrics {
         // (プレースホルダー経路)と判明。見た目 = 中身 + 17 なので、中身は 候補欄 44(帯の詰め −4 で 40 = チップ 31 +
         // 未確定の行 9)・段 47 の 255pt に(3219)。17 の有無はホスト内部の遷移(スナップショット経由の再配置)で
         // 変わり、écritu からは観測も制御もできない(3221 で時間差判定の補正は撤回)。見た目は 255 か 272
-        candidateHeaderExpandedHeight: 44,
+        // 3226(試行): 純正と同じ見た目(17+中身=263)にするため中身 246 = 候補欄 35(帯の詰め −4 で 31)+段 47。
+        // 31pt に未確定の行 8 + チップ(内側余白 2)21 + 余白 2 を詰め込む
+        candidateHeaderExpandedHeight: 35,
         candidateHeaderCollapsedHeight: 3,
         keyboardVerticalPadding: 23,
         keyboardRowSpacing: 6,
@@ -174,12 +176,12 @@ extension KeyboardLayoutMetrics {
         // 上限をそのまま使うと 3219 の +13 が +30 になる。従来の上限を +13 して、どの面も iPhone と同じ +13 に揃える
         metrics.portraitHeightBounds = { profile in
             switch profile {
-            case .kanaThreeByThree: return 220...293
-            case .compactGrid: return 194...265
-            case .compactActionRow: return 200...273
-            case .kanaFiveByTwo: return 216...293
-            case .emoji: return 228...303
-            case .formattedNumber: return 300...353
+            case .kanaThreeByThree: return 220...284
+            case .compactGrid: return 194...256
+            case .compactActionRow: return 200...264
+            case .kanaFiveByTwo: return 216...284
+            case .emoji: return 228...294
+            case .formattedNumber: return 300...344
             }
         }
         // 基準短辺(390)とスケール上限(1.08)は iPhone のまま据え置く。iPad の短辺は
@@ -281,7 +283,7 @@ extension KeyboardLayoutMetrics {
 
     // 縦画面の上乗せ(3216→3219。候補欄 +9(未確定の行)、段 +1×4。candidateHeaderExpandedHeight のコメント参照)。
     // 面ごとに違えると切り替えで跳ねるので全プロファイル一律。横画面は 3175 で別に揃えてあり対象外
-    static let portraitAppleParityExtraHeight: CGFloat = 13
+    static let portraitAppleParityExtraHeight: CGFloat = 4
 
     private func clamp(_ value: CGFloat, to range: ClosedRange<CGFloat>) -> CGFloat {
         min(max(value, range.lowerBound), range.upperBound)
