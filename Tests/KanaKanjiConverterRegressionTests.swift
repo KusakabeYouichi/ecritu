@@ -19243,3 +19243,19 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "かくうちにいく", systemCandidateMode: .surface).first, "角打ちに行く")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // せいきかした が {世紀かした, 正規かした, 性器かした, 正気化した} で 正規化した が無かった(ユーザ報告 3237)。
+    // Sudachi は 正規化 にサ変の印を付けておらず(458 語が同様)、辞書語のサ変推論は追加語彙にしか働かなかった。
+    // 接尾 化(読みが か)は生産的なサ変として推論する
+    func testRegressionRealLMKaSuffixNounInflectsAsSahen() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.candidates(for: "せいきかした", limit: 3, systemCandidateMode: .surface).first, "正規化した")
+        XCTAssertEqual(converter.candidates(for: "せいきかして", limit: 3, systemCandidateMode: .surface).first, "正規化して")
+        let hou = converter.multiClauseCandidates(for: "せいきかしたほうが", systemCandidateMode: .surface)
+        XCTAssertTrue(hou.first == "正規化したほうが" || hou.first == "正規化した方が", "list=\(hou)")
+        // 既にサ変の印がある語は従来どおり
+        XCTAssertEqual(converter.candidates(for: "じどうかした", limit: 3, systemCandidateMode: .surface).first, "自動化した")
+    }
+}
