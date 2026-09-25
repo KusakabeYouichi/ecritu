@@ -861,8 +861,12 @@ extension ContentView {
         defaults.set(initialSignature, forKey: appliedSignatureKey)
     }
 
+    // 初回起動時に 1 回だけ: 保存一覧に無い初期ショートカット(InitialShortcutVocabMigration.json)を末尾へ足す(3243)。
+    // 保存一覧の順が表示順(並べ替え・確定した絵文字の先頭追加はキーボード側と共有)なので、初期一覧を前に置かない。
+    // 2 回目以降は動かさない(ユーザが消した初期項目を戻さない)
     func migrateInitialShortcutVocabularyIfNeeded() {
-        guard let defaults = Self.sharedDefaults else {
+        guard let defaults = Self.sharedDefaults,
+            !defaults.bool(forKey: SettingsKeys.kanaKanjiInitialShortcutVocabularyMigrated) else {
             return
         }
 
@@ -873,8 +877,7 @@ extension ContentView {
         }
 
         let currentCandidates = loadShortcutVocabularyCandidates()
-        // Keep initial shortcut order authoritative while preserving existing entries.
-        let mergedCandidates = uniqueShortcutCandidatesPreservingOrder(initialCandidates + currentCandidates)
+        let mergedCandidates = uniqueShortcutCandidatesPreservingOrder(currentCandidates + initialCandidates)
 
         if mergedCandidates != currentCandidates {
             saveShortcutVocabularyCandidates(mergedCandidates)
