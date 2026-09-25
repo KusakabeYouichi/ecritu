@@ -19296,3 +19296,19 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(list.prefix(2)), ["もね", "モネ"], "list=\(list)")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // カンジヘンカン を学習した途端、かんじへんかん が {カンジヘンカン, かんじへんかん} だけになった(ユーザ報告 3240)。
+    // 読み全体に一致する学習語彙が格子の最良 1 ノードになり連文節が空を返していた。学習語彙は単文節が先頭に出し、
+    // 格子は別解(漢字変換 等)を出す
+    func testRegressionRealLMLearnedFullSpanKeepsMultiClauseAlternatives() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        converter.learn(reading: "かんじへんかん", candidate: "カンジヘンカン")
+        XCTAssertEqual(converter.candidates(for: "かんじへんかん", limit: 3, systemCandidateMode: .surface).first, "カンジヘンカン")
+        let multi = converter.multiClauseCandidates(for: "かんじへんかん", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "漢字変換", "list=\(multi)")
+        // 部分一致では学習語彙が格子に載る
+        XCTAssertEqual(converter.multiClauseCandidates(for: "かんじへんかんを", systemCandidateMode: .surface).first, "カンジヘンカンを")
+    }
+}
