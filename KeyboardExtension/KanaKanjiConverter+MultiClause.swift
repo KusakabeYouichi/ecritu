@@ -487,7 +487,8 @@ extension KanaKanjiConverter {
                 let inflectionSupplyGateSatisfied = len >= 2
                     && len <= Self.multiClauseInflectionMaxSegmentReadingCount
                     && (segmentReading.last.map { Self.inflectionRuleSuffixLastCharacters.contains($0) } == true
-                        || Self.ichidanRenyouNounBaseReadings.contains(segmentReading + "る"))
+                        || Self.ichidanRenyouNounBaseReadings.contains(segmentReading + "る")
+                        || Self.ichidanRenyouSuppliedForEmptyStem(segmentReading, wordCostsIsEmpty: { costMap.isEmpty }))
                 // 活用派生の枠(定数コメント参照。3086)
                 let inflectionTopK = Self.multiClauseInflectionWideSupplyReadingPrefixes.contains(where: { segmentReading.hasPrefix($0) })
                     ? Self.multiClauseInflectionTopKWide
