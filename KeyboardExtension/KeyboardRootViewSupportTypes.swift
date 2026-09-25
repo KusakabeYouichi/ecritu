@@ -1218,8 +1218,9 @@ extension KeyboardRootView {
             !internalCompositionPreviewText.isEmpty
         }
 
-        // tokushima(3212): 状態カプセル(鉛筆/循環矢印)は未確定の行の左に置く。チップ行にはカプセルと
-        // 同じ幅の空きを置いて、未確定の書き始めと 1 つめの候補の左端を揃える(ユーザ指定)
+        // tokushima(3212): 縦画面では状態カプセル(鉛筆/循環矢印)を候補チップと同じ行に固定幅で置き、
+        // 未確定の行の先頭には同じ幅の空きを置いて、未確定の書き始めと 1 つめの候補の左端を揃える。
+        // カプセルを未確定の行に載せると行が高くなり 35pt の枠から上にはみ出て見切れた(ユーザ報告 3212)
         private static let conversionStateCapsuleFixedWidth: CGFloat = 30
 
         @ViewBuilder private var conversionStateCapsule: some View {
@@ -1249,8 +1250,8 @@ extension KeyboardRootView {
             VStack(alignment: .leading, spacing: 0) {
             if showsInternalCompositionPreview {
                 HStack(spacing: 6) {
-                    conversionStateCapsule
-                        .frame(width: Self.conversionStateCapsuleFixedWidth)
+                    Color.clear
+                        .frame(width: Self.conversionStateCapsuleFixedWidth, height: 1)
                     Text(internalCompositionPreviewText)
                         .font(.system(size: 10, weight: .semibold, design: .rounded))
                         .underline()
@@ -1268,9 +1269,9 @@ extension KeyboardRootView {
                     let showsWrapperOnly = showsParenthesesWrapper && composingText.isEmpty
 
                     if showsInternalCompositionPreview {
-                        // tokushima: カプセルは上の行。同じ幅の空きで 1 つめの候補の左端を未確定の書き始めに揃える
-                        Color.clear
-                            .frame(width: Self.conversionStateCapsuleFixedWidth, height: 1)
+                        // tokushima: カプセルは候補と同じ行に固定幅で。未確定の行の先頭の空きと幅を揃える
+                        conversionStateCapsule
+                            .frame(width: Self.conversionStateCapsuleFixedWidth)
                     } else if showsWrapperOnly || (!composingText.isEmpty && !conversionCandidates.isEmpty) {
                         // 候補なし(⊘)のとき状態は必ず未確定なので、カプセルは冗長 — 出さずに左へ詰める。
                         // 状態はアイコンのミニカプセルで示す(鉛筆=未確定/循環矢印=変換中)。
