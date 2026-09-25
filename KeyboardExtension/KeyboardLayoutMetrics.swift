@@ -101,10 +101,12 @@ extension KeyboardLayoutMetrics {
             topPadding: 1,
             topPaddingWhenRowsAreDense: 0
         ),
-        // 純正のかなキーボード(iPhone 15、iOS 27、メッセージ)を実測して揃えた(3216): 上端〜キー 1 段目 54pt、
-        // 段 47pt、全体 263pt。écritu は 37/46/242pt で 21pt 低く、純正から切り替えた直後にホストが前の枠(263)を
-        // 残すと上に 16pt の隙間が見えていた。候補欄 35→52(帯の詰め −4 で 48。上端〜1 段目=48+6=54)、段 46→47
-        candidateHeaderExpandedHeight: 52,
+        // 純正のかなキーボード(iPhone 15、iOS 27、メッセージ)の実測: 上端〜キー 1 段目 54pt、段 47pt、全体 263pt。
+        // 3216 で候補欄 52・段 47 の 263 に揃えたが、統合ログでサードパーティーの枠にはホストが 17pt を上に足す
+        // (プレースホルダー経路)と判明。見た目 = 中身 + 17 なので、中身は 候補欄 44(帯の詰め −4 で 40 = チップ 31 +
+        // 未確定の行 9)・段 47 の 255pt にし、ホストが 17 を付けない経路では écritu 自身が 17 を補う(3219、
+        // KeyboardViewController.hostTopInsetCompensation)。見た目は常に 272pt(純正 +9)で一定
+        candidateHeaderExpandedHeight: 44,
         candidateHeaderCollapsedHeight: 3,
         keyboardVerticalPadding: 23,
         keyboardRowSpacing: 6,
@@ -117,7 +119,7 @@ extension KeyboardLayoutMetrics {
         landscapeScaleRange: 0.9...1.08,
         portraitHeightBounds: { profile in
             switch profile {
-            // 上限は 3216 の +21pt(純正と同じ 263pt)が収まるように広げた
+            // 上限は 3216/3219 の上乗せ(255pt)が収まるように広げた
             case .kanaThreeByThree: return 220...290
             case .compactGrid: return 194...290
             case .compactActionRow: return 200...290
@@ -169,15 +171,15 @@ extension KeyboardLayoutMetrics {
         // iPhone の詰めた値が紛れ込まないよう縦組みと同じ値にしておく。
         metrics.landscape = metrics.portrait
         // iPad は上限に張り付いている面(compactGrid/compactActionRow/formattedNumber)があり、iPhone 向けに広げた
-        // 上限をそのまま使うと 3216 の +21 が +38 になる。従来の上限を +21 して、どの面も iPhone と同じ +21 に揃える
+        // 上限をそのまま使うと 3219 の +13 が +30 になる。従来の上限を +13 して、どの面も iPhone と同じ +13 に揃える
         metrics.portraitHeightBounds = { profile in
             switch profile {
-            case .kanaThreeByThree: return 220...301
-            case .compactGrid: return 194...273
-            case .compactActionRow: return 200...281
-            case .kanaFiveByTwo: return 216...301
-            case .emoji: return 228...311
-            case .formattedNumber: return 300...361
+            case .kanaThreeByThree: return 220...293
+            case .compactGrid: return 194...265
+            case .compactActionRow: return 200...273
+            case .kanaFiveByTwo: return 216...293
+            case .emoji: return 228...303
+            case .formattedNumber: return 300...353
             }
         }
         // 基準短辺(390)とスケール上限(1.08)は iPhone のまま据え置く。iPad の短辺は
@@ -277,9 +279,9 @@ extension KeyboardLayoutMetrics {
         return clamp(adjusted, to: portraitHeightBounds(profile))
     }
 
-    // 縦画面を純正のかなキーボードと同じ高さにする上乗せ(3216。候補欄 +17、段 +1×4。定義コメント参照)。
+    // 縦画面の上乗せ(3216→3219。候補欄 +9(未確定の行)、段 +1×4。candidateHeaderExpandedHeight のコメント参照)。
     // 面ごとに違えると切り替えで跳ねるので全プロファイル一律。横画面は 3175 で別に揃えてあり対象外
-    static let portraitAppleParityExtraHeight: CGFloat = 21
+    static let portraitAppleParityExtraHeight: CGFloat = 13
 
     private func clamp(_ value: CGFloat, to range: ClosedRange<CGFloat>) -> CGFloat {
         min(max(value, range.lowerBound), range.upperBound)

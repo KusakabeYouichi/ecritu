@@ -258,14 +258,42 @@ extension KeyboardViewController {
                 usesKanaLandscapeHeightForCompactGrid: shouldUseKanaLandscapeHeightForCompactGrid()
             )
         )
+        // ホスト枠の補正(定数コメント参照。3219)は縦画面だけ
+        let compensated = height + (isLandscapeOrientation ? 0 : hostTopInsetCompensation)
         logPreferredKeyboardHeightIfChanged(
-            height: height,
+            height: compensated,
             profile: profile,
             isLandscapeOrientation: isLandscapeOrientation,
             screenBounds: screenBounds,
             shorterScreenEdge: shorterScreenEdge
         )
-        return height
+        return compensated
+    }
+
+    // ホストがサードパーティーの枠に足す 17pt(統合ログ 3218: _UIKBCompatInputView が y=17、非表示の入力アシスタント領域)。
+    // 付くのは「入力欄タップ → ホストがプレースホルダーで枠を開く → écritu 生成 → viewDidLoad → 46ms で viewWillAppear」の
+    // 通常経路だけで、écritu が先に生成されていた(viewDidLoad から viewWillAppear まで数秒)ときは付かない。
+    // écritu からは y を見られないので、この時間差で経路を見分け、付かない経路では自前で 17pt の透明な帯を上に置いて
+    // 高さも +17 申告する。見た目を常に「17+中身」で一定にする(ユーザ指定 3219: 高さが変わるのは避けたい)。
+    // 判定を外した回は従来どおり 17pt の差が出る(閾値は実測 0.046 秒 / 3.7 秒の間)
+    static let hostPlaceholderTopInset: CGFloat = 17
+    static let hostPreloadedPathThresholdSec: TimeInterval = 0.75
+
+    func resolveHostTopInsetCompensationIfNeeded() {
+        guard !hostTopInsetCompensationResolved else {
+            return
+        }
+        hostTopInsetCompensationResolved = true
+        let elapsed = viewDidLoadAt > 0 ? CFAbsoluteTimeGetCurrent() - viewDidLoadAt : 0
+        let preloaded = elapsed >= Self.hostPreloadedPathThresholdSec
+        hostTopInsetCompensation = preloaded ? Self.hostPlaceholderTopInset : 0
+        hostTopConstraint?.constant = Self.hostTopOverlapForCompensation + hostTopInsetCompensation
+        updateBackgroundGradientAppearance()
+        updateKeyboardHeightIfNeeded()
+        appendKeyboardDiagnosticsLog(
+            "ホスト枠の補正 \(preloaded ? "+17pt(先読み経路)" : "なし(通常経路)") viewDidLoad→viewWillAppear=\(String(format: "%.2f", elapsed))秒",
+            critical: true
+        )
     }
 
     // 高さ要求が変わったときだけ critical で残す。メッセージ.app で回転を挟むと
