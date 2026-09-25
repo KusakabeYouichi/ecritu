@@ -1399,7 +1399,7 @@ struct KeyboardRootView: View {
                 kanaModeSwitcherRightFlickActionRawValue: "kaomoji",
                 kanaModeSwitcherUpFlickActionRawValue: "symbols",
                 kanaPostModifierEmptyTapActionRawValue: "kaomoji",
-                kanaPostModifierEmptyTapKaomojiCategoryID: "existing",
+                kanaPostModifierEmptyTapKaomojiCategoryID: "shortcut",
                 kanaPostModifierEmptyTapEmojiCategoryID: "0",
                 kanaPostModifierEmptyTapSymbolCategoryID: "0",
                 kanaPostModifierFlickDakutenEnabled: true,

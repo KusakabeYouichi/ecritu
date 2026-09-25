@@ -261,7 +261,7 @@ extension KeyboardViewController {
         let kanaPostModifierEmptyTapKaomojiCategoryID = sharedStringValue(
             from: sharedDefaults,
             key: SharedDefaultsKeys.kanaPostModifierEmptyTapKaomojiCategory,
-            fallback: "existing"
+            fallback: "shortcut"  // 初期設定は ショートカット(App の KaomojiCategoryChoice.defaultID と揃える。3241)
         )
         let kanaPostModifierEmptyTapEmojiCategoryID = sharedStringValue(
             from: sharedDefaults,
