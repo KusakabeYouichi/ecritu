@@ -104,8 +104,8 @@ extension KeyboardLayoutMetrics {
         // 純正のかなキーボード(iPhone 15、iOS 27、メッセージ)の実測: 上端〜キー 1 段目 54pt、段 47pt、全体 263pt。
         // 3216 で候補欄 52・段 47 の 263 に揃えたが、統合ログでサードパーティーの枠にはホストが 17pt を上に足す
         // (プレースホルダー経路)と判明。見た目 = 中身 + 17 なので、中身は 候補欄 44(帯の詰め −4 で 40 = チップ 31 +
-        // 未確定の行 9)・段 47 の 255pt にし、ホストが 17 を付けない経路では écritu 自身が 17 を補う(3219、
-        // KeyboardViewController.hostTopInsetCompensation)。見た目は常に 272pt(純正 +9)で一定
+        // 未確定の行 9)・段 47 の 255pt に(3219)。17 の有無はホスト内部の遷移(スナップショット経由の再配置)で
+        // 変わり、écritu からは観測も制御もできない(3221 で時間差判定の補正は撤回)。見た目は 255 か 272
         candidateHeaderExpandedHeight: 44,
         candidateHeaderCollapsedHeight: 3,
         keyboardVerticalPadding: 23,
