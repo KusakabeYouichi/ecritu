@@ -151,6 +151,9 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "のだ", baseReadingSuffix: "", allowedClasses: .adjectiveI),
         InflectionRule(readingSuffix: "のです", baseReadingSuffix: "", allowedClasses: .adjectiveI),
         InflectionRule(readingSuffix: "くない", baseReadingSuffix: "い", allowedClasses: .adjectiveI),
+        InflectionRule(readingSuffix: "くなさそう", baseReadingSuffix: "い", allowedClasses: .adjectiveI),
+        InflectionRule(readingSuffix: "くなさそうだ", baseReadingSuffix: "い", allowedClasses: .adjectiveI),
+        InflectionRule(readingSuffix: "くなさそうです", baseReadingSuffix: "い", allowedClasses: .adjectiveI),
         InflectionRule(readingSuffix: "くなく", baseReadingSuffix: "い", allowedClasses: .adjectiveI),
         InflectionRule(readingSuffix: "くないです", baseReadingSuffix: "い", allowedClasses: .adjectiveI),
         InflectionRule(readingSuffix: "くなかった", baseReadingSuffix: "い", allowedClasses: .adjectiveI),
@@ -252,6 +255,11 @@ extension KanaKanjiConverter {
 
     private static func makeIchidanInflectionRules() -> [InflectionRule] { [
         InflectionRule(readingSuffix: "ない", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        // 否定の様態(いなさそう/食べなさそう。ない→なさそう)。無くて つかうひといなさそう が 使う人衣なさそう に割れていた(3238)
+        InflectionRule(readingSuffix: "なさそう", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "なさそうだ", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "なさそうです", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "なさそうな", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "なく", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "ず", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "なかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
@@ -989,6 +997,11 @@ extension KanaKanjiConverter {
 
             var suffixes = [
                 pattern.aForm + "ない",
+                // 否定の様態(使わなさそう。一段側のコメント参照。3238)
+                pattern.aForm + "なさそう",
+                pattern.aForm + "なさそうだ",
+                pattern.aForm + "なさそうです",
+                pattern.aForm + "なさそうな",
                 // 否定の連用形(わからなく/行かなく。〜なくなる 系はあるが素の なく が欠けていた)
                 pattern.aForm + "なく",
                 pattern.aForm + "なかった",
@@ -1244,6 +1257,10 @@ extension KanaKanjiConverter {
 
     private static func makeSuruInflectionRules() -> [InflectionRule] { [
         InflectionRule(readingSuffix: "しない", baseReadingSuffix: "する", allowedClasses: .suru),
+        InflectionRule(readingSuffix: "しなさそう", baseReadingSuffix: "する", allowedClasses: .suru),
+        InflectionRule(readingSuffix: "しなさそうだ", baseReadingSuffix: "する", allowedClasses: .suru),
+        InflectionRule(readingSuffix: "しなさそうです", baseReadingSuffix: "する", allowedClasses: .suru),
+        InflectionRule(readingSuffix: "しなさそうな", baseReadingSuffix: "する", allowedClasses: .suru),
         InflectionRule(readingSuffix: "しなかった", baseReadingSuffix: "する", allowedClasses: .suru),
         // 否定の並列(再現しなかったり/しなかったりする。一段側のコメント参照)
         InflectionRule(readingSuffix: "しなかったり", baseReadingSuffix: "する", allowedClasses: .suru),
@@ -1559,6 +1576,10 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "すべきでない", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "すべきではない", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "しない", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
+        InflectionRule(readingSuffix: "しなさそう", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
+        InflectionRule(readingSuffix: "しなさそうだ", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
+        InflectionRule(readingSuffix: "しなさそうです", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
+        InflectionRule(readingSuffix: "しなさそうな", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "しなかった", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "しなかったり", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "しなかったりする", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
@@ -1764,6 +1785,9 @@ extension KanaKanjiConverter {
 
     static let kuruInflectionForms: [(readingSuffix: String, kanjiOutputSuffix: String)] = [
         ("こない", "来ない"),
+        ("こなさそう", "来なさそう"),
+        ("こなさそうだ", "来なさそうだ"),
+        ("こなさそうです", "来なさそうです"),
         ("こなかった", "来なかった"),
         ("こさせる", "来させる"),
         ("こさせた", "来させた"),
@@ -2070,7 +2094,7 @@ extension KanaKanjiConverter {
         "がり",
         "たがった", "たがって", "たがる", "がった", "がって", "がる",
         "って", "った", "いて", "いた", "いで", "いだ", "んで", "んだ", "して", "した",
-        "ない", "きて", "きた", "くて", "て", "た"
+        "なさそうです", "なさそうだ", "なさそうな", "なさそう", "ない", "きて", "きた", "くて", "て", "た"
     ]
 
     static let ikuIrregularInflectionSuffixes: [String] = {
