@@ -1254,12 +1254,13 @@ extension KeyboardRootView {
                     .frame(width: Self.conversionStateCapsuleFixedWidth, height: 1)
                 if showsInternalCompositionPreview {
                     Text(internalCompositionPreviewText)
-                        .font(.system(size: 9, weight: .semibold, design: .rounded))
+                        .font(.system(size: 11, weight: .semibold, design: .rounded))  // 9→11(3235)。行高 約 13pt は 行 8+余白 2+チップ内側 2 に収める
                         .underline()
                         .lineLimit(1)
                         .truncationMode(.head)
                         .foregroundStyle(keyLabelColor.opacity(0.9))
                         .frame(maxWidth: .infinity, alignment: .leading)
+                        .offset(y: -1)  // 1pt 上へ(ユーザ指定 3235)
                         .allowsHitTesting(false)
                         .accessibilityLabel("未確定 \(internalCompositionPreviewText)")
                 } else {
