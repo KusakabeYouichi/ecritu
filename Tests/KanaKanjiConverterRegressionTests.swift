@@ -3123,7 +3123,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // おかの: 源=みなもとの と同型の二段構え(suppr+exactReadingOnly末尾再供給)。
         // 抑制の主目的である 岡の の合成が上位に生きることも固定
         let okano = converter.candidates(for: "おかの", limit: 60, systemCandidateMode: .surface)
-        XCTAssertEqual(Array(okano.prefix(3)), ["岡野", "オカノ", "丘野"], "list=\(okano)")
+        // オカノ(LM 未収録のカタカナ収穫)は 3215 から辞書コスト差でも保護されず末尾近くへ
+        XCTAssertEqual(Array(okano.prefix(3)), ["岡野", "丘野", "岡の"], "list=\(okano)")
         XCTAssertTrue(okano.prefix(5).contains("岡の"), "岡の の合成が生きる: \(okano.prefix(6))")
         XCTAssertTrue(okano.contains("岡"), "岡 は完全一致時のみ末尾再供給: \(okano)")
         XCTAssertTrue(failures.isEmpty, "\(failures.count)件:\n" + failures.joined(separator: "\n"))
@@ -19104,9 +19105,12 @@ extension KanaKanjiConverterRegressionTests {
         // カタカナは LM 実在(カナダ/オランダ)なら従来どおり先頭
         XCTAssertEqual(converter.candidates(for: "かなだ", limit: 3, systemCandidateMode: .surface).first, "カナダ")
         XCTAssertEqual(converter.candidates(for: "おらんだ", limit: 3, systemCandidateMode: .surface).first, "オランダ")
-        // 活用派生(噛んだ 1700)より上には出さない: 姓 seed の無い読みで確認
-        let hanada = converter.candidates(for: "はねだ", limit: 5, systemCandidateMode: .surface)
-        XCTAssertFalse(hanada.first == "ハネダ", "list=\(hanada)")
+        // LM 未収録のカタカナ収穫(ハネダ/シマダ)は辞書コスト差でも保護せず末尾近くへ(ユーザ指定 3215)
+        for (reading, katakana) in [("はねだ", "ハネダ"), ("しまだ", "シマダ")] {
+            let list = converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+            let index = list.firstIndex(of: katakana) ?? list.count
+            XCTAssertGreaterThanOrEqual(index, 4, "reading=\(reading) list=\(list)")
+        }
     }
 
     // おきにくい→起きにくい を先頭に(ユーザ報告 3214)。語幹 seed(おき→起き)は活用形に波及しない設計なので活用形 seed
