@@ -19116,4 +19116,12 @@ extension KanaKanjiConverterRegressionTests {
         let list = converter.candidates(for: "おきにくい", limit: 3, systemCandidateMode: .surface)
         XCTAssertEqual(Array(list.prefix(2)), ["起きにくい", "置きにくい"], "list=\(list)")
     }
+
+    // 慣用句 言わんこっちゃない は misc curated で 1 ノード供給(ユーザ報告 3214)
+    func testRegressionRealLMIwankocchanaiCurated() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let list = converter.candidates(for: "いわんこっちゃない", limit: 3, systemCandidateMode: .surface)
+        XCTAssertEqual(list.first, "言わんこっちゃない", "list=\(list)")
+    }
 }
