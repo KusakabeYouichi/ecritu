@@ -158,7 +158,9 @@ struct KeyboardRootView: View {
     // 縦画面の候補欄の先頭に常に確保する未確定の行の高さ(3216→3219 で 12→9、ユーザ指定)。tokushima 方式はここに
     // 未確定文字(10pt)を上寄せで出し、はみ出す 2〜3pt はチップの上余白(6pt)に食い込ませる。écritu/mountain view は
     // 空のまま。常に確保するのは、入力中/確定後や方式の切り替えでチップの位置が動かないようにするため(3213-3216)
-    static let candidateHeaderCompositionRowHeight: CGFloat = 9
+    static let candidateHeaderCompositionRowHeight: CGFloat = 8
+    // 候補チップの内側の上下余白(3226 で 4→2。候補欄 31pt に未確定の行を詰め込むため。欧文サジェストも同じ)
+    static let candidateChipVerticalPadding: CGFloat = 2
     // 寸法・位置は KeyboardLayoutMetrics に集約(2609)。端末別の値はそちらで分岐する。
     private var frameMetrics: KeyboardLayoutMetrics.FrameMetrics {
         layoutMetrics.frame(usesCompactLandscapeLayout: isLandscapeLayout)
@@ -693,7 +695,8 @@ struct KeyboardRootView: View {
         // 枠を 4pt 詰めた縦向き(3169)ではチップの上余白も詰める。中身が枠に収まるようになって
         // 以前は隠れていた余白が全部見えるようになったため(ユーザー報告)
         let downshift = trimsPortraitContentForHomeIndicator ? 0 : candidateHeaderContentDownshift
-        return (isKanaThreeByThreeMode ? 6 : 4) + downshift
+        // 3226: 候補欄 31pt = 未確定の行 8 + 余白 2 + チップ 21。かな面以外も同じ(面の切り替えでチップが動かないように)
+        return 2 + downshift
     }
 
     var usesThreeByThreeGridForNumberOrLatin: Bool {
