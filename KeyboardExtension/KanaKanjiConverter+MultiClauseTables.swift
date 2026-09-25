@@ -1983,6 +1983,10 @@ extension KanaKanjiConverter {
         // Sudachi wc 5000 の常用語なのに dictUnknown 8700 になり、なんえんさつ が 何円+札 でなく 何+円札(収穫底値の姓 円札)で
         // 成立していた。人名の断片減点(2845)で 円札 が沈むと 南苑札 に化けたため、何人/何回 と同じ水準を置く
         "何円": 6300,
+        // とか(並立・例示の副助詞): LM 未収録(なんか 6450/なんて 6078 は有る)で、文頭や bigram の無い直後では dictUnknown
+        // 8700 になり、とかきくんだろう が と+角く(かきい/角い の誤読み派生)+んだろう に負けていた(ユーザ報告 3238)。
+        // 文中の bigram が期待される位置は複合助詞クランプ(multiClauseCompoundParticles)が担う
+        "とか": 6300,
     ]
     static let multiClauseConversationalTemporalNounUnigramCaps: [String: Int] = [
         "昨日": 4300,

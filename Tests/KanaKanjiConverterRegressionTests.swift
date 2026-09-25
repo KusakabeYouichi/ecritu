@@ -19273,3 +19273,16 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.candidates(for: "こなさそう", limit: 3, systemCandidateMode: .surface).first, "来なさそう")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // とかきくんだろう が と角くんだろう/斗掻くんだろう だった(ユーザ報告 3238)。とか は LM 未収録で文頭では 8700、
+    // 角い(かきい)は Sudachi の誤読み。unigram の代用値と誤エントリの抑制で とか聞くんだろう/とか聴くんだろう に
+    func testRegressionRealLMTokaKikuLeads() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let list = converter.multiClauseCandidates(for: "とかきくんだろう", systemCandidateMode: .surface)
+        XCTAssertEqual(list.first, "とか聞くんだろう", "list=\(list)")
+        XCTAssertTrue(list.contains("とか聴くんだろう"), "list=\(list)")
+        XCTAssertFalse(converter.candidates(for: "かきい", limit: 5, systemCandidateMode: .surface).contains("角い"))
+    }
+}
