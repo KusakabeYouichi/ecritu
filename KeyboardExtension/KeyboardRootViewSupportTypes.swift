@@ -1266,7 +1266,7 @@ extension KeyboardRootView {
                     Color.clear.frame(maxWidth: .infinity, maxHeight: 1)
                 }
             }
-            .frame(height: KeyboardRootView.candidateHeaderCompositionRowHeight, alignment: .bottom)
+            .frame(height: KeyboardRootView.candidateHeaderCompositionRowHeight, alignment: .top)
             .padding(.horizontal, 2)
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 6) {
