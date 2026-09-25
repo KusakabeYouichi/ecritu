@@ -368,6 +368,9 @@ extension KeyboardViewController {
             parts.append("root=" + r(root.frame))
         }
         parts.append("layoutMargins=" + i(view.layoutMargins))
+        // アクセシビリティの画面座標はホスト側の階層で解決される可能性がある(遠隔ビューの実位置が載るか)
+        parts.append("AX画面=" + r(UIAccessibility.convertToScreenCoordinates(view.bounds, in: view)))
+        parts.append("AX枠=" + r(view.accessibilityFrame))
         let signature = parts.joined(separator: " ")
         guard signature != lastLoggedHostGeometrySignature else {
             return
