@@ -19210,6 +19210,19 @@ extension KanaKanjiConverterRegressionTests {
 }
 
 extension KanaKanjiConverterRegressionTests {
+    // おなじねじ が {同じ値時, おなじねじ} だった(ユーザ報告 3225)。かな ねじ は短読みの床上げ(wc 9162)、ネジ は
+    // カタカナ化抑止で、同じ+値(bigram)+時(接尾)に負けていた。misc で ねじ/ネジ を curated 供給
+    func testRegressionRealLMNejiAfterOnaji() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let list = converter.multiClauseCandidates(for: "おなじねじ", systemCandidateMode: .surface)
+        XCTAssertTrue(list.first == "同じねじ" || list.first == "同じネジ", "list=\(list)")
+        XCTAssertNotEqual(list.first, "同じ値時")
+        // 単独は ネジ/ねじ が先頭 2 つ(どちらも常用。順は curated の並び)
+        let single = converter.candidates(for: "ねじ", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(Set(single.prefix(2)), Set(["ネジ", "ねじ"]), "list=\(single)")
+    }
+
     // どうがもなしか が 動画も名しか/動画も名鹿 だった(ユーザ報告 3225)。なし を かな述語として扱い、直後の か を
     // 終助詞としてクランプする
     func testRegressionRealLMNashiKaFinalParticle() throws {
