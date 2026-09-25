@@ -19259,3 +19259,17 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.candidates(for: "じどうかした", limit: 3, systemCandidateMode: .surface).first, "自動化した")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 否定の様態 なさそう(ない→なさそう)が活用規則に無く、つかうひといなさそう が 使う人衣なさそう に割れていた(ユーザ報告 3238)
+    func testRegressionRealLMNasasouNegativeForms() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.multiClauseCandidates(for: "つかうひといなさそう", systemCandidateMode: .surface).first, "使う人いなさそう")
+        XCTAssertEqual(converter.candidates(for: "つかわなさそう", limit: 3, systemCandidateMode: .surface).first, "使わなさそう")
+        XCTAssertEqual(converter.candidates(for: "たべなさそう", limit: 3, systemCandidateMode: .surface).first, "食べなさそう")
+        XCTAssertEqual(converter.candidates(for: "きにしなさそう", limit: 3, systemCandidateMode: .surface).first, "気にしなさそう")
+        XCTAssertEqual(converter.candidates(for: "たかくなさそう", limit: 3, systemCandidateMode: .surface).first, "高くなさそう")
+        XCTAssertEqual(converter.candidates(for: "こなさそう", limit: 3, systemCandidateMode: .surface).first, "来なさそう")
+    }
+}
