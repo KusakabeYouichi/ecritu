@@ -344,6 +344,36 @@ extension KeyboardViewController {
         requestKeyboardHeightAgainIfShrunk(expected: expected, actual: actual)
     }
 
+    #if DEBUG
+    // 調査用(3218): view は要求どおり 263pt なのに、スクリーンショットではその上に 16pt の帯が付いて
+    // 枠が 279pt に見えることがある(純正/Google では起きない=écritu だけ)。view の外側(親の枠・window)の
+    // 実寸を、変わった瞬間だけ残す。原因が分かったら外す
+    func logKeyboardParentFramesIfChanged() {
+        guard !isAwaitingInitialHeightSettle, let window = view.window, view.superview != nil else {
+            return
+        }
+        let inWindow = view.convert(view.bounds, to: nil)
+        var chain: [String] = []
+        var ancestor: UIView? = view.superview
+        var depth = 0
+        while let current = ancestor, depth < 5 {
+            let name = String(describing: type(of: current)).prefix(28)
+            chain.append("\(name)=\(Int(current.bounds.height))@\(Int(current.frame.minY))")
+            ancestor = current.superview
+            depth += 1
+        }
+        let signature = "view y=\(Int(inWindow.minY)) h=\(Int(view.bounds.height)) frame.y=\(Int(view.frame.minY))"
+            + " 窓=\(Int(window.bounds.height))@\(Int(window.frame.minY))"
+            + " inputView=\(Int(inputView?.bounds.height ?? -1))"
+            + " 親=[" + chain.joined(separator: " > ") + "]"
+        guard signature != lastLoggedKeyboardParentFramesSignature else {
+            return
+        }
+        lastLoggedKeyboardParentFramesSignature = signature
+        appendKeyboardDiagnosticsLog("枠の親 " + signature + " モード=\(currentInputMode)", critical: true)
+    }
+    #endif
+
     // 横画面で面を切り替えると、制約に 188 を入れてもホストが枠を 176 のままにすることがある
     // (実機実測 3156: 回転直後の 1 回目で再現。2 回目以降は 29ms で追随する)。中身は
     // 188 前提で組まれるので上下が切れる。ホストにもう一度要求を届けるため、制約の値を
