@@ -967,9 +967,13 @@ final class KanaKanjiConverter {
                 .values
                 .min()
             katakanaTargets = katakanaTargets.filter { candidate in
+                // 辞書コスト差による保護は、カタカナ側が LM 実在(デマ 6955)か、非カタカナ側に LM 実在語が無いときに限る。
+                // 姓のカタカナ収穫(ハネダ wc 4734 / LM 未収録)は 羽田(wc 9349、uni 5747)との差 4615 で保護され
+                // 2 位に居座っていた(ユーザ指定 3215: カタカナは末尾近くへ)
                 if let katakanaWordCost = readingWordCosts[candidate],
                     let nonKatakanaBestWordCost,
-                    nonKatakanaBestWordCost - katakanaWordCost >= CandidateScore.loanwordKatakanaWordCostGap {
+                    nonKatakanaBestWordCost - katakanaWordCost >= CandidateScore.loanwordKatakanaWordCostGap,
+                    uni[candidate] != nil || altBest == nil {
                     return false
                 }
                 guard let kataUni = uni[candidate] else {
