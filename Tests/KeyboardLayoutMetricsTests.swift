@@ -28,17 +28,17 @@ final class KeyboardLayoutMetricsTests: XCTestCase {
         )
     }
 
-    // MARK: - iPhone(リファクタ前の実装が返していた値をそのまま固定する)
+    // MARK: - iPhone(リファクタ前の実装が返していた値をそのまま固定する。3216 で純正と同じ 263pt に +21)
 
     func testPhonePortraitHeightsAreUnchanged() {
         let metrics = KeyboardLayoutMetrics.phone
         let expected: [KeyboardViewController.PortraitHeightProfile: CGFloat] = [
-            .kanaThreeByThree: 242,
-            .compactGrid: 242,
-            .compactActionRow: 242,
-            .kanaFiveByTwo: 242,
-            .emoji: 242,
-            .formattedNumber: 332
+            .kanaThreeByThree: 263,
+            .compactGrid: 263,
+            .compactActionRow: 263,
+            .kanaFiveByTwo: 263,
+            .emoji: 263,
+            .formattedNumber: 353
         ]
 
         for profile in allProfiles {
@@ -149,12 +149,13 @@ final class KeyboardLayoutMetricsTests: XCTestCase {
     func testPadPortraitHeightsAreUnchanged() {
         let metrics = KeyboardLayoutMetrics.pad
         let expected: [KeyboardViewController.PortraitHeightProfile: CGFloat] = [
-            .kanaThreeByThree: 273,
-            .compactGrid: 252,
-            .compactActionRow: 260,
-            .kanaFiveByTwo: 272,
-            .emoji: 273,
-            .formattedNumber: 340
+            // 3216 の +21(純正と同じ高さ)を iPad にも一律に
+            .kanaThreeByThree: 294,
+            .compactGrid: 273,
+            .compactActionRow: 281,
+            .kanaFiveByTwo: 293,
+            .emoji: 294,
+            .formattedNumber: 361
         ]
 
         for profile in allProfiles {
