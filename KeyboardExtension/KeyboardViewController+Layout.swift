@@ -258,42 +258,14 @@ extension KeyboardViewController {
                 usesKanaLandscapeHeightForCompactGrid: shouldUseKanaLandscapeHeightForCompactGrid()
             )
         )
-        // ホスト枠の補正(定数コメント参照。3219)は縦画面だけ
-        let compensated = height + (isLandscapeOrientation ? 0 : hostTopInsetCompensation)
         logPreferredKeyboardHeightIfChanged(
-            height: compensated,
+            height: height,
             profile: profile,
             isLandscapeOrientation: isLandscapeOrientation,
             screenBounds: screenBounds,
             shorterScreenEdge: shorterScreenEdge
         )
-        return compensated
-    }
-
-    // ホストがサードパーティーの枠に足す 17pt(統合ログ 3218: _UIKBCompatInputView が y=17、非表示の入力アシスタント領域)。
-    // 付くのは「入力欄タップ → ホストがプレースホルダーで枠を開く → écritu 生成 → viewDidLoad → 46ms で viewWillAppear」の
-    // 通常経路だけで、écritu が先に生成されていた(viewDidLoad から viewWillAppear まで数秒)ときは付かない。
-    // écritu からは y を見られないので、この時間差で経路を見分け、付かない経路では自前で 17pt の透明な帯を上に置いて
-    // 高さも +17 申告する。見た目を常に「17+中身」で一定にする(ユーザ指定 3219: 高さが変わるのは避けたい)。
-    // 判定を外した回は従来どおり 17pt の差が出る(閾値は実測 0.046 秒 / 3.7 秒の間)
-    static let hostPlaceholderTopInset: CGFloat = 17
-    static let hostPreloadedPathThresholdSec: TimeInterval = 0.75
-
-    func resolveHostTopInsetCompensationIfNeeded() {
-        guard !hostTopInsetCompensationResolved else {
-            return
-        }
-        hostTopInsetCompensationResolved = true
-        let elapsed = viewDidLoadAt > 0 ? CFAbsoluteTimeGetCurrent() - viewDidLoadAt : 0
-        let preloaded = elapsed >= Self.hostPreloadedPathThresholdSec
-        hostTopInsetCompensation = preloaded ? Self.hostPlaceholderTopInset : 0
-        hostTopConstraint?.constant = Self.hostTopOverlapForCompensation + hostTopInsetCompensation
-        updateBackgroundGradientAppearance()
-        updateKeyboardHeightIfNeeded()
-        appendKeyboardDiagnosticsLog(
-            "ホスト枠の補正 \(preloaded ? "+17pt(先読み経路)" : "なし(通常経路)") viewDidLoad→viewWillAppear=\(String(format: "%.2f", elapsed))秒",
-            critical: true
-        )
+        return height
     }
 
     // 高さ要求が変わったときだけ critical で残す。メッセージ.app で回転を挟むと
@@ -371,36 +343,6 @@ extension KeyboardViewController {
         )
         requestKeyboardHeightAgainIfShrunk(expected: expected, actual: actual)
     }
-
-    #if DEBUG
-    // 調査用(3218): view は要求どおり 263pt なのに、スクリーンショットではその上に 16pt の帯が付いて
-    // 枠が 279pt に見えることがある(純正/Google では起きない=écritu だけ)。view の外側(親の枠・window)の
-    // 実寸を、変わった瞬間だけ残す。原因が分かったら外す
-    func logKeyboardParentFramesIfChanged() {
-        guard !isAwaitingInitialHeightSettle, let window = view.window, view.superview != nil else {
-            return
-        }
-        let inWindow = view.convert(view.bounds, to: nil)
-        var chain: [String] = []
-        var ancestor: UIView? = view.superview
-        var depth = 0
-        while let current = ancestor, depth < 5 {
-            let name = String(describing: type(of: current)).prefix(28)
-            chain.append("\(name)=\(Int(current.bounds.height))@\(Int(current.frame.minY))")
-            ancestor = current.superview
-            depth += 1
-        }
-        let signature = "view y=\(Int(inWindow.minY)) h=\(Int(view.bounds.height)) frame.y=\(Int(view.frame.minY))"
-            + " 窓=\(Int(window.bounds.height))@\(Int(window.frame.minY))"
-            + " inputView=\(Int(inputView?.bounds.height ?? -1))"
-            + " 親=[" + chain.joined(separator: " > ") + "]"
-        guard signature != lastLoggedKeyboardParentFramesSignature else {
-            return
-        }
-        lastLoggedKeyboardParentFramesSignature = signature
-        appendKeyboardDiagnosticsLog("枠の親 " + signature + " モード=\(currentInputMode)", critical: true)
-    }
-    #endif
 
     // 横画面で面を切り替えると、制約に 188 を入れてもホストが枠を 176 のままにすることがある
     // (実機実測 3156: 回転直後の 1 回目で再現。2 回目以降は 29ms で追随する)。中身は
