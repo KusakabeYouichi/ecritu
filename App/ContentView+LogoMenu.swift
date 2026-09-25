@@ -240,6 +240,78 @@ extension ContentView {
 
     // 保守的初期設定 = 作者の使用設定(2026-09-02 の YAML エクスポートから転記。ユーザ指定 2760)。
     // 書いていないキーは標準の初期設定のまま(適用前に全キーを消してから上書きする)
+    // 組み込みの初期値(ContentView の @AppStorage の初期値と同じ式。3242)。初期設定の適用は「全キーを消す」方式なので、
+    // 「今の設定と同じか」の判定は保存値でなく実効値(未設定=組み込み初期値)で比べる。以前は未設定と保存値を別物と
+    // 見ていたため、保守的初期設定と組み込み初期値が同じ項目(顔文字=ショートカット 等)で判定がずれた
+    static let builtInDefaultValues: [String: Any] = [
+        SettingsKeys.kanaLayoutMode: KanaLayoutOption.fiveByTwo.rawValue,
+        SettingsKeys.latinLayoutMode: LatinLayoutOption.azerty.rawValue,
+        SettingsKeys.numberLayoutMode: NumberLayoutOption.calculette.rawValue,
+        SettingsKeys.formattedNumberKeypadLayout: FormattedNumberKeypadOption.calculette.rawValue,
+        SettingsKeys.basicSymbolOrder: BasicSymbolOrderOption.ascii.rawValue,
+        SettingsKeys.kanaModifierPlacement: KanaModifierPlacementOption.prefix.rawValue,
+        SettingsKeys.directionProfile: DirectionOption.ecritu.rawValue,
+        SettingsKeys.keyRepeatInitialDelay: RepeatSettings.initialDelayDefault,
+        SettingsKeys.keyRepeatInterval: RepeatSettings.intervalDefault,
+        SettingsKeys.idleCommitEnabled: IdleCommitSettings.enabledDefault,
+        SettingsKeys.idleCommitInterval: IdleCommitSettings.intervalDefault,
+        SettingsKeys.composingTextStyle: ComposingTextStyleOption.ecritu.rawValue,
+        SettingsKeys.kanaModeSwitcherTapAction: KanaModeSwitcherActionOption.emoji.rawValue,
+        SettingsKeys.kanaModeSwitcherRightFlickAction: KanaModeSwitcherActionOption.kaomoji.rawValue,
+        SettingsKeys.kanaModeSwitcherUpFlickAction: KanaModeSwitcherActionOption.symbols.rawValue,
+        SettingsKeys.kanaPostModifierEmptyTapAction: KanaPostModifierEmptyTapActionOption.default.rawValue,
+        SettingsKeys.kanaPostModifierEmptyTapKaomojiCategory: KaomojiCategoryChoice.defaultID,
+        SettingsKeys.kanaPostModifierEmptyTapEmojiCategory: EmojiCategoryChoice.defaultID,
+        SettingsKeys.kanaPostModifierEmptyTapSymbolCategory: SymbolCategoryChoice.defaultID,
+        SettingsKeys.kanaPostModifierFlickDakutenEnabled: true,
+        SettingsKeys.numberThousandsSeparator: ThousandsSeparatorOption.space.rawValue,
+        SettingsKeys.numberGroupFourDigits: false,
+        SettingsKeys.numberDecimalSeparator: DecimalSeparatorOption.dot.rawValue,
+        SettingsKeys.numberUnitProductSeparator: UnitProductSeparatorOption.middleDot.rawValue,
+        SettingsKeys.numberLitreSymbol: LitreSymbolOption.small.rawValue,
+        SettingsKeys.degreeSymbol: DegreeSymbolOption.composed.rawValue,
+        SettingsKeys.calendarWeekStart: CalendarWeekStartOption.monday.rawValue,
+        SettingsKeys.calendarWeekdayLanguage: CalendarWeekdayLanguageOption.french.rawValue,
+        SettingsKeys.calendarSundayColor: CalendarDayColorOption.dic156.rawValue,
+        SettingsKeys.calendarSaturdayColor: CalendarDayColorOption.off.rawValue,
+        SettingsKeys.calendarFridayColor: CalendarDayColorOption.off.rawValue,
+        SettingsKeys.dateFormatStyle: DateFormatStyleOption.japanese.rawValue,
+        SettingsKeys.latinLexiconFrenchEnabled: false,
+        SettingsKeys.latinLexiconItalianEnabled: false,
+        SettingsKeys.latinLexiconGermanEnabled: false,
+        SettingsKeys.latinLexiconEnglishEnabled: false,
+        SettingsKeys.kanaFlickGuideDisplayMode: FlickGuideDisplayOption.fourDirections.rawValue,
+        SettingsKeys.latinFlickGuideDisplayMode: FlickGuideDisplayOption.fourDirections.rawValue,
+        SettingsKeys.numberFlickGuideDisplayMode: FlickGuideDisplayOption.fourDirections.rawValue,
+        SettingsKeys.modifierFlickGuideDisplayMode: FlickGuideDisplayOption.fourDirections.rawValue,
+        SettingsKeys.landscapeLatinSuggestionMode: LandscapeLatinSuggestionModeOption.sidebar.rawValue,
+        SettingsKeys.landscapeCandidateSide: LandscapeCandidateSideOption.left.rawValue,
+        SettingsKeys.landscapeNumberPaneSide: LandscapeCandidateSideOption.left.rawValue,
+        SettingsKeys.accentPalette: AccentColorOption.emeraude.rawValue,
+        SettingsKeys.keyboardBackgroundTheme: KeyboardBackgroundThemeOption.bleu.rawValue,
+        SettingsKeys.delimiterAutoCommitCandidate: DelimiterAutoCommitCandidateOption.one.rawValue,
+        SettingsKeys.kanaKanjiCandidateSourceMode: KanaKanjiCandidateSourceModeOption.surface.rawValue,
+        SettingsKeys.historicalKanaCandidatesEnabled: false,
+        SettingsKeys.iterationMarkCandidatesEnabled: false,
+        SettingsKeys.katakanaEmphasisCandidateMode: ScriptVariantModeOption.suppress.rawValue,
+        SettingsKeys.mazegakiCandidateMode: ScriptVariantModeOption.suppress.rawValue,
+        SettingsKeys.scriptVariantSuppressKyujitai: true,
+        SettingsKeys.scriptVariantSuppressItaiji: true,
+        SettingsKeys.scriptVariantSuppressRyakuji: true,
+        SettingsKeys.scriptVariantSuppressConfusable: true,
+        SettingsKeys.scriptVariantSuppressPersonNameVariant: false,
+        SettingsKeys.emojiCandidateDisplayEnabled: true,
+        SettingsKeys.radicalStrokeCountStyle: "",
+        SettingsKeys.ordinalMeKanjiPreferred: true,
+        SettingsKeys.adjectiveMeKanjiCandidatesEnabled: false,
+        SettingsKeys.kaCounterVariantPreference: KaCounterVariantPreference.default.encoded,
+        SettingsKeys.okuriganaVariantPreference: OkuriganaVariantPreference.default.encoded,
+        SettingsKeys.suspendMemorySlimmingEnabled: true,
+        SettingsKeys.kaomojiCandidateDisplayEnabled: true,
+        SettingsKeys.contactCandidateDisplayMode: ContactCandidateDisplayModeOption.off.rawValue,
+        SettingsKeys.userDictionaryCandidateDisplayMode: UserDictionaryCandidateDisplayModeOption.on.rawValue,
+    ]
+
     static let conservativePresetValues: [String: Any] = [
         SettingsKeys.kanaLayoutMode: KanaLayoutOption.threeByThreePlusWa.rawValue,
         SettingsKeys.latinLayoutMode: LatinLayoutOption.azerty.rawValue,
@@ -361,21 +433,17 @@ extension ContentView {
     }
 
     // 「今の設定」が、その初期設定を当てた直後の状態と同じか。初期設定の適用は
-    // 「全キーを消してから preset を書く」なので、preset に無いキーは未設定が一致の条件
+    // 「全キーを消してから preset を書く」なので、preset に無いキーは組み込み初期値が期待値(実効値で比較)
     private func currentSettingsMatch(preset: [String: Any]) -> Bool {
         guard let defaults = Self.sharedDefaults else {
             return false
         }
         for key in Self.userSettingsKeys {
-            let stored = defaults.object(forKey: key)
-            guard let expected = preset[key] else {
-                if stored != nil {
-                    return false
-                }
-                continue
-            }
-            guard let stored = stored as? NSObject, let expected = expected as? NSObject,
-                stored.isEqual(expected) else {
+            // 実効値で比べる(未設定は組み込み初期値。3242)。preset に無いキーは初期値が期待値
+            let effective = defaults.object(forKey: key) ?? Self.builtInDefaultValues[key]
+            let expected = preset[key] ?? Self.builtInDefaultValues[key]
+            guard let effective = effective as? NSObject, let expected = expected as? NSObject,
+                effective.isEqual(expected) else {
                 return false
             }
         }
