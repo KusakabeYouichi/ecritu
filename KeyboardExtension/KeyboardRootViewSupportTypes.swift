@@ -1121,7 +1121,7 @@ extension KeyboardRootView {
                         .font(.system(size: candidateTextFontSize, weight: .regular))
                         .foregroundStyle(keyLabelColor.opacity(0.6))
                         .padding(.horizontal, 8)
-                        .padding(.vertical, showsInternalCompositionPreview ? 2 : 4)
+                        .padding(.vertical, 4)
                         .background(
                             RoundedRectangle(cornerRadius: 7, style: .continuous)
                                 .fill(KeyboardThemePalette.candidateHeaderPlaceholderBackground)
@@ -1153,7 +1153,7 @@ extension KeyboardRootView {
                     }
                     .lineLimit(1)
                     .padding(.horizontal, 8)
-                    .padding(.vertical, showsInternalCompositionPreview ? 2 : 4)
+                    .padding(.vertical, 4)
                     .background(
                         RoundedRectangle(cornerRadius: 7, style: .continuous)
                             .fill(
@@ -1195,7 +1195,7 @@ extension KeyboardRootView {
                 .foregroundStyle(showsKatakanaCommitFeedback ? Color.white : keyLabelColor)
                 .lineLimit(1)
                 .padding(.horizontal, 8)
-                .padding(.vertical, showsInternalCompositionPreview ? 2 : 4)
+                .padding(.vertical, 4)
                 .background(
                     RoundedRectangle(cornerRadius: 7, style: .continuous)
                         .fill(
@@ -1248,10 +1248,11 @@ extension KeyboardRootView {
             // スワイプで手動スクロールしていると気づけない。選択が変わったら追従させる。
             ScrollViewReader { proxy in
             VStack(alignment: .leading, spacing: 0) {
-            if showsInternalCompositionPreview {
-                HStack(spacing: 6) {
-                    Color.clear
-                        .frame(width: Self.conversionStateCapsuleFixedWidth, height: 1)
+            // 未確定の行は方式に関わらず常に確保する(定数コメント参照。3216)。tokushima だけ文字を出す
+            HStack(spacing: 6) {
+                Color.clear
+                    .frame(width: Self.conversionStateCapsuleFixedWidth, height: 1)
+                if showsInternalCompositionPreview {
                     Text(internalCompositionPreviewText)
                         .font(.system(size: 10, weight: .semibold, design: .rounded))
                         .underline()
@@ -1261,9 +1262,12 @@ extension KeyboardRootView {
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .allowsHitTesting(false)
                         .accessibilityLabel("未確定 \(internalCompositionPreviewText)")
+                } else {
+                    Color.clear.frame(maxWidth: .infinity, maxHeight: 1)
                 }
-                .padding(.horizontal, 2)
             }
+            .frame(height: KeyboardRootView.candidateHeaderCompositionRowHeight, alignment: .bottom)
+            .padding(.horizontal, 2)
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 6) {
                     let showsWrapperOnly = showsParenthesesWrapper && composingText.isEmpty
@@ -1306,13 +1310,13 @@ extension KeyboardRootView {
                     }
 
                 }
-                .modifier(CandidateBarTopMarginProbe(expected: showsInternalCompositionPreview ? 0 : kanaCandidateHeaderTopPadding, isContent: true))
+                .modifier(CandidateBarTopMarginProbe(expected: kanaCandidateHeaderTopPadding, isContent: true))
                 .padding(.horizontal, 2)
-                .padding(.top, showsInternalCompositionPreview ? 0 : kanaCandidateHeaderTopPadding)
+                .padding(.top, kanaCandidateHeaderTopPadding)
                 .padding(.bottom, 0)
                 .frame(maxHeight: .infinity, alignment: .top)
             }
-            .modifier(CandidateBarTopMarginProbe(expected: showsInternalCompositionPreview ? 0 : kanaCandidateHeaderTopPadding, isContent: false))
+            .modifier(CandidateBarTopMarginProbe(expected: kanaCandidateHeaderTopPadding, isContent: false))
             }
             .onChange(of: selectedConversionCandidateIndex) { index in
                 guard let index else {
@@ -1376,7 +1380,8 @@ extension KeyboardRootView {
                     }
                 }
                 .padding(.horizontal, 2)
-                .padding(.top, kanaCandidateHeaderTopPadding)
+                // かな側の未確定の行(3216)と同じだけ下げて、面の切り替えでチップの位置が動かないようにする
+                .padding(.top, kanaCandidateHeaderTopPadding + KeyboardRootView.candidateHeaderCompositionRowHeight)
                 .padding(.bottom, 0)
                 .frame(maxHeight: .infinity, alignment: .top)
             }
