@@ -1747,6 +1747,15 @@ extension KanaKanjiConverter {
                 if let cheapest = siblingCosts.values.min() {
                     base = min(base, cheapest - 1)
                 }
+                // 観測 bigram にも同じ救済を効かせる(3246)。unigram だけ下げても、prev→兄弟 の bigram が
+                // 観測されていると兄弟側は bigram(の→戦闘 4074)で立ち、先頭語は の→先頭 4404 のまま負ける
+                // (のせんとう→の戦闘。ユーザ報告)。同じ prev からの兄弟の最安 bigram − 1 を上限にする
+                if !prevIsBOS {
+                    let cheapestSiblingBigram = siblings.compactMap { bigramCosts[prev + "\t" + $0] }.min()
+                    if let cheapestSiblingBigram {
+                        base = min(base, cheapestSiblingBigram - 1)
+                    }
+                }
             }
             // 活用派生ノードは OOV 信頼水準を上限にする。LM unigram に「実在するが高い」表層
             // (付けよう=7743)が、未収録の同族(着けよう=OOV 7200)より高く付いて基底順が
