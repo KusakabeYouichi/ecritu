@@ -19401,6 +19401,15 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertFalse(multi.contains { $0.hasSuffix("尼") }, "\(multi.prefix(4))")
     }
 
+    // 3250: とうぶん は seed 順(糖分 先頭)を連文節にも効かせ、当分の間 は bigram で保つ
+    func testToubunSeedOrderInMultiClause() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        XCTAssertEqual(converter.multiClauseCandidates(for: "とうぶんのうど", systemCandidateMode: .surface).first, "糖分濃度")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "とうぶんのあいだ", systemCandidateMode: .surface).first, "当分の間")
+        XCTAssertEqual(Array(converter.candidates(for: "とうぶん", limit: 3, systemCandidateMode: .surface)), ["糖分", "当分", "等分"])
+    }
+
     // 3244: iOS のユーザ辞書で読みが ☻ の単語は先頭に足し、既存の単語は元の位置のまま
     func testUserDictionaryShortcutImportPrependsNewOnlyKeepingExisting() {
         let store = converter.store
