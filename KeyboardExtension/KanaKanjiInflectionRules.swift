@@ -355,6 +355,9 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "たくなった", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "たくなって", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "そう", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        // 連用形+たて(〜したばかり: 取れたて/生まれたて/出来たて/揚げたて)。辞書に無い動詞でも組めるよう
+        // 一般則で供給する(ほりたて→掘りたて。ユーザ報告 3247)
+        InflectionRule(readingSuffix: "たて", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "そうだ", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "そうな", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "そうに", baseReadingSuffix: "る", allowedClasses: .ichidan),
@@ -1098,6 +1101,8 @@ extension KanaKanjiConverter {
                 pattern.iForm + "たくなった",
                 pattern.iForm + "たくなって",
                 pattern.iForm + "そう",
+                // 連用形+たて(掘りたて/焼きたて/搾りたて/炊きたて。一段側のコメント参照。3247)
+                pattern.iForm + "たて",
                 pattern.iForm + "そうだ",
                 pattern.iForm + "そうな",
                 pattern.iForm + "そうに",
