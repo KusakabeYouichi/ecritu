@@ -357,6 +357,12 @@ extension KanaKanjiConverter {
     // 助詞・終助詞・助動詞など「1字で正当に立つかな」は multiClauseKanaIdentityFloorExemptReadings が
     // ちょうどその一覧なので、それを白名簿として使う(に/を/が/て/た/ん/か/ね… は無傷)
     static let multiClauseBareKanaAfterCaseParticlePenalty = 2000
+    // 裸のバラ母音かな(あ/い/う/え)の直後の漢字語。え(unigram 5352)+文字(bigram 文字→や 2076)が
+    // 絵文字(6633、絵文字→や は未観測)+や を 670 差で抜き、えもじや が え文字や になっていた(ユーザ報告 3246)。
+    // 母音 1 字が漢字の内容語に助詞なしで直結する並びは、正しい語を割った残りかす。
+    // お は接頭辞(お名前)なので対象外。末尾側の余り母音は multiClauseDanglingVowelKana で別途落とす
+    static let multiClauseBareVowelKanaBeforeKanjiWordPenalty = 2000
+    static let multiClauseBareVowelKanaBeforeKanjiWordReadings: Set<String> = ["あ", "い", "う", "え"]
     // 終助詞のかな(な/ね/よ 等)は節末にしか立たない。格助詞の直後に立って、さらに内容語が
     // 続く並びは、正しい語を割った残りかす(ひらきなおすとなおるか で と+な+居る が
     // と+直る を跨いでいた。居る(おる)は主読み いる の unigram を読み跨ぎで借りて安い)。
