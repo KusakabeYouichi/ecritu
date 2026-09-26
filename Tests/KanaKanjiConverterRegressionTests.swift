@@ -19349,6 +19349,18 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(single.first, "先頭", "\(single)")
     }
 
+    // 3246: こたえられるよう は 答えられるよう(単文節 こたえられる/こたえられるよ の並びと同じ 答え 先頭)
+    func testKotaerareruYouKeepsKotaeLead() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for reading in ["こたえられるよう", "こたえられるよ"] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, "答えられる" + reading.dropFirst(6), "\(reading) \(multi.prefix(4))")
+        }
+        let single = converter.candidates(for: "こたえられる", limit: 3, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "答えられる", "\(single)")
+    }
+
     // 3244: iOS のユーザ辞書で読みが ☻ の単語は先頭に足し、既存の単語は元の位置のまま
     func testUserDictionaryShortcutImportPrependsNewOnlyKeepingExisting() {
         let store = converter.store
