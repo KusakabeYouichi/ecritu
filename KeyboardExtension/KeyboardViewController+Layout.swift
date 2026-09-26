@@ -292,23 +292,18 @@ extension KeyboardViewController {
 
     // ホスト枠 17pt を自前で補うかの判定(純関数。Tests/KeyboardControllerLifecycleTests で固定)。
     //   初期高さ < 申告: 既定(216)経由=アプリで最初の回。17 は付かない → 補う(3227)
-    //   初期高さ = 申告: 前の枠を引き継いだ回。引っ込めた後の開き直しは 17 が付かない → 補う(3239)。
-    //                    差し替え(切り替え)で消えた後はホストが 17 を足す → 補わない(3234)
-    //   初期高さ > 申告: 前の個体が補正込み(261)で要求した枠をホストが覚えていて、そのまま来た回。
-    //                    ホストの 17 が既に窓に入っているので、消え方によらず補わない。3238 の消え方だけの規則は
-    //                    ここで二重補正(261+17=278、上の余白 34)になっていた(実機ログ 2026-09-27 02:57 JST)
+    //   それ以外(前の枠を引き継いだ回): 補わない。
+    // 経緯: 3234〜3239 で「前の個体の消え方」から帯の有無を当てようとしたが、引っ込めた後の開き直しでも
+    // ホストが帯を付ける回があり(実機ログ 2026-09-27 03:26 JST: 初期 244・引っ込めた → +17 → ホストも 17 → 278)、
+    // 逆に 261 を覚えて渡してくる回では二重補正になった(02:57 JST)。帯の有無はホストの placeholder/snapshot
+    // 経路で決まり拡張から観測できない(3222-3225)。ユーザ方針「最初の回だけ補い、2 回目以降は低いままで諦める」
+    // (3227)に戻す。高すぎる(278+下の空き)より 17 低いほうが害が小さい
     static func shouldCompensateHostTopInset(
         initialHeight: CGFloat,
         requestedHeight: CGFloat,
         previousDisappearance: PreviousDisappearanceKind
     ) -> Bool {
-        if initialHeight < requestedHeight - 0.5 {
-            return true
-        }
-        if initialHeight > requestedHeight + 0.5 {
-            return false
-        }
-        return previousDisappearance == .dismissed
+        initialHeight < requestedHeight - 0.5
     }
 
     func recordDisappearanceKindIfNeeded(animated: Bool) {
