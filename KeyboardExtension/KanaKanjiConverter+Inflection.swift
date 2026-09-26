@@ -357,6 +357,14 @@ extension KanaKanjiConverter {
             return ([], Int.max)
         }
 
+        // 五段の裸の連用形は語幹 3 かな以上、かつ読みに辞書語が無いときだけ(複合動詞 誘い出し/思い出し の
+        // 供給欠落の穴埋め。定義コメント参照。3250)。点数は経路ごとに加算されるので、辞書語がある読みに派生を
+        // 重ねると 物語り(辞書 rank1 + 派生)が 物語 を抜く
+        if rule.readingSuffix.count == 1,
+            Self.godanBareRenyouRuleKeys.contains(rule.readingSuffix + "\t" + rule.baseReadingSuffix),
+            readingStem.count < Self.godanBareRenyouMinimumStemLength || !store.wordCosts(for: reading).isEmpty {
+            return ([], Int.max)
+        }
         // らない→んない 縮約は語幹 2 かな以上(定義コメント参照。2887)
         if rule.baseReadingSuffix == "る", Self.godanRuNnaiContractionSuffixes.contains(rule.readingSuffix),
             readingStem.count < 2 {

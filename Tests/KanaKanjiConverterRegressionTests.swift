@@ -19410,6 +19410,22 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(converter.candidates(for: "とうぶん", limit: 3, systemCandidateMode: .surface)), ["糖分", "当分", "等分"])
     }
 
+    // 3250: 五段の裸の連用形(語幹 3 かな以上)を派生で供給する(さそいだし→誘い出し)。短い語幹は対象外
+    func testGodanBareRenyouForCompoundVerbs() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let sasoi = converter.candidates(for: "さそいだし", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(sasoi.first, "誘い出し", "\(sasoi)")
+        let omoi = converter.candidates(for: "おもいだし", limit: 4, systemCandidateMode: .surface)
+        XCTAssertTrue(omoi.prefix(2).contains("思い出し"), "\(omoi)")
+        // 語幹 2 かな(はな+し)は派生しない。辞書の並びのまま
+        let hanashi = converter.candidates(for: "はなし", limit: 3, systemCandidateMode: .surface)
+        XCTAssertEqual(hanashi.first, "話", "\(hanashi)")
+        // 読みに辞書語がある(ものがたり=物語)ときは加点しない
+        let monogatari = converter.candidates(for: "ものがたり", limit: 3, systemCandidateMode: .surface)
+        XCTAssertEqual(monogatari.first, "物語", "\(monogatari)")
+    }
+
     // 3244: iOS のユーザ辞書で読みが ☻ の単語は先頭に足し、既存の単語は元の位置のまま
     func testUserDictionaryShortcutImportPrependsNewOnlyKeepingExisting() {
         let store = converter.store
