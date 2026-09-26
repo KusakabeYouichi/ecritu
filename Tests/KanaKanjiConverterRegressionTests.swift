@@ -19328,6 +19328,17 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(store.shortcutVocabulary(), ["(^^)", "→"])
     }
 
+    // 3246: えもじや は 絵文字や(え+文字+や の割れを退ける)
+    func testEmojiyaPrefersEmojiCompound() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let multi = converter.multiClauseCandidates(for: "えもじや", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "絵文字や", "\(multi.prefix(4))")
+        XCTAssertFalse(multi.contains("え文字や"), "\(multi.prefix(4))")
+        let single = converter.candidates(for: "えもじや", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "絵文字や", "\(single)")
+    }
+
     // 3244: iOS のユーザ辞書で読みが ☻ の単語は先頭に足し、既存の単語は元の位置のまま
     func testUserDictionaryShortcutImportPrependsNewOnlyKeepingExisting() {
         let store = converter.store
