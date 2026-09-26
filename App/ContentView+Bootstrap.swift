@@ -870,6 +870,10 @@ extension ContentView {
             return
         }
 
+        // 初回起動: iOS のユーザ辞書の ☻ 語をショートカットへ取り込む予約(3244)。
+        // アプリからはユーザ辞書を読めないので、拡張の次回レキシコン取得に任せる。
+        defaults.set(true, forKey: SettingsKeys.kanaKanjiUserDictionaryShortcutImportPending)
+
         let initialCandidates = loadBundledInitialShortcutVocabularyEntries()
 
         guard !initialCandidates.isEmpty else {
