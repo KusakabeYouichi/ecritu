@@ -290,6 +290,27 @@ extension KeyboardViewController {
     }
     nonisolated(unsafe) static var lastDisappearanceKind: PreviousDisappearanceKind = .unknown
 
+    // ホスト枠 17pt を自前で補うかの判定(純関数。Tests/KeyboardControllerLifecycleTests で固定)。
+    //   初期高さ < 申告: 既定(216)経由=アプリで最初の回。17 は付かない → 補う(3227)
+    //   初期高さ = 申告: 前の枠を引き継いだ回。引っ込めた後の開き直しは 17 が付かない → 補う(3239)。
+    //                    差し替え(切り替え)で消えた後はホストが 17 を足す → 補わない(3234)
+    //   初期高さ > 申告: 前の個体が補正込み(261)で要求した枠をホストが覚えていて、そのまま来た回。
+    //                    ホストの 17 が既に窓に入っているので、消え方によらず補わない。3238 の消え方だけの規則は
+    //                    ここで二重補正(261+17=278、上の余白 34)になっていた(実機ログ 2026-09-27 02:57 JST)
+    static func shouldCompensateHostTopInset(
+        initialHeight: CGFloat,
+        requestedHeight: CGFloat,
+        previousDisappearance: PreviousDisappearanceKind
+    ) -> Bool {
+        if initialHeight < requestedHeight - 0.5 {
+            return true
+        }
+        if initialHeight > requestedHeight + 0.5 {
+            return false
+        }
+        return previousDisappearance == .dismissed
+    }
+
     func recordDisappearanceKindIfNeeded(animated: Bool) {
         // 最初の viewWillDisappear(窓がまだある)だけを見る。引っ込めた後に窓が外れてから 2 回目が animated=false で来る
         guard !disappearanceKindRecorded, view.window != nil else {
@@ -319,13 +340,12 @@ extension KeyboardViewController {
         }
         hostTopInsetCompensationResolved = true
         let requested = preferredKeyboardHeight()
-        // 既定(216)経由=アプリで最初の回: 17 は付かない → 補う。
-        // それ以外(前の枠の高さを引き継ぐ回。前の申告が 244 でも 261 でも)は前の個体の消え方で決める(3234→3239):
-        // 引っ込めて消えた後の開き直しは 17 が付かない → 補う。差し替え(切り替え)で消えた後はホストが 17 を足す → 補わない。
-        // 3234 は「初期高さが申告と同じなら補わない」としていて、引っ込めた後の開き直しで前の個体が未補正だった回
-        // (初期 244=申告 244)が低いままだった(実機ログ 05:02)
-        let isDefaultPlaceholderHeight = height < requested - 0.5
-        let compensates = isDefaultPlaceholderHeight || Self.lastDisappearanceKind == .dismissed
+        // 判定の規則は shouldCompensateHostTopInset のコメント参照(3227/3234/3239/3248)
+        let compensates = Self.shouldCompensateHostTopInset(
+            initialHeight: height,
+            requestedHeight: requested,
+            previousDisappearance: Self.lastDisappearanceKind
+        )
         hostTopInsetCompensation = compensates ? Self.hostPlaceholderTopInset : 0
         if compensates {
             hostTopConstraint?.constant = Self.hostTopOverlapForCompensation + hostTopInsetCompensation
