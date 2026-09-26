@@ -211,6 +211,12 @@
 	<!-- 變 は 変 の旧字体。單漢字 變(へん)が 次(じ)と合成して へんじないし→變次ないし を先頭にしていた。Sudachi の 變 を含む全 9 語を抑制(ユーザ指定 2823) -->
 	<!-- 吞(U+541F)は 呑(U+541E)の異体字(康熙字典体/中国の字形)。日本語の標準は 呑 で、字形が似ていて候補で見分けられないので 吞 を含む Sudachi の全 22 語を抑制(ユーザ指定 2820) -->
 	<!-- 讚(U+8B9A)は 讃(U+8B83)の旧字体。讃歌 と 讚歌 は候補で見分けられず誤確定しやすいので、讚 を含む Sudachi の 17 語を抑制(ユーザ指定 3202)。姓の 讚良/讚井 は人名なので残す -->
+	<!-- 舘 は 館 の異体字。一般名詞の読みでは 館 だけ出す(ユーザ指定 3247)。姓(堀舘/角舘 等 172 組)と地名・団体名(飯舘/国士舘 等)は正式表記が 舘 のものがあるので触らない -->
+	<dict><key>phrase</key><string>舘</string><key>shortcut</key><string>たて</string></dict>
+	<dict><key>phrase</key><string>舘</string><key>shortcut</key><string>たち</string></dict>
+	<dict><key>phrase</key><string>舘</string><key>shortcut</key><string>だて</string></dict>
+	<dict><key>phrase</key><string>旧舘</string><key>shortcut</key><string>きゅうかん</string></dict>
+	<dict><key>phrase</key><string>弊舘</string><key>shortcut</key><string>へいかん</string></dict>
 	<dict><key>phrase</key><string>画讚</string><key>shortcut</key><string>がさん</string></dict>
 	<dict><key>phrase</key><string>讚</string><key>shortcut</key><string>さん</string></dict>
 	<dict><key>phrase</key><string>讚歌</string><key>shortcut</key><string>さんか</string></dict>
