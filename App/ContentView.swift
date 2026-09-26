@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260926064837"
+    private static let editionUpdatedAtRaw: String = "20260926104831"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -1529,6 +1529,13 @@ struct ContentView: View {
             }
             .onChange(of: settingsSyncSignature) { _ in
                 SettingsSyncNotification.postSettingsDidChange()
+            }
+            .onChange(of: userDictionaryCandidateDisplayModeRawValue) { newValue in
+                // 「使う」にしたとき、iOS のユーザ辞書の ☻ 語をショートカットへ取り込む予約(3244)
+                guard UserDictionaryCandidateDisplayModeOption(rawValue: newValue) == .on else {
+                    return
+                }
+                Self.sharedDefaults?.set(true, forKey: SettingsKeys.kanaKanjiUserDictionaryShortcutImportPending)
             }
             .onChange(of: contactCandidateDisplayModeRawValue) { newValue in
                 let mode = ContactCandidateDisplayModeOption(rawValue: newValue) ?? .off
