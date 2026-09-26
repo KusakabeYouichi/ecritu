@@ -19380,6 +19380,17 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(tate.contains("館"), "\(tate)")
     }
 
+    // 3249: やまたのおろち は misc 登録の 3 表記が先頭(合成の やまたの大蛇 等は後ろ)
+    func testYamatanoOrochiCuratedSurfacesLead() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let list = converter.candidates(for: "やまたのおろち", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(3)), ["ヤマタノオロチ", "八岐大蛇", "八俣遠呂智"], "\(list)")
+        let multi = converter.multiClauseCandidates(for: "やまたのおろちが", systemCandidateMode: .surface)
+        // 連文節は curated 3 表記が同点(床 1500)で並ぶ。先頭がその 3 つのどれかで、合成(やまたの大蛇 等)が上に来ないこと
+        XCTAssertEqual(Set(multi.prefix(3)), ["ヤマタノオロチが", "八岐大蛇が", "八俣遠呂智が"], "\(multi.prefix(4))")
+    }
+
     // 3244: iOS のユーザ辞書で読みが ☻ の単語は先頭に足し、既存の単語は元の位置のまま
     func testUserDictionaryShortcutImportPrependsNewOnlyKeepingExisting() {
         let store = converter.store
