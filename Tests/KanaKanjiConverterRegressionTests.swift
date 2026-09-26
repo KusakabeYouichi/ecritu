@@ -19339,6 +19339,16 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(single.first, "絵文字や", "\(single)")
     }
 
+    // 3246: の+せんとう でも seed 先頭の 先頭 を保つ(の→戦闘 の観測 bigram が の→先頭 を 330 差で抜いていた)
+    func testNoSentouKeepsSeedFirstUnderObservedBigram() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let multi = converter.multiClauseCandidates(for: "のせんとう", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "の先頭", "\(multi.prefix(4))")
+        let single = converter.candidates(for: "せんとう", limit: 3, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "先頭", "\(single)")
+    }
+
     // 3244: iOS のユーザ辞書で読みが ☻ の単語は先頭に足し、既存の単語は元の位置のまま
     func testUserDictionaryShortcutImportPrependsNewOnlyKeepingExisting() {
         let store = converter.store
