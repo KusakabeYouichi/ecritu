@@ -595,6 +595,16 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "やすかった", baseReadingSuffix: "る", outputCandidateSuffix: "易かった", allowedClasses: .ichidan)
     ] }
 
+    // 五段の裸の連用形ルール(iForm 単独)の識別キー(iForm\t辞書形語尾)。derivedCandidates の語幹長ゲート用
+    static let godanBareRenyouRuleKeys: Set<String> = Set(godanPatterns.map { $0.iForm + "\t" + $0.dictionaryEnding })
+    static let godanBareRenyouMinimumStemLength = 3
+    // 裸の連用形ルールを iForm の末尾かなで引く(単文節の順位付け用。collectDerivedCandidates 参照)
+    static let godanBareRenyouRuleByTail: [Character: InflectionRule] = Dictionary(
+        uniqueKeysWithValues: godanPatterns.map {
+            (Character($0.iForm), InflectionRule(readingSuffix: $0.iForm, baseReadingSuffix: $0.dictionaryEnding, allowedClasses: $0.classBit))
+        }
+    )
+
     static let godanPatterns: [GodanPattern] = [
         GodanPattern(dictionaryEnding: "う", inflectionClass: InflectionClass.godanU, aForm: "わ", iForm: "い", eForm: "え", oForm: "お", teForm: "って", taForm: "った"),
         GodanPattern(dictionaryEnding: "く", inflectionClass: InflectionClass.godanKu, aForm: "か", iForm: "き", eForm: "け", oForm: "こ", teForm: "いて", taForm: "いた"),
@@ -1103,6 +1113,10 @@ extension KanaKanjiConverter {
                 pattern.iForm + "そう",
                 // 連用形+たて(掘りたて/焼きたて/搾りたて/炊きたて。一段側のコメント参照。3247)
                 pattern.iForm + "たて",
+                // 裸の連用形(誘い出し/思い出し/引き出し)。Sudachi は 〜出す の動詞を 146 語持つが 連用形の名詞は
+                // 一部しか無く、さそいだし が さ+削いだ+し の合成に負けていた(ユーザ報告 3250)。
+                // 短い名詞(貸し/切り/話し)を派生で汚さないよう、語幹 3 かな以上に限る(derivedCandidates のゲート)
+                pattern.iForm,
                 pattern.iForm + "そうだ",
                 pattern.iForm + "そうな",
                 pattern.iForm + "そうに",
