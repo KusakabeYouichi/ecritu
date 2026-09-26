@@ -2092,6 +2092,13 @@ extension KanaKanjiConverter {
                 Self.multiClauseCaseParticleSurfacesID.contains(prevID) {
                 penalty += Self.multiClauseBareKanaAfterCaseParticlePenalty
             }
+            // 裸のバラ母音かなの直後の漢字語(定数コメント参照。3246)
+            if !prevIsBOS, prevIsKanaIdentity, prev.count == 1,
+                Self.multiClauseBareVowelKanaBeforeKanjiWordReadings.contains(prev),
+                isDictWord, !isKanaIdentity, !isCurated,
+                containsKanji(surface) {
+                penalty += Self.multiClauseBareVowelKanaBeforeKanjiWordPenalty
+            }
             // 格助詞の直後で係助詞 は/も を呑んだ活用派生(定数コメント参照。2859)
             if isInflectionDerived, reading.count >= 3,
                 let head = reading.first, head == "は" || head == "も",
