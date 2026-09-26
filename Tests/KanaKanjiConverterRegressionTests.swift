@@ -19327,4 +19327,30 @@ extension KanaKanjiConverterRegressionTests {
         store.prependShortcutCandidate("   ")    // 空白は無視
         XCTAssertEqual(store.shortcutVocabulary(), ["(^^)", "→"])
     }
+
+    // 3244: iOS のユーザ辞書で読みが ☻ の単語は先頭に足し、既存の単語は元の位置のまま
+    func testUserDictionaryShortcutImportPrependsNewOnlyKeepingExisting() {
+        let store = converter.store
+        store.prependShortcutCandidate("(^^)")
+        store.prependShortcutCandidate("→")
+        XCTAssertEqual(store.shortcutVocabulary(), ["→", "(^^)"])
+
+        let entries: [(userInput: String, candidate: String)] = [
+            ("☻", "mail@example.com"),
+            ("(^^)", "顔"),            // 読みが ☻ でない項目は対象外
+            (" ☻ ", "(^^)"),          // 既存: 位置を動かさない
+            ("☻", "よろしくお願いします"),
+            ("☻", "   "),             // 空は捨てる
+            ("☻", "mail@example.com"), // 同一項目の重複は 1 回
+        ]
+        let picked = KanaKanjiStore.shortcutCandidatesFromUserDictionaryEntries(entries)
+        XCTAssertEqual(picked, ["mail@example.com", "(^^)", "よろしくお願いします", "mail@example.com"])
+
+        XCTAssertEqual(store.prependNewShortcutCandidates(picked), 2)
+        XCTAssertEqual(store.shortcutVocabulary(), ["mail@example.com", "よろしくお願いします", "→", "(^^)"])
+
+        // 2 回目は何も足さない(順位も変えない)
+        XCTAssertEqual(store.prependNewShortcutCandidates(picked), 0)
+        XCTAssertEqual(store.shortcutVocabulary(), ["mail@example.com", "よろしくお願いします", "→", "(^^)"])
+    }
 }

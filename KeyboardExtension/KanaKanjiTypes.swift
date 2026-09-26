@@ -4,6 +4,10 @@ enum KanaKanjiStorageKeys {
     static let ajoutVocabulary = "ÉcrituAjoutVocab"
     static let learnedDictionary = "kanaKanjiLearnedVocabulary"
     static let shortcutVocabulary = "ÉcrituShortcutVocab"
+    // iOS のユーザ辞書で読みが ☻ の単語をショートカット語彙へ取り込む予約(3244)。
+    // アプリが初回起動時と「iOS のユーザ辞書の単語」を「使う」にしたときに true を書き、
+    // 拡張がレキシコン取得時に消費する(アプリ側からはユーザ辞書を読めないため)。
+    static let userDictionaryShortcutImportPending = "kanaKanjiUserDictionaryShortcutImportPending"
     static let suppressionVocabulary = "ÉcrituSuppr_Vocab"
     static let learningScores = "kanaKanjiLearningScores"
     static let systemDictionarySQLiteFilename = "kana_kanji_dictionary.sqlite"

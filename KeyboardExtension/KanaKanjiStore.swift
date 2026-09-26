@@ -1262,6 +1262,50 @@ final class KanaKanjiStore {
         withCacheLock { cachedShortcutVocabulary = nil }
     }
 
+    /// iOS のユーザ辞書で読みが ☻ の単語をショートカット語彙の先頭へ足す(3244)。
+    /// すでにある単語は元の位置のまま(先頭へ動かさない)。足した件数を返す。
+    @discardableResult
+    func prependNewShortcutCandidates(_ candidates: [String]) -> Int {
+        guard let defaults else {
+            return 0
+        }
+        var current = decodedStringArray(forKey: KanaKanjiStorageKeys.shortcutVocabulary) ?? []
+        if current.isEmpty {
+            current = initialShortcutVocabulary()
+        }
+        let existing = Set(current)
+        let additions = uniqueShortcutCandidates(from: candidates).filter { !existing.contains($0) }
+        guard !additions.isEmpty else {
+            return 0
+        }
+        current = additions + current
+        if current.count > Self.shortcutVocabularyMaxCount {
+            current = Array(current.prefix(Self.shortcutVocabularyMaxCount))
+        }
+        guard let encoded = try? JSONEncoder().encode(current) else {
+            return 0
+        }
+        defaults.set(encoded, forKey: KanaKanjiStorageKeys.shortcutVocabulary)
+        withCacheLock { cachedShortcutVocabulary = nil }
+        return additions.count
+    }
+
+    /// レキシコン(iOS のユーザ辞書)の項目から、読みが ☻ の単語だけを取り出す(3244)。
+    static let userDictionaryShortcutReading = "☻"
+
+    static func shortcutCandidatesFromUserDictionaryEntries(
+        _ entries: [(userInput: String, candidate: String)]
+    ) -> [String] {
+        entries.compactMap { entry in
+            let reading = entry.userInput.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard reading == userDictionaryShortcutReading else {
+                return nil
+            }
+            let candidate = entry.candidate.trimmingCharacters(in: .whitespacesAndNewlines)
+            return candidate.isEmpty ? nil : candidate
+        }
+    }
+
     func initialShortcutVocabulary() -> [String] {
         if let cached = withCacheLock({ cachedInitialShortcutVocabulary }) {
             return cached

@@ -22,7 +22,13 @@ extension KeyboardViewController {
         // 死のループにならない(被害は最悪でも24時間に1回)。
         let lexiconFetchStampKey = "supplementaryLexiconLastFetchAttemptAt"
         let lastFetchAttempt = sharedDefaults?.double(forKey: lexiconFetchStampKey) ?? 0
-        if Date().timeIntervalSince1970 - lastFetchAttempt < 24 * 3600 {
+        // ☻ 語のショートカット取り込み予約(3244)があり、設定が「使う」のときは 24 時間待たずに取得する。
+        let shortcutImportPending = (sharedDefaults?.bool(
+            forKey: KanaKanjiStorageKeys.userDictionaryShortcutImportPending
+        ) ?? false)
+            && currentUserDictionaryCandidateDisplayMode(from: sharedDefaults).usesUserDictionaryCandidates
+        if !shortcutImportPending,
+            Date().timeIntervalSince1970 - lastFetchAttempt < 24 * 3600 {
             isRefreshingSupplementaryLexicon = false
             return
         }
@@ -52,6 +58,10 @@ extension KeyboardViewController {
 
         isRefreshingSupplementaryLexicon = true
         sharedDefaults?.set(Date().timeIntervalSince1970, forKey: lexiconFetchStampKey)
+        // 予約はタイムスタンプと同じく取得の**前**に消す(取得が原因で死んでも再試行ループにしない)。
+        if shortcutImportPending {
+            sharedDefaults?.removeObject(forKey: KanaKanjiStorageKeys.userDictionaryShortcutImportPending)
+        }
 
         // MEMFORENSICS(時限計測 2641): 取得スパイクの実数(1.2s=取得中、5s=index構築込み)
         MemoryForensics.noteSpikeWindow("レキシコン取得")
@@ -64,6 +74,17 @@ extension KeyboardViewController {
 
             let lexiconEntries: [(userInput: String, candidate: String)] = lexicon.entries.map { entry in
                 (entry.userInput, entry.documentText)
+            }
+
+            if shortcutImportPending {
+                let shortcutCandidates = KanaKanjiStore.shortcutCandidatesFromUserDictionaryEntries(lexiconEntries)
+                let addedCount = self.kanaKanjiStore.prependNewShortcutCandidates(shortcutCandidates)
+                DispatchQueue.main.async { [weak self] in
+                    self?.updateKeyboardDiagnosticsHeartbeat(
+                        event: "ユーザ辞書の☻語をショートカットへ 対象=\(shortcutCandidates.count) 追加=\(addedCount)",
+                        appendLog: true
+                    )
+                }
             }
 
             DispatchQueue.global(qos: .utility).async { [weak self] in
