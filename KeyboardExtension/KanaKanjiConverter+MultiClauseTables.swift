@@ -1094,7 +1094,7 @@ extension KanaKanjiConverter {
     // せんとう(2859、抜き取り検査): LM は 戦闘 5016 < 先頭 5473(Wikipedia の合戦記述の偏り)で
     // 「先頭の候補が選択され」が「戦闘の候補が洗濯され」になっていた。Sudachi の word_cost も
     // 銭湯7396/戦闘6515/先頭6776 で 先頭 は 3 番手。日常の文章では 先頭 の方が出るので seed 順をノードコストへ
-    static let multiClauseSeedFirstLMOverrideReadings: Set<String> = ["せいかい", "よういち", "かじ", "たんにん", "しんせん", "きゅうりょう", "じゅうそう", "はんせい", "だったん", "せんとう"]
+    static let multiClauseSeedFirstLMOverrideReadings: Set<String> = ["せいかい", "よういち", "かじ", "たんにん", "しんせん", "きゅうりょう", "じゅうそう", "はんせい", "だったん", "せんとう", "とうぶん"]
     // 接頭辞「お」(かな)直後の そい(添い/沿い 等)は おそい(遅い)の誤分割(お+そい)であることが
     // ほとんど。N-best 変種(お添いよね/お沿いよね)から落とすため減点する。寄り添い等の複合
     // (prev≠お)や お茶/お金(reading≠そい)は無傷。
