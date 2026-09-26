@@ -19391,6 +19391,16 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Set(multi.prefix(3)), ["ヤマタノオロチが", "八岐大蛇が", "八俣遠呂智が"], "\(multi.prefix(4))")
     }
 
+    // 3250: てんのうけに は 天皇家に(misc 天皇家 + レア語 家尼(けに)の抑制)
+    func testTennoukeNiIsImperialFamilyWithParticle() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        XCTAssertEqual(converter.candidates(for: "てんのうけ", limit: 3, systemCandidateMode: .surface).first, "天皇家")
+        let multi = converter.multiClauseCandidates(for: "てんのうけに", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "天皇家に", "\(multi.prefix(4))")
+        XCTAssertFalse(multi.contains { $0.hasSuffix("尼") }, "\(multi.prefix(4))")
+    }
+
     // 3244: iOS のユーザ辞書で読みが ☻ の単語は先頭に足し、既存の単語は元の位置のまま
     func testUserDictionaryShortcutImportPrependsNewOnlyKeepingExisting() {
         let store = converter.store
