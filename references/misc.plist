@@ -283,6 +283,7 @@
 	<dict><key>phrase</key><string>ほんとだ</string><key>shortcut</key><string>ほんとだ</string></dict>	<!-- ほんとだ(本当だ の口語): かな ほんと(wc4550)は 本当(2581)より重く、連文節・単文節とも 本当だ が先頭になる。口語の相づちはかな表記が普通(ユーザー指定)なので、かな識別を curated で供給して先頭化する(うまく/さっき/いいね と同じ処方) -->
 
 	<!-- ■ 供給欠落の補充(Sudachi 未収録の複合語・固有名。そもそも候補が作れない) -->
+	<dict><key>phrase</key><string>天皇家</string><key>shortcut</key><string>てんのうけ</string><key>pos</key><string>名詞</string></dict>	<!-- 天皇家(てんのうけ): Sudachi に無く、天皇+け の合成頼み。け→家 は読み別 wc が高く 天皇け が先頭、さらに てんのうけに は Sudachi のレア語 家尼(けに)に食われて 天皇家尼 になっていた(ユーザ報告 3250) -->
 	<dict><key>phrase</key><string>ヤマタノオロチ</string><key>shortcut</key><string>やまたのおろち</string><key>pos</key><string>名詞</string></dict>	<!-- ヤマタノオロチ/八岐大蛇/八俣遠呂智: Sudachi に 1 語で無く(八岐+の+大蛇 の合成頼み)、LM は ヤマタノオロチ(8139)だけ。合成は やまたの大蛇/雄呂血/巨呂智 ばかりだった(ユーザ報告 3249) -->
 	<dict><key>phrase</key><string>八岐大蛇</string><key>shortcut</key><string>やまたのおろち</string><key>pos</key><string>名詞</string></dict>
 	<dict><key>phrase</key><string>八俣遠呂智</string><key>shortcut</key><string>やまたのおろち</string><key>pos</key><string>名詞</string></dict>
