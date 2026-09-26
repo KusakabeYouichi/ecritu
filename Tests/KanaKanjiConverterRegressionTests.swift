@@ -19361,6 +19361,25 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(single.first, "答えられる", "\(single)")
     }
 
+    // 3247: 連用形+たて を一般則で供給する(ほりたて→掘りたて)。舘 は一般名詞の読みでは出さない
+    func testRenyouTateSuffixIsSupplied() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let cases: [(String, String)] = [
+            ("ほりたて", "掘りたて"), ("しぼりたて", "搾りたて"), ("うまれたて", "生まれたて"),
+            ("できたて", "出来たて"), ("あげたて", "揚げたて"), ("たきたて", "炊きたて"),
+        ]
+        for (reading, expected) in cases {
+            let list = converter.candidates(for: reading, limit: 6, systemCandidateMode: .surface)
+            XCTAssertTrue(list.prefix(2).contains(expected), "\(reading) \(list)")
+        }
+        let horitate = converter.candidates(for: "ほりたて", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(horitate.first, "掘りたて", "\(horitate)")
+        let tate = converter.candidates(for: "たて", limit: 40, systemCandidateMode: .surface)
+        XCTAssertFalse(tate.contains("舘"), "\(tate)")
+        XCTAssertTrue(tate.contains("館"), "\(tate)")
+    }
+
     // 3244: iOS のユーザ辞書で読みが ☻ の単語は先頭に足し、既存の単語は元の位置のまま
     func testUserDictionaryShortcutImportPrependsNewOnlyKeepingExisting() {
         let store = converter.store
