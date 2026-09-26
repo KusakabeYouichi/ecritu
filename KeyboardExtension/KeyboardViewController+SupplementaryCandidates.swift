@@ -22,10 +22,13 @@ extension KeyboardViewController {
         // 死のループにならない(被害は最悪でも24時間に1回)。
         let lexiconFetchStampKey = "supplementaryLexiconLastFetchAttemptAt"
         let lastFetchAttempt = sharedDefaults?.double(forKey: lexiconFetchStampKey) ?? 0
-        // ☻ 語のショートカット取り込み予約(3244)があり、設定が「使う」のときは 24 時間待たずに取得する。
-        let shortcutImportPending = (sharedDefaults?.bool(
+        // ☻ 語のショートカット取り込み予約(3244)があるか一度も取り込んでいなくて、
+        // 設定が「使う」のときは 24 時間待たずに取得する。
+        let shortcutImportRequested = (sharedDefaults?.bool(
             forKey: KanaKanjiStorageKeys.userDictionaryShortcutImportPending
         ) ?? false)
+            || !(sharedDefaults?.bool(forKey: KanaKanjiStorageKeys.userDictionaryShortcutImportedOnce) ?? false)
+        let shortcutImportPending = shortcutImportRequested
             && currentUserDictionaryCandidateDisplayMode(from: sharedDefaults).usesUserDictionaryCandidates
         if !shortcutImportPending,
             Date().timeIntervalSince1970 - lastFetchAttempt < 24 * 3600 {
@@ -61,6 +64,7 @@ extension KeyboardViewController {
         // 予約はタイムスタンプと同じく取得の**前**に消す(取得が原因で死んでも再試行ループにしない)。
         if shortcutImportPending {
             sharedDefaults?.removeObject(forKey: KanaKanjiStorageKeys.userDictionaryShortcutImportPending)
+            sharedDefaults?.set(true, forKey: KanaKanjiStorageKeys.userDictionaryShortcutImportedOnce)
         }
 
         // MEMFORENSICS(時限計測 2641): 取得スパイクの実数(1.2s=取得中、5s=index構築込み)

@@ -8,6 +8,9 @@ enum KanaKanjiStorageKeys {
     // アプリが初回起動時と「iOS のユーザ辞書の単語」を「使う」にしたときに true を書き、
     // 拡張がレキシコン取得時に消費する(アプリ側からはユーザ辞書を読めないため)。
     static let userDictionaryShortcutImportPending = "kanaKanjiUserDictionaryShortcutImportPending"
+    // 一度でも取り込んだ印。無ければ予約と同じ扱い(アプリを開かずに使い始めた端末や、
+    // 予約の仕組みより前に初回移行が済んだ端末でも、最初にキーボードを開いたとき取り込む)
+    static let userDictionaryShortcutImportedOnce = "kanaKanjiUserDictionaryShortcutImportedOnce"
     static let suppressionVocabulary = "ÉcrituSuppr_Vocab"
     static let learningScores = "kanaKanjiLearningScores"
     static let systemDictionarySQLiteFilename = "kana_kanji_dictionary.sqlite"
