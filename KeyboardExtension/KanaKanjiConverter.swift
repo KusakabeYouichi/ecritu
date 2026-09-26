@@ -255,6 +255,10 @@ final class KanaKanjiConverter {
         static let bfsPostfix = 1040            // postfix(BFS完全探索)
         static let nounKanjiAffix = 1000        // 名詞+漢字接辞(課/可/別 等)
         static let inflection = 980             // 活用形派生
+        // 五段の裸の連用形(複合動詞 誘い出し/思い出し)への加点。点数は経路ごとに加算されるため、
+        // かな接尾の合成(誘い+だし=bfsPostfix 1040)と派生(誘いだす→誘いだし 979)の両方を持つ表記(2019)を
+        // 派生だけの 誘い出し(980)が抜くには 1040 超の加点が要る(3250)
+        static let godanBareRenyouCompoundBoost = 1050
         // 関西方言の ている→とる 縮約形(騙しとった)を同経路の標準形(騙し取った)より後ろへ下げる幅(2887)
         static let kansaiContractionDemotion = 60
         static let adjectiveGaru = 970          // ガル形派生
@@ -525,6 +529,25 @@ final class KanaKanjiConverter {
             limit: limit * 3
         )
         addCandidates(inflectionDerivedCandidates, baseScore: CandidateScore.inflection, to: &scores)
+        // 五段の裸の連用形(語幹 3 かな以上の複合動詞)は、かな接尾の合成(誘い+だし=bfsPostfix 1040)に負けて
+        // 4 番手に沈む。基底の辞書順で最初の派生だけを合成の上へ(ユーザ報告 3250: さそいだし→誘い出し)。
+        // 読みに辞書語(systemDictionary 1200 以上の直接候補)があるとき(ものがたり=物語)は触らない
+        // (物語り が 物語 を抜くのを防ぐ)=供給欠落の穴埋めに限る
+        if reading.count >= Self.godanBareRenyouMinimumStemLength + 1,
+            let tail = reading.last,
+            let rule = Self.godanBareRenyouRuleByTail[tail],
+            context.systemCandidates.isEmpty {
+            let bare = derivedCandidates(
+                for: reading,
+                rule: rule,
+                ajoutVocabulary: context.ajoutVocabulary,
+                initialAjoutVocabulary: context.initialAjoutVocabulary,
+                systemCandidateMode: context.mode
+            ).items
+            if let first = bare.first(where: { scores[$0] != nil }) {
+                scores[first, default: 0] += CandidateScore.godanBareRenyouCompoundBoost
+            }
+        }
         // 関西方言の ている→とる 縮約(騙しとった)は標準形の複合(騙し取った)の後ろに(ユーザ報告 2887)。
         // 連文節側の multiClauseKansaiTeOruContractionPenalty と同じ判定
         for candidate in inflectionDerivedCandidates where Self.isKansaiTeOruContractionSurface(candidate) {
