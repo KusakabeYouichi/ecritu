@@ -34,8 +34,9 @@ final class KeyboardControllerLifecycleTests: XCTestCase {
         // 既定 216 経由(アプリで最初の回)は消え方によらず補う(3227)
         XCTAssertTrue(decide(216, .unknown))
         XCTAssertTrue(decide(216, .replaced))
-        // 前の枠 244 を引き継いだ回: 引っ込めた後だけ補う(3239)、差し替え後は補わない(3234)
-        XCTAssertTrue(decide(244, .dismissed))
+        // 前の枠 244 を引き継いだ回: 消え方によらず補わない(3239 の「引っ込めた後は補う」は 03:26 JST の実機で
+        // ホストも帯を付けて 278 になったため撤回。3250)
+        XCTAssertFalse(decide(244, .dismissed))
         XCTAssertFalse(decide(244, .replaced))
         XCTAssertFalse(decide(244, .unknown))
         // 前の個体の補正込み 261 をホストが覚えていた回: 消え方によらず補わない(二重補正 278 の防止。3248)
