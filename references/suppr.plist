@@ -145,6 +145,7 @@
 	<dict><key>phrase</key><string>見谷</string><key>shortcut</key><string>みたに</string></dict>
 
 	<!-- ■ 収穫ノイズ: レア語・レア読み(実在するが日常入力では雑音) -->
+	<dict><key>phrase</key><string>家尼</string><key>shortcut</key><string>けに</string></dict>	<!-- 家尼(けに): Sudachi のレア語(wc 7404)。連文節で 名詞+け+に(助詞)の分割より 138 安く、てんのうけに→天皇家尼 のように 〜け+に をすべて食っていた(ユーザ報告 3250) -->
 	<dict><key>phrase</key><string>去れる</string><key>shortcut</key><string>される</string></dict>	<!-- 去る の可能形。される(する の受身、かな正書)の唯一の辞書候補として全活用形(去れたり/去れた)を汚し、されたりしないのかな→去れたりしないのかな になっていた。可能形としての使用は稀(ユーザ指定 2756) -->
 	<dict><key>phrase</key><string>阿刀</string><key>shortcut</key><string>あとの</string></dict>	<!-- 阿刀(あとの): Sudachi実在のレア姓(読みはアト/アトノ両方、wc9770=底値降格の閾値未満)。 あとの の先頭に居座り 後の/跡の を抑えるため抑制。完全一致時のみ末尾再供給(二段構え) -->
 	<dict><key>phrase</key><string>源</string><key>shortcut</key><string>みなもとの</string></dict>
