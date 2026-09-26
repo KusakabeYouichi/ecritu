@@ -201,10 +201,16 @@ extension KeyboardViewController {
         }
 
         if !didApplyInactiveSessionMitigation {
+            // 共有キャッシュ(連絡先 compact/LM/活用)は静的でプロセス共有。降格した個体のトリムで捨てると、
+            // 表示中の個体の bootstrap が同じ blob を復号し直し(連絡先: alloc +4MB の新規領域)、
+            // 断片化した空きに収まらず alloc が 4MB 刻みで伸びるラチェットになっていた
+            // (実機ログ 2026-09-27 03:25 JST: 60→64→68 の直後に iOS のメモリ警告 fp 60.8)。
+            // 通常の非表示と同じ温存方針(honorsSlimmingToggle)に揃える。ビュー階層の解放と観測停止は従来どおり
             performHiddenKeyboardMemoryTrim(
                 reason: "inactiveSession-\(reason)",
                 releaseHostingView: view.window == nil,
-                includeSystemCaches: true
+                includeSystemCaches: true,
+                honorsSlimmingToggle: true
             )
             // 非アクティブ(ゾンビ)側は通知の受信そのものを止めて不活性化する。iOS が旧
             // インスタンスを保持し続ける間(数分に及ぶことがある)、共有設定変更通知や
@@ -619,7 +625,10 @@ extension KeyboardViewController {
     static let preventiveReliefFootprintMBLandscape: Double = 42
     // 通常の非表示で共有キャッシュを捨てはじめる footprint(A/B 2727。performHiddenKeyboardMemoryTrim 参照)。
     // 警告は fp≈60 で届くので、その手前では作り直しコストの方が高い分を温存する
-    static let hiddenCacheClearMinFootprintMB: Double = 55
+    // 55 → 60(3250): 長寿命プロセスの非表示時の土台が 55〜58 に育つと毎回の非表示で捨て、次のセッションで
+    // 作り直す(used +3.4 / alloc +4〜8)ため、土台が高いほど断片化が進む自己増幅になっていた。
+    // 軽減(elevated)の閾値 62 の手前まで温存する
+    static let hiddenCacheClearMinFootprintMB: Double = 60
     static let preventiveReliefMinimumInterval: CFAbsoluteTime = 3
     nonisolated(unsafe) static var lastPreventiveReliefAt: CFAbsoluteTime = 0
     nonisolated(unsafe) static var lastPreventiveReliefLogAt: CFAbsoluteTime = 0
