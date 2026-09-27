@@ -87,6 +87,66 @@ enum ContactCacheCipher {
         try? AES.GCM.seal(store.serializedData(), using: key).combined
     }
 
+    // 畳んだ表のファイル(3260)。自前の AES 封緘(下の seal/open 系)はやめ、このファイルだけにした。封緘系は旧版の
+    // 保存物を読む移行用(拡張のフォールバック)と削除のためにだけ残す。封緘版は拡張が開くたびに復号でヒープへ展開し、捨てて作り直すたびに
+    // malloc の新しい領域(4MB)を確保して footprint のラチェットの引き金になっていた(実機 2026-09-27 03:25 の警告)。
+    // iOS のファイル保護(初回ロック解除まで読めない暗号化)を掛けた App Group のファイルにし、拡張は
+    // mmap(mappedIfSafe)で開く。ページは読み取り専用のクリーンページで footprint にほぼ数えられず、
+    // 捨てても開き直してもヒープを確保しない。App Group に入れるのは écritu 本体と拡張だけ。
+    // バックアップ対象外(連絡先から作り直せる派生データ)
+    static let compactFileName = "ContactCandidatesCompact.eccs"
+
+    static func compactFileURL(appGroupID: String) -> URL? {
+        FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupID)?
+            .appendingPathComponent("Library/Application Support", isDirectory: true)
+            .appendingPathComponent(compactFileName)
+    }
+
+    @discardableResult
+    static func writeCompactFile(_ store: SupplementalVocabCompactStore, appGroupID: String) -> Bool {
+        guard var url = compactFileURL(appGroupID: appGroupID) else {
+            return false
+        }
+        do {
+            try FileManager.default.createDirectory(
+                at: url.deletingLastPathComponent(),
+                withIntermediateDirectories: true
+            )
+            try store.serializedData().write(
+                to: url,
+                options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication]
+            )
+            var values = URLResourceValues()
+            values.isExcludedFromBackup = true
+            try? url.setResourceValues(values)
+            return true
+        } catch {
+            return false
+        }
+    }
+
+    static func openCompactFile(appGroupID: String) -> SupplementalVocabCompactStore? {
+        guard let url = compactFileURL(appGroupID: appGroupID),
+            let data = try? Data(contentsOf: url, options: .mappedIfSafe) else {
+            return nil
+        }
+        return SupplementalVocabCompactStore(serialized: data)
+    }
+
+    static func removeCompactFile(appGroupID: String) {
+        guard let url = compactFileURL(appGroupID: appGroupID) else {
+            return
+        }
+        try? FileManager.default.removeItem(at: url)
+    }
+
+    static func compactFileExists(appGroupID: String) -> Bool {
+        guard let url = compactFileURL(appGroupID: appGroupID) else {
+            return false
+        }
+        return FileManager.default.fileExists(atPath: url.path)
+    }
+
     static func openCompact(_ data: Data, key: SymmetricKey) -> SupplementalVocabCompactStore? {
         guard let box = try? AES.GCM.SealedBox(combined: data),
             let raw = try? AES.GCM.open(box, using: key) else {
