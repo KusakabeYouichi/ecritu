@@ -19492,6 +19492,8 @@ extension KanaKanjiConverterRegressionTests {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
         XCTAssertEqual(converter.candidates(for: "とれいにんぐ", limit: 3, systemCandidateMode: .surface).first, "トレイニング")
+        XCTAssertEqual(converter.candidates(for: "ねいむ", limit: 3, systemCandidateMode: .surface).first, "ネイム")
+        XCTAssertEqual(converter.candidates(for: "ふるねいむ", limit: 3, systemCandidateMode: .surface).first, "フルネイム")
         let shita = converter.candidates(for: "とれいにんぐした", limit: 3, systemCandidateMode: .surface)
         XCTAssertEqual(shita.first, "トレイニングした", "\(shita)")
     }
