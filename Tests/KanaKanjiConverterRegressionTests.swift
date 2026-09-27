@@ -19535,6 +19535,16 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(tori.first, "取り", "\(tori)")
     }
 
+    // 3258: なおせる は なおす と同じ 直 先頭。活用形(なおせない/なおせた)も同じ並び
+    func testNaoseruFollowsNaosuOrder() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for (reading, expected) in [("なおせる", ["直せる", "治せる"]), ("なおせない", ["直せない", "治せない"]), ("なおせた", ["直せた", "治せた"])] {
+            let list = converter.candidates(for: reading, limit: 4, systemCandidateMode: .surface)
+            XCTAssertEqual(Array(list.prefix(2)), expected, "\(reading) \(list)")
+        }
+    }
+
     // 3257: かけ は 書け/描け/賭け/掛け/欠け、かなは末尾
     func testKakeSeedOrder() throws {
         try prepareRealLMDictionary()
