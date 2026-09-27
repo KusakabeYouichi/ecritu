@@ -623,6 +623,11 @@ final class KeyboardViewController: UIInputViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        // 縦画面は最初から 261(中身+透明な帯 17)を申告する(3264。Gboard と同じ)。判定を待って 244→261 と申告し直すと、
+        // その一瞬の 244 でホストが帯を付ける経路に入ることがある(統合ログ 07:42:49)
+        if traitCollection.verticalSizeClass != .compact {
+            hostTopInsetCompensation = Self.hostPlaceholderTopInset
+        }
         // 起動計測: 初回起動が iOS の拡張起動デッドラインを超えると純正キーボードに
         // 差し替えられるため、同期区間の実測を診断ログへ残す(遅い時のみ)。
         let launchStartedAt = CFAbsoluteTimeGetCurrent()

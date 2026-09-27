@@ -291,19 +291,17 @@ extension KeyboardViewController {
     nonisolated(unsafe) static var lastDisappearanceKind: PreviousDisappearanceKind = .unknown
 
     // ホスト枠 17pt を自前で補うかの判定(純関数。Tests/KeyboardControllerLifecycleTests で固定)。
-    //   初期高さ < 申告: 既定(216)経由=アプリで最初の回。17 は付かない → 補う(3227)
-    //   それ以外(前の枠を引き継いだ回): 補わない。
-    // 経緯: 3234〜3239 で「前の個体の消え方」から帯の有無を当てようとしたが、引っ込めた後の開き直しでも
-    // ホストが帯を付ける回があり(実機ログ 2026-09-27 03:26 JST: 初期 244・引っ込めた → +17 → ホストも 17 → 278)、
-    // 逆に 261 を覚えて渡してくる回では二重補正になった(02:57 JST)。帯の有無はホストの placeholder/snapshot
-    // 経路で決まり拡張から観測できない(3222-3225)。ユーザ方針「最初の回だけ補い、2 回目以降は低いままで諦める」
-    // (3227)に戻す。高すぎる(278+下の空き)より 17 低いほうが害が小さい
+    // 3264: 常に補う(縦画面は常に 中身 244+透明な帯 17=261 を申告)。Gboard と同じやり方。
+    // 経緯: 3227〜3250 で「ホストが帯を付けるか」を窓の初期高さや前の個体の消え方から当てようとしたが、どれも外れる回が
+    // あった。統合ログ(2026-09-28 07:43、/tmp/kb-gboard.logarchive)で、Gboard は常に 261 を申告し、開き直し 10 回以上で
+    // ホストの枠は常に y=0(帯なし)。écritu の 244 は開き直しで帯なし→低く見え、帯が残ったのも 244 のときだけ(07:42:49)。
+    // 当てにいかず Gboard と同じ申告にして、ホストの扱いを Gboard と揃える
     static func shouldCompensateHostTopInset(
         initialHeight: CGFloat,
         requestedHeight: CGFloat,
         previousDisappearance: PreviousDisappearanceKind
     ) -> Bool {
-        initialHeight < requestedHeight - 0.5
+        true
     }
 
     func recordDisappearanceKindIfNeeded(animated: Bool) {
@@ -324,6 +322,12 @@ extension KeyboardViewController {
             ?? (traitCollection.verticalSizeClass == .compact)
         guard !isLandscape else {
             hostTopInsetCompensationResolved = true
+            // 横画面は補わない(viewDidLoad で縦と見なして入れた値を戻す)
+            if hostTopInsetCompensation != 0 {
+                hostTopInsetCompensation = 0
+                hostTopConstraint?.constant = Self.hostTopOverlapForCompensation
+                updateBackgroundGradientAppearance()
+            }
             return
         }
         let screenBounds = window.windowScene?.screen.bounds ?? UIScreen.main.bounds
