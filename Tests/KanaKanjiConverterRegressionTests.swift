@@ -19557,6 +19557,23 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(renrakuMulti.first ?? renraku.first, "連絡せずに", "single=\(renraku) multi=\(renrakuMulti.prefix(4))")
     }
 
+    // 3262: きょくでためす は 曲で試す(seed 先頭を連文節にも)。ていおんのきれ は 低音のキレ を候補に(seed でカタカナ強調の抑制を外す)
+    func testKyokuAndKireSeeds() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let kyoku = converter.multiClauseCandidates(for: "きょくでためす", systemCandidateMode: .surface)
+        XCTAssertEqual(kyoku.first, "曲で試す", "\(kyoku.prefix(4))")
+        let kire = converter.multiClauseCandidates(for: "ていおんのきれ", systemCandidateMode: .surface)
+        let kireSingle = converter.candidates(for: "ていおんのきれ", limit: 3, systemCandidateMode: .surface)
+        XCTAssertEqual(kire.first ?? kireSingle.first, "低音のキレ", "multi=\(kire.prefix(5)) single=\(kireSingle)")
+        // おすすめだわ: ダワ(カタカナ収穫)を抑制し、お薦め を お勧め の前に
+        let osusume = converter.multiClauseCandidates(for: "おすすめだわ", systemCandidateMode: .surface)
+        let osusumeSingle = converter.candidates(for: "おすすめだわ", limit: 5, systemCandidateMode: .surface)
+        XCTAssertFalse((osusume + osusumeSingle).contains { $0.hasSuffix("ダワ") }, "multi=\(osusume.prefix(5)) single=\(osusumeSingle)")
+        XCTAssertEqual(Array(converter.candidates(for: "おすすめ", limit: 3, systemCandidateMode: .surface)), ["おすすめ", "お薦め", "お勧め"])
+        XCTAssertEqual(Array(converter.candidates(for: "きれ", limit: 3, systemCandidateMode: .surface).prefix(2)), ["切れ", "キレ"])
+    }
+
     // 3257: かけ は 書け/描け/賭け/掛け/欠け、かなは末尾
     func testKakeSeedOrder() throws {
         try prepareRealLMDictionary()

@@ -1130,7 +1130,8 @@ extension KanaKanjiConverter {
     // せんとう(2859、抜き取り検査): LM は 戦闘 5016 < 先頭 5473(Wikipedia の合戦記述の偏り)で
     // 「先頭の候補が選択され」が「戦闘の候補が洗濯され」になっていた。Sudachi の word_cost も
     // 銭湯7396/戦闘6515/先頭6776 で 先頭 は 3 番手。日常の文章では 先頭 の方が出るので seed 順をノードコストへ
-    static let multiClauseSeedFirstLMOverrideReadings: Set<String> = ["せいかい", "よういち", "かじ", "たんにん", "しんせん", "きゅうりょう", "じゅうそう", "はんせい", "だったん", "せんとう", "とうぶん"]
+    // きょく(3262): LM は 局 4384 < 曲 4543、局→で 1560 < 曲→で 1580 で、きょくでためす が 局で試す だった(ユーザ報告)
+    static let multiClauseSeedFirstLMOverrideReadings: Set<String> = ["せいかい", "よういち", "かじ", "たんにん", "しんせん", "きゅうりょう", "じゅうそう", "はんせい", "だったん", "せんとう", "とうぶん", "きょく"]
     // 接頭辞「お」(かな)直後の そい(添い/沿い 等)は おそい(遅い)の誤分割(お+そい)であることが
     // ほとんど。N-best 変種(お添いよね/お沿いよね)から落とすため減点する。寄り添い等の複合
     // (prev≠お)や お茶/お金(reading≠そい)は無傷。
@@ -1953,6 +1954,12 @@ extension KanaKanjiConverter {
         "え", "け", "げ", "せ", "ぜ", "て", "で", "ね", "へ", "べ", "ぺ", "め", "れ"
     ]
     static let multiClauseImperativeParticlePenalty = 3000
+    // 形式名詞(こと/もの/ところ/とき…)の直後の ある の活用は存在の意味でかなが正書(聞いたことあった/見たことある)。
+    // 会った/合った/有った/在った と同点になり、列挙順で 会った が先頭だった(ユーザ報告 3262)。漢字表層を減点する
+    static let multiClauseExistentialAruKanjiHeads: Set<Character> = ["会", "合", "有", "在", "遭", "逢"]
+    static let multiClauseExistentialAruKanjiAfterFormalNounPenalty = 800
+    // 命令形の直後に来ない疑問・詠嘆の終助詞 か のクラスタ(3262)
+    static let multiClauseQuestionKaClusterSurfaces: Set<String> = ["か", "かー", "かあ", "かな", "かなー", "かなあ"]
     // 副助詞 くらい/ぐらい は体言・用言に付き文頭には立たない。文頭のかな識別 くらい は
     // 形容詞 暗い(uni6012)より安い(5614)ため くらいのはなぜだろう が 暗いのは… に勝っていた。
     // BOS 直後のかな くらい/ぐらい に減点して文頭では形容詞を優先する(2513)
