@@ -19567,6 +19567,17 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertGreaterThan(kanaIndex, 4, "\(list)")
     }
 
+    // 3260: 連絡先の畳んだ表はファイルに書いて mmap で開く。書いた表と mmap で開いた表が同じで、引ける
+    func testContactCompactStoreRoundTripsThroughMappedFile() throws {
+        let store = SupplementalVocabCompactStore(dictionary: ["やまだ": ["山田", "山田太郎"], "すずき": ["鈴木"]])
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("contact-\(UUID().uuidString).eccs")
+        defer { try? FileManager.default.removeItem(at: url) }
+        try store.serializedData().write(to: url, options: .atomic)
+        let mapped = try XCTUnwrap(SupplementalVocabCompactStore(serialized: Data(contentsOf: url, options: .mappedIfSafe)))
+        XCTAssertEqual(mapped, store)
+        XCTAssertEqual(mapped.candidates(for: "やまだ"), ["山田", "山田太郎"])
+    }
+
     // 3244: iOS のユーザ辞書で読みが ☻ の単語は先頭に足し、既存の単語は元の位置のまま
     func testUserDictionaryShortcutImportPrependsNewOnlyKeepingExisting() {
         let store = converter.store

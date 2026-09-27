@@ -503,13 +503,30 @@ extension ContentView {
         let sealedKey = SettingsKeys.contactCandidatesByReadingCacheSealed
         let mode = ContactCandidateDisplayModeOption(rawValue: contactCandidateDisplayModeRawValue) ?? .off
 
+        let compactSealedKey = SettingsKeys.contactCandidatesByReadingCacheCompactSealed
+        let stampKey = SettingsKeys.contactCandidatesByReadingCacheCompactSealedStamp
+        let appGroupID = SettingsKeys.appGroupID
+
+        // 旧版(3259 以前)の保存物: 平文辞書・AES 封緘版 2 種と Keychain の鍵。ファイル方式(3260)では使わない
+        func removeLegacyStorage() {
+            defaults.removeObject(forKey: cacheKey)
+            defaults.removeObject(forKey: sealedKey)
+            defaults.removeObject(forKey: compactSealedKey)
+            ContactCacheCipher.deleteKeychainKey()
+        }
+
         func removeCacheIfPresent() {
-            if defaults.object(forKey: cacheKey) != nil || defaults.object(forKey: sealedKey) != nil {
-                defaults.removeObject(forKey: cacheKey)
-                defaults.removeObject(forKey: sealedKey)
-                ContactCacheCipher.deleteKeychainKey()
-                SettingsSyncNotification.postSettingsDidChange()
+            let hadAny = defaults.object(forKey: cacheKey) != nil
+                || defaults.object(forKey: sealedKey) != nil
+                || defaults.object(forKey: compactSealedKey) != nil
+                || ContactCacheCipher.compactFileExists(appGroupID: appGroupID)
+            guard hadAny else {
+                return
             }
+            removeLegacyStorage()
+            ContactCacheCipher.removeCompactFile(appGroupID: appGroupID)
+            defaults.set(UUID().uuidString, forKey: stampKey)
+            SettingsSyncNotification.postSettingsDidChange()
         }
 
         guard mode != .off else {
@@ -532,50 +549,28 @@ extension ContentView {
                     return
                 }
 
-                // 氏名の対応表を平文で置かない(2026-08-31)。鍵は共有Keychain、本体はAES-GCM封緘
-                guard let key = ContactCacheCipher.keychainKey(createNew: true) else {
-                    appendContainerDiagnosticsLog("連絡先キャッシュ封緘スキップ reason=keychainKeyUnavailable")
-                    return
-                }
-
-                let previous: [String: [String]]
-                if let sealed = defaults.data(forKey: sealedKey),
-                    let decoded = ContactCacheCipher.open(sealed, key: key) {
-                    previous = decoded
-                } else {
-                    previous = defaults.dictionary(forKey: cacheKey) as? [String: [String]] ?? [:]
-                }
-
-                let hadPlaintext = defaults.object(forKey: cacheKey) != nil
-                // 畳んだ版がまだ無い既存ユーザーはここで書き足す(3021)。連絡先が変わらない限り
-                // 下の封緘まで到達しないため、この条件が無いと旧経路(拡張側で辞書を組み立てる)の
-                // ままになる
-                let hasCompact = defaults.data(
-                    forKey: SettingsKeys.contactCandidatesByReadingCacheCompactSealed
-                ) != nil
-                // 畳んだ版が既に在って印だけ無い(3080 より前に書いた)なら、印を付けるだけで再封緘はしない
-                if hasCompact, defaults.string(forKey: SettingsKeys.contactCandidatesByReadingCacheCompactSealedStamp) == nil {
-                    defaults.set(UUID().uuidString, forKey: SettingsKeys.contactCandidatesByReadingCacheCompactSealedStamp)
-                }
-
-                guard previous != dictionary || hadPlaintext || !hasCompact else {
-                    return
-                }
-
-                // 畳んだ表で渡す(3020)。拡張側は配列 4 本を作るだけで復元でき、
-                // 4,126 読みの辞書を一瞬作って malloc アリーナを 4MB 広げる問題が消える。
-                // 旧形式(JSON 辞書)も当面は書いておき、古い拡張との組み合わせでも動くようにする
+                // 対応表は App Group のファイルに畳んだ形で置き、iOS のファイル保護(初回ロック解除まで読めない暗号化)を掛け、
+                // バックアップ対象外にする(3260)。以前の自前 AES 封緘+Keychain 鍵(2026-08-31〜)はやめた:
+                // App Group に入れるのは本体と拡張だけで、端末の保存領域は iOS が暗号化しており、封緘が上乗せしていたのは
+                // 暗号化なしのローカルバックアップへの対策だけ(ファイルはバックアップ対象外で同じ効果)。
+                // 封緘をやめると拡張が mmap で開けるので、開くたびの復号でヒープを 4MB 確保する問題も消える
                 let compactStore = SupplementalVocabCompactStore(dictionary: ContactCacheCipher.limited(dictionary))
-                guard let sealedCompact = ContactCacheCipher.sealCompact(compactStore, key: key),
-                    let sealed = ContactCacheCipher.seal(dictionary, key: key) else {
-                    appendContainerDiagnosticsLog("連絡先キャッシュ封緘スキップ reason=sealFailed")
+                let existing = ContactCacheCipher.openCompactFile(appGroupID: appGroupID)
+                let hasLegacy = defaults.object(forKey: cacheKey) != nil
+                    || defaults.object(forKey: sealedKey) != nil
+                    || defaults.object(forKey: compactSealedKey) != nil
+                if existing == compactStore, !hasLegacy {
+                    if defaults.string(forKey: stampKey) == nil {
+                        defaults.set(UUID().uuidString, forKey: stampKey)
+                    }
                     return
                 }
-
-                defaults.set(sealedCompact, forKey: SettingsKeys.contactCandidatesByReadingCacheCompactSealed)
-                defaults.set(UUID().uuidString, forKey: SettingsKeys.contactCandidatesByReadingCacheCompactSealedStamp)
-                defaults.set(sealed, forKey: sealedKey)
-                defaults.removeObject(forKey: cacheKey)
+                guard ContactCacheCipher.writeCompactFile(compactStore, appGroupID: appGroupID) else {
+                    appendContainerDiagnosticsLog("連絡先の対応表のファイル書き込みに失敗")
+                    return
+                }
+                removeLegacyStorage()
+                defaults.set(UUID().uuidString, forKey: stampKey)
                 SettingsSyncNotification.postSettingsDidChange()
             }
         }
