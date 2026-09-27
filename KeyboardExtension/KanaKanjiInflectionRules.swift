@@ -1124,7 +1124,7 @@ extension KanaKanjiConverter {
                 pattern.iForm + "たて",
                 // 裸の連用形(誘い出し/思い出し/引き出し)。Sudachi は 〜出す の動詞を 146 語持つが 連用形の名詞は
                 // 一部しか無く、さそいだし が さ+削いだ+し の合成に負けていた(ユーザ報告 3250)。
-                // 短い名詞(貸し/切り/話し)を派生で汚さないよう、語幹 3 かな以上に限る(derivedCandidates のゲート)
+                // 短い名詞(貸し/切り/話し)を派生で汚さないよう、語幹 3 かな以上・辞書語無しに限る(derivedCandidates のゲート)
                 pattern.iForm,
                 pattern.iForm + "そうだ",
                 pattern.iForm + "そうな",
