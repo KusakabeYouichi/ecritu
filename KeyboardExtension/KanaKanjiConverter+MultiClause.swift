@@ -3783,6 +3783,49 @@ extension KanaKanjiConverter {
                 }
             }
         }
+        // かな断片の連鎖を 1 ノードの活用派生で覆う代替経路(3251): 最良経路の末尾側に、助詞でないかな識別ノードが
+        // 2 つ以上続く区間(に+つき+まし+た の つき/まし/た、に+つい+た の つい/た)があるとき、同じ区間を 1 ノードで
+        // 覆う活用派生(付きました/着きました/付いた)を強制して再最適化した経路を第2候補群に加える。
+        // Wikipedia の につきまして/つい(副詞)+た の統計でかな断片の連鎖が派生ノード(助詞直後の定額 5000)に
+        // 19〜1900 差で勝ち、東京につきました に漢字の候補が 1 つも並ばなかった(ユーザ報告)。
+        // 変種は 1 文節差し替えしか作らないため、区切りの違う経路はこの再最適化でしか出せない
+        var kanaRunMergedAlternatives: [(delta: Int, joined: String)] = []
+        if pathIndices.count >= 3 {
+            func isKanaFragment(_ node: MultiClauseNode) -> Bool {
+                node.isKanaIdentity && !node.isCurated
+                    && !Self.multiClauseCaseParticleSurfaces.contains(node.surface)
+            }
+            var pos = pathIndices.count - 1
+            while pos >= 1 {
+                guard isKanaFragment(nodes[pathIndices[pos]]) else {
+                    pos -= 1
+                    continue
+                }
+                var runStart = pos
+                while runStart > 0, isKanaFragment(nodes[pathIndices[runStart - 1]]) {
+                    runStart -= 1
+                }
+                if pos > runStart {
+                    let spanStart = nodes[pathIndices[runStart]].start
+                    let spanEnd = nodes[pathIndices[pos]].end
+                    let merged = nodesStartingAt[spanStart].filter {
+                        nodes[$0].end == spanEnd && nodes[$0].isInflectionDerived && !nodes[$0].isKanaIdentity
+                    }
+                    for idx in merged.prefix(Self.multiClauseInflectionTopK) {
+                        guard let alternative = solveViterbi(allowedStartNodeIndex: nil, requiredNodeIndices: [idx]),
+                            alternative.bestTotal - bestTotal <= Self.multiClauseSwallowedParticleAlternativeMaxDelta else {
+                            continue
+                        }
+                        let altJoined = alternative.pathIndices.map { nodes[$0].surface }.joined()
+                        if altJoined != normalized, !kanaRunMergedAlternatives.contains(where: { $0.joined == altJoined }) {
+                            kanaRunMergedAlternatives.append((alternative.bestTotal - bestTotal, altJoined))
+                        }
+                    }
+                    break   // 末尾側の 1 区間だけ(再最適化のコストを抑える)
+                }
+                pos = runStart - 1
+            }
+        }
         #if DEBUG
         // 時限トレース(2642): MULTI_TRACE=1 のときだけ、全ノードの累積コストと選択経路を吐く
         if traceEnabled {
@@ -4242,6 +4285,10 @@ extension KanaKanjiConverter {
         // とし を 1 ノードで覆う代替経路(2802)は先頭差し替えと同じ刻みで、1 文節変種(木標とし 等)より前に置く
         if let toShiMergedAlternativeJoined, toShiMergedAlternativeJoined != joined {
             variants.append((min(toShiMergedAlternativeDelta, Self.multiClauseSeedOrderVariantStep), -2, -1, toShiMergedAlternativeJoined))
+        }
+        // かな断片の連鎖を活用派生 1 ノードで覆う代替経路(3251)もコスト差で同列に並べる
+        for alternative in kanaRunMergedAlternatives where alternative.joined != joined {
+            variants.append((alternative.delta, -2, -1, alternative.joined))
         }
         // 文頭助詞に割った代替(定義箇所のコメント参照。3142)は、同スパンの稀な兄弟表記
         // (這入った/侵った)より前に置く
