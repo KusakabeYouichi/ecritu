@@ -19450,6 +19450,14 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual((multi.first ?? yorou.first), "寄ろうかな", "single=\(yorou) multi=\(multi.prefix(4))")
     }
 
+    // 3251: すいか は かな/Suica/スイカ/西瓜 の順
+    func testSuikaSeedOrder() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let list = converter.candidates(for: "すいか", limit: 5, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(4)), ["すいか", "Suica", "スイカ", "西瓜"], "\(list)")
+    }
+
     // 3244: iOS のユーザ辞書で読みが ☻ の単語は先頭に足し、既存の単語は元の位置のまま
     func testUserDictionaryShortcutImportPrependsNewOnlyKeepingExisting() {
         let store = converter.store
