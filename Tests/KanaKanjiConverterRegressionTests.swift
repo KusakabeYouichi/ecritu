@@ -19584,6 +19584,15 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(converter.candidates(for: "きれ", limit: 3, systemCandidateMode: .surface).prefix(2)), ["切れ", "キレ"])
     }
 
+    // 3267: 交ぜ書き 感ジ は出さない
+    func testKanjiMazegakiSuppressed() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let list = converter.candidates(for: "かんじ", limit: 20, systemCandidateMode: .surface)
+        XCTAssertFalse(list.contains("感ジ"), "\(list)")
+        XCTAssertEqual(list.first, "漢字", "\(list)")
+    }
+
     // 3257: かけ は 書け/描け/賭け/掛け/欠け、かなは末尾
     func testKakeSeedOrder() throws {
         try prepareRealLMDictionary()
