@@ -175,6 +175,7 @@
 	<dict><key>phrase</key><string>進拝</string><key>shortcut</key><string>しんぱい</string></dict>
 
 	<!-- ■ カタカナ収穫・カタカナ強調(かな/漢字の正書を勝たせる) -->
+	<dict><key>phrase</key><string>ダワ</string><key>shortcut</key><string>だわ</string></dict>	<!-- ダワ: Sudachi のカタカナ収穫(wc 2224 と極端に安い)。終助詞 だわ を食い、おすすめだわ が おすすめダワ になっていた(ユーザ報告 3262) -->
 	<dict><key>phrase</key><string>カウカ</string><key>shortcut</key><string>かうか</string></dict>	<!-- カウカ(かうか、カタカナ固有名の収穫 wc4576=異常低): 買う+か の合成に1ノードで勝ち しんぴんかうか→新品カウカ を作る -->
 	<dict><key>phrase</key><string>アルノ</string><key>shortcut</key><string>あるの</string></dict>	<!-- アルノ(あるの、伊アルノ川等のカタカナ固有名の収穫 wc4576=異常低): ある+の の合成に1ノードで勝ち あるのになあ→アルノになあ を作る -->
 	<dict><key>phrase</key><string>ニー</string><key>shortcut</key><string>にー</string></dict>	<!-- ニー(にー のカタカナ)。knee等のLM実在でクラス保護されるため個別suppr(なのニー/行ったのニー) -->
