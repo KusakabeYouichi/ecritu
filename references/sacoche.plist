@@ -100,6 +100,7 @@
 	<!--既存<dict><key>phrase</key><string>ケイブル</string><key>shortcut</key><string>けいぶる</string></dict> -->
 	        <dict><key>phrase</key><string>インヴォイス</string><key>shortcut</key><string>いんゔぉいす</string></dict>
 	        <dict><key>phrase</key><string>アプリケイション</string><key>shortcut</key><string>あぷりけいしょん</string></dict>
+	        <dict><key>phrase</key><string>トレイニング</string><key>shortcut</key><string>とれいにんぐ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- トレイニングする/した/して をサ変で組む(ユーザ指定 3251) -->
 	<!-- 動詞の送り仮名で本則以外のを使うための例外 -->
 	        <dict><key>phrase</key><string>行なう</string><key>shortcut</key><string>おこなう</string></dict>
 </array>
