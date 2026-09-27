@@ -19483,6 +19483,15 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertFalse(list.contains("キ怪"), "\(list)")
     }
 
+    // 3251: sacoche の トレイニング(サ変名詞)が活用する
+    func testTrainingSahenFromSacoche() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        XCTAssertEqual(converter.candidates(for: "とれいにんぐ", limit: 3, systemCandidateMode: .surface).first, "トレイニング")
+        let shita = converter.candidates(for: "とれいにんぐした", limit: 3, systemCandidateMode: .surface)
+        XCTAssertEqual(shita.first, "トレイニングした", "\(shita)")
+    }
+
     // 3244: iOS のユーザ辞書で読みが ☻ の単語は先頭に足し、既存の単語は元の位置のまま
     func testUserDictionaryShortcutImportPrependsNewOnlyKeepingExisting() {
         let store = converter.store
