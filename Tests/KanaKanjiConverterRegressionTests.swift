@@ -19492,6 +19492,18 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(shita.first, "トレイニングした", "\(shita)")
     }
 
+    // 3251: compenser の Laguiole(らぎおーる/らいよーる)
+    func testLaguioleBothReadings() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for reading in ["らぎおーる", "らいよーる"] {
+            let list = converter.candidates(for: reading, limit: 3, systemCandidateMode: .surface)
+            XCTAssertEqual(list.first, "Laguiole", "\(reading) \(list)")
+        }
+        let chateau = converter.candidates(for: "しゃとーらぎおーる", limit: 3, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(chateau.prefix(2)), ["Château Laguiole", "シャトー・ラギオール"], "\(chateau)")
+    }
+
     // 3244: iOS のユーザ辞書で読みが ☻ の単語は先頭に足し、既存の単語は元の位置のまま
     func testUserDictionaryShortcutImportPrependsNewOnlyKeepingExisting() {
         let store = converter.store
