@@ -19426,6 +19426,19 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(monogatari.first, "物語", "\(monogatari)")
     }
 
+    // 3251: つきました は 着きました/付きました が先頭(一段 尽きる 族より五段 つく 族を先に、seed で 着く 先頭)。
+    // 連文節 とうきょうにつきました/とうきょうについた は、かな断片の連鎖(つき+まし+た)が最良でも漢字の派生を変種に出す
+    func testTsukimashitaOrderAndKanaRunAlternatives() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let single = converter.candidates(for: "つきました", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(2)), ["着きました", "付きました"], "\(single)")
+        let tokyo = converter.multiClauseCandidates(for: "とうきょうにつきました", systemCandidateMode: .surface)
+        XCTAssertTrue(tokyo.prefix(3).contains("東京に着きました"), "\(tokyo.prefix(5))")
+        let tsuita = converter.multiClauseCandidates(for: "とうきょうについた", systemCandidateMode: .surface)
+        XCTAssertTrue(tsuita.prefix(3).contains("東京に着いた"), "\(tsuita.prefix(5))")
+    }
+
     // 3244: iOS のユーザ辞書で読みが ☻ の単語は先頭に足し、既存の単語は元の位置のまま
     func testUserDictionaryShortcutImportPrependsNewOnlyKeepingExisting() {
         let store = converter.store
