@@ -1108,12 +1108,14 @@ extension KanaKanjiConverter {
     // seed {さすが, 流石} の順で 流石Apple を2番目に残す(ユーザ指定 2666)
     // たいして: 同じ構図(かな副詞クランプで最良、seed {たいして, 大して, 対して} の順に変種を出す。2771)
     // おしい: seed は 惜しい→おしい→押井。かな おしい も seed 順に従わせて 押井 より前に出す(3182)
-    static let multiClauseSeedOrderVariantKanaLeadReadings: Set<String> = ["いまだ", "さすが", "たいして", "いそう", "とか", "えー", "うーむ", "あとあと", "たとえて", "であっても", "すみません", "おしい"]
+    // みずみずしさ/みずみずしい(3254): かな先頭の seed。変種 瑞々しさが減り を seed 順(100)で並べ、
+    // 縁(へり の seed 2 番目、strict で 100)と同点にして文節位置の早い方を先に出す(ユーザ指定)
+    static let multiClauseSeedOrderVariantKanaLeadReadings: Set<String> = ["いまだ", "さすが", "たいして", "いそう", "とか", "えー", "うーむ", "あとあと", "たとえて", "であっても", "すみません", "おしい", "みずみずしさ", "みずみずしい"]
     // seed 順を変種の差分にそのまま使う(min でなく置換)読みの opt-in(2804)。派生同士は OOV 定額で同点になり、
     // min 方式では seed 2 番目のかな(たとえて)を同点 0 の 喩えて より前に出せない
     // おしい も seed 順(惜しい→おしい→押井)をそのまま変種順に使う。かな おしい を
     // 人名 押井 より前に出すため(ユーザー指定 3182)
-    static let multiClauseSeedOrderVariantStrictReadings: Set<String> = ["たとえて", "おしい"]
+    static let multiClauseSeedOrderVariantStrictReadings: Set<String> = ["たとえて", "おしい", "みずみずしさ", "みずみずしい", "へり"]
     // seed 先頭語のコスト救済(2677)を「LM 収録済みでも」適用する読みの opt-in。
     // せいかい: Sudachi は 正解6465<政界7140 なのに Wikipedia LM は 政界6236<正解6479 で
     // 政界では が先頭だった。無条件適用は7件退行(位置から遣り直す/占いしか/東京中 等)
