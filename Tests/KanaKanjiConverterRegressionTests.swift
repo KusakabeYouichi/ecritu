@@ -19439,6 +19439,17 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(tsuita.prefix(3).contains("東京に着いた"), "\(tsuita.prefix(5))")
     }
 
+    // 3251: よる は 寄る を 3 番目に、よろうかな は 寄ろうかな 先頭
+    func testYoruSeedPutsYoruVerbThird() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let yoru = converter.candidates(for: "よる", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(yoru.prefix(3)), ["夜", "よる", "寄る"], "\(yoru)")
+        let yorou = converter.candidates(for: "よろうかな", limit: 4, systemCandidateMode: .surface)
+        let multi = converter.multiClauseCandidates(for: "よろうかな", systemCandidateMode: .surface)
+        XCTAssertEqual((multi.first ?? yorou.first), "寄ろうかな", "single=\(yorou) multi=\(multi.prefix(4))")
+    }
+
     // 3244: iOS のユーザ辞書で読みが ☻ の単語は先頭に足し、既存の単語は元の位置のまま
     func testUserDictionaryShortcutImportPrependsNewOnlyKeepingExisting() {
         let store = converter.store
