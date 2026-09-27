@@ -19508,6 +19508,20 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(chateau.prefix(2)), ["Château Laguiole", "シャトー・ラギオール"], "\(chateau)")
     }
 
+    // 3252: へり→減り は seed で供給(五段の裸の連用形の一般供給は 41 件退行で撤回)。連文節では みずみずしさが減り が先頭
+    func testGodanBareRenyouSuppliesHeri() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let heri = converter.candidates(for: "へり", limit: 6, systemCandidateMode: .surface)
+        XCTAssertTrue(heri.contains("減り"), "\(heri)")
+        XCTAssertEqual(heri.first, "ヘリ", "\(heri)")
+        let multi = converter.multiClauseCandidates(for: "みずみずしさがへり", systemCandidateMode: .surface)
+        XCTAssertTrue(multi.first?.hasSuffix("が減り") == true, "\(multi.prefix(5))")
+        // 辞書にある連用形の名詞(とり=取り rank0)の並びは変えない
+        let tori = converter.candidates(for: "とり", limit: 3, systemCandidateMode: .surface)
+        XCTAssertEqual(tori.first, "取り", "\(tori)")
+    }
+
     // 3244: iOS のユーザ辞書で読みが ☻ の単語は先頭に足し、既存の単語は元の位置のまま
     func testUserDictionaryShortcutImportPrependsNewOnlyKeepingExisting() {
         let store = converter.store
