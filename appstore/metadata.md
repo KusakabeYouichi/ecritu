@@ -67,19 +67,19 @@
 ## App Privacy 申告(ASCフォームの回答)
 
 - データ収集: 「いいえ、このアプリからデータを収集しません」
-  (連絡先は端末内でのみ読み取り・暗号化保存し、開発者には送信されない=Appleの定義で「収集」に該当しない)
+  (連絡先は端末内でのみ読み取り、iOS のファイル保護で暗号化して保存し(バックアップ対象外)、開発者には送信されない=Appleの定義で「収集」に該当しない)
 - トラッキング: なし
 
 ## 審査ノート(Notes for Review 欄)
 
-App Group を用いて本体アプリとキーボード拡張の間で設定・学習語彙を共有するためにフルアクセスを使用します。フルアクセスは任意で、オフでもすべての入力・変換機能が動作します(学習と設定の反映だけが行なわれません)。ネットワーク通信を行なうコードは含まれておらず、入力内容が端末外へ送信されることはありません。連絡先名の変換候補機能は初期設定でオフで、ユーザーが設定でオンにしたときだけ許可を求め、本体アプリのみが連絡先を読み取り、AES-GCM で暗号化して端末内に保存します。パスワード・ワンタイムコード・カード番号等のフィールドでは学習を行いません。キーボード拡張は約 400MB の変換辞書を同梱し、完全オフラインで動作します(ダウンロードサイズが大きいのはこのためです)。
+App Group を用いて本体アプリとキーボード拡張の間で設定・学習語彙を共有するためにフルアクセスを使用します。フルアクセスは任意で、オフでもすべての入力・変換機能が動作します(学習と設定の反映だけが行なわれません)。ネットワーク通信を行なうコードは含まれておらず、入力内容が端末外へ送信されることはありません。連絡先名の変換候補機能は初期設定でオフで、ユーザーが設定でオンにしたときだけ許可を求め、本体アプリのみが連絡先を読み取り、氏名と読みの対応表を iOS のファイル保護(Data Protection)を掛けて端末内に保存します(バックアップ対象外)。パスワード・ワンタイムコード・カード番号等のフィールドでは学習を行いません。キーボード拡張は約 400MB の変換辞書を同梱し、完全オフラインで動作します(ダウンロードサイズが大きいのはこのためです)。
 
 (英語で求められた場合)
-Full Access is used solely to share settings and the learned vocabulary between the container app and the keyboard extension via an App Group. Full Access is optional: every input and conversion feature works without it (only learning persistence and settings sync are skipped). The app contains no networking code; nothing typed ever leaves the device. The optional contact-name feature is off by default, asks for permission only when the user turns it on in Settings, reads contacts only in the container app, and stores an encrypted (AES-GCM) mapping on device. No learning occurs in password, one-time-code or credit-card fields. The keyboard extension bundles a ~400 MB conversion dictionary and works fully offline, which is why the download is large.
+Full Access is used solely to share settings and the learned vocabulary between the container app and the keyboard extension via an App Group. Full Access is optional: every input and conversion feature works without it (only learning persistence and settings sync are skipped). The app contains no networking code; nothing typed ever leaves the device. The optional contact-name feature is off by default, asks for permission only when the user turns it on in Settings, reads contacts only in the container app, and stores the name-to-reading mapping on device protected by iOS Data Protection and excluded from backups. No learning occurs in password, one-time-code or credit-card fields. The keyboard extension bundles a ~400 MB conversion dictionary and works fully offline, which is why the download is large.
 
 ## 輸出コンプライアンス(暗号化)
 
-ITSAppUsesNonExemptEncryption = NO で申告済み。使用する暗号は Apple 提供の CryptoKit(AES-GCM)のみで、用途は端末内データ(連絡先対応表)の保護。輸出規制の免除対象(暗号を「端末内のデータ保護」に限って使用)に該当し、通信・DRM・独自暗号は無い。ASC で質問が出た場合は「免除に該当」を選ぶ。
+ITSAppUsesNonExemptEncryption = NO で申告済み。3260 以降、アプリ自身は暗号化を行なわない(連絡先対応表の保護は iOS のファイル保護に委ねる)。旧版の保存物を読むための CryptoKit(AES-GCM)の復号だけが移行用に残る。通信・DRM・独自暗号は無く、免除に該当。ASC で質問が出た場合は「免除に該当」を選ぶ。
 
 ## 年齢レーティング
 

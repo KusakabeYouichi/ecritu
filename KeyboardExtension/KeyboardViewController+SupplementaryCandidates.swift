@@ -412,6 +412,19 @@ extension KeyboardViewController {
             // 8/30 10:43 Safari の警告は bootstrap 直後 1.2 秒で used +4.4MB(latin/補助語彙は未ロード)で、
             // この復号(NSDictionary→Swift 辞書のブリッジ二重化)が有力候補。復号前後を必ず記録する
             let decodeSnapshot = MemoryForensics.snapshot()
+            // mmap のファイル(3260)があれば復号もヒープ確保もしない
+            if let mapped = ContactCacheCipher.openCompactFile(appGroupID: SharedDefaultsKeys.appGroupID) {
+                MemoryForensics.noteSyncDelta(
+                    "連絡先キャッシュ mmap readings=\(mapped.readingCount)",
+                    since: decodeSnapshot,
+                    minDeltaMB: -1
+                )
+                DispatchQueue.main.async {
+                    KeyboardViewController.sharedContactCandidatesStamp = stamp
+                    completion(mapped)
+                }
+                return
+            }
             // 畳んだ版があれば辞書を経由しない(3020)
             if let compact = self.cachedContactCompactStoreFromSharedDefaults() {
                 MemoryForensics.noteSyncDelta(
