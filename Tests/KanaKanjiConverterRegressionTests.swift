@@ -19515,10 +19515,10 @@ extension KanaKanjiConverterRegressionTests {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
         let heri = converter.candidates(for: "へり", limit: 6, systemCandidateMode: .surface)
-        XCTAssertTrue(heri.contains("減り"), "\(heri)")
-        XCTAssertEqual(heri.first, "ヘリ", "\(heri)")
+        XCTAssertEqual(Array(heri.prefix(3)), ["減り", "縁", "ヘリ"], "\(heri)")
         let multi = converter.multiClauseCandidates(for: "みずみずしさがへり", systemCandidateMode: .surface)
-        XCTAssertTrue(multi.first?.hasSuffix("が減り") == true, "\(multi.prefix(5))")
+        XCTAssertEqual(Array(multi.prefix(2)), ["みずみずしさが減り", "瑞々しさが減り"], "\(multi.prefix(5))")
+        XCTAssertEqual(converter.candidates(for: "みずみずしい", limit: 3, systemCandidateMode: .surface), ["みずみずしい", "瑞々しい", "水々しい"])
         // 辞書にある連用形の名詞(とり=取り rank0)の並びは変えない
         let tori = converter.candidates(for: "とり", limit: 3, systemCandidateMode: .surface)
         XCTAssertEqual(tori.first, "取り", "\(tori)")
