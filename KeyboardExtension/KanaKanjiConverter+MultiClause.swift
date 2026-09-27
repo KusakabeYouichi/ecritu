@@ -1758,7 +1758,9 @@ extension KanaKanjiConverter {
                 Self.multiClauseSeedOrderNounBonusesByReadingByID[readingID] == nil,
                 let seedList = KanaKanjiSeedDictionary.seed[reading],
                 seedList.first == surface {
-                let siblings = seedList.dropFirst().filter { $0 != reading }
+                // かなは原則比較から外す(かな正書の読みを巻き込まない)。ただし seed がかなを 2 番目以降に明示している読み
+                // (おすすめ: お薦め/お勧め/おすすめ。3263)は、かなより前に置く意図の宣言なのでかなも比べる
+                let siblings = Array(seedList.dropFirst())
                 let siblingCosts = store.wordLMUnigramCosts(for: Array(siblings))
                 if let cheapest = siblingCosts.values.min() {
                     base = min(base, cheapest - 1)

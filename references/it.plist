@@ -7,18 +7,13 @@
 	<dict><key>phrase</key><string>AirMac</string><key>shortcut</key><string>えあまっく</string></dict>
 	<dict><key>phrase</key><string>AirMac Express</string><key>shortcut</key><string>えあまっくえくすぷれす</string></dict>
 	<dict><key>phrase</key><string>AirMac Extreme</string><key>shortcut</key><string>えあまっくえくすとりーむ</string></dict>
-	<dict><key>phrase</key><string>AirPods Max</string><key>shortcut</key><string>えあぽっず</string></dict>
 	<dict><key>phrase</key><string>AirPods Max</string><key>shortcut</key><string>えあぽっずまっくす</string></dict>
-	<dict><key>phrase</key><string>AirPods Pro</string><key>shortcut</key><string>えあぽっず</string></dict>
 	<dict><key>phrase</key><string>AirPods Pro</string><key>shortcut</key><string>えあぽっずぷろ</string></dict>
 	<dict><key>phrase</key><string>AirPods</string><key>shortcut</key><string>えあぽっず</string></dict>
 	<dict><key>phrase</key><string>AirTag</string><key>shortcut</key><string>えあたぐ</string></dict>
 	<dict><key>phrase</key><string>Apple TV</string><key>shortcut</key><string>あっぷるてぃーゔぃー</string></dict>
-	<dict><key>phrase</key><string>Apple TV</string><key>shortcut</key><string>あっぷるてぃーびー</string></dict>
 	<dict><key>phrase</key><string>Apple Vision Pro</string><key>shortcut</key><string>あっぷるゔぃじょんぷろ</string></dict>
-	<dict><key>phrase</key><string>Apple Watch SE</string><key>shortcut</key><string>あっぷるうぉっち</string></dict>
 	<dict><key>phrase</key><string>Apple Watch SE</string><key>shortcut</key><string>あっぷるうぉっちえすいー</string></dict>
-	<dict><key>phrase</key><string>Apple Watch Ultra</string><key>shortcut</key><string>あっぷるうぉっち</string></dict>
 	<dict><key>phrase</key><string>Apple Watch Ultra</string><key>shortcut</key><string>あっぷるうぉっちうるとら</string></dict>
 	<dict><key>phrase</key><string>Apple Watch</string><key>shortcut</key><string>あっぷるうぉっち</string></dict>
 	<dict><key>phrase</key><string>Apple</string><key>shortcut</key><string>あっぷる</string></dict>
