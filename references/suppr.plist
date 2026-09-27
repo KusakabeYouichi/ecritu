@@ -194,6 +194,7 @@
 	<!-- ※ イイね: 今どき流行らない書き方(イイ=カタカナ強調)。いい+ね 合成由来なので読み いいね の直接ペアで抑制(イイ感じ 等、他の読みでの イイ は温存)。※踊り字 いゝね は旧仮名・踊り字トグルのフィルタで制御(個別抑制は撤去) -->
 
 	<!-- ■ 交ぜ書き・表記ゆれの収穫(石ユ/ぜい金 等、意味のない混ぜ表記) -->
+	<dict><key>phrase</key><string>キ怪</string><key>shortcut</key><string>きかい</string></dict>	<!-- キ怪(きかい): 奇怪 の交ぜ書き(Sudachi rank1、wc 3741 で 奇怪 と同値)。きかい の 3 番手に並んでいた(ユーザ指摘 3251) -->
 	<dict><key>phrase</key><string>本もの</string><key>shortcut</key><string>ほんもの</string></dict>
 	<dict><key>phrase</key><string>良い</string><key>shortcut</key><string>いい</string></dict>
 	<dict><key>phrase</key><string>石ユ</string><key>shortcut</key><string>いしく</string></dict>
