@@ -1290,6 +1290,9 @@ extension KanaKanjiConverter {
 
     private static func makeSuruInflectionRules() -> [InflectionRule] { [
         InflectionRule(readingSuffix: "しない", baseReadingSuffix: "する", allowedClasses: .suru),
+        // 打ち消しの連用 せず/せずに(気にせず/連絡せずに)。規則が無く、きにせず が 木+に+せず の断片に割れていた(ユーザ報告 3259)
+        InflectionRule(readingSuffix: "せず", baseReadingSuffix: "する", allowedClasses: .suru),
+        InflectionRule(readingSuffix: "せずに", baseReadingSuffix: "する", allowedClasses: .suru),
         InflectionRule(readingSuffix: "しなさそう", baseReadingSuffix: "する", allowedClasses: .suru),
         InflectionRule(readingSuffix: "しなさそうだ", baseReadingSuffix: "する", allowedClasses: .suru),
         InflectionRule(readingSuffix: "しなさそうです", baseReadingSuffix: "する", allowedClasses: .suru),
@@ -2123,7 +2126,7 @@ extension KanaKanjiConverter {
         "だったら", "だった", "だ", "なら", "から",
         "んですけれど", "んですけど", "んだけれど", "んだけど", "けれど", "けど",
         "んです", "んだ",
-        "くない", "かったり", "かった", "ければ", "くれば", "くなり", "くする", "やすい", "やすく", "よう", "こよう", "こい", "たがらない", "たがります", "がらない", "たい", "れば", "ねば", "ず",
+        "くない", "かったり", "かった", "ければ", "くれば", "くなり", "くする", "やすい", "やすく", "よう", "こよう", "こい", "たがらない", "たがります", "がらない", "たい", "れば", "ねば", "せずに", "ずに", "ず",
         "がり",
         "たがった", "たがって", "たがる", "がった", "がって", "がる",
         "って", "った", "いて", "いた", "いで", "いだ", "んで", "んだ", "して", "した",
