@@ -359,7 +359,9 @@ extension KanaKanjiConverter {
 
         // 五段の裸の連用形は語幹 3 かな以上、かつ読みに辞書語が無いときだけ(複合動詞 誘い出し/思い出し の
         // 供給欠落の穴埋め。定義コメント参照。3250)。点数は経路ごとに加算されるので、辞書語がある読みに派生を
-        // 重ねると 物語り(辞書 rank1 + 派生)が 物語 を抜く
+        // 重ねると 物語り(辞書 rank1 + 派生)が 物語 を抜く。辞書語のある読みに「辞書に無い表層だけ」を足す案(3252)は、
+        // 連文節で派生の定額(7200/助詞直後 5000)が辞書語の word_cost を下回り、でもいい→でも言い/のみはじめ→喫み始め/
+        // 貸した→課した など 41 件が退行したので撤回。へり→減り のような欠落は seed で供給する
         if rule.readingSuffix.count == 1,
             Self.godanBareRenyouRuleKeys.contains(rule.readingSuffix + "\t" + rule.baseReadingSuffix),
             readingStem.count < Self.godanBareRenyouMinimumStemLength || !store.wordCosts(for: reading).isEmpty {
