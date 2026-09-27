@@ -256,6 +256,111 @@ extension KeyboardRootView {
         return min(max(desired, 180), 320)
     }
 
+    // 横画面の状態カプセル(鉛筆=未確定/循環矢印=変換中)は第 1 候補の左に置き、第 2 候補以降は同じ幅だけ左を空けて揃える
+    // (3266、ユーザ指定。横画面は横幅に余裕がある)。tokushima は未確定の行にカプセルがあるので出さない(幅だけ揃える)
+    static let landscapeStateCapsuleSlotWidth: CGFloat = 34
+    static let landscapeStateCapsuleSpacing: CGFloat = 4
+
+    @ViewBuilder func landscapeStateCapsuleSlot(showsCapsule: Bool) -> some View {
+        if showsCapsule, internalCompositionPreviewText.isEmpty, !composingText.isEmpty {
+            Image(systemName: conversionStateIconName)
+                .font(.system(size: candidateStateFontSize, weight: .bold))
+                .foregroundStyle(Color.white)
+                .lineLimit(1)
+                .padding(.horizontal, 7)
+                .padding(.vertical, 3)
+                .background(
+                    Capsule(style: .continuous)
+                        .fill(conversionStateColor.opacity(0.95))
+                )
+                .accessibilityLabel(conversionStateLabel)
+                .frame(width: Self.landscapeStateCapsuleSlotWidth, alignment: .leading)
+                .allowsHitTesting(false)
+        } else {
+            Color.clear
+                .frame(width: Self.landscapeStateCapsuleSlotWidth, height: 1)
+        }
+    }
+
+    // 横画面の候補列の末尾に置くかなチップ(3266)。縦画面と同じく、変換候補に同じかなが無いときだけ出す。
+    // 以前(7 月〜)は候補列の上に状態カプセル(鉛筆)と読みの行を常に出していて、かんじ のように候補にかながあっても
+    // 読みの行が重複していた
+    @ViewBuilder var landscapeTrailingKanaChip: some View {
+        let showsWrapperOnly = showsParenthesesWrapper && composingText.isEmpty
+        if !showsWrapperOnly, !composingText.isEmpty, canTapComposingTextToCommit,
+            !conversionCandidates.contains(composingText) {
+            let showsKatakanaCommitFeedback = isShowingKatakanaCommitFeedback(for: composingText)
+
+            Button {
+                handleComposingTextCommitTap()
+            } label: {
+                if showsParenthesesWrapper {
+                    HStack(spacing: 0) {
+                        Text("(")
+                            .foregroundStyle(
+                                showsKatakanaCommitFeedback
+                                    ? Color.white
+                                    : accentColor
+                            )
+                        Text(composingText)
+                            .foregroundStyle(
+                                showsKatakanaCommitFeedback
+                                    ? Color.white
+                                    : keyLabelColor.opacity(0.9)
+                            )
+                        Text(")")
+                            .foregroundStyle(
+                                showsKatakanaCommitFeedback
+                                    ? Color.white
+                                    : accentColor
+                            )
+                    }
+                    .font(.system(size: candidateTextFontSize, weight: .semibold))
+                    .lineLimit(1)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 6)
+                    .background(
+                        RoundedRectangle(cornerRadius: 9, style: .continuous)
+                            .fill(
+                                showsKatakanaCommitFeedback
+                                    ? accentColor.opacity(0.95)
+                                    : KeyboardThemePalette.candidateHeaderChipBackground
+                            )
+                    )
+                } else {
+                    Text(composingText)
+                        .font(.system(size: candidateTextFontSize, weight: .semibold))
+                        .foregroundStyle(
+                            showsKatakanaCommitFeedback
+                                ? Color.white
+                                : keyLabelColor.opacity(0.9)
+                        )
+                        .lineLimit(1)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 6)
+                        .background(
+                            RoundedRectangle(cornerRadius: 9, style: .continuous)
+                                .fill(
+                                    showsKatakanaCommitFeedback
+                                        ? accentColor.opacity(0.95)
+                                        : KeyboardThemePalette.candidateHeaderChipBackground
+                                )
+                        )
+                }
+            }
+            .buttonStyle(.plain)
+            .accessibilityHint("通常タップで変換せずに確定。ロングタップでカタカナ確定")
+            .simultaneousGesture(
+                LongPressGesture(minimumDuration: 0.4)
+                    .onEnded { _ in
+                        handleComposingTextCommitLongPress()
+                    }
+            )
+        }
+    }
+
     var landscapeKanaCandidateSidebar: some View {
         VStack(alignment: .leading, spacing: 4) {
             let showsWrapperOnly = showsParenthesesWrapper && composingText.isEmpty
@@ -289,137 +394,12 @@ extension KeyboardRootView {
                 .allowsHitTesting(false)
             }
 
-            if !composingText.isEmpty || showsWrapperOnly {
-                // 状態はアイコンのミニカプセルで示す(鉛筆=未確定/循環矢印=変換中)。
-                // 候補なしのとき状態は必ず未確定なので、カプセルは冗長 — 出さずに上へ詰める。
-                // tokushima では未確定の行に載せたので、ここでは出さない(3212)
-                if internalCompositionPreviewText.isEmpty, showsWrapperOnly || !conversionCandidates.isEmpty {
-                    Group {
-                        if showsWrapperOnly {
-                            Text("()")
-                        } else {
-                            Image(systemName: conversionStateIconName)
-                        }
-                    }
-                    .font(.system(size: candidateStateFontSize, weight: .bold))
-                    .foregroundStyle(Color.white)
-                    .lineLimit(1)
-                    .padding(.horizontal, 7)
-                    .padding(.vertical, 3)
-                    .background(
-                        Capsule(style: .continuous)
-                            .fill(conversionStateColor.opacity(0.95))
-                    )
-                    .accessibilityLabel(conversionStateLabel)
-                }
-
-                if !showsWrapperOnly, canTapComposingTextToCommit,
-                    !conversionCandidates.contains(composingText) {
-                    let showsKatakanaCommitFeedback = isShowingKatakanaCommitFeedback(for: composingText)
-
-                    Button {
-                        handleComposingTextCommitTap()
-                    } label: {
-                        if showsParenthesesWrapper {
-                            HStack(spacing: 0) {
-                                Text("(")
-                                    .foregroundStyle(
-                                        showsKatakanaCommitFeedback
-                                            ? Color.white
-                                            : accentColor
-                                    )
-                                Text(composingText)
-                                    .foregroundStyle(
-                                        showsKatakanaCommitFeedback
-                                            ? Color.white
-                                            : keyLabelColor.opacity(0.9)
-                                    )
-                                Text(")")
-                                    .foregroundStyle(
-                                        showsKatakanaCommitFeedback
-                                            ? Color.white
-                                            : accentColor
-                                    )
-                            }
-                            .font(.system(size: candidateTextFontSize, weight: .semibold))
-                            .lineLimit(1)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 6)
-                            .background(
-                                RoundedRectangle(cornerRadius: 9, style: .continuous)
-                                    .fill(
-                                        showsKatakanaCommitFeedback
-                                            ? accentColor.opacity(0.95)
-                                            : KeyboardThemePalette.candidateHeaderChipBackground
-                                    )
-                            )
-                        } else {
-                            Text(composingText)
-                                .font(.system(size: candidateTextFontSize, weight: .semibold))
-                                .foregroundStyle(
-                                    showsKatakanaCommitFeedback
-                                        ? Color.white
-                                        : keyLabelColor.opacity(0.9)
-                                )
-                                .lineLimit(1)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 6)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 9, style: .continuous)
-                                        .fill(
-                                            showsKatakanaCommitFeedback
-                                                ? accentColor.opacity(0.95)
-                                                : KeyboardThemePalette.candidateHeaderChipBackground
-                                        )
-                                )
-                        }
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityHint("通常タップで変換せずに確定。ロングタップでカタカナ確定")
-                    .simultaneousGesture(
-                        LongPressGesture(minimumDuration: 0.4)
-                            .onEnded { _ in
-                                handleComposingTextCommitLongPress()
-                            }
-                    )
-                } else if !showsWrapperOnly {
-                    if showsParenthesesWrapper {
-                        HStack(spacing: 0) {
-                            Text("(")
-                                .foregroundStyle(accentColor)
-                            Text(composingText)
-                                .foregroundStyle(keyLabelColor.opacity(0.9))
-                            Text(")")
-                                .foregroundStyle(accentColor)
-                        }
-                        .font(.system(size: candidateTextFontSize, weight: .semibold))
-                        .lineLimit(1)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 6)
-                        .background(
-                            RoundedRectangle(cornerRadius: 9, style: .continuous)
-                                .fill(KeyboardThemePalette.candidateHeaderChipBackground)
-                        )
-                    } else {
-                        Text(composingText)
-                            .font(.system(size: candidateTextFontSize, weight: .semibold))
-                            .foregroundStyle(keyLabelColor.opacity(0.9))
-                            .lineLimit(1)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 6)
-                            .background(
-                                RoundedRectangle(cornerRadius: 9, style: .continuous)
-                                    .fill(KeyboardThemePalette.candidateHeaderChipBackground)
-                            )
-                    }
-                }
-            }
-
             if conversionCandidates.isEmpty {
+                // 縦画面と同じく、候補が無いときもかなチップを出す(3266)。左の空きは候補の行と揃える
+                HStack(spacing: Self.landscapeStateCapsuleSpacing) {
+                    landscapeStateCapsuleSlot(showsCapsule: false)
+                    landscapeTrailingKanaChip
+                }
                 if !(showsParenthesesWrapper && composingText.isEmpty) {
                     ForEach(0..<landscapeEmptyCandidatePlaceholderCount, id: \.self) { _ in
                         RoundedRectangle(cornerRadius: 8, style: .continuous)
@@ -436,6 +416,8 @@ extension KeyboardRootView {
                         ForEach(Array(conversionCandidates.enumerated()), id: \.offset) { index, candidate in
                             let isSelected = selectedConversionCandidateIndex == index
 
+                            HStack(spacing: Self.landscapeStateCapsuleSpacing) {
+                            landscapeStateCapsuleSlot(showsCapsule: index == 0)
                             Button {
                                 onSelectConversionCandidate(index)
                             } label: {
@@ -477,7 +459,13 @@ extension KeyboardRootView {
                                 }
                             }
                             .buttonStyle(.plain)
+                            }
                             .id(index)
+                        }
+                        // かなが候補に無いときだけ、候補の列の末尾にかなチップ(縦画面の末尾チップと同じ。3266)
+                        HStack(spacing: Self.landscapeStateCapsuleSpacing) {
+                            landscapeStateCapsuleSlot(showsCapsule: false)
+                            landscapeTrailingKanaChip
                         }
                     }
                     .padding(.vertical, 0)
