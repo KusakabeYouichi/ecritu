@@ -1242,16 +1242,16 @@ final class KanaKanjiStore {
     static let shortcutVocabularyMaxCount = 128
 
     func prependShortcutCandidate(_ candidate: String) {
-        let trimmed = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty, let defaults else {
+        // 前後の空白も含めてそのまま保存する(3261。「 > 」が「>」になっていた)。空白だけのものは捨てる
+        guard !candidate.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty, let defaults else {
             return
         }
         var current = decodedStringArray(forKey: KanaKanjiStorageKeys.shortcutVocabulary) ?? []
         if current.isEmpty {
             current = initialShortcutVocabulary()
         }
-        current.removeAll { $0 == trimmed }
-        current.insert(trimmed, at: 0)
+        current.removeAll { $0 == candidate }
+        current.insert(candidate, at: 0)
         if current.count > Self.shortcutVocabularyMaxCount {
             current = Array(current.prefix(Self.shortcutVocabularyMaxCount))
         }
@@ -1301,8 +1301,9 @@ final class KanaKanjiStore {
             guard reading == userDictionaryShortcutReading else {
                 return nil
             }
-            let candidate = entry.candidate.trimmingCharacters(in: .whitespacesAndNewlines)
-            return candidate.isEmpty ? nil : candidate
+            // 候補の前後の空白は意味がある(「 > 」のような区切り記号)。削らずに保存する。空白だけのものは捨てる(3261)
+            let candidate = entry.candidate
+            return candidate.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : candidate
         }
     }
 
