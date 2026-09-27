@@ -384,5 +384,10 @@
 	        <dict><key>phrase</key><string>清和会</string><key>shortcut</key><string>せいわかい</string></dict>
 	        <dict><key>phrase</key><string>北方四島</string><key>shortcut</key><string>ほっぽうよんとう</string></dict>
 	        <dict><key>phrase</key><string>北方四島</string><key>shortcut</key><string>ほっぽうしとう</string></dict>
+	<!-- 刃物・カトラリー -->
+	        <dict><key>phrase</key><string>Laguiole</string><key>shortcut</key><string>らぎおーる</string></dict>	<!-- ラギオール(仏オクシタニーの村とナイフ)。現地音 らいよーる と慣用の らぎおーる の両読み(ユーザ指定 3251) -->
+	        <dict><key>phrase</key><string>Laguiole</string><key>shortcut</key><string>らいよーる</string></dict>
+	        <dict><key>phrase</key><string>Château Laguiole</string><key>shortcut</key><string>しゃとーらぎおーる</string></dict>	<!-- ソムリエナイフの銘柄(ユーザ指定 3251) -->
+	        <dict><key>phrase</key><string>シャトー・ラギオール</string><key>shortcut</key><string>しゃとーらぎおーる</string></dict>
 </array>
 </plist>
