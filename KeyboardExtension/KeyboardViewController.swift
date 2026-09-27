@@ -216,6 +216,10 @@ final class KeyboardViewController: UIInputViewController {
     var hostTopInsetCompensation: CGFloat = 0
     var hostTopInsetCompensationResolved = false
     var hostTopConstraint: NSLayoutConstraint?
+    // 面(SwiftUI)の高さ=補正を除いた中身の高さ(3265)。面は窓の下端に高さ固定で置き、窓が 244→261 と伸びても
+    // キーの位置が動かないようにする(上端に貼ると窓が伸びる間に面が 227→244 と伸び縮みしてちらついた)
+    var hostContentHeightConstraint: NSLayoutConstraint?
+    var hostContentHeight: CGFloat = 0
     var disappearanceKindRecorded = false
     var supplementaryLexiconCandidatesByReading: [String: [String]] = [:]
     var supplementaryMergedCandidatesCacheByKey: [String: [String]] = [:]
@@ -1532,13 +1536,20 @@ final class KeyboardViewController: UIInputViewController {
 
         view.addSubview(host.view)
 
-        // 上端はホスト枠の補正(3227)ぶん下げる。補正は最初のレイアウトで確定するので制約を保持する
+        // 面は窓の下端に中身の高さで固定する(3265)。上端の制約(補正ぶん下げる)は優先度を下げて残し、中身の高さが
+        // 決まる前(0)だけ効かせる。窓が中身より低いあいだは上端を越えないよう >= で抑える
         let topConstraint = host.view.topAnchor.constraint(equalTo: view.topAnchor, constant: Self.hostTopOverlap + hostTopInsetCompensation)
+        topConstraint.priority = .defaultLow
         hostTopConstraint = topConstraint
+        let contentHeightConstraint = host.view.heightAnchor.constraint(equalToConstant: max(hostContentHeight, 1))
+        contentHeightConstraint.priority = UILayoutPriority(999)
+        contentHeightConstraint.isActive = hostContentHeight > 0
+        hostContentHeightConstraint = contentHeightConstraint
         NSLayoutConstraint.activate([
             host.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             host.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             topConstraint,
+            host.view.topAnchor.constraint(greaterThanOrEqualTo: view.topAnchor),
             host.view.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
 
@@ -2069,7 +2080,14 @@ final class KeyboardViewController: UIInputViewController {
         CATransaction.begin()
         CATransaction.setDisableActions(true)
         // ホスト枠の補正(3227)の帯は塗らず透明のまま(ホストが足す 17pt と同じ見え方=ホストの地が透ける)
-        backgroundGradientLayer.frame = view.bounds.inset(by: UIEdgeInsets(top: hostTopInsetCompensation, left: 0, bottom: 0, right: 0))
+        // 面と同じく下端から中身の高さだけ塗る(3265)。中身の高さが未確定なら従来どおり補正ぶん上を空ける
+        let bounds = view.bounds
+        if hostContentHeight > 0 {
+            let paintedHeight = min(bounds.height, hostContentHeight)
+            backgroundGradientLayer.frame = CGRect(x: bounds.minX, y: bounds.maxY - paintedHeight, width: bounds.width, height: paintedHeight)
+        } else {
+            backgroundGradientLayer.frame = bounds.inset(by: UIEdgeInsets(top: hostTopInsetCompensation, left: 0, bottom: 0, right: 0))
+        }
         let rawValue = lastRenderConfiguration?.keyboardBackgroundThemeRawValue
             ?? sharedStringValue(
                 from: sharedDefaults,
