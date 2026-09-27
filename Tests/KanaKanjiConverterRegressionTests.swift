@@ -19452,6 +19452,12 @@ extension KanaKanjiConverterRegressionTests {
         let yorou = converter.candidates(for: "よろうかな", limit: 4, systemCandidateMode: .surface)
         let multi = converter.multiClauseCandidates(for: "よろうかな", systemCandidateMode: .surface)
         XCTAssertEqual(Array(multi.prefix(2)), ["寄ろうかな", "よろうかな"], "single=\(yorou) multi=\(multi.prefix(4))")
+        // 意志を持てない動詞(因る/依る/拠る)の意志形は候補に出さない(3255)
+        for bad in ["因ろう", "依ろう", "拠ろう"] {
+            XCTAssertFalse(yorou.contains { $0.hasPrefix(bad) } || multi.contains { $0.hasPrefix(bad) }, "\(bad) single=\(yorou) multi=\(multi)")
+        }
+        // 平叙の活用(因った/依って)は残す
+        XCTAssertTrue(converter.candidates(for: "よって", limit: 10, systemCandidateMode: .surface).contains("因って"))
     }
 
     // 3251: すいか は かな/Suica/スイカ/西瓜 の順
