@@ -19592,15 +19592,19 @@ extension KanaKanjiConverterRegressionTests {
             ("☻", "よろしくお願いします"),
             ("☻", "   "),             // 空は捨てる
             ("☻", "mail@example.com"), // 同一項目の重複は 1 回
+            ("☻", " > "),             // 前後の空白は削らない(3261)
         ]
         let picked = KanaKanjiStore.shortcutCandidatesFromUserDictionaryEntries(entries)
-        XCTAssertEqual(picked, ["mail@example.com", "(^^)", "よろしくお願いします", "mail@example.com"])
+        XCTAssertEqual(picked, ["mail@example.com", "(^^)", "よろしくお願いします", "mail@example.com", " > "])
 
-        XCTAssertEqual(store.prependNewShortcutCandidates(picked), 2)
-        XCTAssertEqual(store.shortcutVocabulary(), ["mail@example.com", "よろしくお願いします", "→", "(^^)"])
+        XCTAssertEqual(store.prependNewShortcutCandidates(picked), 3)
+        XCTAssertEqual(store.shortcutVocabulary(), ["mail@example.com", "よろしくお願いします", " > ", "→", "(^^)"])
 
         // 2 回目は何も足さない(順位も変えない)
         XCTAssertEqual(store.prependNewShortcutCandidates(picked), 0)
-        XCTAssertEqual(store.shortcutVocabulary(), ["mail@example.com", "よろしくお願いします", "→", "(^^)"])
+        XCTAssertEqual(store.shortcutVocabulary(), ["mail@example.com", "よろしくお願いします", " > ", "→", "(^^)"])
+        // 絵文字/顔文字パネルからの確定も空白を保つ
+        store.prependShortcutCandidate(" ・ ")
+        XCTAssertEqual(store.shortcutVocabulary().first, " ・ ")
     }
 }
