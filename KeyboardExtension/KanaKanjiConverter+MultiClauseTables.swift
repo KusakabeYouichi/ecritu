@@ -436,6 +436,40 @@ extension KanaKanjiConverter {
     // 対象は読みがこれらの格助詞で始まる派生ノード。に は 逃げる/似合う 等の頻出動詞と衝突しやすいので入れない
     static let multiClauseSwallowedParticleHeads: Set<Character> = ["で", "と", "が", "を", "は"]
     static let multiClauseSwallowedParticleAlternativeMaxDelta = 2500
+    // かな断片の連鎖(つき+まし+た / つい+た)を活用派生 1 ノードへ昇格する条件の「助動詞の断片」(3252)。
+    // 動詞の連用形・音便形にしか付かない助動詞・接続助詞のかな。区間にこれが含まれるときだけ昇格の対象にする
+    static let multiClauseKanaRunAuxFragmentReadings: Set<String> = [
+        "た", "て", "で", "まし", "ます", "ました", "ません", "ませ", "ましょ", "ない", "なかった", "たい", "たく"
+    ]
+    // 活用形(reading/surface)を辞書形に戻し、基底の LM でかなが漢字より明確に安い(いる 2726 ≪ 居る 6523、
+    // する/ある/なる/できる)ならかな正書の動詞とみなす(3252)。つく 5683 vs 付く 5893、くる/いく/わかる のような
+    // 僅差はかな正書ではない(付きました/来ました/行きました は漢字が普通)。判定できない形は false
+    static let multiClauseKanaOrthographyVerbMargin = 1000
+    // かな断片の連鎖から派生 1 ノードへ昇格を許すコスト差の上限(3252)。かけて→欠けて(DP の文脈減点で大差)を昇格させない
+    static let multiClauseKanaRunPromotionMaxDelta = 300
+    static func isKanaOrthographyVerbForm(reading: String, surface: String, store: KanaKanjiStore) -> Bool {
+        guard let lastChar = reading.last,
+            let ruleIndices = deinflectionRulesByReadingLastCharacter[lastChar] else {
+            return false
+        }
+        for index in ruleIndices {
+            let rule = allInflectionRules[index]
+            guard !rule.readingSuffix.isEmpty, reading.hasSuffix(rule.readingSuffix),
+                surface.hasSuffix(rule.outputCandidateSuffix) else { continue }
+            let stem = reading.dropLast(rule.readingSuffix.count)
+            let kanjiStem = surface.dropLast(rule.outputCandidateSuffix.count)
+            guard !stem.isEmpty, !kanjiStem.isEmpty else { continue }
+            let baseReading = String(stem) + rule.baseReadingSuffix
+            let baseSurface = String(kanjiStem) + (rule.firstBaseCandidateSuffix { _ in true } ?? rule.baseReadingSuffix)
+            // 規則は複数当たる(つきました: 一段 ました→る の つきる/着きる と 五段 きました→く の つく/着く)。
+            // 辞書形が LM に実在する組だけで判定し、無い組(着きる)は次の規則へ
+            let costs = store.wordLMUnigramCosts(for: [baseReading, baseSurface])
+            guard let kanji = costs[baseSurface] else { continue }
+            guard let kana = costs[baseReading] else { return false }
+            return kana + multiClauseKanaOrthographyVerbMargin < kanji
+        }
+        return false
+    }
     // 文中の と+し で終わる経路に対する、とし を 1 ノード(都市/年)で覆う代替経路の許容差(2802。目標とし→目標都市 は 3300)
     static let multiClauseToShiMergedAlternativeMaxDelta = 4500
     // 期間名詞の判定(isDurationNounSurface。2772)。長い順に照合する

@@ -377,6 +377,18 @@ extension KanaKanjiConverter {
                         // きたんだが→着たんだが になった真因(テストは misc を読まないため
                         // 再現しなかった)。派生フラグを合流させる(2514)
                         surfaces[index].isInflectionDerived = true
+                    } else if isInflectionDerived,
+                        let index = surfaces.firstIndex(where: { $0.surface == surface }),
+                        !surfaces[index].isInflectionDerived,
+                        surfaces[index].wordCost == nil,
+                        containsKanji(surface),
+                        KanaKanjiSeedDictionary.seed[segmentReading]?.first == surface {
+                        // 活用形そのものの seed の先頭(つきました=着きました)が a2 で先着すると、b2 の活用派生コピーが
+                        // dedupe で死に、助詞直後の派生割引(5000)を失って派生の兄弟(尽きました)に負ける。
+                        // 2514 と同族: 派生フラグを合流させる(3252)。対象は seed 先頭・漢字・Sudachi に無い表層に限る
+                        // (seed の 2 番目以降(かけて の 欠けて)や辞書語(取れ立て)まで派生扱いにすると、定額の派生コストで
+                        // seed 先頭のかな(かけて/採れたて)を抜いてしまう)
+                        surfaces[index].isInflectionDerived = true
                     }
                 }
 
@@ -3793,7 +3805,11 @@ extension KanaKanjiConverter {
         // Wikipedia の につきまして/つい(副詞)+た の統計でかな断片の連鎖が派生ノード(助詞直後の定額 5000)に
         // 19〜1900 差で勝ち、東京につきました に漢字の候補が 1 つも並ばなかった(ユーザ報告)。
         // 変種は 1 文節差し替えしか作らないため、区切りの違う経路はこの再最適化でしか出せない
+        // 昇格(3252): 区間に助動詞のかな断片(た/て/まし/ます 等)が含まれ、かつ先頭断片のかな(つき/つい)が LM で
+        // 漢字の語幹(着き/付い)より優位でないときは、1 ノードの派生の経路を最良にし、元のかな経路を第2候補に固定する
+        // (東京に着きました/東京に着いた が先頭。ユーザ指定)。かなが正書の動詞(いました/してました)は LM 優位で残る
         var kanaRunMergedAlternatives: [(delta: Int, joined: String)] = []
+        var kanaRunPromotedOriginalJoined: String? = nil
         if pathIndices.count >= 3 {
             func isKanaFragment(_ node: MultiClauseNode) -> Bool {
                 node.isKanaIdentity && !node.isCurated
@@ -3812,9 +3828,20 @@ extension KanaKanjiConverter {
                 if pos > runStart {
                     let spanStart = nodes[pathIndices[runStart]].start
                     let spanEnd = nodes[pathIndices[pos]].end
+                    // 活用派生ノードだけが対象(seed 先頭の活用形は add() の dedupe で派生の印を合流済み)。
+                    // seed 掲載を先に(seed 順=単文節の並び)
                     let merged = nodesStartingAt[spanStart].filter {
-                        nodes[$0].end == spanEnd && nodes[$0].isInflectionDerived && !nodes[$0].isKanaIdentity
-                    }
+                        nodes[$0].end == spanEnd && !nodes[$0].isKanaIdentity && nodes[$0].isInflectionDerived
+                    }.sorted { (nodes[$0].isSeedListed ? 0 : 1) < (nodes[$1].isSeedListed ? 0 : 1) }
+                    // 昇格の対象は「先頭断片+助動詞断片だけ」の連鎖(つき+まし+た / つい+た)。なんか+し+ない のように
+                    // 途中に一般のかな語が挟まる連鎖や、区間の読みの seed 先頭がかな(かけて/したい=かなが正書)の区間は昇格しない
+                    let runReading = Self.spanString(chars, spanStart..<spanEnd)
+                    let runHasAuxFragment = pos > runStart
+                        && (runStart + 1...pos).allSatisfy {
+                            Self.multiClauseKanaRunAuxFragmentReadings.contains(nodes[pathIndices[$0]].reading)
+                        }
+                        && (KanaKanjiSeedDictionary.seed[runReading]?.first).map { $0 != runReading } ?? true
+                    var promoted: (best: [Int], backPointer: [Int], bestTotal: Int, bestEndIndex: Int, pathIndices: [Int])? = nil
                     for idx in merged.prefix(Self.multiClauseInflectionTopK) {
                         guard let alternative = solveViterbi(allowedStartNodeIndex: nil, requiredNodeIndices: [idx]),
                             alternative.bestTotal - bestTotal <= Self.multiClauseSwallowedParticleAlternativeMaxDelta else {
@@ -3824,6 +3851,21 @@ extension KanaKanjiConverter {
                         if altJoined != normalized, !kanaRunMergedAlternatives.contains(where: { $0.joined == altJoined }) {
                             kanaRunMergedAlternatives.append((alternative.bestTotal - bestTotal, altJoined))
                         }
+                        // 昇格は僅差(つきました: 19)に限る。DP の文脈規則(を→欠け の減点 3091 等)で大差がついた区間
+                        // (かけて→欠けて、ついた→付いた 1444)は DP の判断を尊重し、変種に出すだけにする
+                        if promoted == nil, runHasAuxFragment,
+                            alternative.bestTotal - bestTotal <= Self.multiClauseKanaRunPromotionMaxDelta,
+                            !Self.isKanaOrthographyVerbForm(reading: nodes[idx].reading, surface: nodes[idx].surface, store: store) {
+                            promoted = alternative
+                        }
+                    }
+                    if let promoted {
+                        kanaRunPromotedOriginalJoined = pathIndices.map { nodes[$0].surface }.joined()
+                        kanaRunMergedAlternatives.removeAll { $0.joined == promoted.pathIndices.map { nodes[$0].surface }.joined() }
+                        best = promoted.best
+                        backPointer = promoted.backPointer
+                        bestTotal = promoted.bestTotal
+                        pathIndices = promoted.pathIndices
                     }
                     break   // 末尾側の 1 区間だけ(再最適化のコストを抑える)
                 }
@@ -4290,7 +4332,11 @@ extension KanaKanjiConverter {
         if let toShiMergedAlternativeJoined, toShiMergedAlternativeJoined != joined {
             variants.append((min(toShiMergedAlternativeDelta, Self.multiClauseSeedOrderVariantStep), -2, -1, toShiMergedAlternativeJoined))
         }
-        // かな断片の連鎖を活用派生 1 ノードで覆う代替経路(3251)もコスト差で同列に並べる
+        // かな断片の連鎖を活用派生 1 ノードで覆う代替経路(3251)もコスト差で同列に並べる。
+        // 昇格したとき(3252)は元のかな経路を第2候補に固定する
+        if let kanaRunPromotedOriginalJoined, kanaRunPromotedOriginalJoined != joined {
+            variants.append((Int.min / 2, -2, -1, kanaRunPromotedOriginalJoined))
+        }
         for alternative in kanaRunMergedAlternatives where alternative.joined != joined {
             variants.append((alternative.delta, -2, -1, alternative.joined))
         }

@@ -19434,9 +19434,13 @@ extension KanaKanjiConverterRegressionTests {
         let single = converter.candidates(for: "つきました", limit: 4, systemCandidateMode: .surface)
         XCTAssertEqual(Array(single.prefix(2)), ["着きました", "付きました"], "\(single)")
         let tokyo = converter.multiClauseCandidates(for: "とうきょうにつきました", systemCandidateMode: .surface)
-        XCTAssertTrue(tokyo.prefix(3).contains("東京に着きました"), "\(tokyo.prefix(5))")
+        XCTAssertEqual(Array(tokyo.prefix(2)), ["東京に着きました", "東京につきました"], "\(tokyo.prefix(5))")
+        // ついた は つい(副詞)+た の LM 統計で 1444 差がつくため昇格せず、変種の先頭に出る
         let tsuita = converter.multiClauseCandidates(for: "とうきょうについた", systemCandidateMode: .surface)
-        XCTAssertTrue(tsuita.prefix(3).contains("東京に着いた"), "\(tsuita.prefix(5))")
+        XCTAssertEqual(Array(tsuita.prefix(2)), ["東京についた", "東京に着いた"], "\(tsuita.prefix(5))")
+        // かなが正書の動詞(いました)は昇格しない
+        let imashita = converter.multiClauseCandidates(for: "へやにいました", systemCandidateMode: .surface)
+        XCTAssertEqual(imashita.first, "部屋にいました", "\(imashita.prefix(4))")
     }
 
     // 3251: よる は 寄る を 3 番目に、よろうかな は 寄ろうかな 先頭
