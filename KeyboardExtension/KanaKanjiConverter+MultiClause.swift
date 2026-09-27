@@ -1949,6 +1949,21 @@ extension KanaKanjiConverter {
                 Self.multiClauseERowKanaCharacters.contains(impMora) {
                 penalty += Self.multiClauseImperativeParticlePenalty
             }
+            // 活用派生の え段終わり(命令形 抱け/書け、一段の連用 食べ)の直後の終助詞 か(か/かー/かな/かなー)は非文。
+            // だけかー が 抱け+かー になっていた(ユーザ報告 3262)。名詞+か(丈か)や 連用形+か(行きか)は無傷
+            let isQuestionKaAfterERowDerived = isKanaIdentity && surface.hasPrefix("か")
+                && Self.multiClauseQuestionKaClusterSurfaces.contains(surface)
+                && prevIsInflectionDerived && !prevIsKanaIdentity
+                && (prevReading?.last.map { Self.multiClauseERowKanaCharacters.contains($0) } ?? false)
+            if isQuestionKaAfterERowDerived {
+                penalty += Self.multiClauseImperativeParticlePenalty
+            }
+            // 形式名詞の直後の ある の漢字表層(聞いたこと会った。定数コメント参照。3262)
+            if !isKanaIdentity, reading.hasPrefix("あ"),
+                let head = surface.first, Self.multiClauseExistentialAruKanjiHeads.contains(head),
+                prevIsKanaIdentity, Self.multiClauseFormalNounKanaReadings.contains(prev) {
+                penalty += Self.multiClauseExistentialAruKanjiAfterFormalNounPenalty
+            }
             // 打ち消しの ないで は動詞未然形直後のかなが正書(遅刻しないでね)。
             // 凪いで/薙いで/和いで(風が凪いで 等の正当な動詞)が活用派生直後に立って
             // 遅刻し凪いでねー を作るのを防ぐ(ユーザ報告 2645)。名詞・助詞直後は無傷
@@ -2459,7 +2474,9 @@ extension KanaKanjiConverter {
             // 述語直後の終助詞かなクラスタはクランプ(定数コメント参照。2628)。
             // 1字(な/ね/し 等)は対象外 — 来ん(派生)+な が こんな を乗っ取る(検証で2件退行)。
             // のね/のよ も対象外 — 名詞除外付きの既存厳格ゲート(ExplanatoryFinal)に委譲
+            // (命令形+か は非文なので、述語直後の割引を与えない。3262)
             if isKanaIdentity, reading.count >= 2,
+                !isQuestionKaAfterERowDerived,
                 Self.multiClauseFinalParticleReadingsID.contains(readingID),
                 !Self.multiClauseExplanatoryFinalSurfacesID.contains(readingID),
                 !prevIsBOS,
