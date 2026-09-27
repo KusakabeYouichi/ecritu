@@ -19545,6 +19545,18 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3259: サ変の せず/せずに(きにせず→気にせず、れんらくせずに→連絡せずに)
+    func testSuruSezuInflection() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        XCTAssertEqual(converter.candidates(for: "きにせず", limit: 4, systemCandidateMode: .surface).first, "気にせず")
+        let multi = converter.multiClauseCandidates(for: "きにせず", systemCandidateMode: .surface)
+        XCTAssertTrue(multi.isEmpty || multi.first == "気にせず", "\(multi.prefix(4))")
+        let renraku = converter.candidates(for: "れんらくせずに", limit: 4, systemCandidateMode: .surface)
+        let renrakuMulti = converter.multiClauseCandidates(for: "れんらくせずに", systemCandidateMode: .surface)
+        XCTAssertEqual(renrakuMulti.first ?? renraku.first, "連絡せずに", "single=\(renraku) multi=\(renrakuMulti.prefix(4))")
+    }
+
     // 3257: かけ は 書け/描け/賭け/掛け/欠け、かなは末尾
     func testKakeSeedOrder() throws {
         try prepareRealLMDictionary()
