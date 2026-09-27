@@ -19570,6 +19570,14 @@ extension KanaKanjiConverterRegressionTests {
         let osusume = converter.multiClauseCandidates(for: "おすすめだわ", systemCandidateMode: .surface)
         let osusumeSingle = converter.candidates(for: "おすすめだわ", limit: 5, systemCandidateMode: .surface)
         XCTAssertFalse((osusume + osusumeSingle).contains { $0.hasSuffix("ダワ") }, "multi=\(osusume.prefix(5)) single=\(osusumeSingle)")
+        // だけかー: かなが先頭(抱け/丈/嵩 の漢字合成より前)
+        let dake = converter.candidates(for: "だけかー", limit: 4, systemCandidateMode: .surface)
+        let dakeMulti = converter.multiClauseCandidates(for: "だけかー", systemCandidateMode: .surface)
+        XCTAssertEqual(dakeMulti.first ?? dake.first, "だけかー", "multi=\(dakeMulti.prefix(4)) single=\(dake)")
+        // 形式名詞+ある の活用はかな(聞いたことあった/見たことある)。に/と 会った は漢字のまま
+        XCTAssertEqual(converter.multiClauseCandidates(for: "きいたことあった", systemCandidateMode: .surface).first, "聞いたことあった")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "みたことある", systemCandidateMode: .surface).first, "見たことある")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "ともだちにあった", systemCandidateMode: .surface).first, "友達に会った")
         XCTAssertEqual(Array(converter.candidates(for: "おすすめ", limit: 3, systemCandidateMode: .surface)), ["おすすめ", "お薦め", "お勧め"])
         XCTAssertEqual(Array(converter.candidates(for: "きれ", limit: 3, systemCandidateMode: .surface).prefix(2)), ["切れ", "キレ"])
     }
