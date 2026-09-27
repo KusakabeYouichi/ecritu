@@ -431,8 +431,13 @@ extension KanaKanjiConverter {
         let userOwnCandidateSet = initialOrUserCandidateSet
         var results: [String] = []
         var contributingBases: [String] = []
+        let isVolitionalRule = Self.volitionalReadingSuffixHeads.contains { rule.readingSuffix.hasPrefix($0) }
 
         for candidate in baseCandidates {
+            // 意志を持てない動詞の意志形は作らない(定数コメント参照。3255)
+            if isVolitionalRule, Self.nonVolitionalVerbSurfaces.contains(candidate) {
+                continue
+            }
             guard let matchedSuffix = rule.firstBaseCandidateSuffix(where: { candidate.hasSuffix($0) }) else {
                 continue
             }
