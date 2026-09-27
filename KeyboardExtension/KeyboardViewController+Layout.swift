@@ -260,6 +260,12 @@ extension KeyboardViewController {
         )
         // ホスト枠の補正(3227)は縦画面だけ
         let compensated = height + (isLandscapeOrientation ? 0 : hostTopInsetCompensation)
+        // 面の高さ(補正を除く中身)を記録し、下端固定の高さ制約へ反映する(3265)
+        if abs(hostContentHeight - height) > 0.5 {
+            hostContentHeight = height
+            hostContentHeightConstraint?.constant = height
+            hostContentHeightConstraint?.isActive = true
+        }
         logPreferredKeyboardHeightIfChanged(
             height: compensated,
             profile: profile,
