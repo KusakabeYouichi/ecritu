@@ -19517,7 +19517,7 @@ extension KanaKanjiConverterRegressionTests {
         let heri = converter.candidates(for: "へり", limit: 6, systemCandidateMode: .surface)
         XCTAssertEqual(Array(heri.prefix(3)), ["減り", "縁", "ヘリ"], "\(heri)")
         let multi = converter.multiClauseCandidates(for: "みずみずしさがへり", systemCandidateMode: .surface)
-        XCTAssertEqual(Array(multi.prefix(2)), ["みずみずしさが減り", "瑞々しさが減り"], "\(multi.prefix(5))")
+        XCTAssertEqual(Array(multi.prefix(3)), ["みずみずしさが減り", "瑞々しさが減り", "みずみずしさが縁"], "\(multi.prefix(5))")
         XCTAssertEqual(converter.candidates(for: "みずみずしい", limit: 3, systemCandidateMode: .surface), ["みずみずしい", "瑞々しい", "水々しい"])
         // 辞書にある連用形の名詞(とり=取り rank0)の並びは変えない
         let tori = converter.candidates(for: "とり", limit: 3, systemCandidateMode: .surface)
