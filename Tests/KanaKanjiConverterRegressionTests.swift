@@ -19535,6 +19535,16 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(tori.first, "取り", "\(tori)")
     }
 
+    // 3257: かけ は 書け/描け/賭け/掛け/欠け、かなは末尾
+    func testKakeSeedOrder() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let list = converter.candidates(for: "かけ", limit: 12, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(5)), ["書け", "描け", "賭け", "掛け", "欠け"], "\(list)")
+        let kanaIndex = list.firstIndex(of: "かけ") ?? Int.max
+        XCTAssertGreaterThan(kanaIndex, 4, "\(list)")
+    }
+
     // 3244: iOS のユーザ辞書で読みが ☻ の単語は先頭に足し、既存の単語は元の位置のまま
     func testUserDictionaryShortcutImportPrependsNewOnlyKeepingExisting() {
         let store = converter.store
