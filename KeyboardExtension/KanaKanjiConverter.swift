@@ -259,6 +259,9 @@ final class KanaKanjiConverter {
         // かな接尾の合成(誘い+だし=bfsPostfix 1040)と派生(誘いだす→誘いだし 979)の両方を持つ表記(2019)を
         // 派生だけの 誘い出し(980)が抜くには 1040 超の加点が要る(3250)
         static let godanBareRenyouCompoundBoost = 1050
+        // 一段の語幹(辞書語が実質無い読み。ゆで/あずけ/とらえ)への加点。かな識別(1417)+派生のかな(979)=2396 と
+        // X+で 合成(湯で 1260)の上に 茹で/預け を出す(3251)
+        static let ichidanStemCompoundBoost = 1500
         // 関西方言の ている→とる 縮約形(騙しとった)を同経路の標準形(騙し取った)より後ろへ下げる幅(2887)
         static let kansaiContractionDemotion = 60
         static let adjectiveGaru = 970          // ガル形派生
@@ -546,6 +549,20 @@ final class KanaKanjiConverter {
             ).items
             if let first = bare.first(where: { scores[$0] != nil }) {
                 scores[first, default: 0] += CandidateScore.godanBareRenyouCompoundBoost
+            }
+        }
+        // 一段の語幹(辞書語が実質無い読み。3251): 湯で(X+で 合成 1260)とかな識別に負けて 茹で が 5 番手だった。
+        // 語幹供給の条件(ichidanRenyouSuppliedForEmptyStem)を満たす読みだけ、漢字の派生の先頭に加点する
+        if Self.ichidanRenyouSuppliedForEmptyStem(reading, wordCostsAreNegligible: { Self.wordCostsAreNegligible(store.wordCosts(for: reading)) }) {
+            let stems = derivedCandidates(
+                for: reading,
+                rule: Self.ichidanBareRenyouRule,
+                ajoutVocabulary: context.ajoutVocabulary,
+                initialAjoutVocabulary: context.initialAjoutVocabulary,
+                systemCandidateMode: context.mode
+            ).items
+            if let first = stems.first(where: { $0 != reading && scores[$0] != nil }) {
+                scores[first, default: 0] += CandidateScore.ichidanStemCompoundBoost
             }
         }
         // 関西方言の ている→とる 縮約(騙しとった)は標準形の複合(騙し取った)の後ろに(ユーザ報告 2887)。
