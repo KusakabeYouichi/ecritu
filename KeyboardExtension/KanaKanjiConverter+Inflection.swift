@@ -342,7 +342,7 @@ extension KanaKanjiConverter {
             // 一段の連用形は opt-in の基底読みだけ(全一段に開くと 溜め/占め 等が
             // 既存の並びを崩す。ため→為 が 溜め に、買い占めよね が 買いしめよね に退行した)
             guard Self.ichidanRenyouNounBaseReadings.contains(reading + rule.baseReadingSuffix)
-                || Self.ichidanRenyouSuppliedForEmptyStem(reading, wordCostsIsEmpty: { store.wordCosts(for: reading).isEmpty }) else {
+                || Self.ichidanRenyouSuppliedForEmptyStem(reading, wordCostsAreNegligible: { Self.wordCostsAreNegligible(store.wordCosts(for: reading)) }) else {
                 return ([], Int.max)
             }
             readingStem = reading

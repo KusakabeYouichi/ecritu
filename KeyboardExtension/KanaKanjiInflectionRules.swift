@@ -232,17 +232,24 @@ extension KanaKanjiConverter {
     // 前部要素ボーナス(multiClauseCompoundVerbRenyouStemReadings)と対で 載せ忘れた を組む(2784)
     // まぜる: まぜぐあい が 馬瀬具合/間瀬具合(姓)にしかならず 混ぜ具合 が組めなかった(ユーザ報告 2834)
     static let ichidanRenyouNounBaseReadings: Set<String> = ["たべる", "のせる", "まぜる"]
-    // opt-in に加えて、語幹読み(3 かな以上、末尾がい段/え段)に辞書語が 1 つも無いときは一段の連用形を供給する(3215)。
-    // ひろげ が候補なし(ひろげて は 広げて が出る)だった(ユーザ報告)。中止法(広げ、〜)は普通の書き方。
-    // 辞書語のある語幹(ため/しめ/はじめ)は既存の並びを崩すので従来どおり opt-in のみ。該当 3576 語幹
+    // opt-in に加えて、語幹読み(2 かな以上、末尾がい段/え段)に辞書語が実質無い(1 つも無いか、全部が収穫底値
+    // wc≥10000 のレア姓・地名)ときは一段の連用形を供給する(3215→3251)。ひろげ が候補なし(ひろげて は 広げて が出る)、
+    // ゆでじかん が 湯で時間(ゆで は 湯出/油出 の収穫底値だけ)だった(ユーザ報告)。中止法(広げ、〜)と
+    // 語幹+名詞の複合(茹で時間/預け先/奏で手)は普通の書き方。辞書語のある語幹(ため/しめ/はじめ/みせ/あげ)は
+    // 既存の並びを崩すので従来どおり opt-in のみ。2 かなで該当するのは どけ/ゆで/めで/うせ 等の十数語幹
     static let ichidanStemTailCharacters: Set<Character> = [
         "い", "き", "し", "ち", "に", "ひ", "み", "り", "ぎ", "じ", "び", "ぴ",
         "え", "け", "せ", "て", "ね", "へ", "め", "れ", "げ", "ぜ", "で", "べ", "ぺ"
     ]
-    static func ichidanRenyouSuppliedForEmptyStem(_ reading: String, wordCostsIsEmpty: () -> Bool) -> Bool {
-        reading.count >= 3
+    static func ichidanRenyouSuppliedForEmptyStem(_ reading: String, wordCostsAreNegligible: () -> Bool) -> Bool {
+        reading.count >= 2
             && reading.last.map { ichidanStemTailCharacters.contains($0) } == true
-            && wordCostsIsEmpty()
+            && wordCostsAreNegligible()
+    }
+
+    // 語幹読みの辞書語が「無いか、全部が収穫底値(wc≥10000)」か
+    static func wordCostsAreNegligible(_ costs: [String: Int]) -> Bool {
+        costs.values.allSatisfy { $0 >= CandidateScore.harvestTierWordCostFloor }
     }
 
     // 一段命令形(ろ/よ)を供給しない基底読み。居ろ が 色 を、射ろ が 意呂 を跨ぐ等、
@@ -598,6 +605,8 @@ extension KanaKanjiConverter {
     // 五段の裸の連用形ルール(iForm 単独)の識別キー(iForm\t辞書形語尾)。derivedCandidates の語幹長ゲート用
     static let godanBareRenyouRuleKeys: Set<String> = Set(godanPatterns.map { $0.iForm + "\t" + $0.dictionaryEnding })
     static let godanBareRenyouMinimumStemLength = 3
+    // 一段の裸の連用形(語幹)ルール。単文節の順位付け用(collectDerivedCandidates 参照。3251)
+    static let ichidanBareRenyouRule = InflectionRule(readingSuffix: "", baseReadingSuffix: "る", allowedClasses: .ichidan)
     // 裸の連用形ルールを iForm の末尾かなで引く(単文節の順位付け用。collectDerivedCandidates 参照)
     static let godanBareRenyouRuleByTail: [Character: InflectionRule] = Dictionary(
         uniqueKeysWithValues: godanPatterns.map {

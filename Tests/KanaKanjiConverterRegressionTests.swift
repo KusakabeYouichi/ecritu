@@ -19458,6 +19458,22 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(list.prefix(4)), ["すいか", "Suica", "スイカ", "西瓜"], "\(list)")
     }
 
+    // 3251: 一段の語幹+名詞(ゆでじかん→茹で時間)。語幹読みの辞書語が収穫底値だけ(湯出/油出)なら連用形を供給する
+    func testIchidanStemNounCompoundYudeJikan() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let multi = converter.multiClauseCandidates(for: "ゆでじかん", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "茹で時間", "\(multi.prefix(5))")
+        XCTAssertTrue(multi.prefix(2).contains("ゆで時間"), "\(multi.prefix(5))")
+        let yude = converter.candidates(for: "ゆで", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(yude.first, "茹で", "\(yude)")
+        let azuke = converter.candidates(for: "あずけ", limit: 3, systemCandidateMode: .surface)
+        XCTAssertEqual(azuke.first, "預け", "\(azuke)")
+        // 辞書語のある語幹(みせ=店)は従来どおり(見せ を先頭にしない)
+        let mise = converter.candidates(for: "みせ", limit: 3, systemCandidateMode: .surface)
+        XCTAssertEqual(mise.first, "店", "\(mise)")
+    }
+
     // 3251: きかい は 機械/機会/器械/奇怪 の順。交ぜ書き キ怪 は出さない
     func testKikaiSeedOrderAndMixedScriptSuppression() throws {
         try prepareRealLMDictionary()

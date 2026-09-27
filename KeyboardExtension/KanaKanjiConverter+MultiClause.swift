@@ -494,7 +494,7 @@ extension KanaKanjiConverter {
                     && len <= Self.multiClauseInflectionMaxSegmentReadingCount
                     && (segmentReading.last.map { Self.inflectionRuleSuffixLastCharacters.contains($0) } == true
                         || Self.ichidanRenyouNounBaseReadings.contains(segmentReading + "る")
-                        || Self.ichidanRenyouSuppliedForEmptyStem(segmentReading, wordCostsIsEmpty: { costMap.isEmpty }))
+                        || Self.ichidanRenyouSuppliedForEmptyStem(segmentReading, wordCostsAreNegligible: { Self.wordCostsAreNegligible(costMap) }))
                 // 活用派生の枠(定数コメント参照。3086)
                 let inflectionTopK = Self.multiClauseInflectionWideSupplyReadingPrefixes.contains(where: { segmentReading.hasPrefix($0) })
                     ? Self.multiClauseInflectionTopKWide
@@ -754,8 +754,12 @@ extension KanaKanjiConverter {
                     // seed がその活用形の並びにかなを載せている(たとえて=例えて/たとえて/喩えて/譬えて)ときも、
                     // かなが第1候補でなくても供給する。無いと たとえて言うなら が変種に出ず、喩えて/譬えて の
                     // 稀表記だけが並ぶ(2804)。コストは他の派生と同じ定額で、順位は seed 順の列挙順(タイブレーク)
+                    // 辞書語が実質無い短い一段の語幹(ゆで/どけ。3251)は、かな書きの複合(ゆで時間/ゆで卵)も普通なので
+                    // かなも供給する(変種に ゆで時間 が並ぶ)。長い語幹(まちがえられ 等の受身)まで広げると
+                    // まちがえられ過ぎ が 間違えられすぎ を変種から押し出すので 3 かな以下に限る
                     let suppliesKanaForOkuAuxiliary = Self.isOkuAuxiliaryReading(segmentReading)
                         || (KanaKanjiSeedDictionary.seed[segmentReading]?.contains(segmentReading) ?? false)
+                        || (len <= 3 && Self.ichidanRenyouSuppliedForEmptyStem(segmentReading, wordCostsAreNegligible: { Self.wordCostsAreNegligible(costMap) }))
                     // 関西方言の ている→とる 縮約形(騙しとった/欺しとった/瞞しとった)は標準形の後ろに回してから
                     // topK を採る。surface モードは 欺す/瞞す の異体が残るため縮約形だけで枠が埋まり、
                     // 騙し取った が立たなかった(かれをだましとった→彼を騙しとった。2888)。offset は元の並び
