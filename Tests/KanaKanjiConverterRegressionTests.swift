@@ -19578,7 +19578,9 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "きいたことあった", systemCandidateMode: .surface).first, "聞いたことあった")
         XCTAssertEqual(converter.multiClauseCandidates(for: "みたことある", systemCandidateMode: .surface).first, "見たことある")
         XCTAssertEqual(converter.multiClauseCandidates(for: "ともだちにあった", systemCandidateMode: .surface).first, "友達に会った")
-        XCTAssertEqual(Array(converter.candidates(for: "おすすめ", limit: 3, systemCandidateMode: .surface)), ["おすすめ", "お薦め", "お勧め"])
+        XCTAssertEqual(Array(converter.candidates(for: "おすすめ", limit: 4, systemCandidateMode: .surface)), ["お薦め", "お勧め", "おすすめ", "オススメ"])
+        let osusumeWa = osusume.isEmpty ? osusumeSingle : osusume
+        XCTAssertEqual(Array(osusumeWa.prefix(4)), ["お薦めだわ", "お勧めだわ", "おすすめだわ", "オススメだわ"], "multi=\(osusume.prefix(5)) single=\(osusumeSingle)")
         XCTAssertEqual(Array(converter.candidates(for: "きれ", limit: 3, systemCandidateMode: .surface).prefix(2)), ["切れ", "キレ"])
     }
 
