@@ -19458,6 +19458,15 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(list.prefix(4)), ["すいか", "Suica", "スイカ", "西瓜"], "\(list)")
     }
 
+    // 3251: きかい は 機械/機会/器械/奇怪 の順。交ぜ書き キ怪 は出さない
+    func testKikaiSeedOrderAndMixedScriptSuppression() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let list = converter.candidates(for: "きかい", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(4)), ["機械", "機会", "器械", "奇怪"], "\(list)")
+        XCTAssertFalse(list.contains("キ怪"), "\(list)")
+    }
+
     // 3244: iOS のユーザ辞書で読みが ☻ の単語は先頭に足し、既存の単語は元の位置のまま
     func testUserDictionaryShortcutImportPrependsNewOnlyKeepingExisting() {
         let store = converter.store
