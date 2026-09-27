@@ -19451,7 +19451,7 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(yoru.prefix(3)), ["夜", "よる", "寄る"], "\(yoru)")
         let yorou = converter.candidates(for: "よろうかな", limit: 4, systemCandidateMode: .surface)
         let multi = converter.multiClauseCandidates(for: "よろうかな", systemCandidateMode: .surface)
-        XCTAssertEqual((multi.first ?? yorou.first), "寄ろうかな", "single=\(yorou) multi=\(multi.prefix(4))")
+        XCTAssertEqual(Array(multi.prefix(2)), ["寄ろうかな", "よろうかな"], "single=\(yorou) multi=\(multi.prefix(4))")
     }
 
     // 3251: すいか は かな/Suica/スイカ/西瓜 の順
