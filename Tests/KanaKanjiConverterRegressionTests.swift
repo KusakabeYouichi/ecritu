@@ -19416,6 +19416,11 @@ extension KanaKanjiConverterRegressionTests {
         try loadDeviceAddedVocabulary()
         let sasoi = converter.candidates(for: "さそいだし", limit: 4, systemCandidateMode: .surface)
         XCTAssertEqual(sasoi.first, "誘い出し", "\(sasoi)")
+        // 実機の語幹キャッシュ経由(quickPostfix 1120)でも抜けるよう、合成の最高点との差を固定する(3256)
+        XCTAssertGreaterThan(
+            KanaKanjiConverter.CandidateScore.inflection + KanaKanjiConverter.CandidateScore.godanBareRenyouCompoundBoost,
+            (KanaKanjiConverter.CandidateScore.inflection - 1) + KanaKanjiConverter.CandidateScore.quickPostfix
+        )
         let omoi = converter.candidates(for: "おもいだし", limit: 4, systemCandidateMode: .surface)
         XCTAssertTrue(omoi.prefix(2).contains("思い出し"), "\(omoi)")
         // 語幹 2 かな(はな+し)は派生しない。辞書の並びのまま

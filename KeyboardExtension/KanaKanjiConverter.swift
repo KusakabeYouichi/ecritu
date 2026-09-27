@@ -257,8 +257,10 @@ final class KanaKanjiConverter {
         static let inflection = 980             // 活用形派生
         // 五段の裸の連用形(複合動詞 誘い出し/思い出し)への加点。点数は経路ごとに加算されるため、
         // かな接尾の合成(誘い+だし=bfsPostfix 1040)と派生(誘いだす→誘いだし 979)の両方を持つ表記(2019)を
-        // 派生だけの 誘い出し(980)が抜くには 1040 超の加点が要る(3250)
-        static let godanBareRenyouCompoundBoost = 1050
+        // 派生だけの 誘い出し(980)が抜くには合成点を超える加点が要る(3250)。合成点は経路で違い、実機の語幹キャッシュ経由
+        // (quickPostfix 1120)は Mac の探索経路(bfsPostfix 1040)より高い(実機トレース 3253: 誘いだし=2099 > 誘い出し=2030)。
+        // 高い方の 1120 を超える値にする(3256)
+        static let godanBareRenyouCompoundBoost = 1160
         // 一段の語幹(辞書語が実質無い読み。ゆで/あずけ/とらえ)への加点。かな識別(1417)+派生のかな(979)=2396 と
         // X+で 合成(湯で 1260)の上に 茹で/預け を出す(3251)
         static let ichidanStemCompoundBoost = 1500
