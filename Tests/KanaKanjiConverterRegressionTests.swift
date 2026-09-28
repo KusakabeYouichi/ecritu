@@ -19604,6 +19604,15 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3269: 国名+製(ヴェトナム製)、かけないで は 掛けないで/かけないで/賭けないで
+    func testVietnamSeiAndKakenaide() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        XCTAssertEqual(converter.multiClauseCandidates(for: "ゔぇとなむせい", systemCandidateMode: .surface).first, "ヴェトナム製")
+        XCTAssertEqual(Array(converter.candidates(for: "かけないで", limit: 3, systemCandidateMode: .surface)), ["掛けないで", "かけないで", "賭けないで"])
+        XCTAssertEqual(converter.multiClauseCandidates(for: "かけないでよ", systemCandidateMode: .surface).first, "掛けないでよ")
+    }
+
     // 3257: かけ は 書け/描け/賭け/掛け/欠け、かなは末尾
     func testKakeSeedOrder() throws {
         try prepareRealLMDictionary()

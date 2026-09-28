@@ -1132,7 +1132,7 @@ extension KanaKanjiConverter {
     // 「先頭の候補が選択され」が「戦闘の候補が洗濯され」になっていた。Sudachi の word_cost も
     // 銭湯7396/戦闘6515/先頭6776 で 先頭 は 3 番手。日常の文章では 先頭 の方が出るので seed 順をノードコストへ
     // きょく(3262): LM は 局 4384 < 曲 4543、局→で 1560 < 曲→で 1580 で、きょくでためす が 局で試す だった(ユーザ報告)
-    static let multiClauseSeedFirstLMOverrideReadings: Set<String> = ["せいかい", "よういち", "かじ", "たんにん", "しんせん", "きゅうりょう", "じゅうそう", "はんせい", "だったん", "せんとう", "とうぶん", "きょく", "おすすめ"]
+    static let multiClauseSeedFirstLMOverrideReadings: Set<String> = ["せいかい", "よういち", "かじ", "たんにん", "しんせん", "きゅうりょう", "じゅうそう", "はんせい", "だったん", "せんとう", "とうぶん", "きょく", "おすすめ", "かけないで"]
     // 接頭辞「お」(かな)直後の そい(添い/沿い 等)は おそい(遅い)の誤分割(お+そい)であることが
     // ほとんど。N-best 変種(お添いよね/お沿いよね)から落とすため減点する。寄り添い等の複合
     // (prev≠お)や お茶/お金(reading≠そい)は無傷。
@@ -1321,6 +1321,9 @@ extension KanaKanjiConverter {
     // 濃厚6427)。文として成立しない組み合わせを避けるため、正しいペアに割引を与える。
     // 値は bigram コストからの減算。同読みの対抗馬との unigram 差を跨げる幅にする(2564)
     static let multiClauseBigramPairBonuses: [String: Int] = [
+        // 掛けない+で: 否定の依頼(心配を掛けないで/電話を掛けないで)。かけないでよ が かけない+で+よ に割れ、かけない の
+        // 並び(基底 seed の 欠ける 先頭)で 欠けないでよ になっていた(ユーザ報告 3269)
+        "掛けない\tで": 300,
         // 金+払って(かねはらって): 人名 金原+って が僅差で勝っていた(ユーザ報告 2645)
         "金\t払って": 2500,
         // 参加+の: Wikipedia の「〜の傘下の子会社」偏りで 傘下→の 469 ≪ 参加→の 2086。unigram の
@@ -1477,7 +1480,8 @@ extension KanaKanjiConverter {
     static let multiClauseWoDropIntransitiveReadingPrefixes: [String] = ["いる", "いな", "いた", "いて", "いま", "いよ", "ある", "あっ", "あり", "あれ", "あろ", "なる", "なっ", "なら", "なれ", "なり", "なろ"]
     // 活用エンジンが作れない活用形を seed で供給する読み(しすぎ: する 単独の 連用+すぎ)。a2 の seed ノードに
     // 活用派生フラグを付けて、格助詞直後の活用割引を受けさせる(に+しすぎ が にしすぎ(に+する の派生)に負けない。2823)
-    static let multiClauseSeedInflectionDerivedReadings: Set<String> = ["しすぎ"]
+    // かけないで(3269): seed の 掛けないで を活用派生ノード(7200)として立て、かけない+で の分割(欠けない)に勝たせる
+    static let multiClauseSeedInflectionDerivedReadings: Set<String> = ["しすぎ", "かけないで"]
     // 接続助詞 なら の直後も述語が続くのが自然(あるならさせて/行くなら教えて)。格助詞と同じ活用割引の対象にする。
     // 無いと ある+なら+させて(7200)が ある+鳴らさせて(派生床 7200 の 1 ノード)に負ける(ユーザ報告 2823)
     // する の否定かな形。word_costs の かな識別(しない 9493)が先着して活用派生(b2)の合流を阻むと
@@ -1955,6 +1959,8 @@ extension KanaKanjiConverter {
         "え", "け", "げ", "せ", "ぜ", "て", "で", "ね", "へ", "べ", "ぺ", "め", "れ"
     ]
     static let multiClauseImperativeParticlePenalty = 3000
+    // 名詞の直後の かな せい(所為)は非文(〜のせい と の が要る)。ヴェトナムせい が ヴェトナム製 を抜いていた(ユーザ報告 3269)
+    static let multiClauseKanaSeiAfterNounPenalty = 2000
     // 形式名詞(こと/もの/ところ/とき…)の直後の ある の活用は存在の意味でかなが正書(聞いたことあった/見たことある)。
     // 会った/合った/有った/在った と同点になり、列挙順で 会った が先頭だった(ユーザ報告 3262)。漢字表層を減点する
     static let multiClauseExistentialAruKanjiHeads: Set<Character> = ["会", "合", "有", "在", "遭", "逢"]
