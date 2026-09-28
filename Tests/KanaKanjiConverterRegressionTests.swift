@@ -19623,6 +19623,15 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.candidates(for: "きんむぎ", limit: 3, systemCandidateMode: .surface).first, "金麦")
     }
 
+    // 3271: 板目紙(収穫底値の辞書語)を misc に登録し、いた+女神 の分割より先に
+    func testItamegamiCurated() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let multi = converter.multiClauseCandidates(for: "いためがみ", systemCandidateMode: .surface)
+        let single = converter.candidates(for: "いためがみ", limit: 3, systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first ?? single.first, "板目紙", "multi=\(multi.prefix(4)) single=\(single)")
+    }
+
     // 3257: かけ は 書け/描け/賭け/掛け/欠け、かなは末尾
     func testKakeSeedOrder() throws {
         try prepareRealLMDictionary()
