@@ -19613,6 +19613,16 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "かけないでよ", systemCandidateMode: .surface).first, "掛けないでよ")
     }
 
+    // 3270: つき で始まる活用は 付く を先に(区別付きやすかった)。つかれた は 疲れた のまま。金麦 を登録
+    func testTsukiPrefixFamilyPreferenceAndKinmugi() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let kubetsu = converter.multiClauseCandidates(for: "くべつつきやすかった", systemCandidateMode: .surface)
+        XCTAssertEqual(kubetsu.first, "区別付きやすかった", "\(kubetsu.prefix(4))")
+        XCTAssertEqual(converter.candidates(for: "つかれた", limit: 3, systemCandidateMode: .surface).first, "疲れた")
+        XCTAssertEqual(converter.candidates(for: "きんむぎ", limit: 3, systemCandidateMode: .surface).first, "金麦")
+    }
+
     // 3257: かけ は 書け/描け/賭け/掛け/欠け、かなは末尾
     func testKakeSeedOrder() throws {
         try prepareRealLMDictionary()
