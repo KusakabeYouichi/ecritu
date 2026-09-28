@@ -19610,7 +19610,8 @@ extension KanaKanjiConverterRegressionTests {
         try loadDeviceAddedVocabulary()
         XCTAssertEqual(converter.multiClauseCandidates(for: "ゔぇとなむせい", systemCandidateMode: .surface).first, "ヴェトナム製")
         XCTAssertEqual(Array(converter.candidates(for: "かけないで", limit: 3, systemCandidateMode: .surface)), ["掛けないで", "かけないで", "賭けないで"])
-        XCTAssertEqual(converter.multiClauseCandidates(for: "かけないでよ", systemCandidateMode: .surface).first, "掛けないでよ")
+        let kakenaideyo = converter.multiClauseCandidates(for: "かけないでよ", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(kakenaideyo.prefix(3)), ["掛けないでよ", "かけないでよ", "賭けないでよ"], "\(kakenaideyo.prefix(5))")
     }
 
     // 3270: つき で始まる活用は 付く を先に(区別付きやすかった)。つかれた は 疲れた のまま。金麦 を登録
