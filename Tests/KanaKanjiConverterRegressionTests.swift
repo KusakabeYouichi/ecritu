@@ -19593,6 +19593,17 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(list.first, "漢字", "\(list)")
     }
 
+    // 3268: お+連用形+する/できる(お会いする/お会いできて)。汚穢(おあい、読み違い)と 尾合 が合成を塞いでいた
+    func testOaiSuruHumble() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for (reading, expected) in [("おあいする", "お会いする"), ("おあいできて", "お会いできて"), ("おあいしたい", "お会いしたい")] {
+            let single = converter.candidates(for: reading, limit: 4, systemCandidateMode: .surface)
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first ?? single.first, expected, "\(reading) multi=\(multi.prefix(4)) single=\(single)")
+        }
+    }
+
     // 3257: かけ は 書け/描け/賭け/掛け/欠け、かなは末尾
     func testKakeSeedOrder() throws {
         try prepareRealLMDictionary()
