@@ -1960,6 +1960,13 @@ extension KanaKanjiConverter {
             if isQuestionKaAfterERowDerived {
                 penalty += Self.multiClauseImperativeParticlePenalty
             }
+            // 名詞の直後の かな せい(定数コメント参照。3269)。助詞・述語の直後、かな語の直後は対象外
+            if isKanaIdentity, surface == "せい", !prevIsBOS, !prevIsKanaIdentity,
+                !prevIsInflectionDerived, !prevIsDictionaryFormPredicate,
+                containsKanji(prev) || Self.isKatakanaString(prev),
+                !Self.multiClauseCaseParticleSurfacesID.contains(prevID) {
+                penalty += Self.multiClauseKanaSeiAfterNounPenalty
+            }
             // 形式名詞の直後の ある の漢字表層(聞いたこと会った。定数コメント参照。3262)
             if !isKanaIdentity, reading.hasPrefix("あ"),
                 let head = surface.first, Self.multiClauseExistentialAruKanjiHeads.contains(head),
