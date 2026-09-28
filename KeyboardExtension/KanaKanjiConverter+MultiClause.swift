@@ -1960,6 +1960,12 @@ extension KanaKanjiConverter {
             if isQuestionKaAfterERowDerived {
                 penalty += Self.multiClauseImperativeParticlePenalty
             }
+            // 着く(到着)は 〜に/へ/まで つく。それ以外の直後(区別つく/気がつく/身につく…の 付く)では 着 を後ろに(3270)。
+            // つく の seed は 着く 先頭(つきました=着きました、3251)なので、文脈で 付く に譲る
+            if isInflectionDerived, !prevIsBOS, reading.hasPrefix("つ"), surface.hasPrefix("着"),
+                !Self.multiClauseArrivalParticleSurfaces.contains(prev) {
+                penalty += Self.multiClauseArrivalVerbWithoutDestinationPenalty
+            }
             // 名詞の直後の かな せい(定数コメント参照。3269)。助詞・述語の直後、かな語の直後は対象外
             if isKanaIdentity, surface == "せい", !prevIsBOS, !prevIsKanaIdentity,
                 !prevIsInflectionDerived, !prevIsDictionaryFormPredicate,
