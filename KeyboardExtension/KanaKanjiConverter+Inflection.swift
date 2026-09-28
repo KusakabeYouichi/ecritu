@@ -88,7 +88,8 @@ extension KanaKanjiConverter {
             let kanjiBaseCosts = baseCosts.filter { $0.key != baseReading }
             let isRareBaseReading = !kanjiBaseCosts.isEmpty
                 && kanjiBaseCosts.values.allSatisfy { $0 >= CandidateScore.harvestTierWordCostFloor }
-            if KanaKanjiConverter.multiClauseInflectionFamilyPreferenceBaseReadings.contains(baseReading) {
+            if KanaKanjiConverter.multiClauseInflectionFamilyPreferenceBaseReadings.contains(baseReading)
+                || KanaKanjiConverter.inflectionFamilyPreferenceByReadingPrefix[baseReading].map({ reading.hasPrefix($0) }) == true {
                 // かな識別は昇格させない(先頭に乗ると b2 の「かなは先頭のときだけ供給」を
                 // 誤発動させ、はったら のかなが 貼ったら を抑えてしまう)。かなの扱いは
                 // 従来位置(other側)のまま既存規則に委ねる

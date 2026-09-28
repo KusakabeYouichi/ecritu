@@ -220,6 +220,9 @@ extension KanaKanjiConverter {
     // おきる を足す案は撤回(2973): 棚に置きます→棚に起きます、本を置きますか→本を起きますか に
     // なる。おく と両方に先行ボーナスが乗ると 起きる 側が全面的に勝ってしまう
     static let multiClauseInflectionFamilyPreferenceBaseReadings: Set<String> = ["はる", "おく", "まつ", "すくない", "くう", "くる"]
+    // 読みの接頭で限定した族の優先(3270): つき で始まる活用(付きやすい/付きました/付きます)は五段 付く を一段 尽きる より先に。
+    // 族ごと優先(3251 で試した)だと つかれた が 付かれた になる(疲れた が負ける)ので、つき 始まりの読みに限る
+    static let inflectionFamilyPreferenceByReadingPrefix: [String: String] = ["つく": "つき"]
     // 未代表族の追加供給(b2b)を、寄与基底の LM 優劣ゲート抜きで許す基底読み(2980、ユーザ報告
     // ひんぱんにおきますか)。おきます の族は 置く が上の族選好で先頭に固まり、surface モードでは
     // 異体(擱きます/於きます)まで昇格して topK=3 を使い切るため 起きます がノードとして立たず、
@@ -1961,6 +1964,9 @@ extension KanaKanjiConverter {
     static let multiClauseImperativeParticlePenalty = 3000
     // 名詞の直後の かな せい(所為)は非文(〜のせい と の が要る)。ヴェトナムせい が ヴェトナム製 を抜いていた(ユーザ報告 3269)
     static let multiClauseKanaSeiAfterNounPenalty = 2000
+    // 到着の 着く が立つ直前の助詞(3270)
+    static let multiClauseArrivalParticleSurfaces: Set<String> = ["に", "へ", "まで", "には", "へは", "にも"]
+    static let multiClauseArrivalVerbWithoutDestinationPenalty = 300
     // 形式名詞(こと/もの/ところ/とき…)の直後の ある の活用は存在の意味でかなが正書(聞いたことあった/見たことある)。
     // 会った/合った/有った/在った と同点になり、列挙順で 会った が先頭だった(ユーザ報告 3262)。漢字表層を減点する
     static let multiClauseExistentialAruKanjiHeads: Set<Character> = ["会", "合", "有", "在", "遭", "逢"]
