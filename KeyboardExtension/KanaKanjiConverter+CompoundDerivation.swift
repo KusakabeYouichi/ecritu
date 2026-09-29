@@ -9,6 +9,8 @@ extension KanaKanjiConverter {
         "ちょうえん": ["兆円"]
     ]
 
+    static let counterTableOrderAuthoritativeReadings: Set<String> = ["もん"]
+
     static let numericCounterPrefixCandidatesByReading: [String: [String]] = [
         "いっ": ["一"],
         "きゅう": ["九"],
@@ -1131,7 +1133,12 @@ extension KanaKanjiConverter {
                 reading: suffixReading
             )
 
-            let resolvedSuffixCandidates = suffixCandidates.isEmpty
+            // 表で順序まで明示した助数詞(もん=問/門/文。2600)は、辞書・seed の並び(もん の seed は 門 先頭)でなく
+            // 表の順にする(3274: 何問 が 何門/何文 の後ろだった)
+            let orderedSuffixCandidates = Self.counterTableOrderAuthoritativeReadings.contains(suffixReading)
+                ? suffixCandidates.sorted { (allowedSuffixes.firstIndex(of: $0) ?? .max) < (allowedSuffixes.firstIndex(of: $1) ?? .max) }
+                : suffixCandidates
+            let resolvedSuffixCandidates = orderedSuffixCandidates.isEmpty
                 ? allowedSuffixes
                 : suffixCandidates
 
