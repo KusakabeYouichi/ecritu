@@ -1,5 +1,6 @@
 import SwiftUI
 import XCTest
+import SQLite3
 
 final class KanaKanjiConverterRegressionTests: XCTestCase {
     private var defaultsSuiteName = ""
@@ -3229,6 +3230,183 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // (LM収録)なのに、かな識別が先頭に出る読みを KATALEAD 行で報告。
     // tools/audit_katakana_emphasis_drop.py の TSV(rank列)を再利用する。
     // SWEEP_KATALEAD=1(env TEST_RUNNER_SWEEP_KATALEAD=1)のときだけ実行。
+    // メモリーの育ち方の計測(3280、診断用)。いろいろな読みを変換しながら malloc used を測り、最後にキャッシュを捨てて戻る量を見る
+    func testDiagnosticConversionMemoryGrowth() throws {
+        guard ProcessInfo.processInfo.environment["DIAG_MEMGROW"] != nil else {
+            throw XCTSkip("DIAG_MEMGROW=1 のときだけ実行")
+        }
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        func usedMB() -> Double {
+            var stats = malloc_statistics_t()
+            malloc_zone_statistics(nil, &stats)
+            return Double(stats.size_in_use) / 1_048_576
+        }
+        func allocMB() -> Double {
+            var stats = malloc_statistics_t()
+            malloc_zone_statistics(nil, &stats)
+            return Double(stats.size_allocated) / 1_048_576
+        }
+        var db: OpaquePointer?
+        guard sqlite3_open_v2("/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite", &db, SQLITE_OPEN_READONLY, nil) == SQLITE_OK else {
+            throw XCTSkip("sqlite を開けない")
+        }
+        defer { sqlite3_close(db) }
+        var readings: [String] = []
+        var stmt: OpaquePointer?
+        sqlite3_prepare_v2(db, "select distinct reading from dictionary_entries where length(reading) between 3 and 9 order by random() limit 600", -1, &stmt, nil)
+        while sqlite3_step(stmt) == SQLITE_ROW {
+            readings.append(String(cString: sqlite3_column_text(stmt, 0)))
+        }
+        sqlite3_finalize(stmt)
+        let base = usedMB()
+        print(String(format: "DIAGMEM start used=%.1f alloc=%.1f", base, allocMB()))
+        for (index, reading) in readings.enumerated() {
+            _ = converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+            _ = converter.multiClauseCandidates(for: reading + "ですね", systemCandidateMode: .surface)
+            if (index + 1) % 100 == 0 {
+                print(String(format: "DIAGMEM after=%d used=%.1f(+%.1f) alloc=%.1f", index + 1, usedMB(), usedMB() - base, allocMB()))
+            }
+        }
+        converter.clearAllCaches()
+        print(String(format: "DIAGMEM cleared used=%.1f(+%.1f) alloc=%.1f", usedMB(), usedMB() - base, allocMB()))
+    }
+
+    // 画面側のメモリーの育ち方(3280、診断用)。キーボードの面を実際に作り、変換候補を 600 回差し替えて描画しながら
+    // malloc used と VM タグ(tcmalloc/untagged)を測る
+    @MainActor
+    func testDiagnosticRootViewMemoryGrowth() throws {
+        guard ProcessInfo.processInfo.environment["DIAG_UIMEM"] != nil else {
+            throw XCTSkip("DIAG_UIMEM=1 のときだけ実行")
+        }
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        func usedMB() -> Double {
+            var stats = malloc_statistics_t()
+            malloc_zone_statistics(nil, &stats)
+            return Double(stats.size_in_use) / 1_048_576
+        }
+        var db: OpaquePointer?
+        guard sqlite3_open_v2("/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite", &db, SQLITE_OPEN_READONLY, nil) == SQLITE_OK else {
+            throw XCTSkip("sqlite を開けない")
+        }
+        defer { sqlite3_close(db) }
+        var readings: [String] = []
+        var stmt: OpaquePointer?
+        sqlite3_prepare_v2(db, "select distinct reading from dictionary_entries where length(reading) between 2 and 6 order by random() limit 600", -1, &stmt, nil)
+        while sqlite3_step(stmt) == SQLITE_ROW {
+            readings.append(String(cString: sqlite3_column_text(stmt, 0)))
+        }
+        sqlite3_finalize(stmt)
+        let model = KeyboardCandidateBarModel()
+        let rootView = KeyboardRootView(
+            onTextInput: { _ in },
+            onDeleteBackward: {},
+            onLookupRadicalEntries: { _ in [] },
+            onSpace: {},
+            onReturn: {},
+            onAdvanceKeyboard: {},
+            onApplyKanaPostModifier: { _, _ in .ignored },
+            onToggleParenthesesWrapper: {},
+            onSelectConversionCandidate: { _ in },
+            onCommitComposingText: {},
+            onCommitComposingTextAsKatakana: {},
+            onUpgradeRecentKanaCommitToKatakana: { false },
+            onInputModeChanged: { _, _ in },
+            showsNextKeyboardKey: false,
+            containerFrame: .zero,
+            directionProfile: .littlebear,
+            kanaLayoutMode: .threeByThreePlusWa,
+            kanaModifierPlacementMode: .postfix,
+            numberLayoutMode: .calculette,
+            latinLayoutMode: .flick,
+            accentPaletteRawValue: "emeraude",
+            isSystemDictionaryFallback: false,
+            hasFullAccess: true,
+            keyboardBackgroundThemeRawValue: "sakura",
+            basicSymbolOrderRawValue: "ascii",
+            temperatureUnitRawValue: TemperatureUnitPreference.celsius.rawValue,
+            radicalStrokeCountStyleRawValue: "",
+            spaceToastTrigger: 0,
+            returnKeySystemImageName: nil,
+            returnKeyTitleOverride: nil,
+            isReturnKeyEnabled: true,
+            kanaFlickGuideDisplayMode: .fourDirections,
+            latinFlickGuideDisplayMode: .fourDirections,
+            numberFlickGuideDisplayMode: .fourDirections,
+            modifierFlickGuideDisplayMode: .off,
+            keyRepeatInitialDelay: 0.5,
+            keyRepeatInterval: 0.1,
+            kanaModeSwitcherTapActionRawValue: "symbols",
+            kanaModeSwitcherRightFlickActionRawValue: "kaomoji",
+            kanaModeSwitcherUpFlickActionRawValue: "emoji",
+            kanaPostModifierEmptyTapActionRawValue: "kaomoji",
+            kanaPostModifierEmptyTapKaomojiCategoryID: "existing",
+            kanaPostModifierEmptyTapEmojiCategoryID: "0",
+            kanaPostModifierEmptyTapSymbolCategoryID: "0",
+            kanaPostModifierFlickDakutenEnabled: true,
+            landscapeCandidateSideRawValue: "left",
+            landscapeNumberPaneSideRawValue: "left",
+            landscapeLatinSuggestionModeRawValue: "sidebar",
+            shortcutVocabulary: [],
+            candidateBarModel: model,
+            showsParenthesesWrapper: false,
+            initialSpaceToastText: nil,
+            initialInputMode: .kana
+        )
+        let host = UIHostingController(rootView: rootView.frame(width: 393, height: 244))
+        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 393, height: 244))
+        window.rootViewController = host
+        window.isHidden = false
+        let renderer = UIGraphicsImageRenderer(bounds: CGRect(x: 0, y: 0, width: 393, height: 244))
+        func render() {
+            autoreleasepool {
+                host.view.setNeedsLayout()
+                host.view.layoutIfNeeded()
+                if ProcessInfo.processInfo.environment["DIAG_UIMEM_NODRAW"] == nil {
+                    _ = renderer.image { _ in host.view.drawHierarchy(in: host.view.bounds, afterScreenUpdates: true) }
+                } else {
+                    CATransaction.flush()
+                }
+            }
+        }
+        render()
+        let base = usedMB()
+        print(String(format: "DIAGUI start used=%.1f", base) + " " + MemoryForensics.vmRegionSummaryByTag())
+        let pauses = ProcessInfo.processInfo.environment["DIAG_UIMEM_PAUSE"] != nil
+        if pauses {
+            print("DIAGUI PAUSE1 pid=\(getpid())")
+            Thread.sleep(forTimeInterval: 25)
+        }
+        let fixedMode = ProcessInfo.processInfo.environment["DIAG_UIMEM_FIXED"] != nil
+        let fixedPairs: [(String, [String])] = fixedMode
+            ? readings.prefix(5).map { ($0, converter.candidates(for: $0, limit: 12, systemCandidateMode: .surface)) }
+            : []
+        for (index, reading) in readings.enumerated() {
+            if fixedMode {
+                let pair = fixedPairs[index % fixedPairs.count]
+                let only = ProcessInfo.processInfo.environment["DIAG_UIMEM_ONLY"] ?? ""
+                if only != "candidates" { model.composingText = pair.0 }
+                if only != "composing" { model.conversionCandidates = pair.1 }
+            } else {
+                model.composingText = reading
+                model.conversionCandidates = converter.candidates(for: reading, limit: 12, systemCandidateMode: .surface)
+            }
+            render()
+            if (index + 1) % 100 == 0 {
+                print(String(format: "DIAGUI after=%d used=%.1f(+%.1f)", index + 1, usedMB(), usedMB() - base) + " " + MemoryForensics.vmRegionSummaryByTag())
+            }
+        }
+        model.composingText = ""
+        model.conversionCandidates = []
+        render()
+        print(String(format: "DIAGUI cleared used=%.1f(+%.1f)", usedMB(), usedMB() - base) + " " + MemoryForensics.vmRegionSummaryByTag())
+        if pauses {
+            print("DIAGUI PAUSE2 pid=\(getpid())")
+            Thread.sleep(forTimeInterval: 25)
+        }
+    }
+
     func testDiagnosticKatakanaLeadSweep() throws {
         guard ProcessInfo.processInfo.environment["SWEEP_KATALEAD"] != nil else {
             throw XCTSkip("SWEEP_KATALEAD=1 のときだけ実行")
