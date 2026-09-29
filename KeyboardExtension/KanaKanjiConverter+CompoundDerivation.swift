@@ -11,6 +11,39 @@ extension KanaKanjiConverter {
 
     static let counterTableOrderAuthoritativeReadings: Set<String> = ["もん"]
 
+    // 数/何+助数詞 の並び(3274)。数+助数詞 は先頭(top+1)、何+助数詞 は 2 番目(top と同点にして top を +1)。
+    // 何 は 難問/何度 のように読み全体の辞書語が先頭で自然なことがあるので 2 番目に留める
+    func applyInterrogativeCounterCompoundPlacement(
+        for reading: String,
+        compounds: [String],
+        to scores: inout [String: Int]
+    ) {
+        let rule: (readingPrefix: String, surfacePrefix: Character, leads: Bool)
+        if reading.hasPrefix("すう") {
+            rule = ("すう", "数", true)
+        } else if reading.hasPrefix("なん") {
+            rule = ("なん", "何", false)
+        } else {
+            return
+        }
+        let counterReading = String(reading.dropFirst(rule.readingPrefix.count))
+        guard Self.numericCompoundCounterReadings.contains(counterReading),
+            let compound = compounds.first(where: { $0.first == rule.surfacePrefix }) else {
+            return
+        }
+        let compoundSet = Set(compounds)
+        guard let top = scores.filter({ !compoundSet.contains($0.key) }).max(by: { $0.value < $1.value }) else {
+            scores[compound] = max(scores[compound] ?? 0, CandidateScore.systemDictionary)
+            return
+        }
+        if rule.leads {
+            scores[compound] = max(scores[compound] ?? 0, top.value + 1)
+        } else {
+            scores[top.key] = top.value + 1
+            scores[compound] = max(scores[compound] ?? 0, top.value)
+        }
+    }
+
     static let numericCounterPrefixCandidatesByReading: [String: [String]] = [
         "いっ": ["一"],
         "きゅう": ["九"],
@@ -107,9 +140,11 @@ extension KanaKanjiConverter {
         "はっ": ["ぽん", "ぴき", "ぺん"],
         "よん": ["ほん", "ひき", "へん"],
         "ろっ": ["ぽん", "ぴき", "ぺん"],
+        // 数 も 何 と同じく、もん(問)と機械洗い出しの助数詞を許す(3274: すうもん→数問 がそもそも作られていなかった)
         "すう": [
             "こ", "かい", "かげつ", "かこく", "かしょ", "けん", "しゅうかん", "じかん", "じつ", "だい", "にん", "ねん",
-            "はい", "ばい", "はつ", "ぱつ", "びょう", "ふん", "ひき", "ほん", "まい"
+            "はい", "ばい", "はつ", "ぱつ", "びょう", "ふん", "ひき", "ほん", "まい", "もん", "ごう", "しんとう",
+            "あた", "いんかん", "か", "かいき", "かいり", "かうら", "かかん", "かく", "かごう", "かさね", "かじ", "かじょう", "かそう", "かそん", "かた", "かちょう", "かにち", "かねん", "かぶ", "かよ", "かり", "かん", "かんめ", "がい", "がうら", "がさね", "がた", "がっ", "がつ", "がん", "きゃく", "きょく", "きれ", "きろぐらむ", "きん", "ぎょう", "ぎれ", "くみ", "ぐ", "ぐみ", "けた", "げた", "げっ", "げつ", "げん", "こうじ", "こうにち", "こうねん", "こく", "こま", "ごく", "さお", "さら", "ざお", "ざら", "しな", "しめ", "しゃ", "しゃく", "しゅ", "しゅう", "しゅうき", "しゅうねん", "しょう", "しょく", "しりんぐ", "じつかん", "じめ", "じゃく", "じゅう", "じょう", "じん", "すじ", "すん", "ずん", "せ", "せつ", "せん", "そうばい", "ぞく", "たい", "たく", "たて", "たば", "たび", "たま", "たん", "だ", "だて", "だま", "だん", "ちゃく", "ちょう", "ちょうぶ", "ちょうめ", "つい", "つか", "つがい", "つき", "つぼ", "づき", "てい", "てん", "とう", "とおり", "とん", "ど", "どおり", "なのびょう", "にちかん", "ねんかん", "ねんじ", "はり", "はん", "ばしん", "ばり", "ばりき", "ぱく", "ぱり", "ぱん", "ひょう", "ひろ", "びょうかん", "ぴょう", "ふくろ", "ふり", "ふんかん", "ぶ", "ぶくろ", "ぶり", "ぶん", "ぷり", "ぷんかん", "へいべい", "ぺーじ", "ほ", "ぽ", "ま", "まき", "まわり", "むね", "めい", "めん", "めーとる", "もう", "もく", "もんめ", "よう", "より", "り", "りょう", "りん", "れん", "ろり", "わけ", "わり"
         ]
     ]
 
@@ -1140,7 +1175,7 @@ extension KanaKanjiConverter {
                 : suffixCandidates
             let resolvedSuffixCandidates = orderedSuffixCandidates.isEmpty
                 ? allowedSuffixes
-                : suffixCandidates
+                : orderedSuffixCandidates
 
             for prefixCandidate in resolvedPrefixCandidates {
                 for suffixCandidate in resolvedSuffixCandidates {
