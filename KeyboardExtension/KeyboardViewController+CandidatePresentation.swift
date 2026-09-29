@@ -271,6 +271,10 @@ extension KeyboardViewController {
                 MemoryForensics.noteOperation("変換\(reading.count)字")
                 // フットプリントが 5MB 動いたら理由付きで残す(2855)。alloc が動かない上昇を取り逃さない
                 MemoryForensics.noteFootprintDrift("変換\(reading.count)字")
+                if MemoryForensics.firstConversionPhasePending {
+                    MemoryForensics.firstConversionPhasePending = false
+                    MemoryForensics.notePhase("表示後の最初の変換")
+                }
                 MemoryForensics.noteConversion()
                 // 予防的スリム化(2658): 変換はアリーナを押し広げる主因なので、その直後に
                 // footprint が高ければ返却しておく。実測(8/27 05:39)では警告時点で
