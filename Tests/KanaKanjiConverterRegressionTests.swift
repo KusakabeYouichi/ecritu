@@ -19677,6 +19677,18 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi.first ?? single.first, "常習性", "multi=\(multi.prefix(4)) single=\(single)")
     }
 
+    // 3279: かし の並び(菓子/歌詞/貸し/仮死/樫…)を かしだ にも
+    func testKashiSeedOrderAndCopula() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let kashi = converter.candidates(for: "かし", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(kashi.prefix(5)), ["菓子", "歌詞", "貸し", "仮死", "樫"], "\(kashi)")
+        let multi = converter.multiClauseCandidates(for: "かしだ", systemCandidateMode: .surface)
+        let single = converter.candidates(for: "かしだ", limit: 6, systemCandidateMode: .surface)
+        let shown = multi.isEmpty ? single : multi
+        XCTAssertEqual(Array(shown.prefix(3)), ["菓子だ", "歌詞だ", "貸しだ"], "multi=\(multi.prefix(5)) single=\(single)")
+    }
+
     // 3276: 企業名 アクセア を登録
     func testAcceaRegistered() throws {
         try prepareRealLMDictionary()
