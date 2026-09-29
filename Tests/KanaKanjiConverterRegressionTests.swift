@@ -19633,6 +19633,19 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi.first ?? single.first, "板目紙", "multi=\(multi.prefix(4)) single=\(single)")
     }
 
+    // 3274: 数問 は先頭、何問 は 難問 の次。助数詞 もん は表の順(問/門/文)
+    func testSuumonNanmonCounters() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let suu = converter.multiClauseCandidates(for: "すうもん", systemCandidateMode: .surface)
+        let suuSingle = converter.candidates(for: "すうもん", limit: 3, systemCandidateMode: .surface)
+        XCTAssertEqual((suu.isEmpty ? suuSingle : suu).first, "数問", "multi=\(suu) single=\(suuSingle)")
+        let nan = converter.candidates(for: "なんもん", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(nan.prefix(2)), ["難問", "何問"], "\(nan)")
+        let san = converter.candidates(for: "さんもん", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(san.first { $0.hasPrefix("3") }, "3問", "\(san)")
+    }
+
     // 3257: かけ は 書け/描け/賭け/掛け/欠け、かなは末尾
     func testKakeSeedOrder() throws {
         try prepareRealLMDictionary()
