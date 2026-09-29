@@ -909,6 +909,12 @@ extension KanaKanjiConverter {
                     where surface != segmentReading {
                         add(surface, isDictWord: true, isCurated: false, isInflectionDerived: true)
                     }
+                    // 数+助数詞(数問/数本)は 数+門 のような 1 字名詞への分割に負けやすい。単文節と同じく先頭にするため、
+                    // 表の順で最初の 数+助数詞 ノードにボーナスを付ける(3274)
+                    if segmentReading.hasPrefix("すう"),
+                        let first = numeric.first(where: { $0.hasPrefix("数") }) {
+                        seedOrderNounNodeBonuses[spanKeyByStart[start][end] + "-" + first] = Self.multiClauseSuuCounterCompoundBonus
+                    }
                 }
 
                 // (b4) 名詞化節(のが/のは 等)と説明の のね/のよ のかな単位ノードを常設する。
