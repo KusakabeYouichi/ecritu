@@ -750,6 +750,8 @@ extension KanaKanjiConverter {
         "揭": .init("掲", .itaiji), "溪": .init("渓", .itaiji), "恆": .init("恒", .itaiji), "絲": .init("糸", .itaiji), "緖": .init("緒", .itaiji), "奬": .init("奨", .itaiji), "敕": .init("勅", .itaiji), "祕": .init("秘", .itaiji),
         "舖": .init("舗", .itaiji), "步": .init("歩", .itaiji), "夛": .init("多", .itaiji), "沒": .init("没", .itaiji), "飜": .init("翻", .itaiji), "每": .init("毎", .itaiji), "晚": .init("晩", .itaiji), "顏": .init("顔", .itaiji), "卽": .init("即", .itaiji),
         "狀": .init("状", .itaiji),
+        // 麵(印刷標準字体)→ 麺(常用で使われる字形)。候補で見分けにくい(ユーザ指定 3277)
+        "麵": .init("麺", .itaiji),
         // 略字
         "仝": .init("同", .ryakuji), "卆": .init("卒", .ryakuji),
         // 紛らわしい別字
