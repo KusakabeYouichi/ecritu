@@ -19659,6 +19659,13 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3276: 企業名 アクセア を登録
+    func testAcceaRegistered() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        XCTAssertEqual(converter.candidates(for: "あくせあ", limit: 3, systemCandidateMode: .surface).first, "アクセア")
+    }
+
     // 3257: かけ は 書け/描け/賭け/掛け/欠け、かなは末尾
     func testKakeSeedOrder() throws {
         try prepareRealLMDictionary()
