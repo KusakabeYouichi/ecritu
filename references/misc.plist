@@ -283,6 +283,7 @@
 	<dict><key>phrase</key><string>ほんとだ</string><key>shortcut</key><string>ほんとだ</string></dict>	<!-- ほんとだ(本当だ の口語): かな ほんと(wc4550)は 本当(2581)より重く、連文節・単文節とも 本当だ が先頭になる。口語の相づちはかな表記が普通(ユーザー指定)なので、かな識別を curated で供給して先頭化する(うまく/さっき/いいね と同じ処方) -->
 
 	<!-- ■ 供給欠落の補充(Sudachi 未収録の複合語・固有名。そもそも候補が作れない) -->
+	<dict><key>phrase</key><string>常習性</string><key>shortcut</key><string>じょうしゅうせい</string><key>pos</key><string>名詞</string></dict>	<!-- 常習性: 辞書・LM とも 1 語で無く、城州製/上州製/常習製 の合成ばかりだった(ユーザ報告 3278) -->
 	<dict><key>phrase</key><string>アクセア</string><key>shortcut</key><string>あくせあ</string><key>pos</key><string>名詞</string></dict>	<!-- アクセア(出力・印刷サービスの企業名): 辞書・LM とも無い(ユーザ指定 3276) -->
 	<dict><key>phrase</key><string>板目紙</string><key>shortcut</key><string>いためがみ</string><key>pos</key><string>名詞</string></dict>	<!-- 板目紙: Sudachi にあるが wc 15036 の収穫底値帯で、連文節の いた+女神 に負けていた(ユーザ報告 3271) -->
 	<dict><key>phrase</key><string>金麦</string><key>shortcut</key><string>きんむぎ</string><key>pos</key><string>名詞</string></dict>	<!-- 金麦(サントリーのビール系飲料の銘柄): Sudachi・LM とも無く、勤務木/きんむ木 の合成ばかりだった(ユーザ指定 3270) -->
