@@ -627,6 +627,7 @@ final class KeyboardViewController: UIInputViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        MemoryForensics.notePhase("個体の生成(viewDidLoad)")
         // 縦画面は最初から 261(中身+透明な帯 17)を申告する(3264。Gboard と同じ)。判定を待って 244→261 と申告し直すと、
         // その一瞬の 244 でホストが帯を付ける経路に入ることがある(統合ログ 07:42:49)
         if traitCollection.verticalSizeClass != .compact {
@@ -641,6 +642,7 @@ final class KeyboardViewController: UIInputViewController {
         // KeyboardMemoryForensics.swift を削除(grep MEMFORENSICS)
         // 出力先は「そのとき生きている個体」を書き込み時に選ぶ(2721)。以前は viewDidLoad の個体を
         // weak で捕まえていたため、その個体の deinit 直後に発火する測定(個体deinit の窓)が黙って落ちた
+        MemoryForensics.driftExtraContext = { KeyboardViewController.liveControllerIdleSummary() }
         MemoryForensics.logSink = { line in
             DispatchQueue.main.async {
                 let live = KeyboardViewController.liveControllerCensus.allObjects
@@ -704,6 +706,8 @@ final class KeyboardViewController: UIInputViewController {
     }
 
     override func viewWillAppear(_ animated: Bool) {
+        MemoryForensics.firstConversionPhasePending = true
+        defer { MemoryForensics.notePhase("表示の準備(viewWillAppear)") }
         super.viewWillAppear(animated)
         cancelKeyboardAttachWatchdog()
         // 未到達と数えた後に表示が来たなら遅延復帰として数え直す(cancel より後に呼ぶ)
@@ -961,6 +965,7 @@ final class KeyboardViewController: UIInputViewController {
     }
 
     override func viewDidAppear(_ animated: Bool) {
+        defer { MemoryForensics.notePhase("表示(viewDidAppear)") }
         super.viewDidAppear(animated)
         setNeedsUpdateOfScreenEdgesDeferringSystemGestures()
         // 門番は窓に付くので、窓に載ってから外す(定義コメント参照。3172)
@@ -1526,6 +1531,7 @@ final class KeyboardViewController: UIInputViewController {
     }
 
     private func setupKeyboardView() {
+        defer { MemoryForensics.notePhase("面(SwiftUI)の組み立て") }
         installRawTouchProbeIfNeeded()
         let configuration = makeRenderConfiguration()
         let host = UIHostingController(rootView: makeRootView(from: configuration))
@@ -1580,11 +1586,15 @@ final class KeyboardViewController: UIInputViewController {
                 return
             }
 
+            MemoryForensics.notePhase("起動処理の前")
             if Self.isSupplementaryExternalCandidatesEnabled {
                 self.refreshSupplementaryLexiconIfNeeded(force: true)
+                MemoryForensics.notePhase("ユーザ辞書の索引")
                 self.refreshContactCandidatesIfNeeded(force: true)
+                MemoryForensics.notePhase("連絡先の表(要求)")
             }
             self.requestSharedDataPrewarmIfNeeded()
+            MemoryForensics.notePhase("共有データの先読み(要求)")
             self.requestSystemDictionaryPreloadIfNeeded()
         }
 
@@ -1794,7 +1804,9 @@ final class KeyboardViewController: UIInputViewController {
             appendLog: true
         )
 
+        MemoryForensics.notePhase("辞書プリロードの前")
         kanaKanjiConverter.preloadSystemDictionaryIfNeeded { [weak self] in
+            MemoryForensics.notePhase("辞書プリロードの後")
             guard let self else {
                 return
             }
