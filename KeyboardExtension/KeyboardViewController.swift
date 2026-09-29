@@ -698,6 +698,7 @@ final class KeyboardViewController: UIInputViewController {
             )
         }
         finishKeyboardDiagnosticsSession(reason: "deinit")
+        stripViewShellForDisposal()
         keyboardAttachWatchdogWorkItem?.cancel()
         keyboardBootstrapWorkItem?.cancel()
         dictionaryPreloadWorkItem?.cancel()
@@ -1518,6 +1519,30 @@ final class KeyboardViewController: UIInputViewController {
             "システム操作の門番の待ちを外した \(relaxed)個",
             critical: true
         )
+    }
+
+    // 解体時に外枠(self.view = UIInputView)の中身を空にする(3282)。実機のメモリーグラフ(2026-09-30 00:32、
+    // footprint 39.5MB)で、解体済みの個体 40 体ぶんの UIInputView が、背景のグラデーション層・レイアウト計算
+    // エンジン(NSISEngine)・タッチ計測のジェスチャー・描画の保存領域(CABackingStore 78)を抱えたまま残っていた。
+    // 参照の根は SwiftUI 内部の追跡情報がレイアウト計算エンジンを握っていることで、écritu からは断てない。
+    // 外枠が残っても軽くなるよう、層・ジェスチャー・子ビュー・制約を外す。解体中なので weak self は作らない。
+    // UIKit の操作なのでメインスレッドのときだけ行う
+    func stripViewShellForDisposal() {
+        guard Thread.isMainThread else {
+            return
+        }
+        backgroundGradientLayer?.removeFromSuperlayer()
+        backgroundGradientLayer = nil
+        guard let root = viewIfLoaded else {
+            return
+        }
+        root.gestureRecognizers?.forEach { root.removeGestureRecognizer($0) }
+        NSLayoutConstraint.deactivate(root.constraints)
+        for subview in root.subviews {
+            subview.removeFromSuperview()
+        }
+        root.layer.sublayers?.forEach { $0.removeFromSuperlayer() }
+        root.layer.contents = nil
     }
 
     private func installRawTouchProbeIfNeeded() {
