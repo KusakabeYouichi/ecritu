@@ -1967,6 +1967,8 @@ extension KanaKanjiConverter {
     static let multiClauseImperativeParticlePenalty = 3000
     // 名詞の直後の かな せい(所為)は非文(〜のせい と の が要る)。ヴェトナムせい が ヴェトナム製 を抜いていた(ユーザ報告 3269)
     static let multiClauseKanaSeiAfterNounPenalty = 2000
+    // 数+助数詞 ノードのボーナス(3274)。数門(数+門 の分割)に勝たせる
+    static let multiClauseSuuCounterCompoundBonus = 1500
     // 到着の 着く が立つ直前の助詞(3270)
     static let multiClauseArrivalParticleSurfaces: Set<String> = ["に", "へ", "まで", "には", "へは", "にも"]
     static let multiClauseArrivalVerbWithoutDestinationPenalty = 300

@@ -655,6 +655,14 @@ final class KanaKanjiConverter {
             to: &scores
         )
 
+        // 数+助数詞(数問/数本)は先頭、何+助数詞(何問/何本)は少なくとも 2 番目に(3274 の一般則)。
+        // 派生の点数(360)のままだと、辞書語(難問/南門)や断片の合成(数門)に負けて後ろに沈んでいた(ユーザ報告)
+        applyInterrogativeCounterCompoundPlacement(
+            for: reading,
+            compounds: numericCounterCompound,
+            to: &scores
+        )
+
         applyNumericUnitFallbackPriorityBoost(
             for: reading,
             fallbackCandidates: numericUnitFallback,
