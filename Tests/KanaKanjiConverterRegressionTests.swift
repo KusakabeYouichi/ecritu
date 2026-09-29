@@ -19668,6 +19668,15 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertFalse(list.contains("乾麵"), "\(list)")
     }
 
+    // 3278: 常習性 を登録
+    func testJoushuuseiRegistered() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let multi = converter.multiClauseCandidates(for: "じょうしゅうせい", systemCandidateMode: .surface)
+        let single = converter.candidates(for: "じょうしゅうせい", limit: 3, systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first ?? single.first, "常習性", "multi=\(multi.prefix(4)) single=\(single)")
+    }
+
     // 3276: 企業名 アクセア を登録
     func testAcceaRegistered() throws {
         try prepareRealLMDictionary()
