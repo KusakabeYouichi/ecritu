@@ -47,6 +47,39 @@ enum MemoryForensics {
     nonisolated(unsafe) private static var lastFootprintCheckAt: CFAbsoluteTime = 0
     static let footprintDriftThresholdMB: Double = 5
 
+    // A3. 起動の段階台帳(3273)。5MB 変化台帳は閾値を越えた時点の op しか書かないため、+10MB の増加が
+    // 「プリロード開始」に帰属して見えた(実際はその前の表示・起動処理の合計)。表示のたびに段階ごとの
+    // footprint と used を差分つきで 1 行ずつ残す(1 表示あたり 10 行前後)
+    nonisolated(unsafe) private static var lastPhaseFootprintMB: Double = 0
+    nonisolated(unsafe) private static var lastPhaseUsedMB: Double = 0
+    nonisolated(unsafe) static var firstConversionPhasePending = false
+    // 変化台帳の行に添える文脈(生存個体の内訳。KeyboardViewController が設定する)
+    nonisolated(unsafe) static var driftExtraContext: (() -> String)?
+
+    static func notePhase(_ name: @autoclosure () -> String) {
+        #if DEBUG
+        guard let footprint = currentPhysFootprintMB() else {
+            return
+        }
+        var stats = malloc_statistics_t()
+        malloc_zone_statistics(nil, &stats)
+        let used = Double(stats.size_in_use) / 1_048_576
+        ledgerLock.lock()
+        let previousFootprint = lastPhaseFootprintMB
+        let previousUsed = lastPhaseUsedMB
+        lastPhaseFootprintMB = footprint
+        lastPhaseUsedMB = used
+        ledgerLock.unlock()
+        func signed(_ value: Double) -> String { (value >= 0 ? "+" : "") + String(format: "%.1f", value) }
+        logSink?(
+            "MEMFORENSICS段階 \(name()) fp=\(String(format: "%.1f", footprint))(\(signed(footprint - previousFootprint)))"
+                + " used=\(String(format: "%.1f", used))(\(signed(used - previousUsed)))"
+                + " alloc=\(String(format: "%.1f", Double(stats.size_allocated) / 1_048_576))"
+                + (driftExtraContext.map { " " + $0() } ?? "")
+        )
+        #endif
+    }
+
     static func noteFootprintDrift(_ context: @autoclosure () -> String) {
         #if DEBUG
         let now = CFAbsoluteTimeGetCurrent()
@@ -85,6 +118,7 @@ enum MemoryForensics {
                 + " alloc=\(String(format: "%.1f", Double(stats.size_allocated) / 1_048_576))"
                 + " used=\(String(format: "%.1f", Double(stats.size_in_use) / 1_048_576))"
                 + " \(loadSummary)"
+                + (driftExtraContext.map { " " + $0() } ?? "")
         )
         #endif
     }

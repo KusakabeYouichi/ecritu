@@ -270,6 +270,23 @@ extension KeyboardViewController {
         sweepForgottenDetachedControllers(trigger: trigger)
     }
 
+    // 生存個体の内訳(3273): 表示中 / 使われなくなって 5 分以内 / 1 時間以内 / それ以上 / 降格経路なし(不明)
+    static func liveControllerIdleSummary() -> String {
+        let now = CFAbsoluteTimeGetCurrent()
+        var shown = 0, within5m = 0, within1h = 0, over1h = 0, unknown = 0
+        for controller in liveControllerCensus.allObjects {
+            if controller.viewIfLoaded?.window != nil {
+                shown += 1
+            } else if controller.lostActiveOwnershipAt > 0 {
+                let idle = now - controller.lostActiveOwnershipAt
+                if idle < 300 { within5m += 1 } else if idle < 3600 { within1h += 1 } else { over1h += 1 }
+            } else {
+                unknown += 1
+            }
+        }
+        return "個体[表示\(shown) 5分内\(within5m) 1時間内\(within1h) 1時間超\(over1h) 不明\(unknown)]"
+    }
+
     // 忘れられた離脱個体の掃除(3199)。
     // 既存の回収機構(ゾンビ・カナリア、releaseHostingViewIfZombie、メモリ警告3回目の強制解放)は
     // すべて lostActiveOwnershipAt > 0 = 降格経路を通ったことを前提にしている。降格は
@@ -473,6 +490,7 @@ extension KeyboardViewController {
             }
         }
         let beforeMB = currentFootprintMB()
+        let beforeSnapshot = MemoryForensics.snapshot()
         host.willMove(toParent: nil)
         host.view.removeFromSuperview()
         host.removeFromParent()
@@ -483,7 +501,9 @@ extension KeyboardViewController {
         malloc_zone_pressure_relief(nil, 0)
         let beforeText = beforeMB.map { String(format: "%.1f", $0) } ?? "?"
         appendKeyboardDiagnosticsLog(
-            "ゾンビのビュー階層を解放 reason=\(reason) footprintMB=\(beforeText)→\(diagnosticsFootprintMBText())",
+            "ゾンビのビュー階層を解放 reason=\(reason) footprintMB=\(beforeText)→\(diagnosticsFootprintMBText())"
+                + " " + (MemoryForensics.syncDeltaLine("痩せ", since: beforeSnapshot, minDeltaMB: -1) ?? "")
+                + " idle=\(lostActiveOwnershipAt > 0 ? String(format: "%.0f", CFAbsoluteTimeGetCurrent() - lostActiveOwnershipAt) : "-")s",
             critical: true,
             file: #fileID,
             line: #line,
