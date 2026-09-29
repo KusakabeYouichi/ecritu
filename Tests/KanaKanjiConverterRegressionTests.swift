@@ -19659,6 +19659,15 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3277: 麵 は異体字の区分で抑制し、麺 だけを出す
+    func testMenVariantSuppressed() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let list = converter.candidates(for: "かんめん", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(list.first, "乾麺", "\(list)")
+        XCTAssertFalse(list.contains("乾麵"), "\(list)")
+    }
+
     // 3276: 企業名 アクセア を登録
     func testAcceaRegistered() throws {
         try prepareRealLMDictionary()
