@@ -19644,6 +19644,19 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(nan.prefix(2)), ["難問", "何問"], "\(nan)")
         let san = converter.candidates(for: "さんもん", limit: 6, systemCandidateMode: .surface)
         XCTAssertEqual(san.first { $0.hasPrefix("3") }, "3問", "\(san)")
+        // 一般則: ほかの助数詞でも 数+助数詞 は先頭、何+助数詞 は 2 番目以内
+        func shown(_ reading: String) -> [String] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            return multi.isEmpty ? converter.candidates(for: reading, limit: 4, systemCandidateMode: .surface) : multi
+        }
+        for reading in ["すうほん", "すうけん", "すうにん"] {
+            let list = shown(reading)
+            XCTAssertEqual(list.first?.first, "数", "\(reading) \(list)")
+        }
+        for reading in ["なんほん", "なんけん", "なんにん", "なんかい"] {
+            let list = shown(reading)
+            XCTAssertTrue(list.prefix(2).contains { $0.first == "何" }, "\(reading) \(list)")
+        }
     }
 
     // 3257: かけ は 書け/描け/賭け/掛け/欠け、かなは末尾
