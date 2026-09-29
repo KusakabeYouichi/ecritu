@@ -3407,6 +3407,39 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // 診断ログの書き込み経路のメモリー(3281、診断用)。実機と同じく 130KB 前後のログ Data を UserDefaults に
+    // 書き直す操作を繰り返し、malloc used が戻るかを見る
+    func testDiagnosticDiagnosticsLogWriteMemory() throws {
+        guard ProcessInfo.processInfo.environment["DIAG_LOGMEM"] != nil else {
+            throw XCTSkip("DIAG_LOGMEM=1 のときだけ実行")
+        }
+        func usedMB() -> Double {
+            var stats = malloc_statistics_t()
+            malloc_zone_statistics(nil, &stats)
+            return Double(stats.size_in_use) / 1_048_576
+        }
+        let defaults = UserDefaults(suiteName: "diag.logmem.\(UUID().uuidString)")!
+        var buffer = Data(capacity: 160 * 1024)
+        let line = String(repeating: "あ", count: 120) + "\n"
+        while buffer.count < 130 * 1024 { buffer.append(contentsOf: line.utf8) }
+        let base = usedMB()
+        for index in 1...2000 {
+            autoreleasepool {
+                buffer.removeSubrange(0..<line.utf8.count)
+                buffer.append(contentsOf: line.utf8)
+                defaults.set(buffer, forKey: "keyboardDiagnosticsLogLines")
+                var crit = defaults.data(forKey: "keyboardDiagnosticsCriticalLogLines") ?? Data()
+                crit.append(contentsOf: line.utf8)
+                if crit.count > 28 * 1024 { crit.removeSubrange(0..<line.utf8.count) }
+                defaults.set(crit, forKey: "keyboardDiagnosticsCriticalLogLines")
+                defaults.set("event \(index)", forKey: "keyboardDiagnosticsLastEvent")
+            }
+            if index % 400 == 0 {
+                print(String(format: "DIAGLOG writes=%d used=%.1f(+%.1f)", index, usedMB(), usedMB() - base))
+            }
+        }
+    }
+
     func testDiagnosticKatakanaLeadSweep() throws {
         guard ProcessInfo.processInfo.environment["SWEEP_KATALEAD"] != nil else {
             throw XCTSkip("SWEEP_KATALEAD=1 のときだけ実行")
