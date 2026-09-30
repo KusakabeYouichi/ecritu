@@ -440,7 +440,7 @@ struct KanjiInspectBubble: View {
             RoundedRectangle(cornerRadius: 8, style: .continuous)
                 .fill(Color.black.opacity(0.86))
         )
-        .shadow(color: .black.opacity(0.25), radius: 6, y: 2)
+        .keyboardSoftShadow(RoundedRectangle(cornerRadius: 8, style: .continuous), color: .black.opacity(0.25), radius: 6, y: 2)
     }
 }
 

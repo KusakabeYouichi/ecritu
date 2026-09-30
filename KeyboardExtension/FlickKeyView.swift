@@ -620,7 +620,7 @@ struct FlickKeyView: View {
             RoundedRectangle(cornerRadius: Metrics.keyCornerRadius, style: .continuous)
                 .stroke(KeyboardThemePalette.longPressPanelBorder, lineWidth: 1)
         )
-        .shadow(color: KeyboardThemePalette.longPressPanelShadow, radius: 4, y: 1)
+        .keyboardSoftShadow(RoundedRectangle(cornerRadius: Metrics.keyCornerRadius, style: .continuous), color: KeyboardThemePalette.longPressPanelShadow, radius: 4, y: 1)
         .allowsHitTesting(false)
     }
 
