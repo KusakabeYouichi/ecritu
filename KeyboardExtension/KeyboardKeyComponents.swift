@@ -2,6 +2,23 @@ import Foundation
 import SwiftUI
 import UIKit
 
+// 影は SwiftUI の .shadow を使わず、ぼかした図形を下に敷いて描く(3290)。
+// 実機のメモリグラフで、.shadow は UIKit の影専用ビュー(_UIRoundedRectShadowView)になり、大きさごとに
+// 約 1.4MB の影の画像を UIKit の画像キャッシュへ溜めていた(47MB のプロセスで 19.7MB)。長押しパネルや
+// 吹き出しは候補の数・文字の幅で大きさが毎回変わるので、出すたびに画像が増える。シミュレーターは影を
+// レイヤーで描くためこの経路を通らず、再現しない
+extension View {
+    func keyboardSoftShadow<S: Shape>(_ shape: S, color: Color, radius: CGFloat, y: CGFloat) -> some View {
+        background(
+            shape
+                .fill(color)
+                .offset(y: y)
+                .blur(radius: radius)
+                .allowsHitTesting(false)
+        )
+    }
+}
+
 struct LatinShiftKeyButton: View {
     let isOn: Bool
     let isLocked: Bool
@@ -376,7 +393,7 @@ struct SpaceFlickActionKeyButton: View {
                         Capsule()
                             .stroke(KeyboardThemePalette.keyStrokeOnAccent, lineWidth: 1)
                     )
-                    .shadow(color: Color.black.opacity(0.16), radius: 1.5, y: 1)
+                    .keyboardSoftShadow(Capsule(), color: Color.black.opacity(0.16), radius: 1.5, y: 1)
                     .offset(y: -44)
             }
         }
@@ -658,7 +675,7 @@ private struct SymbolLongPressBubble: View {
                 RoundedRectangle(cornerRadius: 9, style: .continuous)
                     .stroke(KeyboardThemePalette.keyStrokeOnAccent, lineWidth: 1)
             )
-            .shadow(color: Color.black.opacity(0.18), radius: 2, y: 1)
+            .keyboardSoftShadow(RoundedRectangle(cornerRadius: 9, style: .continuous), color: Color.black.opacity(0.18), radius: 2, y: 1)
     }
 }
 
@@ -988,7 +1005,7 @@ struct LongPressVerticalCandidatePanel: View {
             RoundedRectangle(cornerRadius: 10, style: .continuous)
                 .stroke(KeyboardThemePalette.longPressPanelBorder, lineWidth: 1)
         )
-        .shadow(color: KeyboardThemePalette.longPressPanelShadow, radius: 4, y: 1)
+        .keyboardSoftShadow(RoundedRectangle(cornerRadius: 10, style: .continuous), color: KeyboardThemePalette.longPressPanelShadow, radius: 4, y: 1)
         .allowsHitTesting(false)
     }
 
