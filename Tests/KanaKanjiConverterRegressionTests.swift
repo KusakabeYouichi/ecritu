@@ -3272,6 +3272,98 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         print(String(format: "DIAGMEM cleared used=%.1f(+%.1f) alloc=%.1f", usedMB(), usedMB() - base, allocMB()))
     }
 
+    // 影の置き換え(3290)の見た目比較。左が .shadow、右が keyboardSoftShadow。DIAG_SHADOWPNG=出力先
+    @MainActor
+    func testDiagnosticShadowAppearanceComparison() throws {
+        guard let out = ProcessInfo.processInfo.environment["DIAG_SHADOWPNG"] else {
+            throw XCTSkip("DIAG_SHADOWPNG=<png のパス> のときだけ実行")
+        }
+        func panel(_ soft: Bool, radius: CGFloat, y: CGFloat, opacity: Double) -> some View {
+            let shape = RoundedRectangle(cornerRadius: 10, style: .continuous)
+            let base = HStack { Text("あ い う え お").font(.system(size: 20)) }
+                .padding(.horizontal, 14).padding(.vertical, 10)
+                .background(shape.fill(Color.white))
+                .overlay(shape.stroke(Color.black.opacity(0.12), lineWidth: 1))
+            return Group {
+                if soft {
+                    base.keyboardSoftShadow(shape, color: .black.opacity(opacity), radius: radius, y: y)
+                } else {
+                    base.shadow(color: .black.opacity(opacity), radius: radius, y: y)
+                }
+            }
+        }
+        let view = VStack(spacing: 28) {
+            ForEach([(2.0, 1.0, 0.18), (4.0, 1.0, 0.18), (6.0, 2.0, 0.25)], id: \.0) { item in
+                HStack(spacing: 40) {
+                    panel(false, radius: item.0, y: item.1, opacity: item.2)
+                    panel(true, radius: item.0, y: item.1, opacity: item.2)
+                }
+            }
+        }
+        .padding(30)
+        .background(Color(red: 0.95, green: 0.84, blue: 0.88))
+        let renderer = ImageRenderer(content: view)
+        renderer.scale = 3
+        let data = try XCTUnwrap(renderer.uiImage?.pngData())
+        try data.write(to: URL(fileURLWithPath: out))
+    }
+
+    // SwiftUI の .shadow が大きさごとに影の画像(CoreGraphics のデータ領域)を作って溜めるかの確認(3290、診断用)。
+    // DIAG_SHADOWVM=native は .shadow、=blur はぼかした図形を下に敷く置き換え案
+    @MainActor
+    func testDiagnosticShadowImageCacheVMTag() throws {
+        guard let mode = ProcessInfo.processInfo.environment["DIAG_SHADOWVM"] else {
+            throw XCTSkip("DIAG_SHADOWVM=native|blur のときだけ実行")
+        }
+        struct Bubble: View {
+            let width: CGFloat
+            let useBlur: Bool
+            var body: some View {
+                let shape = RoundedRectangle(cornerRadius: 9, style: .continuous)
+                if useBlur {
+                    shape.fill(Color.blue).frame(width: width, height: 40)
+                        .background(shape.fill(Color.black.opacity(0.18)).offset(y: 1).blur(radius: 2))
+                } else {
+                    HStack { Text("あいうえお") }
+                        .frame(width: width, height: 40)
+                        .background(shape.fill(Color.white))
+                        .overlay(shape.stroke(Color.gray, lineWidth: 1))
+                        .shadow(color: Color.black.opacity(0.18), radius: 4, y: 1)
+                }
+            }
+        }
+        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 393, height: 300))
+        let host = UIHostingController(rootView: Bubble(width: 40, useBlur: mode == "blur"))
+        window.rootViewController = host
+        window.isHidden = false
+        func cgData() -> String {
+            let line = MemoryForensics.vmRegionSummaryByTag()
+            return line.split(separator: " ").first { $0.contains("cg_data") }.map(String.init) ?? "cg_data=0"
+        }
+        print("DIAGSHADOW \(mode) before \(cgData())")
+        for (index, width) in stride(from: 40, through: 360, by: 8).enumerated() {
+            host.rootView = Bubble(width: CGFloat(width), useBlur: mode == "blur")
+            window.layoutIfNeeded()
+            CATransaction.flush()
+            RunLoop.main.run(until: Date().addingTimeInterval(0.02))
+            if index % 10 == 9 {
+                print("DIAGSHADOW \(mode) width\(width) \(cgData())")
+            }
+        }
+        print("DIAGSHADOW \(mode) done \(cgData())")
+        func walk(_ v: UIView, _ depth: Int) {
+            let name = String(describing: type(of: v))
+            print("DIAGSHADOW class \(String(repeating: " ", count: depth))\(name) \(v.frame.size)")
+            if name.contains("Shadow") || name.contains("ImageView") {
+                let image = (v.subviews.compactMap { $0 as? UIImageView }.first?.image) ?? (v as? UIImageView)?.image
+                print("DIAGSHADOW view \(name) frame=\(v.frame) image=\(image.map { "\($0.size)x\($0.scale) cg=\($0.cgImage.map { "\($0.width)x\($0.height)" } ?? "-")" } ?? "-")")
+            }
+            v.subviews.forEach { walk($0, depth + 1) }
+        }
+        walk(host.view, 0)
+        window.isHidden = true
+    }
+
     // カラー絵文字の描画で CoreGraphics のデータ領域(VM タグ 54)が育つかの確認(3287、診断用)
     @MainActor
     func testDiagnosticEmojiGlyphCacheVMTag() throws {
