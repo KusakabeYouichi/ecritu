@@ -3272,6 +3272,31 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         print(String(format: "DIAGMEM cleared used=%.1f(+%.1f) alloc=%.1f", usedMB(), usedMB() - base, allocMB()))
     }
 
+    // カラー絵文字の描画で CoreGraphics のデータ領域(VM タグ 54)が育つかの確認(3287、診断用)
+    @MainActor
+    func testDiagnosticEmojiGlyphCacheVMTag() throws {
+        guard ProcessInfo.processInfo.environment["DIAG_EMOJIVM"] != nil else {
+            throw XCTSkip("DIAG_EMOJIVM=1 のときだけ実行")
+        }
+        print("DIAGEMOJI before \(MemoryForensics.vmRegionSummaryByTag())")
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 60, height: 60))
+        label.font = .systemFont(ofSize: 24)
+        let renderer = UIGraphicsImageRenderer(size: label.bounds.size)
+        var count = 0
+        for scalar in 0x1F300...0x1F64F {
+            guard let s = Unicode.Scalar(scalar), s.properties.isEmojiPresentation else { continue }
+            label.text = String(Character(s))
+            autoreleasepool {
+                _ = renderer.image { context in label.layer.render(in: context.cgContext) }
+            }
+            count += 1
+            if count % 100 == 0 {
+                print("DIAGEMOJI after\(count) \(MemoryForensics.vmRegionSummaryByTag())")
+            }
+        }
+        print("DIAGEMOJI done\(count) \(MemoryForensics.vmRegionSummaryByTag())")
+    }
+
     // 画面側のメモリーの育ち方(3280、診断用)。キーボードの面を実際に作り、変換候補を 600 回差し替えて描画しながら
     // malloc used と VM タグ(tcmalloc/untagged)を測る
     @MainActor
