@@ -19900,6 +19900,18 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(shown.prefix(3)), ["菓子だ", "歌詞だ", "貸しだ"], "multi=\(multi.prefix(5)) single=\(single)")
     }
 
+    // 3283: 抜栓(LM 未収録のサ変名詞)を登録し、ばっせんできない/ばっせんする を 抜栓 先頭に
+    func testBassenSahen() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        func shown(_ reading: String) -> [String] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            return multi.isEmpty ? converter.candidates(for: reading, limit: 4, systemCandidateMode: .surface) : multi
+        }
+        XCTAssertEqual(shown("ばっせんできない").first, "抜栓できない", "\(shown("ばっせんできない"))")
+        XCTAssertEqual(shown("ばっせんする").first, "抜栓する", "\(shown("ばっせんする"))")
+    }
+
     // 3276: 企業名 アクセア を登録
     func testAcceaRegistered() throws {
         try prepareRealLMDictionary()
