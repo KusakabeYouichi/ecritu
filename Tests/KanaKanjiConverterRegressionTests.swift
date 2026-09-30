@@ -19925,6 +19925,17 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(shown.prefix(3)), ["菓子だ", "歌詞だ", "貸しだ"], "multi=\(multi.prefix(5)) single=\(single)")
     }
 
+    // 3289: compenser の Vinoteras/Vinolet(ゔぃのてらす/ゔぃのれっと)
+    func testVinoterasVinoletRegistered() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for (reading, expected) in [("ゔぃのてらす", ["Vinoteras", "VINOTERAS", "ヴィノテラス"]), ("ゔぃのれっと", ["Vinolet", "VINOLET", "ヴィノレット"])] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            let shown = multi.isEmpty ? converter.candidates(for: reading, limit: 6, systemCandidateMode: .surface) : multi
+            XCTAssertEqual(Array(shown.prefix(3)), expected, "\(reading) \(shown)")
+        }
+    }
+
     // 3288: 何+駄 の助数詞生成をやめ、ナンダ(なんだ)を抑制。なんだか が 何駄か/ナンダか にならず、なんだか→何だか の順。無駄/駄目 は無傷
     func testNandaFragmentsSuppressed() throws {
         try prepareRealLMDictionary()
