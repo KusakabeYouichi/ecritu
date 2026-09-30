@@ -381,6 +381,7 @@
 	<dict><key>phrase</key><string>核</string><key>shortcut</key><string>かっ</string></dict>
 	<dict><key>phrase</key><string>世</string><key>shortcut</key><string>ぜ</string></dict>
 	<dict><key>phrase</key><string>是</string><key>shortcut</key><string>ぜ</string></dict>
+	<dict><key>phrase</key><string>ナンダ</string><key>shortcut</key><string>なんだ</string></dict>	<!-- ナンダ(人名・ナンダ・デヴィ等の収穫): なんだか→ナンダか を作る(ユーザ指定 3288) -->
 	<dict><key>phrase</key><string>駄賀</string><key>shortcut</key><string>だが</string></dict>
 	<dict><key>phrase</key><string>角野</string><key>shortcut</key><string>かくの</string></dict>
 	<dict><key>phrase</key><string>格野</string><key>shortcut</key><string>かくの</string></dict>
