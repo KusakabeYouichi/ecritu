@@ -19900,6 +19900,20 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(shown.prefix(3)), ["菓子だ", "歌詞だ", "貸しだ"], "multi=\(multi.prefix(5)) single=\(single)")
     }
 
+    // 3285: 有塩バター、ホテル(に)泊まる、留まる(とまる)の後置
+    func testYuuenButterAndHotelTomaru() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        func shown(_ reading: String) -> [String] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            return multi.isEmpty ? converter.candidates(for: reading, limit: 4, systemCandidateMode: .surface) : multi
+        }
+        XCTAssertEqual(shown("ゆうえんばたー").first, "有塩バター", "\(shown("ゆうえんばたー"))")
+        XCTAssertEqual(shown("ほてるにとまる").first, "ホテルに泊まる", "\(shown("ほてるにとまる"))")
+        XCTAssertEqual(shown("ほてるとまる").first, "ホテル泊まる", "\(shown("ほてるとまる"))")
+        XCTAssertNotEqual(shown("くるまがとまる").first, "車が留まる", "\(shown("くるまがとまる"))")
+    }
+
     // 3284: はやく は 早く/速く/端役/破約 の順
     func testHayakuSeedOrder() throws {
         try prepareRealLMDictionary()
