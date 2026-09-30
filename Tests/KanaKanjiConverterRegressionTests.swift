@@ -19925,6 +19925,21 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(shown.prefix(3)), ["菓子だ", "歌詞だ", "貸しだ"], "multi=\(multi.prefix(5)) single=\(single)")
     }
 
+    // 3286: 数字+ばん に 判(135判)、されてないと はかな、がくる は が来る
+    func testBanCounterSaretenaitoGakuru() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let ban = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+            converter.candidates(for: "ばん", limit: 8, systemCandidateMode: .surface), reading: "ばん", precedingCharacter: "5")
+        XCTAssertTrue(ban.prefix(4).contains("判"), "\(ban)")
+        func shown(_ reading: String) -> [String] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            return multi.isEmpty ? converter.candidates(for: reading, limit: 4, systemCandidateMode: .surface) : multi
+        }
+        XCTAssertEqual(shown("されてないと").first, "されてないと", "\(shown("されてないと"))")
+        XCTAssertEqual(shown("がくる").first, "が来る", "\(shown("がくる"))")
+    }
+
     // 3285: 有塩バター、ホテル(に)泊まる、留まる(とまる)の後置
     func testYuuenButterAndHotelTomaru() throws {
         try prepareRealLMDictionary()
