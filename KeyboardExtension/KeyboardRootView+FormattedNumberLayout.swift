@@ -1126,7 +1126,7 @@ extension KeyboardRootView {
             .background(
                 RoundedRectangle(cornerRadius: 10, style: .continuous)
                     .fill(KeyboardThemePalette.keyBackground)
-                    .shadow(color: Color.black.opacity(0.25), radius: 4, y: 1)
+                    .keyboardSoftShadow(RoundedRectangle(cornerRadius: 10, style: .continuous), color: Color.black.opacity(0.25), radius: 4, y: 1)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 10, style: .continuous)
