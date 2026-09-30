@@ -19900,6 +19900,14 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(shown.prefix(3)), ["菓子だ", "歌詞だ", "貸しだ"], "multi=\(multi.prefix(5)) single=\(single)")
     }
 
+    // 3284: はやく は 早く/速く/端役/破約 の順
+    func testHayakuSeedOrder() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let list = converter.candidates(for: "はやく", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(4)), ["早く", "速く", "端役", "破約"], "\(list)")
+    }
+
     // 3283: 抜栓(LM 未収録のサ変名詞)を登録し、ばっせんできない/ばっせんする を 抜栓 先頭に
     func testBassenSahen() throws {
         try prepareRealLMDictionary()
