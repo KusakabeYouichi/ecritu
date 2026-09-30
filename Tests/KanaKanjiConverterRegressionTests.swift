@@ -19925,6 +19925,17 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(shown.prefix(3)), ["菓子だ", "歌詞だ", "貸しだ"], "multi=\(multi.prefix(5)) single=\(single)")
     }
 
+    // 3288: 何+駄 の助数詞生成をやめ、ナンダ(なんだ)を抑制。なんだか が 何駄か/ナンダか にならず、なんだか→何だか の順。無駄/駄目 は無傷
+    func testNandaFragmentsSuppressed() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let multi = converter.multiClauseCandidates(for: "なんだかはばがひろいやつ", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(multi.prefix(2)), ["なんだか幅が広いやつ", "何だか幅が広いやつ"], "\(multi)")
+        XCTAssertFalse(multi.contains { $0.contains("何駄") || $0.contains("ナンダ") }, "\(multi)")
+        XCTAssertTrue(converter.candidates(for: "むだ", limit: 4, systemCandidateMode: .surface).contains("無駄"))
+        XCTAssertTrue(converter.candidates(for: "だめ", limit: 4, systemCandidateMode: .surface).contains("駄目"))
+    }
+
     // 3286: 数字+ばん に 判(135判)、されてないと はかな、がくる は が来る
     func testBanCounterSaretenaitoGakuru() throws {
         try prepareRealLMDictionary()
