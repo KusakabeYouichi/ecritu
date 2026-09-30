@@ -27,6 +27,12 @@
 	        <dict><key>phrase</key><string>Vacu Vin</string><key>shortcut</key><string>ゔぁきゅゔぁん</string></dict>
 	        <dict><key>phrase</key><string>Vacu Vin</string><key>shortcut</key><string>ばきゅばん</string></dict>
 	        <dict><key>phrase</key><string>ガンパウダー</string><key>shortcut</key><string>がんぱうだー</string></dict>
+	        <dict><key>phrase</key><string>Vinoteras</string><key>shortcut</key><string>ゔぃのてらす</string></dict>	<!-- ユーザ指定 3289 -->
+	        <dict><key>phrase</key><string>VINOTERAS</string><key>shortcut</key><string>ゔぃのてらす</string></dict>
+	        <dict><key>phrase</key><string>ヴィノテラス</string><key>shortcut</key><string>ゔぃのてらす</string></dict>
+	        <dict><key>phrase</key><string>Vinolet</string><key>shortcut</key><string>ゔぃのれっと</string></dict>	<!-- ユーザ指定 3289 -->
+	        <dict><key>phrase</key><string>VINOLET</string><key>shortcut</key><string>ゔぃのれっと</string></dict>
+	        <dict><key>phrase</key><string>ヴィノレット</string><key>shortcut</key><string>ゔぃのれっと</string></dict>
 	<!-- 服飾 -->
 	        <dict><key>phrase</key><string>黄麻</string><key>shortcut</key><string>こうま</string></dict>	<!-- Sudachiにもある(基底3位/24、コスト7404) -->
 	        <dict><key>phrase</key><string>ヴェロア</string><key>shortcut</key><string>ゔぇろあ</string></dict>
