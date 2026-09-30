@@ -1972,6 +1972,14 @@ extension KanaKanjiConverter {
                 !Self.multiClauseArrivalParticleSurfaces.contains(prev) {
                 penalty += Self.multiClauseArrivalVerbWithoutDestinationPenalty
             }
+            // 活用派生の て/で 形の直後のカタカナ語(されて+ナイト)は、打ち消しの ない+と の取り違え(3286)。
+            // て形に助詞なしで外来語名詞が続く文は稀なので減点する
+            // (されて のように辞書にある かな の て形や、さ/れ/て と刻まれた て も対象。で 終わりは まで/ので を巻き込むので活用派生だけ)
+            if Self.isKatakanaString(surface), surface.count >= 2, let prevLast = prev.last,
+                (prevIsInflectionDerived && (prevLast == "て" || prevLast == "で"))
+                    || (prevLast == "て" && prev.allSatisfy { ("ぁ"..."ゖ").contains($0) }) {
+                penalty += Self.multiClauseKatakanaAfterTeFormPenalty
+            }
             // 名詞の直後の かな せい(定数コメント参照。3269)。助詞・述語の直後、かな語の直後は対象外
             if isKanaIdentity, surface == "せい", !prevIsBOS, !prevIsKanaIdentity,
                 !prevIsInflectionDerived, !prevIsDictionaryFormPredicate,
