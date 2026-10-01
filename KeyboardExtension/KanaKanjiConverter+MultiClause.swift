@@ -1972,6 +1972,18 @@ extension KanaKanjiConverter {
                 !Self.multiClauseArrivalParticleSurfaces.contains(prev) {
                 penalty += Self.multiClauseArrivalVerbWithoutDestinationPenalty
             }
+            // 名詞+「助詞と同音の一字漢字で始まる活用形」(テスト+派しなくて/破しなくて)は、名詞+助詞+する の取り違え(3294)。
+            // 一字のサ変・す動詞(派する/破す/課す…)の活用形が、読みの頭の助詞(は/が/を/に/も/で/と/へ)を飲み込んで
+            // 1 ノードで安く立つ。後ろが動詞なら助詞で切るのが自然なので減点する
+            if isInflectionDerived, !prevIsInflectionDerived, surface.count >= 2,
+                let head = surface.unicodeScalars.first, (0x4E00...0x9FFF).contains(head.value),
+                surface.unicodeScalars.dropFirst().allSatisfy({ (0x3041...0x3096).contains($0.value) }),
+                // 一字のサ変・す動詞の形(派しない/破した/課す)だけ。取って/払って/入った 等の普通の動詞は除く
+                let second = surface.dropFirst().first, Self.multiClauseSuruVerbSecondCharacters.contains(second),
+                let readingHead = reading.first, Self.multiClauseParticleHeadCharacters.contains(readingHead),
+                let prevTail = prev.unicodeScalars.last, !(0x3041...0x3096).contains(prevTail.value) {
+                penalty += Self.multiClauseParticleSwallowingKanjiVerbPenalty
+            }
             // 活用派生の て/で 形の直後のカタカナ語(されて+ナイト)は、打ち消しの ない+と の取り違え(3286)。
             // て形に助詞なしで外来語名詞が続く文は稀なので減点する
             // (されて のように辞書にある かな の て形や、さ/れ/て と刻まれた て も対象。で 終わりは まで/ので を巻き込むので活用派生だけ)
