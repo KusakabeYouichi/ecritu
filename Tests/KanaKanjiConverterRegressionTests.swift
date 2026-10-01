@@ -20017,6 +20017,19 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(shown.prefix(3)), ["菓子だ", "歌詞だ", "貸しだ"], "multi=\(multi.prefix(5)) single=\(single)")
     }
 
+    // 3295: まんじゅう は 饅頭 先頭(地名 満喜世 は後ろ)
+    func testManjuuLeadsWithSweet() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        func shown(_ reading: String) -> [String] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            return multi.isEmpty ? converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface) : multi
+        }
+        XCTAssertEqual(converter.candidates(for: "まんじゅう", limit: 8, systemCandidateMode: .surface).first, "饅頭")
+        XCTAssertEqual(shown("まんじゅう").first, "饅頭", "\(shown("まんじゅう"))")
+        XCTAssertEqual(shown("まんじゅうをたべた").first, "饅頭を食べた", "\(shown("まんじゅうをたべた"))")
+    }
+
     // 3294: 名詞+助詞と同音の単漢字(派/破/葉/歯…)+動詞 は助詞にする(テスト派しなくて→テストはしなくて)
     func testParticleHomophoneKanjiBeforeVerb() throws {
         try prepareRealLMDictionary()
