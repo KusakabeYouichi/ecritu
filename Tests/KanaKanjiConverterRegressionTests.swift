@@ -20017,6 +20017,24 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(shown.prefix(3)), ["菓子だ", "歌詞だ", "貸しだ"], "multi=\(multi.prefix(5)) single=\(single)")
     }
 
+    // 3294: 名詞+助詞と同音の単漢字(派/破/葉/歯…)+動詞 は助詞にする(テスト派しなくて→テストはしなくて)
+    func testParticleHomophoneKanjiBeforeVerb() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        func shown(_ reading: String) -> [String] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            return multi.isEmpty ? converter.candidates(for: reading, limit: 6, systemCandidateMode: .surface) : multi
+        }
+        let expected: [(String, String)] = [
+            ("てすとはしなくて", "テストはしなくて"), ("てすとはしない", "テストはしない"), ("てすとはする", "テストはする"),
+            ("しごとはしない", "仕事はしない"), ("てすとがおわった", "テストが終わった"), ("めーるをおくった", "メールを送った"),
+("ぱそこんにいれた", "パソコンに入れた"), ("てれびはみない", "テレビは見ない"),
+        ]
+        for (reading, top) in expected {
+            XCTAssertEqual(shown(reading).first, top, "\(reading) \(shown(reading))")
+        }
+    }
+
     // 3293: どうにか 等の副詞句(Sudachi が どう+に+か に分ける)
     func testDounikaAdverbsKanaLead() throws {
         try prepareRealLMDictionary()
