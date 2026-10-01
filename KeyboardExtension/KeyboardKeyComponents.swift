@@ -7,15 +7,23 @@ import UIKit
 // 約 1.4MB の影の画像を UIKit の画像キャッシュへ溜めていた(47MB のプロセスで 19.7MB)。長押しパネルや
 // 吹き出しは候補の数・文字の幅で大きさが毎回変わるので、出すたびに画像が増える。シミュレーターは影を
 // レイヤーで描くためこの経路を通らず、再現しない
+//
+// 型は AnyView で包んで呼び元へ漏らさない(3298)。包まずに some View を返していた 3290 では、吹き出しの
+// 型(fill/offset/blur/allowsHitTesting)が KeyboardRootView の型へ積み上がり、Release(-O wholemodule)の
+// swift-frontend が opaque type の置き換えで回り続けてビルドが終わらなくなった(30 分超。.shadow に戻すと 4 分台)。
+// [[project_release_wmo_body_limit]] と同じ系統。影は小さな吹き出しだけなので AnyView の差分計算の損は無視できる
 extension View {
-    func keyboardSoftShadow<S: Shape>(_ shape: S, color: Color, radius: CGFloat, y: CGFloat) -> some View {
-        background(
-            shape
-                .fill(color)
-                .offset(y: y)
-                .blur(radius: radius)
-                .allowsHitTesting(false)
-        )
+    func keyboardSoftShadow<S: Shape>(_ shape: S, color: Color, radius: CGFloat, y: CGFloat) -> ModifiedContent<Self, _BackgroundModifier<AnyView>> {
+        modifier(_BackgroundModifier(
+            background: AnyView(
+                shape
+                    .fill(color)
+                    .offset(y: y)
+                    .blur(radius: radius)
+                    .allowsHitTesting(false)
+            ),
+            alignment: .center
+        ))
     }
 }
 
