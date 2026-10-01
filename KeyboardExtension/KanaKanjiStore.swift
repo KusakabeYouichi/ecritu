@@ -1380,8 +1380,9 @@ final class KanaKanjiStore {
 
         // UserDefaults(poubelle=アプリ移行分+アプリUIでの手動抑制)と、バンドル直読みの
         // hidden(suppr.plist 由来=変換対策で非表示)を統合する。変換時は両者を対等に抑制。
-        // 共有設定に値が無い(フルアクセスがオフで App Group が読めない/アプリをまだ一度も開いていない)ときは、
-        // 同梱の poubelle 初期値で代わりに抑制する。値があればユーザーの編集(抑制を外した語)を優先する(3300)
+        // 共有設定に値が無い(アプリをまだ一度も開いていない/読み取りに失敗した)ときは、同梱の poubelle 初期値で
+        // 代わりに抑制する。値があればユーザーの編集(抑制を外した語)を優先する(3300)。なおフルアクセスがオフでも
+        // 共有設定の読み取りは効く(書き込みだけ不可。シミュレーター実測 2026-09-24)ので、オフ自体はこの経路に入らない
         var decodedDictionary = decodedStringArrayDictionary(
             forKey: KanaKanjiStorageKeys.suppressionVocabulary
         ) ?? bundledDictionary(resourceName: KanaKanjiStorageKeys.initialSuppressionResourceName)
