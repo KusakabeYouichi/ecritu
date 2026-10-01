@@ -30,6 +30,8 @@ enum KanaKanjiStorageKeys {
     // 変換対策の抑制(poubelle と対等に効くが、コンテナアプリの「抑制語彙」には表示しない)。
     // アプリ移行(ÉcrituSuppr_Vocab)を経由せず、キーボードがバンドルから直接読む。
     static let initialSuppressionHiddenResourceName = "InitialSupprHiddenVocabMigration"
+    // poubelle.plist 由来の抑制(アプリの「抑制語彙」に初期表示される分)。共有設定に値が無いときの代わり(3300)
+    static let initialSuppressionResourceName = "InitialSupprVocabMigration"
 }
 
 // カタカナ強調表記/交ぜ書きの扱い(コンテナ設定)。suppress=候補から除去(既定)、

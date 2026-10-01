@@ -8033,6 +8033,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // (220)を与え top 圏へ(名詞は残す)。おいしそう/なりそう(既存の様態)は不変。
     func testRegressionRealLMKaisouBuyAppears() throws {
         try prepareRealLMDictionary()
+        try clearUserSuppressionVocabulary()
         let single = converter.candidates(for: "かいそう", limit: 8, systemCandidateMode: .surface)
         XCTAssertTrue(single.contains("買いそう"), "single=\(single)")
         XCTAssertTrue(single.prefix(8).contains("飼いそう"), "single=\(single)")
@@ -12897,8 +12898,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     }
 
     // さすが をかな副詞に(指す+が 分割が勝っていた)。seed 順変種で 流石Apple を2番目に(2666)
+    // ユーザーが抑制語(poubelle)を全部外した状態にする(3300)。抑制語が無いと同梱の初期値(流石/美味しい 等)で
+    // 抑制されるようになったので、「抑制を外したときの順位」を見るテストはこれで空にしてから確かめる
+    private func clearUserSuppressionVocabulary() throws {
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: defaultsSuiteName))
+        defaults.set(try JSONEncoder().encode([String: [String]]()), forKey: "ÉcrituSuppr_Vocab")
+        converter.clearSharedDataCaches()
+    }
+
     func testSasugaAppleOrdering() throws {
         try prepareRealLMDictionary()
+        try clearUserSuppressionVocabulary()
         let result = converter.multiClauseCandidates(for: "さすがあっぷる", systemCandidateMode: .surface)
         XCTAssertEqual(Array(result.prefix(2)), ["さすがApple", "流石Apple"], "\(result)")
         let sore = converter.multiClauseCandidates(for: "さすがにそれは", systemCandidateMode: .surface)

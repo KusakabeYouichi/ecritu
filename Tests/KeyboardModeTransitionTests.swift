@@ -3,6 +3,19 @@ import XCTest
 import UIKit
 
 final class KeyboardModeTransitionTests: XCTestCase {
+    // 3300: 共有設定に抑制語(poubelle)の値が無い(フルアクセスがオフ等)ときは同梱の初期値で抑制する。値があればそちらを優先
+    func testSuppressionFallsBackToBundledPoubelleWhenSharedDefaultsMissing() throws {
+        let suite = "test.poubelle.fallback.\(UUID().uuidString)"
+        defer { UserDefaults.standard.removePersistentDomain(forName: suite) }
+        let missing = KanaKanjiStore(appGroupID: suite).suppressedCandidatesByReading()
+        XCTAssertTrue(missing["いたって"]?.contains("至って") == true, "同梱の poubelle で抑制される")
+        // ユーザーが抑制を外した(空にした)状態は尊重する
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
+        defaults.set(try JSONEncoder().encode([String: [String]]()), forKey: KanaKanjiStorageKeys.suppressionVocabulary)
+        let edited = KanaKanjiStore(appGroupID: suite).suppressedCandidatesByReading()
+        XCTAssertFalse(edited["いたって"]?.contains("至って") == true, "共有設定の値(空)を優先する")
+    }
+
     // 3296: かな 1 文字の正規化の速い道は、旧実装(ICU の文字変換)と全文字で結果が同じ
     private static func legacyNormalizedKanaCharacter(from text: String) -> Character? {
         guard text.count == 1 else { return nil }
