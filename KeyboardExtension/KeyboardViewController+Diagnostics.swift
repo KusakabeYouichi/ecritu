@@ -50,6 +50,8 @@ extension KeyboardViewController {
         // footprint のセッション最大値(MB、切り上げ)。**publish しない** ─ レイアウト経路から
         // @Published を書くと再描画→レイアウトの輪になる(2921)
         var memoryFootprintPeakMB = 0
+        // footprint の直近の値(MB、四捨五入)。でばぐ表示の「今の値」(ユーザ指定 3298)。最大値と同じく publish しない
+        var memoryFootprintCurrentMB = 0
         // footprint のプロセス生涯の最大値(MB、切り上げ)。セッション側は viewWillAppear で
         // 0 に戻すので「いつか 45 を超えた」記録が消える。拡張プロセスはアプリ切替をまたいで
         // 1 時間以上生きるため、その間の水位を残す方が切迫の追跡に効く(ユーザ指定 2924)。
@@ -741,6 +743,7 @@ extension KeyboardViewController {
             diagnosticsState.memoryFootprintPeakMB,
             Int(footprintMB.rounded(.up))
         )
+        diagnosticsState.memoryFootprintCurrentMB = Int(footprintMB.rounded())
         diagnosticsState.memoryFootprintProcessPeakMB = max(
             diagnosticsState.memoryFootprintProcessPeakMB,
             diagnosticsState.memoryFootprintPeakMB
