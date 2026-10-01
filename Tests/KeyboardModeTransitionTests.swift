@@ -2,6 +2,22 @@ import CryptoKit
 import XCTest
 
 final class KeyboardModeTransitionTests: XCTestCase {
+    // 3291: 削除キー(押し続けるとリピートするキー)は 1 打鍵で 1 回だけ実行する
+    func testRepeatKeyButtonActionRunsOncePerTouch() {
+        let suppress = ActionKeyButton.shouldSuppressRepeatKeyButtonAction
+        // 連打で 1 回目のボタン判定が 2 回目に触れた後に遅れて届く。どちらのボタン判定も弾く(ドラッグ判定が実行済み)
+        let tap2Began = 100.15
+        XCTAssertTrue(suppress(100.16, tap2Began, 100.08, false), "遅れて届いた 1 回目のボタン判定")
+        XCTAssertTrue(suppress(100.23, tap2Began, 100.22, false), "2 回目のボタン判定")
+        // 押し続けてリピート中に離す(触れてから 1 秒超)。リピート中なので弾く
+        XCTAssertTrue(suppress(102.0, 100.0, 90.0, true), "リピート中に離した")
+        // 離した直後(onEnded が先に届いた)も弾く
+        XCTAssertTrue(suppress(102.1, 100.0, 102.0, false), "離した直後")
+        // ドラッグ判定が来ない操作(VoiceOver のダブルタップ等)は実行する
+        XCTAssertFalse(suppress(200.0, 0, 0, false), "ドラッグが来ない操作")
+        XCTAssertFalse(suppress(200.0, 100.0, 100.1, false), "前のタッチから十分に時間が経った")
+    }
+
     func testSwitchInputModeResetsTransientState() {
         let state = makeState(
             inputMode: .kana,
