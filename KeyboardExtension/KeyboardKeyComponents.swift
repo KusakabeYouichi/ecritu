@@ -107,6 +107,13 @@ struct LatinShiftKeyButton: View {
     }
 }
 
+// 調査用ログ(削除キーの二重削除 3291): 押し続けるとリピートするキー(⌫ 等)で、
+// ①ボタン判定の遅着を二重削除として弾いた ②タッチの取り消しでリピート予約を捨てた、を 1 行残す。
+// 原因が分かったら外す
+enum KeyRepeatTouchForensics {
+    static var onReport: ((String) -> Void)?
+}
+
 struct ActionKeyButton: View {
     let title: String
     var systemImageName: String? = nil
@@ -132,10 +139,37 @@ struct ActionKeyButton: View {
     @State private var lastImmediateSingleTapAt: Date?
     @State private var repeatStartWorkItem: DispatchWorkItem?
     @State private var repeatTimer: Timer?
+    // リピートするキー(⌫ 等)の 1 打鍵 1 回の保証(3291)。ドラッグ判定が触れた瞬間に 1 回実行した時刻と、
+    // 指を離した(onEnded)時刻。ボタン判定はこの時刻から一定時間内なら実行しない。以前は「実行済み」の
+    // 印 1 つで弾いていたため、連打で前の打鍵のボタン判定が次の打鍵の後に遅れて届くと、次の打鍵の印を
+    // 倒してしまい、次の打鍵で 2 回消えた
+    @State private var repeatDragBeganAt: CFAbsoluteTime = 0
+    @State private var repeatDragEndedAt: CFAbsoluteTime = 0
+    // タッチが取り消されると SwiftUI は onEnded を呼ばない。GestureState は取り消しでも元に戻るので、
+    // これが false に戻ったらリピートの予約を必ず捨てる(3291)
+    @GestureState private var isRepeatTouchActive = false
+    private static let repeatTapSuppressionWindow: CFTimeInterval = 1.0
+
+    // リピートするキーのボタン判定を弾くか(3291)。触れてから 1 秒以内、リピート中、離してから 0.5 秒以内の
+    // どれかなら、そのタッチはドラッグ判定が実行済み。どれでもない(VoiceOver 等でドラッグが来ない)ときだけ実行する
+    static func shouldSuppressRepeatKeyButtonAction(
+        now: CFAbsoluteTime,
+        dragBeganAt: CFAbsoluteTime,
+        dragEndedAt: CFAbsoluteTime,
+        isRepeatPending: Bool
+    ) -> Bool {
+        now - dragBeganAt < repeatTapSuppressionWindow
+            || isRepeatPending
+            || now - dragEndedAt < 0.5
+    }
     private let keyLabelColor = KeyboardThemePalette.keyLabel
 
     var body: some View {
         Button(action: {
+            if repeatsWhileHolding {
+                handleRepeatKeyButtonAction()
+                return
+            }
             if didTriggerLongPress {
                 didTriggerLongPress = false
                 return
@@ -196,6 +230,9 @@ struct ActionKeyButton: View {
         )
         .simultaneousGesture(
             DragGesture(minimumDistance: 0)
+                .updating($isRepeatTouchActive) { _, active, _ in
+                    active = true
+                }
                 .onChanged { _ in
                     guard isEnabled,
                             repeatsWhileHolding else {
@@ -205,10 +242,28 @@ struct ActionKeyButton: View {
                     beginRepeatingActionIfNeeded()
                 }
                 .onEnded { _ in
+                    repeatDragEndedAt = CFAbsoluteTimeGetCurrent()
                     cancelRepeatingActionStart()
                     stopRepeatingAction()
                 }
         )
+        .onChange(of: isRepeatTouchActive) { active in
+            guard !active, repeatsWhileHolding else {
+                return
+            }
+            // onEnded と同じ更新で届くことがあるので、次の周回で「onEnded が来たか」を見る
+            DispatchQueue.main.async {
+                let endedNormally = repeatDragEndedAt >= repeatDragBeganAt
+                let hadPendingRepeat = repeatStartWorkItem != nil || repeatTimer != nil
+                cancelRepeatingActionStart()
+                stopRepeatingAction()
+                if !endedNormally, hadPendingRepeat {
+                    KeyRepeatTouchForensics.onReport?(
+                        "リピートキーのタッチ取消でリピート予約を破棄 キー=\(accessibilityLabel ?? title)"
+                    )
+                }
+            }
+        }
         .onDisappear {
             cancelPendingSingleTapAction()
             lastImmediateSingleTapAt = nil
@@ -277,8 +332,36 @@ struct ActionKeyButton: View {
         cancelPendingSingleTapAction()
         lastImmediateSingleTapAt = nil
         didTriggerLongPress = true
+        repeatDragBeganAt = CFAbsoluteTimeGetCurrent()
         action()
         scheduleRepeatingActionStartIfNeeded()
+    }
+
+    // リピートするキーのボタン判定(3291)。ドラッグ判定が直前に実行していれば何もしない。
+    // ドラッグ判定が来ない操作(VoiceOver のダブルタップ等)だけここで 1 回実行する
+    private func handleRepeatKeyButtonAction() {
+        let legacyWouldAct = !didTriggerLongPress
+        didTriggerLongPress = false
+        guard isEnabled else {
+            return
+        }
+        let now = CFAbsoluteTimeGetCurrent()
+        let sinceDrag = now - repeatDragBeganAt
+        if Self.shouldSuppressRepeatKeyButtonAction(
+            now: now,
+            dragBeganAt: repeatDragBeganAt,
+            dragEndedAt: repeatDragEndedAt,
+            isRepeatPending: repeatTimer != nil || repeatStartWorkItem != nil
+        ) {
+            if legacyWouldAct {
+                KeyRepeatTouchForensics.onReport?(
+                    "リピートキーの二重実行を回避(旧判定なら実行していた) キー=\(accessibilityLabel ?? title)"
+                        + " 触れてから=\(Int(sinceDrag * 1000))ms"
+                )
+            }
+            return
+        }
+        action()
     }
 
     private func scheduleRepeatingActionStartIfNeeded() {
