@@ -20017,6 +20017,20 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(shown.prefix(3)), ["菓子だ", "歌詞だ", "貸しだ"], "multi=\(multi.prefix(5)) single=\(single)")
     }
 
+    // 3293: どうにか 等の副詞句(Sudachi が どう+に+か に分ける)
+    func testDounikaAdverbsKanaLead() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        func shown(_ reading: String) -> [String] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            return multi.isEmpty ? converter.candidates(for: reading, limit: 6, systemCandidateMode: .surface) : multi
+        }
+        for reading in ["どうにかしたい", "どうにかする", "どうにかして", "どうにかなる", "どうにかならない", "どうにもならない",
+                        "どうにもできない", "どうやらそうらしい", "どうにでもなれ", "どうしてもしたい", "どうにかこうにか", "どうにか"] {
+            XCTAssertEqual(shown(reading).first, reading, "\(reading) \(shown(reading))")
+        }
+    }
+
     // 3292: そうじゃなきゃ 等は かな先頭(総社/惣社 の地名が そうじゃ を乗っ取らない)
     func testSoujaNakyaKanaLeads() throws {
         try prepareRealLMDictionary()
