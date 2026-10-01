@@ -58,6 +58,8 @@ final class KeyboardCandidateBarModel: ObservableObject {
     // プロセス生涯の footprint 最大値。セッション側は表示のたびに 0 に戻るので、
     // 「いつか 45 を超えた」記録はこちらにしか残らない(ユーザ指定 2924)
     @Published var memoryFootprintProcessPeakMBForDebugDisplay: Int = 0
+    // footprint の今の値(でばぐ表示のみ。3298)
+    @Published var memoryFootprintCurrentMBForDebugDisplay: Int = 0
 }
 
 enum KeyboardThemePalette {

@@ -864,6 +864,12 @@ final class KeyboardViewController: UIInputViewController {
         if candidateBarModel.memoryFootprintProcessPeakMBForDebugDisplay != processPeak {
             candidateBarModel.memoryFootprintProcessPeakMBForDebugDisplay = processPeak
         }
+        // 今の値は変わりやすいので、でばぐ表示が有効なときだけ流す(出荷版で再描画を増やさない)
+        let current = diagnosticsState.memoryFootprintCurrentMB
+        if KeyboardRootView.memoryPressureVisualizationEnabled,
+            candidateBarModel.memoryFootprintCurrentMBForDebugDisplay != current {
+            candidateBarModel.memoryFootprintCurrentMBForDebugDisplay = current
+        }
     }
 
     override func textDidChange(_ textInput: UITextInput?) {
