@@ -2,6 +2,65 @@ import CryptoKit
 import XCTest
 
 final class KeyboardModeTransitionTests: XCTestCase {
+    // 3296: かな 1 文字の正規化の速い道は、旧実装(ICU の文字変換)と全文字で結果が同じ
+    private static func legacyNormalizedKanaCharacter(from text: String) -> Character? {
+        guard text.count == 1 else { return nil }
+        let source = text.precomposedStringWithCanonicalMapping
+        let normalized = source.applyingTransform(.hiraganaToKatakana, reverse: true) ?? source
+        guard normalized.count == 1, let character = normalized.first,
+            let scalar = String(character).unicodeScalars.first,
+            (0x3040...0x309F).contains(scalar.value) || scalar.value == 0x30FC else {
+            return nil
+        }
+        return character
+    }
+
+    func testKanaNormalizerMatchesLegacyForAllCharacters() {
+        var inputs: [String] = []
+        for value in UInt32(0x20)...UInt32(0xFFFF) {
+            if let scalar = Unicode.Scalar(value) { inputs.append(String(Character(scalar))) }
+        }
+        for value in UInt32(0x20000)...UInt32(0x20010) {
+            if let scalar = Unicode.Scalar(value) { inputs.append(String(Character(scalar))) }
+        }
+        // 濁点・半濁点が別の文字になった形(か+゙ 等)と、絵文字の結合
+        for base in UInt32(0x3041)...UInt32(0x30FA) {
+            for mark in [UInt32(0x3099), UInt32(0x309A)] {
+                inputs.append(String(String.UnicodeScalarView([Unicode.Scalar(base)!, Unicode.Scalar(mark)!])))
+            }
+        }
+        inputs += ["👍🏽", "e\u{301}", "かか", ""]
+        var mismatches: [String] = []
+        for input in inputs {
+            let expected = Self.legacyNormalizedKanaCharacter(from: input)
+            let actual = KanaTextNormalizer.normalizedKanaCharacter(from: input)
+            if expected != actual {
+                let codes = input.unicodeScalars.map { String($0.value, radix: 16) }.joined(separator: "+")
+                mismatches.append("\(codes): 旧=\(expected.map(String.init) ?? "nil") 新=\(actual.map(String.init) ?? "nil")")
+            }
+        }
+        XCTAssertTrue(mismatches.isEmpty, "\(mismatches.count) 件不一致: \(mismatches.prefix(20))")
+    }
+
+    // 速さの比較(3296、計測用。DIAG_KANA_PERF=1 のときだけ)
+    func testKanaNormalizerSpeedComparison() throws {
+        guard ProcessInfo.processInfo.environment["DIAG_KANA_PERF"] != nil else {
+            throw XCTSkip("DIAG_KANA_PERF=1 のときだけ実行")
+        }
+        let samples = ["か", "ア", "ー", "ん", "が", "漢", "字", "a"]
+        let rounds = 20_000
+        func measure(_ body: (String) -> Character?) -> Double {
+            let start = CFAbsoluteTimeGetCurrent()
+            var hits = 0
+            for _ in 0..<rounds { for s in samples where body(s) != nil { hits += 1 } }
+            XCTAssertGreaterThan(hits, 0)
+            return (CFAbsoluteTimeGetCurrent() - start) * 1_000_000 / Double(rounds * samples.count)
+        }
+        let legacy = measure(Self.legacyNormalizedKanaCharacter)
+        let current = measure(KanaTextNormalizer.normalizedKanaCharacter)
+        print(String(format: "DIAGKANAPERF 旧=%.3fµs/字 新=%.3fµs/字 比=%.1f倍", legacy, current, legacy / current))
+    }
+
     // 3291: 削除キー(押し続けるとリピートするキー)は 1 打鍵で 1 回だけ実行する
     func testRepeatKeyButtonActionRunsOncePerTouch() {
         let suppress = ActionKeyButton.shouldSuppressRepeatKeyButtonAction
