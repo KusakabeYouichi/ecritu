@@ -1986,6 +1986,10 @@ extension KanaKanjiConverter {
     // 名詞の直後の かな せい(所為)は非文(〜のせい と の が要る)。ヴェトナムせい が ヴェトナム製 を抜いていた(ユーザ報告 3269)
     static let multiClauseKanaSeiAfterNounPenalty = 2000
     static let multiClauseKatakanaAfterTeFormPenalty = 2000
+    // 名詞の直後で助詞を飲み込む一字漢字の活用形(テスト+派しなくて)の減点と、対象の読みの頭(3294)
+    static let multiClauseParticleSwallowingKanjiVerbPenalty = 3000
+    static let multiClauseParticleHeadCharacters: Set<Character> = ["は", "が", "を", "に", "も", "で", "と", "へ"]
+    static let multiClauseSuruVerbSecondCharacters: Set<Character> = ["し", "さ", "す", "せ"]
     // 数+助数詞 ノードのボーナス(3274)。数門(数+門 の分割)に勝たせる
     static let multiClauseSuuCounterCompoundBonus = 1500
     // 到着の 着く が立つ直前の助詞(3270)
