@@ -1343,6 +1343,16 @@ final class KanaKanjiStore {
         return []
     }
 
+    // 同梱の JSON(読み→候補)を読む。無ければ空
+    private func bundledDictionary(resourceName: String) -> [String: [String]] {
+        guard let url = Bundle(for: KanaKanjiStore.self).url(forResource: resourceName, withExtension: "json"),
+            let data = try? Data(contentsOf: url),
+            let decoded = try? JSONDecoder().decode([String: [String]].self, from: data) else {
+            return [:]
+        }
+        return decoded
+    }
+
     // suppr.plist 由来の抑制(バンドル同梱、UI非表示)。poubelle の UserDefaults 経路とは別に
     // キーボードが直接読む。実機/バンドル解決は追加語彙(initialAjoutVocabulary)と同じ仕組み。
     private func bundledHiddenSuppressionDictionary() -> [String: [String]] {
@@ -1370,9 +1380,11 @@ final class KanaKanjiStore {
 
         // UserDefaults(poubelle=アプリ移行分+アプリUIでの手動抑制)と、バンドル直読みの
         // hidden(suppr.plist 由来=変換対策で非表示)を統合する。変換時は両者を対等に抑制。
+        // 共有設定に値が無い(フルアクセスがオフで App Group が読めない/アプリをまだ一度も開いていない)ときは、
+        // 同梱の poubelle 初期値で代わりに抑制する。値があればユーザーの編集(抑制を外した語)を優先する(3300)
         var decodedDictionary = decodedStringArrayDictionary(
             forKey: KanaKanjiStorageKeys.suppressionVocabulary
-        ) ?? [:]
+        ) ?? bundledDictionary(resourceName: KanaKanjiStorageKeys.initialSuppressionResourceName)
         for (reading, candidates) in bundledHiddenSuppressionDictionary() {
             decodedDictionary[reading, default: []].append(contentsOf: candidates)
         }
