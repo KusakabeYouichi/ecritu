@@ -3,7 +3,7 @@ import XCTest
 import UIKit
 
 final class KeyboardModeTransitionTests: XCTestCase {
-    // 3300: 共有設定に抑制語(poubelle)の値が無い(フルアクセスがオフ等)ときは同梱の初期値で抑制する。値があればそちらを優先
+    // 3300: 共有設定に抑制語(poubelle)の値が無い(アプリ未起動・読み取り失敗)ときは同梱の初期値で抑制する。値があればそちらを優先
     func testSuppressionFallsBackToBundledPoubelleWhenSharedDefaultsMissing() throws {
         let suite = "test.poubelle.fallback.\(UUID().uuidString)"
         defer { UserDefaults.standard.removePersistentDomain(forName: suite) }
