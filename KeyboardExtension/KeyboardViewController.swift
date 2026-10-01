@@ -1771,6 +1771,11 @@ final class KeyboardViewController: UIInputViewController {
     }
 
     private func configureInputAssistantBar() {
+        // 入力補助バー(ショートカットの欄)は iPad だけのもの。iPhone で inputAssistantItem に触ると、
+        // UIKit が内部の仕組みを初回だけ組み立てて約 0.7MB を持ち続ける(シミュレーター実測。3297)ので触らない
+        guard UIDevice.current.userInterfaceIdiom == .pad else {
+            return
+        }
         let assistant = inputAssistantItem
         assistant.leadingBarButtonGroups = []
         assistant.trailingBarButtonGroups = []

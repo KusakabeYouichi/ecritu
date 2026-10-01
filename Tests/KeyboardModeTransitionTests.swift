@@ -1,5 +1,6 @@
 import CryptoKit
 import XCTest
+import UIKit
 
 final class KeyboardModeTransitionTests: XCTestCase {
     // 3296: かな 1 文字の正規化の速い道は、旧実装(ICU の文字変換)と全文字で結果が同じ
@@ -40,6 +41,33 @@ final class KeyboardModeTransitionTests: XCTestCase {
             }
         }
         XCTAssertTrue(mismatches.isEmpty, "\(mismatches.count) 件不一致: \(mismatches.prefix(20))")
+    }
+
+    // 入力補助バーの設定(inputAssistantItem の初回アクセス)で増えるメモリ(3297、計測用。DIAG_ASSIST_MEM=1 のときだけ)
+    @MainActor
+    func testInputAssistantItemMemoryCost() throws {
+        guard ProcessInfo.processInfo.environment["DIAG_ASSIST_MEM"] != nil else {
+            throw XCTSkip("DIAG_ASSIST_MEM=1 のときだけ実行")
+        }
+        func usedMB() -> Double {
+            var stats = malloc_statistics_t()
+            malloc_zone_statistics(nil, &stats)
+            return Double(stats.size_in_use) / 1_048_576
+        }
+        let controller = UIInputViewController()
+        controller.loadViewIfNeeded()
+        let before = usedMB()
+        let assistant = controller.inputAssistantItem
+        assistant.leadingBarButtonGroups = []
+        assistant.trailingBarButtonGroups = []
+        let after = usedMB()
+        let second = UIInputViewController()
+        second.loadViewIfNeeded()
+        let before2 = usedMB()
+        second.inputAssistantItem.leadingBarButtonGroups = []
+        second.inputAssistantItem.trailingBarButtonGroups = []
+        let after2 = usedMB()
+        print(String(format: "DIAGASSIST 1体目 +%.2fMB 2体目 +%.2fMB", after - before, after2 - before2))
     }
 
     // 速さの比較(3296、計測用。DIAG_KANA_PERF=1 のときだけ)
