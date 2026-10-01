@@ -20017,6 +20017,26 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(shown.prefix(3)), ["菓子だ", "歌詞だ", "貸しだ"], "multi=\(multi.prefix(5)) single=\(single)")
     }
 
+    // 3292: そうじゃなきゃ 等は かな先頭(総社/惣社 の地名が そうじゃ を乗っ取らない)
+    func testSoujaNakyaKanaLeads() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        func shown(_ reading: String) -> [String] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            return multi.isEmpty ? converter.candidates(for: reading, limit: 6, systemCandidateMode: .surface) : multi
+        }
+        for reading in ["そうじゃなきゃ", "そうじゃない", "そうじゃなくて", "そうじゃないと", "そうじゃなければ", "そうじゃん",
+                        "そうじゃないか", "そうじゃなかった", "そうじゃなかったら", "そうじゃなくちゃ", "そうじゃなくても"] {
+            XCTAssertEqual(shown(reading).first, reading, "\(reading) \(shown(reading))")
+        }
+        // 他の じゃ+活用形 も壊さない
+        for (reading, expected) in [("きらいじゃなかった", "嫌いじゃなかった"), ("ほんとうじゃなければ", "本当じゃなければ")] {
+            XCTAssertEqual(shown(reading).first, expected, "\(reading) \(shown(reading))")
+        }
+        // ガード: 地名 総社 は地名の文脈では残る
+        XCTAssertTrue(shown("そうじゃし").prefix(3).contains("総社市"), "\(shown("そうじゃし"))")
+    }
+
     // 3289: compenser の Vinoteras/Vinolet(ゔぃのてらす/ゔぃのれっと)
     func testVinoterasVinoletRegistered() throws {
         try prepareRealLMDictionary()
