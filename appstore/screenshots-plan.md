@@ -148,6 +148,11 @@ take 6 で使った種(iPhone 17 Pro Max、`B907C0B8-0540-436D-9D10-2E5747498716
 
 - 拡張の attach 失敗(`表示未到達`)が出ると純正キーボードが写る。web クリップを 2〜3 回起動し直せば通る
 - 撮影のたびに `xcrun simctl status_bar <UD> override --time 9:41 …` を打ち直す(再起動で消える)
-- マニュアルの hero-kana は **iPhone 17 Pro**(1206×2622)から撮って `(0,1630)-(1206,2446)` を切り抜く。
+- マニュアルの hero-kana は **iPhone 17 Pro**(1206×2622)から撮り、キーボードの上端の 17px 上から最下段のピンクが
+  終わる 49px 下までを切り抜く(take 7、2026-10-02: 上端 1641・ピンクの終わり 2397 → `(0,1624)-(1206,2446)`、高さ 822)。
+  撮影用の設定: `kanaLayoutMode=threeByThreePlusWa keyboardBackgroundTheme=sakura flickDirectionProfile=littlebear
+  kanaModifierPlacement=postfix accentPalette=emeraude flickGuideDisplayModeKana=fourDirections
+  flickGuideDisplayModeModifier=off kanaModeSwitcherTapAction=symbols`(本文は空。Safari で開いてよい=上は切り抜きで落ちる)。
+  旧記録(take 5): `(0,1630)-(1206,2446)` を切り抜いた。
   App Store の 6.9 インチは iPhone 17 Pro Max(1320×2868)なので別のシミュレーターで撮る
 
