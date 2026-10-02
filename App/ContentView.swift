@@ -1534,7 +1534,12 @@ struct ContentView: View {
                 // 「使う」にしたとき、iOS のユーザ辞書の ☻ 語をショートカットへ取り込む予約(3244)
                 guard UserDictionaryCandidateDisplayModeOption(rawValue: newValue) == .on else {
                     // 「使わない」にしたら、拡張が共有領域に残した iOS ユーザ辞書の表(読み→候補)をその場で消す(3305)。
-                    // 拡張側も次の表示で消すが、キーボードを開くまで残るのを待たせない
+                    // 拡張側も次の表示で消すが、キーボードを開くまで残るのを待たせない。表は 3318 からファイル
+                    // (連絡先の対応表と同じ場所・同じ保護)、旧版の平文キーは後片づけ(撤去予定 2026-10-23 以降)
+                    ContactCacheCipher.removeCompactFile(
+                        appGroupID: SettingsKeys.appGroupID,
+                        fileName: ContactCacheCipher.userLexiconCompactFileName
+                    )
                     Self.sharedDefaults?.removeObject(forKey: SettingsKeys.supplementaryLexiconIndexCacheByReading)
                     Self.sharedDefaults?.removeObject(forKey: SettingsKeys.supplementaryLexiconIndexSignature)
                     return

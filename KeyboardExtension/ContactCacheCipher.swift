@@ -76,15 +76,24 @@ enum ContactCacheCipher {
     // バックアップ対象外(連絡先から作り直せる派生データ)
     static let compactFileName = "ContactCandidatesCompact.eccs"
 
-    static func compactFileURL(appGroupID: String) -> URL? {
+    // iOS のユーザ辞書(UILexicon)から拡張が作る 読み→候補 の表も同じ方式・同じ場所に置く(3318)。以前は App Group の
+    // UserDefaults に平文の辞書で置き、バックアップにも入っていた(セキュリティー検査 2026-10-02)。
+    // fileName 引数の既定は連絡先(呼び出し側を変えないため)
+    static let userLexiconCompactFileName = "UserLexiconCompact.eccs"
+
+    static func compactFileURL(appGroupID: String, fileName: String = compactFileName) -> URL? {
         FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupID)?
             .appendingPathComponent("Library/Application Support", isDirectory: true)
-            .appendingPathComponent(compactFileName)
+            .appendingPathComponent(fileName)
     }
 
     @discardableResult
-    static func writeCompactFile(_ store: SupplementalVocabCompactStore, appGroupID: String) -> Bool {
-        guard var url = compactFileURL(appGroupID: appGroupID) else {
+    static func writeCompactFile(
+        _ store: SupplementalVocabCompactStore,
+        appGroupID: String,
+        fileName: String = compactFileName
+    ) -> Bool {
+        guard var url = compactFileURL(appGroupID: appGroupID, fileName: fileName) else {
             return false
         }
         do {
@@ -105,23 +114,23 @@ enum ContactCacheCipher {
         }
     }
 
-    static func openCompactFile(appGroupID: String) -> SupplementalVocabCompactStore? {
-        guard let url = compactFileURL(appGroupID: appGroupID),
+    static func openCompactFile(appGroupID: String, fileName: String = compactFileName) -> SupplementalVocabCompactStore? {
+        guard let url = compactFileURL(appGroupID: appGroupID, fileName: fileName),
             let data = try? Data(contentsOf: url, options: .mappedIfSafe) else {
             return nil
         }
         return SupplementalVocabCompactStore(serialized: data)
     }
 
-    static func removeCompactFile(appGroupID: String) {
-        guard let url = compactFileURL(appGroupID: appGroupID) else {
+    static func removeCompactFile(appGroupID: String, fileName: String = compactFileName) {
+        guard let url = compactFileURL(appGroupID: appGroupID, fileName: fileName) else {
             return
         }
         try? FileManager.default.removeItem(at: url)
     }
 
-    static func compactFileExists(appGroupID: String) -> Bool {
-        guard let url = compactFileURL(appGroupID: appGroupID) else {
+    static func compactFileExists(appGroupID: String, fileName: String = compactFileName) -> Bool {
+        guard let url = compactFileURL(appGroupID: appGroupID, fileName: fileName) else {
             return false
         }
         return FileManager.default.fileExists(atPath: url.path)

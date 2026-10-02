@@ -6,7 +6,7 @@ import Darwin
 extension KeyboardViewController {
     func refreshSupplementaryLexiconIfNeeded(force: Bool) {
         guard Self.isSupplementaryExternalCandidatesEnabled else {
-            supplementaryLexiconCandidatesByReading = [:]
+            supplementaryLexiconCandidatesByReading = .empty
             supplementaryMergedCandidatesCacheByKey = [:]
             return
         }
@@ -17,7 +17,7 @@ extension KeyboardViewController {
         // 暗号化・バックアップ除外・オフ時削除まで整っていたのに、こちらだけ素通しだった)。設定が「使う」の
         // ときだけ下へ進み、「使わない」なら残っている表も消す
         guard currentUserDictionaryCandidateDisplayMode(from: sharedDefaults).usesUserDictionaryCandidates else {
-            supplementaryLexiconCandidatesByReading = [:]
+            supplementaryLexiconCandidatesByReading = .empty
             supplementaryMergedCandidatesCacheByKey = [:]
             removePersistedSupplementaryLexiconIndex()
             return
@@ -109,12 +109,12 @@ extension KeyboardViewController {
                 }
 
                 let signature = self.supplementaryLexiconEntriesSignature(fromEntries: lexiconEntries)
-                let mergedCandidates: [String: [String]]
+                let mergedCandidates: SupplementalVocabCompactStore
                 let usedPersistentIndex: Bool
 
-                // 署名が一致するなら hydrate 済みの in-memory 辞書をそのまま使う
-                // (defaults からの辞書デコードを毎セッション2回→hit時0回に。2415)。
-                // in-memory が空のとき(メモリ解放直後 等)だけ永続キャッシュを読む。
+                // 署名が一致するなら hydrate 済みの in-memory の表をそのまま使う
+                // (永続キャッシュの読み直しを毎セッション2回→hit時0回に。2415)。
+                // in-memory が空のとき(メモリ解放直後 等)だけ永続キャッシュ(mmap のファイル。3318)を読む。
                 if self.persistedSupplementaryLexiconIndexSignature() == signature,
                     let hydrated = self.hydratedSupplementaryLexiconCandidatesIfAvailable() {
                     mergedCandidates = hydrated
@@ -123,19 +123,18 @@ extension KeyboardViewController {
                     mergedCandidates = cachedCandidates
                     usedPersistentIndex = true
                 } else {
-                    mergedCandidates = self.buildSupplementaryLexiconCandidates(
-                        fromEntries: lexiconEntries
+                    // 辞書は畳むまでの一時物。畳んだ表をファイルに書き、以後は mmap で開く
+                    mergedCandidates = SupplementalVocabCompactStore(
+                        dictionary: self.buildSupplementaryLexiconCandidates(fromEntries: lexiconEntries)
                     )
                     usedPersistentIndex = false
                     self.storeSupplementaryLexiconIndex(
                         signature: signature,
-                        dictionary: mergedCandidates
+                        store: mergedCandidates
                     )
                 }
 
-                let entryCount = mergedCandidates.values.reduce(0) { partialResult, candidates in
-                    partialResult + candidates.count
-                }
+                let entryCount = mergedCandidates.readingCount
 
                 DispatchQueue.main.async {
                     if self.view.window == nil {
@@ -166,7 +165,7 @@ extension KeyboardViewController {
     func clearSupplementaryLexiconCandidatesForMemoryTrim() {
         isRefreshingSupplementaryLexicon = false
         supplementaryLexiconLastRefreshAt = Date()
-        supplementaryLexiconCandidatesByReading = [:]
+        supplementaryLexiconCandidatesByReading = .empty
         supplementaryMergedCandidatesCacheByKey = [:]
     }
 
@@ -175,25 +174,32 @@ extension KeyboardViewController {
             return
         }
 
-        guard let defaults = sharedDefaults,
-            let cachedDictionary = defaults.dictionary(forKey: SharedDefaultsKeys.supplementaryLexiconIndexCacheByReading)
-                as? [String: [String]],
-            !cachedDictionary.isEmpty else {
+        guard let defaults = sharedDefaults else {
             return
         }
+        // 旧版(3317 以前)が UserDefaults に置いた平文の辞書は、見つけたら消すだけ(3318)。表はファイルから作り直す。
+        // 端末ごと 1 回の後片づけ。**撤去予定: 2026-10-23 以降**(連絡先の後片づけ 3317 と同時)
+        if defaults.object(forKey: SharedDefaultsKeys.supplementaryLexiconIndexCacheByReading) != nil {
+            defaults.removeObject(forKey: SharedDefaultsKeys.supplementaryLexiconIndexCacheByReading)
+        }
 
-        // 保存されている signature が現行スキーマ(v2 接頭辞付き)でないキャッシュは
-        // インデックス化ロジックが古い可能性があるので破棄する。これがないと、
-        // 旧スキームで生成された「候補側カナ抽出キー」混入キャッシュが
-        // 起動ごとに in-memory へ復活し続けてしまう。
+        // 保存されている signature が現行スキーマ(v3 接頭辞付き)でない表は、索引化の論理が古い可能性が
+        // あるので破棄する。これがないと旧スキームの表が起動ごとに in-memory へ復活し続ける
         let storedSignature = defaults.string(forKey: SharedDefaultsKeys.supplementaryLexiconIndexSignature) ?? ""
         guard storedSignature.hasPrefix("v3:") else {
-            defaults.removeObject(forKey: SharedDefaultsKeys.supplementaryLexiconIndexCacheByReading)
-            defaults.removeObject(forKey: SharedDefaultsKeys.supplementaryLexiconIndexSignature)
+            removePersistedSupplementaryLexiconIndex()
             return
         }
 
-        supplementaryLexiconCandidatesByReading = cachedDictionary
+        // 連絡先の対応表と同じ App Group のファイル(保護クラス付き・バックアップ除外)を mmap で開く(3318)。
+        // 壊れていれば nil(SupplementalVocabCompactStore の検証 3306)→ 次の取得で作り直す
+        guard let mapped = ContactCacheCipher.openCompactFile(
+            appGroupID: SharedDefaultsKeys.appGroupID,
+            fileName: ContactCacheCipher.userLexiconCompactFileName
+        ), !mapped.isEmpty else {
+            return
+        }
+        supplementaryLexiconCandidatesByReading = mapped
     }
 
     func buildSupplementaryLexiconCandidates(
@@ -294,8 +300,8 @@ extension KeyboardViewController {
     // hydrate 済みの in-memory 辞書(空なら nil)。utility キューから読むため main 経由で取る。
     // main から呼ばれたときは同期待ちせず直接読む(3312)。DispatchQueue.main.sync を main で呼ぶと
     // デッドロックする。今の呼び出し元は utility キューだけだが、将来の呼び出しに備える
-    func hydratedSupplementaryLexiconCandidatesIfAvailable() -> [String: [String]]? {
-        let read: () -> [String: [String]]? = {
+    func hydratedSupplementaryLexiconCandidatesIfAvailable() -> SupplementalVocabCompactStore? {
+        let read: () -> SupplementalVocabCompactStore? = {
             self.supplementaryLexiconCandidatesByReading.isEmpty
                 ? nil
                 : self.supplementaryLexiconCandidatesByReading
@@ -303,42 +309,59 @@ extension KeyboardViewController {
         if Thread.isMainThread {
             return read()
         }
-        var result: [String: [String]]?
+        var result: SupplementalVocabCompactStore?
         DispatchQueue.main.sync {
             result = read()
         }
         return result
     }
 
-    func cachedSupplementaryLexiconIndex(signature: String) -> [String: [String]]? {
+    // 署名が一致するときだけ、永続キャッシュ(mmap のファイル)を開く(3318)
+    func cachedSupplementaryLexiconIndex(signature: String) -> SupplementalVocabCompactStore? {
         guard let defaults = sharedDefaults,
             defaults.string(forKey: SharedDefaultsKeys.supplementaryLexiconIndexSignature) == signature,
-            let dictionary = defaults.dictionary(forKey: SharedDefaultsKeys.supplementaryLexiconIndexCacheByReading)
-                as? [String: [String]],
-            !dictionary.isEmpty else {
+            let mapped = ContactCacheCipher.openCompactFile(
+                appGroupID: SharedDefaultsKeys.appGroupID,
+                fileName: ContactCacheCipher.userLexiconCompactFileName
+            ),
+            !mapped.isEmpty else {
             return nil
         }
 
-        return dictionary
+        return mapped
     }
 
+    // 畳んだ表を App Group のファイルに書く(3318。保護クラス付き・バックアップ除外・atomic。連絡先の対応表と同じ)。
+    // 署名(ハッシュ文字列。語の中身は含まない)だけ UserDefaults に残す。書けなければ署名も残さない
+    // (署名だけ新しくて表が古い、という不整合を作らない)
     func storeSupplementaryLexiconIndex(
         signature: String,
-        dictionary: [String: [String]]
+        store: SupplementalVocabCompactStore
     ) {
         guard let defaults = sharedDefaults else {
             return
         }
-
+        guard ContactCacheCipher.writeCompactFile(
+            store,
+            appGroupID: SharedDefaultsKeys.appGroupID,
+            fileName: ContactCacheCipher.userLexiconCompactFileName
+        ) else {
+            defaults.removeObject(forKey: SharedDefaultsKeys.supplementaryLexiconIndexSignature)
+            return
+        }
         defaults.set(signature, forKey: SharedDefaultsKeys.supplementaryLexiconIndexSignature)
-        defaults.set(dictionary, forKey: SharedDefaultsKeys.supplementaryLexiconIndexCacheByReading)
     }
 
-    // 共有領域に残した UILexicon の表を消す(3305)。設定を「使わない」にしたときに呼ぶ(アプリ側も同じ 2 キーを消す)
+    // 共有領域に残した UILexicon の表(ファイルと署名。旧版の平文キーも)を消す(3305/3318)。
+    // 設定を「使わない」にしたときに呼ぶ(アプリ側も同じものを消す)
     func removePersistedSupplementaryLexiconIndex() {
         guard let defaults = sharedDefaults else {
             return
         }
+        ContactCacheCipher.removeCompactFile(
+            appGroupID: SharedDefaultsKeys.appGroupID,
+            fileName: ContactCacheCipher.userLexiconCompactFileName
+        )
         defaults.removeObject(forKey: SharedDefaultsKeys.supplementaryLexiconIndexCacheByReading)
         defaults.removeObject(forKey: SharedDefaultsKeys.supplementaryLexiconIndexSignature)
     }
@@ -562,7 +585,7 @@ extension KeyboardViewController {
         let lexiconCandidates: [String]
 
         if usesUserDictionaryCandidates {
-            lexiconCandidates = supplementaryLexiconCandidatesByReading[normalizedReading] ?? []
+            lexiconCandidates = supplementaryLexiconCandidatesByReading.candidates(for: normalizedReading)
         } else {
             lexiconCandidates = []
         }
