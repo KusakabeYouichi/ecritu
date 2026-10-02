@@ -142,6 +142,7 @@
 	<dict><key>phrase</key><string>Numbers</string><key>shortcut</key><string>なんばーず</string></dict>
 	<dict><key>phrase</key><string>Pages</string><key>shortcut</key><string>ぺいじず</string></dict>
 	<dict><key>phrase</key><string>Safari</string><key>shortcut</key><string>さふぁり</string></dict>
+	<dict><key>phrase</key><string>Chrome</string><key>shortcut</key><string>くろーむ</string></dict>
 	<dict><key>phrase</key><string>TestFlight</string><key>shortcut</key><string>てすとふらいと</string></dict>
 	<dict><key>phrase</key><string>Xcode</string><key>shortcut</key><string>えっくすこーど</string></dict>
 	<dict><key>phrase</key><string>Photoshop</string><key>shortcut</key><string>ふぉとしょっぷ</string></dict>
