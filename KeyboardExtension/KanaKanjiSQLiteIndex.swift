@@ -120,8 +120,14 @@ final class KanaKanjiSQLiteIndex {
             )
         }
 
-        hasWordCostMetadata = tableExists("word_costs")
-        if hasWordCostMetadata {
+        // 語コストは dictionary_entries.cost(3303。以前は別表 word_costs)。列の無い古い辞書は旧表を引く
+        if columnExists(table: "dictionary_entries", column: "cost") {
+            hasWordCostMetadata = true
+            selectWordCostStatement = prepareStatement(
+                sql: "SELECT candidate, cost FROM dictionary_entries WHERE reading = ? AND cost IS NOT NULL"
+            )
+        } else if tableExists("word_costs") {
+            hasWordCostMetadata = true
             selectWordCostStatement = prepareStatement(
                 sql: "SELECT candidate, cost FROM word_costs WHERE reading = ?"
             )
