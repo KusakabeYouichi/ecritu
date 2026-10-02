@@ -500,6 +500,23 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // おかし: 辞書エントリが 御菓子(wc7812)だけで現代正書の お菓子 が1件も無かった。
     // 御菓子 は LM 未収録なので連文節では dictUnknown 扱いになり、ぼるどーのおかし が
     // 丘(LM5514)+し の分割に負けて ボルドーの丘し になっていた(2584)。
+    // 押し上げない補助語彙(同読みに LM 実在の一般語がある)も合成より前に出す(3326、ユーザ指定)。
+    // たまや: ryukyu の 玉家 が 玉や/多摩や の合成の後ろ(13 番目)だった。一般語の 玉屋 は先頭のまま
+    func testRegressionRealLMUnpromotedSupplementalAboveComposition() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let list = converter.candidates(for: "たまや", limit: 25, systemCandidateMode: .surface)
+        guard let tamaya = list.firstIndex(of: "玉家") else {
+            return XCTFail("玉家 が無い \(list)")
+        }
+        XCTAssertEqual(list.first, "玉屋", "\(list)")
+        for synthesized in ["玉や", "多摩や", "弾や"] {
+            if let index = list.firstIndex(of: synthesized) {
+                XCTAssertLessThan(tamaya, index, "玉家 は \(synthesized) より前 \(list)")
+            }
+        }
+    }
+
     func testRegressionRealLMOkashi() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
