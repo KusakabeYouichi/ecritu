@@ -466,6 +466,23 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(KanaKanjiConverter.isUnusedOkuVerbSurface("於く", reading: "おく"))
     }
 
+    // 2要素認証(ユーザ報告 2026-10-03): 数字の直後で よう(葉)の前方一致が先に当たり 2葉祖認証 になっていた。
+    // 数字文脈の助数詞表に ようそ→要素 を足し、最長一致で 要素認証 にする(3324)
+    func testRegressionRealLMDigitYousoNinshou() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let base = converter.multiClauseCandidates(for: "ようそにんしょう", systemCandidateMode: .surface)
+        let boosted = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+            base, reading: "ようそにんしょう", precedingCharacter: "2",
+            tailConversion: { [converter] tail in converter!.counterTailConversion(tail) })
+        XCTAssertEqual(boosted.first, "要素認証", "\(boosted)")
+        XCTAssertFalse(boosted.contains { $0.hasPrefix("葉") }, "\(boosted)")
+        // 数字の後の よう 単独は従来どおり 葉 を出す
+        let you = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+            converter.candidates(for: "よう", limit: 8, systemCandidateMode: .surface), reading: "よう", precedingCharacter: "3")
+        XCTAssertTrue(you.prefix(4).contains("葉"), "\(you)")
+    }
+
     func testRegressionRealLMOkashi() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
