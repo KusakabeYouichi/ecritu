@@ -11,6 +11,18 @@ extension KeyboardViewController {
             return
         }
 
+        // 「iOS のユーザ辞書の単語」が「使わない」なら、取得も保存もしない(3305)。以前は設定に関係なく
+        // UILexicon(iOS のユーザ辞書の語。iOS はここに連絡先の姓名も含める)を取得して、読み→候補の表を
+        // 共有領域の UserDefaults に平文で残していた(2026-10-02 のセキュリティー検査で検出。連絡先キャッシュ側は
+        // 暗号化・バックアップ除外・オフ時削除まで整っていたのに、こちらだけ素通しだった)。設定が「使う」の
+        // ときだけ下へ進み、「使わない」なら残っている表も消す
+        guard currentUserDictionaryCandidateDisplayMode(from: sharedDefaults).usesUserDictionaryCandidates else {
+            supplementaryLexiconCandidatesByReading = [:]
+            supplementaryMergedCandidatesCacheByKey = [:]
+            removePersistedSupplementaryLexiconIndex()
+            return
+        }
+
         hydrateSupplementaryLexiconCandidatesFromPersistentCacheIfNeeded()
 
         // レキシコン生取得は24時間に1回だけ(2623)。requestSupplementaryLexicon の完了直後に
@@ -312,6 +324,15 @@ extension KeyboardViewController {
 
         defaults.set(signature, forKey: SharedDefaultsKeys.supplementaryLexiconIndexSignature)
         defaults.set(dictionary, forKey: SharedDefaultsKeys.supplementaryLexiconIndexCacheByReading)
+    }
+
+    // 共有領域に残した UILexicon の表を消す(3305)。設定を「使わない」にしたときに呼ぶ(アプリ側も同じ 2 キーを消す)
+    func removePersistedSupplementaryLexiconIndex() {
+        guard let defaults = sharedDefaults else {
+            return
+        }
+        defaults.removeObject(forKey: SharedDefaultsKeys.supplementaryLexiconIndexCacheByReading)
+        defaults.removeObject(forKey: SharedDefaultsKeys.supplementaryLexiconIndexSignature)
     }
 
     func refreshContactCandidatesIfNeeded(force: Bool) {

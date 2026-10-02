@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20261002145908"
+    private static let editionUpdatedAtRaw: String = "20261002155438"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -1533,6 +1533,10 @@ struct ContentView: View {
             .onChange(of: userDictionaryCandidateDisplayModeRawValue) { newValue in
                 // 「使う」にしたとき、iOS のユーザ辞書の ☻ 語をショートカットへ取り込む予約(3244)
                 guard UserDictionaryCandidateDisplayModeOption(rawValue: newValue) == .on else {
+                    // 「使わない」にしたら、拡張が共有領域に残した iOS ユーザ辞書の表(読み→候補)をその場で消す(3305)。
+                    // 拡張側も次の表示で消すが、キーボードを開くまで残るのを待たせない
+                    Self.sharedDefaults?.removeObject(forKey: SettingsKeys.supplementaryLexiconIndexCacheByReading)
+                    Self.sharedDefaults?.removeObject(forKey: SettingsKeys.supplementaryLexiconIndexSignature)
                     return
                 }
                 Self.sharedDefaults?.set(true, forKey: SettingsKeys.kanaKanjiUserDictionaryShortcutImportPending)
