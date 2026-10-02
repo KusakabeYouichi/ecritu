@@ -242,7 +242,30 @@ patch("KeyboardViewController+Layout.swift", [(
     "    static let hostPlaceholderTopInset: CGFloat = 0  // ★撮影用の一時変更(コミットしない)",
 )])
 
-# 6. 2 段階フリックの吹き出しを出したままにする
+# 6. 指定の面で最初から開く(高さの申告より前に面を決める)。表示直後に かな→絵文字 と切り替えると、
+#    iOS が余白(17pt)を足す表示経路に入りやすかった(take 7 の 03 で 8 回連続)
+patch("KeyboardViewController+Rendering.swift", [(
+    """    func preferredInitialInputMode() -> KeyboardInputMode {
+        switch textDocumentProxy.keyboardType {""",
+    """    func preferredInitialInputMode() -> KeyboardInputMode {
+        if let seeded = ScreenshotSeed.inputMode {  // ★撮影用の一時フック(コミットしない)
+            return seeded
+        }
+        switch textDocumentProxy.keyboardType {""",
+)])
+patch("KeyboardViewController.swift", [(
+    """        super.viewDidLoad()
+        MemoryForensics.notePhase("個体の生成(viewDidLoad)")
+""",
+    """        super.viewDidLoad()
+        MemoryForensics.notePhase("個体の生成(viewDidLoad)")
+        if let seeded = ScreenshotSeed.inputMode {  // ★撮影用の一時フック(コミットしない)
+            currentInputMode = seeded
+        }
+""",
+)])
+
+# 7. 2 段階フリックの吹き出しを出したままにする
 patch("FlickKeyView.swift", [(
     """        .contentShape(Rectangle())
         .gesture(flickGesture)""",

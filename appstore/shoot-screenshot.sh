@@ -42,7 +42,10 @@ done
 
 xcrun simctl boot "$UD"
 xcrun simctl bootstatus "$UD" -b >/dev/null 2>&1
-xcrun simctl install "$UD" "$APP"
+# アプリの入れ直しは iOS が余白(17pt)を足す表示経路に入りやすい(take 7)。入っていれば SKIP_INSTALL=1 で省く
+if [ "${SKIP_INSTALL:-0}" != "1" ]; then
+  xcrun simctl install "$UD" "$APP"
+fi
 xcrun simctl status_bar "$UD" override --time 9:41 --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularBars 4 >/dev/null
 for i in 1 2; do
   xcrun simctl terminate "$UD" com.apple.webapp 2>/dev/null
