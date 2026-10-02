@@ -213,6 +213,8 @@ final class KanaKanjiConverter {
     }
 
     // メモリ内訳census用: converter 側キャッシュの件数+store 側の要約を1行で返す。
+    // 診断ログ(DEBUG)とテストにしか使わないので DEBUG だけで組み立てる(3313)
+    #if DEBUG
     func diagnosticsCacheCountsSummary() -> String {
         let converterPart = withStateLock {
             "cand=\(candidateCache.count)"
@@ -221,6 +223,7 @@ final class KanaKanjiConverter {
         }
         return converterPart + " " + store.diagnosticsCacheCountsSummary()
     }
+    #endif
 
     func preloadSharedDataCachesIfNeeded() {
         _ = store.ajoutVocabulary()

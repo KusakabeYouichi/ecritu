@@ -599,6 +599,8 @@ extension KeyboardViewController {
         // 寝る瞬間に返却しておけば起床時の最初の変換(+4MB)に耐えられる。
         if slimmingActive {
             malloc_zone_pressure_relief(nil, 0)
+            #if DEBUG
+            // 以下の帰属・内訳の集計は診断ログにしか出ないので、ログ本体と同じく DEBUG だけで組み立てる(3313)
             // VM タグ別の帰属(malloc 外の untagged/tcmalloc/CoreAnimation 等)は高水位更新時にしか
             // 出ないため、alloc が張り付いた長いセッションでは比較材料が取れなかった。非表示時に
             // fp≥30 なら120秒に1回だけ記録する(走査は数ms)。2713
@@ -620,6 +622,7 @@ extension KeyboardViewController {
                     critical: true
                 )
             }
+            #endif
             // MEMFORENSICS(時限計測 2640): スリム化の返却量(1MB以上動いたときだけ記録)
             MemoryForensics.noteSpikeWindow("スリム化(\(reason))")
         }
@@ -1467,8 +1470,11 @@ extension KeyboardViewController {
         )
     }
 
+    // event は @autoclosure(3313)。Release では本体が空なので、呼び出し側の文字列補間(件数・MB の整形 等)を
+    // 評価せずに済ませる。以前は 90 か所あまりの呼び出しが Release でも文字列を組み立てて捨てていた
+    // (セキュリティー検査 2026-10-02)。重い集計(メモリ内訳 census)はさらに呼び出し側ごと #if DEBUG で外してある
     func appendKeyboardDiagnosticsLog(
-        _ event: String,
+        _ event: @autoclosure () -> String,
         critical: Bool = false,
         file: String = #fileID,
         line: Int = #line,
@@ -1480,7 +1486,7 @@ extension KeyboardViewController {
         let sourceFile = (file as NSString).lastPathComponent
         let timestamp = Self.diagnosticsTimestampFormatter.string(from: Date())
         let entry =
-            "\(timestamp) [\(diagnosticsState.diagnosticsSessionID)] \(event) {\(diagnosticsRuntimeContext())} (\(sourceFile):\(line) \(function))"
+            "\(timestamp) [\(diagnosticsState.diagnosticsSessionID)] \(event()) {\(diagnosticsRuntimeContext())} (\(sourceFile):\(line) \(function))"
 
         guard let sharedDefaults else {
             return
@@ -1653,6 +1659,7 @@ extension KeyboardViewController {
         // footprint 高止まり調査(2541): 誕生→50MB級への登り区間が320行ローテで消えて
         // 観測できなかったため、セッション開始ごとに malloc ヒープと自前キャッシュ件数を
         // 1行記録する(どのセッションで何が積んだかの標本化)。
+        #if DEBUG
         do {
             var stats = malloc_statistics_t()
             malloc_zone_statistics(nil, &stats)
@@ -1665,6 +1672,7 @@ extension KeyboardViewController {
                 function: #function
             )
         }
+        #endif
     }
 
     func finishKeyboardDiagnosticsSession(
@@ -1711,8 +1719,8 @@ extension KeyboardViewController {
         }
     }
 
-    func appendKeyboardDiagnosticsLogFromInputHandling(_ event: String, critical: Bool = false) {
-        appendKeyboardDiagnosticsLog(event, critical: critical)
+    func appendKeyboardDiagnosticsLogFromInputHandling(_ event: @autoclosure () -> String, critical: Bool = false) {
+        appendKeyboardDiagnosticsLog(event(), critical: critical)
     }
 
     func performanceElapsedMilliseconds(since startedAt: CFAbsoluteTime) -> Int {

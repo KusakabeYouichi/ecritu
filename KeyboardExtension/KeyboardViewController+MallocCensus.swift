@@ -5,6 +5,16 @@ import UIKit
 // 正体推定(2564/2602 の調査用)は用済みで撤去(2822)。すべて static(プロセス単位)で、didReceiveMemoryWarning から呼ばれる。
 // KeyboardViewController.swift 本体(2084 行)から純移動(2805 リファクタ)
 extension KeyboardViewController {
+    // メモリ内訳の採取間隔。連続警告のたびに全ブロックを列挙すると main を塞ぐ。
+    static var lastMemoryCensusAt: CFAbsoluteTime = 0
+    static let memoryCensusMinimumInterval: CFAbsoluteTime = 10
+    // 非表示個体を強制解放しはじめる警告回数(2658、ユーザ指定の段階制)。
+    // 予防スリム化(常時)で足りないときの次の手
+    static let aggressiveInactiveReleaseWarningCount = 3
+
+    // 以下の集計は診断ログにしか出ないので DEBUG だけで組み立てる(3313)。以前はログ本体だけが
+    // #if DEBUG で、Release でもメモリ警告の瞬間に計算して捨てていた(セキュリティー検査 2026-10-02)
+    #if DEBUG
     // 静的カタログ(顔文字/絵文字)の概算バイト(census v3、2575)。キャッシュ空でも残る
     // ベースライン(mallocUsed 約40MB)の内訳特定用。測定自体が materialize を誘発するが、
     // メモリ警告時にしか呼ばないので通常動作には影響しない。
@@ -49,9 +59,6 @@ extension KeyboardViewController {
         return "zones(used/allocMB)[\(parts.joined(separator: " "))]"
     }
 
-    // メモリ内訳の採取間隔。連続警告のたびに全ブロックを列挙すると main を塞ぐ。
-    static var lastMemoryCensusAt: CFAbsoluteTime = 0
-    static let memoryCensusMinimumInterval: CFAbsoluteTime = 10
     // 重い診断(census2〜4)を許す footprint の上限(2654)。per-process 上限 77MB に対し
     // 22MB の余裕を残す。8/25 の死2件は警告時 fp59.6 → census2 計算中に 77MB 到達。
     static let memoryHeavyCensusMaxFootprintMB: Double = 55
@@ -68,7 +75,5 @@ extension KeyboardViewController {
         }
         return false
     }
-    // 非表示個体を強制解放しはじめる警告回数(2658、ユーザ指定の段階制)。
-    // 予防スリム化(常時)で足りないときの次の手
-    static let aggressiveInactiveReleaseWarningCount = 3
+    #endif
 }

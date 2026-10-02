@@ -1139,7 +1139,6 @@ final class KeyboardViewController: UIInputViewController {
         let now = CFAbsoluteTimeGetCurrent()
         let isCensusThrottled = now - Self.lastMemoryCensusAt < Self.memoryCensusMinimumInterval
         let isAwaitingAttach = keyboardAttachWatchdogWorkItem != nil || isCensusThrottled
-        var heavyCensusAllowedThisWarning = false
         if !isAwaitingAttach {
             Self.lastMemoryCensusAt = now
         }
@@ -1156,6 +1155,11 @@ final class KeyboardViewController: UIInputViewController {
         } else {
             logLiveControllerCensus(trigger: "memoryWarning")
         }
+        #if DEBUG
+        // メモリ内訳(census1〜4)は診断ログにしか出ないので、集計ごと DEBUG だけで組み立てる(3313)。
+        // 以前はログ本体だけが #if DEBUG で、Release でも警告の瞬間に全 malloc ゾーンの列挙と
+        // 常駐構造の概算を計算して捨てていた(セキュリティー検査 2026-10-02)
+        var heavyCensusAllowedThisWarning = false
         // footprint 高止まり(安静時51MB級)の正体切り分け: malloc ヒープの実使用量と
         // 自前キャッシュの件数を記録する。mallocUsed が小さいのに footprint が大きければ
         // ヒープ外(描画層/IOSurface/圧縮メモリ 等)、大きければ自前かライブラリの蓄積。
@@ -1225,6 +1229,7 @@ final class KeyboardViewController: UIInputViewController {
                 function: #function
             )
         }
+        #endif
         // メモリ切迫の可視化(でばぐ表示): かな削除キーの背景色に反映する。
         candidateBarModel.memoryWarningCountForDebugDisplay = diagnosticsState.memoryWarningCountThisSession
         candidateBarModel.memoryWarningBurstCountForDebugDisplay = diagnosticsState.memoryWarningBurstCountThisSession

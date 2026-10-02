@@ -998,6 +998,8 @@ final class KanaKanjiStore {
         return inflectionMap
     }
 
+    // 以下 2 つの集計は診断ログ(DEBUG)とテストにしか使わないので DEBUG だけで組み立てる(3313)
+    #if DEBUG
     // メモリ内訳census用: 常駐辞書構造の概算バイト数(文字実体のみ、下限値)を1行で返す。
     // ベースライン固定費(キャッシュ空でも残る mallocUsed 約35MB)の正体特定に使う(2570)。
     // 読み込み済みの構造だけ集計する(census がロードを誘発しないよう nil はスキップ)。
@@ -1057,6 +1059,7 @@ final class KanaKanjiStore {
                 + " personMap=\(cachedPersonNameKindsByReading.count)"
         }
     }
+    #endif
 
     // JSON フォールバック辞書のキャッシュのみ破棄する。sqlite インデックスは保持する。
     // sqlite は mmap 未使用(PRAGMA mmap_size 未設定)で 400MB は常駐せず、close しても
