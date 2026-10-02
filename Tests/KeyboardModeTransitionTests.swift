@@ -532,7 +532,7 @@ final class KeyboardModeTransitionTests: XCTestCase {
         XCTAssertEqual(hanabi.right, "を")
         XCTAssertEqual(hanabi.down, "〜")
         XCTAssertEqual(hanabi.left, "ー")
-        // 2段フリックは左右からしか起動しない。を→下=ゐ、ー→下=ゑ が出せること
+        // 2段階フリックは左右からしか起動しない。を→下=ゐ、ー→下=ゑ が出せること
         XCTAssertEqual(
             FlickKanaLayout.secondaryBracketFlickOutput(forPrimaryOutput: hanabi.right, verticalDirection: .bas), "ゐ")
         XCTAssertEqual(

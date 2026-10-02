@@ -16,7 +16,7 @@ for block in desc.split('\n\n'):
     lines=block.split('\n')
     if lines[0].startswith('■ '): paras.append(f'<h3>{html.escape(lines[0][2:])}</h3>'+''.join(f'<p>{html.escape(l)}</p>' for l in lines[1:]))
     else: paras.append(''.join(f'<p>{html.escape(l)}</p>' for l in lines))
-shots=[('01-kana.png','かな入力と候補バー'),('02-comma-flick.png','や キーの 2 段フリック(sakura テーマ)'),('03-flags.png','国旗の長押し'),('04-kaomoji-search.png','顔文字の読み検索'),('05-number-unit.png','書式化数値(単位)'),('06-settings.png','設定アプリ')]
+shots=[('01-kana.png','かな入力と候補バー'),('02-comma-flick.png','『や』キーの2段階フリック(sakura テーマ)'),('03-flags.png','国旗の長押し'),('04-kaomoji-search.png','顔文字の読み検索'),('05-number-unit.png','書式化数値(単位)'),('06-settings.png','設定アプリ')]
 gallery=''.join(f'<figure><img src="{f}" alt="{html.escape(c)}" width="1320" height="2868" loading="lazy"><figcaption>{html.escape(c)}</figcaption></figure>' for f,c in shots)
 page=f'''<!DOCTYPE html>
 <html lang="ja">

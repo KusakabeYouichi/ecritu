@@ -29,7 +29,7 @@ enum FlickKanaLayout {
     static let latinShiftKeyToken = "__latin_shift__"
     // わキーは方向プロファイルごとに別定義(2026-08-31、ゐ/ゑ対応の案C)。
     // écritu方向: 母音方向の一貫性(い段=上/お段=下)を わ行にも通す — 上ゐ・下を。
-    //   最頻出の ー(左)/ん(右) は1段のまま無傷。2段フリック: ー→下=ゑ、ん→下=〜。
+    //   最頻出の ー(左)/ん(右) は1段のまま無傷。2段階フリック: ー→下=ゑ、ん→下=〜。
     // Apple方向: 従来の1段割り当てを無傷で維持し、2段で を→下=ゐ、ー→下=ゑ を追加。
     // 〜 が écritu の1段目に存在しないため、汎用の remapped(for:) では導出できない。
     static let kanaWaSetEcritu = FlickKanaSet(
@@ -41,7 +41,7 @@ enum FlickKanaLayout {
         usesProfileDependentGuideOrder: false
     )
     // hanabi方向: 1998年の Newton OS 版 Hanabi の わ キー(中央=わ / 右=を / 上=ん / 左=ー)。
-    // 下は空いていたので 〜 を置く — 2段フリックは左右からしか起動しないため、ん が上にあると
+    // 下は空いていたので 〜 を置く — 2段階フリックは左右からしか起動しないため、ん が上にあると
     // 〜 の出口が無くなる。2段は を→下=ゐ、ー→下=ゑ で旧仮名も出せる(3010)
     static let kanaWaSetHanabi = FlickKanaSet(
         label: "わ", center: "わ", up: "ん", right: "を", down: "〜", left: "ー",
@@ -49,7 +49,7 @@ enum FlickKanaLayout {
     )
     static let kanaYaSet = FlickKanaSet(label: "や", center: "や", up: "『", right: "ゆ", down: "よ", left: "』")
 
-    // 2段フリック(横フリック後、指を離さず上下)の出力表。や の括弧に加え、
+    // 2段階フリック(横フリック後、指を離さず上下)の出力表。や の括弧に加え、
     // わ の旧仮名 ゐ/ゑ と、案Cで2段へ移した ー/〜 を担う(2026-08-31)。
     static func secondaryBracketFlickOutput(
         forPrimaryOutput primaryOutput: String,
@@ -75,7 +75,7 @@ enum FlickKanaLayout {
         }
     }
 
-    // FlickKeyView が2段フリックを起動してよい1段目出力か(左右フリック限定は呼び出し側)
+    // FlickKeyView が2段階フリックを起動してよい1段目出力か(左右フリック限定は呼び出し側)
     static func hasSecondaryFlickOutput(forPrimaryOutput primaryOutput: String) -> Bool {
         secondaryBracketFlickOutput(forPrimaryOutput: primaryOutput, verticalDirection: .haut) != nil
             || secondaryBracketFlickOutput(forPrimaryOutput: primaryOutput, verticalDirection: .bas) != nil
