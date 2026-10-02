@@ -72,7 +72,8 @@ done
 # 5) appexサイズ
 if [[ -d "$APPEX" ]]; then
   SZ=$(du -sm "$APPEX" | cut -f1)
-  if (( SZ < 470 )); then ok "appexサイズ ${SZ}MB (<470MB)"; else warn "appexサイズ ${SZ}MB — 想定(約434MB)より大きい"; fi
+  # 3302 で候補の出どころを辞書の列に畳み、辞書 441→269MB、appex 約 463→290MB。元の大きさに戻っていたら気づけるように
+  if (( SZ < 320 )); then ok "appexサイズ ${SZ}MB (<320MB)"; else warn "appexサイズ ${SZ}MB — 想定(約290MB)より大きい"; fi
 fi
 
 # 6) 辞書がテスト済みのtmpと同一か
