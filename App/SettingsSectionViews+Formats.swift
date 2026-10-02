@@ -53,7 +53,7 @@ struct CalendarSettingsGroupSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("カレンダー")
+            Text("F.3 カレンダー")
                 .font(.headline)
 
             settingsSubItem("週開始") {
@@ -144,7 +144,7 @@ struct DegreSettingsSection: View {
             ? "Celsius(せっし・せるしうす)でも同様です(°C / ℃)。"
             : "Fahrenheit(かし・ふぁーれんはいと)でも同様です(°F / ℉)。"
         VStack(alignment: .leading, spacing: 16) {
-            Text("degré")
+            Text("F.2 degré")
                 .font(.headline)
 
             Picker("degré", selection: $degreeSymbol) {
@@ -187,7 +187,7 @@ struct FormatNumeriqueSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("format numérique")
+            Text("F.1 format numérique")
                 .font(.headline)
 
             settingsSubItem("Séparateur de milliers") {

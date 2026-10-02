@@ -8,7 +8,7 @@ struct DirectionSettingsSection: View {
 
     var body: some View {
         SegmentedSettingsCard(
-            title: "フリック方向",
+            title: "E.1 フリック方向",
             pickerTitle: "フリック方向",
             selection: $selection,
             options: Array(DirectionOption.allCases),
@@ -33,7 +33,7 @@ struct KanaModifierSettingsSection: View {
 
     var body: some View {
         SegmentedSettingsCard(
-            title: "かな修飾",
+            title: "L.5 かな修飾",
             pickerTitle: "かな修飾",
             selection: $selection,
             options: Array(KanaModifierPlacementOption.allCases),
@@ -48,7 +48,7 @@ struct KanaLayoutSettingsSection: View {
 
     var body: some View {
         SegmentedSettingsCard(
-            title: "かな配列",
+            title: "L.1 かな配列",
             pickerTitle: "かな配列",
             selection: $selection,
             options: Array(KanaLayoutOption.allCases),
@@ -80,7 +80,7 @@ struct LandscapeCandidateSideSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("ラテン文字候補ペイン (horizontal)")
+            Text("V.1 ラテン文字候補ペイン (horizontal)")
                 .font(.headline)
 
             Button {
@@ -141,7 +141,7 @@ struct LandscapeNumberPaneSideSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("数字ペイン配列 (horizontal)")
+            Text("V.2 数字ペイン配列 (horizontal)")
                 .font(.headline)
 
             DraggablePanePairRow(
@@ -163,7 +163,7 @@ struct LatinLayoutSettingsSection: View {
 
     var body: some View {
         SegmentedSettingsCard(
-            title: "ラテン文字配列",
+            title: "L.2 ラテン文字配列",
             pickerTitle: "ラテン文字配列",
             selection: $selection,
             options: Array(LatinLayoutOption.allCases),
@@ -179,7 +179,7 @@ struct NumberLayoutSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("数字配列")
+            Text("L.3 数字配列")
                 .font(.headline)
 
             settingsSubItem("数字入力") {
