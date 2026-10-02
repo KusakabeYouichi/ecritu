@@ -147,7 +147,7 @@ check_get_task_allow "$APP" "App"
 check_get_task_allow "$APPEX" "KeyboardExtension"
 
 # 9) 出荷前診断の組み込み(ECRITU_PRERELEASE_DIAGNOSTICS)。提出ビルドは 0 でなければならない。
-#    1 のままだとでばぐ可視化(削除キーの黄/橙と数値バッジ)と診断カウンターがバイナリに入る。
+#    1 のままだと診断カウンターがバイナリに入る(削除キーの黄/橙と数値バッジは 3321 から DEBUG 専用)。
 #    判定は**バイナリの文字列**で行なう(3307。以前は Config/Edition.xcconfig の文字列を見ていたため、
 #    古いアーカイブ・Signing.local の上書き・アーカイブ後の編集をすり抜けた)。
 #    keyboardDiagnosticsWriteProbe は #if ECRITU_PRERELEASE_DIAGNOSTICS の中にしか無いリテラル
