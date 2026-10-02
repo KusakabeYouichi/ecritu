@@ -1443,6 +1443,9 @@ final class KeyboardViewController: UIInputViewController {
         updateKeyboardHeightIfNeeded()
     }
 
+    // DEBUG だけに置く(3301): 中の ProcessInfo.systemUptime は「必要な理由」の申告が要る API(起動時刻の区分)。
+    // Release にシンボルが残ると PrivacyInfo.xcprivacy との不一致(ITMS-91053)になる。認識器を付ける側も DEBUG だけ
+    #if DEBUG
     // 調査用(3136): UIKit が触れたと判断した時刻を記録するだけの認識器。状態を変えないので他の操作を邪魔しない。
     // 押下表示(緑)が出るまでの体感の遅さが、UIKit→SwiftUI の受け渡しにあるのかを測るために入れた。原因判明後に外す
     private final class RawTouchProbeGestureRecognizer: UIGestureRecognizer {
@@ -1489,6 +1492,7 @@ final class KeyboardViewController: UIInputViewController {
             super.touchesEnded(touches, with: event)
         }
     }
+    #endif
 
     // 画面下端のシステム操作の門番(_UISystemGestureGate…)は、触れてから約 0.75 秒 touch を
     // 保留してから配る。縦画面では最下段がその帯に入るため、キーが緑になるまで 750ms かかっていた
