@@ -1117,13 +1117,12 @@ struct KeyboardRootView: View {
     // 警告1回目=黄 / 2回目以降=橙+左下に回数。
     // えんじ(sqlite 最終手段アンロード)は到達不能な閾値(115MB>上限77MB)だったため 2769 で撤去。
     // 薄ピンク(欧文サジェスト構築の高水位見送り)は構築自体を前計算ファイル化して無くした(2770)
-    // でばぐ可視化を出すか。開発ビルドは常に出す。リリースは TestFlight でテスターの画面にも出したいので true。
-    // 組み込みは ECRITU_PRERELEASE_DIAGNOSTICS(Config/Edition.xcconfig)で切る。App Store 提出時は
-    // そのフラグを 0 にするとこの可視化ごとバイナリから消える(tools/verify_archive_artifacts.sh が 1 のまま
-    // のアーカイブを弾く。2918 / 3009)。
+    // でばぐ可視化を出すか。開発ビルド(DEBUG、Xcode の ⌘R)だけで出し、Release(TestFlight・App Store)では
+    // 出さない(3321、ユーザ指定)。以前(2918 / 3009)は ECRITU_PRERELEASE_DIAGNOSTICS で切り、TestFlight の
+    // テスターの画面にも出していた。
     // 目的: キーが赤くなる描画異常(緑・青が落ちる)が起きたとき、同じ画面にメモリ警告の有無が写るようにして
     // 「メモリ切迫が引き金か」を 1 枚で判定する。黄も橙も緑・青が落ちれば真っ赤になるが、数字は白なので読める
-#if ECRITU_PRERELEASE_DIAGNOSTICS
+#if DEBUG
     static let memoryPressureVisualizationEnabled = true
 #else
     static let memoryPressureVisualizationEnabled = false

@@ -26,15 +26,15 @@ ENABLE_DEBUG_DYLIB = NO
 // 出荷前診断(TestFlight 配布中だけ入れる計測・可視化)を組み込むか。
 // 1 = 組み込む(開発・TestFlight) / 0 = 組み込まない(**App Store 提出はこちら**)。
 // 0 にすると Swift の #if ECRITU_PRERELEASE_DIAGNOSTICS が丸ごと消えるので、
-// でばぐ可視化(削除キーの黄/橙と数値バッジ)と診断カウンターはバイナリに入らない。
+// 診断カウンターはバイナリに入らない(削除キーの黄/橙と数値バッジは 3321 から DEBUG 専用で、このフラグに関係なく Release には入らない)。
 // tools/verify_archive_artifacts.sh が 1 のままのアーカイブを弾く(2026-09-17)
 ECRITU_PRERELEASE_DIAGNOSTICS = 1
 ECRITU_PRERELEASE_DIAGNOSTICS_FLAG_1 = ECRITU_PRERELEASE_DIAGNOSTICS
 ECRITU_PRERELEASE_DIAGNOSTICS_FLAG_0 =
 ECRITU_PRERELEASE_DIAGNOSTICS_FLAG = $(ECRITU_PRERELEASE_DIAGNOSTICS_FLAG_$(ECRITU_PRERELEASE_DIAGNOSTICS))
 
-ECRITU_EDITION_NUMBER = 3302
-ECRITU_EDITION_UPDATED_AT = 20261002190734
+ECRITU_EDITION_NUMBER = 3303
+ECRITU_EDITION_UPDATED_AT = 20261003040437
 
 // Optional per-developer signing overrides (ignored from git).
 #include? "Signing.local.xcconfig"
