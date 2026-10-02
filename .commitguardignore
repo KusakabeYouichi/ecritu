@@ -4,3 +4,5 @@
 appstore/screenshots-plan.md
 appstore/screenshots/*
 docs/manual/assets/*
+appstore/apply-screenshot-hooks.py
+appstore/shoot-screenshot.sh
