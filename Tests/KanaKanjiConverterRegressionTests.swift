@@ -417,9 +417,6 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(magsafe.first, "MagSafe", "single=\(magsafe)")
     }
 
-    // おかし: 辞書エントリが 御菓子(wc7812)だけで現代正書の お菓子 が1件も無かった。
-    // 御菓子 は LM 未収録なので連文節では dictUnknown 扱いになり、ぼるどーのおかし が
-    // 丘(LM5514)+し の分割に負けて ボルドーの丘し になっていた(2584)。
     // しろごはんより: 語→版(英語版)の安い bigram に引かれて 白+語+版+より になり、ご飯 が候補から消えていた。
     // 接尾の 語 は言語名にしか付かない(実績の無い相手では減点。3322、ユーザ報告 2026-10-03)
     func testRegressionRealLMShirogohanYoriKeepsGohan() throws {
@@ -466,6 +463,23 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(KanaKanjiConverter.isUnusedOkuVerbSurface("於く", reading: "おく"))
     }
 
+    // 次亜○○酸(ユーザ報告 2026-10-03): 接頭辞 次亜 が SudachiDict の人名 ジア に負けていた。
+    // 次亜塩素酸 は 次亜→塩素酸 の bigram(91)が「読み跨ぎの借用」と誤判定されて捨てられていたのを直し(3325)、
+    // 次亜臭素酸/次亜ヨウ素酸/次亜リン酸/ヨウ素酸 は misc に登録した
+    func testRegressionRealLMJiaPrefixChemicals() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        func shown(_ reading: String) -> [String] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            return multi.isEmpty ? converter.candidates(for: reading, limit: 6, systemCandidateMode: .surface) : multi
+        }
+        for (reading, expected) in [("じあえんそさん", "次亜塩素酸"), ("じあしゅうそさん", "次亜臭素酸"),
+                                    ("じあようそさん", "次亜ヨウ素酸"), ("じありんさん", "次亜リン酸")] {
+            XCTAssertEqual(shown(reading).first, expected, "reading=\(reading) list=\(shown(reading))")
+        }
+        XCTAssertEqual(shown("じあえんそさんなとりうむ").first, "次亜塩素酸ナトリウム", "\(shown("じあえんそさんなとりうむ"))")
+    }
+
     // 2要素認証(ユーザ報告 2026-10-03): 数字の直後で よう(葉)の前方一致が先に当たり 2葉祖認証 になっていた。
     // 数字文脈の助数詞表に ようそ→要素 を足し、最長一致で 要素認証 にする(3324)
     func testRegressionRealLMDigitYousoNinshou() throws {
@@ -483,6 +497,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(you.prefix(4).contains("葉"), "\(you)")
     }
 
+    // おかし: 辞書エントリが 御菓子(wc7812)だけで現代正書の お菓子 が1件も無かった。
+    // 御菓子 は LM 未収録なので連文節では dictUnknown 扱いになり、ぼるどーのおかし が
+    // 丘(LM5514)+し の分割に負けて ボルドーの丘し になっていた(2584)。
     func testRegressionRealLMOkashi() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()

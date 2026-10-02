@@ -1548,6 +1548,14 @@ extension KanaKanjiConverter {
                     return false
                 }
                 if wordCost >= KanaKanjiConverter.CandidateScore.harvestTierWordCostFloor {
+                    // 漢字 2 字以上の表層で、この読みがその表層の最小コストの読み(=辞書で読みがこれだけ)なら、
+                    // LM の表層統計はこの語自身のもので借用ではない。拒むと 次亜→塩素酸 の bigram 91 が捨てられ、
+                    // 人名の ジア と同じ unigram+バックオフで比べられて ジア塩素酸 が勝っていた(3325、ユーザ報告
+                    // 2026-10-03。塩素酸 は辞書の読みが えんそさん だけで、語コストが収穫帯 13898)
+                    if surface.count >= 2, Self.isKanjiOnlyString(surface),
+                        let minWordCost = surfaceMinWordCostValue(), minWordCost >= wordCost {
+                        return false
+                    }
                     return true
                 }
                 if let minWordCost = surfaceMinWordCostValue(),
