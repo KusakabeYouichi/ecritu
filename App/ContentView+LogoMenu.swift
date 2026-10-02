@@ -101,6 +101,10 @@ struct LogoMenuFramePreferenceKey: PreferenceKey {
 // 入れ直しても設定が残る。iCloud(NSUbiquitousKeyValueStore)は有料の開発者アカウントが要るので使わない。
 // Apple は「削除後も残る」ことを保証はしていないが、iOS では長年そう振る舞っている(2760)
 enum SettingsStashStore {
+    // Keychain 項目のラベル(kSecAttrService)。旧バンドル ID の接頭辞のままだが、これは端末内の不透明な
+    // ラベルで、誰が読めるかは entitlements のアクセスグループで決まる。**改名禁止**: 変えると既存端末の
+    // 退避した設定が見つからなくなる(「アプリ削除後も残す」という目的に反する)。
+    // バンドル ID の一括置換に巻き込まないこと(セキュリティー検査 2026-10-02、3308)
     private static let service = "com.kusakabe.ecritu.settings-stash"
     private static let account = "settings"
 
