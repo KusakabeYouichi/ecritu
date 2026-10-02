@@ -435,6 +435,37 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(eigo.first, "英語の本", "multi=\(eigo)")
     }
 
+    // とうろくしておこう が 登録して岡豊 になり、登録しておこう が候補に無かった(ユーザ報告 2026-10-03)。
+    // 辞書の 於く から活用エンジンが 於こう を作り、それが漢字の第 1 候補扱いになって かな おこう の供給が
+    // 止まっていた。於 を動詞として書くのは 於いて/於ける だけなので、それ以外の 於+ひらがな を落とす(3323)
+    func testRegressionRealLMTeOkuAuxiliaryAndUnusedOkuVerb() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let cases: [(String, String)] = [
+            ("とうろくしておこう", "登録しておこう"),
+            ("とうろくしておきます", "登録しておきます"),
+            ("とうろくしておいた", "登録しておいた"),
+            ("とうろくしておけば", "登録しておけば"),
+        ]
+        for (reading, expected) in cases {
+            // 連文節が空(単文節の活用で賄える読み)のときは単文節の先頭を見る
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            let single = converter.candidates(for: reading, limit: 12, systemCandidateMode: .surface)
+            let list = multi.isEmpty ? single : multi
+            XCTAssertEqual(list.first, expected, "reading=\(reading) multi=\(multi) single=\(single)")
+            XCTAssertFalse((multi + single).contains { $0.contains("於") }, "reading=\(reading) multi=\(multi) single=\(single)")
+        }
+        // 単文節でも 於く・於こう は出ない
+        XCTAssertFalse(converter.candidates(for: "おく", limit: 30, systemCandidateMode: .surface).contains("於く"))
+        XCTAssertFalse(converter.candidates(for: "おこう", limit: 30, systemCandidateMode: .surface).contains("於こう"))
+        // 於いて/於ける は判定で残す(表層の規則)
+        XCTAssertFalse(KanaKanjiConverter.isUnusedOkuVerbSurface("於いて", reading: "おいて"))
+        XCTAssertFalse(KanaKanjiConverter.isUnusedOkuVerbSurface("於ける", reading: "おける"))
+        XCTAssertFalse(KanaKanjiConverter.isUnusedOkuVerbSurface("於久", reading: "おく"))
+        XCTAssertTrue(KanaKanjiConverter.isUnusedOkuVerbSurface("於こう", reading: "おこう"))
+        XCTAssertTrue(KanaKanjiConverter.isUnusedOkuVerbSurface("於く", reading: "おく"))
+    }
+
     func testRegressionRealLMOkashi() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
