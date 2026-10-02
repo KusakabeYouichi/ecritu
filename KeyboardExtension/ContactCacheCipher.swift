@@ -9,6 +9,10 @@ import Security
 // 以前はアプリ側(ContentView+Bootstrap.swift)と拡張側(KanaKanjiTypes.swift)に同じ enum を
 // 2 重に持っていた。両ターゲットに同梱する 1 ファイルへ集約(2805 リファクタ)
 enum ContactCacheCipher {
+    // Keychain 項目のラベル(kSecAttrService)。旧バンドル ID の接頭辞のままだが、端末内の不透明なラベルで、
+    // 読める範囲は entitlements のアクセスグループで決まる。**改名禁止**: 変えると既存端末で鍵が見つからず、
+    // 封じた連絡先キャッシュが開けなくなる(作り直されるだけだが無駄)。バンドル ID の一括置換に巻き込まないこと
+    // (セキュリティー検査 2026-10-02、3308)
     static let keychainService = "com.kusakabe.ecritu.contactCache"
     static let keychainAccount = "aes-256-key"
 
