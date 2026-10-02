@@ -10,7 +10,8 @@ UD=$1
 OUT=$2
 SEEDS=${3:-}
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
-APP=$(ls -d ~/Library/Developer/Xcode/DerivedData/écritu-*/Build/Products/Debug-iphonesimulator/écritu.app | head -1)
+# é は合成形・分解形の揺れでグロブが外れるので使わない
+APP=$(ls -d ~/Library/Developer/Xcode/DerivedData/*critu-*/Build/Products/Debug-iphonesimulator/*critu.app | head -1)
 
 xcrun simctl boot "$UD" 2>/dev/null
 xcrun simctl bootstatus "$UD" -b >/dev/null 2>&1
