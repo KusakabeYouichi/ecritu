@@ -43,11 +43,11 @@ extension KanaKanjiConverter {
         multiClauseTraceForced || multiClauseTraceEnabledFromEnvironment
     }
     static let multiClauseTraceEnabledFromEnvironment = ProcessInfo.processInfo.environment["MULTI_TRACE"] != nil
-    #else
-    static let multiClauseTraceEnabled = ProcessInfo.processInfo.environment["MULTI_TRACE"] != nil
-    #endif
+    // 3 つの環境変数は DEBUG だけで読む(3316)。消費側(MULTITRACE/SINGLETRACE の print)はすべて #if DEBUG で、
+    // Release では読むだけ読んで使っていなかった(セキュリティー検査 2026-10-02)。Release に環境変数の参照を残さない
     static let multiClauseTraceEdgesEnabled = ProcessInfo.processInfo.environment["MULTI_TRACE_EDGES"] != nil
     static let singleTraceEnabled = ProcessInfo.processInfo.environment["SINGLE_TRACE"] != nil
+    #endif
     // 連語ボーナス表の頭(紙\t印刷 → 紙)。変換ごとに split で組み直していた(3096)
     static let multiClauseAcrossNoCollocationHeads: Set<String> = Set(
         multiClauseAcrossNoCollocationBonuses.keys.compactMap { $0.split(separator: "\t").first.map(String.init) }
