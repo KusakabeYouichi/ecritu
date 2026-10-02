@@ -138,6 +138,13 @@ ol.toc .no {
 }
 ol.toc .t { display: block; font-weight: 700; }
 ol.toc .d { display: block; font-size: .82rem; color: var(--ink-sub); margin-top: .1em; }
+/* 第3〜8章: 右端に正方形の画像(ユーザ指定。アプリのアイコンより大きく、ペインの高さより小さい 64px) */
+ol.toc li a.has-thumb { display: flex; align-items: center; gap: 1rem; }
+ol.toc li a.has-thumb .body { flex: 1 1 auto; min-width: 0; }
+ol.toc .thumb {
+  flex: 0 0 64px; width: 64px; height: 64px; object-fit: cover;
+  border-radius: 12px; border: 1px solid var(--line); background: var(--card);
+}
 /* ---------- 索引 ---------- */
 .idx-group { margin: 1.6rem 0; }
 .idx-group h2 { border: none; padding: 0; margin: 0 0 .3rem; font-size: 1rem; color: var(--accent-ink); }
