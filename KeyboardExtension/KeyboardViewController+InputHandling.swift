@@ -866,6 +866,13 @@ extension KeyboardViewController {
         guard textDocumentProxy.isSecureTextEntry != true else {
             return false
         }
+        // 数字入力用のキーボード種別(電話番号・暗証番号・金額)の欄でも学習しない(3309)。ホストが
+        // numberPad 等を指定していても écritu は出てくるので、かな→数字の変換(さんぜん→3000)が
+        // 読みと対で覚えられるのを防ぐ
+        if let keyboardType = textDocumentProxy.keyboardType,
+            Self.learningDeniedKeyboardTypes.contains(keyboardType) {
+            return false
+        }
         // textContentType は UITextContentType?? (プロトコル要件 optional の optional)
         guard let contentType = textDocumentProxy.textContentType ?? nil else {
             return true
@@ -873,8 +880,15 @@ extension KeyboardViewController {
         return !Self.learningDeniedTextContentTypes.contains(contentType)
     }
 
+    // ユーザー名・メールアドレス・電話番号は 3309 で追加(セキュリティー検査 2026-10-02)。
+    // 個人を識別する値で、変換の学習に残す意味も無い
     static let learningDeniedTextContentTypes: Set<UITextContentType> = [
-        .password, .newPassword, .oneTimeCode, .creditCardNumber
+        .password, .newPassword, .oneTimeCode, .creditCardNumber,
+        .username, .emailAddress, .telephoneNumber
+    ]
+
+    static let learningDeniedKeyboardTypes: Set<UIKeyboardType> = [
+        .numberPad, .phonePad, .asciiCapableNumberPad, .decimalPad
     ]
 
     func commitComposingText(
