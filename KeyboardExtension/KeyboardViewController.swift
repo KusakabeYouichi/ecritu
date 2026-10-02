@@ -221,7 +221,8 @@ final class KeyboardViewController: UIInputViewController {
     var hostContentHeightConstraint: NSLayoutConstraint?
     var hostContentHeight: CGFloat = 0
     var disappearanceKindRecorded = false
-    var supplementaryLexiconCandidatesByReading: [String: [String]] = [:]
+    // iOS のユーザ辞書(UILexicon)から作る 読み→候補 の表。連絡先と同じ畳んだ表(3318。以前は [String: [String]])
+    var supplementaryLexiconCandidatesByReading: SupplementalVocabCompactStore = .empty
     var supplementaryMergedCandidatesCacheByKey: [String: [String]] = [:]
     // 連絡先候補はプロセス共有(2655)。内容はコンテナが書く共有キャッシュそのもので全個体
     // 同一(実機: 4126読み・4945件)なのに個体ごとに持っていたため、多重生存時に alive×約1MB
