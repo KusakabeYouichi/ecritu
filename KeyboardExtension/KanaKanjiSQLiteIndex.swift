@@ -90,7 +90,9 @@ final class KanaKanjiSQLiteIndex {
         }
         selectCandidatesStatement = candidateStatement
 
-        hasSourceMetadata = tableExists("candidate_sources")
+        // 出どころは dictionary_entries.sources のビット集合(3302。以前は別表 candidate_sources)。
+        // 列が無い古い辞書(App Group に残った遺物)は出どころで絞らない
+        hasSourceMetadata = columnExists(table: "dictionary_entries", column: "sources")
         if hasSourceMetadata {
             selectCandidatesBySourceStatement = prepareStatement(
                 // かな識別(表層==読み)は常に残す(2854): 正規化形/表記形の区別は Sudachi が漢字語の
@@ -102,10 +104,12 @@ final class KanaKanjiSQLiteIndex {
                 // けせる は 消せる/けせる とも 表記形タグしか持たず、normalise では 消せる が
                 // 消えてかな けせる だけが残り、活用の供給元が失われて
                 // かげはけせないからな が 影はけせないからな になっていた
-                sql: "SELECT e.candidate FROM dictionary_entries e WHERE e.reading = ? AND (e.candidate = e.reading OR NOT EXISTS (SELECT 1 FROM candidate_sources s_any WHERE s_any.reading = e.reading AND s_any.candidate = e.candidate) OR EXISTS (SELECT 1 FROM candidate_sources s WHERE s.reading = e.reading AND s.candidate = e.candidate AND s.source = ?) OR NOT EXISTS (SELECT 1 FROM candidate_sources s_reading WHERE s_reading.reading = e.reading AND s_reading.source = ?)) ORDER BY e.rank ASC"
+                // ?1=読み、?2=指定ソースのビット。sources=0 は「記録なし」(旧 NOT EXISTS s_any)、
+                // 最後の NOT EXISTS は「その読みに指定ソースの候補が 1 つも無い」(旧 s_reading)に対応する
+                sql: "SELECT e.candidate FROM dictionary_entries e WHERE e.reading = ?1 AND (e.candidate = e.reading OR e.sources = 0 OR (e.sources & ?2) != 0 OR NOT EXISTS (SELECT 1 FROM dictionary_entries r WHERE r.reading = ?1 AND (r.sources & ?2) != 0)) ORDER BY e.rank ASC"
             )
             selectCandidatesWithExactSourceStatement = prepareStatement(
-                sql: "SELECT e.candidate FROM dictionary_entries e INNER JOIN candidate_sources s ON s.reading = e.reading AND s.candidate = e.candidate WHERE e.reading = ? AND s.source = ? ORDER BY e.rank ASC"
+                sql: "SELECT candidate FROM dictionary_entries WHERE reading = ?1 AND (sources & ?2) != 0 ORDER BY rank ASC"
             )
         }
 
@@ -532,18 +536,10 @@ final class KanaKanjiSQLiteIndex {
         }
 
         if let source {
-            // 2 番目=候補ごとの照合、3 番目=読み全体に指定ソースが在るかの照合(2871)。
-            // 完全一致用の文(?は2つ)には 3 番目が無いので、失敗しても無視してよい
-            let sourceBindResult = source.withCString { sourceCString in
-                sqlite3_bind_text(statement, 2, sourceCString, -1, sqliteTransientDestructor)
-            }
-
-            guard sourceBindResult == SQLITE_OK else {
+            // ?2=指定ソースのビット。知らない名前は 0 で、旧実装と同じく「候補ごとの照合は常に不成立・
+            // 読み全体にも無い」= 絞り込まない(完全一致の文では 0 件)になる
+            guard sqlite3_bind_int(statement, 2, Self.sourceBit(source)) == SQLITE_OK else {
                 return []
-            }
-
-            _ = source.withCString { sourceCString in
-                sqlite3_bind_text(statement, 3, sourceCString, -1, sqliteTransientDestructor)
             }
         }
 
@@ -612,6 +608,34 @@ final class KanaKanjiSQLiteIndex {
         }
 
         return statement
+    }
+
+    // 出どころ名 → dictionary_entries.sources のビット。tools/build_kana_kanji_sqlite.py の SOURCE_BITS と一致させる
+    static func sourceBit(_ source: String) -> Int32 {
+        switch source {
+        case KanaKanjiCandidateSourceTag.surface: return 1
+        case KanaKanjiCandidateSourceTag.normalized: return 2
+        case KanaKanjiCandidateSourceTag.adjectiveGaru: return 4
+        default: return 0
+        }
+    }
+
+    private func columnExists(table: String, column: String) -> Bool {
+        guard database != nil,
+            let statement = prepareStatement(sql: "SELECT 1 FROM pragma_table_info(?) WHERE name = ? LIMIT 1") else {
+            return false
+        }
+        defer { sqlite3_finalize(statement) }
+        let bound = table.withCString { t in
+            column.withCString { c in
+                sqlite3_bind_text(statement, 1, t, -1, sqliteTransientDestructor) == SQLITE_OK
+                    && sqlite3_bind_text(statement, 2, c, -1, sqliteTransientDestructor) == SQLITE_OK
+            }
+        }
+        guard bound else {
+            return false
+        }
+        return sqlite3_step(statement) == SQLITE_ROW
     }
 
     private func tableExists(_ tableName: String) -> Bool {

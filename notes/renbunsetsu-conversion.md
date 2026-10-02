@@ -11,7 +11,7 @@ Apple 純正 IME 相当の連文節変換(複数文節を一括変換)を écrit
 
 - 変換器 `KanaKanjiConverter` に **ラティス / ビタビ / 連接(connection)コスト処理は皆無**。
 - 辞書 `kana_kanji_dictionary.sqlite` は `dictionary_entries(reading, candidate, rank)` のみ。
-  **語コスト・連接 ID を持たない**(`candidate_sources` / `inflection_classes` は補助メタのみ)。
+  **語コスト・連接 ID を持たない**(`dictionary_entries.sources` のビット / `inflection_classes` は補助メタのみ。出どころは 3302 で別表 `candidate_sources` から列に畳んだ)。
 - `candidates(for reading:limit:systemCandidateMode:) -> [String]`
   (`KeyboardExtension/KanaKanjiConverter.swift:457`)は、**読み全体を 1 単位**として
   `scores: [String: Int]` を積み上げ、スコア降順で整列して上位 N 件を返す。

@@ -127,6 +127,10 @@ def merge_vocab(paths: Iterable[Path]) -> Dict[str, List[str]]:
     return merged
 
 
+# 候補の出どころ名 → dictionary_entries.sources のビット。Swift 側(KanaKanjiSQLiteIndex.sourceBit)と一致させる
+SOURCE_BITS = {"surface": 1, "normalized": 2, "adjective-garu": 4}
+
+
 def merge_sources(paths: Iterable[Path]) -> Dict[str, Dict[str, Set[str]]]:
     merged: Dict[str, Dict[str, Set[str]]] = {}
 
@@ -271,21 +275,14 @@ def build_sqlite(
                 reading TEXT NOT NULL,
                 candidate TEXT NOT NULL,
                 rank INTEGER NOT NULL,
+                -- 候補の出どころのビット集合(SOURCE_BITS)。0 = 記録なし。以前は別表 candidate_sources
+                -- (読み+候補+出どころ名の行×133 万、索引 2 本で 173MB)だった(3302)
+                sources INTEGER NOT NULL DEFAULT 0,
                 PRIMARY KEY (reading, candidate)
             );
 
             CREATE INDEX idx_dictionary_entries_reading_rank
                 ON dictionary_entries (reading, rank);
-
-            CREATE TABLE candidate_sources (
-                reading TEXT NOT NULL,
-                candidate TEXT NOT NULL,
-                source TEXT NOT NULL,
-                PRIMARY KEY (reading, candidate, source)
-            );
-
-            CREATE INDEX idx_candidate_sources_lookup
-                ON candidate_sources (reading, candidate);
 
             CREATE TABLE inflection_classes (
                 reading TEXT NOT NULL,
@@ -341,37 +338,28 @@ def build_sqlite(
             """
         )
 
-        dictionary_rows: List[Tuple[str, str, int]] = []
+        dictionary_rows: List[Tuple[str, str, int, int]] = []
         dictionary_candidate_set: Dict[str, Set[str]] = {}
 
         for reading in sorted(vocab.keys()):
             candidates = vocab[reading]
             dictionary_candidate_set[reading] = set(candidates)
+            candidate_sources = sources.get(reading, {})
             for rank, candidate in enumerate(candidates):
-                dictionary_rows.append((reading, candidate, rank))
+                bits = 0
+                for source in candidate_sources.get(candidate, ()):
+                    if source not in SOURCE_BITS:
+                        raise SystemExit(
+                            f"unknown candidate source {source!r} for {reading}/{candidate}: "
+                            "add it to SOURCE_BITS here and KanaKanjiSQLiteIndex.sourceBit"
+                        )
+                    bits |= SOURCE_BITS[source]
+                dictionary_rows.append((reading, candidate, rank, bits))
 
         conn.executemany(
-            "INSERT INTO dictionary_entries(reading, candidate, rank) VALUES (?, ?, ?)",
+            "INSERT INTO dictionary_entries(reading, candidate, rank, sources) VALUES (?, ?, ?, ?)",
             dictionary_rows,
         )
-
-        source_rows: List[Tuple[str, str, str]] = []
-        for reading, candidate_map in sources.items():
-            allowed_candidates = dictionary_candidate_set.get(reading)
-            if not allowed_candidates:
-                continue
-
-            for candidate, source_set in candidate_map.items():
-                if candidate not in allowed_candidates:
-                    continue
-                for source in sorted(source_set):
-                    source_rows.append((reading, candidate, source))
-
-        if source_rows:
-            conn.executemany(
-                "INSERT INTO candidate_sources(reading, candidate, source) VALUES (?, ?, ?)",
-                source_rows,
-            )
 
         inflection_rows: List[Tuple[str, str, str]] = []
         for reading, candidate_map in inflections.items():
