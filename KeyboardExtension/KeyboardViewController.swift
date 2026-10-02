@@ -872,6 +872,28 @@ final class KeyboardViewController: UIInputViewController {
         }
     }
 
+    // 面の切り替え(サブモード含む)で削除キーのでばぐ表示(数字と色)を採り直す(3304)。文字の変化でしか更新して
+    // いなかったため、絵文字パネルで増えたぶんが次の変換のときにまとめて現れていた(2026-10-02 実機)。
+    // パネルの構築とグリフキャッシュは切替後に膨らむので、即時に加えて 1.2s / 5s 後(MEMFORENSICS の窓と同じ)にも採る。
+    // 可視化が無効(出荷版)なら何もしない
+    func refreshMemoryPressureDebugDisplay(trigger: String) {
+        guard KeyboardRootView.memoryPressureVisualizationEnabled else {
+            return
+        }
+        let sample: (String) -> Void = { [weak self] stage in
+            guard let self else {
+                return
+            }
+            self.updateMemoryFailSafeProfile(trigger: "\(trigger)-\(stage)")
+            self.candidateBarModel.memoryWarningCountForDebugDisplay = self.diagnosticsState.memoryWarningCountThisSession
+            self.candidateBarModel.memoryWarningBurstCountForDebugDisplay = self.diagnosticsState.memoryWarningBurstCountThisSession
+            self.publishMemoryFootprintPeakForDebugDisplay()
+        }
+        sample("即時")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) { sample("1.2s") }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) { sample("5s") }
+    }
+
     override func textDidChange(_ textInput: UITextInput?) {
         super.textDidChange(textInput)
         updateKeyboardDiagnosticsHeartbeat(event: "textDidChange")

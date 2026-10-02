@@ -19,6 +19,8 @@ struct KeyboardRootView: View {
     let onUpgradeRecentKanaCommitToKatakana: () -> Bool
     // 第2引数は調査用ログ(記号面切替 2838): 切替の引き金とサブモード。原因判明後に外す
     let onInputModeChanged: (KeyboardInputMode, String) -> Void
+    // でばぐ表示(削除キーの数字と色)を面の切り替え(サブモード含む)でも更新する要求(3304)。引数は切替の内容
+    var onMemoryDebugDisplayRefreshRequested: (String) -> Void = { _ in }
     var onFormattedNumberCategoryChanged: () -> Void = {}
     // 絵文字/顔文字パネルで確定した文字列をショートカット語彙の先頭へ足す(3243。ユーザ指定)。
     // ショートカット・カテゴリー自身からの確定は対象外(手で並べた順を崩さない)
@@ -1283,7 +1285,7 @@ struct KeyboardRootView: View {
         // (initialInputMode)への追従もこの1個で担う(4.4.1)。素の .onChange を
         // もう1個足すと Swift 6.3.3 Release(WMO)がopaque type置換の発散でクラッシュ
         // するため、複合値の監視に置き換えてモディファイア数を増やさない
-        .onChange(of: InputModeObservation(inputMode: inputMode, initialInputMode: initialInputMode)) { signal in
+        .onChange(of: InputModeObservation(inputMode: inputMode, initialInputMode: initialInputMode, emojiInputSubmode: emojiInputSubmode)) { signal in
             handleInputModeObservationChange(signal)
         }
         .onChange(of: spaceToastTrigger) { _ in
@@ -1407,6 +1409,8 @@ struct KeyboardRootView: View {
 struct InputModeObservation: Equatable {
     let inputMode: KeyboardInputMode
     let initialInputMode: KeyboardInputMode
+    // 絵文字面のサブモード(絵文字/顔文字/記号/漢字ピッカー)。でばぐ表示の更新要求のためだけに監視する(3304)
+    let emojiInputSubmode: EmojiInputSubmode
 }
 
 extension KeyboardRootView {
@@ -1432,6 +1436,18 @@ extension KeyboardRootView {
             }
             onInputModeChanged(signal.inputMode, detail)
             inputModeChangeTrigger = "面内キー"
+        }
+        // 面の切り替え(サブモードの切り替えを含む)で、削除キーのでばぐ表示(数字と色)を更新する(3304)。
+        // 文字の変化(textDidChange)でしか更新していなかったため、絵文字パネルで増えたぶんが次の変換のときに
+        // まとめて現れ、「変換で増えた」ように見えていた(2026-10-02 実機)
+        if previous == nil
+            || previous?.inputMode != signal.inputMode
+            || previous?.emojiInputSubmode != signal.emojiInputSubmode {
+            var face = String(describing: signal.inputMode)
+            if signal.inputMode == .emoji {
+                face += "/\(signal.emojiInputSubmode)"
+            }
+            onMemoryDebugDisplayRefreshRequested(face)
         }
     }
 }
