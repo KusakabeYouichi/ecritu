@@ -91,7 +91,7 @@ final class KanaKanjiSQLiteIndex {
         selectCandidatesStatement = candidateStatement
 
         // 出どころは dictionary_entries.sources のビット集合(3302。以前は別表 candidate_sources)。
-        // 列が無い古い辞書(App Group に残った遺物)は出どころで絞らない
+        // 列が無ければ出どころで絞らない(辞書は常にバンドル同梱のものなので、実際には起きない)
         hasSourceMetadata = columnExists(table: "dictionary_entries", column: "sources")
         if hasSourceMetadata {
             selectCandidatesBySourceStatement = prepareStatement(
@@ -120,16 +120,12 @@ final class KanaKanjiSQLiteIndex {
             )
         }
 
-        // 語コストは dictionary_entries.cost(3303。以前は別表 word_costs)。列の無い古い辞書は旧表を引く
-        if columnExists(table: "dictionary_entries", column: "cost") {
-            hasWordCostMetadata = true
+        // 語コストは dictionary_entries.cost(3303。以前は別表 word_costs)。辞書は常にバンドル同梱のものを開くので
+        // 旧スキーマへの分岐は持たない(列が無ければコストなしとして動く)
+        hasWordCostMetadata = columnExists(table: "dictionary_entries", column: "cost")
+        if hasWordCostMetadata {
             selectWordCostStatement = prepareStatement(
                 sql: "SELECT candidate, cost FROM dictionary_entries WHERE reading = ? AND cost IS NOT NULL"
-            )
-        } else if tableExists("word_costs") {
-            hasWordCostMetadata = true
-            selectWordCostStatement = prepareStatement(
-                sql: "SELECT candidate, cost FROM word_costs WHERE reading = ?"
             )
         }
 
