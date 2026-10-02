@@ -13,7 +13,7 @@
 3. 下記「撮影用の入力ページ」をホーム画面に追加し、そのアイコンから起動
 4. 地球儀で écritu に切替 → `xcrun simctl io <UD> screenshot appstore/screenshots/NN-name.png`
 
-## 撮影状態(take 5 = 現行、2026-09-24。01〜05 を無操作手順で撮り直し)
+## 撮影状態(take 6 = 現行、2026-10-02。01〜05 を無操作手順で撮り直し)
 
 6枚すべて撮影済み・1320×2868。ホーム画面に追加した `capture-page.html` から起動して撮ったため、
 Safari のドメイン表示ピルもツールバーも写っていない。音声入力はオフでマイクも無し。
@@ -27,7 +27,9 @@ Safari のドメイン表示ピルもツールバーも写っていない。音�
 | 05 | 05-number-unit.png | 書式化数値の単位 `36 200 000 hℓ`(sep mil + espace + 接頭辞 h + ℓ) |
 | 06 | 06-settings.png | 設定アプリのアクセントカラー/テーマカラー(take 4、2026-09-19: ステータスバーの「◀ Safari」を消すため撮り直し。今日の寸法変更の影響を受けないので据え置き) |
 
-01〜05 は 2026-09-24(edition 3200)に撮り直した。縦画面の寸法変更(候補欄の上余白 13→10pt、
+01〜05 は 2026-10-02(edition 3292 相当)に撮り直した。9/25 の 3216 で縦の高さを純正のかなキーボードに揃え、
+候補欄の上に未確定の行を常設したため、9/24 の take 5 とは高さと候補欄が違っていた。
+(以下は take 5 の記録)01〜05 は 2026-09-24(edition 3200)に撮り直した。縦画面の寸法変更(候補欄の上余白 13→10pt、
 ヘッダー 35→31pt、最下段とホームインジケーターの間 20→7pt、キー高さ +1pt)と「あいう」→「あい」を反映。
 構図・本文・設定は take 3 と同じに揃えてある。撮り方は末尾の「無操作での撮影手順」。
 
@@ -102,6 +104,22 @@ Xcode 27 には Simulator.app が無く、`simctl` にも触点注入が無い(C
 ページの autofocus で入力欄に入り、上の仕込みにより écritu が出た状態になる。
 
 ### 3. 打鍵と画面状態は一時フックで作る(コミットしない)
+
+**道具(2026-10-02)**: フックは `python3 appstore/apply-screenshot-hooks.py` でまとめて入る(コミットしない。
+撮影後 `git checkout -- KeyboardExtension/`)。1 枚の撮影は `appstore/shoot-screenshot.sh <UDID> <出力接頭辞> "<種>"`。
+take 6 で使った種(iPhone 17 Pro Max、`B907C0B8-0540-436D-9D10-2E5747498716`):
+
+| # | 種(`key=型:値`、型 s/i/b、d は削除) |
+|---|---|
+| 01 | `screenshotScript=s:01 kanaLayoutMode=d: keyboardBackgroundTheme=d: flickDirectionProfile=d: kanaModifierPlacement=d: flickGuideDisplayModeModifier=d:` |
+| 02 | `screenshotScript=s:02 screenshot_flickKey=s:や kanaLayoutMode=s:threeByThreePlusWa keyboardBackgroundTheme=s:sakura flickDirectionProfile=s:apple kanaModifierPlacement=s:prefix flickGuideDisplayModeModifier=s:off` |
+| 03 | `screenshotScript=s:03 screenshot_inputMode=s:emoji screenshot_emojiSubmode=s:emoji screenshot_emojiCategory=s:flags screenshot_emojiBubble=s:🇸🇰` |
+| 04 | `screenshotScript=s:04 screenshot_inputMode=s:emoji screenshot_emojiSubmode=s:kaomoji screenshot_kaomojiCategory=s:search screenshot_kaomojiPrefix=s:わ screenshot_kaomojiReading=s:わーい` |
+| 05 | `screenshotScript=s:05 screenshot_inputMode=s:formattedNumber screenshot_numberBuffer=s:36200000 numberLitreSymbol=s:script formattedNumber.lastCategory=i:2 formattedNumber.lastUnit.2=s:L formattedNumber.lastPrefix.2=s:h formattedNumber.unitSpacing=b:true` |
+
+撮影後は 02/05 で変えた設定(配列・背景・フリック方向・修飾の位置・ガイド・ℓ)と `screenshot*` を削除して既定に戻す。
+**ダイナミックアイランドが写ることがある**(take 6 の 04 で 2 回)。写ったら数秒待って `xcrun simctl io <UDID> screenshot` で撮り足す。
+
 
 拡張に使い捨てのコードを入れ、App Group のキーを読んで状態を作る。撮影後 `git checkout -- KeyboardExtension/` で外す。
 
