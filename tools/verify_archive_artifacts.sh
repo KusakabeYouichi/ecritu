@@ -3,6 +3,8 @@
 #   使い方: bash tools/verify_archive_artifacts.sh [path/to/écritu.xcarchive | path/to/écritu.app] [--tag]
 #   引数なし: ~/Library/Developer/Xcode/Archives から最新の écritu.xcarchive を探す
 #   --tag   : 検証OKのとき submitted-<version>-<build> の git タグを打つ(追跡性の記録)
+#   --testflight : TestFlight 配布用。出荷前診断(ECRITU_PRERELEASE_DIAGNOSTICS=1)を ❌ でなく ⚠️ にし、
+#              タグは testflight-<version>-<build> にする(App Store 提出ではこの指定を付けない)
 # 検査項目: バンドルID / debug.dylib等の混入 / ITSAppUsesNonExemptEncryption /
 #           アイコンのアルファ / appexサイズ / 辞書sqliteがtmpと同一(=テスト済みの辞書) /
 #           プロビジョニングの失効日 / 出荷前診断フラグ / APP_STORE_BLOCKER の印 / 必要な理由 API の申告 / gitツリーの汚れ
@@ -14,8 +16,9 @@ warn() { echo "  ⚠️  $1"; }
 
 TARGET="${1:-}"
 DO_TAG=0
-for a in "$@"; do [[ "$a" == "--tag" ]] && DO_TAG=1; done
-[[ "$TARGET" == "--tag" ]] && TARGET=""
+TESTFLIGHT=0
+for a in "$@"; do [[ "$a" == "--tag" ]] && DO_TAG=1; [[ "$a" == "--testflight" ]] && TESTFLIGHT=1; done
+[[ "$TARGET" == "--tag" || "$TARGET" == "--testflight" ]] && TARGET=""
 
 if [[ -z "$TARGET" ]]; then
   TARGET=$(ls -dt "$HOME"/Library/Developer/Xcode/Archives/*/*.xcarchive 2>/dev/null | grep -i "critu" | head -1 || true)
@@ -100,6 +103,8 @@ fi
 DIAG=$(grep -E "^ECRITU_PRERELEASE_DIAGNOSTICS = " Config/Edition.xcconfig | head -1 | sed 's/.*= *//')
 if [[ "$DIAG" == "0" ]]; then
   ok "出荷前診断は組み込まれていない(ECRITU_PRERELEASE_DIAGNOSTICS=0)"
+elif [[ $TESTFLIGHT -eq 1 ]]; then
+  warn "出荷前診断が組み込まれている(ECRITU_PRERELEASE_DIAGNOSTICS=$DIAG)。TestFlight 配布ではこのまま。App Store 提出では 0 にする"
 else
   bad "ECRITU_PRERELEASE_DIAGNOSTICS=$DIAG のままです。Config/Edition.xcconfig を 0 にして再アーカイブしてください"
 fi
@@ -154,6 +159,7 @@ echo "バージョン: $VER ($BUILD)  コミット: $(git rev-parse --short HEAD
 
 if [[ $FAIL -eq 0 && $DO_TAG -eq 1 ]]; then
   TAG="submitted-$VER-$BUILD"
+  [[ $TESTFLIGHT -eq 1 ]] && TAG="testflight-$VER-$BUILD"
   git tag -f "$TAG" && echo "  🏷  git tag $TAG を作成(追跡性の記録)"
 fi
 
