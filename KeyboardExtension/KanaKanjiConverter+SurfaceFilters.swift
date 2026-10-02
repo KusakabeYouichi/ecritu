@@ -503,11 +503,28 @@ extension KanaKanjiConverter {
     }
 
     // 装飾表記(〜水増し・中黒散らし・…溜め・っ/ー水増し)の総合判定。候補列挙の各段で共通に使う。
+    // 表記としてありえない活用形(於く の活用。下記)も同じ段で落とす(3323)
     static func isDecorativeVariantSurface(_ surface: String, reading: String) -> Bool {
         hasWaveDashElongation(surface, reading: reading)
             || hasNakaguroDecorationSpelling(surface, reading: reading)
             || hasEllipsisElongation(surface, reading: reading)
             || hasSokuonOrChoonPadding(surface, reading: reading)
+            || isUnusedOkuVerbSurface(surface, reading: reading)
+    }
+
+    // 於 を動詞として書くのは 於いて/於ける(とその続き: 於いては/於いても/於けるる…)だけ。辞書に 於く が
+    // あるため、活用エンジンが 於こう/於き/於けば/於かない … を作り、て形の直後(しておこう)などに出ていた
+    // (ユーザ報告 2026-10-03: とうろくしておこう→登録して於こう)。於 + ひらがな の表層で、於いて/於ける で
+    // 始まらないものは落とす。於久(地名)のように 於 の後が漢字のものには触れない
+    static func isUnusedOkuVerbSurface(_ surface: String, reading: String) -> Bool {
+        guard surface.hasPrefix("於"), reading.hasPrefix("お") else {
+            return false
+        }
+        let rest = surface.dropFirst()
+        guard let next = rest.unicodeScalars.first, (0x3041...0x309F).contains(next.value) else {
+            return false
+        }
+        return !(rest.hasPrefix("いて") || rest.hasPrefix("ける"))
     }
 
     // 連濁の清音化マップ(濁音/半濁音→清音)。連濁収穫フィルタ用。
