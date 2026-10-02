@@ -9,7 +9,7 @@ extension KanaKanjiConverter {
     // 読み全体を文節ラティスに分割し、Sudachi 語コスト最小の経路を DP(ビタビ)で選ぶ。
     // 連接コスト(matrix.def)は未導入(=案A2)。連接が無いため各文節は「最安の変換」を
     // 独立に選べば最適で、経路コスト = Σ(語コスト) + 文節数ペナルティ。
-    //   - 語コストは store.wordCosts(word_costs テーブル, Sudachi連接エントリ由来)。
+    //   - 語コストは store.wordCosts(dictionary_entries.cost 列。3303 までは word_costs テーブル。Sudachi連接エントリ由来)。
     //   - コスト不明な文節(活用形・追加語彙・かな素通り)は candidates() の top1 を
     //     既定コストで補完。かな素通りは強く減点。
     // 呼び出し側でフラグ(isMultiClauseConversionEnabled)により on/off する。

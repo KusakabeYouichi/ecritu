@@ -537,7 +537,7 @@ final class KanaKanjiStore {
     }
 
     // 案A(連文節ビタビ)用: 読みに対する語コスト(Sudachi由来, 小さいほど高頻度)。
-    // sqlite の word_costs 由来。無ければ空(= 呼び出し側で既定コストにフォールバック)。
+    // sqlite の dictionary_entries.cost 由来(3303 までは word_costs 表)。無ければ空(= 呼び出し側で既定コストにフォールバック)。
     func wordCosts(for reading: String) -> [String: Int] {
         let normalizedReading = KanaTextNormalizer.normalizedReading(reading)
         guard !normalizedReading.isEmpty,

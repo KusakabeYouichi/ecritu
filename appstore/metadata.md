@@ -72,10 +72,10 @@
 
 ## 審査ノート(Notes for Review 欄)
 
-App Group を用いて本体アプリとキーボード拡張の間で設定・学習語彙を共有するためにフルアクセスを使用します。フルアクセスは任意で、オフでもすべての入力・変換機能が動作します(学習と設定の反映だけが行なわれません)。ネットワーク通信を行なうコードは含まれておらず、入力内容が端末外へ送信されることはありません。連絡先名の変換候補機能は初期設定でオフで、ユーザーが設定でオンにしたときだけ許可を求め、本体アプリのみが連絡先を読み取り、氏名と読みの対応表を iOS のファイル保護(Data Protection)を掛けて端末内に保存します(バックアップ対象外)。パスワード・ワンタイムコード・カード番号等のフィールドでは学習を行いません。キーボード拡張は約 440MB の変換辞書を同梱し、完全オフラインで動作します(ダウンロードは約 140MB、インストール後の容量が大きいのはこのためです)。
+App Group を用いて本体アプリとキーボード拡張の間で設定・学習語彙を共有するためにフルアクセスを使用します。フルアクセスは任意で、オフでもすべての入力・変換機能が動作します(学習と設定の反映だけが行なわれません)。ネットワーク通信を行なうコードは含まれておらず、入力内容が端末外へ送信されることはありません。連絡先名の変換候補機能は初期設定でオフで、ユーザーが設定でオンにしたときだけ許可を求め、本体アプリのみが連絡先を読み取り、氏名と読みの対応表を iOS のファイル保護(Data Protection)を掛けて端末内に保存します(バックアップ対象外)。パスワード・ワンタイムコード・カード番号等のフィールドでは学習を行いません。キーボード拡張は約 80MB の変換辞書を同梱し、完全オフラインで動作します。
 
 (英語で求められた場合)
-Full Access is used solely to share settings and the learned vocabulary between the container app and the keyboard extension via an App Group. Full Access is optional: every input and conversion feature works without it (only learning persistence and settings sync are skipped). The app contains no networking code; nothing typed ever leaves the device. The optional contact-name feature is off by default, asks for permission only when the user turns it on in Settings, reads contacts only in the container app, and stores the name-to-reading mapping on device protected by iOS Data Protection and excluded from backups. No learning occurs in password, one-time-code or credit-card fields. The keyboard extension bundles a ~440 MB conversion dictionary and works fully offline, which is why the installed size is large (the download itself is about 140 MB).
+Full Access is used solely to share settings and the learned vocabulary between the container app and the keyboard extension via an App Group. Full Access is optional: every input and conversion feature works without it (only learning persistence and settings sync are skipped). The app contains no networking code; nothing typed ever leaves the device. The optional contact-name feature is off by default, asks for permission only when the user turns it on in Settings, reads contacts only in the container app, and stores the name-to-reading mapping on device protected by iOS Data Protection and excluded from backups. No learning occurs in password, one-time-code or credit-card fields. The keyboard extension bundles an ~80 MB conversion dictionary and works fully offline.
 
 ## 輸出コンプライアンス(暗号化)
 

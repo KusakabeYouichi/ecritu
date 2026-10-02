@@ -88,7 +88,7 @@ def main():
             costs = [
                 (c, wc)
                 for (c, wc) in db.execute(
-                    "SELECT candidate, cost FROM word_costs WHERE reading=? ORDER BY cost",
+                    "SELECT candidate, cost FROM dictionary_entries WHERE reading=? AND cost IS NOT NULL ORDER BY cost",
                     (stem,),
                 )
                 if has_kanji(c)
