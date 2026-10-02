@@ -507,38 +507,20 @@ extension ContentView {
         let stampKey = SettingsKeys.contactCandidatesByReadingCacheCompactSealedStamp
         let appGroupID = SettingsKeys.appGroupID
 
-        // 旧版(3259 以前)の保存物: 平文辞書・AES 封緘版 2 種と Keychain の鍵。ファイル方式(3260)では使わない
-        func removeLegacyStorage() {
-            defaults.removeObject(forKey: cacheKey)
-            defaults.removeObject(forKey: sealedKey)
-            defaults.removeObject(forKey: compactSealedKey)
-            ContactCacheCipher.deleteKeychainKey()
-        }
-
-        func removeCacheIfPresent() {
-            let hadAny = defaults.object(forKey: cacheKey) != nil
-                || defaults.object(forKey: sealedKey) != nil
-                || defaults.object(forKey: compactSealedKey) != nil
-                || ContactCacheCipher.compactFileExists(appGroupID: appGroupID)
-            guard hadAny else {
-                return
-            }
-            removeLegacyStorage()
-            ContactCacheCipher.removeCompactFile(appGroupID: appGroupID)
-            defaults.set(UUID().uuidString, forKey: stampKey)
-            SettingsSyncNotification.postSettingsDidChange()
-        }
-
         guard mode != .off else {
-            removeCacheIfPresent()
+            removeContactCandidatesCacheIfPresent()
             return
         }
 
         let status = CNContactStore.authorizationStatus(for: .contacts)
 
         guard hasGrantedContactsAccess(status) else {
-            removeCacheIfPresent()
+            removeContactCandidatesCacheIfPresent()
             return
+        }
+
+        func removeLegacyStorage() {
+            removeLegacyContactCandidatesStorage(defaults: defaults)
         }
 
         DispatchQueue.global(qos: .utility).async {
@@ -574,6 +556,49 @@ extension ContentView {
                 SettingsSyncNotification.postSettingsDidChange()
             }
         }
+    }
+
+    // 旧版(3259 以前)の保存物: 平文辞書・AES 封緘版 2 種と Keychain の鍵。ファイル方式(3260)では使わない
+    func removeLegacyContactCandidatesStorage(defaults: UserDefaults) {
+        defaults.removeObject(forKey: SettingsKeys.contactCandidatesByReadingCache)
+        defaults.removeObject(forKey: SettingsKeys.contactCandidatesByReadingCacheSealed)
+        defaults.removeObject(forKey: SettingsKeys.contactCandidatesByReadingCacheCompactSealed)
+        ContactCacheCipher.deleteKeychainKey()
+    }
+
+    // 連絡先の対応表(ファイル方式+旧版の保存物)が残っていれば消し、拡張に知らせる
+    func removeContactCandidatesCacheIfPresent() {
+        guard let defaults = Self.sharedDefaults else {
+            return
+        }
+        let appGroupID = SettingsKeys.appGroupID
+        let hadAny = defaults.object(forKey: SettingsKeys.contactCandidatesByReadingCache) != nil
+            || defaults.object(forKey: SettingsKeys.contactCandidatesByReadingCacheSealed) != nil
+            || defaults.object(forKey: SettingsKeys.contactCandidatesByReadingCacheCompactSealed) != nil
+            || ContactCacheCipher.compactFileExists(appGroupID: appGroupID)
+        guard hadAny else {
+            return
+        }
+        removeLegacyContactCandidatesStorage(defaults: defaults)
+        ContactCacheCipher.removeCompactFile(appGroupID: appGroupID)
+        defaults.set(UUID().uuidString, forKey: SettingsKeys.contactCandidatesByReadingCacheCompactSealedStamp)
+        SettingsSyncNotification.postSettingsDidChange()
+    }
+
+    // 前面復帰のたびに呼ぶ(3310)。設定アプリで連絡先の許可を取り消して戻ってきたとき、以前はアプリを
+    // 開き直す(起動時の同期)まで対応表が残り、拡張が候補に出し続けていた(セキュリティー検査 2026-10-02)。
+    // 許可があるときは何もしない(対応表の作り直しは連絡先の読み直しを伴うので、起動時と設定変更時だけ)
+    func removeContactCandidatesCacheIfAccessRevoked() {
+        let mode = ContactCandidateDisplayModeOption(rawValue: contactCandidateDisplayModeRawValue) ?? .off
+        guard mode != .off else {
+            return
+        }
+        let status = CNContactStore.authorizationStatus(for: .contacts)
+        guard !hasGrantedContactsAccess(status) else {
+            return
+        }
+        removeContactCandidatesCacheIfPresent()
+        appendContainerDiagnosticsLog("連絡先の許可が取り消されていたため対応表を削除 status=\(status.rawValue)")
     }
 
     func hasGrantedContactsAccess(_ status: CNAuthorizationStatus) -> Bool {

@@ -1572,6 +1572,8 @@ struct ContentView: View {
                 loadLearnedDictionaryEntries()
                 // ショートカット語彙も拡張が書く(絵文字/顔文字の確定を先頭へ足す。3243)ので読み直す
                 loadShortcutDictionaryEntries()
+                // 設定アプリで連絡先の許可を取り消して戻ってきたら、対応表をその場で消す(3310)
+                removeContactCandidatesCacheIfAccessRevoked()
 
                 if shouldUseContactCandidates {
                     syncContactCandidatesCacheFromContainerApp()
