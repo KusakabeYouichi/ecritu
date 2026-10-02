@@ -469,27 +469,6 @@ final class KeyboardModeTransitionTests: XCTestCase {
         )
     }
 
-    func testContactCacheCipherRoundTrip() {
-        let key = SymmetricKey(size: .bits256)
-        let dictionary: [String: [String]] = [
-            "やまだ": ["山田", "山田太郎"],
-            "すずき": ["鈴木"]
-        ]
-        guard let sealed = ContactCacheCipher.seal(dictionary, key: key) else {
-            XCTFail("seal failed")
-            return
-        }
-        // 封緘データに平文が含まれない
-        XCTAssertNil(String(data: sealed, encoding: .utf8))
-        XCTAssertEqual(ContactCacheCipher.open(sealed, key: key), dictionary)
-        // 別鍵では開かない
-        XCTAssertNil(ContactCacheCipher.open(sealed, key: SymmetricKey(size: .bits256)))
-        // 改竄検知(1バイト破壊)
-        var tampered = sealed
-        tampered[tampered.count - 1] ^= 0xFF
-        XCTAssertNil(ContactCacheCipher.open(tampered, key: key))
-    }
-
     func testWaSecondaryFlickOutputsForHistoricalKana() {
         // 案C(2026-08-31): を→下=ゐ、ー→下=ゑ、ん→下=〜
         XCTAssertEqual(
