@@ -22,7 +22,7 @@ struct KeyRepeatSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("削除キーリピート")
+            Text("E.2 削除キーリピート")
                 .font(.headline)
 
             VStack(alignment: .leading, spacing: 12) {
@@ -136,7 +136,7 @@ struct ComposingTextStyleSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("未確定の方式")
+            Text("E.4 未確定の方式")
                 .font(.headline)
 
             // 選べない方式は灰色で押せない(準備中)。segmented Picker は項目単位で無効化できないので自前の並び
@@ -193,7 +193,7 @@ struct IdleCommitSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("自動確定(アイドル)")
+            Text("E.3 自動確定(アイドル)")
                 .font(.headline)
 
             Toggle("入力が止まったら未確定を自動確定", isOn: $idleCommitEnabled)
@@ -527,7 +527,7 @@ struct KanaModeSwitcherAssignmentSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("かな左下キー割り当て")
+            Text("E.5 かな左下キー割り当て")
                 .font(.headline)
 
             VStack(alignment: .leading, spacing: 10) {
@@ -605,7 +605,7 @@ struct KanaPostModifierEmptyTapAssignmentSection: View {
                     .alignmentGuide(.firstTextBaseline) { dimensions in
                         dimensions[VerticalAlignment.center] + 6
                     }
-                Text("タップ (後置修飾、未確定なし)")
+                Text("E.6 タップ (後置修飾、未確定なし)")
                     .font(.headline)
                     .lineLimit(1)
                     .minimumScaleFactor(0.85)

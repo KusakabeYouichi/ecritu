@@ -8,7 +8,7 @@ struct BasicSymbolOrderSettingsSection: View {
 
     var body: some View {
         SegmentedSettingsCard(
-            title: "基本記号の並び順",
+            title: "L.4 基本記号の並び順",
             pickerTitle: "基本記号の並び順",
             selection: $selection,
             options: Array(BasicSymbolOrderOption.allCases),
@@ -23,7 +23,7 @@ struct AccentColorSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("アクセントカラー")
+            Text("V.3 アクセントカラー")
                 .font(.headline)
 
             HStack(spacing: 8) {
@@ -79,7 +79,7 @@ struct ThemeColorSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("テーマカラー")
+            Text("V.4 テーマカラー")
                 .font(.headline)
 
             VStack(spacing: 8) {
@@ -174,7 +174,7 @@ struct FlickGuideDisplaySettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("ガイド文字表示")
+            Text("G.1 ガイド文字表示")
                 .font(.headline)
 
             VStack(alignment: .leading, spacing: 10) {
