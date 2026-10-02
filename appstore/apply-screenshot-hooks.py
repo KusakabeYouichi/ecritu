@@ -235,7 +235,14 @@ s = s[:j] + b + s[j + len(a):]
 open(path, "w", encoding="utf-8").write(s)
 print("patched KeyboardKeyComponents.swift")
 
-# 5. 2 段階フリックの吹き出しを出したままにする
+# 5. 上余白の補正(縦画面で 17pt を透明な帯として高く申告する。3264)を切る。実機のホストが付ける灰色の余白を
+#    打ち消すためのもので、シミュレーターのホストは余白を付けないので、帯がそのまま空白として写ってしまう(take 6 の失敗)
+patch("KeyboardViewController+Layout.swift", [(
+    "    static let hostPlaceholderTopInset: CGFloat = 17",
+    "    static let hostPlaceholderTopInset: CGFloat = 0  // ★撮影用の一時変更(コミットしない)",
+)])
+
+# 6. 2 段階フリックの吹き出しを出したままにする
 patch("FlickKeyView.swift", [(
     """        .contentShape(Rectangle())
         .gesture(flickGesture)""",
