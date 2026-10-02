@@ -502,6 +502,9 @@ extension KeyboardViewController {
 
                 self.refreshKeyboardStateAsync()
             },
+            onMemoryDebugDisplayRefreshRequested: { [weak self] face in
+                self?.refreshMemoryPressureDebugDisplay(trigger: "面切替(\(face))")
+            },
             onFormattedNumberCategoryChanged: { [weak self] in
                 // カレンダー↔単位でキーボード高さが変わるため、カテゴリー変更で高さを再計算する。
                 self?.updateKeyboardHeightIfNeeded()
