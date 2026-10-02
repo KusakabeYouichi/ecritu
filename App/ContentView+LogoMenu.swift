@@ -101,14 +101,20 @@ struct LogoMenuFramePreferenceKey: PreferenceKey {
 // 入れ直しても設定が残る。iCloud(NSUbiquitousKeyValueStore)は有料の開発者アカウントが要るので使わない。
 // Apple は「削除後も残る」ことを保証はしていないが、iOS では長年そう振る舞っている(2760)
 enum SettingsStashStore {
-    // Keychain 項目のラベル(kSecAttrService)。旧バンドル ID の接頭辞のままだが、これは端末内の不透明な
-    // ラベルで、誰が読めるかは entitlements のアクセスグループで決まる。**改名禁止**: 変えると既存端末の
-    // 退避した設定が見つからなくなる(「アプリ削除後も残す」という目的に反する)。
-    // バンドル ID の一括置換に巻き込まないこと(セキュリティー検査 2026-10-02、3308)
-    private static let service = "com.kusakabe.ecritu.settings-stash"
+    // Keychain 項目のラベル(kSecAttrService)。端末内の不透明なラベルで、誰が読めるかは entitlements の
+    // アクセスグループで決まる。バンドル ID から組み立てる(3319。ユーザ指定 jp.or.pleiades.merope.ecritu.settings-stash)
+    // ので、次にバンドル ID が変わっても自動で追従し、一括置換に巻き込まれない。テスターが Signing.local で別の
+    // バンドル ID を使っていても、その人の端末のその人のアプリにしか関係しない
+    private static let serviceSuffix = ".settings-stash"
+    private static var service: String {
+        (Bundle.main.bundleIdentifier ?? "jp.or.pleiades.merope.ecritu") + serviceSuffix
+    }
+    // 旧名(3318 以前。旧バンドル ID の接頭辞のまま残っていた)。load で見つけたら新名へ写して消す。
+    // 端末ごと 1 回の移行。**撤去予定: 2026-10-23 以降**(全テスターが一度「復元」か「退避」をすれば用済み)
+    private static let legacyService = "com.kusakabe.ecritu.settings-stash"
     private static let account = "settings"
 
-    private static var baseQuery: [String: Any] {
+    private static func baseQuery(service: String) -> [String: Any] {
         [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
@@ -117,7 +123,8 @@ enum SettingsStashStore {
     }
 
     static func save(_ data: Data) -> Bool {
-        var query = baseQuery
+        let base = baseQuery(service: service)
+        var query = base
         query[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlock
         // iCloud キーチェーンには同期しない(既定 false だが意図を明示。2785)
         query[kSecAttrSynchronizable as String] = false
@@ -125,13 +132,28 @@ enum SettingsStashStore {
         let status = SecItemAdd(query as CFDictionary, nil)
         if status == errSecDuplicateItem {
             let update: [String: Any] = [kSecValueData as String: data]
-            return SecItemUpdate(baseQuery as CFDictionary, update as CFDictionary) == errSecSuccess
+            return SecItemUpdate(base as CFDictionary, update as CFDictionary) == errSecSuccess
         }
         return status == errSecSuccess
     }
 
     static func load() -> Data? {
-        var query = baseQuery
+        if let data = load(service: service) {
+            return data
+        }
+        // 旧名からの移行(3319): 見つかれば新名で保存して旧名を消す。新名で書けなかったときは旧名を残す
+        // (次回また移行を試みる)
+        guard let legacy = load(service: legacyService) else {
+            return nil
+        }
+        if save(legacy) {
+            SecItemDelete(baseQuery(service: legacyService) as CFDictionary)
+        }
+        return legacy
+    }
+
+    private static func load(service: String) -> Data? {
+        var query = baseQuery(service: service)
         query[kSecReturnData as String] = true
         query[kSecMatchLimit as String] = kSecMatchLimitOne
         var result: AnyObject?
