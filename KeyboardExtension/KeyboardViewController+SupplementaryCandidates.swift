@@ -292,12 +292,20 @@ extension KeyboardViewController {
     }
 
     // hydrate 済みの in-memory 辞書(空なら nil)。utility キューから読むため main 経由で取る。
+    // main から呼ばれたときは同期待ちせず直接読む(3312)。DispatchQueue.main.sync を main で呼ぶと
+    // デッドロックする。今の呼び出し元は utility キューだけだが、将来の呼び出しに備える
     func hydratedSupplementaryLexiconCandidatesIfAvailable() -> [String: [String]]? {
-        var result: [String: [String]]?
-        DispatchQueue.main.sync {
-            result = self.supplementaryLexiconCandidatesByReading.isEmpty
+        let read: () -> [String: [String]]? = {
+            self.supplementaryLexiconCandidatesByReading.isEmpty
                 ? nil
                 : self.supplementaryLexiconCandidatesByReading
+        }
+        if Thread.isMainThread {
+            return read()
+        }
+        var result: [String: [String]]?
+        DispatchQueue.main.sync {
+            result = read()
         }
         return result
     }
