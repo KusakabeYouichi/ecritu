@@ -92,12 +92,17 @@ done
 #    シミュレーターと CI(CODE_SIGNING_ALLOWED=NO)は対象外
 if [[ "${PLATFORM_NAME:-}" == "iphoneos" && "${CODE_SIGNING_ALLOWED:-YES}" != "NO" ]]; then
   team="${ECRITU_DEVELOPMENT_TEAM:-}"
+  # 証明書の一時ファイルは mktemp の専用ディレクトリーに置く(3311)。以前は /tmp/.ecritu_cert_N.pem という
+  # 固定名で、同じ Mac の別ユーザーが先にシンボリックリンクを置けば書き込み先をすり替えられた
+  # (セキュリティー検査 2026-10-02。中身は公開鍵証明書なので漏洩の害は無いが、作法として直す)
+  cert_dir="$(mktemp -d "${TMPDIR:-/tmp}/ecritu-certs.XXXXXX")"
   local_teams="$(security find-certificate -a -c "Apple Development" -p 2>/dev/null \
-    | awk '/BEGIN CERT/{c++} {print > ("/tmp/.ecritu_cert_" c ".pem")}' 2>/dev/null; \
-    for f in /tmp/.ecritu_cert_*.pem; do
+    | awk -v dir="$cert_dir" '/BEGIN CERT/{c++} {print > (dir "/cert_" c ".pem")}' 2>/dev/null; \
+    for f in "$cert_dir"/cert_*.pem; do
       [[ -f "$f" ]] || continue
       openssl x509 -in "$f" -noout -subject 2>/dev/null | sed -nE 's/.*OU *= *([A-Z0-9]+).*/\1/p'
-    done | sort -u; rm -f /tmp/.ecritu_cert_*.pem)"
+    done | sort -u)"
+  rm -rf "$cert_dir"
 
   if [[ -n "$team" && -n "$local_teams" ]] && ! printf '%s\n' "$local_teams" | grep -Fxq "$team"; then
     report "Team ID $team の署名証明書がこの Mac にありません(手元にあるのは: $(echo $local_teams))"
