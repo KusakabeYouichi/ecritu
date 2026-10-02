@@ -85,6 +85,7 @@
 	        <dict><key>phrase</key><string>Philips</string><key>shortcut</key><string>ふぃりっぷす</string></dict>
 	        <dict><key>phrase</key><string>nanoleaf</string><key>shortcut</key><string>なのりーふ</string></dict>
 	<!-- 表記 -->
+	        <dict><key>phrase</key><string>モデレイター</string><key>shortcut</key><string>もでれいたー</string></dict>
 	        <dict><key>phrase</key><string>ケイス</string><key>shortcut</key><string>けいす</string></dict>	<!-- Sudachiにもある -->
 	        <dict><key>phrase</key><string>コンヴィニ</string><key>shortcut</key><string>こんゔぃに</string></dict>
 	        <dict><key>phrase</key><string>テイプ</string><key>shortcut</key><string>ていぷ</string></dict>
