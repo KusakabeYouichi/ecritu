@@ -2151,6 +2151,12 @@ extension KanaKanjiConverter {
                 bigramCosts[prev + "\t屋"] == nil {
                 penalty += Self.multiClauseTradeSuffixKanjiWithoutEvidencePenalty
             }
+            // 接尾の 語 は言語名(bigram 実績のある相手)にしか付かない(定数コメント参照。3322)
+            if surfaceID == SID.語, readingID == SID.ご,
+                !prevIsBOS,
+                bigramCosts[prev + "\t語"] == nil {
+                penalty += Self.multiClauseLanguageSuffixKanjiWithoutEvidencePenalty
+            }
             // 期間の直後の たつ は「経つ」(定数コメント参照。2873)
             if !prevIsBOS,
                 Self.multiClauseElapsedTimeVerbStems.contains(where: { surface.hasPrefix($0) }),
