@@ -1,0 +1,13 @@
+# tools/*.py が使う Python 依存の固定(3315。セキュリティー検査 2026-10-02: 版が未固定で、辞書の生成物が
+# その日の pip の解決次第だった)。使い方:
+#   python3 -m venv .venv && .venv/bin/pip install -r tools/requirements.txt
+# 版は 2026-10-02 時点の .venv の実物(SudachiPy/SudachiDict-core/numpy)と、PyPI の最新(wordfreq)。
+# 上げるときは辞書・欧文語彙を作り直して全網テストを通し、このファイルの更新を同じコミットにする。
+#
+# 読み付け・分かち書き(tools/build_sudachi_index.py、tools/build_word_lm.py)
+SudachiPy==0.6.11
+SudachiDict-core==20260116
+# 数値処理(1 か所で使用)
+numpy==2.4.2
+# 欧文サジェストの頻度源(tools/build_latin_suggestion_lexicon.py。生成済みの一覧を使うだけなら不要)
+wordfreq==3.1.1

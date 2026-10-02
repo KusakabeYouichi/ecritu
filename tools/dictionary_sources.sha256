@@ -1,0 +1,23 @@
+# 辞書素材(ネットから取得するもの)の固定(3315)。tools/fetch_sudachi_raw.sh と tools/fetch_unihan_raw.sh が
+# 取得・展開したファイルをここの sha256 と突き合わせ、合わなければ tmp/ へ置かずに失敗する。
+# 出荷する辞書 sqlite はこの素材から作られるので、ミラーの改ざんや追従先ブランチの移動で中身が
+# 黙って変わらないようにする(セキュリティー検査 2026-10-02)。
+#
+# 更新の手順(意図して版を上げるとき):
+#   1. fetch_sudachi_raw.sh の SUDACHI_REF(タグ)/ fetch_unihan_raw.sh の UNIHAN_VERSION を新しい版にする
+#   2. 各スクリプトを --print-hashes 付きで実行し、表示された行でここを置き換える
+#   3. 辞書を作り直して全網テストを通し、素材の版とハッシュの更新を同じコミットにする
+#
+# 基準: SudachiDict v20260428(2026-06-03 に develop から取得した時点の先頭 = タグのコミット 3ae9201a)、
+#       Unihan 17.0.0(2025-07-24)。形式は「sha256  相対パス」(shasum -a 256 と同じ)
+27e3a504c7cb9401aaeca56e8b0d01300beed0fed9d28ecbf19e2474aa67ea0c  sudachi_raw/sudachidict_core/core_lex.csv
+fa182e69126031f3165c3a76491b4dc9512b14d8b9aeb0181d0f84f6adaa3ef6  sudachi_raw/sudachidict_core/small_lex.csv
+fa182e69126031f3165c3a76491b4dc9512b14d8b9aeb0181d0f84f6adaa3ef6  sudachi_raw/sudachidict_small/small_lex.csv
+5207f6d17be8915d6423a3ed549233bc53633dadf7cd30e0dc021cfb859a0766  unihan_raw/Unihan_DictionaryIndices.txt
+d0caf58b8be0683a34c9a4090d87c2fd8737067e089d34def83b8d8a4060297a  unihan_raw/Unihan_DictionaryLikeData.txt
+d1c817dd7db84295dab0643c277d97c2fa742c245f8824e6736c2a0935095325  unihan_raw/Unihan_IRGSources.txt
+c8a6ef56aa4828a238cc4ed806d81ae9ea32ed39290359a64b9f493142b61b5e  unihan_raw/Unihan_NumericValues.txt
+4fabda168d04a5ac360809a8bfa377fe54e04fbc069ba67cacad4df03d691fa0  unihan_raw/Unihan_OtherMappings.txt
+8254ebe14addce992c2bd6f74003d8fdc15eb94d8d8933c554b417d574dca5f9  unihan_raw/Unihan_RadicalStrokeCounts.txt
+575e69c9ad85a4737a889a4f94cbd987042a90a1a6cc16dd3f4ed995c715b17c  unihan_raw/Unihan_Readings.txt
+3f23cd71872633f3350875d25bd388e83b60fa71807634c9a600ec26f38a68ab  unihan_raw/Unihan_Variants.txt
