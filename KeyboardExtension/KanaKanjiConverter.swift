@@ -251,6 +251,11 @@ final class KanaKanjiConverter {
         // 読みは2331件・うち頻出語衝突525件だった。2497)
         static let supplementalVocabulary = 1500
         static let systemDictionary = 1200      // 辞書(sqlite/seed)
+        // 押し上げない補助語彙(同読みに LM 実在の一般語がある。上の supplementalVocabulary の注記)の帯(3326)。
+        // 辞書の普通の語(1200)より下、合成の最上位(quickPostfix 1120)のすぐ上。1150 では から の 嘉良(ryukyu の地名)が
+        // 普通の語の 唐 を抜いた(全網)ので、合成をぎりぎり超える値にする。収穫帯(1030)より上。
+        // 普通の語の並びは保ったまま、vin/ryukyu などの語を 名詞+や のような合成の後ろに埋もれさせない
+        static let unpromotedSupplementalVocabulary = 1125
         static let quickPostfix = 1120          // postfix(語幹キャッシュ利用)
         static let politePrefix = 1100          // お/ご 丁寧接頭辞派生
         static let ordinalMeFallback = 1080     // 序数(〜つ目)
@@ -481,13 +486,21 @@ final class KanaKanjiConverter {
         var normalSystemCandidates: [String] = []
         var harvestTierCandidates: [String] = []
         var supplementalSystemCandidates: [String] = []
+        var unpromotedSupplementalCandidates: [String] = []
         for candidate in context.systemCandidates {
             if promotesSupplemental, supplementalCandidates.contains(candidate) {
                 supplementalSystemCandidates.append(candidate)
             } else if let cost = wordCosts[candidate],
                 cost >= CandidateScore.harvestTierWordCostFloor,
                 !seedExempt.contains(candidate) {
-                harvestTierCandidates.append(candidate)
+                // 押し上げない補助語彙は、収穫帯(1030、合成より下)に落とさず合成より前に出す(3326、ユーザ指定)。
+                // たまや で ryukyu の 玉家(語コストが収穫帯)が 玉や/多摩や の後ろの 13 番目だった。
+                // 語コストが普通の帯の補助語彙(海葱/器官 等)は従来どおり普通の語として並べる(全網で 11 件の順位が動いた)
+                if supplementalCandidates.contains(candidate) {
+                    unpromotedSupplementalCandidates.append(candidate)
+                } else {
+                    harvestTierCandidates.append(candidate)
+                }
             } else {
                 normalSystemCandidates.append(candidate)
             }
@@ -498,6 +511,7 @@ final class KanaKanjiConverter {
             to: &scores
         )
         addCandidates(normalSystemCandidates, baseScore: CandidateScore.systemDictionary, to: &scores)
+        addCandidates(unpromotedSupplementalCandidates, baseScore: CandidateScore.unpromotedSupplementalVocabulary, to: &scores)
         addCandidates(harvestTierCandidates, baseScore: CandidateScore.harvestTierDictionary, to: &scores)
         addCandidates(context.userCandidates, baseScore: CandidateScore.ajoutVocabulary, to: &scores)
         addCandidates(context.learnedCandidates, baseScore: CandidateScore.learnedDictionary, to: &scores)

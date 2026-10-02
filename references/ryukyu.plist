@@ -6301,6 +6301,7 @@
 	<dict><key>phrase</key><string>嵐山展望台</string><key>shortcut</key><string>あらしやまてんぼうだい</string></dict>
 
 	<!-- 沖縄関係の語彙リストの追加分 -->
+	<dict><key>phrase</key><string>玉家</string><key>shortcut</key><string>たまや</string></dict>
 	<dict><key>phrase</key><string>石庵</string><key>shortcut</key><string>いっしゃん</string></dict>
 	<dict><key>phrase</key><string>栄町</string><key>shortcut</key><string>さかえまち</string></dict>
 	<dict><key>phrase</key><string>農連市場</string><key>shortcut</key><string>のうれんいちば</string></dict>
