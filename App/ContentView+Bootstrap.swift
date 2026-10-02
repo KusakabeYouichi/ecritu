@@ -558,7 +558,10 @@ extension ContentView {
         }
     }
 
-    // 旧版(3259 以前)の保存物: 平文辞書・AES 封緘版 2 種と Keychain の鍵。ファイル方式(3260)では使わない
+    // 旧版(3259 以前)の保存物: 平文辞書・AES 封緘版 2 種と Keychain の鍵。ファイル方式(3260)では使わない。
+    // 端末ごとに 1 回しか意味の無い後片づけ。**撤去予定: 2026-10-23 以降(3317)**。旧形式を持つのは TestFlight の
+    // 7 人の端末だけ(App Store に旧形式の版は出ていない)。撤去時は呼び出し側の hadAny 判定の旧 3 キー、
+    // SettingsKeys/SharedDefaultsKeys の旧 3 キー、ContactCacheCipher.deleteKeychainKey と Keychain 識別子も消す
     func removeLegacyContactCandidatesStorage(defaults: UserDefaults) {
         defaults.removeObject(forKey: SettingsKeys.contactCandidatesByReadingCache)
         defaults.removeObject(forKey: SettingsKeys.contactCandidatesByReadingCacheSealed)

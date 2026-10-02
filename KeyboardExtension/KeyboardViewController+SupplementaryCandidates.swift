@@ -454,69 +454,15 @@ extension KeyboardViewController {
                 }
                 return
             }
-            // 畳んだ版があれば辞書を経由しない(3020)
-            if let compact = self.cachedContactCompactStoreFromSharedDefaults() {
-                MemoryForensics.noteSyncDelta(
-                    "連絡先キャッシュ復号(畳んだ版) readings=\(compact.readingCount)",
-                    since: decodeSnapshot,
-                    minDeltaMB: -1
-                )
-                DispatchQueue.main.async {
-                    KeyboardViewController.sharedContactCandidatesStamp = stamp
-                    completion(compact)
-                }
-                return
-            }
-
-            // 旧形式(JSON 辞書の封緘/平文)。コンテナーが次回同期で畳んだ版へ置き換える
-            let decoded = self.cachedContactCandidatesFromSharedDefaults()
-            MemoryForensics.noteSyncDelta("連絡先キャッシュ復号 readings=\(decoded.count)", since: decodeSnapshot, minDeltaMB: -1)
-            let cachedCandidates = ContactCacheCipher.limited(decoded)
-
+            // ファイルが無ければ空(3317)。旧版の保存物(封緘した畳んだ版 3020 / 封緘・平文の JSON 辞書)を
+            // 読むフォールバックは外した。アプリが次回の同期でファイル方式へ置き換えるので、残っていても
+            // 「アプリを開くまで連絡先候補が出ない」だけ。旧形式を持つのは TestFlight の 7 人の端末だけで、
+            // App Store には旧形式の版が出ていない(セキュリティー検査 2026-10-02)
+            MemoryForensics.noteSyncDelta("連絡先キャッシュ なし", since: decodeSnapshot, minDeltaMB: -1)
             DispatchQueue.main.async {
-                completion(SupplementalVocabCompactStore(dictionary: cachedCandidates))
+                completion(.empty)
             }
         }
-    }
-
-    // 畳んだ表を封緘した版(3020)。あればこれを使い、復元の途中で 4,126 読みの辞書を
-    // 作らない(その一瞬の辞書が malloc アリーナを 4MB 広げて返さなかった。実機計測)
-    func cachedContactCompactStoreFromSharedDefaults() -> SupplementalVocabCompactStore? {
-        guard let sharedDefaults,
-            let sealed = sharedDefaults.data(
-                forKey: SharedDefaultsKeys.contactCandidatesByReadingCacheCompactSealed
-            ),
-            let key = ContactCacheCipher.keychainKey(createNew: false) else {
-            return nil
-        }
-        return ContactCacheCipher.openCompact(sealed, key: key)
-    }
-
-    func cachedContactCandidatesFromSharedDefaults() -> [String: [String]] {
-        guard let sharedDefaults else {
-            return [:]
-        }
-
-        // 封緘版(AES-GCM)を優先。鍵はアプリ側が生成した共有Keychain鍵を読むだけ
-        if let sealed = sharedDefaults.data(forKey: SharedDefaultsKeys.contactCandidatesByReadingCacheSealed) {
-            if let key = ContactCacheCipher.keychainKey(createNew: false),
-                let dictionary = ContactCacheCipher.open(sealed, key: key) {
-                // 移行完了後に平文が残っていたら消す
-                if sharedDefaults.object(forKey: SharedDefaultsKeys.contactCandidatesByReadingCache) != nil {
-                    sharedDefaults.removeObject(forKey: SharedDefaultsKeys.contactCandidatesByReadingCache)
-                }
-                return dictionary
-            }
-            return [:]
-        }
-
-        // 移行前の平文(アプリが次回同期で封緘版へ置き換える)
-        guard let dictionary = sharedDefaults.dictionary(forKey: SharedDefaultsKeys.contactCandidatesByReadingCache)
-            as? [String: [String]] else {
-            return [:]
-        }
-
-        return dictionary
     }
 
     func clearContactCandidatesIfNeeded(refreshKeyboardState: Bool) {
