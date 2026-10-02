@@ -13,7 +13,7 @@
 3. 下記「撮影用の入力ページ」をホーム画面に追加し、そのアイコンから起動
 4. 地球儀で écritu に切替 → `xcrun simctl io <UD> screenshot appstore/screenshots/NN-name.png`
 
-## 撮影状態(take 6 = 現行、2026-10-02。01〜05 を無操作手順で撮り直し)
+## 撮影状態(take 7 = 現行、2026-10-02。01〜05 を上余白の補正なしで撮り直し)
 
 6枚すべて撮影済み・1320×2868。ホーム画面に追加した `capture-page.html` から起動して撮ったため、
 Safari のドメイン表示ピルもツールバーも写っていない。音声入力はオフでマイクも無し。
@@ -119,6 +119,15 @@ take 6 で使った種(iPhone 17 Pro Max、`B907C0B8-0540-436D-9D10-2E5747498716
 
 撮影後は 02/05 で変えた設定(配列・背景・フリック方向・修飾の位置・ガイド・ℓ)と `screenshot*` を削除して既定に戻す。
 **ダイナミックアイランドが写ることがある**(take 6 の 04 で 2 回)。写ったら数秒待って `xcrun simctl io <UDID> screenshot` で撮り足す。
+
+**上余白の補正を切ってから撮る**(take 7、2026-10-02)。3264 以降、縦画面は 17pt の透明な帯を足して高く申告する
+(実機のホストが付ける灰色の余白を打ち消すため)。シミュレーターのホストは余白を付けないので、帯がそのまま
+キーボードの上の空白として写る。apply-screenshot-hooks.py が `hostPlaceholderTopInset` を 0 にする。
+
+**純正キーボードが写り続けたら**、装着失敗で iOS が「最後に使ったキーボード」を純正に切り替えて覚えている。
+停止中に `D/Library/Preferences/com.apple.keyboard.preferences.plist` の `KeyboardLastUsed`・
+`KeyboardLastUsedForLanguage:ja_JP`・`:NonASCII`・`KeyboardsCurrentAndNext:0/1` を
+`jp.or.pleiades.merope.ecritu.keyboard` に戻して起動し直す(take 7 の 02 で発生)。
 
 
 拡張に使い捨てのコードを入れ、App Group のキーを読んで状態を作る。撮影後 `git checkout -- KeyboardExtension/` で外す。
