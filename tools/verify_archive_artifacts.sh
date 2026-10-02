@@ -1,13 +1,17 @@
 #!/bin/bash
 # 提出ビルド(Archive)の成果物検証。App Store 提出前に1回実行する。
-#   使い方: bash tools/verify_archive_artifacts.sh [path/to/écritu.xcarchive | path/to/écritu.app] [--tag]
+#   使い方: bash tools/verify_archive_artifacts.sh [path/to/écritu.xcarchive | path/to/écritu.app | path/to/écritu.ipa] [--tag]
 #   引数なし: ~/Library/Developer/Xcode/Archives から最新の écritu.xcarchive を探す
 #   --tag   : 検証OKのとき submitted-<version>-<build> の git タグを打つ(追跡性の記録)
 #   --testflight : TestFlight 配布用。出荷前診断(ECRITU_PRERELEASE_DIAGNOSTICS=1)を ❌ でなく ⚠️ にし、
 #              タグは testflight-<version>-<build> にする(App Store 提出ではこの指定を付けない)
 # 検査項目: バンドルID / debug.dylib等の混入 / ITSAppUsesNonExemptEncryption /
 #           アイコンのアルファ / appexサイズ / 辞書sqliteがtmpと同一(=テスト済みの辞書) /
-#           プロビジョニングの失効日 / 出荷前診断フラグ / APP_STORE_BLOCKER の印 / 必要な理由 API の申告 / gitツリーの汚れ
+#           プロビジョニング(失効日・配布用か) / get-task-allow / 出荷前診断フラグ(バイナリで判定) /
+#           DEBUG 専用・撮影用の文字列の残留 / APP_STORE_BLOCKER の印 / 必要な理由 API の申告 / dSYM / gitツリーの汚れ
+# xcarchive と エクスポート後(.app/.ipa)の違い: xcarchive の中身は開発用プロファイル+get-task-allow=true で
+# 署名されており、エクスポート時に配布用で署名し直される。署名系の検査(get-task-allow・配布プロファイル)は
+# エクスポート後の成果物を渡したときだけ ❌ にし、xcarchive では参考表示にとどめる(3307)
 set -u
 FAIL=0
 ok()   { echo "  ✅ $1"; }
@@ -25,14 +29,26 @@ if [[ -z "$TARGET" ]]; then
   [[ -z "$TARGET" ]] && { echo "xcarchiveが見つかりません。パスを引数で指定してください。"; exit 1; }
 fi
 
+TARGET="${TARGET%/}"   # 末尾の / を落とす(ls -F やタブ補完由来。*.xcarchive の判定を外さないため)
+IS_ARCHIVE=0
+UNZIP_DIR=""
 if [[ "$TARGET" == *.xcarchive ]]; then
+  IS_ARCHIVE=1
   APP=$(ls -d "$TARGET"/Products/Applications/*.app 2>/dev/null | head -1)
+elif [[ "$TARGET" == *.ipa ]]; then
+  UNZIP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/ecritu-verify.XXXXXX")
+  trap 'rm -rf "$UNZIP_DIR"' EXIT
+  unzip -q "$TARGET" -d "$UNZIP_DIR" || { echo ".ipa を展開できません: $TARGET"; exit 1; }
+  APP=$(ls -d "$UNZIP_DIR"/Payload/*.app 2>/dev/null | head -1)
 else
   APP="$TARGET"
 fi
 [[ -d "$APP" ]] || { echo ".appが見つかりません: $TARGET"; exit 1; }
 APPEX=$(ls -d "$APP"/PlugIns/*.appex 2>/dev/null | head -1)
 echo "対象: $APP"
+APP_BIN="$APP/$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$APP/Info.plist" 2>/dev/null)"
+APPEX_BIN=""
+[[ -d "$APPEX" ]] && APPEX_BIN="$APPEX/$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$APPEX/Info.plist" 2>/dev/null)"
 
 # 1) バンドルID。期待値はリテラルでなく xcconfig から解決する(Config/Signing.local.xcconfig の
 #    上書きを尊重。2026-09-11 に既定の com.kusakabe.ecritu が取得不能になり jp.or.pleiades.merope.ecritu
@@ -89,24 +105,100 @@ if [[ -f "$APPEX/kana_kanji_dictionary.sqlite" && -f tmp/kana_kanji_dictionary.s
   (( ROWS > 100000 )) && ok "辞書行数 $ROWS" || bad "辞書行数が異常: $ROWS"
 fi
 
-# 7) プロビジョニングの失効(実機/配布ビルドのみ存在)
+# 7) プロビジョニング(実機/配布ビルドのみ存在)。失効日に加えて、配布用かどうか(3307):
+#    App Store/TestFlight 用のプロファイルには ProvisionedDevices が無く、get-task-allow も false。
+#    xcarchive の中身は開発用のまま(エクスポートで差し替わる)なので参考表示にとどめる
 PROF="$APP/embedded.mobileprovision"
 if [[ -f "$PROF" ]]; then
-  EXP=$(security cms -D -i "$PROF" 2>/dev/null | plutil -extract ExpirationDate raw -o - - 2>/dev/null)
-  ok "プロビジョニング失効日: ${EXP:-不明}"
+  PROF_PLIST=$(security cms -D -i "$PROF" 2>/dev/null)
+  EXP=$(echo "$PROF_PLIST" | plutil -extract ExpirationDate raw -o - - 2>/dev/null)
+  PROF_NAME=$(echo "$PROF_PLIST" | plutil -extract Name raw -o - - 2>/dev/null)
+  ok "プロビジョニング失効日: ${EXP:-不明}(${PROF_NAME:-名前不明})"
+  if echo "$PROF_PLIST" | plutil -extract ProvisionedDevices json -o - - >/dev/null 2>&1; then
+    if [[ $IS_ARCHIVE -eq 1 ]]; then
+      echo "  ℹ️  プロファイルは開発用(端末限定)。xcarchive なので想定どおり — エクスポート後の .ipa を渡すと配布用か検査する"
+    else
+      bad "プロファイルが開発用(ProvisionedDevices あり)。App Store Connect 用のエクスポート(destination=upload/export, method app-store)でない"
+    fi
+  else
+    ok "プロファイルは配布用(端末限定なし)"
+  fi
 else
   warn "embedded.mobileprovision なし(simulatorビルド?)"
 fi
 
+# 7b) get-task-allow(デバッガー接続許可)。配布物では両バイナリとも false でなければならない(3307)
+check_get_task_allow() {
+  local bundle="$1" label="$2"
+  [[ -d "$bundle" ]] || return
+  local value
+  value=$(codesign -d --entitlements :- "$bundle" 2>/dev/null | plutil -extract get-task-allow raw -o - - 2>/dev/null || echo "なし")
+  if [[ "$value" == "true" ]]; then
+    if [[ $IS_ARCHIVE -eq 1 ]]; then
+      echo "  ℹ️  $label: get-task-allow=true(xcarchive の中身は開発用署名のまま。エクスポートで false になる)"
+    else
+      bad "$label: get-task-allow=true のまま配布物に残っている(デバッガー接続可)。配布用に署名し直す"
+    fi
+  else
+    ok "$label: get-task-allow=${value}"
+  fi
+}
+check_get_task_allow "$APP" "App"
+check_get_task_allow "$APPEX" "KeyboardExtension"
+
 # 9) 出荷前診断の組み込み(ECRITU_PRERELEASE_DIAGNOSTICS)。提出ビルドは 0 でなければならない。
-#    1 のままだとでばぐ可視化(削除キーの黄/橙と数値バッジ)と診断カウンターがバイナリに入る
-DIAG=$(grep -E "^ECRITU_PRERELEASE_DIAGNOSTICS = " Config/Edition.xcconfig | head -1 | sed 's/.*= *//')
-if [[ "$DIAG" == "0" ]]; then
-  ok "出荷前診断は組み込まれていない(ECRITU_PRERELEASE_DIAGNOSTICS=0)"
-elif [[ $TESTFLIGHT -eq 1 ]]; then
-  warn "出荷前診断が組み込まれている(ECRITU_PRERELEASE_DIAGNOSTICS=$DIAG)。TestFlight 配布ではこのまま。App Store 提出では 0 にする"
+#    1 のままだとでばぐ可視化(削除キーの黄/橙と数値バッジ)と診断カウンターがバイナリに入る。
+#    判定は**バイナリの文字列**で行なう(3307。以前は Config/Edition.xcconfig の文字列を見ていたため、
+#    古いアーカイブ・Signing.local の上書き・アーカイブ後の編集をすり抜けた)。
+#    keyboardDiagnosticsWriteProbe は #if ECRITU_PRERELEASE_DIAGNOSTICS の中にしか無いリテラル
+#    (KeyboardViewController+Diagnostics.swift recordKeyboardDiagnosticsAppGroupHealth)
+DIAG_HINT=$(resolve_xcconfig_value ECRITU_PRERELEASE_DIAGNOSTICS)
+if [[ -n "$APPEX_BIN" && -f "$APPEX_BIN" ]]; then
+  if strings "$APPEX_BIN" 2>/dev/null | grep -q "^keyboardDiagnosticsWriteProbe$"; then
+    if [[ $TESTFLIGHT -eq 1 ]]; then
+      warn "出荷前診断がバイナリに組み込まれている(xcconfig の現在値=${DIAG_HINT:-?})。TestFlight 配布ではこのまま。App Store 提出では 0 にして再アーカイブ"
+    else
+      bad "出荷前診断がバイナリに組み込まれている(xcconfig の現在値=${DIAG_HINT:-?})。Config/Edition.xcconfig を 0 にして再アーカイブしてください"
+    fi
+  else
+    ok "出荷前診断はバイナリに組み込まれていない"
+    [[ "$DIAG_HINT" != "0" ]] && warn "ただし xcconfig の現在値は ${DIAG_HINT:-?}(このアーカイブは別の値で作られている)"
+  fi
 else
-  bad "ECRITU_PRERELEASE_DIAGNOSTICS=$DIAG のままです。Config/Edition.xcconfig を 0 にして再アーカイブしてください"
+  warn "拡張のバイナリが見つからず、出荷前診断の有無を判定できない"
+fi
+
+# 9b) DEBUG 専用・撮影用の文字列が配布バイナリに残っていないか(3307)。どれも #if DEBUG の中か、
+#     撮影時だけ入れる一時フック(appstore/apply-screenshot-hooks.py)にしか存在しないリテラル
+check_debug_only_strings() {
+  local bin="$1" label="$2"
+  [[ -n "$bin" && -f "$bin" ]] || return
+  local syms hits
+  syms=$(strings "$bin" 2>/dev/null)
+  # 文字列リテラルそのものに合わせる(行頭固定)。App 側には同名のプロパティのシンボル
+  # (_keyboardConversionLastTrace)が #if DEBUG の外にもあり、部分一致だと誤検知する
+  hits=$(echo "$syms" | grep -E "^(MULTITRACE|SINGLETRACE|screenshotScript$|keyboardConversionLastTrace$|.*撮影用の一時フック)" | sort -u | head -5 | tr '\n' ' ')
+  if [[ -n "$hits" ]]; then
+    bad "$label: DEBUG 専用/撮影用の文字列がバイナリに残っている: $hits"
+  else
+    ok "$label: DEBUG 専用/撮影用の文字列なし"
+  fi
+}
+check_debug_only_strings "$APP_BIN" "App"
+check_debug_only_strings "$APPEX_BIN" "KeyboardExtension"
+
+# 9c) 撮影用の一時フックがソースツリーに残っていないか(3307)。git が clean でもコミットされていれば残るので ❌
+HOOKS=$(grep -rln "撮影用の一時フック" App KeyboardExtension 2>/dev/null || true)
+if [[ -n "$HOOKS" ]]; then
+  bad "撮影用の一時フックがソースに残っている: $(echo "$HOOKS" | tr '\n' ' ')(git checkout -- KeyboardExtension/ で外す)"
+else
+  ok "撮影用の一時フックはソースに無い"
+fi
+
+# 9d) dSYM(クラッシュレポートの記号化に要る。xcarchive のみ)
+if [[ $IS_ARCHIVE -eq 1 ]]; then
+  DSYM_COUNT=$(ls -d "$TARGET"/dSYMs/*.dSYM 2>/dev/null | wc -l | tr -d ' ')
+  (( DSYM_COUNT >= 2 )) && ok "dSYM ${DSYM_COUNT} 個(App と拡張)" || warn "dSYM が ${DSYM_COUNT} 個しかない(DEBUG_INFORMATION_FORMAT を確認)"
 fi
 
 # 10) 提出前に解消すべき印(APP_STORE_BLOCKER)。個別の一時的な仕掛け用
