@@ -127,7 +127,64 @@ struct SupplementalVocabCompactStore: Equatable {
         let blobCount = header.4
         let expected = headerLength + (readingOffsetCount + surfaceListStartCount + surfaceOffsetCount) * 4 + blobCount
         guard data.count == expected,
-            readingOffsetCount == surfaceListStartCount else {
+            readingOffsetCount == surfaceListStartCount,
+            readingOffsetCount >= 1 else {
+            return nil
+        }
+        // オフセット表の整合(3306)。ヘッダーと全長だけでは、表の中身が壊れたファイル(書きかけ・ディスク破損)を
+        // 開いたときに blobSlice が start > end で止まるか、blob の外を読む(Release の範囲添字は検査なし)。
+        // 連絡先キャッシュの平文版は App Group にあり署名も認証も無いので、ここで 1 回だけ O(n) で確かめて
+        // 壊れていれば nil を返す(呼び出し側は JSON 経路か空へ落ちる)。約 1.6 万読みで 1ms 未満
+        //   ・読みオフセットは単調非減少で、終端が blob 長
+        //   ・表層リスト開始は単調非減少で、終端が表層オフセット数
+        //   ・表層オフセットは単調非減少で、blob 長以下
+        //   ・読み i の範囲 ≤ その表層列の範囲 ≤ 読み i+1 の開始(blob は [読み][表層…] の交互配置)
+        let readingOffsetsPosition = headerLength
+        let surfaceListStartsPosition = readingOffsetsPosition + readingOffsetCount * 4
+        let surfaceOffsetsPosition = surfaceListStartsPosition + surfaceListStartCount * 4
+        let tablesConsistent: Bool = data.withUnsafeBytes { raw in
+            func uint32(at position: Int) -> Int {
+                Int(UInt32(littleEndian: raw.loadUnaligned(fromByteOffset: position, as: UInt32.self)))
+            }
+            var previousSurfaceOffset = 0
+            for slot in 0..<surfaceOffsetCount {
+                let offset = uint32(at: surfaceOffsetsPosition + slot * 4)
+                guard offset >= previousSurfaceOffset, offset <= blobCount else {
+                    return false
+                }
+                previousSurfaceOffset = offset
+            }
+            guard uint32(at: readingOffsetsPosition + (readingOffsetCount - 1) * 4) == blobCount,
+                uint32(at: surfaceListStartsPosition + (surfaceListStartCount - 1) * 4) == surfaceOffsetCount else {
+                return false
+            }
+            var previousReadingOffset = 0
+            var previousListStart = 0
+            for index in 0..<(readingOffsetCount - 1) {
+                let readingStart = uint32(at: readingOffsetsPosition + index * 4)
+                let nextReadingStart = uint32(at: readingOffsetsPosition + (index + 1) * 4)
+                let firstSlot = uint32(at: surfaceListStartsPosition + index * 4)
+                let lastSlotExclusive = uint32(at: surfaceListStartsPosition + (index + 1) * 4)
+                guard readingStart >= previousReadingOffset,
+                    readingStart <= nextReadingStart,
+                    firstSlot >= previousListStart,
+                    firstSlot <= lastSlotExclusive,
+                    lastSlotExclusive <= surfaceOffsetCount else {
+                    return false
+                }
+                if firstSlot < lastSlotExclusive {
+                    // 表層列は読みの直後から始まり、次の読みの開始までに収まる
+                    guard uint32(at: surfaceOffsetsPosition + firstSlot * 4) >= readingStart,
+                        uint32(at: surfaceOffsetsPosition + (lastSlotExclusive - 1) * 4) <= nextReadingStart else {
+                        return false
+                    }
+                }
+                previousReadingOffset = readingStart
+                previousListStart = firstSlot
+            }
+            return true
+        }
+        guard tablesConsistent else {
             return nil
         }
         self.buffer = data

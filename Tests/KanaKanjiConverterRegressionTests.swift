@@ -1273,6 +1273,72 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(oku.first, "そばに置く", "list=\(oku)")
     }
 
+    // 壊れた直列化データ(オフセット表の不整合)は nil で弾く(3306、セキュリティー検査 2026-10-02)。
+    // 以前はヘッダーと全長しか見ておらず、App Group の連絡先キャッシュ(平文・無署名)が書きかけや
+    // ディスク破損で壊れると、最初の点引きで範囲添字が止まるか blob の外を読んでいた
+    func testSupplementalVocabCompactStoreRejectsCorruptedOffsetTables() {
+        let dictionary: [String: [String]] = [
+            "あ": ["亜", "阿"],
+            "い": ["胃"],
+            "う": []
+        ]
+        let good = SupplementalVocabCompactStore(dictionary: dictionary).serializedData()
+        XCTAssertNotNil(SupplementalVocabCompactStore(serialized: good))
+
+        let magicLength = 5
+        let headerLength = magicLength + 16
+        func header(_ field: Int) -> Int {
+            good.withUnsafeBytes { Int(UInt32(littleEndian: $0.loadUnaligned(fromByteOffset: magicLength + field * 4, as: UInt32.self))) }
+        }
+        let readingOffsetCount = header(0)
+        let surfaceListStartCount = header(1)
+        let surfaceOffsetCount = header(2)
+        let blobCount = header(3)
+        XCTAssertEqual(readingOffsetCount, dictionary.count + 1)
+        XCTAssertEqual(surfaceOffsetCount, 3)
+        let readingOffsetsPosition = headerLength
+        let surfaceListStartsPosition = readingOffsetsPosition + readingOffsetCount * 4
+        let surfaceOffsetsPosition = surfaceListStartsPosition + surfaceListStartCount * 4
+
+        // 表の 1 要素だけを書き換えた版を作る(全長とヘッダーは正しいまま)
+        func corrupted(at position: Int, value: Int) -> Data {
+            var data = good
+            data.withUnsafeMutableBytes { raw in
+                raw.storeBytes(of: UInt32(value).littleEndian, toByteOffset: position, as: UInt32.self)
+            }
+            return data
+        }
+        // 読みオフセットの終端が blob 長でない
+        XCTAssertNil(SupplementalVocabCompactStore(serialized: corrupted(at: readingOffsetsPosition + (readingOffsetCount - 1) * 4, value: blobCount + 1)))
+        // 読みオフセットが後退(start > end の範囲)
+        XCTAssertNil(SupplementalVocabCompactStore(serialized: corrupted(at: readingOffsetsPosition + 1 * 4, value: blobCount)))
+        // 表層オフセットが blob の外
+        XCTAssertNil(SupplementalVocabCompactStore(serialized: corrupted(at: surfaceOffsetsPosition + 0 * 4, value: blobCount + 100)))
+        // 表層リスト開始が表層数を超える
+        XCTAssertNil(SupplementalVocabCompactStore(serialized: corrupted(at: surfaceListStartsPosition + 1 * 4, value: surfaceOffsetCount + 1)))
+        // 表層リスト開始の終端が表層数でない
+        XCTAssertNil(SupplementalVocabCompactStore(serialized: corrupted(at: surfaceListStartsPosition + (surfaceListStartCount - 1) * 4, value: surfaceOffsetCount - 1)))
+        // 表層列が読みの開始より手前を指す(交互配置の破れ)
+        XCTAssertNil(SupplementalVocabCompactStore(serialized: corrupted(at: surfaceOffsetsPosition + 2 * 4, value: 0)))
+        // ヘッダーだけで表と blob が無い(全長の不一致)
+        XCTAssertNil(SupplementalVocabCompactStore(serialized: Data(good.prefix(headerLength))))
+        // 元のデータは変わっていない
+        XCTAssertEqual(SupplementalVocabCompactStore(serialized: good)?.candidates(for: "あ"), ["亜", "阿"])
+    }
+
+    // 実物の畳んだ補助語彙(ビルドが tmp に書き出す。実機ではバンドルから mmap で開く)が、強めた
+    // オフセット表の検証(3306)を通ること。検証が厳しすぎて実物を nil にしても、呼び出し側は黙って
+    // JSON 経路へ落ちる(常駐が約 6.8MB 増えるだけ)ので、ここで明示的に確かめる
+    func testBuiltSupplementalVocabCompactFilePassesValidation() throws {
+        let url = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/ÉcrituSecondVocab.eccs")
+        guard FileManager.default.fileExists(atPath: url.path) else {
+            throw XCTSkip("tmp/ÉcrituSecondVocab.eccs not available on this machine")
+        }
+        let data = try Data(contentsOf: url, options: .mappedIfSafe)
+        let store = try XCTUnwrap(SupplementalVocabCompactStore(serialized: data), "built .eccs must pass validation")
+        XCTAssertGreaterThan(store.readingCount, 10_000)
+    }
+
     // 補助語彙のコンパクト表(UTF8ブロブ+二分探索)が [String: [String]] と同じ答えを
     // 返すことの固定。常駐 6.8MB→約1MB の置き換え(2615)の正しさの根拠。
     func testSupplementalVocabCompactStoreRoundTrip() {
