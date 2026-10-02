@@ -5,7 +5,7 @@
 #   --tag   : 検証OKのとき submitted-<version>-<build> の git タグを打つ(追跡性の記録)
 # 検査項目: バンドルID / debug.dylib等の混入 / ITSAppUsesNonExemptEncryption /
 #           アイコンのアルファ / appexサイズ / 辞書sqliteがtmpと同一(=テスト済みの辞書) /
-#           プロビジョニングの失効日 / 出荷前診断フラグ / APP_STORE_BLOCKER の印 / gitツリーの汚れ
+#           プロビジョニングの失効日 / 出荷前診断フラグ / APP_STORE_BLOCKER の印 / 必要な理由 API の申告 / gitツリーの汚れ
 set -u
 FAIL=0
 ok()   { echo "  ✅ $1"; }
@@ -109,6 +109,34 @@ if [[ -n "$BLOCKERS" ]]; then
   echo "$BLOCKERS" | sed 's/^/      /'
 else
   ok "APP_STORE_BLOCKER の印なし"
+fi
+
+# 11) 「必要な理由」の申告が要る API のシンボルが、PrivacyInfo.xcprivacy に申告の無い区分で残っていないか
+#     (ITMS-91053。2026-10-02 に DEBUG 専用の計測が ProcessInfo.systemUptime を Release に残していたのを検出)
+check_required_reason_apis() {
+  local bin="$1" manifest="$2" label="$3"
+  [[ -f "$bin" ]] || { warn "$label: バイナリが見つからない"; return; }
+  local syms; syms=$(strings "$bin" 2>/dev/null)
+  # 区分:シンボルの正規表現(macOS の bash 3.2 には連想配列が無い)
+  local entry cat pattern hits
+  for entry in \
+    "SystemBootTime:systemUptime|mach_absolute_time|mach_continuous_time" \
+    "DiskSpace:statfs|statvfs|volumeAvailableCapacity|volumeTotalCapacity" \
+    "FileTimestamp:creationDate|modificationDate|contentModificationDateKey|creationDateKey|fileModificationDate" \
+    "ActiveKeyboards:activeInputModes"; do
+    cat=${entry%%:*}; pattern=${entry#*:}
+    hits=$(echo "$syms" | grep -E "^(${pattern})$" | sort -u | tr '\n' ' ')
+    [[ -n "$hits" ]] || continue
+    if [[ -f "$manifest" ]] && grep -q "NSPrivacyAccessedAPICategory$cat" "$manifest"; then
+      ok "$label: $cat の API($hits)を使い、申告あり"
+    else
+      bad "$label: $cat の API($hits)を使うのに PrivacyInfo.xcprivacy に申告が無い"
+    fi
+  done
+}
+check_required_reason_apis "$APP/$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$APP/Info.plist" 2>/dev/null)" "$APP/PrivacyInfo.xcprivacy" "App"
+if [[ -d "$APPEX" ]]; then
+  check_required_reason_apis "$APPEX/$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$APPEX/Info.plist" 2>/dev/null)" "$APPEX/PrivacyInfo.xcprivacy" "KeyboardExtension"
 fi
 
 # 8) gitツリー
