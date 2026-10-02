@@ -16,23 +16,6 @@ enum ContactCacheCipher {
     static let keychainService = "com.kusakabe.ecritu.contactCache"
     static let keychainAccount = "aes-256-key"
 
-    static func seal(_ dictionary: [String: [String]], key: SymmetricKey) -> Data? {
-        guard let json = try? JSONEncoder().encode(dictionary),
-            let sealed = try? AES.GCM.seal(json, using: key).combined else {
-            return nil
-        }
-        return sealed
-    }
-
-    static func open(_ data: Data, key: SymmetricKey) -> [String: [String]]? {
-        guard let box = try? AES.GCM.SealedBox(combined: data),
-            let json = try? AES.GCM.open(box, using: key),
-            let dictionary = try? JSONDecoder().decode([String: [String]].self, from: json) else {
-            return nil
-        }
-        return dictionary
-    }
-
     // 連絡先キャッシュの上限(拡張の常駐量を抑えるための頭打ち)。以前は拡張側だけが持ち、
     // 復号した辞書を拡張で切り詰めていた。畳んだ表で渡す方式(3020)ではコンテナー側が
     // 同じ規則で切ってから畳む必要があるため、両ターゲットが使うこのファイルへ移した
@@ -83,16 +66,9 @@ enum ContactCacheCipher {
         return limited
     }
 
-    // 畳んだ表のまま封緘する版(3020)。JSON 辞書で渡すと拡張側が復元のたびに
-    // 4,126 読みの [String: [String]] を一瞬だけ作り、malloc アリーナを 4MB 広げて
-    // 返さなかった(実機計測)。連絡先はめったに変わらないので、コンテナー側で
-    // コンパクト表に畳んでから封緘する
-    static func sealCompact(_ store: SupplementalVocabCompactStore, key: SymmetricKey) -> Data? {
-        try? AES.GCM.seal(store.serializedData(), using: key).combined
-    }
-
-    // 畳んだ表のファイル(3260)。自前の AES 封緘(下の seal/open 系)はやめ、このファイルだけにした。封緘系は旧版の
-    // 保存物を読む移行用(拡張のフォールバック)と削除のためにだけ残す。封緘版は拡張が開くたびに復号でヒープへ展開し、捨てて作り直すたびに
+    // 畳んだ表のファイル(3260)。自前の AES 封緘(seal/open/sealCompact/openCompact と Keychain の鍵作成)はやめ、
+    // このファイルだけにした。封緘系の読み書きは 3317 で撤去し、残るのは旧版の鍵を消す deleteKeychainKey だけ。
+    // 封緘版は拡張が開くたびに復号でヒープへ展開し、捨てて作り直すたびに
     // malloc の新しい領域(4MB)を確保して footprint のラチェットの引き金になっていた(実機 2026-09-27 03:25 の警告)。
     // iOS のファイル保護(初回ロック解除まで読めない暗号化)を掛けた App Group のファイルにし、拡張は
     // mmap(mappedIfSafe)で開く。ページは読み取り専用のクリーンページで footprint にほぼ数えられず、
@@ -151,49 +127,10 @@ enum ContactCacheCipher {
         return FileManager.default.fileExists(atPath: url.path)
     }
 
-    static func openCompact(_ data: Data, key: SymmetricKey) -> SupplementalVocabCompactStore? {
-        guard let box = try? AES.GCM.SealedBox(combined: data),
-            let raw = try? AES.GCM.open(box, using: key) else {
-            return nil
-        }
-        return SupplementalVocabCompactStore(serialized: raw)
-    }
-
-    static func keychainKey(createNew: Bool) -> SymmetricKey? {
-        var query: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: keychainService,
-            kSecAttrAccount as String: keychainAccount,
-            kSecReturnData as String: true,
-            kSecMatchLimit as String: kSecMatchLimitOne
-        ]
-        var result: CFTypeRef?
-        let status = SecItemCopyMatching(query as CFDictionary, &result)
-        if status == errSecSuccess, let data = result as? Data, data.count == 32 {
-            return SymmetricKey(data: data)
-        }
-        guard createNew else {
-            return nil
-        }
-        let key = SymmetricKey(size: .bits256)
-        let keyData = key.withUnsafeBytes { Data($0) }
-        query.removeValue(forKey: kSecReturnData as String)
-        query.removeValue(forKey: kSecMatchLimit as String)
-        query[kSecValueData as String] = keyData
-        query[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlock
-        // iCloud キーチェーンには同期しない(既定 false だが意図を明示。2785)
-        query[kSecAttrSynchronizable as String] = false
-        let addStatus = SecItemAdd(query as CFDictionary, nil)
-        guard addStatus == errSecSuccess || addStatus == errSecDuplicateItem else {
-            return nil
-        }
-        if addStatus == errSecDuplicateItem {
-            return keychainKey(createNew: false)
-        }
-        return key
-    }
-
-    // 連絡先候補をオフにしたとき、対応表と一緒に鍵も消す(鍵だけ残す理由が無い。2785)
+    // 旧版(3259 以前)が Keychain に置いた AES 鍵を消す(アプリの後片づけ専用)。
+    // **撤去予定: 2026-10-23 以降(3317)**。旧形式を持つのは TestFlight の 7 人の端末だけで、各端末でアプリを
+    // 一度開けば用済み。keychainService / keychainAccount と、App/KeyboardExtension の旧 3 キー
+    // (contactCandidatesByReadingCache / …Sealed / …CompactSealed)も同時に消す
     static func deleteKeychainKey() {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
