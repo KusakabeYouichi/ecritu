@@ -1326,6 +1326,59 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(SupplementalVocabCompactStore(serialized: good)?.candidates(for: "あ"), ["亜", "阿"])
     }
 
+    // 学習語彙の全体の上限(3314、安全弁)。3 万組を超えたら保存時に点数の低い順に 3,000 組を捨てる。
+    // 点数の高い組とかな識別の学習は残る。捨てる処理の所要時間も記録する(数十ミリ秒の見込み)
+    func testLearnedVocabularyEvictsLowestScoredPairsOverLimit() {
+        let store = converter.store
+        let digits = Array("あいうえおかきくけこ")
+        func kana(_ n: Int) -> String {
+            var value = n
+            var text = ""
+            repeat {
+                text.insert(digits[value % 10], at: text.startIndex)
+                value /= 10
+            } while value > 0
+            return text
+        }
+        // かな識別の学習(表記==読み)は残る
+        store.addLearnedEntry(reading: "つもり", candidate: "つもり", allowKanaIdentity: true)
+        // 点数の高い 10 組は残る
+        for i in 0..<10 {
+            store.addLearnedEntry(reading: "たかい" + kana(i), candidate: "高い\(i)")
+            for _ in 0..<5 {
+                store.incrementLearning(reading: "たかい" + kana(i), candidate: "高い\(i)")
+            }
+        }
+        // 点数 0 の組を足して合計を上限+1 にする
+        let limit = KanaKanjiStore.learnedPairsLimit
+        for n in 0..<(limit - 10) {
+            store.addLearnedEntry(reading: "よみ" + kana(n), candidate: "表記\(n)")
+        }
+        XCTAssertEqual(store.learnedDictionary().values.reduce(0) { $0 + $1.count }, limit + 1)
+
+        let started = CFAbsoluteTimeGetCurrent()
+        store.waitForPendingLearningPersists()
+        let elapsedMs = Int((CFAbsoluteTimeGetCurrent() - started) * 1000)
+        print("LEARNED-EVICT pairs=\(limit + 1) elapsedMs=\(elapsedMs)(捨てる処理+JSON 書き出し)")
+
+        let learned = store.learnedDictionary()
+        let total = learned.values.reduce(0) { $0 + $1.count }
+        XCTAssertEqual(total, limit + 1 - KanaKanjiStore.learnedPairsEvictionBatch)
+        XCTAssertEqual(learned["つもり"], ["つもり"])
+        for i in 0..<10 {
+            XCTAssertEqual(learned["たかい" + kana(i)], ["高い\(i)"], "high-scored pair must survive")
+            XCTAssertEqual(store.learningScores()["たかい" + kana(i) + "\t高い\(i)"], 5)
+        }
+        // 捨てた組の点数キーも消えている(残った組の数と点数キーの数が整合)
+        let zeroScoredSurvivors = learned.filter { $0.key.hasPrefix("よみ") }.count
+        XCTAssertEqual(zeroScoredSurvivors, limit - 10 - KanaKanjiStore.learnedPairsEvictionBatch)
+        // 上限以下なら何も捨てない
+        store.addLearnedEntry(reading: "あたらしい", candidate: "新しい")
+        store.waitForPendingLearningPersists()
+        XCTAssertEqual(store.learnedDictionary()["あたらしい"], ["新しい"])
+        XCTAssertLessThan(elapsedMs, 2000)
+    }
+
     // 実物の畳んだ補助語彙(ビルドが tmp に書き出す。実機ではバンドルから mmap で開く)が、強めた
     // オフセット表の検証(3306)を通ること。検証が厳しすぎて実物を nil にしても、呼び出し側は黙って
     // JSON 経路へ落ちる(常駐が約 6.8MB 増えるだけ)ので、ここで明示的に確かめる

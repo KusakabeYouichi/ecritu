@@ -62,6 +62,9 @@ extension KanaKanjiStore {
         let (learned, scores): ([String: [String]]?, [String: Int]?) = withCacheLock {
             learningPersistWorkItem?.cancel()
             learningPersistWorkItem = nil
+            if learningPersistDirtyLearned {
+                _ = evictLearnedPairsOverLimitLocked()
+            }
             let l = learningPersistDirtyLearned ? cachedLearnedDictionary : nil
             let s = learningPersistDirtyScores ? cachedLearningScores : nil
             learningPersistDirtyLearned = false
@@ -79,6 +82,66 @@ extension KanaKanjiStore {
 
     func flushPendingLearningPersists() {
         persistDirtyLearningNow()
+    }
+
+    // 学習語彙の全体の上限(3314)。機能ではなく安全弁: 1 組は JSON で 40〜60 バイトなので 3 万組で約 1.5MB、
+    // UserDefaults が警告を出す 4MB には届かない。毎日 30 語を新しく覚える重い使い方でも 1 万組に 1 年かかる。
+    // 到達したら 1 割をまとめて捨てる(1 組ずつだと上限付近で保存のたびに並べ替えが走る)
+    static let learnedPairsLimit = 30_000
+    static let learnedPairsEvictionBatch = 3_000
+
+    // cacheLock の中で呼ぶ。学習語彙(読み→表記)の組の総数が上限を超えていたら、点数(選ばれた回数)の低い順に
+    // 捨てる。同点は読み・表記の辞書順で決めて、結果を決定的にする。「最初に覚えた順」で捨てないのは、何年も
+    // 使い続けている語が先週 1 回選んだ語より先に消えるから。かな識別の学習(表記==読み)はユーザーの明示的な
+    // 意思表示なので対象外。保存キュー(背景)で走り、3 万組の並べ替えは数ミリ秒。戻り値は捨てた組の数
+    func evictLearnedPairsOverLimitLocked() -> Int {
+        guard let learned = cachedLearnedDictionary else {
+            return 0
+        }
+        var total = 0
+        for surfaces in learned.values {
+            total += surfaces.count
+        }
+        guard total > Self.learnedPairsLimit else {
+            return 0
+        }
+        let scores = cachedLearningScores ?? [:]
+        struct Pair {
+            let reading: String
+            let surface: String
+            let score: Int
+        }
+        var pairs: [Pair] = []
+        pairs.reserveCapacity(total)
+        for (reading, surfaces) in learned {
+            for surface in surfaces where surface != reading {
+                pairs.append(Pair(reading: reading, surface: surface, score: scores[learningKey(reading: reading, candidate: surface)] ?? 0))
+            }
+        }
+        let removeCount = min(Self.learnedPairsEvictionBatch, pairs.count)
+        guard removeCount > 0 else {
+            return 0
+        }
+        pairs.sort { lhs, rhs in
+            if lhs.score != rhs.score {
+                return lhs.score < rhs.score
+            }
+            if lhs.reading != rhs.reading {
+                return lhs.reading < rhs.reading
+            }
+            return lhs.surface < rhs.surface
+        }
+        for pair in pairs.prefix(removeCount) {
+            if var surfaces = cachedLearnedDictionary?[pair.reading] {
+                surfaces.removeAll { $0 == pair.surface }
+                cachedLearnedDictionary?[pair.reading] = surfaces.isEmpty ? nil : surfaces
+            }
+            cachedLearningScores?[learningKey(reading: pair.reading, candidate: pair.surface)] = nil
+        }
+        cachedLearningScoresByReading = nil
+        learningPersistDirtyLearned = true
+        learningPersistDirtyScores = true
+        return removeCount
     }
 
     func learningScores() -> [String: Int] {
