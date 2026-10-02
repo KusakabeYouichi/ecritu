@@ -420,6 +420,21 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // おかし: 辞書エントリが 御菓子(wc7812)だけで現代正書の お菓子 が1件も無かった。
     // 御菓子 は LM 未収録なので連文節では dictUnknown 扱いになり、ぼるどーのおかし が
     // 丘(LM5514)+し の分割に負けて ボルドーの丘し になっていた(2584)。
+    // しろごはんより: 語→版(英語版)の安い bigram に引かれて 白+語+版+より になり、ご飯 が候補から消えていた。
+    // 接尾の 語 は言語名にしか付かない(実績の無い相手では減点。3322、ユーザ報告 2026-10-03)
+    func testRegressionRealLMShirogohanYoriKeepsGohan() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let multi = converter.multiClauseCandidates(for: "しろごはんより", systemCandidateMode: .surface)
+        XCTAssertTrue(multi.first?.contains("ご飯") == true || multi.first?.contains("ごはん") == true || multi.first?.contains("御飯") == true, "multi=\(multi)")
+        XCTAssertFalse(multi.prefix(3).contains { $0.contains("語版") }, "multi=\(multi)")
+        // 言語名+語 は従来どおり(にほんごばんより→日本語版より)
+        let nihongo = converter.multiClauseCandidates(for: "にほんごばんより", systemCandidateMode: .surface)
+        XCTAssertEqual(nihongo.first, "日本語版より", "multi=\(nihongo)")
+        let eigo = converter.multiClauseCandidates(for: "えいごのほん", systemCandidateMode: .surface)
+        XCTAssertEqual(eigo.first, "英語の本", "multi=\(eigo)")
+    }
+
     func testRegressionRealLMOkashi() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
