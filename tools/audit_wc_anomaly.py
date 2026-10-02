@@ -19,18 +19,17 @@ def main() -> None:
     con = sqlite3.connect(DB)
     # 主読みガード: レア読み(はじめ→元 等の人名ハーベスト)は辞書が正しく下げて
     # いるので対象外。wc高型は「その読みが候補の最安読み」に限り、欠落型は
-    # 「候補が word_costs に一切無い」に限る
+    # 「候補にコスト(dictionary_entries.cost、旧 word_costs)が無い」に限る
     rows = con.execute(
         """
-        SELECT d.reading, d.candidate, u.cost, w.cost
+        SELECT d.reading, d.candidate, u.cost, d.cost
         FROM dictionary_entries d
         JOIN word_lm_unigram u ON u.surface = d.candidate
-        LEFT JOIN word_costs w ON w.reading = d.reading AND w.candidate = d.candidate
         LEFT JOIN candidate_min_word_costs m ON m.candidate = d.candidate
         WHERE u.cost <= 6000 AND length(d.reading) >= 2 AND d.rank <= 3
           AND (
-            (w.cost IS NOT NULL AND w.cost >= 8000 AND w.cost - m.min_cost <= 500)
-            OR (w.cost IS NULL AND m.candidate IS NULL)
+            (d.cost IS NOT NULL AND d.cost >= 8000 AND d.cost - m.min_cost <= 500)
+            OR (d.cost IS NULL AND m.candidate IS NULL)
           )
         ORDER BY u.cost
         """

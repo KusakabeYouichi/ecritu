@@ -271,78 +271,68 @@ def build_sqlite(
 
         conn.executescript(
             """
+            -- 表はすべて WITHOUT ROWID(3303): 主キーの b-tree が表そのものになり、rowid 表+主キーの自動索引の
+            -- 二重持ちが消える。引き方は全部「主キーの前方一致」なので検索用の索引も要らない。
+            -- (以前は dictionary_entries だけで rowid 表 27MB+自動索引 29MB+読み順索引 21MB だった)
             CREATE TABLE dictionary_entries (
                 reading TEXT NOT NULL,
-                candidate TEXT NOT NULL,
                 rank INTEGER NOT NULL,
+                candidate TEXT NOT NULL,
                 -- 候補の出どころのビット集合(SOURCE_BITS)。0 = 記録なし。以前は別表 candidate_sources
                 -- (読み+候補+出どころ名の行×133 万、索引 2 本で 173MB)だった(3302)
                 sources INTEGER NOT NULL DEFAULT 0,
-                PRIMARY KEY (reading, candidate)
-            );
-
-            CREATE INDEX idx_dictionary_entries_reading_rank
-                ON dictionary_entries (reading, rank);
+                -- 語コスト(案A ビタビ用、Sudachi 連接エントリ由来か補助語彙の既定値)。以前は別表 word_costs
+                -- (索引 2 本と合わせて 81MB)だった(3303)。NULL = コストなし
+                cost INTEGER,
+                PRIMARY KEY (reading, rank)
+            ) WITHOUT ROWID;
 
             CREATE TABLE inflection_classes (
                 reading TEXT NOT NULL,
                 candidate TEXT NOT NULL,
                 inflection_class TEXT NOT NULL,
                 PRIMARY KEY (reading, candidate)
-            );
-
-            CREATE INDEX idx_inflection_classes_lookup
-                ON inflection_classes (reading, candidate);
+            ) WITHOUT ROWID;
 
             CREATE TABLE person_names (
                 reading TEXT NOT NULL,
                 candidate TEXT NOT NULL,
                 kind TEXT NOT NULL,
                 PRIMARY KEY (reading, candidate)
-            );
-
-            CREATE INDEX idx_person_names_lookup
-                ON person_names (reading);
-
-            CREATE TABLE word_costs (
-                reading TEXT NOT NULL,
-                candidate TEXT NOT NULL,
-                cost INTEGER NOT NULL,
-                PRIMARY KEY (reading, candidate)
-            );
-
-            CREATE INDEX idx_word_costs_lookup
-                ON word_costs (reading, candidate);
+            ) WITHOUT ROWID;
 
             CREATE TABLE candidate_min_word_costs (
                 candidate TEXT PRIMARY KEY,
                 min_cost INTEGER NOT NULL
-            );
+            ) WITHOUT ROWID;
 
             CREATE TABLE word_lm_unigram (
                 surface TEXT PRIMARY KEY,
                 cost INTEGER NOT NULL
-            );
+            ) WITHOUT ROWID;
 
             CREATE TABLE word_lm_bigram (
                 prev TEXT NOT NULL,
                 cur TEXT NOT NULL,
                 cost INTEGER NOT NULL,
                 PRIMARY KEY (prev, cur)
-            );
+            ) WITHOUT ROWID;
 
             CREATE TABLE word_lm_params (
                 key TEXT PRIMARY KEY,
                 value INTEGER NOT NULL
-            );
+            ) WITHOUT ROWID;
             """
         )
 
-        dictionary_rows: List[Tuple[str, str, int, int]] = []
+        # (読み, rank, 候補, 出どころビット)。語コストは下で決めてから一緒に INSERT する(3303)
+        dictionary_rows: List[Tuple[str, int, str, int]] = []
         dictionary_candidate_set: Dict[str, Set[str]] = {}
 
         for reading in sorted(vocab.keys()):
             candidates = vocab[reading]
+            if len(set(candidates)) != len(candidates):
+                raise SystemExit(f"duplicate candidate for reading {reading!r}: {candidates}")
             dictionary_candidate_set[reading] = set(candidates)
             candidate_sources = sources.get(reading, {})
             for rank, candidate in enumerate(candidates):
@@ -354,12 +344,7 @@ def build_sqlite(
                             "add it to SOURCE_BITS here and KanaKanjiSQLiteIndex.sourceBit"
                         )
                     bits |= SOURCE_BITS[source]
-                dictionary_rows.append((reading, candidate, rank, bits))
-
-        conn.executemany(
-            "INSERT INTO dictionary_entries(reading, candidate, rank, sources) VALUES (?, ?, ?, ?)",
-            dictionary_rows,
-        )
+                dictionary_rows.append((reading, rank, candidate, bits))
 
         inflection_rows: List[Tuple[str, str, str]] = []
         for reading, candidate_map in inflections.items():
@@ -427,12 +412,16 @@ def build_sqlite(
                 cost_rows.append((reading, candidate, default_cost))
                 seen_cost_keys.add((reading, candidate))
 
-        if cost_rows:
-            conn.executemany(
-                "INSERT INTO word_costs(reading, candidate, cost) VALUES (?, ?, ?)",
-                cost_rows,
-            )
+        cost_by_key: Dict[Tuple[str, str], int] = {(r, c): cost for r, c, cost in cost_rows}
+        conn.executemany(
+            "INSERT INTO dictionary_entries(reading, rank, candidate, sources, cost) VALUES (?, ?, ?, ?, ?)",
+            [
+                (reading, rank, candidate, bits, cost_by_key.get((reading, candidate)))
+                for reading, rank, candidate, bits in dictionary_rows
+            ],
+        )
 
+        if cost_rows:
             # 表層ごとの全読み最安 word_cost。読み跨ぎコスト借用の遮断
             # (表層キーの LM unigram が主読みの実績なのに、レア読みの同表層が
             # タダ乗りして浮上する: 充て(みて)←あて、田中(でんちゅう)←たなか 等)
@@ -479,7 +468,7 @@ def build_sqlite(
         print(f"wrote sqlite: {output_path}")
         print(f"readings={len(vocab)}")
         print(f"dictionary_rows={len(dictionary_rows)}")
-        print(f"source_rows={len(source_rows)}")
+        print(f"sourced_rows={sum(1 for row in dictionary_rows if row[3])}")
         print(f"inflection_rows={len(inflection_rows)}")
     finally:
         conn.close()

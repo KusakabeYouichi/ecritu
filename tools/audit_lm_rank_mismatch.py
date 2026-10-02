@@ -35,10 +35,9 @@ def main() -> None:
           JOIN word_lm_unigram u ON u.surface = d.candidate
           -- 読み跨ぎの誤期待(宇宙=たかおき 等の人名読みハーベスト)を除くため、
           -- この読みが表層の主読み(word_cost が全読み最安に近い)である候補に限る
-          JOIN word_costs w ON w.reading = d.reading AND w.candidate = d.candidate
           JOIN candidate_min_word_costs m ON m.candidate = d.candidate
           WHERE length(d.reading) >= 2
-            AND w.cost - m.min_cost <= 500
+            AND d.cost - m.min_cost <= 500
         ),
         r0 AS (
           SELECT d.reading, d.candidate AS top, u.cost AS top_uni
