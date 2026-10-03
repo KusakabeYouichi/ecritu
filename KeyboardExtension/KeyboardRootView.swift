@@ -1122,6 +1122,8 @@ struct KeyboardRootView: View {
     // テスターの画面にも出していた。
     // 目的: キーが赤くなる描画異常(緑・青が落ちる)が起きたとき、同じ画面にメモリ警告の有無が写るようにして
     // 「メモリ切迫が引き金か」を 1 枚で判定する。黄も橙も緑・青が落ちれば真っ赤になるが、数字は白なので読める
+    // スイッチがオフでも数値を出す footprint の最大値(MB。3334)
+    static let memoryBadgeAlwaysShownAboveMB = 45
 #if DEBUG
     static let memoryPressureVisualizationEnabled = true
 #else
@@ -1148,7 +1150,14 @@ struct KeyboardRootView: View {
     // **バッジは 1 本にまとめること**(2921): ActionKeyButton に格納プロパティを足すと、キー群の巨大なタプルが
     // その分だけ太り、横画面の body 構築で App Extension のスタックを食い潰して落ちた
     var memoryPressureDeleteKeyBadge: String? {
+        // 数値はアプリの「キーボード診断ログ」のスイッチでオンにしたときは常に、オフ(初期設定)でも footprint の最大値が
+        // 45MB を超えたら出す(3334、ユーザ指定。色は別)
         guard Self.memoryPressureVisualizationEnabled else {
+            return nil
+        }
+        let peakMB = max(candidateBarModel.memoryFootprintPeakMBForDebugDisplay,
+                         candidateBarModel.memoryFootprintProcessPeakMBForDebugDisplay)
+        guard candidateBarModel.showsMemoryBadgeForDebugDisplay || peakMB > Self.memoryBadgeAlwaysShownAboveMB else {
             return nil
         }
 

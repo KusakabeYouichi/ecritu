@@ -523,6 +523,8 @@ final class KeyboardViewController: UIInputViewController {
         // デバッグ用: 直近1回の変換トレース(上書き式)。実機のみ再現する誤変換の層特定に使う。
         // reading→連文節上位|単文節上位|LM/フェイルセーフ/モード を記録。ローテなし・単一値。
         static let keyboardConversionLastTrace = "keyboardConversionLastTrace"
+        // 削除キーにメモリの数値を出すか(アプリの「キーボード診断ログ」のスイッチ。初期設定はオフ。3334)
+        static let deleteKeyMemoryBadgeEnabled = "deleteKeyMemoryBadgeEnabled"
         // 設定変更の世代カウンタ(コンテナ app が変更のたび +1)。サスペンド中のキーボードが
         // Darwin 通知を取りこぼしても、次のキーボード表示でこの値の変化を見て共有キャッシュを
         // 破棄し、学習リセット等を確実に反映する。App 側 SettingsKeys と同一キー文字列。
@@ -866,6 +868,12 @@ final class KeyboardViewController: UIInputViewController {
             candidateBarModel.memoryFootprintProcessPeakMBForDebugDisplay = processPeak
         }
         // 今の値は変わりやすいので、でばぐ表示が有効なときだけ流す(出荷版で再描画を増やさない)
+        // 数値を出すかはアプリのスイッチ(初期設定はオフ。3334)。設定変更の通知のあとの表示・打鍵で反映される
+        let showsBadge = KeyboardRootView.memoryPressureVisualizationEnabled
+            && (sharedDefaults?.bool(forKey: SharedDefaultsKeys.deleteKeyMemoryBadgeEnabled) ?? false)
+        if candidateBarModel.showsMemoryBadgeForDebugDisplay != showsBadge {
+            candidateBarModel.showsMemoryBadgeForDebugDisplay = showsBadge
+        }
         let current = diagnosticsState.memoryFootprintCurrentMB
         if KeyboardRootView.memoryPressureVisualizationEnabled,
             candidateBarModel.memoryFootprintCurrentMBForDebugDisplay != current {
