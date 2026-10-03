@@ -508,9 +508,10 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     func testRegressionRealLMSupplementalWholeNameBeforeSurnameGivenName() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
+        // 3336 以降は 1 語が連文節にも勝ち、連文節は空(単文節に委ねる)になりうる
         let multi = converter.multiClauseCandidates(for: "こいずみきょうこ", systemCandidateMode: .surface)
-        XCTAssertEqual(multi.first, "小泉今日子", "\(multi)")
-        XCTAssertTrue(multi.contains("小泉恭子"), "\(multi)")
+        let shown = multi.isEmpty ? converter.candidates(for: "こいずみきょうこ", limit: 4, systemCandidateMode: .surface) : multi
+        XCTAssertEqual(shown.first, "小泉今日子", "\(shown)")
     }
 
     // さいきん: もしかしてさいきん が もしかして細菌 先頭だった(ユーザ報告)。もしかして を 1 語で登録し、末尾 て から借りる
@@ -523,6 +524,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(word.first, "最近", "\(word)")
         XCTAssertEqual(word.last, "さいきん", "\(word)")
         XCTAssertEqual(converter.multiClauseCandidates(for: "さいきんにかんせんする", systemCandidateMode: .surface).first, "細菌に感染する")
+    }
+
+    // くもじで: 区間の候補がどれも LM に無いとき、補助語彙(ryukyu)の 久茂地 を連文節でも先に立てる(3336、ユーザ報告)
+    func testRegressionRealLMKumojiSupplementalInUnknownSpan() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let multi = converter.multiClauseCandidates(for: "くもじで", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "久茂地で", "\(multi)")
     }
 
     // しろごはんより: 語→版(英語版)の安い bigram に引かれて 白+語+版+より になり、ご飯 が候補から消えていた。
@@ -16453,11 +16462,10 @@ extension KanaKanjiConverterRegressionTests {
                 ("じっかにかえって", "実家に帰って"),
                 ("かつらむきする", "桂剥きする")
             ] {
-                XCTAssertEqual(
-                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
-                    expected,
-                    "mode=\(mode.rawValue) reading=\(reading)"
-                )
+                // 連文節が空(1 語に委ねる)なら単文節の先頭を見る(3336 で 1 語の補助語彙が連文節に勝つようになった)
+                let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: mode)
+                let shown = multi.isEmpty ? converter.candidates(for: reading, limit: 4, systemCandidateMode: mode) : multi
+                XCTAssertEqual(shown.first, expected, "mode=\(mode.rawValue) reading=\(reading)")
             }
         }
     }

@@ -1416,6 +1416,24 @@ extension KanaKanjiConverter {
             print("MULTITRACE weakStandaloneKanji probe=\(standaloneKanjiProbeSurfaces.sorted()) weak=\(weakStandaloneKanjiSurfaces.sorted())")
         }
         #endif
+        // 補助語彙(ryukyu/vin 等)の語は、同じ区間の候補がどれも LM に無いとき連文節でも先に立てる(3336、定数コメント参照)。
+        // 単文節の補助語彙昇格(同読みに LM 実在の一般語が無ければ昇格)と同じ条件を区間単位で当てる
+        do {
+            // 区間を除外する条件: LM 既知の語がある/辞書語以外の候補がある/算用数字の候補がある(さんにん の 3人 は
+            // 辞書語だが LM に無い。月桃(ryukyu)が 3人以内で を押しのけた)
+            var spanExcluded = Set<String>()
+            for node in nodes where !node.isKanaIdentity
+                && (unigramCostByID[node.surfaceID] != nil || (!node.isDictWord && !node.isCurated)
+                    || node.surface.unicodeScalars.contains(where: { ("0"..."9").contains($0) })) {
+                spanExcluded.insert(node.spanKey)
+            }
+            for node in nodes where node.isDictWord && !node.isInflectionDerived && !node.isKanaIdentity
+                && node.reading.count >= 2 && !spanExcluded.contains(node.spanKey) && containsKanji(node.surface)
+                // その読みの補助語彙の先頭の語だけ(かねひで は かな かねひで が先頭なので 金秀 は上げない)
+                && supplementalSystemDictionary.candidates(for: node.reading).first == node.surface {
+                seedOrderNounNodeBonuses[node.key, default: 0] += Self.multiClauseUnknownSpanSupplementalBonus
+            }
+        }
         // 人名ノード(定数コメント参照。2845): 漢字辞書語の読みごとに person_names を引く(読み単位でキャッシュ)
         var personNameKindByNodeKey: [String: String] = [:]
         // transitionCost 側(読み跨ぎ借用の遮断)からも読み×表層で引くため外に出す
