@@ -364,6 +364,9 @@ struct KeyboardDiagnosticsSection: View {
         #endif
     }
 
+    @AppStorage(SettingsKeys.deleteKeyMemoryBadgeEnabled, store: ContentView.sharedDefaults)
+    private var showsDeleteKeyMemoryBadge = false
+
     @State private var isClearConfirmationPresented = false
     @State private var isCopiedBadgeVisible = false
     // 更新の成否可視化: 内容が変わらない(たまたま最新だった)場合でも取得完了が
@@ -409,6 +412,19 @@ struct KeyboardDiagnosticsSection: View {
             }
             .font(.footnote)
             .foregroundStyle(.secondary)
+
+            // 削除キーのメモリの数値(3334、ユーザ指定。初期設定はオフ。オフでも最大値が 45MB を超えたら出る。
+            // 黄/橙の色はこのスイッチに関係なく出る)
+            VStack(alignment: .leading, spacing: 2) {
+                Toggle("削除キーにメモリの数値を常に表示", isOn: $showsDeleteKeyMemoryBadge)
+                    .font(.subheadline)
+                    .onChange(of: showsDeleteKeyMemoryBadge) { _ in
+                        SettingsSyncNotification.postSettingsDidChange()
+                    }
+                Text("オフでも、使用量の最大値が 45MB を超えると表示します。")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
 
             HStack(spacing: 10) {
                 Button("更新") {

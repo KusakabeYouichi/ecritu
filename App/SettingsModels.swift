@@ -144,6 +144,9 @@ enum SettingsKeys {
     static let keyboardDiagnosticsRegistrationHistory = "keyboardDiagnosticsRegistrationHistory"
     // デバッグ: 直近1回の変換トレース(上書き式)。KeyboardExtension 側 SharedDefaultsKeys と同一。
     static let keyboardConversionLastTrace = "keyboardConversionLastTrace"
+    // 削除キーにメモリの数値(警告回数と footprint)を出すか(DEBUG のでばぐ表示。3334、ユーザ指定で初期設定はオフ)。
+    // 色(黄/橙)はこの設定に関係なく出す。KeyboardExtension 側 SharedDefaultsKeys と同一キー文字列
+    static let deleteKeyMemoryBadgeEnabled = "deleteKeyMemoryBadgeEnabled"
     // iOS のユーザ辞書(UILexicon)から拡張が作る 読み→候補 の表とその署名(3305)。拡張が書き、
     // 「iOS のユーザ辞書の単語」を「使わない」にしたときにアプリ側からも消す。KeyboardExtension 側
     // SharedDefaultsKeys と同一キー文字列

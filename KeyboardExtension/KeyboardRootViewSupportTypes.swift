@@ -60,6 +60,8 @@ final class KeyboardCandidateBarModel: ObservableObject {
     @Published var memoryFootprintProcessPeakMBForDebugDisplay: Int = 0
     // footprint の今の値(でばぐ表示のみ。3298)
     @Published var memoryFootprintCurrentMBForDebugDisplay: Int = 0
+    // 削除キーに数値を出すか(アプリのスイッチ。初期設定はオフ。色は常に出す。3334)
+    @Published var showsMemoryBadgeForDebugDisplay: Bool = false
 }
 
 enum KeyboardThemePalette {
