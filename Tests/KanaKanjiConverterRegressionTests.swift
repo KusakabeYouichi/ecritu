@@ -491,6 +491,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.multiClauseCandidates(for: "いくかちない", systemCandidateMode: .surface).first, "行く価値ない")
     }
 
+    // おもしろい: かな先頭(ユーザ指定)。かな正書の形容詞の活用形全般(くない/さ/くて/かった/そう)でかなを先頭にする(3332)
+    func testRegressionRealLMOmoshiroiKanaLead() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for reading in ["おもしろい", "おもしろそう", "おもしろかった", "おもしろくない", "おもしろさ", "おもしろくて", "おいしくない", "おいしさ"] {
+            XCTAssertEqual(converter.candidates(for: reading, limit: 4, systemCandidateMode: .surface).first, reading, reading)
+        }
+        // かな正書でない形容詞は従来どおり漢字先頭
+        XCTAssertEqual(converter.candidates(for: "かなしくない", limit: 4, systemCandidateMode: .surface).first, "悲しくない")
+        XCTAssertEqual(converter.candidates(for: "からさ", limit: 4, systemCandidateMode: .surface).first, "辛さ")
+    }
+
     // しろごはんより: 語→版(英語版)の安い bigram に引かれて 白+語+版+より になり、ご飯 が候補から消えていた。
     // 接尾の 語 は言語名にしか付かない(実績の無い相手では減点。3322、ユーザ報告 2026-10-03)
     func testRegressionRealLMShirogohanYoriKeepsGohan() throws {
