@@ -479,6 +479,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(first("ほーむらんをうった"), "ホームランを打った")
     }
 
+    // かちだな: 勝(かち)が しょう 読みの統計(勝→だ 3344)を借りて 勝だな が先頭だった(ユーザ報告)。借用を止めて
+    // 勝(かち)/カチ を連文節で降格し、かち の seed を 勝ち/価値 先頭にする(3331)。かちがある は 価値 のまま
+    func testRegressionRealLMKachiDana() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let dana = converter.multiClauseCandidates(for: "かちだな", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(dana.prefix(2)), ["勝ちだな", "価値だな"], "\(dana)")
+        XCTAssertEqual(Array(converter.candidates(for: "かち", limit: 4, systemCandidateMode: .surface).prefix(2)), ["勝ち", "価値"])
+        XCTAssertEqual(converter.multiClauseCandidates(for: "かちがある", systemCandidateMode: .surface).first, "価値がある")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "いくかちない", systemCandidateMode: .surface).first, "行く価値ない")
+    }
+
     // しろごはんより: 語→版(英語版)の安い bigram に引かれて 白+語+版+より になり、ご飯 が候補から消えていた。
     // 接尾の 語 は言語名にしか付かない(実績の無い相手では減点。3322、ユーザ報告 2026-10-03)
     func testRegressionRealLMShirogohanYoriKeepsGohan() throws {
