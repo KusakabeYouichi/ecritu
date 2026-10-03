@@ -1363,6 +1363,24 @@ extension KanaKanjiConverter {
         }
         // 一括引きは入力順の配列で受け、ID 対の表を直接組む。文字列鍵の表(遷移内に残る String 参照用)は
         // 当たった対だけ作る(以前は全対で "prev\tcur" を store 側と合わせて 2 回組んでいた。3096)
+        // の を挟む複合の実績(3328。定数コメント参照): 頭(の の直前)→尾(の の直後)の bigram も引く
+        var crossNoCompoundCandidatePairs: [(head: Int32, tail: Int32)] = []
+        for particleIndex in nodes.indices {
+            let particle = nodes[particleIndex]
+            guard particle.start > 0, particle.end < n,
+                particle.surfaceID == SID.の, particle.readingID == SID.の else { continue }
+            for headIndex in nodesEndingAt[particle.start] {
+                let head = nodes[headIndex]
+                guard head.surface.count >= 2, !head.isKanaIdentity,
+                    Self.isKanjiOnlyString(head.surface) || Self.isKatakanaString(head.surface) else { continue }
+                for tailIndex in nodesStartingAt[particle.end] {
+                    let tail = nodes[tailIndex]
+                    guard tail.surface.count >= 2, Self.isKanjiOnlyString(tail.surface) else { continue }
+                    addPair(head.surface, tail.surface, head.surfaceID, tail.surfaceID)
+                    crossNoCompoundCandidatePairs.append((head.surfaceID, tail.surfaceID))
+                }
+            }
+        }
         let alignedBigramCosts = store.wordLMBigramCostsAligned(for: bigramPairs)
         var bigramCostByIDPair = scratch.bigramCostByIDPair
         scratch.bigramCostByIDPair = [:]
@@ -1377,6 +1395,14 @@ extension KanaKanjiConverter {
             bigramCostsBuilt[pair.0 + "\t" + pair.1] = cost
         }
         let bigramCosts = bigramCostsBuilt
+        // 頭→尾 の複合が LM で強く観測される組(東京→支店 3080)。DP と変種で の の後の尾に加点する(3328)
+        var crossNoCompoundPairs = Set<UInt64>()
+        for pair in crossNoCompoundCandidatePairs {
+            let key = MultiClauseSymbols.pairKey(pair.head, pair.tail)
+            if let cost = bigramCostByIDPair[key], cost <= Self.multiClauseCrossNoCompoundMaxBigramCost {
+                crossNoCompoundPairs.insert(key)
+            }
+        }
         defer { scratch.bigramCosts = bigramCosts }
         let weakStandaloneKanjiSurfaces: Set<String> = standaloneKanjiProbeSurfaces.filter { surface in
             let surfaceID = symbolID(surface)
@@ -3495,6 +3521,11 @@ extension KanaKanjiConverter {
                         let prevPrevSurface = prevNode.boundHeadSurface ?? (backPointer[prevIdx] >= 0 ? nodes[backPointer[prevIdx]].surface : nil),
                         let collocationBonus = Self.acrossParticleCollocationBonus(prevPrev: prevPrevSurface, surface: node.surface) {
                         cost -= collocationBonus
+                    } else if prevNode.surfaceID == SID.の, prevNode.readingID == SID.の,
+                        prevNode.boundHeadSurface == nil, backPointer[prevIdx] >= 0,
+                        crossNoCompoundPairs.contains(MultiClauseSymbols.pairKey(nodes[backPointer[prevIdx]].surfaceID, node.surfaceID)) {
+                        // 頭+尾 の複合の実績がある の 連結(東京の支店。定数コメント参照。3328)
+                        cost -= Self.multiClauseCrossNoCompoundBonus
                     }
                     // サ変名詞+の+事象名詞(定数コメント参照。2944)。の の前が出来事(suru クラス)なら
                     // 前兆 を採る。道路の全長/吊り橋の全長 は サ変名詞でないので無傷
@@ -4136,6 +4167,9 @@ extension KanaKanjiConverter {
                 if Self.multiClauseCollocationBridgeParticles.contains(prevSurface), pos >= 2,
                     let collocationBonus = Self.acrossParticleCollocationBonus(prevPrev: nodes[pathIndices[pos - 2]].surface, surface: node.surface) {
                     nodeBonus += collocationBonus
+                } else if prevSurface == "の", pos >= 2,
+                    crossNoCompoundPairs.contains(MultiClauseSymbols.pairKey(nodes[pathIndices[pos - 2]].surfaceID, node.surfaceID)) {
+                    nodeBonus += Self.multiClauseCrossNoCompoundBonus
                 }
                 // 先頭側を差し替えると後段の連語(甲州→果皮)が失われる分も差分に入れる(公衆の果皮 が負値で先頭に来ていた)
                 if pos + 2 < pathIndices.count, Self.multiClauseCollocationBridgeParticles.contains(nodes[pathIndices[pos + 1]].surface),
