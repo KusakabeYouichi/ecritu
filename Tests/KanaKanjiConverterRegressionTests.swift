@@ -526,6 +526,20 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.multiClauseCandidates(for: "さいきんにかんせんする", systemCandidateMode: .surface).first, "細菌に感染する")
     }
 
+    // かんじ: 感じ 先頭・かなは末尾、感ぢ(Sudachi の誤った表記ゆれ)は抑制。こんなかんじで は こんな感じで(3337、ユーザ指定)
+    func testRegressionRealLMKanjiPrefersFeeling() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let word = converter.candidates(for: "かんじ", limit: 12, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(word.prefix(4)), ["感じ", "漢字", "幹事", "監事"], "\(word)")
+        XCTAssertFalse(word.contains("感ぢ"), "\(word)")
+        let konna = converter.multiClauseCandidates(for: "こんなかんじで", systemCandidateMode: .surface)
+        XCTAssertEqual(konna.first, "こんな感じで", "\(konna)")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "どんなかんじ", systemCandidateMode: .surface).first, "どんな感じ")
+        // 漢字 の文脈は従来どおり
+        XCTAssertTrue(converter.multiClauseCandidates(for: "かんじをかく", systemCandidateMode: .surface).first?.hasPrefix("漢字を") == true)
+    }
+
     // くもじで: 区間の候補がどれも LM に無いとき、補助語彙(ryukyu)の 久茂地 を連文節でも先に立てる(3336、ユーザ報告)
     func testRegressionRealLMKumojiSupplementalInUnknownSpan() throws {
         try prepareRealLMDictionary()
@@ -20260,7 +20274,8 @@ extension KanaKanjiConverterRegressionTests {
         try loadDeviceAddedVocabulary()
         let list = converter.candidates(for: "かんじ", limit: 20, systemCandidateMode: .surface)
         XCTAssertFalse(list.contains("感ジ"), "\(list)")
-        XCTAssertEqual(list.first, "漢字", "\(list)")
+        // 3337 で 感じ 先頭に変えた(ユーザ指定)
+        XCTAssertEqual(Array(list.prefix(2)), ["感じ", "漢字"], "\(list)")
     }
 
     // 3268: お+連用形+する/できる(お会いする/お会いできて)。汚穢(おあい、読み違い)と 尾合 が合成を塞いでいた
