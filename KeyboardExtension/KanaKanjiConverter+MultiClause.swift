@@ -4482,6 +4482,18 @@ extension KanaKanjiConverter {
         #endif
         Self.multiClausePhaseProbe?("変種")
         var results = suppressAllKanaBest ? [] : [joined]
+        // 補助語彙(personnalités 等)の 1 語の人名を、姓+名 の合成より前に置く(3333、ユーザ指定)。
+        // こいずみきょうこ: 小泉+恭子(Sudachi の 名、小泉→恭子 2595)が、personnalités の 1 語 小泉今日子(LM 未収録で
+        // 未知語 8700)に 345 差で勝っていた。今日子 は きょうこ の 14 番目で区間の候補上限から外れ、小泉+今日子 は組まれない。
+        // 最良経路がちょうど 姓+名 の 2 文節で、読み全体に一致する補助語彙の 1 語があれば、それを先頭にする
+        if pathIndices.count == 2,
+            personNameKindByNodeKey[nodes[pathIndices[0]].key] == "姓",
+            personNameKindByNodeKey[nodes[pathIndices[1]].key] == "名",
+            let wholeName = supplementalSystemDictionary.candidates(for: normalized).first(where: {
+                $0 != joined && containsKanji($0) && !(suppressedByReading[normalized]?.contains($0) ?? false)
+            }) {
+            results.insert(wholeName, at: 0)
+        }
         // 変種枠は文節位置で散らす(定数コメント参照。2939)。1 巡目は「まだ使っていない文節」かつ
         // コスト差が上限以内の変種を 1 つずつ採り、2 巡目で残りをコスト差順に詰める。
         // 代替経路(position -1)は位置を占有しない

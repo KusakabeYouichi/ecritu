@@ -503,6 +503,16 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.candidates(for: "からさ", limit: 4, systemCandidateMode: .surface).first, "辛さ")
     }
 
+    // こいずみきょうこ: 姓+名 の合成 小泉恭子 が personnalités の 1 語 小泉今日子 より前だった(ユーザ報告)。
+    // 補助語彙の 1 語の人名を 姓+名 の合成より前に置く(3333)
+    func testRegressionRealLMSupplementalWholeNameBeforeSurnameGivenName() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let multi = converter.multiClauseCandidates(for: "こいずみきょうこ", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "小泉今日子", "\(multi)")
+        XCTAssertTrue(multi.contains("小泉恭子"), "\(multi)")
+    }
+
     // しろごはんより: 語→版(英語版)の安い bigram に引かれて 白+語+版+より になり、ご飯 が候補から消えていた。
     // 接尾の 語 は言語名にしか付かない(実績の無い相手では減点。3322、ユーザ報告 2026-10-03)
     func testRegressionRealLMShirogohanYoriKeepsGohan() throws {
