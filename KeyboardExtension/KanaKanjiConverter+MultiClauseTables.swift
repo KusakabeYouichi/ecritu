@@ -514,6 +514,12 @@ extension KanaKanjiConverter {
     static let multiClauseRareDerivedVariantPenalty = 300
     // の を挟む連語(前々ノード→現ノード)のボーナス(2736)。甲州の果皮: の→可否 5248 < の→果皮 5955 で 可否 が勝つが、
     // 甲州 の後なら 果皮。かひ 全体を seed 順ボーナスで持ち上げると 講習の可否 まで 講習の果皮 になるため連語に限定
+    // の を挟む複合の実績(3328、ユーザ報告 2026-10-03)。A+の+B で、A→B の bigram(A B と続けた複合)が LM で強く
+    // 観測されていれば B に加点する。とうきょうのしてん: の→視点 4343 < の→支店 5185 で 東京の視点 が勝っていたが、
+    // 東京→支店 3080(東京支店)が観測されている。下の表(人手の連語)の一般版で、表に無い組だけに効く。
+    // 頭は漢字/カタカナ 2 字以上、尾は漢字 2 字以上に限る(助詞・かなの断片を巻き込まない)
+    static let multiClauseCrossNoCompoundMaxBigramCost = 4000
+    static let multiClauseCrossNoCompoundBonus = 1200
     static let multiClauseAcrossNoCollocationBonuses: [String: Int] = [
         "甲州\t果皮": 2500,
         // 雨/雪+降(あめがふっている→雨が振っている。2881、ユーザ報告)。ふる の辞書順は 振る が先で
