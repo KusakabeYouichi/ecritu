@@ -1660,6 +1660,12 @@ extension KanaKanjiConverter {
                     base = fallback + (auxBigram - fallback) / 2
                 } else {
                     base = auxBigram
+                    // 借りた bigram にも会話的時相名詞のキャップを効かせる(3335)。もしかしてさいきん: もしかして の末尾 て で借りた
+                    // bigram(て→細菌 5446 < て→最近 6048。〜して細菌 の記事統計)で もしかして細菌 が先頭だった(ユーザ報告)。
+                    // 本物の直前語の bigram(細菌→が 等)には触れないので さいきんが→細菌が は保たれる
+                    if let temporalCap = Self.multiClauseConversationalTemporalNounUnigramCapsByID[surfaceID] {
+                        base = min(base, temporalCap)
+                    }
                 }
             } else if let unigram = unigramCostByID[surfaceID] {
                 base = unigram + Self.multiClauseBackoffCost

@@ -513,6 +513,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(multi.contains("小泉恭子"), "\(multi)")
     }
 
+    // さいきん: もしかしてさいきん が もしかして細菌 先頭だった(ユーザ報告)。もしかして を 1 語で登録し、末尾 て から借りる
+    // bigram にも会話的時相名詞のキャップを効かせる。単文節は 最近 先頭・かなは末尾(3335)
+    func testRegressionRealLMSaikinPrefersRecently() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        XCTAssertEqual(converter.multiClauseCandidates(for: "もしかしてさいきん", systemCandidateMode: .surface).first, "もしかして最近")
+        let word = converter.candidates(for: "さいきん", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(word.first, "最近", "\(word)")
+        XCTAssertEqual(word.last, "さいきん", "\(word)")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "さいきんにかんせんする", systemCandidateMode: .surface).first, "細菌に感染する")
+    }
+
     // しろごはんより: 語→版(英語版)の安い bigram に引かれて 白+語+版+より になり、ご飯 が候補から消えていた。
     // 接尾の 語 は言語名にしか付かない(実績の無い相手では減点。3322、ユーザ報告 2026-10-03)
     func testRegressionRealLMShirogohanYoriKeepsGohan() throws {
