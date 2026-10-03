@@ -417,6 +417,23 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(magsafe.first, "MagSafe", "single=\(magsafe)")
     }
 
+    // さかいの: 界の が先頭だった(ユーザ報告 2026-10-03)。界(さかい) は 世界/業界 の接辞 界(かい)の LM 統計を
+    // 借りていた。床上げ強制+bigram 借用禁止と、さかい の seed で 堺 を先頭にする(3327)
+    func testRegressionRealLMSakaiPrefersPlaceName() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let multi = converter.multiClauseCandidates(for: "さかいの", systemCandidateMode: .surface)
+        let single = converter.candidates(for: "さかいの", limit: 10, systemCandidateMode: .surface)
+        let list = multi.isEmpty ? single : multi
+        print("SAKAI multi=\(multi) single=\(single)")
+        XCTAssertEqual(list.first, "堺の", "\(list)")
+        if let kai = list.firstIndex(of: "界の"), let sakai = list.firstIndex(of: "境の") {
+            XCTAssertLessThan(sakai, kai, "\(list)")
+        }
+        let word = converter.candidates(for: "さかい", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(word.prefix(2)), ["堺", "境"], "\(word)")
+    }
+
     // しろごはんより: 語→版(英語版)の安い bigram に引かれて 白+語+版+より になり、ご飯 が候補から消えていた。
     // 接尾の 語 は言語名にしか付かない(実績の無い相手では減点。3322、ユーザ報告 2026-10-03)
     func testRegressionRealLMShirogohanYoriKeepsGohan() throws {

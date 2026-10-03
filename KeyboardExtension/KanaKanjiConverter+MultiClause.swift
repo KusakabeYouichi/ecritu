@@ -1649,7 +1649,9 @@ extension KanaKanjiConverter {
                             .contains(surface) ?? false),
                     !(Self.multiClauseRareReadingFloorExemptSurfacesByReadingByID[readingID]?
                         .contains(surface) ?? false),
-                    reading.count <= Self.multiClauseRareReadingFloorMaxReadingCount,
+                    reading.count <= Self.multiClauseRareReadingFloorMaxReadingCount
+                        || (Self.multiClauseRareReadingFloorForcedSurfacesByReadingByID[readingID]?
+                            .contains(surface) ?? false),
                     containsKanji(surface)
                         || (isKanaIdentity
                             && !isCurated
