@@ -2187,6 +2187,14 @@ extension KanaKanjiConverter {
                 bigramCosts[prev + "\t屋"] == nil {
                 penalty += Self.multiClauseTradeSuffixKanjiWithoutEvidencePenalty
             }
+            // 隙(すき)は名詞の直後に立たない(定数コメント参照。3329)
+            if surfaceID == SID.隙, readingID == SID.すき,
+                !prevIsBOS,
+                !prevIsInflectionDerived, !prevIsDictionaryFormPredicate,
+                !Self.multiClauseCaseParticleSurfacesID.contains(prevID),
+                bigramCosts[prev + "\t隙"] == nil {
+                penalty += Self.multiClauseGapNounWithoutEvidencePenalty
+            }
             // 接尾の 語 は言語名(bigram 実績のある相手)にしか付かない(定数コメント参照。3322)
             if surfaceID == SID.語, readingID == SID.ご,
                 !prevIsBOS,
