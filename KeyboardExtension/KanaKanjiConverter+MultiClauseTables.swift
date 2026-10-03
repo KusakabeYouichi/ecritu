@@ -248,8 +248,11 @@ extension KanaKanjiConverter {
     // 得る(える) は word_cost 9263/うる 9751 とどちらの読みも高いのに LM unigram 4907 が安く、
     // たっぷするときえる→タップするとき得る のように 形式名詞+得る の分割を勝たせていた
     // (ユーザ報告 3204)。実勢のある読み(居る(おる)/打つ(ぶつ))は入れない
+    // ここに載せた組は読みの長さの制限(短 span)も外して床上げする(3327)。界(さかい) は読み別 wc 8456 なのに、
+    // LM unigram 4954・界→の 827 は 世界/業界 の接辞用法(かい)の統計で、さかいの が 界の 先頭だった(ユーザ報告)
     static let multiClauseRareReadingFloorForcedSurfacesByReading: [String: Set<String>] = [
-        "える": ["得る"]
+        "える": ["得る"],
+        "さかい": ["界"]
     ]
 
     static let multiClauseRareReadingFloorExemptSurfacesByReading: [String: Set<String>] = [
@@ -1641,6 +1644,8 @@ extension KanaKanjiConverter {
     // 断片連結を過剰に安くするため、bigram を使わず unigram+短span床で評価する。
     // 人(にん/じん)=さわってかくにん/しにんからも対策、頭(ず)=にくいはず→にくいは頭対策。
     static let multiClauseBigramBorrowDeniedReadingsBySurface: [String: Set<String>] = [
+        // 界(さかい)は 世界の/業界の の接辞 界(かい)の bigram(界→の 827)を借用する(3327。床上げ強制の表の注記)
+        "界": ["さかい"],
         "人": ["にん", "じん"],
         "頭": ["ず"],
         // 日(び)=曜日の連濁読み収穫(wc6052、主読み ひ=5549)。あの→日 1272(あの日=
