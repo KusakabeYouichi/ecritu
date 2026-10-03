@@ -434,6 +434,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(word.prefix(2)), ["堺", "境"], "\(word)")
     }
 
+    // とうきょうのしてん: 東京の視点 が先頭だった(ユーザ報告 2026-10-03)。東京→支店 の複合の実績で 支店 に加点する(3328)。
+    // してん 単独は 支店/視点/始点/支点/指点/熾天 の順(seed)。の の後でも複合の実績が無い頭なら 視点 のまま
+    func testRegressionRealLMCrossNoCompoundEvidence() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let tokyo = converter.multiClauseCandidates(for: "とうきょうのしてん", systemCandidateMode: .surface)
+        XCTAssertEqual(tokyo.first, "東京の支店", "\(tokyo)")
+        let kare = converter.multiClauseCandidates(for: "かれのしてん", systemCandidateMode: .surface)
+        XCTAssertEqual(kare.first, "彼の視点", "\(kare)")
+        let word = converter.candidates(for: "してん", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(word.prefix(6)), ["支店", "視点", "始点", "支点", "指点", "熾天"], "\(word)")
+    }
+
     // しろごはんより: 語→版(英語版)の安い bigram に引かれて 白+語+版+より になり、ご飯 が候補から消えていた。
     // 接尾の 語 は言語名にしか付かない(実績の無い相手では減点。3322、ユーザ報告 2026-10-03)
     func testRegressionRealLMShirogohanYoriKeepsGohan() throws {
