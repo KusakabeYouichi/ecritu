@@ -119,6 +119,7 @@
 	<dict><key>phrase</key><string>売ってしまう</string><key>shortcut</key><string>うってしまう</string></dict>
 
 	<!-- ■ かな正書の語・句(かな識別 curated。漢字化・カタカナ化・全かなエコー抑制から守る) -->
+	<dict><key>phrase</key><string>うどんすき</string><key>shortcut</key><string>うどんすき</string><key>pos</key><string>名詞</string></dict>	<!-- うどんすき(美々卯の登録商標の鍋料理、かな表記が正式): 辞書に無く うどん好き/うどん隙 の合成ばかりだった(ユーザ指定 3329) -->
 	<dict><key>phrase</key><string>そしたら</string><key>shortcut</key><string>そしたら</string></dict>	<!-- そしたら(そうしたら の口語): 辞書に無く 祖+したら(7979)だけが立っていた。かなが正書(ユーザ指定 2910) -->
 	<dict><key>phrase</key><string>わかんない</string><key>shortcut</key><string>わかんない</string></dict>	<!-- わかんない/わかんなかった: らない→んない 縮約(2887)で 分かんない が組めるようになり、単独では 分かんない が先頭に出た。口語縮約はかなが正書(ユーザ指定 2889) -->
 	<dict><key>phrase</key><string>わかんなかった</string><key>shortcut</key><string>わかんなかった</string></dict>

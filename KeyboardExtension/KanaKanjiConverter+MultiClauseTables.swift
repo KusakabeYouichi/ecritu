@@ -2058,6 +2058,10 @@ extension KanaKanjiConverter {
     // そのため観測の無い相手に付いた 語 が はん→版 を連れて名詞を割る(しろごはんより→白+語+版+より。
     // ご飯→より の bigram が未観測なのも重なり、白+ご飯 が先頭どころか候補から消えた。ユーザ報告 2026-10-03)
     static let multiClauseLanguageSuffixKanjiWithoutEvidencePenalty = 2500
+    // 隙(すき)の前に立つ語は LM では その/後/な/ない/た/の/いる/、/に/は の 10 通りだけで、名詞の直後は無い
+    // (一瞬の隙/油断した隙/その隙)。名詞+隙 は 好き の同音の取り違えで、うどんすき→うどん隙 になっていた
+    // (ユーザ報告 2026-10-03)。述語・助詞以外の直後で bigram 実績が無ければ減点する(3329)
+    static let multiClauseGapNounWithoutEvidencePenalty = 2500
     // 助詞の読みを持つ 1 字漢字のガード(2876)。この読みのときは bigram が観測されていても
     // 読み別 word_cost を下限にする。は→波(wc 9103、主読み なみ)のような表層は、
     // 複合語(青海波)の統計で bigram だけ極端に安くなり、助詞の は を跨ぐ
@@ -2710,6 +2714,8 @@ extension KanaKanjiConverter {
             for s in ["家"] { add(s) }
             // 接尾の 語(ご)は言語名にしか付かない(3322)
             for s in ["語"] { add(s) }
+            // 隙(すき)は名詞の直後に立たない(3329)
+            for s in ["隙", "すき"] { add(s) }
             for s in ["ある", "いう", "いち", "いって", "う", "お", "おそい", "か", "かち", "かん", "かんじ", "が", "きた", "くらい", "ぐらい", "こと", "ご", "ごと", "さ", "さん", "し", "した", "して", "します", "じん", "すぎ", "する", "そい", "そう", "た", "たい", "ため", "だ", "っけ", "であっても", "でも", "と", "な", "ない", "ないで", "なん", "に", "にも", "の", "のか", "は", "ひと", "ほうが", "ほうがいい", "ほしい", "まだ", "まち", "も", "もう", "や", "よう", "を", "ん", "ー", "一", "一手", "人", "位置", "価値", "化", "屋", "待ち", "感", "来た", "漢字", "産", "用", "様", "行って"] { add(s) }
             for s in KanaKanjiConverter.multiClauseAdverbKanjiAfterNounSurfaces.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseAuVerbReadings.sorted() { add(s) }
@@ -2926,6 +2932,8 @@ extension KanaKanjiConverter {
         static let 化 = MultiClauseSymbols.id("化")
         static let 家 = MultiClauseSymbols.id("家")
         static let 語 = MultiClauseSymbols.id("語")
+        static let 隙 = MultiClauseSymbols.id("隙")
+        static let すき = MultiClauseSymbols.id("すき")
         static let 屋 = MultiClauseSymbols.id("屋")
         static let 待ち = MultiClauseSymbols.id("待ち")
         static let 感 = MultiClauseSymbols.id("感")
