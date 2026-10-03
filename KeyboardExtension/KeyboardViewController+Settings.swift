@@ -178,6 +178,10 @@ extension KeyboardViewController {
             guard !self.shouldSuppressHeavyOperations(reason: "handleSharedSettingsDidChange") else {
                 return
             }
+            // 削除キーの数値のスイッチ(3334)をすぐ反映する(DEBUG のでばぐ表示。出荷版では何もしない)
+            if KeyboardRootView.memoryPressureVisualizationEnabled {
+                self.publishMemoryFootprintPeakForDebugDisplay()
+            }
 
             self.updateMemoryFailSafeProfile(trigger: "handleSharedSettingsDidChange")
 
