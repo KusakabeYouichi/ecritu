@@ -1052,6 +1052,7 @@
 	<dict><key>phrase</key><string>アート・ブレイキー</string><key>shortcut</key><string>あーとぶれいきー</string></dict>
 	<dict><key>phrase</key><string>アート・ペッパー</string><key>shortcut</key><string>あーとぺっぱー</string></dict>
 	<dict><key>phrase</key><string>アストラッド・ジルベルト</string><key>shortcut</key><string>あすとらっどじるべると</string></dict>
+	<dict><key>phrase</key><string>アニタ・オデイ</string><key>shortcut</key><string>あにたおでい</string></dict>
 	<dict><key>phrase</key><string>アビー・リンカーン</string><key>shortcut</key><string>あびーりんかーん</string></dict>
 	<dict><key>phrase</key><string>アリス・コルトレーン</string><key>shortcut</key><string>ありすこるとれーん</string></dict>
 	<dict><key>phrase</key><string>アルバート・アイラー</string><key>shortcut</key><string>あるばーとあいらー</string></dict>
@@ -1086,6 +1087,7 @@
 	<dict><key>phrase</key><string>ジム・ホール</string><key>shortcut</key><string>じむほーる</string></dict>
 	<dict><key>phrase</key><string>ジャコ・パストリアス</string><key>shortcut</key><string>じゃこぱすとりあす</string></dict>
 	<dict><key>phrase</key><string>ジャンゴ・ラインハルト</string><key>shortcut</key><string>じゃんごらいんはると</string></dict>
+	<dict><key>phrase</key><string>ジュリー・ロンドン</string><key>shortcut</key><string>じゅりーろんどん</string></dict>
 	<dict><key>phrase</key><string>ジョアン・ジルベルト</string><key>shortcut</key><string>じょあんじるべると</string></dict>
 	<dict><key>phrase</key><string>ジョー・ザヴィヌル</string><key>shortcut</key><string>じょーざゔぃぬる</string></dict>
 	<dict><key>phrase</key><string>ジョージ・ガーシュウィン</string><key>shortcut</key><string>じょーじがーしゅうぃん</string></dict>
@@ -1123,6 +1125,7 @@
 	<dict><key>phrase</key><string>ブラッド・メルドー</string><key>shortcut</key><string>ぶらっどめるどー</string></dict>
 	<dict><key>phrase</key><string>フレッチャー・ヘンダーソン</string><key>shortcut</key><string>ふれっちゃーへんだーそん</string></dict>
 	<dict><key>phrase</key><string>フレディ・ハバード</string><key>shortcut</key><string>ふれでぃはばーど</string></dict>
+	<dict><key>phrase</key><string>ブロッサム・ディアリー</string><key>shortcut</key><string>ぶろっさむでぃありー</string></dict>
 	<dict><key>phrase</key><string>ベニー・グッドマン</string><key>shortcut</key><string>べにーぐっどまん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ベニー・ゴルソン</string><key>shortcut</key><string>べにーごるそん</string></dict>
 	<dict><key>phrase</key><string>ポール・チェンバース</string><key>shortcut</key><string>ぽーるちぇんばーす</string></dict>
@@ -1148,6 +1151,7 @@
 	<dict><key>phrase</key><string>Abbey Lincoln</string><key>shortcut</key><string>あびーりんかーん</string></dict>
 	<dict><key>phrase</key><string>Albert Ayler</string><key>shortcut</key><string>あるばーとあいらー</string></dict>
 	<dict><key>phrase</key><string>Alice Coltrane</string><key>shortcut</key><string>ありすこるとれーん</string></dict>
+	<dict><key>phrase</key><string>Anita O'Day</string><key>shortcut</key><string>あにたおでい</string></dict>
 	<dict><key>phrase</key><string>Anthony Braxton</string><key>shortcut</key><string>あんそにーぶらくすとん</string></dict>
 	<dict><key>phrase</key><string>Antônio Carlos Jobim</string><key>shortcut</key><string>あんとにおかるろすじょびん</string></dict>
 	<dict><key>phrase</key><string>Art Blakey</string><key>shortcut</key><string>あーとぶれいきー</string></dict>
@@ -1158,6 +1162,7 @@
 	<dict><key>phrase</key><string>Benny Goodman</string><key>shortcut</key><string>べにーぐっどまん</string></dict>
 	<dict><key>phrase</key><string>Bill Evans</string><key>shortcut</key><string>びるえゔぁんす</string></dict>
 	<dict><key>phrase</key><string>Billy Strayhorn</string><key>shortcut</key><string>びりーすとれいほーん</string></dict>
+	<dict><key>phrase</key><string>Blossom Dearie</string><key>shortcut</key><string>ぶろっさむでぃありー</string></dict>
 	<dict><key>phrase</key><string>Brad Mehldau</string><key>shortcut</key><string>ぶらっどめるどー</string></dict>
 	<dict><key>phrase</key><string>Bud Powell</string><key>shortcut</key><string>ばどぱうえる</string></dict>
 	<dict><key>phrase</key><string>Cannonball Adderley</string><key>shortcut</key><string>きゃのんぼーるあだれい</string></dict>
@@ -1202,6 +1207,7 @@
 	<dict><key>phrase</key><string>John McLaughlin</string><key>shortcut</key><string>じょんまくらふりん</string></dict>
 	<dict><key>phrase</key><string>João Gilberto</string><key>shortcut</key><string>じょあんじるべると</string></dict>
 	<dict><key>phrase</key><string>Joshua Redman</string><key>shortcut</key><string>じょしゅあれっどまん</string></dict>
+	<dict><key>phrase</key><string>Julie London</string><key>shortcut</key><string>じゅりーろんどん</string></dict>
 	<dict><key>phrase</key><string>Kamasi Washington</string><key>shortcut</key><string>かましわしんとん</string></dict>
 	<dict><key>phrase</key><string>Keith Jarrett</string><key>shortcut</key><string>きーすじゃれっと</string></dict>
 	<dict><key>phrase</key><string>Kenny Burrell</string><key>shortcut</key><string>けにーばれる</string></dict>

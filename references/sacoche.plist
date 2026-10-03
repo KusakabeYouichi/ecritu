@@ -23,7 +23,7 @@
 	        <dict><key>phrase</key><string>二郎系</string><key>shortcut</key><string>じろうけい</string></dict>
 	        <dict><key>phrase</key><string>群林堂</string><key>shortcut</key><string>ぐんりんどう</string></dict>
 	        <dict><key>phrase</key><string>椿山荘</string><key>shortcut</key><string>ちんざんそう</string></dict>
-	<!-- 高山 -->
+	<!-- 高山 / 飛騨 -->
 	        <dict><key>phrase</key><string>なか川</string><key>shortcut</key><string>なかがわ</string></dict>
 	        <dict><key>phrase</key><string>みやび庵</string><key>shortcut</key><string>みやびあん</string></dict>
 	        <dict><key>phrase</key><string>三番叟</string><key>shortcut</key><string>さんばそう</string></dict>
@@ -39,7 +39,11 @@
 	        <dict><key>phrase</key><string>礼華</string><key>shortcut</key><string>あやか</string></dict>
 	        <dict><key>phrase</key><string>稲豊園</string><key>shortcut</key><string>とうほうえん</string></dict>
 	        <dict><key>phrase</key><string>角正</string><key>shortcut</key><string>かくしょう</string></dict>	<!-- Sudachiにもある(姓、コスト10000の収穫底値で基底13位=表示枠外。届かないので登録) -->
+	        <dict><key>phrase</key><string>帰雲城</string><key>shortcut</key><string>かえりくもじょう</string></dict>
+	        <dict><key>phrase</key><string>帰雲城</string><key>shortcut</key><string>かえりぐもじょう</string></dict>
+	        <dict><key>phrase</key><string>帰雲城</string><key>shortcut</key><string>きうんじょう</string></dict>
 	<!-- その他の地方 -->
+	        <dict><key>phrase</key><string>美々卯</string><key>shortcut</key><string>みみう</string></dict>
 	        <dict><key>phrase</key><string>リアンクール</string><key>shortcut</key><string>りあんくーる</string></dict>
 	        <dict><key>phrase</key><string>福砂屋</string><key>shortcut</key><string>ふくさや</string></dict>
 	        <dict><key>phrase</key><string>新疆</string><key>shortcut</key><string>しんちゃん</string></dict>
@@ -56,27 +60,6 @@
 	        <dict><key>phrase</key><string>稚加栄</string><key>shortcut</key><string>ちかえ</string></dict>
 	        <dict><key>phrase</key><string>木川屋</string><key>shortcut</key><string>きがわや</string></dict>
 	        <dict><key>phrase</key><string>小金澤</string><key>shortcut</key><string>こがねざわ</string></dict>	<!-- Sudachiにもある(姓、コスト9770で基底2位。小金沢 の後ろ) -->
-	<!-- 令制国の別称(○州)。Sudachi に無い 19 語(江州/豊州/若州/美州 は別読みでだけ入っていた)。播州 は ばんしゅう で辞書にある -->
-	        <dict><key>phrase</key><string>参州</string><key>shortcut</key><string>さんしゅう</string><key>pos</key><string>名詞</string></dict>
-	        <dict><key>phrase</key><string>濃州</string><key>shortcut</key><string>のうしゅう</string><key>pos</key><string>名詞</string></dict>
-	        <dict><key>phrase</key><string>江州</string><key>shortcut</key><string>ごうしゅう</string><key>pos</key><string>名詞</string></dict>
-	        <dict><key>phrase</key><string>阿州</string><key>shortcut</key><string>あしゅう</string><key>pos</key><string>名詞</string></dict>
-	        <dict><key>phrase</key><string>防州</string><key>shortcut</key><string>ぼうしゅう</string><key>pos</key><string>名詞</string></dict>
-	        <dict><key>phrase</key><string>淡州</string><key>shortcut</key><string>たんしゅう</string><key>pos</key><string>名詞</string></dict>
-	        <dict><key>phrase</key><string>河州</string><key>shortcut</key><string>かしゅう</string><key>pos</key><string>名詞</string></dict>
-	        <dict><key>phrase</key><string>城州</string><key>shortcut</key><string>じょうしゅう</string><key>pos</key><string>名詞</string></dict>
-	        <dict><key>phrase</key><string>但州</string><key>shortcut</key><string>たんしゅう</string><key>pos</key><string>名詞</string></dict>
-	        <dict><key>phrase</key><string>若州</string><key>shortcut</key><string>じゃくしゅう</string><key>pos</key><string>名詞</string></dict>
-	        <dict><key>phrase</key><string>佐州</string><key>shortcut</key><string>さしゅう</string><key>pos</key><string>名詞</string></dict>
-	        <dict><key>phrase</key><string>勢州</string><key>shortcut</key><string>せいしゅう</string><key>pos</key><string>名詞</string></dict>
-	        <dict><key>phrase</key><string>志州</string><key>shortcut</key><string>ししゅう</string><key>pos</key><string>名詞</string></dict>
-	        <dict><key>phrase</key><string>美州</string><key>shortcut</key><string>びしゅう</string><key>pos</key><string>名詞</string></dict>
-	        <dict><key>phrase</key><string>豊州</string><key>shortcut</key><string>ほうしゅう</string><key>pos</key><string>名詞</string></dict>
-	        <dict><key>phrase</key><string>肥州</string><key>shortcut</key><string>ひしゅう</string><key>pos</key><string>名詞</string></dict>
-	        <dict><key>phrase</key><string>隅州</string><key>shortcut</key><string>ぐうしゅう</string><key>pos</key><string>名詞</string></dict>
-	        <dict><key>phrase</key><string>壱州</string><key>shortcut</key><string>いっしゅう</string><key>pos</key><string>名詞</string></dict>
-	        <dict><key>phrase</key><string>隠州</string><key>shortcut</key><string>おんしゅう</string><key>pos</key><string>名詞</string></dict>
-	        <dict><key>phrase</key><string>隠州</string><key>shortcut</key><string>いんしゅう</string><key>pos</key><string>名詞</string></dict>
 	<!-- 音楽 -->
 	        <dict><key>phrase</key><string>iReal b</string><key>shortcut</key><string>あいりあるびー</string></dict>
 	        <dict><key>phrase</key><string>iReal Pro</string><key>shortcut</key><string>あいりあるぷろ</string></dict>
