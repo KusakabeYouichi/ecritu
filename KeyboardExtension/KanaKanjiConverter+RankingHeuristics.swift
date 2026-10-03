@@ -605,6 +605,7 @@ extension KanaKanjiConverter {
                 inflectionDerivedCandidates: inflectionDerivedCandidates,
                 to: &scores
             )
+            applyKanaLeadAdjectiveFormPreference(for: reading, to: &scores)
             // カ変の明示ペア(きはじめる→来始める 等)は活用順位サフィックスに無い語尾でも
             // 成立する。ここで抜けると 来始める(979)がかな識別(980)の下に残る(2658)
             applyKuruCandidateBoost(for: reading, to: &scores)
@@ -667,6 +668,8 @@ extension KanaKanjiConverter {
             systemCandidateMode: systemCandidateMode,
             to: &scores
         )
+        // 活用語尾の加点(+500)を足し終えたあとに、かな正書の形容詞のかなを先頭へ(3332)
+        applyKanaLeadAdjectiveFormPreference(for: reading, to: &scores)
     }
 
     // 読みが だ で終わる(コピュラに見える)とき、読み全体が辞書先頭の常用語(羽田/上田/島田 等の姓、体/涙/間)なら
@@ -722,6 +725,31 @@ extension KanaKanjiConverter {
                 continue
             }
             scores[candidate, default: 0] += Self.stativeSouBoost
+        }
+    }
+
+    // かな正書の い形容詞(seed 先頭がかな: おもしろい/うまい/すごい、misc の かな識別: おいしい)の活用形は、
+    // かな(おもしろくない/おもしろさ/おもしろかった)を先頭にする(3332、ユーザ指定)。様態の そう(上)だけでなく
+    // 形容詞の活用語尾全般に広げた一般則。読み末尾を活用語尾で剥がして 語幹+い が かな先頭の形容詞なら、
+    // 読みそのもの(かな)の点を最上位+1 にする。かなが候補に無いときは何もしない
+    static let kanaLeadAdjectiveInflectionSuffixes: [String] = [
+        "くなかった", "かったら", "かったです", "くないです", "くなくて", "かった", "くない", "ければ", "くて",
+        "そうな", "そうに", "そうだ", "そう", "さ", "く", "げ"
+    ]
+    func applyKanaLeadAdjectiveFormPreference(for reading: String, to scores: inout [String: Int]) {
+        guard let current = scores[reading] else {
+            return
+        }
+        for suffix in Self.kanaLeadAdjectiveInflectionSuffixes where reading.hasSuffix(suffix) && reading.count > suffix.count {
+            let base = String(reading.dropLast(suffix.count)) + "い"
+            guard KanaKanjiSeedDictionary.seed[base]?.first == base || hasCuratedKanaIdentity(for: base) else {
+                continue
+            }
+            let top = scores.filter { $0.key != reading }.values.max() ?? current
+            if current <= top {
+                scores[reading] = top + 1
+            }
+            return
         }
     }
 

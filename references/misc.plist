@@ -213,6 +213,7 @@
 	<dict><key>phrase</key><string>なぜ</string><key>shortcut</key><string>なぜ</string></dict>	<!-- なぜ: かな正書語(uni5289<何故6391)。かな識別curatedが無いと なぜそれが(最良・全かな)がエコー抑制で捨てられ 何故それが が先頭化する(それぞれ と同型) -->	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>おいしい</string><key>shortcut</key><string>おいしい</string><key>pos</key><string>形容詞</string></dict>	<!-- おいしい/おいしく: かな正書寄りの高頻度語(uni おいしく7143実在)。かな識別curatedが無いと どちらもおいしく(最良)が全かなエコー抑制で捨てられ、同スパン敬語合成 お石工/お石ユ が繰り上がる(うっかり同型) -->	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>おいしく</string><key>shortcut</key><string>おいしく</string></dict>
+	<dict><key>phrase</key><string>おもしろい</string><key>shortcut</key><string>おもしろい</string><key>pos</key><string>形容詞</string></dict>	<!-- おもしろい: かな表記を 面白い より先に(ユーザ指定 3332)。pos 形容詞で おもしろそう/おもしろかった/おもしろく 等の活用形も かな を供給する(おいしい と同型) -->
 	<dict><key>phrase</key><string>夜</string><key>shortcut</key><string>よる</string></dict>	<!-- よる は unigram で かな よる が 夜 より安く、curated になって と組むと全かな よるになって が最良化するため 夜 を先頭化 -->	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>なのね</string><key>shortcut</key><string>なのね</string></dict>
 	<dict><key>phrase</key><string>だねえ</string><key>shortcut</key><string>だねえ</string></dict>
