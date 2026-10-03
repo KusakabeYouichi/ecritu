@@ -462,6 +462,23 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(shown("いっしゅんのすき").contains("一瞬の隙"), "\(shown("いっしゅんのすき"))")
     }
 
+    // うってる: 打ってる(うつ族)と 売ってる(うる族)が派生定額で同点になり、列挙順で 打 が勝っていた(ユーザ報告)。
+    // うる族を昇格し(うっている と同じ 売 を既定に)、打つ が自然な目的語は を を挟む連語で 打 を守る(3330)
+    func testRegressionRealLMUtteruPrefersSell() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        func first(_ reading: String) -> String? {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            return (multi.isEmpty ? converter.candidates(for: reading, limit: 4, systemCandidateMode: .surface) : multi).first
+        }
+        XCTAssertEqual(first("きりみをうってる"), "切り身を売ってる")
+        XCTAssertEqual(first("うってるみせ"), "売ってる店")
+        XCTAssertEqual(first("きりみをうっている"), "切り身を売っている")
+        XCTAssertEqual(first("くぎをうってる"), "釘を打ってる")
+        XCTAssertEqual(first("ぼーるをうってる"), "ボールを打ってる")
+        XCTAssertEqual(first("ほーむらんをうった"), "ホームランを打った")
+    }
+
     // しろごはんより: 語→版(英語版)の安い bigram に引かれて 白+語+版+より になり、ご飯 が候補から消えていた。
     // 接尾の 語 は言語名にしか付かない(実績の無い相手では減点。3322、ユーザ報告 2026-10-03)
     func testRegressionRealLMShirogohanYoriKeepsGohan() throws {
