@@ -447,6 +447,21 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(word.prefix(6)), ["支店", "視点", "始点", "支点", "指点", "熾天"], "\(word)")
     }
 
+    // うどんすき(商標、かな表記)を登録し先頭に。名詞+隙 は LM に実績が無く 好き の取り違えなので減点(3329、ユーザ報告)。
+    // 助詞・述語の後の 隙(一瞬の隙 等)には減点を掛けない
+    func testRegressionRealLMUdonsukiAndGapNoun() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        func shown(_ reading: String) -> [String] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            return multi.isEmpty ? converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface) : multi
+        }
+        XCTAssertEqual(shown("うどんすき").first, "うどんすき", "\(shown("うどんすき"))")
+        XCTAssertFalse(shown("らーめんすき").contains("ラーメン隙"), "\(shown("らーめんすき"))")
+        // 助詞の後の 隙 には減点が掛からない(一瞬の隙/相手が隙を は候補に残る。先頭は 好き のままで、今回の範囲外)
+        XCTAssertTrue(shown("いっしゅんのすき").contains("一瞬の隙"), "\(shown("いっしゅんのすき"))")
+    }
+
     // しろごはんより: 語→版(英語版)の安い bigram に引かれて 白+語+版+より になり、ご飯 が候補から消えていた。
     // 接尾の 語 は言語名にしか付かない(実績の無い相手では減点。3322、ユーザ報告 2026-10-03)
     func testRegressionRealLMShirogohanYoriKeepsGohan() throws {
