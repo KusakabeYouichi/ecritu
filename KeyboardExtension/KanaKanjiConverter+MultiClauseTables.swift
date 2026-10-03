@@ -511,6 +511,9 @@ extension KanaKanjiConverter {
     static let multiClauseInstrumentPlayVerbBonus = 1500
     // 変種の差分に反映する seed 順ボーナスの上限(2738。pairCost 参照)
     static let multiClauseVariantSeedBonusCap = 600
+    // 区間の候補がどれも LM に無いときの補助語彙ノードへの加点(3336)。くもじで: 久茂地(ryukyu、wc 9219)と 雲路(wc 7864)が
+    // どちらも LM 未収録で、辞書コストだけで 雲路で が先頭だった(単文節は補助語彙の昇格で 久茂地 が先頭。ユーザ報告)
+    static let multiClauseUnknownSpanSupplementalBonus = 2000
     // 活用派生の変種で語幹が LM 未収録(熔け 等)のときの加算(2739。変種ループ参照)
     static let multiClauseUnknownDerivedVariantPenalty = 500
     static let multiClauseRareDerivedVariantGap = 800
