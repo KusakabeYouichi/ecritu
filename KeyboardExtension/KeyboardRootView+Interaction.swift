@@ -365,7 +365,7 @@ extension KeyboardRootView {
         switch direction {
         case .milieu:
             onAdvanceKeyboard()
-        // 下は通常の左下キーと同じく単漢字の面(案内「部」)。以前は下を受けず、案内だけ出て何も起きなかった
+        // 下は通常の左下キーと同じく単漢字の面(案内「熙」)。以前は下を受けず、案内だけ出て何も起きなかった
         // (提出前監査 第3回)
         case .droite, .haut, .bas:
             selectKanaModeSwitcher(direction: direction)

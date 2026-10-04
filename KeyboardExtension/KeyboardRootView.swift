@@ -766,7 +766,7 @@ struct KeyboardRootView: View {
             center: kanaModeSwitcherTapAction.keyLabel,
             up: kanaModeSwitcherUpFlickAction.keyLabel,
             right: kanaModeSwitcherRightFlickAction.keyLabel,
-            down: "部",
+            down: "熙",  // 単漢字の面(康熙字典の熙。面選択パレットのアイコンと同じ字。ユーザ指定)
             left: "",
             usesProfileDependentGuideOrder: false
         )
@@ -778,7 +778,7 @@ struct KeyboardRootView: View {
             center: "🌐",
             up: kanaModeSwitcherUpFlickAction.keyLabel,
             right: kanaModeSwitcherRightFlickAction.keyLabel,
-            down: "部",
+            down: "熙",  // 同上
             left: "",
             usesProfileDependentGuideOrder: false
         )
