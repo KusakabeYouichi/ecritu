@@ -153,6 +153,11 @@ struct ActionKeyButton: View {
     // 倒してしまい、次の打鍵で 2 回消えた
     @State private var repeatDragBeganAt: CFAbsoluteTime = 0
     @State private var repeatDragEndedAt: CFAbsoluteTime = 0
+    // 1 打鍵ぶんの実行(ドラッグ判定の触れた瞬間/ボタン判定)を最後に行なった時刻(3344)。タッチの配送が遅れると
+    // (Facebook の投稿欄で触れてから 157ms)、ボタン判定がドラッグ判定より先に届き、どちらも実行して 2 文字消えた
+    // (実機ログ: 削除が 20ms 間隔で 2 回)。どちらの順で届いても、間隔が人の連打より短ければ 2 回目を捨てる
+    @State private var repeatSingleActionAt: CFAbsoluteTime = 0
+    private static let repeatDuplicateActionWindow: CFTimeInterval = 0.08
     // タッチが取り消されると SwiftUI は onEnded を呼ばない。GestureState は取り消しでも元に戻るので、
     // これが false に戻ったらリピートの予約を必ず捨てる(3291)
     @GestureState private var isRepeatTouchActive = false
@@ -340,7 +345,17 @@ struct ActionKeyButton: View {
         cancelPendingSingleTapAction()
         lastImmediateSingleTapAt = nil
         didTriggerLongPress = true
-        repeatDragBeganAt = CFAbsoluteTimeGetCurrent()
+        let now = CFAbsoluteTimeGetCurrent()
+        repeatDragBeganAt = now
+        // ボタン判定が先に実行済み(配送の遅れで順序が逆転)なら、このタッチはもう離れているので実行もリピート予約もしない
+        if now - repeatSingleActionAt < Self.repeatDuplicateActionWindow {
+            KeyRepeatTouchForensics.onReport?(
+                "リピートキーの二重実行を回避(ボタン判定が先に到着) キー=\(accessibilityLabel ?? title)"
+                    + " 間隔=\(Int((now - repeatSingleActionAt) * 1000))ms"
+            )
+            return
+        }
+        repeatSingleActionAt = now
         action()
         scheduleRepeatingActionStartIfNeeded()
     }
@@ -369,6 +384,14 @@ struct ActionKeyButton: View {
             }
             return
         }
+        if now - repeatSingleActionAt < Self.repeatDuplicateActionWindow {
+            KeyRepeatTouchForensics.onReport?(
+                "リピートキーの二重実行を回避(ボタン判定が直後に到着) キー=\(accessibilityLabel ?? title)"
+                    + " 間隔=\(Int((now - repeatSingleActionAt) * 1000))ms"
+            )
+            return
+        }
+        repeatSingleActionAt = now
         action()
     }
 
