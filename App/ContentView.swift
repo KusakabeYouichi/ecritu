@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20261004165048"
+    private static let editionUpdatedAtRaw: String = "20261004165235"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -501,7 +501,8 @@ struct ContentView: View {
     ]
 
     // 操作マニュアルとプライバシーポリシー(GitHub Pages)。アイコン長押しメニューから Safari で開く
-    // (カードは置かない。ユーザ指定 2792)
+    // (カードは置かない。ユーザ指定 2792)。ただしプライバシーポリシーは審査(5.1.1)のため、設定末尾の
+    // 「プライバシーポリシーとライセンス」カードにも置く(3349)
     static let manualURL = URL(string: "https://kusakabeyouichi.github.io/ecritu/manual/")!
 
     // 有効化手順カードの配置: 拡張が一度も表示されていない(印なし)かつ手動で隠していない間だけ先頭。
