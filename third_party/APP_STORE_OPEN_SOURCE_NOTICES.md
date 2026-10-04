@@ -69,6 +69,9 @@ Wikipedia (https://ja.wikipedia.org/).
   Documentation License.
 - The bundled tables contain aggregated word frequency statistics
   computed from Wikipedia dump data; no article text is included.
+- Source data: Wikimedia database dump of Japanese Wikipedia (jawiki,
+  2026-06-01, pages-articles part 1), https://dumps.wikimedia.org/jawiki/,
+  downloaded 2026-07-02.
 - We consider these aggregated statistics to be factual data rather
   than an adaptation of the articles. To the extent they are
   nevertheless considered an adaptation, the bundled tables are
