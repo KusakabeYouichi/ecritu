@@ -20374,6 +20374,18 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3341: とかなのでしょ(う)(ね) が とかナノでしょ/とかなので章 だった(ユーザ報告)。素直にかなで通す
+    func testRegressionRealLMNanoDeshouStaysKana() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for reading in ["とかなの", "とかなので", "とかなのでしょ", "とかなのでしょう", "とかなのでしょうね", "なのでしょう"] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertTrue(multi.isEmpty || multi.first == reading, "\(reading) \(multi)")
+        }
+        XCTAssertEqual(converter.multiClauseCandidates(for: "ぶたとかなのでしょうね", systemCandidateMode: .surface).first, "豚とかなのでしょうね")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "このしょう", systemCandidateMode: .surface).first, "この章")
+    }
+
     // 3339: なんでもかんでも は 何でもかんでも 先頭・なんでもかんでも が次(ユーザ指定)。何でも噛んでも が先頭だった
     func testRegressionRealLMNandemoKandemo() throws {
         try prepareRealLMDictionary()
