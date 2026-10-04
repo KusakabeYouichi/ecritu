@@ -4,6 +4,13 @@
 wikitext のマークアップを大まかに除去する(n-gram 集計用途なので完全さは不要)。
 出力サイズ上限に達したら打ち切る。ストリーム処理で巨大展開ファイルを作らない。
 usage: extract_wiki_text.py <input.bz2> <output.txt> [max_mb]
+
+今の LM(references/word_lm.json.gz)の元データ: jawiki 2026-06-01 のダンプの pages-articles の第 1 分割(p1、約 400MB、
+ファイル内の最新の編集 2026-06-01T09:58Z)を https://dumps.wikimedia.org/jawiki/ から 2026-07-02 に取得
+(手元では tmp/corpus/jawiki_p1.xml.bz2)。名前空間で絞っていないので、記事(0)79,122 ページのほかに
+Wikipedia:(4)677・Category(14)469・Template(10)157 等の計 1,469 ページも数えている(ノート・利用者ページは
+pages-articles に元から含まれない)。署名の 利用者/ノート/会話 が実際より多めに数えられるのはこのため。
+作り直すなら名前空間 0 だけに絞る(変換順位が全体に動くので、全網テストと補正の見直しとセットで)
 """
 import bz2
 import re

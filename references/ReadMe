@@ -26,4 +26,4 @@ suppr.plist						# 変換対策の隠し抑制。SudachiDict の誤エントリ�
 apple_missing_examples.md		# (再生成可)「Apple の変換では出るが écritu 辞書に無い語」の点検レポート。generate_missing_apple_examples.pyで再生成可能
 adjective_garu_allowlist.json	# (必須)ガル形派生(悲しがる/怖がる 等)を許可する形容詞の allowlist。build_sudachi_index が読む
 compteur						# (資料)助数詞の頻度順一覧資料(compteur=仏語で「カウンター」)。numericCounterSuffixCandidatesByReading(せき=[席,隻]を足したあの表)を整備するときの参考資料
-word_lm.json.gz					# (必須)連文節変換の単語 n-gram LM 本体(11MB)。ビルド時に tmp へ展開→sqlite に焼き込まれる
+word_lm.json.gz					# (必須)連文節変換の単語 n-gram LM 本体(11MB)。ビルド時に tmp へ展開→sqlite に焼き込まれる。元データは jawiki 2026-06-01 ダンプの pages-articles 第 1 分割(2026-07-02 取得。詳細は tools/extract_wiki_text.py の冒頭)
