@@ -20374,6 +20374,50 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3343: suppr.plist の「字形が似ていて間違えやすい」語単位の抑制のうち 51 語を、対応表の区分「見分けにくい字形」(字単位)へ移した
+    // (標準字体の語が辞書に無い 7 語 吞み物/画讚/熱讚/魔吞 等は字単位の抑制が効かないので suppr に残した)。
+    // 移した語が単文節・連文節とも出ないこと、その区分だけで制御できること(旧字体・異体字をオフにしても抑制が続く)を確かめる
+    static let lookalikeMovedFromSuppr: [(surface: String, reading: String)] = [
+        ("黑", "くろ"), ("麴", "こうじ"), ("纍", "るい"), ("繫ぐ", "つなぐ"), ("ぐい吞み", "ぐいのみ"),
+        ("瘦せる", "やせる"), ("吞みこむ", "のみこむ"), ("吞みこめる", "のみこめる"), ("吞み下す", "のみくだす"),
+        ("吞み干す", "のみほす"), ("吞み込み", "のみこみ"), ("吞み込む", "のみこむ"), ("吞み込める", "のみこめる"),
+        ("吞む", "のむ"), ("吞める", "のめる"), ("鵜吞み", "うのみ"), ("麴屋", "こうじや"), ("吞気", "のんき"),
+        ("剣吞", "けんのん"), ("醱酵", "はっこう"), ("黒麴", "くろこうじ"), ("自讚", "じさん"), ("酒麴", "さけこうじ"), ("称讚", "しょうさん"),
+        ("賞讚", "しょうさん"), ("麴塵", "あおいろ"), ("製麴", "せいきく"), ("絶讚", "ぜっさん"), ("麴町", "こうじまち"), ("麴漬け", "こうじづけ"),
+        ("湯吞", "ゆのみ"), ("湯吞み", "ゆのみ"), ("乳吞", "ちのみ"), ("吞馬", "どんば"), ("併吞", "へいどん"),
+        ("併せ吞む", "あわせのむ"), ("米麴", "こめこうじ"), ("褒め讚える", "ほめたたえる"), ("誉め讚える", "ほめたたえる"),
+        ("礼讚", "らいさん"), ("曵く", "ひく"), ("曵ける", "ひける"), ("讚", "さん"), ("讚える", "たたえる"), ("讚歌", "さんか"),
+        ("讚仰", "さんぎょう"), ("讚辞", "さんじ"), ("讚歎", "さんたん"), ("讚美", "さんび"), ("讚美歌", "さんびか"), ("鰺", "あじ")
+    ]
+
+    func testLookalikeVariantsMovedFromSupprStayHidden() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        var leaked: [String] = []
+        for (surface, reading) in Self.lookalikeMovedFromSuppr {
+            let single = converter.candidates(for: reading, limit: 40, systemCandidateMode: .surface)
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            if single.contains(surface) || multi.contains(surface) {
+                leaked.append("\(surface)(\(reading)) single=\(single.prefix(8)) multi=\(multi.prefix(4))")
+            }
+        }
+        XCTAssertTrue(leaked.isEmpty, "漏れ \(leaked.count) 件:\n" + leaked.joined(separator: "\n"))
+    }
+
+    func testLookalikeCategoryControlsIndependently() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        defer { converter.setScriptVariantSuppressionCategories(ScriptVariantSuppressionCategory.defaultEnabled) }
+        // 旧字体・異体字を出す設定でも、見分けにくい字形がオンなら 吞む/讚歌 は出ない
+        converter.setScriptVariantSuppressionCategories([.lookalike])
+        XCTAssertFalse(converter.candidates(for: "のむ", limit: 40, systemCandidateMode: .surface).contains("吞む"))
+        XCTAssertFalse(converter.candidates(for: "さんか", limit: 40, systemCandidateMode: .surface).contains("讚歌"))
+        // 見分けにくい字形もオフにすれば出る(語単位の抑制が残っていないこと)
+        converter.setScriptVariantSuppressionCategories([])
+        XCTAssertTrue(converter.candidates(for: "のむ", limit: 40, systemCandidateMode: .surface).contains("吞む"))
+        XCTAssertTrue(converter.candidates(for: "さんか", limit: 40, systemCandidateMode: .surface).contains("讚歌"))
+    }
+
     // 3342: だいさんしょう が 台参照 だった(ユーザ報告)。章/話 は数字直後限定の表にしか無く 第N章 が作られていなかった
     func testRegressionRealLMDaiSanShou() throws {
         try prepareRealLMDictionary()
