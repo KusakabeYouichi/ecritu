@@ -371,6 +371,8 @@
 
 	<!-- ■ 分割・断片に負ける語の救済(連文節の区切りを勝たせる固定句) -->
 	<dict><key>phrase</key><string>次に</string><key>shortcut</key><string>つぎに</string></dict>	<!-- 副詞 次に。連文節が 次+に(bigram 1404)より 継ぎに/次ぎに(連用形+目的の に の派生 7200)を採り、つぎにきたきゃく→継ぎに来た客 になっていた(ユーザ報告 2818) -->
+	<dict><key>phrase</key><string>何でもかんでも</string><key>shortcut</key><string>なんでもかんでも</string></dict>	<!-- 何でもかんでも: 辞書に句として無く 何でも+噛んでも が先頭だった。かんでも は かな書きの慣用句。登録順=候補順(なんでもかんでも が 2 番手。ユーザ指定 3339) -->
+	<dict><key>phrase</key><string>なんでもかんでも</string><key>shortcut</key><string>なんでもかんでも</string></dict>
 	<dict><key>phrase</key><string>お待ち</string><key>shortcut</key><string>おまち</string></dict>	<!-- お待ち(ください/になる)。連文節に お+待ち の丁寧合成ノードが立たず、なかでおまちに が 中で雄町に(酒米/地名)になっていた(ユーザ報告 2818) -->
 	<dict><key>phrase</key><string>仕方ない</string><key>shortcut</key><string>しかたない</string><key>pos</key><string>形容詞</string></dict>	<!-- 仕方ない: 辞書に在る(wc7696)が連文節で から+仕方ない の区切りが 枯らし+方+ない 分割に負ける(まけたからしかたない→負けた枯らし方ない)。curated化(連文節1500)で区切りを勝たせる -->	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>合格圏内</string><key>shortcut</key><string>ごうかくけんない</string><key>pos</key><string>名詞</string></dict>	<!-- 合格圏内: 辞書に在る(圏内 wc8004)が連文節で 合格+圏+ない 分割(合格圏ない)に負ける。curated化で区切りを勝たせる -->

@@ -20364,6 +20364,16 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertFalse(kande.contains { $0.contains("嚙") }, "\(kande)")
     }
 
+    // 3339: なんでもかんでも は 何でもかんでも 先頭・なんでもかんでも が次(ユーザ指定)。何でも噛んでも が先頭だった
+    func testRegressionRealLMNandemoKandemo() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let multi = converter.multiClauseCandidates(for: "なんでもかんでも", systemCandidateMode: .surface)
+        let single = converter.candidates(for: "なんでもかんでも", limit: 6, systemCandidateMode: .surface)
+        let shown = multi.isEmpty ? single : multi
+        XCTAssertEqual(Array(shown.prefix(2)), ["何でもかんでも", "なんでもかんでも"], "multi=\(multi) single=\(single)")
+    }
+
     // 3278: 常習性 を登録
     func testJoushuuseiRegistered() throws {
         try prepareRealLMDictionary()
