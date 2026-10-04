@@ -295,9 +295,14 @@ extension KanaKanjiConverter {
                 emit("\(value)つ")
                 continue
             }
-            for counterReading in Self.numericCompoundCounterReadings
+            let counterReadings = ordinalPrefix.isEmpty
+                ? Self.numericCompoundCounterReadings
+                : Self.numericCompoundCounterReadings.union(Self.ordinalPrefixCounterSurfacesByReading.keys)
+            for counterReading in counterReadings
             where body.count > counterReading.count && body.hasSuffix(counterReading) {
-                let counterSurfaces = Self.numericCompoundCounterSurfaces(for: counterReading) ?? []
+                let ordinalSurfaces = ordinalPrefix.isEmpty ? [] : Self.ordinalPrefixCounterSurfacesByReading[counterReading] ?? []
+                let baseSurfaces = Self.numericCompoundCounterSurfaces(for: counterReading) ?? []
+                let counterSurfaces = ordinalSurfaces + baseSurfaces.filter { !ordinalSurfaces.contains($0) }
                 let numberReading = String(body.dropLast(counterReading.count))
                 guard let value = Self.japaneseNumberReadingValue(numberReading) else {
                     continue
@@ -625,6 +630,14 @@ extension KanaKanjiConverter {
         Set(numericCounterSuffixCandidatesByReading.keys)
             .union(supplementalCounterSurfacesByReading.keys)
     }
+
+    // 第 が付くときだけ使う助数詞(第3章/第2話/第1部 等。ユーザ報告 3342: だいさんしょう→台参照)。
+    // 本表に置くと 3しょう→3章 や 何章/数章 以外の合成(さんわ→3話 等)に波及するので、序数接頭のときに限る
+    static let ordinalPrefixCounterSurfacesByReading: [String: [String]] = [
+        "しょう": ["章"], "わ": ["話"], "ぶ": ["部"], "かん": ["巻"], "じょう": ["条"], "せつ": ["節"],
+        "こう": ["項"], "はん": ["版"], "ぱん": ["版"], "き": ["期"], "だん": ["弾", "段"], "い": ["位"],
+        "まく": ["幕"], "しゅう": ["集", "週"], "へん": ["編"], "しゅ": ["種"]
+    ]
 
     // 助数詞ではないが、数字の直後では先頭に来るべき語(ユーザー指定 3185)。
     // 1かいそう→1階層(既定では 回想 が先頭)。助数詞の表に入れると 第1階層/何階層 の複合生成に

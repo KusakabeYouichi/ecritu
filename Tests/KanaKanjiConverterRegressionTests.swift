@@ -20374,6 +20374,21 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3342: だいさんしょう が 台参照 だった(ユーザ報告)。章/話 は数字直後限定の表にしか無く 第N章 が作られていなかった
+    func testRegressionRealLMDaiSanShou() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for (reading, expected) in [("だいさんしょう", "第3章"), ("だいいっしょう", "第1章"), ("だいにしょう", "第2章"),
+                                    ("だいごしょう", "第5章"), ("だいさんわ", "第3話"), ("だいさんぶ", "第3部"),
+                                    ("だいさんかい", "第3回"), ("だいさんしょうで", "第3章で")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            let single = converter.candidates(for: reading, limit: 4, systemCandidateMode: .surface)
+            XCTAssertEqual((multi.isEmpty ? single : multi).first, expected, "multi=\(multi) single=\(single)")
+        }
+        // 第 が無ければ従来どおり
+        XCTAssertEqual(converter.candidates(for: "さんしょう", limit: 4, systemCandidateMode: .surface).first, "参照")
+    }
+
     // 3341: とかなのでしょ(う)(ね) が とかナノでしょ/とかなので章 だった(ユーザ報告)。素直にかなで通す
     func testRegressionRealLMNanoDeshouStaysKana() throws {
         try prepareRealLMDictionary()
