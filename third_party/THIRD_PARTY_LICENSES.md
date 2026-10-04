@@ -22,12 +22,16 @@ information. Keep the two in sync.
 
 ## Tatoeba (German display-form restoration)
 
-- https://tatoeba.org/ — CC BY 2.0 FR. Used only to restore German
+- https://tatoeba.org/ — CC BY 2.0 FR
+  (https://creativecommons.org/licenses/by/2.0/fr/). Used only to restore German
   capitalization and ß spellings in the bundled German list
+- Source: https://downloads.tatoeba.org/exports/per_language/deu/deu_sentences.tsv.bz2
 
 ## Wiktionary (German display-form fallback)
 
-- https://de.wiktionary.org/ — CC BY-SA. Entry titles only
+- https://de.wiktionary.org/ — CC BY-SA 4.0
+  (https://creativecommons.org/licenses/by-sa/4.0/). Entry titles only
+- Source: https://dumps.wikimedia.org/dewiktionary/latest/dewiktionary-latest-all-titles-in-ns0.gz
 
 ## Lexique 3.83 (French suggestion frequencies)
 
