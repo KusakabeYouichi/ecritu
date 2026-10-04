@@ -3,8 +3,12 @@
 #   使い方: bash tools/verify_archive_artifacts.sh [path/to/écritu.xcarchive | path/to/écritu.app | path/to/écritu.ipa] [--tag]
 #   引数なし: ~/Library/Developer/Xcode/Archives から最新の écritu.xcarchive を探す
 #   --tag   : 検証OKのとき submitted-<version>-<build> の git タグを打つ(追跡性の記録)
-#   --testflight : TestFlight 配布用。出荷前診断(ECRITU_PRERELEASE_DIAGNOSTICS=1)を ❌ でなく ⚠️ にし、
+#   モードは 3 つ(3347)。指定なし = App Store 審査用で、すべて厳しく見る。
+#   --testflight : TestFlight 配布用(Release 構成)。出荷前診断(ECRITU_PRERELEASE_DIAGNOSTICS=1)を ❌ でなく ⚠️ にし、
 #              タグは testflight-<version>-<build> にする(App Store 提出ではこの指定を付けない)
+#   --testflight-debug : TestFlight 配布用(Debug 構成。テスターから診断ログを取る版、3312〜)。上に加えて、
+#              Debug 構成なら必ず入る DEBUG 専用の文字列と、DEBUG 専用コード由来の「必要な理由 API」を ⚠️ にする。
+#              逆に DEBUG 専用の文字列が無ければ ❌(Release で作ったのに指定を取り違えた)。タグは testflight-debug-<version>-<build>
 # 検査項目: バンドルID / debug.dylib等の混入 / ITSAppUsesNonExemptEncryption /
 #           アイコンのアルファ / appexサイズ / 辞書sqliteがtmpと同一(=テスト済みの辞書) /
 #           プロビジョニング(失効日・配布用か) / get-task-allow / 出荷前診断フラグ(バイナリで判定) /
@@ -21,8 +25,17 @@ warn() { echo "  ⚠️  $1"; }
 TARGET="${1:-}"
 DO_TAG=0
 TESTFLIGHT=0
-for a in "$@"; do [[ "$a" == "--tag" ]] && DO_TAG=1; [[ "$a" == "--testflight" ]] && TESTFLIGHT=1; done
-[[ "$TARGET" == "--tag" || "$TARGET" == "--testflight" ]] && TARGET=""
+DEBUG_BUILD=0
+for a in "$@"; do
+  [[ "$a" == "--tag" ]] && DO_TAG=1
+  [[ "$a" == "--testflight" ]] && TESTFLIGHT=1
+  [[ "$a" == "--testflight-debug" ]] && { TESTFLIGHT=1; DEBUG_BUILD=1; }
+done
+[[ "$TARGET" == --* ]] && TARGET=""
+if [[ $DEBUG_BUILD -eq 1 ]]; then MODE_LABEL="TestFlight(Debug 構成)"
+elif [[ $TESTFLIGHT -eq 1 ]]; then MODE_LABEL="TestFlight(Release 構成)"
+else MODE_LABEL="App Store 審査用"; fi
+echo "モード: $MODE_LABEL"
 
 if [[ -z "$TARGET" ]]; then
   TARGET=$(ls -dt "$HOME"/Library/Developer/Xcode/Archives/*/*.xcarchive 2>/dev/null | grep -i "critu" | head -1 || true)
@@ -178,7 +191,18 @@ check_debug_only_strings() {
   # 文字列リテラルそのものに合わせる(行頭固定)。App 側には同名のプロパティのシンボル
   # (_keyboardConversionLastTrace)が #if DEBUG の外にもあり、部分一致だと誤検知する
   hits=$(echo "$syms" | grep -E "^(MULTITRACE|SINGLETRACE|screenshotScript$|keyboardConversionLastTrace$|.*撮影用の一時フック)" | sort -u | head -5 | tr '\n' ' ')
-  if [[ -n "$hits" ]]; then
+  # 撮影用の一時フックはどのモードでも配布してはいけない
+  local hookHits
+  hookHits=$(echo "$syms" | grep -E "^(screenshotScript$|.*撮影用の一時フック)" | sort -u | head -3 | tr '\n' ' ')
+  if [[ $DEBUG_BUILD -eq 1 ]]; then
+    if [[ -n "$hookHits" ]]; then
+      bad "$label: 撮影用の文字列がバイナリに残っている: $hookHits"
+    elif [[ -n "$hits" ]]; then
+      warn "$label: DEBUG 専用の文字列あり(Debug 構成なので想定どおり): $hits"
+    else
+      bad "$label: Debug 構成のはずが DEBUG 専用の文字列が無い(Release で作った版に --testflight-debug を付けていないか)"
+    fi
+  elif [[ -n "$hits" ]]; then
     bad "$label: DEBUG 専用/撮影用の文字列がバイナリに残っている: $hits"
   else
     ok "$label: DEBUG 専用/撮影用の文字列なし"
@@ -228,6 +252,10 @@ check_required_reason_apis() {
     [[ -n "$hits" ]] || continue
     if [[ -f "$manifest" ]] && grep -q "NSPrivacyAccessedAPICategory$cat" "$manifest"; then
       ok "$label: $cat の API($hits)を使い、申告あり"
+    elif [[ $DEBUG_BUILD -eq 1 ]]; then
+      # DEBUG 専用の計測(触れてからの遅れ等)が使う。TestFlight は受け付けられる(3312/3319 で実績)。
+      # Release 構成で同じ ❌ が出たら審査で止まるので、そちらでは ❌ のまま
+      warn "$label: $cat の API($hits)の申告が無い(Debug 構成の DEBUG 専用コード由来。App Store 審査用の Release 構成では ❌)"
     else
       bad "$label: $cat の API($hits)を使うのに PrivacyInfo.xcprivacy に申告が無い"
     fi
@@ -252,6 +280,7 @@ echo "バージョン: $VER ($BUILD)  コミット: $(git rev-parse --short HEAD
 if [[ $FAIL -eq 0 && $DO_TAG -eq 1 ]]; then
   TAG="submitted-$VER-$BUILD"
   [[ $TESTFLIGHT -eq 1 ]] && TAG="testflight-$VER-$BUILD"
+  [[ $DEBUG_BUILD -eq 1 ]] && TAG="testflight-debug-$VER-$BUILD"
   git tag -f "$TAG" && echo "  🏷  git tag $TAG を作成(追跡性の記録)"
 fi
 
