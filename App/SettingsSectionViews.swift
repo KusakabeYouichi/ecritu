@@ -139,7 +139,7 @@ struct ComposingTextStyleSettingsSection: View {
             Text("E.4 未確定の方式")
                 .font(.headline)
 
-            // 選べない方式は灰色で押せない(準備中)。segmented Picker は項目単位で無効化できないので自前の並び
+            // 3 方式の並び(選択中は枠付き)。以前は未実装の方式を灰色で押せなくする(isAvailable)ための自前の並びだった
             HStack(spacing: 8) {
                 ForEach(ComposingTextStyleOption.allCases) { option in
                     let isSelected = option == selection
@@ -162,9 +162,8 @@ struct ComposingTextStyleSettingsSection: View {
                             )
                     }
                     .buttonStyle(.plain)
-                    .disabled(!option.isAvailable)
-                    .foregroundStyle(option.isAvailable ? Color.primary : Color.secondary)
-                    .accessibilityLabel(option.title + (option.isAvailable ? "" : "(準備中)"))
+                    .foregroundStyle(Color.primary)
+                    .accessibilityLabel(option.title)
                 }
             }
 
@@ -172,7 +171,7 @@ struct ComposingTextStyleSettingsSection: View {
                 ForEach(ComposingTextStyleOption.allCases) { option in
                     Text(option.summary)
                         .font(.footnote)
-                        .foregroundStyle(option.isAvailable ? .secondary : .tertiary)
+                        .foregroundStyle(.secondary)
                 }
                 Text("初期設定は écritu です。")
                     .font(.footnote)
