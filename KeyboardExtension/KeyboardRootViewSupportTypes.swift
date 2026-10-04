@@ -2,38 +2,6 @@ import Foundation
 import SwiftUI
 import UIKit
 
-#if DEBUG
-// 調査用(3145): 候補欄の上の余白が時々ほとんど無くなる件。原因が分かったら外す。
-// 実際に描かれた「スクロール枠の上端」と「チップの上端」の差を測り、指定した余白
-// (kanaCandidateHeaderTopPadding)とずれた瞬間だけ 1 行残す。SwiftUI 側から呼ぶので
-// ビュー(値型)に状態を持たせず、ここへ置く
-enum KeyboardCandidateBarLayoutForensics {
-    static var onReport: ((String) -> Void)?
-    nonisolated(unsafe) static var scrollTopY: CGFloat = .nan
-    nonisolated(unsafe) static var contentTopY: CGFloat = .nan
-    nonisolated(unsafe) static var lastReportedGap: CGFloat = .nan
-
-    static func note(scrollTopY newScrollTopY: CGFloat? = nil, contentTopY newContentTopY: CGFloat? = nil, expected: CGFloat) {
-        if let newScrollTopY {
-            scrollTopY = newScrollTopY
-        }
-        if let newContentTopY {
-            contentTopY = newContentTopY
-        }
-        guard scrollTopY.isFinite, contentTopY.isFinite else {
-            return
-        }
-        let gap = ((contentTopY - scrollTopY) * 2).rounded() / 2
-        guard !lastReportedGap.isFinite || abs(gap - lastReportedGap) > 0.5 else {
-            return
-        }
-        lastReportedGap = gap
-        onReport?("候補欄の余白 実測=\(gap)pt 指定=\(expected)pt 枠上端=\(Int(scrollTopY)) チップ上端=\(Int(contentTopY))")
-    }
-}
-
-#endif
-
 // 候補バー系の状態(未確定文字列/変換候補/選択位置/英字サジェスト)。毎打鍵で変わるのは
 // ここだけなので、rootView 差し替えではなく publish で更新して SwiftUI に差分再評価させる。
 final class KeyboardCandidateBarModel: ObservableObject {
@@ -125,75 +93,6 @@ enum KeyboardThemePalette {
         }
     )
     static let thinDivider = Color(uiColor: .separator).opacity(0.5)
-}
-
-#if DEBUG
-// 調査用(3163): 面の中身が枠からはみ出していないか。ZStack は中身を中央に置くので、
-// 中身が枠より高いと上下に同じだけはみ出す(= 上の余白が消える / 上下が切れる)。
-// 中身の上端・下端を枠の座標で残す。原因が分かったら外す
-enum KeyboardRootOverflowForensics {
-    static var onReport: ((String) -> Void)?
-    nonisolated(unsafe) static var lastTop: CGFloat = .nan
-
-    static func note(top: CGFloat, bottom: CGFloat) {
-        guard !lastTop.isFinite || abs(top - lastTop) > 0.5 else {
-            return
-        }
-        lastTop = top
-        onReport?("面の中身 上端=\(Int(top)) 下端=\(Int(bottom))")
-    }
-}
-
-struct KeyboardRootOverflowProbe: ViewModifier {
-    func body(content: Content) -> some View {
-        content.background(
-            GeometryReader { proxy in
-                Color.clear
-                    .onAppear { report(proxy.frame(in: .global)) }
-                    .onChange(of: proxy.frame(in: .global).minY) { _ in
-                        report(proxy.frame(in: .global))
-                    }
-            }
-        )
-    }
-
-    private func report(_ frame: CGRect) {
-        KeyboardRootOverflowForensics.note(top: frame.minY, bottom: frame.maxY)
-    }
-}
-
-#endif
-
-// 調査用(3145): 候補欄の上余白の実測。DEBUG 以外では何もしない
-struct CandidateBarTopMarginProbe: ViewModifier {
-    let expected: CGFloat
-    let isContent: Bool
-
-    func body(content: Content) -> some View {
-        #if DEBUG
-        content.background(
-            GeometryReader { proxy in
-                Color.clear
-                    .onAppear { report(proxy.frame(in: .global).minY) }
-                    .onChange(of: proxy.frame(in: .global).minY) { value in
-                        report(value)
-                    }
-            }
-        )
-        #else
-        content
-        #endif
-    }
-
-    #if DEBUG
-    private func report(_ minY: CGFloat) {
-        if isContent {
-            KeyboardCandidateBarLayoutForensics.note(contentTopY: minY, expected: expected)
-        } else {
-            KeyboardCandidateBarLayoutForensics.note(scrollTopY: minY, expected: expected)
-        }
-    }
-    #endif
 }
 
 // 面の中身を、与えられた高さに収める(3170)。横画面では ホストが枠を広げてくれず
@@ -1315,13 +1214,11 @@ extension KeyboardRootView {
                     }
 
                 }
-                .modifier(CandidateBarTopMarginProbe(expected: kanaCandidateHeaderTopPadding, isContent: true))
                 .padding(.horizontal, 2)
                 .padding(.top, kanaCandidateHeaderTopPadding)
                 .padding(.bottom, 0)
                 .frame(maxHeight: .infinity, alignment: .top)
             }
-            .modifier(CandidateBarTopMarginProbe(expected: kanaCandidateHeaderTopPadding, isContent: false))
             }
             .onChange(of: selectedConversionCandidateIndex) { index in
                 guard let index else {
