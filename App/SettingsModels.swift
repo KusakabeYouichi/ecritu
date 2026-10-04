@@ -3,6 +3,9 @@ import CoreFoundation
 import UIKit
 
 enum SettingsKeys {
+    // App Group ID は App/Info.plist の EcrituAppGroupIdentifier(= $(ECRITU_APP_GROUP_IDENTIFIER)、拡張と同じ設定値)から読む。
+    // 以前は INFOPLIST_KEY_ で指定していたが Xcode は独自キーを生成物に入れず、たまたま同じ規則のこの代替で一致していた
+    // (提出前監査 第3回)。代替は保険として残す
     private static func fallbackAppGroupID() -> String {
         guard let bundleID = Bundle.main.bundleIdentifier,
             !bundleID.isEmpty else {
