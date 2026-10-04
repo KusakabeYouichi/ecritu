@@ -65,11 +65,27 @@ private enum ThirdPartyLicenseCatalog {
     }
 }
 
+// プライバシーポリシーとオープンソースライセンスのカード(3349)。ポリシーへの導線がアイコン長押しメニューだけだと
+// 審査(5.1.1「アプリ内から容易に開ける」)で見つからないので、設定の末尾のこのカードにも置く。長押しメニューは近道として残す
 struct ThirdPartyLicensesSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("オープンソースライセンス")
+            Text("プライバシーポリシーとライセンス")
                 .font(.headline)
+
+            Link(destination: ContentView.privacyPolicyURL) {
+                HStack(spacing: 10) {
+                    Image(systemName: "hand.raised")
+                        .foregroundStyle(.secondary)
+                    Text("プライバシーポリシーを開く")
+                        .font(.subheadline.weight(.semibold))
+                    Spacer(minLength: 8)
+                    Image(systemName: "arrow.up.right")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .buttonStyle(.plain)
 
             NavigationLink {
                 ThirdPartyLicensesListView()
@@ -87,7 +103,7 @@ struct ThirdPartyLicensesSection: View {
             }
             .buttonStyle(.plain)
 
-            Text("同梱データ(SudachiDict、Wikipedia 由来の言語モデル統計、Unicode CLDR 絵文字読み 等)のライセンス文書を確認できます。")
+            Text("プライバシーポリシーは Safari で開きます。ライセンス表示では、同梱データ(SudachiDict、Wikipedia 由来の言語モデル統計、Unicode CLDR 絵文字読み 等)のライセンス文書を確認できます。")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
