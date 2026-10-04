@@ -550,5 +550,8 @@
 
 	<!-- ギリシャ文字 -->
 	        <dict><key>phrase</key><string>μ</string><key>shortcut</key><string>まいくろ</string></dict>
+	<!-- ■ 追加語彙(sacoche)から移した語(一覧で確認・削除する必要のない地名・人名の表記。ユーザ指定 2026-10-04) -->
+	<dict><key>phrase</key><string>礼華</string><key>shortcut</key><string>あやか</string></dict>	<!-- 髙橋礼華・山本礼華 など公人の名の表記 -->
+	<dict><key>phrase</key><string>小金澤</string><key>shortcut</key><string>こがねざわ</string></dict>	<!-- 陸前国本吉郡小金沢の地名由来(姓にもある)。Sudachiにもある(姓、コスト9770で基底2位。小金沢 の後ろ) -->
 </array>
 </plist>

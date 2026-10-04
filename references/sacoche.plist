@@ -36,7 +36,6 @@
 	        <dict><key>phrase</key><string>寿美久</string><key>shortcut</key><string>すみきゅう</string></dict>
 	        <dict><key>phrase</key><string>洲さき</string><key>shortcut</key><string>すさき</string></dict>
 	        <dict><key>phrase</key><string>洲さき</string><key>shortcut</key><string>すざき</string></dict>
-	        <dict><key>phrase</key><string>礼華</string><key>shortcut</key><string>あやか</string></dict>
 	        <dict><key>phrase</key><string>稲豊園</string><key>shortcut</key><string>とうほうえん</string></dict>
 	        <dict><key>phrase</key><string>角正</string><key>shortcut</key><string>かくしょう</string></dict>	<!-- Sudachiにもある(姓、コスト10000の収穫底値で基底13位=表示枠外。届かないので登録) -->
 	        <dict><key>phrase</key><string>帰雲城</string><key>shortcut</key><string>かえりくもじょう</string></dict>
@@ -59,7 +58,6 @@
 	        <dict><key>phrase</key><string>梨泰院</string><key>shortcut</key><string>いてうぉん</string></dict>
 	        <dict><key>phrase</key><string>稚加栄</string><key>shortcut</key><string>ちかえ</string></dict>
 	        <dict><key>phrase</key><string>木川屋</string><key>shortcut</key><string>きがわや</string></dict>
-	        <dict><key>phrase</key><string>小金澤</string><key>shortcut</key><string>こがねざわ</string></dict>	<!-- Sudachiにもある(姓、コスト9770で基底2位。小金沢 の後ろ) -->
 	<!-- 音楽 -->
 	        <dict><key>phrase</key><string>iReal b</string><key>shortcut</key><string>あいりあるびー</string></dict>
 	        <dict><key>phrase</key><string>iReal Pro</string><key>shortcut</key><string>あいりあるぷろ</string></dict>
