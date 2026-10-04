@@ -1085,7 +1085,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = "écritu";
 				INFOPLIST_KEY_CFBundleShortVersionString = "$(MARKETING_VERSION)";
 				INFOPLIST_KEY_CFBundleVersion = "$(CURRENT_PROJECT_VERSION)";
-				INFOPLIST_KEY_EcrituAppGroupIdentifier = "$(ECRITU_APP_GROUP_IDENTIFIER)";
+				INFOPLIST_FILE = App/Info.plist;
 				INFOPLIST_KEY_EcrituEditionUpdatedAt = "$(ECRITU_EDITION_UPDATED_AT)";
 				INFOPLIST_KEY_NSContactsUsageDescription = "連絡先の名前を変換候補として使うために連絡先データにアクセスします。";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
@@ -1208,7 +1208,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = "écritu";
 				INFOPLIST_KEY_CFBundleShortVersionString = "$(MARKETING_VERSION)";
 				INFOPLIST_KEY_CFBundleVersion = "$(CURRENT_PROJECT_VERSION)";
-				INFOPLIST_KEY_EcrituAppGroupIdentifier = "$(ECRITU_APP_GROUP_IDENTIFIER)";
+				INFOPLIST_FILE = App/Info.plist;
 				INFOPLIST_KEY_EcrituEditionUpdatedAt = "$(ECRITU_EDITION_UPDATED_AT)";
 				INFOPLIST_KEY_NSContactsUsageDescription = "連絡先の名前を変換候補として使うために連絡先データにアクセスします。";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
