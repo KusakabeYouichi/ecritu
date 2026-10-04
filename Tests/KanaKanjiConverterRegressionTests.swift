@@ -20418,6 +20418,21 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(converter.candidates(for: "さんか", limit: 40, systemCandidateMode: .surface).contains("讚歌"))
     }
 
+    // 3360: しんしゃかった が 新社買った 先頭だった(ユーザ報告)。新社 の LM が Wikipedia の社名で安すぎるのを連文節で降格
+    func testRegressionRealLMShinshaKatta() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for (reading, expected) in [("しんしゃかった", "新車買った"), ("しんしゃかったの", "新車買ったの"),
+                                    ("しんしゃを", "新車を"), ("しんしゃをかう", "新車を買う")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "\(multi)")
+        }
+        // 新社 は候補に残る(並びが後ろになるだけ)
+        XCTAssertTrue(converter.multiClauseCandidates(for: "しんしゃかった", systemCandidateMode: .surface).contains("新社買った"))
+        // 単文節の並びは従来どおり
+        XCTAssertEqual(Array(converter.candidates(for: "しんしゃ", limit: 2, systemCandidateMode: .surface)), ["新車", "新社"])
+    }
+
     // 3342: だいさんしょう が 台参照 だった(ユーザ報告)。章/話 は数字直後限定の表にしか無く 第N章 が作られていなかった
     func testRegressionRealLMDaiSanShou() throws {
         try prepareRealLMDictionary()
