@@ -939,16 +939,19 @@ extension KeyboardViewController {
     // (実測5.0〜5.3秒)に発火するので、これを超える遅れは失敗として数えない。
     static let keyboardAttachWatchdogLateFireToleranceSec: TimeInterval = 5
 
-    // 出荷前診断(ECRITU_PRERELEASE_DIAGNOSTICS)。記録は起動回数(整数)と時刻だけで
-    // ユーザーの入力文字は含まないが、App Store 版には入れない(3009)
+    // 見張りと「表示に至らなかった個体の解放」はどのビルドでも動かす(3351)。以前は丸ごと出荷前診断
+    // (ECRITU_PRERELEASE_DIAGNOSTICS)の中にあり、App Store 版(0)だけ未表示の個体が保持物を抱えたまま
+    // 滞留し、テスターが使っている版よりメモリに弱くなっていた(提出前監査 第3回)。
+    // 起動・未到達・予備・遅延復帰の回数の記録だけを出荷前診断に残す(ユーザーの入力文字は含まないが、
+    // App Store 版には入れない。3009)
     func startKeyboardAttachWatchdog() {
 #if ECRITU_PRERELEASE_DIAGNOSTICS
-        guard let sharedDefaults else {
-            return
+        if let sharedDefaults {
+            let launchCount =
+                sharedDefaults.integer(forKey: SharedDefaultsKeys.keyboardDiagnosticsLaunchCount) + 1
+            sharedDefaults.set(launchCount, forKey: SharedDefaultsKeys.keyboardDiagnosticsLaunchCount)
         }
-        let launchCount =
-            sharedDefaults.integer(forKey: SharedDefaultsKeys.keyboardDiagnosticsLaunchCount) + 1
-        sharedDefaults.set(launchCount, forKey: SharedDefaultsKeys.keyboardDiagnosticsLaunchCount)
+#endif
 
         let scheduledAt = CFAbsoluteTimeGetCurrent()
         let workItem = DispatchWorkItem { [weak self] in
@@ -976,20 +979,25 @@ extension KeyboardViewController {
                 self.releaseNeverDisplayedKeyboardResources(reason: "otherInstanceAttached")
                 return
             }
-            guard let defaults = self.sharedDefaults else {
-                self.releaseNeverDisplayedKeyboardResources(reason: "noDefaults")
-                return
-            }
             // 予備の個体(定数コメント参照。3147)は未到達に数えない。別勘定で残す
             if self.observedAnotherInstanceAsDisplayOwner {
-                let spareCount =
-                    defaults.integer(forKey: SharedDefaultsKeys.keyboardDiagnosticsSpareControllerCount) + 1
-                defaults.set(spareCount, forKey: SharedDefaultsKeys.keyboardDiagnosticsSpareControllerCount)
-                self.appendKeyboardDiagnosticsLog(
-                    "予備の個体として除外(読み込み中に別個体が画面を持っていた) 累計\(spareCount)回",
-                    critical: true
-                )
+#if ECRITU_PRERELEASE_DIAGNOSTICS
+                if let defaults = self.sharedDefaults {
+                    let spareCount =
+                        defaults.integer(forKey: SharedDefaultsKeys.keyboardDiagnosticsSpareControllerCount) + 1
+                    defaults.set(spareCount, forKey: SharedDefaultsKeys.keyboardDiagnosticsSpareControllerCount)
+                    self.appendKeyboardDiagnosticsLog(
+                        "予備の個体として除外(読み込み中に別個体が画面を持っていた) 累計\(spareCount)回",
+                        critical: true
+                    )
+                }
+#endif
                 self.releaseNeverDisplayedKeyboardResources(reason: "spareController")
+                return
+            }
+#if ECRITU_PRERELEASE_DIAGNOSTICS
+            guard let defaults = self.sharedDefaults else {
+                self.releaseNeverDisplayedKeyboardResources(reason: "noDefaults")
                 return
             }
             let failureCount =
@@ -1017,6 +1025,7 @@ extension KeyboardViewController {
                 critical: true
             )
             self.logLiveControllerCensus(trigger: "attachFailure")
+#endif
             self.releaseNeverDisplayedKeyboardResources(reason: "attachFailure")
         }
         keyboardAttachWatchdogWorkItem = workItem
@@ -1024,7 +1033,6 @@ extension KeyboardViewController {
             deadline: .now() + Self.keyboardAttachWatchdogDelaySec,
             execute: workItem
         )
-#endif
     }
 
     func cancelKeyboardAttachWatchdog() {
@@ -1063,9 +1071,10 @@ extension KeyboardViewController {
     // 表示されたインスタンスがオーナー権(重い処理を担う権利)を主張する。viewWillAppear から
     // 呼ぶ。オーナー権を viewDidLoad で主張しないのは startKeyboardDiagnosticsSession の
     // コメント参照(投機生成VCによる横取りを防ぐ)。
-    // 出荷前診断(ECRITU_PRERELEASE_DIAGNOSTICS)。書くのはセッションの UUID と時刻のみ(同上)
+    // どのビルドでも動かす(3351)。以前は出荷前診断(ECRITU_PRERELEASE_DIAGNOSTICS)の中にあり、App Store 版(0)では
+    // オーナー権の印が書かれず、shouldSuppressHeavyOperations が常に false = 多重生存した非表示の個体の重い処理を
+    // 抑えられなかった。書くのはプロセス番号とセッションの UUID だけ(ユーザーの入力文字は含まない)
     func claimKeyboardSessionOwnership() {
-#if ECRITU_PRERELEASE_DIAGNOSTICS
         guard let sharedDefaults else {
             return
         }
@@ -1081,7 +1090,6 @@ extension KeyboardViewController {
         appendKeyboardDiagnosticsLog(
             "表示インスタンスがオーナー権を取得 previousOwner=\(storedToken ?? "none") currentOwner=\(token)"
         )
-#endif
     }
 
     // オーナー権を手放す(未表示のまま解放されるインスタンス用)。保持したままだと
