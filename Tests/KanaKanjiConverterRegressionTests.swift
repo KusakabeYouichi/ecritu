@@ -20418,6 +20418,20 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(converter.candidates(for: "さんか", limit: 40, systemCandidateMode: .surface).contains("讚歌"))
     }
 
+    // 3361: というかんじ が という漢字 先頭だった(ユーザ報告)
+    func testRegressionRealLMToiuKanji() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        // 漢字 を連文節で降格し(Wikipedia の解説記事で LM が安すぎた)、漢字 が自然な連語は守る
+        for (reading, expected) in [("というかんじ", "という感じ"), ("というかんじで", "という感じで"), ("っていうかんじ", "っていう感じ"),
+                                    ("いいかんじ", "いい感じ"), ("そういうかんじ", "そういう感じ"), ("かんじがする", "感じがする"),
+                                    ("かんじのいい", "感じのいい"), ("こんなかんじで", "こんな感じで"), ("みたいなかんじ", "みたいな感じ"),
+                                    ("かんじのよみ", "漢字の読み"), ("かんじをよむ", "漢字を読む")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "\(reading) \(multi)")
+        }
+    }
+
     // 3360: しんしゃかった が 新社買った 先頭だった(ユーザ報告)。新社 の LM が Wikipedia の社名で安すぎるのを連文節で降格
     func testRegressionRealLMShinshaKatta() throws {
         try prepareRealLMDictionary()
