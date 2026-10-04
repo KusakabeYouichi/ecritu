@@ -207,19 +207,29 @@ struct KanjiCharacterGridCollectionView: UIViewRepresentable {
             let keyFrameVisible = cellFrameInContent.offsetBy(dx: -host.contentOffset.x, dy: -host.contentOffset.y)
             let origin = KanjiInspectBubble.placement(forKey: keyFrameVisible, in: visibleSize)
 
+            // 影は layer の影を使わず、ぼかした図形の画像を下に敷く(KeyboardKeyComponents.swift の keyboardSoftShadow と
+            // 同じ考え方。3359)。吹き出しを包む外枠に影の画像と本体を重ねる
+            let pad = Self.bubbleShadowPadding
+            let wrapper = UIView(frame: CGRect(
+                x: origin.x + host.contentOffset.x - pad,
+                y: origin.y + host.contentOffset.y - pad,
+                width: KanjiInspectBubble.bubbleWidth + pad * 2,
+                height: KanjiInspectBubble.bubbleHeight + pad * 2
+            ))
+            wrapper.isUserInteractionEnabled = false
+            let shadow = UIImageView(image: Self.bubbleShadowImage)
+            shadow.frame = wrapper.bounds
+            wrapper.addSubview(shadow)
+
             let container = UIView(frame: CGRect(
-                x: origin.x + host.contentOffset.x,
-                y: origin.y + host.contentOffset.y,
+                x: pad,
+                y: pad,
                 width: KanjiInspectBubble.bubbleWidth,
                 height: KanjiInspectBubble.bubbleHeight
             ))
             container.backgroundColor = UIColor.black.withAlphaComponent(0.86)
             container.layer.cornerRadius = 8
             container.layer.cornerCurve = .continuous
-            container.layer.shadowColor = UIColor.black.cgColor
-            container.layer.shadowOpacity = 0.25
-            container.layer.shadowRadius = 6
-            container.layer.shadowOffset = CGSize(width: 0, height: 2)
             container.isUserInteractionEnabled = false
 
             let readings = UILabel()
@@ -243,9 +253,36 @@ struct KanjiCharacterGridCollectionView: UIViewRepresentable {
             code.frame = CGRect(x: 10, y: 28, width: inner, height: 13)
             container.addSubview(readings)
             container.addSubview(code)
-            host.addSubview(container)
-            bubble = container
+            wrapper.addSubview(container)
+            host.addSubview(wrapper)
+            bubble = wrapper
         }
+
+        // 吹き出しの影(黒 25%・ぼかし 6pt・下へ 2pt。以前の layer の影と同じ値)。寸法が固定なので 1 枚だけ作って使い回し、
+        // 出すたびに画像が増えることは無い。ぼけた影なので 1x で描いて引き伸ばしても見た目は変わらない(約 56KB)
+        private static let bubbleShadowPadding: CGFloat = 14
+        private static let bubbleShadowImage: UIImage = {
+            let pad = bubbleShadowPadding
+            let size = CGSize(width: KanjiInspectBubble.bubbleWidth + pad * 2, height: KanjiInspectBubble.bubbleHeight + pad * 2)
+            let format = UIGraphicsImageRendererFormat()
+            format.scale = 1
+            format.opaque = false
+            return UIGraphicsImageRenderer(size: size, format: format).image { context in
+                // 図形は画面の外に描き、影だけを内側へずらして残す(図形そのものは写らない)
+                let away: CGFloat = 10_000
+                let shape = UIBezierPath(
+                    roundedRect: CGRect(x: pad - away, y: pad, width: KanjiInspectBubble.bubbleWidth, height: KanjiInspectBubble.bubbleHeight),
+                    cornerRadius: 8
+                )
+                context.cgContext.setShadow(
+                    offset: CGSize(width: away, height: 2),
+                    blur: 12,
+                    color: UIColor.black.withAlphaComponent(0.25).cgColor
+                )
+                UIColor.black.setFill()
+                shape.fill()
+            }
+        }()
 
         private static func roundedFont(size: CGFloat, weight: UIFont.Weight) -> UIFont {
             let base = UIFont.systemFont(ofSize: size, weight: weight)
