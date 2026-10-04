@@ -732,10 +732,6 @@ final class KeyboardViewController: UIInputViewController {
         KeyboardStuckTouchDiagnostics.onTouchForensics = { [weak self] detail in
             self?.appendKeyboardDiagnosticsLog("接触詳細 \(detail)")
         }
-        // 調査用ログ(削除キーの二重削除 3291): 原因判明後に外す
-        KeyRepeatTouchForensics.onReport = { [weak self] detail in
-            self?.appendKeyboardDiagnosticsLog(detail, critical: true)
-        }
         #if DEBUG
         // 調査用ログ(3163): 面の中身が枠に収まっているか。枠の高さも添える
         KeyboardRootOverflowForensics.onReport = { [weak self] detail in
