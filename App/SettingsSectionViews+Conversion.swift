@@ -297,6 +297,7 @@ struct ScriptVariantSuppressionSettingsSection: View {
     @Binding var itaiji: Bool
     @Binding var ryakuji: Bool
     @Binding var confusable: Bool
+    @Binding var lookalike: Bool
     @Binding var personNameVariant: Bool
 
     var body: some View {
@@ -313,6 +314,10 @@ struct ScriptVariantSuppressionSettingsSection: View {
                 Text("異体字を抑制\n(飜訳→翻訳、每日→毎日)")
             }
             .toggleStyle(.switch)
+            Toggle(isOn: $lookalike) {
+                Text("見分けにくい字形を抑制\n(嚙む→噛む、吞む→呑む、讚歌→讃歌)")
+            }
+            .toggleStyle(.switch)
             Toggle(isOn: $ryakuji) {
                 Text("略字を抑制\n(仝じ→同じ、卆→卒)")
             }
@@ -326,7 +331,7 @@ struct ScriptVariantSuppressionSettingsSection: View {
             }
             .toggleStyle(.switch)
 
-            Text("同じ読みに現代の標準字体の候補があるときだけ、古い字体の候補を出さないようにします。標準字体の候補が無い語(和氣あず未、國場組、守禮門、魚香肉絲 など)はそのまま出ます。人名の姓・名(小野澤、千惠、眞子)は設定に関わらず常に出ます。追加語彙に登録した語も対象外です。最後の項目は初期設定はオフで、辺/邊 のように人名表記として生きている字を残します。")
+            Text("同じ読みに現代の標準字体の候補があるときだけ、古い字体の候補を出さないようにします。標準字体の候補が無い語(和氣あず未、國場組、守禮門、魚香肉絲 など)はそのまま出ます。人名の姓・名(小野澤、千惠、眞子)は設定に関わらず常に出ます。追加語彙に登録した語も対象外です。「見分けにくい字形」は旧字体・異体字のうち候補欄で標準字体と見分けられない字で、旧字体や異体字を出す設定にしても、これをオンにしておけば選び間違いを防げます。最後の項目は初期設定はオフで、辺/邊 のように人名表記として生きている字を残します。")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }

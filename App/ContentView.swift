@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20261004130404"
+    private static let editionUpdatedAtRaw: String = "20261004144913"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -418,6 +418,9 @@ struct ContentView: View {
     @AppStorage(SettingsKeys.scriptVariantSuppressConfusable, store: Self.sharedDefaults)
     private var scriptVariantSuppressConfusable = true
 
+    @AppStorage(SettingsKeys.scriptVariantSuppressLookalike, store: Self.sharedDefaults)
+    private var scriptVariantSuppressLookalike = true
+
     @AppStorage(SettingsKeys.scriptVariantSuppressPersonNameVariant, store: Self.sharedDefaults)
     private var scriptVariantSuppressPersonNameVariant = false
 
@@ -584,6 +587,7 @@ struct ContentView: View {
             String(scriptVariantSuppressItaiji),
             String(scriptVariantSuppressRyakuji),
             String(scriptVariantSuppressConfusable),
+            String(scriptVariantSuppressLookalike),
             String(scriptVariantSuppressPersonNameVariant),
             String(latinLexiconEnglishEnabled),
             String(latinLexiconFrenchEnabled),
@@ -685,6 +689,7 @@ struct ContentView: View {
         bool(SettingsKeys.scriptVariantSuppressItaiji, scriptVariantSuppressItaiji, "異体字を抑制")
         bool(SettingsKeys.scriptVariantSuppressRyakuji, scriptVariantSuppressRyakuji, "略字を抑制")
         bool(SettingsKeys.scriptVariantSuppressConfusable, scriptVariantSuppressConfusable, "紛らわしい別字を抑制")
+        bool(SettingsKeys.scriptVariantSuppressLookalike, scriptVariantSuppressLookalike, "見分けにくい字形を抑制")
         bool(SettingsKeys.scriptVariantSuppressPersonNameVariant, scriptVariantSuppressPersonNameVariant, "人名で生きている異体字を抑制")
         bool(SettingsKeys.emojiCandidateDisplayEnabled, emojiCandidateDisplayEnabled, "emojis & les émoticônes: emoji 😀")
         str(SettingsKeys.radicalStrokeCountStyle, radicalStrokeCountStyleRawValue, "部首の画数の数え方")
@@ -1236,6 +1241,7 @@ struct ContentView: View {
             itaiji: $scriptVariantSuppressItaiji,
             ryakuji: $scriptVariantSuppressRyakuji,
             confusable: $scriptVariantSuppressConfusable,
+            lookalike: $scriptVariantSuppressLookalike,
             personNameVariant: $scriptVariantSuppressPersonNameVariant
         )
 

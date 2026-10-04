@@ -5,6 +5,8 @@
 	<!-- 変換抑制の語彙(キーボードが直接読む。アプリの抑制語彙UIには非表示)。『■ 』で始まる行がグループ見出し(直前に空行)。エントリ行の後ろのコメントはその語の個別理由。『※ 』で始まる行は、対応するエントリが今は無い補足メモ。 -->
 
 	<!-- ■ 誤エントリ: 辞書の誤った読み・存在しない表記(学習でも古語でもなく明確な誤り) -->
+	<dict><key>phrase</key><string>継なぐ</string><key>shortcut</key><string>つなぐ</string></dict>	<!-- 継ぐ(つぐ)の非標準送り仮名。継なぎましょ 等の派生を出さない(ユーザ指定 2736) -->
+	<dict><key>phrase</key><string>宣野座</string><key>shortcut</key><string>ぎのざ</string></dict>	<!-- 正しくは 宜野座(沖縄県宜野座村)。宣(せん)と宜(ぎ)の字形類似で辞書収穫にも混入した誤表記 -->
 	<dict><key>phrase</key><string>感ぢ</string><key>shortcut</key><string>かんじ</string></dict>	<!-- 感ぢ: SudachiDict small_lex の 感じ の表記ゆれ収穫。感じ は歴史的仮名遣いでも かんじ で ぢ にならない誤り(ユーザ指定 3337) -->
 	<dict><key>phrase</key><string>汚穢</string><key>shortcut</key><string>おあい</string></dict>	<!-- 汚穢 の読みは おわい。おあい(Sudachi の読み違い)が「お+連用形」の合成を塞ぎ、おあいする/おあいできて に お会い が出なかった(ユーザ報告 3268) -->
 	<dict><key>phrase</key><string>尾合</string><key>shortcut</key><string>おあい</string></dict>	<!-- 尾合: レア姓の収穫(wc 10000)。同上 -->
@@ -81,6 +83,7 @@
 	<dict><key>phrase</key><string>ムベキ</string><key>shortcut</key><string>むべき</string></dict>	<!-- 「むべき」のカタカナ収穫(単独で成立する語ではない)。ふむべき→府ムベキ の合成を作っていた(ユーザ報告 2798) -->
 
 	<!-- ■ 収穫ノイズ: レア人名・レア姓(1ノードで安く、合成や連文節を汚す) -->
+	<dict><key>phrase</key><string>大睦</string><key>shortcut</key><string>たいりく</string></dict>	<!-- 大陸 と字形類似のレア人名収穫。たいりく で出したい場面が無い -->
 	<dict><key>phrase</key><string>重走</string><key>shortcut</key><string>じゅうそう</string></dict>	<!-- 重走(じゅうそう): レア姓の収穫(wc 10000)。じゅうそうで の末尾に並んでいた(ユーザ指摘 2818) -->
 	<dict><key>phrase</key><string>スルト</string><key>shortcut</key><string>すると</string></dict>	<!-- スルト(すると): Sudachi の人名固有名詞(北欧神話 Surtr)。すると の唯一の辞書語で rank0 を占め、接続詞 すると(かな)を跨いでいた(ユーザ指定 2688) -->
 	<dict><key>phrase</key><string>本途</string><key>shortcut</key><string>ほんと</string></dict>	<!-- 本途/本斗/本登(ほんと): LM 不在のレア人名・地名収穫。ほんと の かな先頭化は seed で行うため、これらが2番手以降に居座らないよう抑制する(旧: 本当 を抑制していたが ほんとだ/ほんとに 等の合成から 本当 が消えるため seed へ移行。2583) -->
@@ -148,6 +151,9 @@
 	<dict><key>phrase</key><string>見谷</string><key>shortcut</key><string>みたに</string></dict>
 
 	<!-- ■ 収穫ノイズ: レア語・レア読み(実在するが日常入力では雑音) -->
+	<dict><key>phrase</key><string>可</string><key>shortcut</key><string>かなり</string></dict>	<!-- 可なり の縮約(Sudachi rank0)。副詞 かなり の変換で 可 が先頭に出てストレス源(ユーザ指定 2736) -->
+	<dict><key>phrase</key><string>釈ける</string><key>shortcut</key><string>とける</string></dict>	<!-- 解ける の稀な表記。氷が釈けて が 氷が解けて の直後に並び紛らわしい(ユーザ指定 2739) -->
+	<dict><key>phrase</key><string>説ける</string><key>shortcut</key><string>とける</string></dict>	<!-- 説く の可能形。解ける/溶ける と並ぶと紛らわしく実用頻度も低い(同上) -->
 	<dict><key>phrase</key><string>煠でる</string><key>shortcut</key><string>ゆでる</string></dict>	<!-- 煠でる(ゆでる): 茹でる の稀な異体表記(Sudachi rank1)。語幹供給(3251)で 煠で時間 が 茹で時間 の直後に並んでいた -->
 	<dict><key>phrase</key><string>鎧う</string><key>shortcut</key><string>よろう</string></dict>	<!-- 鎧う(よろう、武装する): Sudachi のレア動詞(wc 9501)。寄る/因る の意志形 よろう と同形で、よろうかな の先頭に 鎧うかな が立っていた(ユーザ報告 3251) -->
 	<dict><key>phrase</key><string>家尼</string><key>shortcut</key><string>けに</string></dict>	<!-- 家尼(けに): Sudachi のレア語(wc 7404)。連文節で 名詞+け+に(助詞)の分割より 138 安く、てんのうけに→天皇家尼 のように 〜け+に をすべて食っていた(ユーザ報告 3250) -->
@@ -178,6 +184,7 @@
 	<dict><key>phrase</key><string>進拝</string><key>shortcut</key><string>しんぱい</string></dict>
 
 	<!-- ■ カタカナ収穫・カタカナ強調(かな/漢字の正書を勝たせる) -->
+	<dict><key>phrase</key><string>ススメる</string><key>shortcut</key><string>すすめる</string></dict>	<!-- カタカナ強調の収穫。派生(ススメて/ススメていて)が常に3位に並ぶ雑音(ユーザ指定 2741) -->
 	<dict><key>phrase</key><string>ダワ</string><key>shortcut</key><string>だわ</string></dict>	<!-- ダワ: Sudachi のカタカナ収穫(wc 2224 と極端に安い)。終助詞 だわ を食い、おすすめだわ が おすすめダワ になっていた(ユーザ報告 3262) -->
 	<dict><key>phrase</key><string>カウカ</string><key>shortcut</key><string>かうか</string></dict>	<!-- カウカ(かうか、カタカナ固有名の収穫 wc4576=異常低): 買う+か の合成に1ノードで勝ち しんぴんかうか→新品カウカ を作る -->
 	<dict><key>phrase</key><string>アルノ</string><key>shortcut</key><string>あるの</string></dict>	<!-- アルノ(あるの、伊アルノ川等のカタカナ固有名の収穫 wc4576=異常低): ある+の の合成に1ノードで勝ち あるのになあ→アルノになあ を作る -->
@@ -199,6 +206,7 @@
 	<!-- ※ イイね: 今どき流行らない書き方(イイ=カタカナ強調)。いい+ね 合成由来なので読み いいね の直接ペアで抑制(イイ感じ 等、他の読みでの イイ は温存)。※踊り字 いゝね は旧仮名・踊り字トグルのフィルタで制御(個別抑制は撤去) -->
 
 	<!-- ■ 交ぜ書き・表記ゆれの収穫(石ユ/ぜい金 等、意味のない混ぜ表記) -->
+	<dict><key>phrase</key><string>ススめる</string><key>shortcut</key><string>すすめる</string></dict>	<!-- 交ぜ書き収穫。同上 -->
 	<dict><key>phrase</key><string>感ジ</string><key>shortcut</key><string>かんじ</string></dict>	<!-- 感ジ: 感じ の交ぜ書き。使わない表記(ユーザ指定 3267) -->
 	<dict><key>phrase</key><string>キ怪</string><key>shortcut</key><string>きかい</string></dict>	<!-- キ怪(きかい): 奇怪 の交ぜ書き(Sudachi rank1、wc 3741 で 奇怪 と同値)。きかい の 3 番手に並んでいた(ユーザ指摘 3251) -->
 	<dict><key>phrase</key><string>本もの</string><key>shortcut</key><string>ほんもの</string></dict>
@@ -217,89 +225,80 @@
 	<dict><key>phrase</key><string>連れて言って</string><key>shortcut</key><string>つれていって</string></dict>	<!-- 連れて行って が正書。誤選択で学習しても復活させない(抑制は学習より強い) -->
 
 	<!-- ■ 字形が似ていて間違えやすいので抑制する旧字体・異体字・紛らわし表記(誤確定防止) -->
-	<!-- 變 は 変 の旧字体。單漢字 變(へん)が 次(じ)と合成して へんじないし→變次ないし を先頭にしていた。Sudachi の 變 を含む全 9 語を抑制(ユーザ指定 2823) -->
-	<!-- 吞(U+541F)は 呑(U+541E)の異体字(康熙字典体/中国の字形)。日本語の標準は 呑 で、字形が似ていて候補で見分けられないので 吞 を含む Sudachi の全 22 語を抑制(ユーザ指定 2820) -->
-	<!-- 讚(U+8B9A)は 讃(U+8B83)の旧字体。讃歌 と 讚歌 は候補で見分けられず誤確定しやすいので、讚 を含む Sudachi の 17 語を抑制(ユーザ指定 3202)。姓の 讚良/讚井 は人名なので残す -->
+	<!-- 字単位で決まるもの(吞→呑・讚→讃・麴→麹・曵→曳・瘦→痩・繫→繋・黑→黒・鰺→鯵・纍→累・醱→醗)は 3343 で旧字体・異体字の対応表(KanaKanjiConverter+SurfaceFilters.swift の scriptVariantToStandard、区分「見分けにくい字形」)へ移した。ここには語・読み単位で決める必要があるものだけを残す -->
 	<!-- 舘 は 館 の異体字。一般名詞の読みでは 館 だけ出す(ユーザ指定 3247)。姓(堀舘/角舘 等 172 組)と地名・団体名(飯舘/国士舘 等)は正式表記が 舘 のものがあるので触らない -->
 	<dict><key>phrase</key><string>舘</string><key>shortcut</key><string>たて</string></dict>
 	<dict><key>phrase</key><string>舘</string><key>shortcut</key><string>たち</string></dict>
 	<dict><key>phrase</key><string>舘</string><key>shortcut</key><string>だて</string></dict>
 	<dict><key>phrase</key><string>旧舘</string><key>shortcut</key><string>きゅうかん</string></dict>
 	<dict><key>phrase</key><string>弊舘</string><key>shortcut</key><string>へいかん</string></dict>
-	<dict><key>phrase</key><string>画讚</string><key>shortcut</key><string>がさん</string></dict>
-	<dict><key>phrase</key><string>讚</string><key>shortcut</key><string>さん</string></dict>
-	<dict><key>phrase</key><string>讚歌</string><key>shortcut</key><string>さんか</string></dict>
-	<dict><key>phrase</key><string>讚仰</string><key>shortcut</key><string>さんぎょう</string></dict>
-	<dict><key>phrase</key><string>讚辞</string><key>shortcut</key><string>さんじ</string></dict>
-	<dict><key>phrase</key><string>讚歎</string><key>shortcut</key><string>さんたん</string></dict>
-	<dict><key>phrase</key><string>讚美</string><key>shortcut</key><string>さんび</string></dict>
-	<dict><key>phrase</key><string>讚美歌</string><key>shortcut</key><string>さんびか</string></dict>
-	<dict><key>phrase</key><string>称讚</string><key>shortcut</key><string>しょうさん</string></dict>
-	<dict><key>phrase</key><string>賞讚</string><key>shortcut</key><string>しょうさん</string></dict>
-	<dict><key>phrase</key><string>自讚</string><key>shortcut</key><string>じさん</string></dict>
-	<dict><key>phrase</key><string>絶讚</string><key>shortcut</key><string>ぜっさん</string></dict>
-	<dict><key>phrase</key><string>讚える</string><key>shortcut</key><string>たたえる</string></dict>
-	<dict><key>phrase</key><string>熱讚</string><key>shortcut</key><string>ねっさん</string></dict>
-	<dict><key>phrase</key><string>褒め讚える</string><key>shortcut</key><string>ほめたたえる</string></dict>
-	<dict><key>phrase</key><string>誉め讚える</string><key>shortcut</key><string>ほめたたえる</string></dict>
-	<dict><key>phrase</key><string>礼讚</string><key>shortcut</key><string>らいさん</string></dict>
-	<dict><key>phrase</key><string>あわせ吞む</string><key>shortcut</key><string>あわせのむ</string></dict>
-	<dict><key>phrase</key><string>併せ吞む</string><key>shortcut</key><string>あわせのむ</string></dict>
-	<dict><key>phrase</key><string>鵜吞み</string><key>shortcut</key><string>うのみ</string></dict>
-	<dict><key>phrase</key><string>ぐい吞み</string><key>shortcut</key><string>ぐいのみ</string></dict>
-	<dict><key>phrase</key><string>剣吞</string><key>shortcut</key><string>けんのん</string></dict>
-	<dict><key>phrase</key><string>乳吞</string><key>shortcut</key><string>ちのみ</string></dict>
-	<dict><key>phrase</key><string>吞馬</string><key>shortcut</key><string>どんば</string></dict>
-	<dict><key>phrase</key><string>吞み下す</string><key>shortcut</key><string>のみくだす</string></dict>
-	<dict><key>phrase</key><string>吞み込み</string><key>shortcut</key><string>のみこみ</string></dict>
-	<dict><key>phrase</key><string>吞みこむ</string><key>shortcut</key><string>のみこむ</string></dict>
-	<dict><key>phrase</key><string>吞み込む</string><key>shortcut</key><string>のみこむ</string></dict>
-	<dict><key>phrase</key><string>吞みこめる</string><key>shortcut</key><string>のみこめる</string></dict>
-	<dict><key>phrase</key><string>吞み込める</string><key>shortcut</key><string>のみこめる</string></dict>
-	<dict><key>phrase</key><string>吞み干す</string><key>shortcut</key><string>のみほす</string></dict>
-	<dict><key>phrase</key><string>吞み物</string><key>shortcut</key><string>のみもの</string></dict>
-	<dict><key>phrase</key><string>吞む</string><key>shortcut</key><string>のむ</string></dict>
-	<dict><key>phrase</key><string>吞める</string><key>shortcut</key><string>のめる</string></dict>
-	<dict><key>phrase</key><string>吞気</string><key>shortcut</key><string>のんき</string></dict>
-	<dict><key>phrase</key><string>併吞</string><key>shortcut</key><string>へいどん</string></dict>
-	<dict><key>phrase</key><string>魔吞</string><key>shortcut</key><string>まのん</string></dict>
-	<dict><key>phrase</key><string>湯吞</string><key>shortcut</key><string>ゆのみ</string></dict>
-	<dict><key>phrase</key><string>湯吞み</string><key>shortcut</key><string>ゆのみ</string></dict>
-	<dict><key>phrase</key><string>鰺</string><key>shortcut</key><string>あじ</string></dict>	<!-- 鯵 の異体字。字形が似て選び間違える(2642) -->
 	<dict><key>phrase</key><string>瘠せる</string><key>shortcut</key><string>やせる</string></dict>	<!-- 痩せる の異体字(瘠)。字形が似て選び間違える(ユーザ指定 2731) -->
-	<dict><key>phrase</key><string>瘦せる</string><key>shortcut</key><string>やせる</string></dict>	<!-- 痩せる の旧字体(瘦)。同上 -->
-	<dict><key>phrase</key><string>少い</string><key>shortcut</key><string>すくない</string></dict>	<!-- 少ない の旧送り仮名。派生 少く/少かった が 少なく の隣に並び紛らわしい(ユーザ指定 2732) -->
-	<dict><key>phrase</key><string>繫ぐ</string><key>shortcut</key><string>つなぐ</string></dict>	<!-- 繋ぐ の異体字(繫)。字形が同じに見え 繋ぎましょ/繫ぎましょ が並ぶ(ユーザ指定 2736) -->
-	<dict><key>phrase</key><string>継なぐ</string><key>shortcut</key><string>つなぐ</string></dict>	<!-- 継ぐ(つぐ)の非標準送り仮名。継なぎましょ 等の派生を出さない(ユーザ指定 2736) -->
-	<dict><key>phrase</key><string>可</string><key>shortcut</key><string>かなり</string></dict>	<!-- 可なり の縮約(Sudachi rank0)。副詞 かなり の変換で 可 が先頭に出てストレス源(ユーザ指定 2736) -->
-	<dict><key>phrase</key><string>釈ける</string><key>shortcut</key><string>とける</string></dict>	<!-- 解ける の稀な表記。氷が釈けて が 氷が解けて の直後に並び紛らわしい(ユーザ指定 2739) -->
-	<dict><key>phrase</key><string>説ける</string><key>shortcut</key><string>とける</string></dict>	<!-- 説く の可能形。解ける/溶ける と並ぶと紛らわしく実用頻度も低い(同上) -->
-	<dict><key>phrase</key><string>相する</string><key>shortcut</key><string>そうする</string></dict>	<!-- 文語サ変(人相を見る)。そうしちゃう の候補に 相しちゃう が並び雑音(ユーザ指定 2740) -->
-	<dict><key>phrase</key><string>草する</string><key>shortcut</key><string>そうする</string></dict>	<!-- 文語サ変(草稿を書く)。同上 -->
-	<dict><key>phrase</key><string>ススメる</string><key>shortcut</key><string>すすめる</string></dict>	<!-- カタカナ強調の収穫。派生(ススメて/ススメていて)が常に3位に並ぶ雑音(ユーザ指定 2741) -->
-	<dict><key>phrase</key><string>ススめる</string><key>shortcut</key><string>すすめる</string></dict>	<!-- 交ぜ書き収穫。同上 -->
-	<dict><key>phrase</key><string>纍</string><key>shortcut</key><string>るい</string></dict>	<!-- 累 の異体字。字形が似て選び間違える -->
-	<dict><key>phrase</key><string>宣野座</string><key>shortcut</key><string>ぎのざ</string></dict>	<!-- 正しくは 宜野座(沖縄県宜野座村)。宣(せん)と宜(ぎ)の字形類似で辞書収穫にも混入した誤表記 -->
-	<dict><key>phrase</key><string>大睦</string><key>shortcut</key><string>たいりく</string></dict>	<!-- 大陸 と字形類似のレア人名収穫。たいりく で出したい場面が無い -->
-	<dict><key>phrase</key><string>吞む</string><key>shortcut</key><string>のむ</string></dict>	<!-- 呑む に似る(吞 は 呑 の正字体。ほぼ同形で見分け困難) -->
-	<dict><key>phrase</key><string>醱酵</string><key>shortcut</key><string>はっこう</string></dict>	<!-- 醗酵 に似る(醱 は 醗 の旧字体。使いたいのは 醗酵) -->
-	<dict><key>phrase</key><string>黑</string><key>shortcut</key><string>くろ</string></dict>	<!-- 黒 に似る(黑 は 黒 の旧字体) -->
 	<dict><key>phrase</key><string>摸型</string><key>shortcut</key><string>もけい</string></dict>	<!-- 模型 に似る(摸 は 模 と手偏/木偏違いの別字) -->
-	<dict><key>phrase</key><string>曵く</string><key>shortcut</key><string>ひく</string></dict>	<!-- 曳く の異体字。ひける の候補を 曳ける/曵ける の二重で汚す(ユーザ指定 2771)。活用形は基底抑制で消える -->
-	<dict><key>phrase</key><string>曵ける</string><key>shortcut</key><string>ひける</string></dict>	<!-- 同上(辞書に可能動詞の行が直接あるため別途抑制) -->
-	<dict><key>phrase</key><string>麴</string><key>shortcut</key><string>こうじ</string></dict>	<!-- 麹 の正字(康熙字典体)。現代日本語の食品・醸造用途は 麹 で、字形が似て混在しやすい(ユーザ指定 2784)。人名 麴嘉/麴雍 は残す。麴塵 は misc に 麹塵 を追加した上で抑制 -->
-	<dict><key>phrase</key><string>麴</string><key>shortcut</key><string>きく</string></dict>
-	<dict><key>phrase</key><string>黒麴</string><key>shortcut</key><string>くろこうじ</string></dict>
-	<dict><key>phrase</key><string>麴漬け</string><key>shortcut</key><string>こうじづけ</string></dict>
-	<dict><key>phrase</key><string>麴町</string><key>shortcut</key><string>こうじまち</string></dict>	<!-- 現在の正式表記は 麹町 -->
-	<dict><key>phrase</key><string>麴屋</string><key>shortcut</key><string>こうじや</string></dict>
-	<dict><key>phrase</key><string>米麴</string><key>shortcut</key><string>こめこうじ</string></dict>
-	<dict><key>phrase</key><string>酒麴</string><key>shortcut</key><string>さけこうじ</string></dict>
-	<dict><key>phrase</key><string>製麴</string><key>shortcut</key><string>せいきく</string></dict>
-	<dict><key>phrase</key><string>フスマ麴</string><key>shortcut</key><string>ふすまこうじ</string></dict>
-	<dict><key>phrase</key><string>麴塵</string><key>shortcut</key><string>あおいろ</string></dict>	<!-- 麹塵 は辞書に無いため misc で あおいろ/きくじん→麹塵 を補充 -->
+	<dict><key>phrase</key><string>麴</string><key>shortcut</key><string>きく</string></dict>	<!-- 標準字体の 麹(きく) が辞書に無く、字単位の抑制(対応表)が効かないので語で抑制する(3343) -->
+	<dict><key>phrase</key><string>あわせ吞む</string><key>shortcut</key><string>あわせのむ</string></dict>	<!-- 標準字体の あわせ呑む が辞書に無く、字単位の抑制(対応表)が効かないので語で抑制する(3343) -->
+	<dict><key>phrase</key><string>フスマ麴</string><key>shortcut</key><string>ふすまこうじ</string></dict>	<!-- 標準字体の フスマ麹 が辞書に無く、字単位の抑制(対応表)が効かないので語で抑制する(3343) -->
+	<dict><key>phrase</key><string>吞み物</string><key>shortcut</key><string>のみもの</string></dict>	<!-- 標準字体の 呑み物 が辞書に無く、字単位の抑制(対応表)が効かないので語で抑制する(3343) -->
+	<dict><key>phrase</key><string>画讚</string><key>shortcut</key><string>がさん</string></dict>	<!-- 標準字体の 画讃 が辞書に無く、字単位の抑制(対応表)が効かないので語で抑制する(3343) -->
+	<dict><key>phrase</key><string>熱讚</string><key>shortcut</key><string>ねっさん</string></dict>	<!-- 標準字体の 熱讃 が辞書に無く、字単位の抑制(対応表)が効かないので語で抑制する(3343) -->
+	<dict><key>phrase</key><string>魔吞</string><key>shortcut</key><string>まのん</string></dict>	<!-- 標準字体の 魔呑 が辞書に無く、字単位の抑制(対応表)が効かないので語で抑制する(3343) -->
+	<!-- □ 対応表へ移したもの(字単位の抑制で同じ効果。3343) -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>讚</string><key>shortcut</key><string>さん</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>讚歌</string><key>shortcut</key><string>さんか</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>讚仰</string><key>shortcut</key><string>さんぎょう</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>讚辞</string><key>shortcut</key><string>さんじ</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>讚歎</string><key>shortcut</key><string>さんたん</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>讚美</string><key>shortcut</key><string>さんび</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>讚美歌</string><key>shortcut</key><string>さんびか</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>称讚</string><key>shortcut</key><string>しょうさん</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>賞讚</string><key>shortcut</key><string>しょうさん</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>自讚</string><key>shortcut</key><string>じさん</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>絶讚</string><key>shortcut</key><string>ぜっさん</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>讚える</string><key>shortcut</key><string>たたえる</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>褒め讚える</string><key>shortcut</key><string>ほめたたえる</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>誉め讚える</string><key>shortcut</key><string>ほめたたえる</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>礼讚</string><key>shortcut</key><string>らいさん</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>併せ吞む</string><key>shortcut</key><string>あわせのむ</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>鵜吞み</string><key>shortcut</key><string>うのみ</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>ぐい吞み</string><key>shortcut</key><string>ぐいのみ</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>剣吞</string><key>shortcut</key><string>けんのん</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>乳吞</string><key>shortcut</key><string>ちのみ</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>吞馬</string><key>shortcut</key><string>どんば</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>吞み下す</string><key>shortcut</key><string>のみくだす</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>吞み込み</string><key>shortcut</key><string>のみこみ</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>吞みこむ</string><key>shortcut</key><string>のみこむ</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>吞み込む</string><key>shortcut</key><string>のみこむ</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>吞みこめる</string><key>shortcut</key><string>のみこめる</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>吞み込める</string><key>shortcut</key><string>のみこめる</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>吞み干す</string><key>shortcut</key><string>のみほす</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>吞む</string><key>shortcut</key><string>のむ</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>吞める</string><key>shortcut</key><string>のめる</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>吞気</string><key>shortcut</key><string>のんき</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>併吞</string><key>shortcut</key><string>へいどん</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>湯吞</string><key>shortcut</key><string>ゆのみ</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>湯吞み</string><key>shortcut</key><string>ゆのみ</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>鰺</string><key>shortcut</key><string>あじ</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>瘦せる</string><key>shortcut</key><string>やせる</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>繫ぐ</string><key>shortcut</key><string>つなぐ</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>纍</string><key>shortcut</key><string>るい</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>吞む</string><key>shortcut</key><string>のむ</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>醱酵</string><key>shortcut</key><string>はっこう</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>黑</string><key>shortcut</key><string>くろ</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>曵く</string><key>shortcut</key><string>ひく</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>曵ける</string><key>shortcut</key><string>ひける</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>麴</string><key>shortcut</key><string>こうじ</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>黒麴</string><key>shortcut</key><string>くろこうじ</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>麴漬け</string><key>shortcut</key><string>こうじづけ</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>麴町</string><key>shortcut</key><string>こうじまち</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>麴屋</string><key>shortcut</key><string>こうじや</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>米麴</string><key>shortcut</key><string>こめこうじ</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>酒麴</string><key>shortcut</key><string>さけこうじ</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>製麴</string><key>shortcut</key><string>せいきく</string></dict> -->
+	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>麴塵</string><key>shortcut</key><string>あおいろ</string></dict> -->
 
 	<!-- ■ 現代的に流行っていない言い方(古語・文語・旧仮名・非標準表記) -->
+	<dict><key>phrase</key><string>少い</string><key>shortcut</key><string>すくない</string></dict>	<!-- 少ない の旧送り仮名。派生 少く/少かった が 少なく の隣に並び紛らわしい(ユーザ指定 2732) -->
+	<dict><key>phrase</key><string>相する</string><key>shortcut</key><string>そうする</string></dict>	<!-- 文語サ変(人相を見る)。そうしちゃう の候補に 相しちゃう が並び雑音(ユーザ指定 2740) -->
+	<dict><key>phrase</key><string>草する</string><key>shortcut</key><string>そうする</string></dict>	<!-- 文語サ変(草稿を書く)。同上 -->
 	<dict><key>phrase</key><string>其麼</string><key>shortcut</key><string>そんな</string></dict>	<!-- 其麼(そんな): 白話文由来の当て字(什麼/怎麼 と同族)。読めないので候補に並ぶと困る(ユーザ指定)。かな そんな は wc4833/rank0 で基底が健在なので供給には影響しない。抑制だけ入れると そんなことないのに が候補ゼロになるため、keepKana の準体助詞クラスタ剥がしと同時に入れた(2584) -->
 	<dict><key>phrase</key><string>六ヶ敷い</string><key>shortcut</key><string>むつかしい</string></dict>
 	<dict><key>phrase</key><string>満てる</string><key>shortcut</key><string>みてる</string></dict>	<!-- 満てる(みてる): 文語 満つ の口語化した自動詞(=満ちる)。現代語では 満ちる/満たす しか使わず、みてる rank0 の唯一の辞書語として 見てる(派生)を押しのけ、みてないか に 満てないか を立てていた(ユーザ指摘 2820) -->	<!-- 六ヶ敷い(むつかしい): 難しい の戯書的な当て字。数詞+ケ 型の辞書語の精査で発見(ユーザ指定 2815) -->

@@ -91,11 +91,12 @@ enum ScriptVariantSuppressionCategory: String, CaseIterable {
     case itaiji            // 異体字(印刷標準字体レベルの差): 飜→翻、每→毎、步→歩
     case ryakuji           // 略字: 仝→同、卆→卒
     case confusable        // 紛らわしい別字: 聯→連、聨→連
+    case lookalike         // 見分けにくい字形(旧字体・異体字のうち候補欄で区別できないもの): 嚙→噛、吞→呑、讚→讃(3343)
     case personNameVariant // 人名で生きている異体字: 邊→辺、龍→竜、嶋→島(初期設定オフ)
 
     // 初期設定で抑制する分類(人名で生きている異体字だけオフ)
     static let defaultEnabled: Set<ScriptVariantSuppressionCategory> = [
-        .kyujitai, .itaiji, .ryakuji, .confusable
+        .kyujitai, .itaiji, .ryakuji, .confusable, .lookalike
     ]
 
     var settingsKey: String {

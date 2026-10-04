@@ -458,6 +458,7 @@ final class KeyboardViewController: UIInputViewController {
         static let scriptVariantSuppressItaiji = "scriptVariantSuppressItaiji"
         static let scriptVariantSuppressRyakuji = "scriptVariantSuppressRyakuji"
         static let scriptVariantSuppressConfusable = "scriptVariantSuppressConfusable"
+        static let scriptVariantSuppressLookalike = "scriptVariantSuppressLookalike"
         static let scriptVariantSuppressPersonNameVariant = "scriptVariantSuppressPersonNameVariant"
         static let iterationMarkCandidatesEnabled = "iterationMarkCandidatesEnabled"
         static let latinLexiconEnglishEnabled = "latinLexiconEnglishEnabled"
