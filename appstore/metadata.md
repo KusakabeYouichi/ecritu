@@ -79,7 +79,7 @@ Full Access is used solely to share settings and the learned vocabulary between 
 
 ## 輸出コンプライアンス(暗号化)
 
-ITSAppUsesNonExemptEncryption = NO で申告済み。3260 以降、アプリ自身は暗号化を行なわない(連絡先対応表の保護は iOS のファイル保護に委ねる)。旧版の保存物を読むための CryptoKit(AES-GCM)の復号だけが移行用に残る。通信・DRM・独自暗号は無く、免除に該当。ASC で質問が出た場合は「免除に該当」を選ぶ。
+ITSAppUsesNonExemptEncryption = NO で申告済み。アプリ自身は暗号化を一切行なわない(連絡先対応表の保護は iOS のファイル保護に委ねる。3260)。旧版の暗号化済み保存物を読む CryptoKit(AES-GCM)の移行コードも 3317 で撤去し、CryptoKit はもう使っていない。通信・DRM・独自暗号は無く、免除に該当。ASC で質問が出た場合は「免除に該当」を選ぶ。
 
 ## 年齢レーティング
 

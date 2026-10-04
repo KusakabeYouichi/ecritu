@@ -1,11 +1,10 @@
-import CryptoKit
 import Foundation
 import Security
 
-// 連絡先キャッシュの暗号化(2026-08-31)。氏名・読みの対応表を共有defaultsへ平文で
-// 置かない(端末外送信はもともと無いが、バックアップ等での可読性を断つ)。
-// 鍵は両ターゲット共有のKeychain(kSecAttrAccessibleAfterFirstUnlock)に置き、
-// 本体は AES-GCM で封緘して App Group defaults に保存する。
+// 連絡先キャッシュ(氏名・読みの対応表)の保存と読み出し。App Group のファイルに置き、保護は iOS の
+// ファイル保護(completeUntilFirstUserAuthentication)に委ね、バックアップ対象外にする(3260)。
+// アプリ自身は暗号化を行なわない。2026-08-31〜3259 の自前 AES-GCM 封緘+Keychain 鍵はやめ、旧版の
+// 封緘物を読む移行も 3317 で撤去した(CryptoKit は使わない。残るのは旧 Keychain 鍵の削除だけ)。
 // 以前はアプリ側(ContentView+Bootstrap.swift)と拡張側(KanaKanjiTypes.swift)に同じ enum を
 // 2 重に持っていた。両ターゲットに同梱する 1 ファイルへ集約(2805 リファクタ)
 enum ContactCacheCipher {

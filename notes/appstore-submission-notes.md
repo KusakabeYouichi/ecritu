@@ -13,8 +13,8 @@
 > contact names to conversion candidates on device; no data leaves the
 > device. The contact cache stored in the App Group is protected by iOS
 > Data Protection (completeUntilFirstUserAuthentication) and excluded from
-> backup; the app itself performs no encryption (CryptoKit remains only to
-> read data saved by older versions), which is why the app declares
+> backup; the app itself performs no encryption (it no longer uses CryptoKit at all),
+> which is why the app declares
 > ITSAppUsesNonExemptEncryption = NO.
 >
 > (正本は appstore/metadata.md の「審査ノート」。ここは下書きの控え。3260 で暗号化をやめた記述に更新、3299)
@@ -43,7 +43,7 @@
 
 - 連絡先キャッシュ(読み→名前の対応表)は App Group のファイルに置き、保護は iOS のファイル保護
   (completeUntilFirstUserAuthentication)に委ねる。バックアップ対象外。
-- CryptoKit(AES-GCM)は、旧版が保存した暗号化済みの対応表を読み出す移行のためだけに残る(復号のみ)。
+- CryptoKit(AES-GCM)で旧版の暗号化済み対応表を読み出す移行コードは 3317 で撤去した。CryptoKit はもう使っていない。
 
 通信も認証も行わない(そもそもネットワークコードが無い)。Apple の輸出規制の免除(OS 提供の
 暗号の利用/付随的な用途)に該当するため NO とする。正本は appstore/metadata.md の「輸出コンプライアンス」。
