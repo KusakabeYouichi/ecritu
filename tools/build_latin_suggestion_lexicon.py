@@ -6,7 +6,7 @@ wordfreq top lists (en/de/it) and Lexique 3.83 (fr).
 en/de/it の頻度源を wordfreq(データ CC BY-SA 4.0)へ移行。wordfreq は全語を小文字化し
 ドイツ語の ß も ss に正規化するため、de の表示形は Tatoeba 独文(CC-BY 2.0 FR)の
 ケース付き出現数(旧 Leipzig 実装と同じ「優勢表記+大文字は3倍超のみ」規則)と
-deWiktionary 見出し(CC BY-SA)のフォールバックで復元する。
+deWiktionary 見出し(CC BY-SA 4.0)のフォールバックで復元する。
 
 Sources (downloaded separately, not committed; tmp/latin_sources/ 推奨):
 - wordfreq: python3 -m venv venv && venv/bin/pip install wordfreq &&
@@ -33,7 +33,7 @@ Cleaning policy (v1):
 Attribution (アプリの謝辞に記載):
 - wordfreq (data: CC BY-SA 4.0) — R. Speer ほか(SUBTLEX 等の元コーパス作者のクレジット必須)
 - Tatoeba (CC-BY 2.0 FR) — 独語表示形の復元に使用
-- Wiktionary (CC BY-SA) — 独語表示形のフォールバックに使用
+- Wiktionary (CC BY-SA 4.0) — 独語表示形のフォールバックに使用
 - Lexique 3.83 (CC BY-SA 4.0) — B. New, C. Pallier
 """
 
