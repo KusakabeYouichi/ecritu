@@ -224,7 +224,6 @@ struct KeyboardRootView: View {
     let kaomojiFontSize: CGFloat = 18
     let kaomojiMinInterItemSpacingMultiplier: CGFloat = 1.2
     let kaomojiCategoryButtonWidth: CGFloat = 40
-    let kaomojiSearchReadingDisplayLimit = 120
 
     var showsKanaConversionCandidates: Bool {
         inputMode == .kana && (!composingText.isEmpty || showsParenthesesWrapper)

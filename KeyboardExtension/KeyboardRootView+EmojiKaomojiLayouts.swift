@@ -67,11 +67,10 @@ extension KeyboardRootView {
         }
     }
 
+    // 「全」では全部の読み(816 個)を出す。以前は先頭 120 個で切っていて、か行の途中から後ろの読みは「全」から
+    // たどれず、切れている表示も無かった(ユーザ指摘)。一覧は遅延描画なので見えている分しか作らない
     var kaomojiSearchReadings: [String] {
-        return Array(
-            KaomojiCatalog.readings(prefix: selectedKaomojiReadingPrefix)
-                .prefix(kaomojiSearchReadingDisplayLimit)
-        )
+        KaomojiCatalog.readings(prefix: selectedKaomojiReadingPrefix)
     }
 
     var selectedKaomojiSearchResults: [String] {
@@ -352,7 +351,8 @@ extension KeyboardRootView {
                 Group {
                     if isKaomojiSearchCategorySelected {
                         ScrollView(.vertical, showsIndicators: false) {
-                        VStack(alignment: .leading, spacing: keyboardRowSpacing) {
+                        // 読みを全部(816 個)並べても見えている分しか作らないよう、外側も遅延の並びにする
+                        LazyVStack(alignment: .leading, spacing: keyboardRowSpacing) {
                             Text("1) 上の文字を選ぶ  2) 読みを選ぶ  3) 下の顔文字をタップ")
                                 .font(.system(size: 11, weight: .semibold, design: .rounded))
                                 .foregroundStyle(KeyboardThemePalette.keyLabelSecondary)
