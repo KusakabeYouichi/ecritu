@@ -51,7 +51,7 @@ Safari のドメイン表示ピルもツールバーも写っていない。音�
 2段階フリックは『や』キーを左へフリック(『)→指を離さず上へ、で `(` が出る。
 **05 の設定**: `numberLitreSymbol=script`(ℓ)。製品の初期設定は `l`。
 
-05 の数値(フランスのワイン生産量 36 200 000 hℓ)の出典は、フランス政府の農業・食料主権省(Ministère de l’Agriculture et de la Souveraineté alimentaire)の統計データ(ユーザ確認 2026-10-04)。
+05 の数値(フランスのワイン生産量 36 200 000 hℓ)の出典は、フランス政府の農業・食料主権省(Ministère de l’Agriculture et de la Souveraineté alimentaire)の統計データ(2025 年の生産量の予測。ユーザ確認 2026-10-04)。経緯をたどれる報道: Reuters 2025-11-07「France's 2025 wine output forecast at historic lows for second year」https://www.reuters.com/business/frances-2025-wine-output-forecast-historic-lows-second-year-2025-11-07/(取得には認証が要り、記事内の数字はこちらでは未照合)。
 
 ## 撮影用の入力ページ
 
