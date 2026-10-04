@@ -3677,6 +3677,15 @@ extension KanaKanjiConverter {
                     (0x3041...0x3096).contains(prevLast.value) {
                     total += Self.multiClauseFinalParticleKanjiPenalty
                 }
+                // 〜ので の直後で文末の しょう を漢字 1 語(章/省/小)にしない。なのでしょう が 文頭 な の高コストで
+                // なので+章 になっていた(3341、ユーザ報告)。なので+しょう は な+の+でしょう の切り違え
+                if nodes[idx].reading == "しょう",
+                    KanaKanjiConverter.isAllKanjiSurface(nodes[idx].surface),
+                    !nodes[idx].isCurated,
+                    backPointer[idx] >= 0,
+                    nodes[backPointer[idx]].surface.hasSuffix("ので") {
+                    total += Self.multiClauseFinalParticleKanjiPenalty
+                }
                 let isParticleFinal = nodes[idx].surface == nodes[idx].reading
                     && (Self.multiClauseCaseParticleSurfaces.contains(nodes[idx].surface)
                         || Self.multiClauseFinalParticleReadings.contains(nodes[idx].reading))
