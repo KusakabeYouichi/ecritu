@@ -48,6 +48,11 @@ information. Keep the two in sync.
 - https://ja.wikipedia.org/ — CC BY-SA 4.0 / GFDL. Bundled tables are
   aggregated frequency statistics only (no article text); to the extent
   they are considered an adaptation they are provided under CC BY-SA 4.0
+- Source: Wikimedia database dump of Japanese Wikipedia, jawiki 2026-06-01
+  (pages-articles, first part "p1"; newest revision in the file 2026-06-01T09:58Z),
+  https://dumps.wikimedia.org/jawiki/ — downloaded 2026-07-02. The file holds
+  80,591 pages: 79,122 articles and 1,469 project/category/template pages
+  (no talk or user pages)
 
 ## Unicode CLDR (emoji readings)
 
