@@ -20353,6 +20353,17 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertFalse(list.contains("乾麵"), "\(list)")
     }
 
+    // 3338: 嚙(常用漢字表の字形)は 噛 と見分けにくいので異体字の区分で抑制する(麵 と同じ扱い。ユーザ指定)
+    func testKamuVariantSuppressed() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let kamu = converter.candidates(for: "かむ", limit: 8, systemCandidateMode: .surface)
+        XCTAssertTrue(kamu.contains("噛む"), "\(kamu)")
+        XCTAssertFalse(kamu.contains { $0.contains("嚙") }, "\(kamu)")
+        let kande = converter.multiClauseCandidates(for: "がむをかんで", systemCandidateMode: .surface)
+        XCTAssertFalse(kande.contains { $0.contains("嚙") }, "\(kande)")
+    }
+
     // 3278: 常習性 を登録
     func testJoushuuseiRegistered() throws {
         try prepareRealLMDictionary()
