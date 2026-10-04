@@ -29,9 +29,11 @@ This app includes word frequency lists for Latin-script suggestions
   Google Books Ngrams, and the other sources listed in the wordfreq
   documentation. SUBTLEX is freely available data.
 - Tatoeba (German sentences; used only to restore German capitalization
-  and ß spellings) — https://tatoeba.org/ — Licensed under CC BY 2.0 FR.
+  and ß spellings) — https://tatoeba.org/ — Licensed under CC BY 2.0 FR
+  (https://creativecommons.org/licenses/by/2.0/fr/).
 - Wiktionary (German entry titles; fallback for German display forms) —
-  https://de.wiktionary.org/ — Licensed under CC BY-SA.
+  https://de.wiktionary.org/ — Licensed under CC BY-SA 4.0
+  (https://creativecommons.org/licenses/by-sa/4.0/).
 - Lexique 3.83 (French) — B. New, C. Pallier.
   http://www.lexique.org/ — Licensed under CC BY-SA 4.0.
 
