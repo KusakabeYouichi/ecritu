@@ -20418,6 +20418,19 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(converter.candidates(for: "さんか", limit: 40, systemCandidateMode: .surface).contains("讚歌"))
     }
 
+    // 3365: しています/していない を単独で打つと 指定ます/子弟ない が先頭だった(前の語と切って打つのはよくある打ち方)。
+    // LM は い+ます で数えていて て→います/いない が高く、文頭の して が未知語扱いだった。て/で+います/いない の組に加点
+    func testRegressionRealLMShiteimasu() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for (reading, expected) in [("しています", "しています"), ("していない", "していない"), ("していますか", "していますか"),
+                                    ("していました", "していました"), ("ここにいます", "ここにいます"), ("いますぐ", "今すぐ")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "\(reading) \(multi)")
+        }
+        XCTAssertEqual(converter.candidates(for: "よんでいます", limit: 2, systemCandidateMode: .surface).first, "読んでいます")
+    }
+
     // 3363: ミシュランの星付きの料理店名を compenser に追加(ユーザ提供の資料)。一般の変換を乗っ取る読みは入れていない
     func testRegressionRealLMMichelinRestaurants() throws {
         try prepareRealLMDictionary()
