@@ -17,6 +17,10 @@ monnaies.plist			# [通貨]
 astronomique.plist		# [天文] 恒星の固有名(IAU 承認名。カタカナ+原語、等級別、コメントに星座)と 88 星座(和名+IAU ラテン語名)。作者編纂(2026-09-13)
 emoji.plist				# [絵文字] CLDR ja アノテーション由来(SudachiPyで読み化+手動整備。2026-08-31 に全読みのCLDR帰着を検証済み、f8c4c10)
 personnalités.plist	# [人名]
+médicaux.plist			# [病名] ICD10対応標準病名マスター(MEDIS-DC 配布、標準病名マスター作業班 編集。byomei.org の ICD 階層病名ブラウザから取得)の病名 27,662 件を「梅毒性/大動脈弁閉鎖不全症」の粒度で機械的に切り分け、読みは辞書+macOS 解析の突き合わせのうえ AI が医学の慣用読みで全件点検(2026-10-05)。
+						#   MEDIS の条件: 医療機関以外での使用・配布は使用許諾申請が要り、改変して配るなら「MEDIS-DCの標準マスターを利用」と明記する。
+						#   許諾が下りるまでは ECRITU_INCLUDE_MEDICAUX=1(Config/Signing.local.xcconfig)の手元ビルドだけで入る。提出前検査(verify_archive_artifacts.sh)は入っていれば止める
+						#   入り方: sqlite には Premier の後ろ(同じ読みでは一般語より後ろ・弱いコスト)。実行時の補助語彙には読みがぶつからない病名だけ足す(tools/merge_medicaux_runtime_vocab.py)
 bushu.plist				# [部首] 漢字ピッカーの部首→位置分類表(拡張に同梱)。部首名は慣用名、位置分類は字形から判断(作者が全件確認)、画数は事実。部首番号のみ Unihan kRSKangxi と照合。KANJIDIC 等からの取り込みではない(2026-09-04 確認)
 
 # ---AIが使う

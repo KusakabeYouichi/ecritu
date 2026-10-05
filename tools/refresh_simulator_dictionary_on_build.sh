@@ -54,6 +54,14 @@ REF_PERSONNALITES_PLIST="$ROOT_DIR/references/personnalités.plist"
 REF_DRAPEAUX_PLIST="$ROOT_DIR/references/drapeaux.plist"
 REF_MONNAIES_PLIST="$ROOT_DIR/references/monnaies.plist"
 REF_ASTRONOMIQUE_PLIST="$ROOT_DIR/references/astronomique.plist"
+# 病名(標準病名マスター由来)。配布には MEDIS の使用許諾が要るため、許諾が下りるまでは
+# ECRITU_INCLUDE_MEDICAUX=1(Config/Signing.local.xcconfig など手元の設定)のときだけ入れる。
+# 補助語彙(vin/it 等)と違い ÉcrituSecondVocab には混ぜず、sqlite に Premier の後ろで足す
+# (偽性/犠牲・拘禁性/抗菌性 のように読みがぶつかる 188 語で一般語を押しのけないため)。
+REF_MEDICAUX_PLIST="$ROOT_DIR/references/médicaux.plist"
+TMP_MEDICAUX="$ROOT_DIR/tmp/ÉcrituMedicauxVocab.json"
+TMP_MEDICAUX_STATE="$ROOT_DIR/tmp/.medicaux.state"
+INCLUDE_MEDICAUX="${ECRITU_INCLUDE_MEDICAUX:-0}"
 REF_EMOJI_PLIST="$ROOT_DIR/references/emoji.plist"
 REF_ADJECTIVE_GARU_ALLOWLIST="$ROOT_DIR/references/adjective_garu_allowlist.json"
 REF_WORD_LM_GZ="$ROOT_DIR/references/word_lm.json.gz"
@@ -178,6 +186,14 @@ python3 tools/build_second_vocab_from_references.py \
   --output "$TMP_SECOND" \
   --output-inflections "$TMP_SECOND_INFLECTIONS"
 
+if is_truthy "$INCLUDE_MEDICAUX"; then
+  python3 tools/build_second_vocab_from_references.py \
+    --input-plist "$REF_MEDICAUX_PLIST" \
+    --output "$TMP_MEDICAUX"
+else
+  rm -f "$TMP_MEDICAUX"
+fi
+
 # sacoche = コンテナアプリの「追加語彙」に初期表示される実語彙(従来の void の可視分)。
 python3 tools/build_second_vocab_from_references.py \
   --input-plist "$REF_SACOCHE_PLIST" \
@@ -209,7 +225,14 @@ python3 tools/build_second_vocab_from_references.py \
 # 正規化・重複排除を拡張と同じにするため、拡張のソース 3 本をいっしょに swiftc でコンパイルする。
 second_compact_stamp="$ROOT_DIR/tmp/.ÉcrituSecondVocab.eccs.src.sha"
 second_compact_tool="$ROOT_DIR/tmp/build_second_vocab_compact"
-second_compact_src_sha="$(shasum -a 256 "$TMP_SECOND" tools/build_second_vocab_compact.swift \
+# 病名を入れるときは、読みが既存の語とぶつからない病名だけを畳む元に足す(tools/merge_medicaux_runtime_vocab.py 参照)
+second_compact_input="$TMP_SECOND"
+if [[ -f "$TMP_MEDICAUX" && -f "$TMP_PREMIER" ]]; then
+  second_compact_input="$ROOT_DIR/tmp/ÉcrituSecondVocabRuntime.json"
+  python3 tools/merge_medicaux_runtime_vocab.py --second "$TMP_SECOND" --premier "$TMP_PREMIER" \
+    --medicaux "$TMP_MEDICAUX" --output "$second_compact_input"
+fi
+second_compact_src_sha="$(shasum -a 256 "$second_compact_input" tools/build_second_vocab_compact.swift \
   KeyboardExtension/KanaTextNormalizer.swift KeyboardExtension/SupplementalVocabCompactStore.swift \
   KeyboardExtension/KanaKanjiTypes.swift | shasum -a 256 | cut -d' ' -f1)"
 if [[ ! -f "$TMP_SECOND_COMPACT" || ! -f "$second_compact_stamp" || "$(cat "$second_compact_stamp")" != "$second_compact_src_sha" ]]; then
@@ -217,7 +240,7 @@ if [[ ! -f "$TMP_SECOND_COMPACT" || ! -f "$second_compact_stamp" || "$(cat "$sec
       tools/build_second_vocab_compact.swift KeyboardExtension/KanaTextNormalizer.swift \
       KeyboardExtension/SupplementalVocabCompactStore.swift KeyboardExtension/KanaKanjiTypes.swift \
       -o "$second_compact_tool" \
-    && "$second_compact_tool" "$TMP_SECOND" "$TMP_SECOND_COMPACT"; then
+    && "$second_compact_tool" "$second_compact_input" "$TMP_SECOND_COMPACT"; then
     echo "$second_compact_src_sha" > "$second_compact_stamp"
   else
     echo "[dict] Warning: 補助語彙の畳み込みに失敗しました。拡張は JSON 経路で継続します。"
@@ -287,6 +310,10 @@ print("1" if newest_input > oldest_output else "0")
 PY
 }
 
+medicaux_state() {
+  if is_truthy "$INCLUDE_MEDICAUX"; then echo 1; else echo 0; fi
+}
+
 needs_sqlite_regeneration() {
   if [[ ! -f "$TMP_SQLITE" ]]; then
     return 0
@@ -312,6 +339,15 @@ needs_sqlite_regeneration() {
   fi
 
   if [[ -f "$REF_PERSON_NAMES_ADD" && "$REF_PERSON_NAMES_ADD" -nt "$TMP_SQLITE" ]]; then
+    return 0
+  fi
+
+  # 病名の入り/抜けが前回と違えば作り直す(TestFlight 用の作業コピーは tmp を共有するので、
+  # 手元で入れた病名が抜けないまま配られないようにする)
+  if [[ "$(cat "$TMP_MEDICAUX_STATE" 2>/dev/null)" != "$(medicaux_state)" ]]; then
+    return 0
+  fi
+  if [[ -f "$TMP_MEDICAUX" && "$TMP_MEDICAUX" -nt "$TMP_SQLITE" ]]; then
     return 0
   fi
 
@@ -376,6 +412,11 @@ regenerate_sqlite_if_possible() {
     --output "$TMP_SQLITE"
   )
 
+  # 病名は Premier の後ろ = 同じ読みでは既存の語より後ろの rank(偽性 が 犠牲 を押しのけない)
+  if [[ -f "$TMP_MEDICAUX" ]]; then
+    sqlite_args+=(--trailing-vocab-json "$TMP_MEDICAUX" --normalized-vocab-json "$TMP_MEDICAUX")
+  fi
+
   if [[ -f "$TMP_SOURCES" ]]; then
     sqlite_args+=(--sources-json "$TMP_SOURCES")
   fi
@@ -431,7 +472,8 @@ regenerate_sqlite_if_possible() {
     rm -f "$TMP_SQLITE"
     exit 1
   fi
-  echo "[dict] SQLite regeneration complete (rows=$regenerated_rows)."
+  medicaux_state > "$TMP_MEDICAUX_STATE"
+  echo "[dict] SQLite regeneration complete (rows=$regenerated_rows, médicaux=$(medicaux_state))."
   else
     echo "[dict] Warning: sqlite regeneration failed. Keeping previous artifacts if present."
   fi
