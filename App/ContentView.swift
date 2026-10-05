@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20261006061826"
+    private static let editionUpdatedAtRaw: String = "20261006085642"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -476,6 +476,8 @@ struct ContentView: View {
     @State var logoMenuFrames: [String: CGRect] = [:]
     @State var pendingLogoMenuAction: LogoMenuAction?
     @State var logoMenuInfo: LogoMenuInfo?
+    // 退避した設定の日時(無ければ nil)。メニューを描くたびに Keychain を読まないよう、起動時と退避・復元のあとに読む
+    @State var settingsStashSavedAt: Date?
     @State var settingsToastMessage: String?
     // 初回フレーム軽量化: 設定カード群は最初の描画後に構築する(起動直後の白背景 Loading 対策)。
     @State private var didRenderInitialFrame = false

@@ -1032,6 +1032,7 @@ extension ContentView {
             let preludeStartedAt = CFAbsoluteTimeGetCurrent()
             clearLegacyKeyboardDebugLogKeysIfNeeded()
             migrateLegacyFlickGuideSettingIfNeeded()
+            refreshSettingsStashSavedAt()
             clearKeyboardDiagnosticsIfInstallChanged()
             recordKeyboardExtensionRegistrationState()
             loadKeyboardDiagnosticsState()
