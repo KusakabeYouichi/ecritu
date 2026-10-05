@@ -12541,6 +12541,22 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(KeyboardViewController.adaptedLatinSuggestionCase("birds", toQuery: "bir"), "birds")
     }
 
+    // 3372: 空白入りの追加語彙(ワイン語句)は、語句全体で一致すれば語句全体を置き換える(従来どおり)。
+    // 前に別の語があって語句の途中から一致したときは、一致した部分だけ(Bourgogne Grand C → Grand C)
+    func testLatinSuggestionMatchedQueryForMultiWordSupplementalPhrases() throws {
+        try prepareRealLMDictionary()
+        let store = KanaKanjiStore(appGroupID: defaultsSuiteName)
+        let whole = store.latinSuggestionsWithMatchedQuery(prefix: "Cote de B", limit: 8)
+        XCTAssertEqual(whole.matchedQuery, "Cote de B")
+        XCTAssertTrue(whole.results.contains("Côte de Beaune"), "\(whole.results)")
+        let pinot = store.latinSuggestionsWithMatchedQuery(prefix: "Pinot N", limit: 8)
+        XCTAssertEqual(pinot.matchedQuery, "Pinot N")
+        XCTAssertTrue(pinot.results.contains("Pinot Nero"), "\(pinot.results)")
+        let trailing = store.latinSuggestionsWithMatchedQuery(prefix: "Bourgogne Grand C", limit: 8)
+        XCTAssertEqual(trailing.matchedQuery, "Grand C")
+        XCTAssertTrue(trailing.results.contains("Grand Cru"), "\(trailing.results)")
+    }
+
     // 欧文サジェスチョンの別レイヤー(同梱頻度リスト): 追加語彙が先頭、汎用語が頻度順で後続。
     // 言語トグルOFFで当該言語が消えること、追加語彙と同キーは追加語彙が勝つことを確認。
     func testGenericLatinLexiconSuggestions() throws {
