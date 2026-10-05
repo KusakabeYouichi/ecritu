@@ -821,13 +821,37 @@ extension KanaKanjiConverter {
             return candidates
         }
 
+        // 踊り字を含む追加語彙・学習語彙(祇園 さゝ木 等)は設定に関わらず出す(3364、ユーザ指定)。旧字体の設定(X.7)が
+        // 追加語彙を常に対象外にしているのと揃える。踊り字を含む候補が来たときだけ語彙を見る(普段の変換の速度に響かない)
+        var userIterationSurfaces: [String]? = nil
+        func isUserIterationMarkWord(_ candidate: String) -> Bool {
+            if userIterationSurfaces == nil {
+                var found = Set<String>()
+                for dictionary in [store.ajoutVocabulary(), store.initialAjoutVocabulary(), store.learnedDictionary()] {
+                    for surfaces in dictionary.values {
+                        for surface in surfaces where surface.contains(where: { Self.iterationMarkScalars.contains($0) }) {
+                            found.insert(surface)
+                        }
+                    }
+                }
+                // 長い語から外す(短い語が長い語の一部のとき取りこぼさない)
+                userIterationSurfaces = found.sorted { $0.count > $1.count }
+            }
+            var rest = candidate
+            for surface in userIterationSurfaces ?? [] where rest.contains(surface) {
+                rest = rest.replacingOccurrences(of: surface, with: "")
+            }
+            return !rest.contains(where: { Self.iterationMarkScalars.contains($0) })
+        }
+
         return candidates.filter { candidate in
             // 旧仮名文字(ゐゑヰヱ)を含む表層(ぐらゐ/ゐる/ウヰスキー 等)は旧仮名遣い。
             if !historicalAllowed, candidate.contains(where: { Self.historicalKanaScalars.contains($0) }) {
                 return false
             }
             // かな踊り字(ゝゞヽヾ)を含む表層(いゝ/こゝ 等)。
-            if !iterationAllowed, candidate.contains(where: { Self.iterationMarkScalars.contains($0) }) {
+            if !iterationAllowed, candidate.contains(where: { Self.iterationMarkScalars.contains($0) }),
+                !isUserIterationMarkWord(candidate) {
                 return false
             }
             // える動詞の へる 旧仮名活用(給へる/覚へる 等)。読みが える 終わりの時のみ(旧仮名側)。
