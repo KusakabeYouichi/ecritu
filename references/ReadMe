@@ -18,6 +18,7 @@ astronomique.plist		# [天文] 恒星の固有名(IAU 承認名。カタカナ+�
 emoji.plist				# [絵文字] CLDR ja アノテーション由来(SudachiPyで読み化+手動整備。2026-08-31 に全読みのCLDR帰着を検証済み、f8c4c10)
 personnalités.plist	# [人名]
 médicaux.plist			# [病名] ICD10対応標準病名マスター(MEDIS-DC 配布、標準病名マスター作業班 編集。byomei.org の ICD 階層病名ブラウザから取得)の病名 27,662 件を「梅毒性/大動脈弁閉鎖不全症」の粒度で機械的に切り分け、読みは辞書+macOS 解析の突き合わせのうえ AI が医学の慣用読みで全件点検(2026-10-05)。
+						#   さらに MEDIS 病名マスター 5.18(byomei518.zip、~/med/medis518)の病名表記カナを切片に割り振り、点検済みの読みと違う公式の読み 949 件を別の行で足した(発疹 はっしん/ほっしん 等)
 						#   MEDIS の条件: 医療機関以外での使用・配布は使用許諾申請が要り、改変して配るなら「MEDIS-DCの標準マスターを利用」と明記する。
 						#   許諾が下りるまでは ECRITU_INCLUDE_MEDICAUX=1(Config/Signing.local.xcconfig)の手元ビルドだけで入る。提出前検査(verify_archive_artifacts.sh)は入っていれば止める
 						#   入り方: sqlite には Premier の後ろ(同じ読みでは一般語より後ろ・弱いコスト)。実行時の補助語彙には読みがぶつからない病名だけ足す(tools/merge_medicaux_runtime_vocab.py)
