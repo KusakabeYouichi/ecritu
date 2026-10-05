@@ -12523,6 +12523,24 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single.first, "来てしまいました", "single=\(single)")
     }
 
+    // 3372: 語句全体(Early Bir)で一致が無く空白の後ろ(Bir)で見つけた候補は、その部分だけを置き換える。
+    // 以前はタップすると語句全体を置き換え、確定済みの Early が消えていた
+    func testLatinSuggestionMatchedQueryIsTrailingWordAfterFallback() throws {
+        let store = KanaKanjiStore(appGroupID: defaultsSuiteName)
+        store.genericLatinLexiconDirectoryURLOverride = URL(
+            fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension", isDirectory: true
+        )
+        store.setGenericLatinLexiconEnabledLanguages(["en"])
+        let lookup = store.latinSuggestionsWithMatchedQuery(prefix: "Early Bir", limit: 8)
+        XCTAssertEqual(lookup.matchedQuery, "Bir")
+        XCTAssertTrue(lookup.results.contains(where: { $0.lowercased() == "birds" }), "\(lookup.results)")
+        // 1 語なら問い合わせ全体
+        XCTAssertEqual(store.latinSuggestionsWithMatchedQuery(prefix: "Earl", limit: 8).matchedQuery, "Earl")
+        // 大小文字の適応は一致した部分に合わせる(early Bir → Birds、Early bir → birds)
+        XCTAssertEqual(KeyboardViewController.adaptedLatinSuggestionCase("birds", toQuery: "Bir"), "Birds")
+        XCTAssertEqual(KeyboardViewController.adaptedLatinSuggestionCase("birds", toQuery: "bir"), "birds")
+    }
+
     // 欧文サジェスチョンの別レイヤー(同梱頻度リスト): 追加語彙が先頭、汎用語が頻度順で後続。
     // 言語トグルOFFで当該言語が消えること、追加語彙と同キーは追加語彙が勝つことを確認。
     func testGenericLatinLexiconSuggestions() throws {

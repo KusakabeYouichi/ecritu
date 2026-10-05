@@ -68,17 +68,27 @@ extension KeyboardViewController {
     }
 
     func currentLatinSuggestions(limit: Int = CandidateLimits.latinSuggestionDefault) -> [String] {
+        currentLatinSuggestionsWithMatchedQuery(limit: limit).results
+    }
+
+    // 候補と、候補が一致した問い合わせの部分(Early Bir なら Bir)。語句全体で一致が無いときは
+    // 空白の後ろから探し直すので、置き換えと大小文字の適応はこの部分だけに当てる(3372)
+    func currentLatinSuggestionsWithMatchedQuery(
+        limit: Int = CandidateLimits.latinSuggestionDefault
+    ) -> (results: [String], matchedQuery: String) {
         let startedAt = CFAbsoluteTimeGetCurrent()
-        let query = currentLatinSuggestionQueryFromTextContext()
+        let fullQuery = currentLatinSuggestionQueryFromTextContext()
         let effectiveLimit = effectiveLatinSuggestionLimit(defaultLimit: limit)
 
-        guard !query.isEmpty,
+        guard !fullQuery.isEmpty,
             effectiveLimit > 0 else {
-            return []
+            return ([], "")
         }
 
         let lookupLimit = max(effectiveLimit + 12, effectiveLimit * 2)
-        let suggestions = latinSuggestions(prefix: query, limit: lookupLimit)
+        let lookup = kanaKanjiStore.latinSuggestionsWithMatchedQuery(prefix: fullQuery, limit: lookupLimit)
+        let suggestions = lookup.results
+        let query = lookup.matchedQuery
         // 打った先頭が大文字なら候補の表記も大文字へ適応(Natur→Natural)。表示と確定の
         // 両方に効くようここで変換し、変換後の重複(natural と Natural 等)は先勝ちで畳む。
         var seenAdapted = Set<String>()
@@ -97,7 +107,7 @@ extension KeyboardViewController {
             )
         }
 
-        return results
+        return (results, query)
     }
 
     func currentCandidatePresentationForRender(

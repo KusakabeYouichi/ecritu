@@ -336,19 +336,16 @@ extension KeyboardViewController {
         }
 
         if currentInputMode == .latin {
-            let token = currentLatinSuggestionQueryFromTextContext()
+            // 置き換えるのは候補が一致した部分だけ(Early Bir で Birds を選んだら Bir だけを置き換える。3372)
+            let lookup = currentLatinSuggestionsWithMatchedQuery(limit: CandidateLimits.latinSuggestionDefault)
+            let token = lookup.matchedQuery
 
-            guard !token.isEmpty else {
+            guard !token.isEmpty,
+                lookup.results.indices.contains(index) else {
                 return
             }
 
-            let suggestions = currentLatinSuggestions(limit: CandidateLimits.latinSuggestionDefault)
-
-            guard suggestions.indices.contains(index) else {
-                return
-            }
-
-            commitLatinSuggestion(suggestions[index], replacing: token)
+            commitLatinSuggestion(lookup.results[index], replacing: token)
             refreshKeyboardStateAsync()
             return
         }
