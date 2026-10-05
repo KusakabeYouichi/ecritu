@@ -20697,6 +20697,48 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(list.prefix(4)), ["早く", "速く", "端役", "破約"], "\(list)")
     }
 
+    // 3367: 病名(references/médicaux.plist)は sqlite で既存の語の後ろに入る。読みがぶつかる一般語を押しのけない
+    // (病名を入れない辞書でも成り立つ)
+    func testMedicauxDoNotDisplaceCommonWords() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let pairs: [(reading: String, common: String, medical: String)] = [
+            ("ぎせい", "犠牲", "偽性"),
+            ("かんせんせい", "感染性", "乾癬性"),
+            ("こうきんせい", "抗菌性", "拘禁性"),
+            ("すいようせい", "水溶性", "水様性"),
+            ("かいようせい", "海洋性", "潰瘍性"),
+            ("きょうぶ", "胸部", "頬部"),
+        ]
+        for pair in pairs {
+            let list = converter.candidates(for: pair.reading, limit: 12, systemCandidateMode: .surface)
+            XCTAssertEqual(list.first, pair.common, "\(pair.reading): \(list)")
+            if let medicalIndex = list.firstIndex(of: pair.medical) {
+                XCTAssertGreaterThan(medicalIndex, 0, "\(pair.reading): \(list)")
+            }
+        }
+    }
+
+    // 3367: 病名を入れた辞書(ECRITU_INCLUDE_MEDICAUX=1)では、切り分けた病名が単独でも続けても出る
+    func testMedicauxConvertWhenIncluded() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        guard converter.candidates(for: "がいいんちつえん", limit: 6, systemCandidateMode: .surface).contains("外陰腟炎") else {
+            throw XCTSkip("病名(médicaux)を入れていない辞書")
+        }
+        func shown(_ reading: String) -> [String] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            return multi.isEmpty ? converter.candidates(for: reading, limit: 4, systemCandidateMode: .surface) : multi
+        }
+        // 読み 12 字超の 1 語は連文節の区間に収まらないので、全読み一致の単文節最良を先頭に置く(提示層)
+        let longReading = "だいどうみゃくべんへいさふぜんしょう"
+        let longSingle = converter.candidates(for: longReading, limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(longSingle.first, "大動脈弁閉鎖不全症", "\(longSingle)")
+        XCTAssertTrue(converter.shouldPromoteSingleBestAboveMultiClause(reading: longReading, singleBest: "大動脈弁閉鎖不全症"))
+        XCTAssertEqual(shown("とりこもなすせいがいいんちつえん").first, "トリコモナス性外陰腟炎", "\(shown("とりこもなすせいがいいんちつえん"))")
+        XCTAssertEqual(shown("じんこうじゅせいごこつばんないえんしょうせいしっかん").first, "人工授精後骨盤内炎症性疾患", "\(shown("じんこうじゅせいごこつばんないえんしょうせいしっかん"))")
+    }
+
     // 3283: 抜栓(LM 未収録のサ変名詞)を登録し、ばっせんできない/ばっせんする を 抜栓 先頭に
     func testBassenSahen() throws {
         try prepareRealLMDictionary()

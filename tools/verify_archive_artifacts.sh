@@ -116,6 +116,10 @@ if [[ -f "$APPEX/kana_kanji_dictionary.sqlite" && -f tmp/kana_kanji_dictionary.s
   [[ "$H1" == "$H2" ]] && ok "辞書sqliteがtmpと同一(テスト済み辞書がそのまま入っている)" || bad "辞書sqliteがtmpと不一致 — テスト後に辞書が変わっている"
   ROWS=$(sqlite3 "file:$APPEX/kana_kanji_dictionary.sqlite?mode=ro&immutable=1" "SELECT count(*) FROM dictionary_entries" 2>/dev/null || echo 0)
   (( ROWS > 100000 )) && ok "辞書行数 $ROWS" || bad "辞書行数が異常: $ROWS"
+  # 病名(references/médicaux.plist)は MEDIS の使用許諾が下りるまで配らない。病名にしか無い語を目印に見る
+  MED=$(sqlite3 "file:$APPEX/kana_kanji_dictionary.sqlite?mode=ro&immutable=1" \
+    "SELECT count(*) FROM dictionary_entries WHERE candidate IN ('女性骨盤炎','外陰腟炎','クラミジア性','人工授精後')" 2>/dev/null || echo 0)
+  (( MED == 0 )) && ok "病名(médicaux)は入っていない" || bad "病名(médicaux)が辞書に入っている — 使用許諾前は ECRITU_INCLUDE_MEDICAUX を外してビルドし直す"
 fi
 
 # 7) プロビジョニング(実機/配布ビルドのみ存在)。失効日に加えて、配布用かどうか(3307):

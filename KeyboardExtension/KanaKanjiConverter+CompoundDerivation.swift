@@ -1305,6 +1305,12 @@ extension KanaKanjiConverter {
         }) {
             return true
         }
+        // 読み全体と一致する辞書語が連文節の 1 区間の上限(12 字)を超えるときは、連文節がその語を 1 ノードに
+        // できず必ず分割に負ける(大動脈弁閉鎖不全症 → 大動脈便閉鎖府全焼。3367)。全読み一致の語を先頭に置く
+        if reading.count > Self.multiClauseMaxSegmentReadingCount,
+            store.systemCandidates(for: reading, mode: .lesDeux).contains(singleBest) {
+            return true
+        }
         return isPolitePrefixDerivationOfTopStem(reading: reading, singleBest: singleBest)
     }
 
