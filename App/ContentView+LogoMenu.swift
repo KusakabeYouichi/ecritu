@@ -455,9 +455,25 @@ extension ContentView {
             return !currentSettingsMatch(preset: [:])
         case .conservativeDefaults:
             return !currentSettingsMatch(preset: Self.conservativePresetValues)
+        case .restoreStashedSettings:
+            // 退避した設定が無ければ選べない(ユーザー指定)
+            return settingsStashSavedAt != nil
         default:
             return true
         }
+    }
+
+    func refreshSettingsStashSavedAt() {
+        settingsStashSavedAt = loadSettingsStash()?.savedAt
+    }
+
+    // 復元の項目名の後ろに小さく出す日時。今年なら年を省く(メニュー幅 300 に収める)
+    func settingsStashSavedAtLabel(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ja_JP")
+        let sameYear = Calendar.current.isDate(date, equalTo: Date(), toGranularity: .year)
+        formatter.dateFormat = sameYear ? "M/d H:mm" : "yyyy/M/d H:mm"
+        return "(\(formatter.string(from: date)))"
     }
 
     // 「今の設定」が、その初期設定を当てた直後の状態と同じか。初期設定の適用は
@@ -527,8 +543,15 @@ extension ContentView {
                 .font(.system(size: 18, weight: .medium))
                 .frame(width: 26)
             VStack(alignment: .leading, spacing: 1) {
-                Text(action.title)
-                    .font(.body.weight(.semibold))
+                HStack(alignment: .firstTextBaseline, spacing: 4) {
+                    Text(action.title)
+                        .font(.body.weight(.semibold))
+                    if action == .restoreStashedSettings, let savedAt = settingsStashSavedAt {
+                        Text(settingsStashSavedAtLabel(savedAt))
+                            .font(.caption)
+                            .foregroundStyle(subtitleColor)
+                    }
+                }
                 Text(action.subtitle)
                     .font(.caption)
                     .foregroundStyle(subtitleColor)
@@ -562,6 +585,7 @@ extension ContentView {
             copySettingsYAMLToPasteboard()
         case .stashSettings:
             stashCurrentSettings()
+            refreshSettingsStashSavedAt()
         case .about:
             logoMenuInfo = LogoMenuInfo(
                 title: "écritu",
@@ -610,6 +634,7 @@ extension ContentView {
             } else {
                 logoMenuInfo = LogoMenuInfo(title: "復元できません", message: "退避した設定がありません。")
             }
+            refreshSettingsStashSavedAt()
         case .copyYAML, .stashSettings, .openManual, .openPrivacyPolicy, .about:
             break
         }
