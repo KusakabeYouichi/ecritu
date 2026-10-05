@@ -20418,6 +20418,31 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(converter.candidates(for: "さんか", limit: 40, systemCandidateMode: .surface).contains("讚歌"))
     }
 
+    // 3363: ミシュランの星付きの料理店名を compenser に追加(ユーザ提供の資料)。一般の変換を乗っ取る読みは入れていない
+    func testRegressionRealLMMichelinRestaurants() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        func shown(_ reading: String) -> [String] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            return multi.isEmpty ? converter.candidates(for: reading, limit: 6, systemCandidateMode: .surface) : multi
+        }
+        for (reading, expected) in [("みざい", "未在"), ("さぜんか", "茶禅華"), ("もりえーる", "モリエール"),
+                                    ("れふぇるゔぇそんす", "レフェルヴェソンス"), ("かはら", "カハラ"), ("おまーじゅ", "オマージュ"),
+                                    ("すきやばしじろう", "すきやばし次郎"), ("きくのい", "菊乃井")] {
+            XCTAssertEqual(shown(reading).first, expected, "\(reading) \(shown(reading))")
+        }
+        // さゝ木 は踊り字(ゝ)を含むので、設定「仮名の踊り字の候補を含める」(初期設定オフ)をオンにしたときだけ出る
+        converter.setIterationMarkSurfaceAllowed(true)
+        defer { converter.setIterationMarkSurfaceAllowed(false) }
+        XCTAssertEqual(shown("ぎおんささき").first, "祇園 さゝ木", "\(shown("ぎおんささき"))")
+        converter.setIterationMarkSurfaceAllowed(false)
+        // 入れなかった読みは一般の変換のまま(ます を MAZ/マス が乗っ取らない 等)
+        for (reading, notFirst) in [("ます", "MAZ"), ("ます", "マス"), ("はじめ", "ハジメ"), ("こはく", "虎白"), ("りょうしょう", "凌霄"),
+                                    ("たいあん", "太庵"), ("なかむら", "なかむら")] {
+            XCTAssertNotEqual(shown(reading).first, notFirst, "\(reading) \(shown(reading))")
+        }
+    }
+
     // 3362: 辞書形の かく が何でも 描く になっていた(手紙を描く/日記を描く)。描く は misc の curated(床 1500)で供給しているため
     func testRegressionRealLMKakuWriteVersusDraw() throws {
         try prepareRealLMDictionary()
