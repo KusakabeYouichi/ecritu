@@ -54,10 +54,10 @@ REF_PERSONNALITES_PLIST="$ROOT_DIR/references/personnalités.plist"
 REF_DRAPEAUX_PLIST="$ROOT_DIR/references/drapeaux.plist"
 REF_MONNAIES_PLIST="$ROOT_DIR/references/monnaies.plist"
 REF_ASTRONOMIQUE_PLIST="$ROOT_DIR/references/astronomique.plist"
-# 病名(標準病名マスター由来)。配布には MEDIS の使用許諾が要るため、許諾が下りるまでは
+# 病名(標準病名マスター由来)。配布の許諾がまだ無い(references/ReadMe 参照)ため、
 # ECRITU_INCLUDE_MEDICAUX=1(Config/Signing.local.xcconfig など手元の設定)のときだけ入れる。
-# 補助語彙(vin/it 等)と違い ÉcrituSecondVocab には混ぜず、sqlite に Premier の後ろで足す
-# (偽性/犠牲・拘禁性/抗菌性 のように読みがぶつかる 188 語で一般語を押しのけないため)。
+# 補助語彙(vin/it 等)の JSON には混ぜず、sqlite に Premier の後ろで足す(偽性/犠牲・拘禁性/抗菌性 のように
+# 読みがぶつかる語で一般語を押しのけないため)。実行時の補助語彙(.eccs)には読みがぶつからない病名だけ足す。
 REF_MEDICAUX_PLIST="$ROOT_DIR/references/médicaux.plist"
 TMP_MEDICAUX="$ROOT_DIR/tmp/ÉcrituMedicauxVocab.json"
 TMP_MEDICAUX_STATE="$ROOT_DIR/tmp/.medicaux.state"
