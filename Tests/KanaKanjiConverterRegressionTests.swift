@@ -20431,11 +20431,11 @@ extension KanaKanjiConverterRegressionTests {
                                     ("すきやばしじろう", "すきやばし次郎"), ("きくのい", "菊乃井")] {
             XCTAssertEqual(shown(reading).first, expected, "\(reading) \(shown(reading))")
         }
-        // さゝ木 は踊り字(ゝ)を含むので、設定「仮名の踊り字の候補を含める」(初期設定オフ)をオンにしたときだけ出る
-        converter.setIterationMarkSurfaceAllowed(true)
-        defer { converter.setIterationMarkSurfaceAllowed(false) }
+        // さゝ木 は踊り字(ゝ)を含むが、追加語彙なので設定「仮名の踊り字の候補を含める」(初期設定オフ)でも出る(3364)
         XCTAssertEqual(shown("ぎおんささき").first, "祇園 さゝ木", "\(shown("ぎおんささき"))")
-        converter.setIterationMarkSurfaceAllowed(false)
+        XCTAssertEqual(converter.multiClauseCandidates(for: "ぎおんささきで", systemCandidateMode: .surface).first, "祇園 さゝ木で")
+        // 辞書の踊り字の表記(こゝ 等)は従来どおり隠す
+        XCTAssertFalse(converter.candidates(for: "ここ", limit: 20, systemCandidateMode: .surface).contains("こゝ"))
         // 入れなかった読みは一般の変換のまま(ます を MAZ/マス が乗っ取らない 等)
         for (reading, notFirst) in [("ます", "MAZ"), ("ます", "マス"), ("はじめ", "ハジメ"), ("こはく", "虎白"), ("りょうしょう", "凌霄"),
                                     ("たいあん", "太庵"), ("なかむら", "なかむら")] {

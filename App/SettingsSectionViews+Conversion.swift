@@ -369,7 +369,7 @@ struct IterationMarkCandidatesSettingsSection: View {
             Toggle("仮名の踊り字の候補を含める", isOn: $isEnabled)
                 .toggleStyle(.switch)
 
-            Text("かな踊り字(繰り返し記号 ゝ/ゞ/ヽ/ヾ。いゝ/こゝ/バナヽ 等)を含む表記を変換結果に含めるかを切り替えます。初期設定はオフです。※漢字の々(人々/時々 等)は常に有効です。")
+            Text("かな踊り字(繰り返し記号 ゝ/ゞ/ヽ/ヾ。いゝ/こゝ/バナヽ 等)を含む表記を変換結果に含めるかを切り替えます。初期設定はオフです。追加語彙・学習語彙の語(祇園 さゝ木 等)は設定に関わらず出ます。※漢字の々(人々/時々 等)は常に有効です。")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
