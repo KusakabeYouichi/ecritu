@@ -8004,9 +8004,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(multi.prefix(2)), ["ひらがなのは", "平仮名のは"], "multi=\(multi)")  // 2859 で かな先頭に反転
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "ひらがなのは"))
         XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "かってみようかな"))
-        // 既存の名詞化節挙動は不変
+        // 既存の名詞化節挙動は不変(のが好き で切れる)。3362 で目的語の無い かく は 書く を先頭にしたので、書く/描く の両方が上位 2 つにあればよい
         let kaku = converter.multiClauseCandidates(for: "かくのがすき", systemCandidateMode: .surface)
-        XCTAssertEqual(kaku.first, "描くのが好き", "multi=\(kaku)")
+        XCTAssertEqual(Set(kaku.prefix(2)), ["書くのが好き", "描くのが好き"], "multi=\(kaku)")
     }
 
     // てかず: かな識別が既定で先頭化し 手数 が2番手だった。どちらも実用のため seed で
@@ -20416,6 +20416,22 @@ extension KanaKanjiConverterRegressionTests {
         converter.setScriptVariantSuppressionCategories([])
         XCTAssertTrue(converter.candidates(for: "のむ", limit: 40, systemCandidateMode: .surface).contains("吞む"))
         XCTAssertTrue(converter.candidates(for: "さんか", limit: 40, systemCandidateMode: .surface).contains("讚歌"))
+    }
+
+    // 3362: 辞書形の かく が何でも 描く になっていた(手紙を描く/日記を描く)。描く は misc の curated(床 1500)で供給しているため
+    func testRegressionRealLMKakuWriteVersusDraw() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for (reading, expected) in [("てがみをかく", "手紙を書く"), ("にっきをかく", "日記を書く"), ("ぶんしょうをかく", "文章を書く"),
+                                    ("めーるをかく", "メールを書く"), ("かんじをかく", "漢字を書く"), ("てがみをかいた", "手紙を書いた"),
+                                    ("なまえをかいて", "名前を書いて"),
+                                    ("えをかく", "絵を描く"), ("えをかいた", "絵を描いた"), ("まんがをかく", "漫画を描く"),
+                                    ("ずをかく", "図を描く"), ("ゆめをえがく", "夢を描く")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "\(reading) \(multi)")
+        }
+        // 描く は候補に残る
+        XCTAssertTrue(converter.multiClauseCandidates(for: "てがみをかく", systemCandidateMode: .surface).contains("手紙を描く"))
     }
 
     // 3361: というかんじ が という漢字 先頭だった(ユーザ報告)
