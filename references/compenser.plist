@@ -417,15 +417,16 @@
 	        <dict><key>phrase</key><string>Laguiole</string><key>shortcut</key><string>らいよーる</string></dict>
 	        <dict><key>phrase</key><string>Château Laguiole</string><key>shortcut</key><string>しゃとーらぎおーる</string></dict>	<!-- ソムリエナイフの銘柄(ユーザ指定 3251) -->
 	        <dict><key>phrase</key><string>シャトー・ラギオール</string><key>shortcut</key><string>しゃとーらぎおーる</string></dict>
-
-	<!-- 料理店(ミシュランの星付き。ユーザ提供の資料 2026-10-05、3363)。同じ読みでは日本語表記を欧文より先に置く -->
-	<!-- 入れなかったもの(compenser は固定の優先度で先頭に出るため、一般の変換を乗っ取る): ます を乗っ取る MAZ/マス、初め の前に出る ハジメ、噛んだ/神田 の前の かんだ、琥珀 の前の 虎白、了承 の前の 凌霄、仰天 の前の 行天、伝 の前の 傳、新 の前の 真、掃除機 の前の 草喰、大安 の前の 太庵、評定 の前の 瓢亭、温み の前の 温味、独歩 の前の 獨歩、円錐 の前の 炎水、有限 の前の 幽玄、白雲 の前の 伯雲、九十九 の前の 白(つくも)、朝比奈 の前の ASAHINA、ガストロノーム の前の Gastronome、姓の前に出る部品(なかむら/さかい/にしかわ/しのはら/なかしま/かどわき/つちや/石かわ/さゝ木/田なべ/さわ田/ぬま田/右江田/𡈽方/こま田/唯/福樹/フジヤ)。店名の全体(祇園 さゝ木 等)は入れてある。資料の読みの誤り(モリエール=カタカナ読み、レフェルヴェソンス=ぞ、なかむら=区切りが /)は直した -->
+	<!-- 料理店(ミシュランの星付き。ユーザ提供の資料 2026-10-05、3363)。同じ読みでは日本語表記を欧文より先に置く。一般の変換を乗っ取る読みは compenser の固定の優先度で先頭に出てしまうので、コメントアウトして理由を添えた。資料の読みの誤り(モリエール=カタカナ読み、レフェルヴェソンス=ぞ、なかむら=区切りが /)は直した -->
 	<!-- □ ミシュラン3つ星(日本) -->
 	        <dict><key>phrase</key><string>柏屋 大阪千里山</string><key>shortcut</key><string>かしわやおおさかせんりやま</string></dict>
+	<!--        <dict><key>phrase</key><string>ハジメ</string><key>shortcut</key><string>はじめ</string></dict>	(入れない: はじめ→初め/始め の前に出る) -->
+	<!--        <dict><key>phrase</key><string>太庵</string><key>shortcut</key><string>たいあん</string></dict>	(入れない: たいあん→大安 の前に出る) -->
 	        <dict><key>phrase</key><string>未在</string><key>shortcut</key><string>みざい</string></dict>
 	        <dict><key>phrase</key><string>祇園 さゝ木</string><key>shortcut</key><string>ぎおんささき</string></dict>
 	        <dict><key>phrase</key><string>一子相伝 なかむら</string><key>shortcut</key><string>いっしそうでんなかむら</string></dict>
 	        <dict><key>phrase</key><string>菊乃井 本店</string><key>shortcut</key><string>きくのいほんてん</string></dict>
+	<!--        <dict><key>phrase</key><string>瓢亭</string><key>shortcut</key><string>ひょうてい</string></dict>	(入れない: ひょうてい→評定 の前に出る) -->
 	        <dict><key>phrase</key><string>美山荘</string><key>shortcut</key><string>みやまそう</string></dict>
 	        <dict><key>phrase</key><string>レフェルヴェソンス</string><key>shortcut</key><string>れふぇるゔぇそんす</string></dict>
 	        <dict><key>phrase</key><string>ジョエル・ロブション</string><key>shortcut</key><string>じょえるろぶしょん</string></dict>
@@ -433,34 +434,43 @@
 	        <dict><key>phrase</key><string>明寂</string><key>shortcut</key><string>みょうじゃく</string></dict>
 	        <dict><key>phrase</key><string>茶禅華</string><key>shortcut</key><string>さぜんか</string></dict>
 	        <dict><key>phrase</key><string>カンテサンス</string><key>shortcut</key><string>かんてさんす</string></dict>
+	<!--        <dict><key>phrase</key><string>かんだ</string><key>shortcut</key><string>かんだ</string></dict>	(入れない: かんだ→噛んだ/神田 の前に出る) -->
 	        <dict><key>phrase</key><string>ロオジエ</string><key>shortcut</key><string>ろおじえ</string></dict>
 	        <dict><key>phrase</key><string>龍吟</string><key>shortcut</key><string>りゅうぎん</string></dict>
 	        <dict><key>phrase</key><string>神楽坂 石かわ</string><key>shortcut</key><string>かぐらざかいしかわ</string></dict>
 	        <dict><key>phrase</key><string>青空</string><key>shortcut</key><string>はるたか</string></dict>
 	<!-- □ ミシュラン3つ星(特別版) -->
+	<!--        <dict><key>phrase</key><string>温味</string><key>shortcut</key><string>ぬくみ</string></dict>	(入れない: ぬくみ→温み の前に出る) -->
 	        <dict><key>phrase</key><string>ミシェル・ブラス トーヤ ジャポン</string><key>shortcut</key><string>みしぇるぶらすとーやじゃぽん</string></dict>	<!-- 北海道特別版2012年 -->
 	        <dict><key>phrase</key><string>鮨 田なべ</string><key>shortcut</key><string>すしたなべ</string></dict>	<!-- 北海道特別版2012年 -->
 	        <dict><key>phrase</key><string>モリエール</string><key>shortcut</key><string>もりえーる</string></dict>	<!-- 北海道特別版2012年・2017年 -->
 	        <dict><key>phrase</key><string>花小路 さわ田</string><key>shortcut</key><string>はなこうじさわだ</string></dict>	<!-- 北海道特別版2017年 -->
 	        <dict><key>phrase</key><string>すし 宮川</string><key>shortcut</key><string>すしみやがわ</string></dict>	<!-- 北海道特別版2017年 -->
 	        <dict><key>phrase</key><string>季節料理 なかしま</string><key>shortcut</key><string>きせつりょうりなかしま</string></dict>	<!-- 広島・愛媛特別版2013年・2018年 -->
+	<!--        <dict><key>phrase</key><string>行天</string><key>shortcut</key><string>ぎょうてん</string></dict>	(入れない: ぎょうてん→仰天 の前に出る) -->
 	        <dict><key>phrase</key><string>嵯峨野</string><key>shortcut</key><string>さがの</string></dict>	<!-- 福岡・佐賀・長崎特別版2014年 -->
 	        <dict><key>phrase</key><string>鮨 さかい</string><key>shortcut</key><string>すしさかい</string></dict>	<!-- 福岡・佐賀・長崎特別版2019年 -->
+	<!--        <dict><key>phrase</key><string>右江田</string><key>shortcut</key><string>うえだ</string></dict>	(入れない: 上田 の前に出る) -->
+	<!--        <dict><key>phrase</key><string>𡈽方</string><key>shortcut</key><string>ひじかた</string></dict>	(入れない: 土方 の前に出る) -->
+	<!--        <dict><key>phrase</key><string>こま田</string><key>shortcut</key><string>こまだ</string></dict>	(入れない: 駒田 の前に出る) -->
 	<!-- □ ミシュラン2つ星(日本) -->
 	        <dict><key>phrase</key><string>旬彩天 つちや</string><key>shortcut</key><string>しゅんさいてんつちや</string></dict>
 	        <dict><key>phrase</key><string>天神橋 青木</string><key>shortcut</key><string>てんじんばしあおき</string></dict>
 	        <dict><key>phrase</key><string>ラ・シーム</string><key>shortcut</key><string>らしーむ</string></dict>
 	        <dict><key>phrase</key><string>宮本</string><key>shortcut</key><string>みやもと</string></dict>
 	        <dict><key>phrase</key><string>弧柳</string><key>shortcut</key><string>こりゅう</string></dict>
+	<!--        <dict><key>phrase</key><string>ぬま田</string><key>shortcut</key><string>ぬまた</string></dict>	(入れない: 沼田 の前に出る) -->
 	        <dict><key>phrase</key><string>カハラ</string><key>shortcut</key><string>かはら</string></dict>
 	        <dict><key>phrase</key><string>老松 ひさ乃</string><key>shortcut</key><string>おいまつひさの</string></dict>
 	        <dict><key>phrase</key><string>フジヤ 1935</string><key>shortcut</key><string>ふじやいちきゅうさんご</string></dict>
 	        <dict><key>phrase</key><string>照屋</string><key>shortcut</key><string>てるや</string></dict>
+	<!--        <dict><key>phrase</key><string>幽玄</string><key>shortcut</key><string>ゆうげん</string></dict>	(入れない: ゆうげん→有限 の前に出る) -->
 	        <dict><key>phrase</key><string>鮨 原正</string><key>shortcut</key><string>すしはらしょう</string></dict>
 	        <dict><key>phrase</key><string>御料理 花墻</string><key>shortcut</key><string>おりょうりはながき</string></dict>
 	        <dict><key>phrase</key><string>アコルドゥ</string><key>shortcut</key><string>あこるどぅ</string></dict>
 	        <dict><key>phrase</key><string>緒方</string><key>shortcut</key><string>おがた</string></dict>
 	        <dict><key>phrase</key><string>奈良 而今</string><key>shortcut</key><string>ならしこん</string></dict>
+	<!--        <dict><key>phrase</key><string>白</string><key>shortcut</key><string>つくも</string></dict>	(入れない: つくも→九十九 の前に出る) -->
 	        <dict><key>phrase</key><string>東山 吉寿</string><key>shortcut</key><string>ひがしやまよしひさ</string></dict>
 	        <dict><key>phrase</key><string>山荘 京大和</string><key>shortcut</key><string>さんそうきょうやまと</string></dict>
 	        <dict><key>phrase</key><string>室町 唯</string><key>shortcut</key><string>むろまちゆい</string></dict>
@@ -469,6 +479,7 @@
 	        <dict><key>phrase</key><string>祇園 又吉</string><key>shortcut</key><string>ぎおんまたよし</string></dict>
 	        <dict><key>phrase</key><string>高台寺 十牛庵</string><key>shortcut</key><string>こうだいじじゅうぎゅうあん</string></dict>
 	        <dict><key>phrase</key><string>祇園 丸山</string><key>shortcut</key><string>ぎおんまるやま</string></dict>
+	<!--        <dict><key>phrase</key><string>凌霄</string><key>shortcut</key><string>りょうしょう</string></dict>	(入れない: りょうしょう→了承 の前に出る) -->
 	        <dict><key>phrase</key><string>建仁寺 祇園 丸山</string><key>shortcut</key><string>けんにんじぎおんまるやま</string></dict>
 	        <dict><key>phrase</key><string>おたぎ</string><key>shortcut</key><string>おたぎ</string></dict>
 	        <dict><key>phrase</key><string>炭火割烹 いふき</string><key>shortcut</key><string>すみびかっぽういふき</string></dict>
@@ -477,17 +488,23 @@
 	        <dict><key>phrase</key><string>徳ハ本也</string><key>shortcut</key><string>とくはもとなり</string></dict>
 	        <dict><key>phrase</key><string>京懐石 吉泉</string><key>shortcut</key><string>きょうかいせききちせん</string></dict>
 	        <dict><key>phrase</key><string>草喰 なかひがし</string><key>shortcut</key><string>そうじきなかひがし</string></dict>
+	<!--        <dict><key>phrase</key><string>獨歩</string><key>shortcut</key><string>どっぽ</string></dict>	(入れない: どっぽ→独歩 の前に出る) -->
 	        <dict><key>phrase</key><string>プリズマ</string><key>shortcut</key><string>ぷりずま</string></dict>
 	        <dict><key>phrase</key><string>天ぷら 元吉</string><key>shortcut</key><string>てんぷらもとよし</string></dict>
+	<!--        <dict><key>phrase</key><string>伯雲</string><key>shortcut</key><string>はくうん</string></dict>	(入れない: はくうん→白雲 の前に出る) -->
 	        <dict><key>phrase</key><string>西麻布 鮨 真</string><key>shortcut</key><string>にしあざぶすししん</string></dict>
 	        <dict><key>phrase</key><string>神宮前 樋口</string><key>shortcut</key><string>じんぐうまえひぐち</string></dict>
+	<!--        <dict><key>phrase</key><string>炎水</string><key>shortcut</key><string>えんすい</string></dict>	(入れない: えんすい→塩水/円錐 の前に出る) -->
+	<!--        <dict><key>phrase</key><string>傳</string><key>shortcut</key><string>でん</string></dict>	(入れない: でん→伝/電 の前に出る) -->
 	        <dict><key>phrase</key><string>晴山</string><key>shortcut</key><string>せいざん</string></dict>
+	<!--        <dict><key>phrase</key><string>マス</string><key>shortcut</key><string>ます</string></dict>	(入れない: ます(丁寧の助動詞)を乗っ取る) -->
 	        <dict><key>phrase</key><string>クローニー</string><key>shortcut</key><string>くろーにー</string></dict>
 	        <dict><key>phrase</key><string>紀尾井町 福田家</string><key>shortcut</key><string>きおいちょうふくだや</string></dict>
 	        <dict><key>phrase</key><string>リューズ</string><key>shortcut</key><string>りゅーず</string></dict>
 	        <dict><key>phrase</key><string>ナリサワ</string><key>shortcut</key><string>なりさわ</string></dict>
 	        <dict><key>phrase</key><string>すきやばし 次郎 六本木店</string><key>shortcut</key><string>すきやばしじろうろっぽんぎてん</string></dict>
 	        <dict><key>phrase</key><string>赤坂 菊乃井</string><key>shortcut</key><string>あかさかきくのい</string></dict>
+	<!--        <dict><key>phrase</key><string>虎白</string><key>shortcut</key><string>こはく</string></dict>	(入れない: こはく→琥珀 の前に出る) -->
 	        <dict><key>phrase</key><string>フロリレージュ</string><key>shortcut</key><string>ふろりれーじゅ</string></dict>
 	        <dict><key>phrase</key><string>銀座 福樹</string><key>shortcut</key><string>ぎんざふくじゅ</string></dict>
 	        <dict><key>phrase</key><string>鮨 かねさか</string><key>shortcut</key><string>すしかねさか</string></dict>
@@ -499,34 +516,64 @@
 	        <dict><key>phrase</key><string>久丹</string><key>shortcut</key><string>くたん</string></dict>
 	        <dict><key>phrase</key><string>オマージュ</string><key>shortcut</key><string>おまーじゅ</string></dict>
 	<!-- □ 店名の部品・欧文表記 -->
+	<!--        <dict><key>phrase</key><string>青木</string><key>shortcut</key><string>あおき</string></dict>	(入れない: すでに候補の上位にあり、足すと並びが動くだけ) -->
 	        <dict><key>phrase</key><string>akordu</string><key>shortcut</key><string>あこるどぅ</string></dict>
+	<!--        <dict><key>phrase</key><string>ASAHINA</string><key>shortcut</key><string>あさひな</string></dict>	(入れない: 朝比奈 の前に出る) -->
+	<!--        <dict><key>phrase</key><string>石かわ</string><key>shortcut</key><string>いしかわ</string></dict>	(入れない: 石川 の前に出る) -->
 	        <dict><key>phrase</key><string>いふき</string><key>shortcut</key><string>いふき</string></dict>
 	        <dict><key>phrase</key><string>ESqUISSE</string><key>shortcut</key><string>えすきす</string></dict>
+	<!--        <dict><key>phrase</key><string>老松</string><key>shortcut</key><string>おいまつ</string></dict>	(入れない: すでに候補の上位にあり、足すと並びが動くだけ) -->
 	        <dict><key>phrase</key><string>HOMMAGE</string><key>shortcut</key><string>おまーじゅ</string></dict>
+	<!--        <dict><key>phrase</key><string>柏屋</string><key>shortcut</key><string>かしわや</string></dict>	(入れない: すでに候補の上位にあり、足すと並びが動くだけ) -->
+	<!--        <dict><key>phrase</key><string>かどわき</string><key>shortcut</key><string>かどわき</string></dict>	(入れない: 門脇 の前に出る) -->
+	<!--        <dict><key>phrase</key><string>かねさか</string><key>shortcut</key><string>かねさか</string></dict>	(入れない: すでに候補の上位にあり、足すと並びが動くだけ) -->
 	        <dict><key>phrase</key><string>KAHALA</string><key>shortcut</key><string>かはら</string></dict>
 	        <dict><key>phrase</key><string>Quintessence</string><key>shortcut</key><string>かんてさんす</string></dict>
+	<!--        <dict><key>phrase</key><string>Gastronome</string><key>shortcut</key><string>がすとろのーむ</string></dict>	(入れない: ガストロノーム の前に出る) -->
 	        <dict><key>phrase</key><string>菊乃井</string><key>shortcut</key><string>きくのい</string></dict>
 	        <dict><key>phrase</key><string>吉泉</string><key>shortcut</key><string>きちせん</string></dict>
 	        <dict><key>phrase</key><string>京懐石</string><key>shortcut</key><string>きょうかいせき</string></dict>
 	        <dict><key>phrase</key><string>京大和</string><key>shortcut</key><string>きょうやまと</string></dict>
 	        <dict><key>phrase</key><string>Crony</string><key>shortcut</key><string>くろーにー</string></dict>
+	<!--        <dict><key>phrase</key><string>建仁寺</string><key>shortcut</key><string>けんにんじ</string></dict>	(入れない: すでに候補の上位にあり、足すと並びが動くだけ) -->
 	        <dict><key>phrase</key><string>小十</string><key>shortcut</key><string>こじゅう</string></dict>
+	<!--        <dict><key>phrase</key><string>近藤</string><key>shortcut</key><string>こんどう</string></dict>	(入れない: すでに候補の上位にあり、足すと並びが動くだけ) -->
+	<!--        <dict><key>phrase</key><string>さかい</string><key>shortcut</key><string>さかい</string></dict>	(入れない: 堺/境/酒井 の前に出る) -->
+	<!--        <dict><key>phrase</key><string>さゝ木</string><key>shortcut</key><string>ささき</string></dict>	(入れない: 佐々木 の前に出る) -->
+	<!--        <dict><key>phrase</key><string>さわ田</string><key>shortcut</key><string>さわだ</string></dict>	(入れない: 沢田 の前に出る) -->
 	        <dict><key>phrase</key><string>而今</string><key>shortcut</key><string>しこん</string></dict>
+	<!--        <dict><key>phrase</key><string>しのはら</string><key>shortcut</key><string>しのはら</string></dict>	(入れない: 篠原 の前に出る) -->
 	        <dict><key>phrase</key><string>旬彩天</string><key>shortcut</key><string>しゅんさいてん</string></dict>
+	<!--        <dict><key>phrase</key><string>真</string><key>shortcut</key><string>しん</string></dict>	(入れない: しん→新/心 の前に出る) -->
 	        <dict><key>phrase</key><string>十牛庵</string><key>shortcut</key><string>じゅうぎゅうあん</string></dict>
 	        <dict><key>phrase</key><string>Joël Robuchon</string><key>shortcut</key><string>じょえるろぶしょん</string></dict>
 	        <dict><key>phrase</key><string>すきやばし次郎</string><key>shortcut</key><string>すきやばしじろう</string></dict>
+	<!--        <dict><key>phrase</key><string>草喰</string><key>shortcut</key><string>そうじき</string></dict>	(入れない: そうじき→掃除機 の前に出る) -->
+	<!--        <dict><key>phrase</key><string>田なべ</string><key>shortcut</key><string>たなべ</string></dict>	(入れない: 田辺 の前に出る) -->
+	<!--        <dict><key>phrase</key><string>つちや</string><key>shortcut</key><string>つちや</string></dict>	(入れない: 土屋 の前に出る) -->
+	<!--        <dict><key>phrase</key><string>なかしま</string><key>shortcut</key><string>なかしま</string></dict>	(入れない: 中島 の前に出る) -->
 	        <dict><key>phrase</key><string>なかひがし</string><key>shortcut</key><string>なかひがし</string></dict>
+	<!--        <dict><key>phrase</key><string>なかむら</string><key>shortcut</key><string>なかむら</string></dict>	(入れない: 中村 の前に出る) -->
 	        <dict><key>phrase</key><string>NARISAWA</string><key>shortcut</key><string>なりさわ</string></dict>
+	<!--        <dict><key>phrase</key><string>にしかわ</string><key>shortcut</key><string>にしかわ</string></dict>	(入れない: 西川 の前に出る) -->
 	        <dict><key>phrase</key><string>花墻</string><key>shortcut</key><string>はながき</string></dict>
 	        <dict><key>phrase</key><string>原正</string><key>shortcut</key><string>はらしょう</string></dict>
+	<!--        <dict><key>phrase</key><string>樋口</string><key>shortcut</key><string>ひぐち</string></dict>	(入れない: すでに候補の上位にあり、足すと並びが動くだけ) -->
 	        <dict><key>phrase</key><string>ひさ乃</string><key>shortcut</key><string>ひさの</string></dict>
+	<!--        <dict><key>phrase</key><string>福樹</string><key>shortcut</key><string>ふくじゅ</string></dict>	(入れない: 福寿 の前に出る) -->
 	        <dict><key>phrase</key><string>福田家</string><key>shortcut</key><string>ふくだや</string></dict>
+	<!--        <dict><key>phrase</key><string>フジヤ</string><key>shortcut</key><string>ふじや</string></dict>	(入れない: 藤屋 の前に出る) -->
 	        <dict><key>phrase</key><string>Fujiya 1935</string><key>shortcut</key><string>ふじやいちきゅうさんご</string></dict>
 	        <dict><key>phrase</key><string>Florilège</string><key>shortcut</key><string>ふろりれーじゅ</string></dict>
 	        <dict><key>phrase</key><string>PRISMA</string><key>shortcut</key><string>ぷりずま</string></dict>
+	<!--        <dict><key>phrase</key><string>MAZ</string><key>shortcut</key><string>ます</string></dict>	(入れない: ます(丁寧の助動詞)を乗っ取る) -->
+	<!--        <dict><key>phrase</key><string>又吉</string><key>shortcut</key><string>またよし</string></dict>	(入れない: すでに候補の上位にあり、足すと並びが動くだけ) -->
+	<!--        <dict><key>phrase</key><string>丸山</string><key>shortcut</key><string>まるやま</string></dict>	(入れない: すでに候補の上位にあり、足すと並びが動くだけ) -->
 	        <dict><key>phrase</key><string>萬亀楼</string><key>shortcut</key><string>まんかめろう</string></dict>
 	        <dict><key>phrase</key><string>ミシェル・ブラス</string><key>shortcut</key><string>みしぇるぶらす</string></dict>
+	<!--        <dict><key>phrase</key><string>宮川</string><key>shortcut</key><string>みやがわ</string></dict>	(入れない: すでに候補の上位にあり、足すと並びが動くだけ) -->
+	<!--        <dict><key>phrase</key><string>元吉</string><key>shortcut</key><string>もとよし</string></dict>	(入れない: すでに候補の上位にあり、足すと並びが動くだけ) -->
+	<!--        <dict><key>phrase</key><string>唯</string><key>shortcut</key><string>ゆい</string></dict>	(入れない: 結/由比 の前に出る) -->
 	        <dict><key>phrase</key><string>有職料理</string><key>shortcut</key><string>ゆうしょくりょうり</string></dict>
 	        <dict><key>phrase</key><string>吉寿</string><key>shortcut</key><string>よしひさ</string></dict>
 	        <dict><key>phrase</key><string>La Cime</string><key>shortcut</key><string>らしーむ</string></dict>
