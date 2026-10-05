@@ -120,6 +120,7 @@
 
 	<!-- ■ かな正書の語・句(かな識別 curated。漢字化・カタカナ化・全かなエコー抑制から守る) -->
 	<dict><key>phrase</key><string>うどんすき</string><key>shortcut</key><string>うどんすき</string><key>pos</key><string>名詞</string></dict>	<!-- うどんすき(美々卯の登録商標の鍋料理、かな表記が正式): 辞書に無く うどん好き/うどん隙 の合成ばかりだった(ユーザ指定 3329) -->
+	<dict><key>phrase</key><string>のなのか</string><key>shortcut</key><string>のなのか</string></dict>	<!-- のなのか: 所有の の+なのか(アジアのなのか/誰のなのか)。の→名(な)の連接が安く アジアの名のか になっていた(ユーザ報告 3366)。なのか 単独で登録すると 七日(なのか)を押しのけるので の ごと 1 語にする -->
 	<dict><key>phrase</key><string>もしかして</string><key>shortcut</key><string>もしかして</string></dict>	<!-- もしかして/もしかすると/もしかしたら: 辞書に 1 語で無く もし+か+し+て に割れ、末尾の て→細菌 の連接で もしかしてさいきん→もしかして細菌 になっていた。かな正書の副詞(ユーザ報告 3335) -->
 	<dict><key>phrase</key><string>もしかすると</string><key>shortcut</key><string>もしかすると</string></dict>
 	<dict><key>phrase</key><string>もしかしたら</string><key>shortcut</key><string>もしかしたら</string></dict>

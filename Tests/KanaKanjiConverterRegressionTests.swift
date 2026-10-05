@@ -20418,6 +20418,20 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(converter.candidates(for: "さんか", limit: 40, systemCandidateMode: .surface).contains("讚歌"))
     }
 
+    // 3366: あじあのなのか が アジアの名のか 先頭だった(ユーザ報告)。の→名(な)が安い。のなのか を misc に 1 語で登録
+    // (なのか 単独で登録すると 七日 を押しのける)
+    func testRegressionRealLMAjiaNoNanoka() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for (reading, expected) in [("あじあのなのか", "アジアのなのか"), ("だれのなのか", "誰のなのか"), ("わたしのなのか", "私のなのか"),
+                                    ("あじあのなのかな", "アジアのなのかな"), ("はなのなのゆらい", "花の名の由来")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "\(reading) \(multi)")
+        }
+        // 2 番目以降の変種も なのか のまま(亜細亜の名のか のような混ざりが出ない)
+        XCTAssertFalse(converter.multiClauseCandidates(for: "あじあのなのか", systemCandidateMode: .surface).contains { $0.contains("名") })
+    }
+
     // 3365: しています/していない を単独で打つと 指定ます/子弟ない が先頭だった(前の語と切って打つのはよくある打ち方)。
     // LM は い+ます で数えていて て→います/いない が高く、文頭の して が未知語扱いだった。て/で+います/いない の組に加点
     func testRegressionRealLMShiteimasu() throws {
