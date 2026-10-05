@@ -256,6 +256,8 @@ final class KeyboardViewController: UIInputViewController {
     var spaceToastTrigger = 0
     var composingRawText = ""
     var composingReading = ""
+    // 欧文サジェストを確定して自動で空白を付けた直後なら、その候補(句読点で空白を前へ詰める判定用。3373)
+    var latinSuggestionAutoSpacedWord: String?
     var hasParenthesesWrapper = false
     var activeConversion: ActiveConversion?
     var recentKanaPlainCommit: RecentKanaPlainCommit?

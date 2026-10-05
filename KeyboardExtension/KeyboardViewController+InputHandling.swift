@@ -16,6 +16,11 @@ extension KeyboardViewController {
 
         clearRecentKanaPlainCommitUpgradeContext()
 
+        if consumeLatinSuggestionAutoSpace(beforeInserting: text) {
+            refreshKeyboardStateAsync()
+            return
+        }
+
         if currentInputMode == .kana,
             let activeConversion,
             shouldAutoCommitConversion(beforeInserting: text) {
@@ -171,6 +176,7 @@ extension KeyboardViewController {
     }
 
     func handleDeleteBackward() {
+        latinSuggestionAutoSpacedWord = nil
         reconcileHostCommittedMarkedTextIfNeeded(trigger: "deleteBackward")
         if revertIdleCommitToComposingIfNeeded() {
             return
@@ -418,6 +424,48 @@ extension KeyboardViewController {
         markTextProxyEdit()
         textDocumentProxy.insertText(suggestion)
         clearComposingState()
+
+        // 純正の予測変換と同じく、確定した語の後ろに空白を 1 つ付ける(カーソルの直後が既に空白なら付けない。3373)
+        let nextCharacter = textDocumentProxy.documentContextAfterInput?.first
+        if nextCharacter.map({ !$0.isWhitespace }) ?? true {
+            markTextProxyEdit()
+            textDocumentProxy.insertText(" ")
+            latinSuggestionAutoSpacedWord = suggestion
+        } else {
+            latinSuggestionAutoSpacedWord = nil
+        }
+    }
+
+    // 欧文サジェストで付けた空白の直後に句読点を打ったら、空白を句読点の後ろへ回す(Birds , → Birds, )。純正と同じ動き(3373)
+    static let latinAutoSpaceSwappingPunctuation: Set<String> = [".", ",", "!", "?", ";", ":"]
+    // こちらは空白を消して語の直後に付けるだけ(後ろに空白を付けない)。日本語の句読点と閉じ括弧・閉じ引用符
+    // (『A』が『A 』にならない)。かな入力・数字入力に切り替えて打っても効く(3373)
+    static let latinAutoSpaceAbsorbingPunctuation: Set<String> = [
+        "。", "、", "，", "．", "！", "？", "：", "；", "…", "・",
+        "』", "」", "）", "】", "〉", "》", "〕", "］", "｝", "”", "’",
+        ")", "]", "}", "\"", "'",
+    ]
+
+    func consumeLatinSuggestionAutoSpace(beforeInserting text: String) -> Bool {
+        guard let word = latinSuggestionAutoSpacedWord else {
+            return false
+        }
+
+        latinSuggestionAutoSpacedWord = nil
+
+        let swaps = Self.latinAutoSpaceSwappingPunctuation.contains(text)
+        guard swaps || Self.latinAutoSpaceAbsorbingPunctuation.contains(text),
+            composingRawText.isEmpty,
+            activeConversion == nil,
+            currentTextContextBeforeInput().hasSuffix(word + " ") else {
+            return false
+        }
+
+        markTextProxyEdit()
+        textDocumentProxy.deleteBackward()
+        markTextProxyEdit()
+        textDocumentProxy.insertText(swaps ? text + " " : text)
+        return true
     }
 
     func handleCommitComposingText() {
