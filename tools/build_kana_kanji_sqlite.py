@@ -83,6 +83,15 @@ def parse_args() -> argparse.Namespace:
         ),
     )
     parser.add_argument(
+        "--trailing-vocab-json",
+        action="append",
+        default=[],
+        help=(
+            "--vocab-json の後ろに足す語彙(病名 médicaux)。同じ読みでは先行語彙より後ろの rank に入り、"
+            "Sudachi コストを持たない語には先行語彙の語より弱い既定コストを付ける(一般語を押しのけない)。Repeatable."
+        ),
+    )
+    parser.add_argument(
         "--output",
         required=True,
         help="Output SQLite file path",
@@ -258,6 +267,7 @@ def build_sqlite(
     costs: Dict[str, Dict[str, int]] = {},
     word_lm=None,
     person_names: Dict[str, Dict[str, str]] = {},
+    trailing_pairs: Set[Tuple[str, str]] = set(),
 ) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     if output_path.exists():
@@ -407,10 +417,30 @@ def build_sqlite(
                 else DEFAULT_SUPPLEMENTAL_VOCAB_COST_SHORT
             )
             for candidate in candidate_set:
-                if (reading, candidate) in seen_cost_keys:
+                if (reading, candidate) in seen_cost_keys or (reading, candidate) in trailing_pairs:
                     continue
                 cost_rows.append((reading, candidate, default_cost))
                 seen_cost_keys.add((reading, candidate))
+
+        # 後置き語彙(病名 médicaux)は、同じ読みに先行語彙の語があればそのどれよりも 1 だけ弱くする。
+        # 既定 7500 のままだと 抗菌性(11850)/水溶性(10874) より強くなり、拘禁性/水様性 が先頭に出た
+        cost_of = {(r, c): cost for r, c, cost in cost_rows}
+        for reading, candidate in sorted(trailing_pairs):
+            if (reading, candidate) in seen_cost_keys:
+                continue
+            default_cost = (
+                DEFAULT_SUPPLEMENTAL_VOCAB_COST
+                if len(reading) >= 4
+                else DEFAULT_SUPPLEMENTAL_VOCAB_COST_SHORT
+            )
+            rival_costs = [
+                cost_of[(reading, other)]
+                for other in dictionary_candidate_set.get(reading, set())
+                if (reading, other) not in trailing_pairs and (reading, other) in cost_of
+            ]
+            cost = max([default_cost] + [c + 1 for c in rival_costs])
+            cost_rows.append((reading, candidate, cost))
+            seen_cost_keys.add((reading, candidate))
 
         cost_by_key: Dict[Tuple[str, str], int] = {(r, c): cost for r, c, cost in cost_rows}
         conn.executemany(
@@ -489,6 +519,15 @@ def main() -> int:
             raise FileNotFoundError(path)
 
     vocab = merge_vocab(vocab_paths)
+    trailing_paths = [Path(path) for path in args.trailing_vocab_json]
+    trailing_pairs: Set[Tuple[str, str]] = set()
+    if trailing_paths:
+        leading = {reading: set(candidates) for reading, candidates in vocab.items()}
+        vocab = merge_vocab(vocab_paths + trailing_paths)
+        for reading, candidates in merge_vocab(trailing_paths).items():
+            for candidate in candidates:
+                if candidate not in leading.get(reading, set()):
+                    trailing_pairs.add((reading, candidate))
     sources = merge_sources(source_paths)
     # 補助語彙(plist)の候補は作者が選んだ表記なので、Sudachi 側のタグに依らず正規化モードでも出す(2897)。
     # うお座 は Sudachi では 魚座 の surface 異表記(surface タグのみ)で、normalise モードでは候補から消えていた
@@ -522,6 +561,7 @@ def main() -> int:
         costs=costs,
         word_lm=word_lm,
         person_names=person_names,
+        trailing_pairs=trailing_pairs,
     )
     return 0
 
