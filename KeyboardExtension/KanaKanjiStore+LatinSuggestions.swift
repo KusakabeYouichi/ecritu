@@ -86,24 +86,30 @@ extension KanaKanjiStore {
     // やり直して段階的に縮める(grand ch→ch)。空白入りentry(追加語彙のワイン語句等)の
     // 最長一致補完を優先しつつ、1語entryしか無い汎用リストも2語目以降で効くようにする。
     func latinSuggestions(prefix: String, limit: Int) -> [String] {
+        latinSuggestionsWithMatchedQuery(prefix: prefix, limit: limit).results
+    }
+
+    // 候補と、その候補が一致した問い合わせ(縮めた後の部分)。候補をタップしたときに置き換えるのは
+    // この部分だけ(Early Bir で Birds を選んで Early まで消していた。3372)
+    func latinSuggestionsWithMatchedQuery(prefix: String, limit: Int) -> (results: [String], matchedQuery: String) {
         var query = prefix
 
         while true {
             let results = latinSuggestionsForToken(prefix: query, limit: limit)
 
             if !results.isEmpty {
-                return results
+                return (results, query)
             }
 
             guard let boundary = query.rangeOfCharacter(from: .whitespacesAndNewlines) else {
-                return []
+                return ([], "")
             }
 
             query = String(query[boundary.upperBound...])
                 .trimmingCharacters(in: .whitespacesAndNewlines)
 
             guard !query.isEmpty else {
-                return []
+                return ([], "")
             }
         }
     }
