@@ -20934,6 +20934,21 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(kizu.first?.contains("出やすい") ?? false, "multi=\(kizu.prefix(4))")
     }
 
+    // 3395: お+語幹 の合成は、語幹が LM に無いか珍しいものを作らない(おりょうり の お料り/お良吏/お綾里)
+    func testPolitePrefixSkipsRareStems() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let ryouri = converter.candidates(for: "おりょうり", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(ryouri.first, "お料理", "\(ryouri)")
+        for junk in ["お料り", "お良吏", "お綾里"] {
+            XCTAssertFalse(ryouri.contains(junk), "\(junk): \(ryouri)")
+        }
+        // 普通の お+語 は残る
+        XCTAssertTrue(converter.candidates(for: "おさけ", limit: 6, systemCandidateMode: .surface).contains("お酒"))
+        XCTAssertTrue(converter.candidates(for: "おもち", limit: 6, systemCandidateMode: .surface).contains("お持ち"))
+        XCTAssertEqual(converter.candidates(for: "おべんきょう", limit: 3, systemCandidateMode: .surface).first, "お勉強")
+    }
+
     func testAcceaRegistered() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
