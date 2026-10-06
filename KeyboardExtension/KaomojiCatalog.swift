@@ -380,31 +380,6 @@ enum KaomojiCatalog {
         "surprise", "colere", "decu", "amour", "excite", "timide", "dodo", "triste", "action"
     ]
 
-    // 旧キー(日本語名)→新キー。保存済み設定(かな後置修飾の空タップ先 imported:笑 等)の読み替え用
-    static let legacyCategoryKeys: [String: String] = [
-        "笑": "rire",
-        "かわいい": "kawaii",
-        "照れ": "timide",
-        "焦り": "panique",
-        "しょぼん": "decu",
-        "悲": "triste",
-        "怒": "colere",
-        "驚き": "surprise",
-        "くそねみ": "dodo",
-        "挨拶": "coucou",
-        "ラブ": "amour",
-        "激しい": "excite",
-        "うごき": "action",
-        "キモい": "bizarre",
-        "キャラ": "heros",
-        "特殊": "special",
-        "ライン": "lignes",
-    ]
-
-    static func canonicalCategoryKey(_ key: String) -> String {
-        legacyCategoryKeys[key] ?? key
-    }
-
     static let importedEntriesByCategory: [String: [String]] = [
         "heros": [
             "(=^^=)",
