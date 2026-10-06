@@ -298,6 +298,7 @@
 	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>麴塵</string><key>shortcut</key><string>あおいろ</string></dict> -->
 
 	<!-- ■ 現代的に流行っていない言い方(古語・文語・旧仮名・非標準表記) -->
+	<dict><key>phrase</key><string>あのォ</string><key>shortcut</key><string>あの</string></dict>	<!-- あのォ: 非標準の小書き表記。あの の 3 位に出て あのォ手帖 のような合成も作っていた(ユーザ報告 3396) -->
 	<dict><key>phrase</key><string>少い</string><key>shortcut</key><string>すくない</string></dict>	<!-- 少ない の旧送り仮名。派生 少く/少かった が 少なく の隣に並び紛らわしい(ユーザ指定 2732) -->
 	<dict><key>phrase</key><string>相する</string><key>shortcut</key><string>そうする</string></dict>	<!-- 文語サ変(人相を見る)。そうしちゃう の候補に 相しちゃう が並び雑音(ユーザ指定 2740) -->
 	<dict><key>phrase</key><string>草する</string><key>shortcut</key><string>そうする</string></dict>	<!-- 文語サ変(草稿を書く)。同上 -->

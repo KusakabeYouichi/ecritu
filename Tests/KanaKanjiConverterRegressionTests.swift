@@ -20949,6 +20949,16 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.candidates(for: "おべんきょう", limit: 3, systemCandidateMode: .surface).first, "お勉強")
     }
 
+    // 3396: あのてちょうを は あの手帳を/あの手帖を(あの→手 の慣用句の統計で あの手長を になっていた)。あのォ は抑制
+    func testAnoTechouAndAnoTeKonoTe() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let techou = converter.multiClauseCandidates(for: "あのてちょうを", systemCandidateMode: .surface)
+        XCTAssertTrue(["あの手帳を", "あの手帖を"].contains(techou.first ?? ""), "multi=\(techou.prefix(4))")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "あのてこのてで", systemCandidateMode: .surface).first, "あの手この手で")
+        XCTAssertFalse(converter.candidates(for: "あの", limit: 8, systemCandidateMode: .surface).contains("あのォ"))
+    }
+
     func testAcceaRegistered() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
