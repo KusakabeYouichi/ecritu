@@ -1,5 +1,9 @@
 name: iOS CI
 
+# git に入っている状態だけから Release ビルドが通るかを見る(3408)。
+# テストは回さない: 変換のテストは tmp/(git 管理外、約 1.9GB)から作る辞書が前提で、ここでは用意できない。
+# 全網テストは手元でコミット前に回す。ここで拾いたいのは手元では気づけない失敗
+# (pbxproj の登録漏れ・コミットし忘れ・新しい clone だけで壊れる設定・Release だけのコンパイラ異常終了)
 on:
   pull_request:
   push:
@@ -8,16 +12,29 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-test:
-    runs-on: macos-15
-    timeout-minutes: 30
+  release-build:
+    runs-on: macos-26
+    timeout-minutes: 40
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Show Xcode version
-        run: xcodebuild -version
+      - name: Select Xcode 27
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          XCODE_APP="$(ls -d /Applications/Xcode_27*.app 2>/dev/null | sort -V | tail -n 1 || true)"
+
+          if [[ -z "$XCODE_APP" ]]; then
+            echo "Xcode 27 not found on this runner" >&2
+            ls -d /Applications/Xcode*.app >&2 || true
+            exit 1
+          fi
+
+          sudo xcode-select -s "$XCODE_APP/Contents/Developer"
+          xcodebuild -version
 
       - name: Normalize shared scheme
         run: bash tools/normalize_unicode_project_names.sh
@@ -25,36 +42,17 @@ jobs:
       - name: Swift style check
         run: bash tools/check_top_level_brace_blank_lines.sh
 
-      - name: Pick an available iPhone simulator
-        id: simulator
+      - name: Release build
         shell: bash
         run: |
           set -euo pipefail
-
-          SIM_UDID="$(xcrun simctl list devices available | sed -nE 's/^[[:space:]]*iPhone[^()]* \(([A-F0-9-]+)\) \((Booted|Shutdown)\).*/\1/p' | head -n 1)"
-
-          if [[ -z "$SIM_UDID" ]]; then
-            echo "No available iPhone simulator found" >&2
-            xcrun simctl list devices available
-            exit 1
-          fi
-
-          echo "Selected simulator: $SIM_UDID"
-          echo "udid=$SIM_UDID" >> "$GITHUB_OUTPUT"
-
-      - name: Build and run tests
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          xcrun simctl boot "${{ steps.simulator.outputs.udid }}" >/dev/null 2>&1 || true
-          xcrun simctl bootstatus "${{ steps.simulator.outputs.udid }}" -b
 
           xcodebuild \
             -project "écritu.xcodeproj" \
             -scheme "écritu" \
-            -destination "id=${{ steps.simulator.outputs.udid }}" \
+            -configuration Release \
+            -destination "generic/platform=iOS" \
             -derivedDataPath "build-ci" \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
-            test
+            build
