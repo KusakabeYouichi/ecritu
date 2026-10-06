@@ -405,6 +405,7 @@
 	<dict><key>phrase</key><string>顔</string><key>shortcut</key><string>かお</string></dict>	<!-- 顔: curated のか(疑問形)が 〜のかお を のか+お に分断し 顔 のスパンが消える(あんたのかおなんかいもみたい→あんたのかお南海揉みたい、変種に 乃佳お 等)。ろーまにいたる事件の処方箋どおり、分断される側の 顔 も curated 化して同床で文節数の少ない区切りを勝たせる -->	<!-- Sudachiにもある -->
 
 	<!-- ■ 同音・同読みの優先順の是正(コーパスのコスト/バイアスを頻度実感に寄せる) -->
+	<dict><key>phrase</key><string>吉野家</string><key>shortcut</key><string>よしのや</string></dict>	<!-- 吉野家: Sudachi に有るが wc10000(収穫底値)で 吉野屋/吉ノ谷 と同列に後ろへ回され、吉野+や の合成が先頭だった(ユーザ報告 3380)。牛丼チェーンの社名 -->	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>禿げる</string><key>shortcut</key><string>はげる</string></dict>	<!-- 禿げる: Sudachi に有り dict rank0 だが LM uni 未収録(=連文節ノード8700)で、は+ゲル(uni6785)の断片連結に負ける(おおいとはげるよ→多いとはゲルよ)。curated で連文節を担保(供給欠落ではないので本節。2742) -->
 	<dict><key>phrase</key><string>これ安い</string><key>shortcut</key><string>これやすい</string></dict>	<!-- これ安い: 口語の 指示詞+形容詞(これ、安い)。活用合成(来れやすい 等)しか出ず、ユーザ第一希望の これ安い が組めないため curated 供給 -->
 	<dict><key>phrase</key><string>夜行性</string><key>shortcut</key><string>やこうせい</string></dict>	<!-- 夜行性: Sudachi実在だが wc10555 のジャンク級+LM unigram 7792 で、や(2998)+後世(bigram4885)+の(413) の接着剤ジャンクに1979差で負ける(やこうせいのどうぶつ→や後世の動物) -->	<!-- Sudachiにもある -->
