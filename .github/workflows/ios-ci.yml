@@ -13,27 +13,18 @@ on:
 
 jobs:
   release-build:
-    runs-on: macos-26
+    # macos-26 には Xcode 26 しか無い。Xcode 27 は専用イメージ(公開プレビュー)にある
+    runs-on: xcode-27
     timeout-minutes: 40
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Select Xcode 27
-        shell: bash
+      # 手元と同じ 27.0 に固定する(イメージには 27.1 / 27.2 beta も入っている)
+      - name: Select Xcode 27.0
         run: |
-          set -euo pipefail
-
-          XCODE_APP="$(ls -d /Applications/Xcode_27*.app 2>/dev/null | sort -V | tail -n 1 || true)"
-
-          if [[ -z "$XCODE_APP" ]]; then
-            echo "Xcode 27 not found on this runner" >&2
-            ls -d /Applications/Xcode*.app >&2 || true
-            exit 1
-          fi
-
-          sudo xcode-select -s "$XCODE_APP/Contents/Developer"
+          sudo xcode-select -s /Applications/Xcode_27.0.app/Contents/Developer
           xcodebuild -version
 
       - name: Normalize shared scheme
