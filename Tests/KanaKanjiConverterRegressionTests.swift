@@ -20894,6 +20894,32 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(list.prefix(9)), ["席", "咳", "堰", "積", "責", "関", "籍", "咳き", "寂"], "\(list)")
     }
 
+    // 3390: 英字の直後の がた は 型 を先頭(A型)
+    func testLatinContextGataPrefersKata() {
+        let boosted = KanaKanjiConverter.latinContextPreferredCandidates(["がた", "ガタ", "方", "型", "形"], reading: "がた", precedingCharacter: "A")
+        XCTAssertEqual(boosted.first, "型")
+        XCTAssertEqual(KanaKanjiConverter.latinContextPreferredCandidates(["がた", "型"], reading: "がた", precedingCharacter: "あ").first, "がた")
+    }
+
+    // 3391: かんき は 換気/寒気/乾期/歓喜/喚起…で 神吉 は 8 位以降。かんきのよくない は 換気のよくない/換気の良くない
+    // 3392: がいしょう は 外相/外商/外傷/街娼/凱章/概称/外照/外省(街しょう は抑制)
+    // 3393: みやこ は 都/宮古/京都/美耶子
+    func testKankiGaishouMiyakoOrder() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let kanki = converter.candidates(for: "かんき", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(kanki.prefix(5)), ["換気", "寒気", "乾期", "歓喜", "喚起"], "\(kanki)")
+        XCTAssertGreaterThanOrEqual(kanki.firstIndex(of: "神吉") ?? 99, 7, "\(kanki)")
+        let kankiMulti = converter.multiClauseCandidates(for: "かんきのよくない", systemCandidateMode: .surface)
+        XCTAssertEqual(kankiMulti.first, "換気のよくない", "multi=\(kankiMulti.prefix(4))")
+        XCTAssertTrue(kankiMulti.prefix(4).contains("換気の良くない"), "multi=\(kankiMulti.prefix(4))")
+        let gaishou = converter.candidates(for: "がいしょう", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(gaishou.prefix(8)), ["外相", "外商", "外傷", "街娼", "凱章", "概称", "外照", "外省"], "\(gaishou)")
+        XCTAssertFalse(gaishou.contains("街しょう"), "\(gaishou)")
+        let miyako = converter.candidates(for: "みやこ", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(miyako.prefix(4)), ["都", "宮古", "京都", "美耶子"], "\(miyako)")
+    }
+
     func testAcceaRegistered() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
