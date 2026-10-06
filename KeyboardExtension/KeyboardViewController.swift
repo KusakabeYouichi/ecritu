@@ -491,13 +491,7 @@ final class KeyboardViewController: UIInputViewController {
         static let adjectiveMeKanjiCandidatesEnabled = "adjectiveMeKanjiCandidatesEnabled"
         static let suspendMemorySlimmingEnabled = "suspendMemorySlimmingEnabled"
         static let kaomojiCandidateDisplayEnabled = "kaomojiCandidateDisplayEnabled"
-        static let contactCandidatesByReadingCache = "contactCandidatesByReadingCache"
-        // AES-GCM封緘版(平文キーは移行後に削除される)
-        static let contactCandidatesByReadingCacheSealed = "contactCandidatesByReadingCacheSealed"
-        // 畳んだ表を封緘した版(3020)
-        static let contactCandidatesByReadingCacheCompactSealed = "contactCandidatesByReadingCacheCompactSealed"
         static let contactCandidatesByReadingCacheCompactSealedStamp = "contactCandidatesByReadingCacheCompactSealedStamp"
-        static let supplementaryLexiconIndexCacheByReading = "supplementaryLexiconIndexCacheByReading"
         static let supplementaryLexiconIndexSignature = "supplementaryLexiconIndexSignature"
         static let keyboardDiagnosticsLogLines = "keyboardDiagnosticsLogLines"
         // 重大イベント(メモリ警告/最終手段アンロード/フェイルセーフ遷移)の保護ログ。
