@@ -21005,7 +21005,11 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "おんをかえす", systemCandidateMode: .surface).first, "恩を返す")
         XCTAssertEqual(converter.candidates(for: "できえる", limit: 3, systemCandidateMode: .surface).first, "で消える")
         XCTAssertTrue(converter.multiClauseCandidates(for: "できえる", systemCandidateMode: .surface).first.map { $0 == "で消える" } ?? true)
-        XCTAssertEqual(converter.multiClauseCandidates(for: "できえるかぎり", systemCandidateMode: .surface).first, "出来得る限り")
+        // 3401: 出来得る は できうる で出す(できえる の読みは抑制)
+        XCTAssertFalse(converter.candidates(for: "できえる", limit: 6, systemCandidateMode: .surface).contains("出来得る"))
+        let dekiuru = converter.multiClauseCandidates(for: "できうるかぎり", systemCandidateMode: .surface)
+        let dekiuruShown = dekiuru.isEmpty ? converter.candidates(for: "できうるかぎり", limit: 3, systemCandidateMode: .surface) : dekiuru
+        XCTAssertEqual(dekiuruShown.first, "出来得る限り", "\(dekiuruShown.prefix(3))")
         XCTAssertEqual(converter.multiClauseCandidates(for: "そこできえる", systemCandidateMode: .surface).first, "そこで消える")
     }
 
