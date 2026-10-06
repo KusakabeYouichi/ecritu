@@ -411,7 +411,11 @@ extension KeyboardViewController {
             reading: cacheKey.reading
         )
         let boosted = KanaKanjiConverter.digitContextCounterBoostedCandidates(
-            promoted,
+            KanaKanjiConverter.latinContextPreferredCandidates(
+                promoted,
+                reading: cacheKey.reading,
+                precedingCharacter: textDocumentProxy.documentContextBeforeInput?.last
+            ),
             reading: cacheKey.reading,
             precedingCharacter: textDocumentProxy.documentContextBeforeInput?.last,
             suppressedCandidates: kanaKanjiConverter.store

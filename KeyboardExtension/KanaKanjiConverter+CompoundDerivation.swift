@@ -646,6 +646,23 @@ extension KanaKanjiConverter {
         "かいそう": ["階層"]
     ]
 
+    // 英字の直後で先頭に来るべき語(ユーザー指定 3390)。A確定→がた→A型(既定は がた/ガタ/方/型 の順で 型 が出なかった)
+    static let latinContextPreferredSurfacesByReading: [String: [String]] = [
+        "がた": ["型"]
+    ]
+
+    static func latinContextPreferredCandidates(
+        _ candidates: [String],
+        reading: String,
+        precedingCharacter: Character?
+    ) -> [String] {
+        guard let precedingCharacter, precedingCharacter.isASCII, precedingCharacter.isLetter,
+            let preferred = latinContextPreferredSurfacesByReading[reading] else {
+            return candidates
+        }
+        return preferred + candidates.filter { !preferred.contains($0) }
+    }
+
     static func digitBoostCounterSurfaces(for reading: String) -> [String]? {
         let base = numericCounterSuffixCandidatesByReading[reading]
         let extra = digitContextAdditionalCounterSurfacesByReading[reading]
