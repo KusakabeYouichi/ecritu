@@ -20854,6 +20854,24 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "だいじだとおもう", systemCandidateMode: .surface).first, "大事だと思う")
     }
 
+    // 3385: おてすうかけます は お手数掛けます / お手数かけます(お手数欠けます が先頭だった)
+    // 3386: いわゆるかぜや は いわゆる風邪や(いわゆる風屋 だった)
+    // 3387: こつ は コツ が先頭(カタカナ化の抑制で後ろに回っていた)
+    func testOtesuuIwayuruKazeAndKotsu() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let tesuu = converter.candidates(for: "おてすうかけます", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(tesuu.prefix(2)), ["お手数掛けます", "お手数かけます"], "\(tesuu)")
+        let tesuuMulti = converter.multiClauseCandidates(for: "おてすうかけます", systemCandidateMode: .surface)
+        XCTAssertTrue(tesuuMulti.isEmpty || tesuuMulti.first == "お手数掛けます", "multi=\(tesuuMulti.prefix(4))")
+        let kaze = converter.multiClauseCandidates(for: "いわゆるかぜや", systemCandidateMode: .surface)
+        XCTAssertEqual(kaze.first, "いわゆる風邪や", "multi=\(kaze.prefix(4))")
+        // 風 が自然な文脈は変えない
+        XCTAssertEqual(converter.multiClauseCandidates(for: "つよいかぜがふく", systemCandidateMode: .surface).first, "強い風が吹く")
+        let kotsu = converter.candidates(for: "こつ", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(kotsu.first, "コツ", "\(kotsu)")
+    }
+
     func testAcceaRegistered() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
