@@ -24,22 +24,22 @@
 	<dict><key>phrase</key><string>箇箇</string><key>shortcut</key><string>ここ</string></dict>
 	<dict><key>phrase</key><string>呱々</string><key>shortcut</key><string>ここ</string></dict>
 	<!--<dict><key>phrase</key><string>流石</string><key>shortcut</key><string>さすが</string></dict>	(かなで書く言葉 kanagaki.plist へ移した。X.8 の設定で抑制する 3404) -->
-	<dict><key>phrase</key><string>早速</string><key>shortcut</key><string>さっそく</string></dict>
-	<dict><key>phrase</key><string>更に</string><key>shortcut</key><string>さらに</string></dict>
+	<!--<dict><key>phrase</key><string>早速</string><key>shortcut</key><string>さっそく</string></dict>	(かなで書く言葉 kanagaki.plist へ移した。X.8 の設定で抑制する 3405) -->
+	<!--<dict><key>phrase</key><string>更に</string><key>shortcut</key><string>さらに</string></dict>	(かなで書く言葉 kanagaki.plist へ移した。X.8 の設定で抑制する 3405) -->
 	<!--<dict><key>phrase</key><string>然し</string><key>shortcut</key><string>しかし</string></dict>	(かなで書く言葉 kanagaki.plist へ移した。X.8 の設定で抑制する 3404) -->
 	<!--<dict><key>phrase</key><string>暫く</string><key>shortcut</key><string>しばらく</string></dict>	(かなで書く言葉 kanagaki.plist へ移した。X.8 の設定で抑制する 3404) -->
-	<dict><key>phrase</key><string>既に</string><key>shortcut</key><string>すでに</string></dict>
-	<dict><key>phrase</key><string>全て</string><key>shortcut</key><string>すべて</string></dict>
+	<!--<dict><key>phrase</key><string>既に</string><key>shortcut</key><string>すでに</string></dict>	(かなで書く言葉 kanagaki.plist へ移した。X.8 の設定で抑制する 3405) -->
+	<!--<dict><key>phrase</key><string>全て</string><key>shortcut</key><string>すべて</string></dict>	(かなで書く言葉 kanagaki.plist へ移した。X.8 の設定で抑制する 3405) -->
 	<!--<dict><key>phrase</key><string>但し</string><key>shortcut</key><string>ただし</string></dict>	(かなで書く言葉 kanagaki.plist へ移した。X.8 の設定で抑制する 3404) -->
 	<!--<dict><key>phrase</key><string>尚</string><key>shortcut</key><string>なお</string></dict>	(かなで書く言葉 kanagaki.plist へ移した。X.8 の設定で抑制する 3404) -->
 	<dict><key>phrase</key><string>遣る</string><key>shortcut</key><string>やる</string></dict>
 	<dict><key>phrase</key><string>為る</string><key>shortcut</key><string>する</string></dict>
 	<dict><key>phrase</key><string>仕る</string><key>shortcut</key><string>する</string></dict>
 	<dict><key>phrase</key><string>不味い</string><key>shortcut</key><string>まずい</string></dict>
-	<dict><key>phrase</key><string>又は</string><key>shortcut</key><string>または</string></dict>
-	<dict><key>phrase</key><string>全く</string><key>shortcut</key><string>まったく</string></dict>
+	<!--<dict><key>phrase</key><string>又は</string><key>shortcut</key><string>または</string></dict>	(かなで書く言葉 kanagaki.plist へ移した。X.8 の設定で抑制する 3405) -->
+	<!--<dict><key>phrase</key><string>全く</string><key>shortcut</key><string>まったく</string></dict>	(かなで書く言葉 kanagaki.plist へ移した。X.8 の設定で抑制する 3405) -->
 	<!--<dict><key>phrase</key><string>若しくは</string><key>shortcut</key><string>もしくは</string></dict>	(かなで書く言葉 kanagaki.plist へ移した。X.8 の設定で抑制する 3404) -->
-	<dict><key>phrase</key><string>最早</string><key>shortcut</key><string>もはや</string></dict>
+	<!--<dict><key>phrase</key><string>最早</string><key>shortcut</key><string>もはや</string></dict>	(かなで書く言葉 kanagaki.plist へ移した。X.8 の設定で抑制する 3405) -->
 	<dict><key>phrase</key><string>故に</string><key>shortcut</key><string>ゆえに</string></dict>
 	<dict><key>phrase</key><string>美味い</string><key>shortcut</key><string>うまい</string></dict>	<!-- うまい はかな書きを優先 -->
 
