@@ -20811,6 +20811,16 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(walk.first, "犬とお散歩に行く", "multi=\(walk.prefix(4))")
     }
 
+    // 3380: よしのや は 吉野家 が先頭(Sudachi の wc10000 で後ろに回され 吉野+や の合成が先頭だった)
+    func testYoshinoyaRegistered() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let list = converter.candidates(for: "よしのや", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(list.first, "吉野家", "\(list)")
+        let multi = converter.multiClauseCandidates(for: "よしのやでたべた", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "吉野家で食べた", "multi=\(multi.prefix(4))")
+    }
+
     func testAcceaRegistered() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
