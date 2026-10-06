@@ -5,31 +5,6 @@ import Darwin
 import Contacts
 
 extension ContentView {
-    func clearLegacyKeyboardDebugLogKeysIfNeeded() {
-        guard let defaults = Self.sharedDefaults,
-            !defaults.bool(forKey: SettingsKeys.legacyKeyboardDebugLogCleanupCompleted) else {
-            return
-        }
-
-        let legacyKeys = [
-            "keyboardLayoutDebugLines",
-            "keyboardLayoutDebugHeartbeat",
-            "keyboardLayoutDebugReporterBundleID",
-            "keyboardLayoutDebugReporterAppGroupID",
-            "keyboardLayoutDebugLastEvent",
-            "keyboardInputProbeCount",
-            "keyboardInputProbeHeartbeat",
-            "keyboardInputProbeLastEvent",
-            "keyboardInputProbeLastText"
-        ]
-
-        for key in legacyKeys {
-            defaults.removeObject(forKey: key)
-        }
-
-        defaults.set(true, forKey: SettingsKeys.legacyKeyboardDebugLogCleanupCompleted)
-    }
-
     func keyboardExtensionBundleForDiagnostics() -> Bundle? {
         guard let pluginsURL = Bundle.main.builtInPlugInsURL,
             let pluginURLs = try? FileManager.default.contentsOfDirectory(
