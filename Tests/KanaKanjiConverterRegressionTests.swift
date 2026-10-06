@@ -14686,7 +14686,8 @@ extension KanaKanjiConverterRegressionTests {
     func testRegressionRealLMCounterGapsAndHitoInai() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
-        for (reading, want) in [("び", "尾"), ("わ", "羽"), ("はい", "倍"), ("つう", "通"), ("びん", "便"), ("ぜん", "膳"),
+        // はい は 杯(3398 で直した。以前は 倍 を期待していたが、倍 は ばい としか読まない)
+        for (reading, want) in [("び", "尾"), ("わ", "羽"), ("はい", "杯"), ("つう", "通"), ("びん", "便"), ("ぜん", "膳"),
                                 ("とん", "トン"), ("じげん", "次元")] {
             let cands = converter.candidates(for: reading, limit: 16, systemCandidateMode: .surface)
             let boosted = KanaKanjiConverter.digitContextCounterBoostedCandidates(cands, reading: reading, precedingCharacter: "2")
@@ -20974,6 +20975,22 @@ extension KanaKanjiConverterRegressionTests {
         // こう を含むほかの語は変えない
         XCTAssertEqual(converter.candidates(for: "こう", limit: 3, systemCandidateMode: .surface).first, "こう")
         XCTAssertEqual(converter.candidates(for: "けんこう", limit: 3, systemCandidateMode: .surface).first, "健康")
+    }
+
+    // 3398: 数字の直後の はい は 杯(倍 は ばい としか読まない)。2はいと→2杯と
+    func testDigitThenHaiIsHaiCounter() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let hai = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+            converter.candidates(for: "はい", limit: 16, systemCandidateMode: .surface), reading: "はい", precedingCharacter: "2")
+        XCTAssertEqual(hai.first, "杯", "\(hai.prefix(4))")
+        XCTAssertFalse(hai.prefix(3).contains("倍"), "\(hai.prefix(4))")
+        let haito = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+            converter.candidates(for: "はいと", limit: 16, systemCandidateMode: .surface), reading: "はいと", precedingCharacter: "2")
+        XCTAssertEqual(haito.first, "杯と", "\(haito.prefix(4))")
+        let bai = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+            converter.candidates(for: "ばい", limit: 16, systemCandidateMode: .surface), reading: "ばい", precedingCharacter: "3")
+        XCTAssertEqual(Array(bai.prefix(2)), ["倍", "杯"], "\(bai.prefix(4))")
     }
 
     func testAcceaRegistered() throws {
