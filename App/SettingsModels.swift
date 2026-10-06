@@ -202,8 +202,7 @@ enum KanaModifierPlacementOption: String, CaseIterable, Identifiable {
     }
 }
 
-// フリック方向の割り当て。画面上の名前をそのまま永続値にする(3036)。
-// 旧永続値 apple(=littlebear)/ ecritu(=écritu)も読める(拡張側 FlickDirectionProfile と対)
+// フリック方向の割り当て。画面上の名前をそのまま永続値にする(3036。拡張側 FlickDirectionProfile と対)
 enum DirectionOption: String, CaseIterable, Identifiable {
     // 並び順はピッカーの表示順(ユーザ指定 3016)
     case hanabi
@@ -213,8 +212,8 @@ enum DirectionOption: String, CaseIterable, Identifiable {
     init?(rawValue: String) {
         switch rawValue {
         case "hanabi": self = .hanabi
-        case "littlebear", "apple": self = .littlebear
-        case "écritu", "ecritu": self = .ecritu
+        case "littlebear": self = .littlebear
+        case "écritu": self = .ecritu
         default: return nil
         }
     }
@@ -718,7 +717,7 @@ enum KaomojiCategoryChoice {
         }
         guard id.hasPrefix("imported:") else { return id }
         let name = String(id.dropFirst("imported:".count))
-        switch legacyCategoryKeys[name] ?? name {
+        switch name {
         case "rire": return "Sourire / Rire (笑顔)"
         case "kawaii": return "Kawaii / Chou (かわいい)"
         case "timide": return "Timide (照れ)"
@@ -739,27 +738,6 @@ enum KaomojiCategoryChoice {
         default: return name
         }
     }
-
-    // 旧キー(日本語名)→新キー。KaomojiCatalog.legacyCategoryKeys のミラー(別ターゲット)
-    static let legacyCategoryKeys: [String: String] = [
-        "笑": "rire",
-        "かわいい": "kawaii",
-        "照れ": "timide",
-        "焦り": "panique",
-        "しょぼん": "decu",
-        "悲": "triste",
-        "怒": "colere",
-        "驚き": "surprise",
-        "くそねみ": "dodo",
-        "挨拶": "coucou",
-        "ラブ": "amour",
-        "激しい": "excite",
-        "うごき": "action",
-        "キモい": "bizarre",
-        "キャラ": "heros",
-        "特殊": "special",
-        "ライン": "lignes",
-    ]
 }
 
 enum EmojiCategoryChoice {

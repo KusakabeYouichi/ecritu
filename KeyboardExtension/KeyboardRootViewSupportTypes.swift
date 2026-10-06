@@ -286,7 +286,7 @@ extension KeyboardRootView {
             case .existing:
                 return "Base (基本)"
             case .imported(let name):
-                switch KaomojiCatalog.canonicalCategoryKey(name) {
+                switch name {
                 case "rire":
                     return "Sourire / Rire (笑顔)"
                 case "kawaii":
@@ -336,7 +336,7 @@ extension KeyboardRootView {
             case .existing:
                 return "🙂"
             case .imported(let name):
-                switch KaomojiCatalog.canonicalCategoryKey(name) {
+                switch name {
                 case "rire":
                     return "😂"
                 case "kawaii":

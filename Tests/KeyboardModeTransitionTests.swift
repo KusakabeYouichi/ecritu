@@ -526,14 +526,16 @@ final class KeyboardModeTransitionTests: XCTestCase {
         }
     }
 
-    // 永続値は画面上の名前(hanabi / littlebear / écritu)。旧値 apple / ecritu も読める(3036)
-    func testFlickDirectionProfileReadsLegacyStoredValues() {
+    // 永続値は画面上の名前(hanabi / littlebear / écritu。3036)。旧値 apple / ecritu の読み替えは 3377 で撤去した
+    func testFlickDirectionProfileStoredValues() {
         XCTAssertEqual(FlickDirectionProfile.littlebear.rawValue, "littlebear")
         XCTAssertEqual(FlickDirectionProfile.hanabi.rawValue, "hanabi")
         XCTAssertEqual(FlickDirectionProfile.ecritu.rawValue, "écritu")
-        XCTAssertEqual(FlickDirectionProfile(rawValue: "apple"), .littlebear)
-        XCTAssertEqual(FlickDirectionProfile(rawValue: "ecritu"), .ecritu)
+        XCTAssertNil(FlickDirectionProfile(rawValue: "apple"))
+        XCTAssertNil(FlickDirectionProfile(rawValue: "ecritu"))
         XCTAssertEqual(FlickDirectionProfile(rawValue: "écritu"), .ecritu)
+        // 合成形・分解形のどちらで保存されていても読める(Swift の文字列比較は正準等価)
+        XCTAssertEqual(FlickDirectionProfile(rawValue: "e\u{0301}critu"), .ecritu)
         XCTAssertEqual(FlickDirectionProfile(rawValue: "littlebear"), .littlebear)
         XCTAssertNil(FlickDirectionProfile(rawValue: "style-i"))
     }

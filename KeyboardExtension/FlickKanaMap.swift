@@ -78,7 +78,6 @@ enum NumberLayoutMode: String {
 }
 
 // フリック方向の割り当て。画面上の名前 hanabi / littlebear / écritu をそのまま永続値にする(3036)。
-// 旧永続値 apple(=littlebear)/ ecritu(=écritu)も読める。
 // あ行で言うと い の置き場所が違う: littlebear=左 / hanabi=右 / écritu=上
 enum FlickDirectionProfile: String {
     case littlebear
@@ -87,9 +86,9 @@ enum FlickDirectionProfile: String {
 
     init?(rawValue: String) {
         switch rawValue {
-        case "littlebear", "apple": self = .littlebear
+        case "littlebear": self = .littlebear
         case "hanabi": self = .hanabi
-        case "écritu", "ecritu": self = .ecritu
+        case "écritu": self = .ecritu
         default: return nil
         }
     }
