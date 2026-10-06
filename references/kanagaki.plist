@@ -44,6 +44,12 @@
 	<dict><key>phrase</key><string>呉々も</string><key>shortcut</key><string>くれぐれも</string></dict>
 	<dict><key>phrase</key><string>先ず</string><key>shortcut</key><string>まず</string></dict>
 	<dict><key>phrase</key><string>殊に</string><key>shortcut</key><string>ことに</string></dict>
+	<dict><key>phrase</key><string>早速</string><key>shortcut</key><string>さっそく</string></dict>
+	<dict><key>phrase</key><string>更に</string><key>shortcut</key><string>さらに</string></dict>
+	<dict><key>phrase</key><string>既に</string><key>shortcut</key><string>すでに</string></dict>
+	<dict><key>phrase</key><string>全て</string><key>shortcut</key><string>すべて</string></dict>
+	<dict><key>phrase</key><string>全く</string><key>shortcut</key><string>まったく</string></dict>
+	<dict><key>phrase</key><string>最早</string><key>shortcut</key><string>もはや</string></dict>
 	<!-- ■ conjunction 接続詞 -->
 	<dict><key>phrase</key><string>即ち</string><key>shortcut</key><string>すなわち</string></dict>
 	<dict><key>phrase</key><string>但し</string><key>shortcut</key><string>ただし</string></dict>
@@ -59,6 +65,7 @@
 	<dict><key>phrase</key><string>而も</string><key>shortcut</key><string>しかも</string></dict>
 	<dict><key>phrase</key><string>然も</string><key>shortcut</key><string>しかも</string></dict>
 	<dict><key>phrase</key><string>又</string><key>shortcut</key><string>また</string></dict>
+	<dict><key>phrase</key><string>又は</string><key>shortcut</key><string>または</string></dict>
 	<dict><key>phrase</key><string>所が</string><key>shortcut</key><string>ところが</string></dict>
 	<!-- ■ auxiliary 補助の言葉・挨拶 -->
 	<dict><key>phrase</key><string>下さい</string><key>shortcut</key><string>ください</string></dict>
