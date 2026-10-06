@@ -20920,6 +20920,20 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(miyako.prefix(4)), ["都", "宮古", "京都", "美耶子"], "\(miyako)")
     }
 
+    // 3394: 〜でやすかった は で+安かった(出やすかった の派生 1 ノードが勝っていた)。人気が出やすい は守る
+    func testDeYasuiVersusDeYasukatta() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let convini = converter.multiClauseCandidates(for: "こんびにでやすかったよ", systemCandidateMode: .surface)
+        XCTAssertEqual(convini.first, "コンビニで安かったよ", "multi=\(convini.prefix(4))")
+        let convini2 = converter.multiClauseCandidates(for: "こんゔぃにでやすかったよ", systemCandidateMode: .surface)
+        XCTAssertEqual(convini2.first, "コンヴィニで安かったよ", "multi=\(convini2.prefix(4))")
+        let ninki = converter.multiClauseCandidates(for: "にんきがでやすい", systemCandidateMode: .surface)
+        XCTAssertEqual(ninki.first, "人気が出やすい", "multi=\(ninki.prefix(4))")
+        let kizu = converter.multiClauseCandidates(for: "きずがでやすいので", systemCandidateMode: .surface)
+        XCTAssertTrue(kizu.first?.contains("出やすい") ?? false, "multi=\(kizu.prefix(4))")
+    }
+
     func testAcceaRegistered() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
