@@ -20993,6 +20993,22 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(bai.prefix(2)), ["倍", "杯"], "\(bai.prefix(4))")
     }
 
+    // 3399: おん/おんにして は オン/On/恩/温/ON/怨/on の順(連文節が onにして を先頭にしていた)
+    // 3400: できえる は で消える が先頭。出来得る限り は守る
+    func testOnNiShiteAndDeKieru() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let on = converter.candidates(for: "おんにして", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(on.prefix(7)), ["オンにして", "Onにして", "恩にして", "温にして", "ONにして", "怨にして", "onにして"], "\(on)")
+        let onMulti = converter.multiClauseCandidates(for: "おんにして", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(onMulti.prefix(2)), ["オンにして", "Onにして"], "multi=\(onMulti.prefix(4))")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "おんをかえす", systemCandidateMode: .surface).first, "恩を返す")
+        XCTAssertEqual(converter.candidates(for: "できえる", limit: 3, systemCandidateMode: .surface).first, "で消える")
+        XCTAssertTrue(converter.multiClauseCandidates(for: "できえる", systemCandidateMode: .surface).first.map { $0 == "で消える" } ?? true)
+        XCTAssertEqual(converter.multiClauseCandidates(for: "できえるかぎり", systemCandidateMode: .surface).first, "出来得る限り")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "そこできえる", systemCandidateMode: .surface).first, "そこで消える")
+    }
+
     func testAcceaRegistered() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
