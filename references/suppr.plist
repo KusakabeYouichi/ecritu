@@ -184,6 +184,7 @@
 	<dict><key>phrase</key><string>進拝</string><key>shortcut</key><string>しんぱい</string></dict>
 
 	<!-- ■ カタカナ収穫・カタカナ強調(かな/漢字の正書を勝たせる) -->
+	<dict><key>phrase</key><string>カッタ</string><key>shortcut</key><string>かった</string></dict>	<!-- カッタ: Sudachi のカタカナ収穫(wc 2344 と極端に安い)。かった の先頭を取り 買った/勝った を押し下げていた(ユーザ報告 3388) -->
 	<dict><key>phrase</key><string>ススメる</string><key>shortcut</key><string>すすめる</string></dict>	<!-- カタカナ強調の収穫。派生(ススメて/ススメていて)が常に3位に並ぶ雑音(ユーザ指定 2741) -->
 	<dict><key>phrase</key><string>ダワ</string><key>shortcut</key><string>だわ</string></dict>	<!-- ダワ: Sudachi のカタカナ収穫(wc 2224 と極端に安い)。終助詞 だわ を食い、おすすめだわ が おすすめダワ になっていた(ユーザ報告 3262) -->
 	<dict><key>phrase</key><string>カウカ</string><key>shortcut</key><string>かうか</string></dict>	<!-- カウカ(かうか、カタカナ固有名の収穫 wc4576=異常低): 買う+か の合成に1ノードで勝ち しんぴんかうか→新品カウカ を作る -->
