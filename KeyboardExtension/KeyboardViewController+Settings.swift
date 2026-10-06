@@ -345,13 +345,7 @@ extension KeyboardViewController {
             return mode
         }
 
-        let legacyShowsGuide = sharedBoolValue(
-            from: defaults,
-            key: SharedDefaultsKeys.showsFlickGuideCharacters,
-            fallback: true
-        )
-
-        return legacyShowsGuide ? .fourDirections : .off
+        return .fourDirections
     }
 
     func currentKanaKanjiCandidateSourceMode(from defaults: UserDefaults?) -> KanaKanjiCandidateSourceMode {

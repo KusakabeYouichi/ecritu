@@ -1226,17 +1226,6 @@ final class KanaKanjiStore {
             return uniqueShortcutCandidates(from: userCandidates)
         }
 
-        if let legacyDictionary = decodedStringArrayDictionary(forKey: KanaKanjiStorageKeys.shortcutVocabulary) {
-            let legacyCandidates = legacyDictionary["☻"] ?? legacyDictionary
-                .keys
-                .sorted()
-                .flatMap { legacyDictionary[$0] ?? [] }
-
-            if !legacyCandidates.isEmpty {
-                return uniqueShortcutCandidates(from: legacyCandidates)
-            }
-        }
-
         return initialShortcutVocabulary()
     }
 

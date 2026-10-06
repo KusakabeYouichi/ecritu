@@ -51,7 +51,6 @@ enum SettingsKeys {
     static let latinFlickGuideDisplayMode = "flickGuideDisplayModeLatin"
     static let numberFlickGuideDisplayMode = "flickGuideDisplayModeNumber"
     static let modifierFlickGuideDisplayMode = "flickGuideDisplayModeModifier"
-    static let showsFlickGuideCharacters = "showsFlickGuideCharacters"
     static let keyRepeatInitialDelay = "keyRepeatInitialDelay"
     static let keyRepeatInterval = "keyRepeatInterval"
     static let idleCommitEnabled = "idleCommitEnabled"
@@ -76,7 +75,6 @@ enum SettingsKeys {
     // 追加語彙播種の記録(削除同期用)。抑制側 AppliedSeed と同機構
     static let kanaKanjiInitialAjoutVocabularyAppliedSeed = "kanaKanjiInitialUserDictionaryAppliedSeed"
     // misc 分離以前の Ajout 播種残骸の one-shot 清掃(2390)実行済みフラグ
-    static let kanaKanjiMiscEraAjoutResidueCleanupCompleted = "kanaKanjiMiscEraAjoutResidueCleanupCompleted"
     static let kanaKanjiLearnedVocabulary = "kanaKanjiLearnedVocabulary"
     static let kanaKanjiLearningVocabularyMigrationCompleted = "kanaKanjiLearningVocabularyMigrationCompleted"
     static let kanaKanjiShortcutVocabulary = "ÉcrituShortcutVocab"
@@ -117,7 +115,6 @@ enum SettingsKeys {
     // 畳んだ封緘版を書き換えるたびに更新する印(UUID)。拡張は印が変わらなければ復号をやり直さない(3080)
     static let contactCandidatesByReadingCacheCompactSealedStamp = "contactCandidatesByReadingCacheCompactSealedStamp"
     static let kanaKanjiLearningScores = "kanaKanjiLearningScores"
-    static let legacyKeyboardDebugLogCleanupCompleted = "legacyKeyboardDebugLogCleanupCompleted"
     static let keyboardDiagnosticsLogLines = "keyboardDiagnosticsLogLines"
     // 重大イベント(メモリ警告/最終手段アンロード/フェイルセーフ遷移)の保護ログ。
     // 拡張側の320行ローテーションとinstall変更リセットの対象外

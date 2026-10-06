@@ -432,7 +432,6 @@ final class KeyboardViewController: UIInputViewController {
         static let latinFlickGuideDisplayMode = "flickGuideDisplayModeLatin"
         static let numberFlickGuideDisplayMode = "flickGuideDisplayModeNumber"
         static let modifierFlickGuideDisplayMode = "flickGuideDisplayModeModifier"
-        static let showsFlickGuideCharacters = "showsFlickGuideCharacters"
         static let keyRepeatInitialDelay = "keyRepeatInitialDelay"
         static let keyRepeatInterval = "keyRepeatInterval"
         static let idleCommitEnabled = "idleCommitEnabled"

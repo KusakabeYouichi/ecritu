@@ -300,16 +300,6 @@ extension ContentView {
             return uniqueShortcutCandidatesPreservingOrder(rawArray.compactMap { $0 as? String })
         }
 
-        let legacyDictionary = loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiShortcutVocabulary)
-
-        if !legacyDictionary.isEmpty {
-            let candidates = legacyDictionary["☻"] ?? legacyDictionary
-                .keys
-                .sorted()
-                .flatMap { legacyDictionary[$0] ?? [] }
-            return uniqueShortcutCandidatesPreservingOrder(candidates)
-        }
-
         return []
     }
 
