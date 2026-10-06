@@ -177,12 +177,6 @@ extension KeyboardViewController {
         guard let defaults = sharedDefaults else {
             return
         }
-        // 旧版(3317 以前)が UserDefaults に置いた平文の辞書は、見つけたら消すだけ(3318)。表はファイルから作り直す。
-        // 端末ごと 1 回の後片づけ。**撤去予定: 2026-10-23 以降**(連絡先の後片づけ 3317 と同時)
-        if defaults.object(forKey: SharedDefaultsKeys.supplementaryLexiconIndexCacheByReading) != nil {
-            defaults.removeObject(forKey: SharedDefaultsKeys.supplementaryLexiconIndexCacheByReading)
-        }
-
         // 保存されている signature が現行スキーマ(v3 接頭辞付き)でない表は、索引化の論理が古い可能性が
         // あるので破棄する。これがないと旧スキームの表が起動ごとに in-memory へ復活し続ける
         let storedSignature = defaults.string(forKey: SharedDefaultsKeys.supplementaryLexiconIndexSignature) ?? ""
@@ -352,7 +346,7 @@ extension KeyboardViewController {
         defaults.set(signature, forKey: SharedDefaultsKeys.supplementaryLexiconIndexSignature)
     }
 
-    // 共有領域に残した UILexicon の表(ファイルと署名。旧版の平文キーも)を消す(3305/3318)。
+    // 共有領域に残した UILexicon の表(ファイルと署名)を消す(3305/3318)。
     // 設定を「使わない」にしたときに呼ぶ(アプリ側も同じものを消す)
     func removePersistedSupplementaryLexiconIndex() {
         guard let defaults = sharedDefaults else {
@@ -362,7 +356,6 @@ extension KeyboardViewController {
             appGroupID: SharedDefaultsKeys.appGroupID,
             fileName: ContactCacheCipher.userLexiconCompactFileName
         )
-        defaults.removeObject(forKey: SharedDefaultsKeys.supplementaryLexiconIndexCacheByReading)
         defaults.removeObject(forKey: SharedDefaultsKeys.supplementaryLexiconIndexSignature)
     }
 
@@ -477,10 +470,7 @@ extension KeyboardViewController {
                 }
                 return
             }
-            // ファイルが無ければ空(3317)。旧版の保存物(封緘した畳んだ版 3020 / 封緘・平文の JSON 辞書)を
-            // 読むフォールバックは外した。アプリが次回の同期でファイル方式へ置き換えるので、残っていても
-            // 「アプリを開くまで連絡先候補が出ない」だけ。旧形式を持つのは TestFlight の 7 人の端末だけで、
-            // App Store には旧形式の版が出ていない(セキュリティー検査 2026-10-02)
+            // ファイルが無ければ空(3317)
             MemoryForensics.noteSyncDelta("連絡先キャッシュ なし", since: decodeSnapshot, minDeltaMB: -1)
             DispatchQueue.main.async {
                 completion(.empty)

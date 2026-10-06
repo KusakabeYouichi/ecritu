@@ -114,10 +114,6 @@ enum SettingsKeys {
     static let contactCandidateDisplayMode = "contactCandidateDisplayMode"
     static let emojiCandidateDisplayEnabled = "emojiCandidateDisplayEnabled"
     static let kaomojiCandidateDisplayEnabled = "kaomojiCandidateDisplayEnabled"
-    static let contactCandidatesByReadingCache = "contactCandidatesByReadingCache"
-    static let contactCandidatesByReadingCacheSealed = "contactCandidatesByReadingCacheSealed"
-    // 畳んだ表を封緘した版(3020)。拡張はこちらを優先し、無ければ上の JSON 版へ落ちる
-    static let contactCandidatesByReadingCacheCompactSealed = "contactCandidatesByReadingCacheCompactSealed"
     // 畳んだ封緘版を書き換えるたびに更新する印(UUID)。拡張は印が変わらなければ復号をやり直さない(3080)
     static let contactCandidatesByReadingCacheCompactSealedStamp = "contactCandidatesByReadingCacheCompactSealedStamp"
     static let kanaKanjiLearningScores = "kanaKanjiLearningScores"
@@ -151,10 +147,9 @@ enum SettingsKeys {
     // 削除キーにメモリの数値(警告回数と footprint)を出すか(DEBUG のでばぐ表示。3334、ユーザ指定で初期設定はオフ)。
     // 色(黄/橙)はこの設定に関係なく出す。KeyboardExtension 側 SharedDefaultsKeys と同一キー文字列
     static let deleteKeyMemoryBadgeEnabled = "deleteKeyMemoryBadgeEnabled"
-    // iOS のユーザ辞書(UILexicon)から拡張が作る 読み→候補 の表とその署名(3305)。拡張が書き、
+    // iOS のユーザ辞書(UILexicon)から拡張が作る 読み→候補 の表の署名(3305。表そのものは 3318 からファイル)。拡張が書き、
     // 「iOS のユーザ辞書の単語」を「使わない」にしたときにアプリ側からも消す。KeyboardExtension 側
     // SharedDefaultsKeys と同一キー文字列
-    static let supplementaryLexiconIndexCacheByReading = "supplementaryLexiconIndexCacheByReading"
     static let supplementaryLexiconIndexSignature = "supplementaryLexiconIndexSignature"
     // 設定変更の世代カウンタ。postSettingsDidChange のたびに +1 され、キーボード拡張が
     // 通知取りこぼし後も次回表示で共有キャッシュを破棄・再読込するのに使う(学習リセット等の

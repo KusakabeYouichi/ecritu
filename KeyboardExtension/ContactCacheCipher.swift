@@ -1,20 +1,12 @@
 import Foundation
-import Security
 
 // 連絡先キャッシュ(氏名・読みの対応表)の保存と読み出し。App Group のファイルに置き、保護は iOS の
 // ファイル保護(completeUntilFirstUserAuthentication)に委ね、バックアップ対象外にする(3260)。
 // アプリ自身は暗号化を行なわない。2026-08-31〜3259 の自前 AES-GCM 封緘+Keychain 鍵はやめ、旧版の
-// 封緘物を読む移行も 3317 で撤去した(CryptoKit は使わない。残るのは旧 Keychain 鍵の削除だけ)。
+// 封緘物を読む移行は 3317、旧版の保存物と Keychain 鍵の後片づけは 3375 で撤去した。
 // 以前はアプリ側(ContentView+Bootstrap.swift)と拡張側(KanaKanjiTypes.swift)に同じ enum を
 // 2 重に持っていた。両ターゲットに同梱する 1 ファイルへ集約(2805 リファクタ)
 enum ContactCacheCipher {
-    // Keychain 項目のラベル(kSecAttrService)。旧バンドル ID の接頭辞のままだが、端末内の不透明なラベルで、
-    // 読める範囲は entitlements のアクセスグループで決まる。**改名禁止**: 変えると既存端末で鍵が見つからず、
-    // 封じた連絡先キャッシュが開けなくなる(作り直されるだけだが無駄)。バンドル ID の一括置換に巻き込まないこと
-    // (セキュリティー検査 2026-10-02、3308)
-    static let keychainService = "com.kusakabe.ecritu.contactCache"
-    static let keychainAccount = "aes-256-key"
-
     // 連絡先キャッシュの上限(拡張の常駐量を抑えるための頭打ち)。以前は拡張側だけが持ち、
     // 復号した辞書を拡張で切り詰めていた。畳んだ表で渡す方式(3020)ではコンテナー側が
     // 同じ規則で切ってから畳む必要があるため、両ターゲットが使うこのファイルへ移した
@@ -66,7 +58,7 @@ enum ContactCacheCipher {
     }
 
     // 畳んだ表のファイル(3260)。自前の AES 封緘(seal/open/sealCompact/openCompact と Keychain の鍵作成)はやめ、
-    // このファイルだけにした。封緘系の読み書きは 3317 で撤去し、残るのは旧版の鍵を消す deleteKeychainKey だけ。
+    // このファイルだけにした。封緘系の読み書きは 3317 で撤去した。
     // 封緘版は拡張が開くたびに復号でヒープへ展開し、捨てて作り直すたびに
     // malloc の新しい領域(4MB)を確保して footprint のラチェットの引き金になっていた(実機 2026-09-27 03:25 の警告)。
     // iOS のファイル保護(初回ロック解除まで読めない暗号化)を掛けた App Group のファイルにし、拡張は
@@ -133,18 +125,5 @@ enum ContactCacheCipher {
             return false
         }
         return FileManager.default.fileExists(atPath: url.path)
-    }
-
-    // 旧版(3259 以前)が Keychain に置いた AES 鍵を消す(アプリの後片づけ専用)。
-    // **撤去予定: 2026-10-23 以降(3317)**。旧形式を持つのは TestFlight の 7 人の端末だけで、各端末でアプリを
-    // 一度開けば用済み。keychainService / keychainAccount と、App/KeyboardExtension の旧 3 キー
-    // (contactCandidatesByReadingCache / …Sealed / …CompactSealed)も同時に消す
-    static func deleteKeychainKey() {
-        let query: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: keychainService,
-            kSecAttrAccount as String: keychainAccount
-        ]
-        SecItemDelete(query as CFDictionary)
     }
 }

@@ -495,15 +495,12 @@ extension ContentView {
     }
 
     func syncContactCandidatesCacheFromContainerApp() {
-        guard let defaults = Self.sharedDefaults else {
+        guard Self.sharedDefaults != nil else {
             return
         }
 
-        let cacheKey = SettingsKeys.contactCandidatesByReadingCache
-        let sealedKey = SettingsKeys.contactCandidatesByReadingCacheSealed
         let mode = ContactCandidateDisplayModeOption(rawValue: contactCandidateDisplayModeRawValue) ?? .off
 
-        let compactSealedKey = SettingsKeys.contactCandidatesByReadingCacheCompactSealed
         let stampKey = SettingsKeys.contactCandidatesByReadingCacheCompactSealedStamp
         let appGroupID = SettingsKeys.appGroupID
 
@@ -517,10 +514,6 @@ extension ContentView {
         guard hasGrantedContactsAccess(status) else {
             removeContactCandidatesCacheIfPresent()
             return
-        }
-
-        func removeLegacyStorage() {
-            removeLegacyContactCandidatesStorage(defaults: defaults)
         }
 
         DispatchQueue.global(qos: .utility).async {
@@ -538,10 +531,7 @@ extension ContentView {
                 // 封緘をやめると拡張が mmap で開けるので、開くたびの復号でヒープを 4MB 確保する問題も消える
                 let compactStore = SupplementalVocabCompactStore(dictionary: ContactCacheCipher.limited(dictionary))
                 let existing = ContactCacheCipher.openCompactFile(appGroupID: appGroupID)
-                let hasLegacy = defaults.object(forKey: cacheKey) != nil
-                    || defaults.object(forKey: sealedKey) != nil
-                    || defaults.object(forKey: compactSealedKey) != nil
-                if existing == compactStore, !hasLegacy {
+                if existing == compactStore {
                     if defaults.string(forKey: stampKey) == nil {
                         defaults.set(UUID().uuidString, forKey: stampKey)
                     }
@@ -551,38 +541,21 @@ extension ContentView {
                     appendContainerDiagnosticsLog("連絡先の対応表のファイル書き込みに失敗")
                     return
                 }
-                removeLegacyStorage()
                 defaults.set(UUID().uuidString, forKey: stampKey)
                 SettingsSyncNotification.postSettingsDidChange()
             }
         }
     }
 
-    // 旧版(3259 以前)の保存物: 平文辞書・AES 封緘版 2 種と Keychain の鍵。ファイル方式(3260)では使わない。
-    // 端末ごとに 1 回しか意味の無い後片づけ。**撤去予定: 2026-10-23 以降(3317)**。旧形式を持つのは TestFlight の
-    // 7 人の端末だけ(App Store に旧形式の版は出ていない)。撤去時は呼び出し側の hadAny 判定の旧 3 キー、
-    // SettingsKeys/SharedDefaultsKeys の旧 3 キー、ContactCacheCipher.deleteKeychainKey と Keychain 識別子も消す
-    func removeLegacyContactCandidatesStorage(defaults: UserDefaults) {
-        defaults.removeObject(forKey: SettingsKeys.contactCandidatesByReadingCache)
-        defaults.removeObject(forKey: SettingsKeys.contactCandidatesByReadingCacheSealed)
-        defaults.removeObject(forKey: SettingsKeys.contactCandidatesByReadingCacheCompactSealed)
-        ContactCacheCipher.deleteKeychainKey()
-    }
-
-    // 連絡先の対応表(ファイル方式+旧版の保存物)が残っていれば消し、拡張に知らせる
+    // 連絡先の対応表のファイルが残っていれば消し、拡張に知らせる
     func removeContactCandidatesCacheIfPresent() {
         guard let defaults = Self.sharedDefaults else {
             return
         }
         let appGroupID = SettingsKeys.appGroupID
-        let hadAny = defaults.object(forKey: SettingsKeys.contactCandidatesByReadingCache) != nil
-            || defaults.object(forKey: SettingsKeys.contactCandidatesByReadingCacheSealed) != nil
-            || defaults.object(forKey: SettingsKeys.contactCandidatesByReadingCacheCompactSealed) != nil
-            || ContactCacheCipher.compactFileExists(appGroupID: appGroupID)
-        guard hadAny else {
+        guard ContactCacheCipher.compactFileExists(appGroupID: appGroupID) else {
             return
         }
-        removeLegacyContactCandidatesStorage(defaults: defaults)
         ContactCacheCipher.removeCompactFile(appGroupID: appGroupID)
         defaults.set(UUID().uuidString, forKey: SettingsKeys.contactCandidatesByReadingCacheCompactSealedStamp)
         SettingsSyncNotification.postSettingsDidChange()
