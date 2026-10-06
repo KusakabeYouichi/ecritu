@@ -20786,6 +20786,16 @@ extension KanaKanjiConverterRegressionTests {
     }
 
     // 3276: 企業名 アクセア を登録
+    // 3378: ちんげんさい は ちんげん菜 / 青梗菜 / チンゲン菜 / チンゲンサイ の順(ユーザ指定)
+    func testChingensaiOrder() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let list = converter.candidates(for: "ちんげんさい", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(4)), ["ちんげん菜", "青梗菜", "チンゲン菜", "チンゲンサイ"], "\(list)")
+        let multi = converter.multiClauseCandidates(for: "ちんげんさい", systemCandidateMode: .surface)
+        XCTAssertTrue(multi.isEmpty || multi.first == "ちんげん菜", "multi=\(multi.prefix(4))")
+    }
+
     func testAcceaRegistered() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
