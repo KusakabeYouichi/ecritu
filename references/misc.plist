@@ -295,6 +295,8 @@
 	<dict><key>phrase</key><string>ほんとだ</string><key>shortcut</key><string>ほんとだ</string></dict>	<!-- ほんとだ(本当だ の口語): かな ほんと(wc4550)は 本当(2581)より重く、連文節・単文節とも 本当だ が先頭になる。口語の相づちはかな表記が普通(ユーザー指定)なので、かな識別を curated で供給して先頭化する(うまく/さっき/いいね と同じ処方) -->
 
 	<!-- ■ 供給欠落の補充(Sudachi 未収録の複合語・固有名。そもそも候補が作れない) -->
+	<dict><key>phrase</key><string>紅しょうが</string><key>shortcut</key><string>べにしょうが</string></dict>	<!-- 紅しょうが/紅生姜: 辞書に 1 語で無く、紅+省+が・紅+章+が の分割が先頭だった(ユーザ報告 3381)。順はユーザ指定 -->
+	<dict><key>phrase</key><string>紅生姜</string><key>shortcut</key><string>べにしょうが</string></dict>
 	<dict><key>phrase</key><string>有塩バター</string><key>shortcut</key><string>ゆうえんばたー</string><key>pos</key><string>名詞</string></dict>	<!-- 有塩バター: 有塩 は辞書にあるが rank 8・LM 無しで 遊園バター ばかりだった(ユーザ報告 3285)。有塩 単独を登録すると ゆうえん の先頭が 遊園 から変わるので句で -->
 	<dict><key>phrase</key><string>無塩バター</string><key>shortcut</key><string>むえんばたー</string><key>pos</key><string>名詞</string></dict>
 	<dict><key>phrase</key><string>抜栓</string><key>shortcut</key><string>ばっせん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 抜栓(ワインの栓を抜く): 辞書にあるが LM に無く(未知語 8700)、ばっせんできない が 罰せ+ん+できない(派生 7200)に負けていた(ユーザ報告 3283) -->
