@@ -10,8 +10,9 @@ import UIKit
 
 enum LogoMenuAction: String, CaseIterable, Identifiable {
     case strategicDefaults
-    case conservativeDefaults
+    // メニューの並び順(現代的を保守的の上に。ユーザ指定 3407)
     case contemporaryDefaults
+    case conservativeDefaults
     case copyYAML
     case stashSettings
     case restoreStashedSettings
