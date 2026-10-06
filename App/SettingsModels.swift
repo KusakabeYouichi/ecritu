@@ -96,6 +96,12 @@ enum SettingsKeys {
     static let scriptVariantSuppressConfusable = "scriptVariantSuppressConfusable"
     static let scriptVariantSuppressLookalike = "scriptVariantSuppressLookalike"
     static let scriptVariantSuppressPersonNameVariant = "scriptVariantSuppressPersonNameVariant"
+    // かなで書く言葉の抑制(仲間ごと。KanaGakiCategory.settingsKey と同じ文字列。3404)
+    static let kanaGakiSuppressAdverb = "kanaGakiSuppressAdverb"
+    static let kanaGakiSuppressConjunction = "kanaGakiSuppressConjunction"
+    static let kanaGakiSuppressAuxiliary = "kanaGakiSuppressAuxiliary"
+    static let kanaGakiSuppressFormalNoun = "kanaGakiSuppressFormalNoun"
+    static let kanaGakiSuppressDemonstrative = "kanaGakiSuppressDemonstrative"
     static let radicalStrokeCountStyle = "radicalStrokeCountStyle"
     static let ordinalMeKanjiPreferred = "ordinalMeKanjiPreferred"
     static let kaCounterVariantPreference = "kaCounterVariantPreference"

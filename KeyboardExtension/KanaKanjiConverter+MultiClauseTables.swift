@@ -2089,6 +2089,8 @@ extension KanaKanjiConverter {
     static let multiClauseImperativeParticlePenalty = 3000
     // 名詞の直後の かな せい(所為)は非文(〜のせい と の が要る)。ヴェトナムせい が ヴェトナム製 を抜いていた(ユーザ報告 3269)
     static let multiClauseKanaSeiAfterNounPenalty = 2000
+    // かなで書く言葉(KanaGakiTable)を抑制しないときの、漢字表記ノードへの減点(かな を先に出す。3404)
+    static let multiClauseKanaGakiKanaFirstPenalty = 1500
     // 同じ減点を当てる かな 1 語(名詞の直後には単独で来ない接尾辞の読み)。こう は 港/工/高 の接尾で、七類こう/日本こう が
     // 七類港/日本港 を抜いていた(かな こう 4590 < 港 5079、地名→港 の bigram が無い。ユーザ報告 3397)
     static let multiClauseKanaSuffixAfterNounSurfaces: Set<String> = ["せい", "こう"]

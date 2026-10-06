@@ -57,7 +57,7 @@ struct ContactCandidateDisplaySettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("X.14 iOSの連絡先の姓、名、会社名")
+            Text("X.15 iOSの連絡先の姓、名、会社名")
                 .font(.headline)
 
             VStack(spacing: 8) {
@@ -128,7 +128,7 @@ struct UserDictionaryCandidateDisplaySettingsSection: View {
 
     var body: some View {
         SegmentedSettingsCard(
-            title: "X.15 iOSのユーザ辞書の単語",
+            title: "X.16 iOSのユーザ辞書の単語",
             pickerTitle: "iOSのユーザ辞書の単語",
             selection: $selection,
             options: Array(UserDictionaryCandidateDisplayModeOption.allCases),
@@ -144,7 +144,7 @@ struct RadicalStrokeCountSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("X.8 部首の画数の数え方")
+            Text("X.9 部首の画数の数え方")
                 .font(.headline)
 
             Text("単漢字入力(モード切替キーの下フリック)の部首一覧を並べる画数です。流儀が分かれる部首だけ個別に選べます(艸/辵/食 は単独では6画/7画/9画で、ここの数字はその部首として数えるときの画数です)。")
@@ -217,7 +217,7 @@ struct MeSuffixCandidateSettingsSection: View {
 
     var body: some View {
         SegmentedSettingsCard(
-            title: "X.11 序数化suffixe – me",
+            title: "X.12 序数化suffixe – me",
             subtitle: "première、deuxième、troisième、…",
             pickerTitle: "順序の『め/目』",
             selection: ordinalSelection,
@@ -227,7 +227,7 @@ struct MeSuffixCandidateSettingsSection: View {
         )
 
         VStack(alignment: .leading, spacing: 10) {
-            SettingsCardTitle(title: "X.12 形状名詞化suffixe / 傾向派生suffixe – me", subtitle: "un peu …")
+            SettingsCardTitle(title: "X.13 形状名詞化suffixe / 傾向派生suffixe – me", subtitle: "un peu …")
 
             Toggle("程度の『め』に漢字『目』の候補も出す", isOn: $adjectiveKanjiEnabled)
                 .toggleStyle(.switch)
@@ -246,7 +246,7 @@ struct EmojiKaomojiCandidateSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("X.13 emojis & les émoticônes")
+            Text("X.14 emojis & les émoticônes")
                 .font(.headline)
 
             VStack(spacing: 10) {
@@ -339,6 +339,51 @@ struct ScriptVariantSuppressionSettingsSection: View {
     }
 }
 
+// かなで書く言葉(3404)。例は KanaGakiTable(references/kanagaki.plist から生成)の各仲間の先頭から並べる
+struct KanaGakiSettingsSection: View {
+    @Binding var adverb: Bool
+    @Binding var conjunction: Bool
+    @Binding var auxiliary: Bool
+    @Binding var formalNoun: Bool
+    @Binding var demonstrative: Bool
+
+    // 例として並べる語の数(超えたら「など」)
+    static let exampleLimit = 12
+
+    static func examples(for category: KanaGakiCategory) -> String {
+        var seen = Set<String>()
+        let surfaces = (KanaGakiTable.entries[category] ?? []).map(\.surface).filter { seen.insert($0).inserted }
+        let shown = surfaces.prefix(exampleLimit).joined(separator: "、")
+        return surfaces.count > exampleLimit ? shown + " など" : shown
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("X.8 かなで書く言葉の候補")
+                .font(.headline)
+
+            // 例の括弧の前で必ず改行する(X.7 と同じ。ユーザ指定 3001)
+            toggle($adverb, .adverb)
+            toggle($conjunction, .conjunction)
+            toggle($auxiliary, .auxiliary)
+            toggle($formalNoun, .formalNoun)
+            toggle($demonstrative, .demonstrative)
+
+            Text("漢字で書けるけれど、今の文章ではかなで書くことが多い言葉です。オンにした仲間は漢字の候補を出さず、かなだけを出します。オフにした仲間も、かなを先頭にして漢字はその後ろに並べます。『所謂風邪』『して下さい』のような続きの中の漢字もかなにします(1 字の語は 事件・為替・時計 などを巻き込まないよう、その語だけを打ったときに限ります)。追加語彙に登録した語と、学習した語は対象外です。初期設定は 5 つともオンで、保守的初期設定では形式名詞と指示語・代名詞がオフです。")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+        .settingsCardStyle()
+    }
+
+    private func toggle(_ isOn: Binding<Bool>, _ category: KanaGakiCategory) -> some View {
+        Toggle(isOn: isOn) {
+            Text("\(category.title)を抑制\n(\(Self.examples(for: category)))")
+        }
+        .toggleStyle(.switch)
+    }
+}
+
 struct HistoricalKanaCandidatesSettingsSection: View {
     @Binding var isEnabled: Bool
 
@@ -422,7 +467,7 @@ struct KaCounterVariantSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SettingsCardTitle(title: "X.9 助数詞型suffixe / 数詞類別suffixe – ka", subtitle: "un endroit, deux endroits, …")
+            SettingsCardTitle(title: "X.10 助数詞型suffixe / 数詞類別suffixe – ka", subtitle: "un endroit, deux endroits, …")
 
             VStack(spacing: 8) {
                 ForEach(preference.order) { variant in
@@ -507,7 +552,7 @@ struct OkuriganaVariantSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SettingsCardTitle(title: "X.10 送り仮名の許容形 – orthographe", subtitle: "送り仮名の付け方(1973 年内閣告示)の許容")
+            SettingsCardTitle(title: "X.11 送り仮名の許容形 – orthographe", subtitle: "送り仮名の付け方(1973 年内閣告示)の許容")
 
             VStack(alignment: .leading, spacing: 12) {
                 ForEach(OkuriganaVariantGroup.allCases) { group in
