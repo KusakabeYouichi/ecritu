@@ -1522,6 +1522,9 @@ extension KanaKanjiConverter {
             compoundVerbRenyouNodeKeys.insert(node.key)
         }
 
+        // かなで書く言葉の設定(3404。transitionCost で引く)
+        let kanaGakiSuppressed = withStateLock { kanaGakiSuppressedCategories }
+
         // --- 3. コスト関数(sim_lm.py と一致): bigram / unigram+backoff / 辞書OOV / 素通りper-char ---
         func transitionCost(
             prev: String,
@@ -2675,6 +2678,16 @@ extension KanaKanjiConverter {
                         penalty += demotion
                     }
                 }
+            }
+            // かなで書く言葉(所謂/即ち/下さい/事/此処 等。KanaGakiTable、3404)。抑制する仲間は禁止級の減点で実質落とし、
+            // 抑制しない仲間は かな の後ろに回る程度に下げる。追加語彙・学習語彙(curated)は対象外
+            // 形式名詞(事/時/為)は述語の直後(行くとき/食べること)だけ。文頭や名詞の位置(時は金なり/事の起こり)は普通の名詞として残す
+            if !isKanaIdentity, !isCurated,
+                let category = KanaGakiTable.categoryByReadingAndSurface[reading]?[surface],
+                category != .formalNoun || prevIsInflectionDerived || prevIsDictionaryFormPredicate {
+                penalty += kanaGakiSuppressed.contains(category)
+                    ? Self.multiClauseForbiddenPenaltyCost
+                    : Self.multiClauseKanaGakiKanaFirstPenalty
             }
             // 稀な語幹の活用派生(動じよう)は同点の常用語(同じよう)の後ろに(定数コメント参照。2890)。
             // 格助詞の直後(何事にも動じない)は本来の用法なので触らない

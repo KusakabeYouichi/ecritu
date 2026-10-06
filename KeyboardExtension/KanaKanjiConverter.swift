@@ -66,6 +66,9 @@ final class KanaKanjiConverter {
     // 旧字体・異体字の抑制(小分類ごとにコンテナー設定。人名は分類に関わらず常に対象外。2991)
     var scriptVariantSuppressionCategories: Set<ScriptVariantSuppressionCategory> =
         ScriptVariantSuppressionCategory.defaultEnabled
+    // かなで書く言葉(所謂/即ち/下さい/事/此処 等。KanaGakiTable)を抑制する仲間。入っていない仲間は抑制せず、
+    // かなを先頭にして漢字はその後ろに置く(3404)。初期設定は全部抑制
+    var kanaGakiSuppressedCategories: Set<KanaGakiCategory> = Set(KanaGakiCategory.allCases)
     // め終わり読みの『め/目』選好(コンテナー設定。applyMeSuffixPreferences 参照)。
     // 序数(première…): true=漢字『目』を先に(既定。1973年内閣告示第2号 通則4 の表記)。
     // 形容詞語幹(un peu…): true=『目』形も出す(かな『め』が先)。既定はオフ(告示 付表の語1)。
@@ -158,6 +161,16 @@ final class KanaKanjiConverter {
                 return
             }
             scriptVariantSuppressionCategories = categories
+            invalidateCandidateCache()
+        }
+    }
+
+    func setKanaGakiSuppressedCategories(_ categories: Set<KanaGakiCategory>) {
+        withStateLock {
+            guard kanaGakiSuppressedCategories != categories else {
+                return
+            }
+            kanaGakiSuppressedCategories = categories
             invalidateCandidateCache()
         }
     }
@@ -900,6 +913,50 @@ final class KanaKanjiConverter {
             to: &scores
         )
         applyScriptVariantSurfaceSuppression(context, to: &scores)
+        applyKanaGakiPreference(context, to: &scores)
+    }
+
+    // かなで書く言葉(KanaGakiTable、3404)。抑制する仲間は漢字の候補を落としてかなに置き換え、抑制しない仲間は
+    // かなを漢字の上に置く。読み全体が一致する語(いわゆる→所謂)に加えて、2 字以上の語は合成の中でも置き換える
+    // (所謂風邪→いわゆる風邪、して下さい→してください)。1 字の語(事/為/時)は 事件/為替/時計 を巻き込むので読み全体の一致だけ。
+    // 追加語彙・学習語彙の語は対象外
+    private func applyKanaGakiPreference(
+        _ context: CandidateGenerationContext,
+        to scores: inout [String: Int]
+    ) {
+        let suppressed = withStateLock { kanaGakiSuppressedCategories }
+        let reading = context.reading
+        var exempt = context.userCandidateSet.union(context.learnedCandidates)
+        // 部首名から出す字形(また→又 等)は字そのものが目的なので落とさない
+        exempt.formUnion(KanjiRadicalCatalog.formsByKanaName[reading] ?? [])
+        func place(_ kana: String, above score: Int) {
+            scores[kana] = max(scores[kana] ?? Int.min, score + 1)
+        }
+        if let table = KanaGakiTable.categoryByReadingAndSurface[reading] {
+            for (surface, category) in table {
+                guard let score = scores[surface], !exempt.contains(surface) else {
+                    continue
+                }
+                // 形式名詞(事/時/為)は、その語だけを打ったときは前が述語かどうか分からない(時は金なり の 時 もある)ので
+                // 抑制せず かな を先頭にするだけ。述語の直後で抑制するのは連文節側(3404)
+                if suppressed.contains(category), category != .formalNoun {
+                    scores.removeValue(forKey: surface)
+                }
+                place(reading, above: score)
+            }
+        }
+        for (category, items) in KanaGakiTable.entries {
+            for item in items where item.surface.count >= 2 && reading.count > item.reading.count
+                && reading.contains(item.reading) {
+                for (candidate, score) in scores where candidate.contains(item.surface) && !exempt.contains(candidate) {
+                    let replaced = candidate.replacingOccurrences(of: item.surface, with: item.reading)
+                    if suppressed.contains(category) {
+                        scores.removeValue(forKey: candidate)
+                    }
+                    place(replaced, above: score)
+                }
+            }
+        }
     }
 
     // 旧字体・異体字(氣持/會社/變更/仝じ/聯合 等)は、同じ読みに標準字体版の候補が実在する
