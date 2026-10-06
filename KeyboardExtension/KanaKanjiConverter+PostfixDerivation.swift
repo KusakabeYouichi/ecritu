@@ -931,7 +931,9 @@ extension KanaKanjiConverter {
         }
 
         // Allow honorific-go for sahen nouns like "相談" that may be tagged as suru-capable.
-        if prefix == "ご",
+        // お も同じ(お勉強/お掃除/お散歩。以前は ご だけで、おべんきょう から お勉強 が作れず
+        // 連文節が 御+勉強 を選んでいた。ユーザ報告 3379)
+        if prefix == "ご" || prefix == "お",
             resolvedClass == InflectionClass.suru,
             !candidate.hasSuffix("する") {
             return false

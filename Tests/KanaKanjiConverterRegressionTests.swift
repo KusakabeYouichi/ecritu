@@ -20796,6 +20796,21 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(multi.isEmpty || multi.first == "ちんげん菜", "multi=\(multi.prefix(4))")
     }
 
+    // 3379: お+サ変名詞(お勉強/お掃除/お散歩/お仕事)を作る。以前は ご(ご相談)だけ許され、おべんきょう の候補が空で、
+    // 連文節は 御+勉強 を選んでいた(今日の分の御勉強)
+    func testPolitePrefixOWithSahenNoun() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        XCTAssertEqual(converter.candidates(for: "おべんきょう", limit: 3, systemCandidateMode: .surface).first, "お勉強")
+        XCTAssertEqual(converter.candidates(for: "おそうじ", limit: 3, systemCandidateMode: .surface).first, "お掃除")
+        XCTAssertEqual(converter.candidates(for: "おさんぽ", limit: 3, systemCandidateMode: .surface).first, "お散歩")
+        XCTAssertEqual(converter.candidates(for: "おしごと", limit: 3, systemCandidateMode: .surface).first, "お仕事")
+        let multi = converter.multiClauseCandidates(for: "きょうのぶんのおべんきょう", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "今日の分のお勉強", "multi=\(multi.prefix(4))")
+        let walk = converter.multiClauseCandidates(for: "いぬとおさんぽにいく", systemCandidateMode: .surface)
+        XCTAssertEqual(walk.first, "犬とお散歩に行く", "multi=\(walk.prefix(4))")
+    }
+
     func testAcceaRegistered() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
