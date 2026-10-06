@@ -20831,6 +20831,17 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(multi.first?.hasPrefix("紅しょうがを") ?? false, "multi=\(multi.prefix(4))")
     }
 
+    // 3382: いろは は いろは / 色は / 伊呂波 / 色葉 / 以呂波(色は が 5 位だった)
+    // 3383: たいひ は 退避 / 対比 / 堆肥 / 待避
+    func testIrohaAndTaihiOrder() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let iroha = converter.candidates(for: "いろは", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(iroha.prefix(5)), ["いろは", "色は", "伊呂波", "色葉", "以呂波"], "\(iroha)")
+        let taihi = converter.candidates(for: "たいひ", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(taihi.prefix(4)), ["退避", "対比", "堆肥", "待避"], "\(taihi)")
+    }
+
     func testAcceaRegistered() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
