@@ -20842,6 +20842,18 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(taihi.prefix(4)), ["退避", "対比", "堆肥", "待避"], "\(taihi)")
     }
 
+    // 3384: ことだと/ことだとおもってる/ことだから は かな の こと を先に(連文節が 事だと を選んでいた)
+    func testKotodaKanaFirstInMultiClause() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for (reading, expected) in [("ことだと", "ことだと"), ("ことだとおもってる", "ことだと思ってる"), ("ことだから", "ことだから")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "\(reading): \(multi.prefix(3))")
+        }
+        // 事 が普通の文脈は変えない(大事だ/何事だ は別の 1 語)
+        XCTAssertEqual(converter.multiClauseCandidates(for: "だいじだとおもう", systemCandidateMode: .surface).first, "大事だと思う")
+    }
+
     func testAcceaRegistered() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
