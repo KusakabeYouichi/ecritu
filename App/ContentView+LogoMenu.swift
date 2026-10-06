@@ -109,9 +109,6 @@ enum SettingsStashStore {
     private static var service: String {
         (Bundle.main.bundleIdentifier ?? "jp.or.pleiades.merope.ecritu") + serviceSuffix
     }
-    // 旧名(3318 以前。旧バンドル ID の接頭辞のまま残っていた)。load で見つけたら新名へ写して消す。
-    // 端末ごと 1 回の移行。**撤去予定: 2026-10-23 以降**(全テスターが一度「復元」か「退避」をすれば用済み)
-    private static let legacyService = "com.kusakabe.ecritu.settings-stash"
     private static let account = "settings"
 
     private static func baseQuery(service: String) -> [String: Any] {
@@ -138,21 +135,6 @@ enum SettingsStashStore {
     }
 
     static func load() -> Data? {
-        if let data = load(service: service) {
-            return data
-        }
-        // 旧名からの移行(3319): 見つかれば新名で保存して旧名を消す。新名で書けなかったときは旧名を残す
-        // (次回また移行を試みる)
-        guard let legacy = load(service: legacyService) else {
-            return nil
-        }
-        if save(legacy) {
-            SecItemDelete(baseQuery(service: legacyService) as CFDictionary)
-        }
-        return legacy
-    }
-
-    private static func load(service: String) -> Data? {
         var query = baseQuery(service: service)
         query[kSecReturnData as String] = true
         query[kSecMatchLimit as String] = kSecMatchLimitOne
