@@ -21013,6 +21013,25 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "そこできえる", systemCandidateMode: .surface).first, "そこで消える")
     }
 
+    // 3402: てんしゅ は 店主 / 天守 / 天主 / 天種 / 天趣(Wikipedia の LM で 天守 が先頭だった)
+    func testTenshuOrder() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let list = converter.candidates(for: "てんしゅ", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(3)), ["店主", "天守", "天主"], "\(list)")
+        let multi = converter.multiClauseCandidates(for: "みせのてんしゅがいった", systemCandidateMode: .surface)
+        XCTAssertTrue(multi.first?.contains("店主") ?? false, "multi=\(multi.prefix(3))")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "おしろのてんしゅ", systemCandidateMode: .surface).first, "お城の天守")
+    }
+
+    // 3403: ひとり は 1人 / ひとり / 一人 / 火取り / 独り / 孤り / 火取 / 火採り / 独
+    func testHitoriOrder() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let list = converter.candidates(for: "ひとり", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(5)), ["1人", "ひとり", "一人", "火取り", "独り"], "\(list)")
+    }
+
     func testAcceaRegistered() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
