@@ -20821,6 +20821,16 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi.first, "吉野家で食べた", "multi=\(multi.prefix(4))")
     }
 
+    // 3381: べにしょうが は 紅しょうが / 紅生姜 の順(辞書に 1 語で無く 紅+省+が が先頭だった)
+    func testBenishougaRegistered() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let list = converter.candidates(for: "べにしょうが", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(2)), ["紅しょうが", "紅生姜"], "\(list)")
+        let multi = converter.multiClauseCandidates(for: "べにしょうがをのせる", systemCandidateMode: .surface)
+        XCTAssertTrue(multi.first?.hasPrefix("紅しょうがを") ?? false, "multi=\(multi.prefix(4))")
+    }
+
     func testAcceaRegistered() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
