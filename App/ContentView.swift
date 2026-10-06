@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20261007005216"
+    private static let editionUpdatedAtRaw: String = "20261007014555"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -424,6 +424,21 @@ struct ContentView: View {
     @AppStorage(SettingsKeys.scriptVariantSuppressPersonNameVariant, store: Self.sharedDefaults)
     private var scriptVariantSuppressPersonNameVariant = false
 
+    @AppStorage(SettingsKeys.kanaGakiSuppressAdverb, store: Self.sharedDefaults)
+    private var kanaGakiSuppressAdverb = true
+
+    @AppStorage(SettingsKeys.kanaGakiSuppressConjunction, store: Self.sharedDefaults)
+    private var kanaGakiSuppressConjunction = true
+
+    @AppStorage(SettingsKeys.kanaGakiSuppressAuxiliary, store: Self.sharedDefaults)
+    private var kanaGakiSuppressAuxiliary = true
+
+    @AppStorage(SettingsKeys.kanaGakiSuppressFormalNoun, store: Self.sharedDefaults)
+    private var kanaGakiSuppressFormalNoun = true
+
+    @AppStorage(SettingsKeys.kanaGakiSuppressDemonstrative, store: Self.sharedDefaults)
+    private var kanaGakiSuppressDemonstrative = true
+
     @State var ajoutVocabularyEntries: [VocabularyEntry] = []
     @State var ajoutVocabularyReadingInput = ""
     @State var ajoutVocabularyCandidateInput = ""
@@ -592,6 +607,11 @@ struct ContentView: View {
             String(scriptVariantSuppressConfusable),
             String(scriptVariantSuppressLookalike),
             String(scriptVariantSuppressPersonNameVariant),
+            String(kanaGakiSuppressAdverb),
+            String(kanaGakiSuppressConjunction),
+            String(kanaGakiSuppressAuxiliary),
+            String(kanaGakiSuppressFormalNoun),
+            String(kanaGakiSuppressDemonstrative),
             String(latinLexiconEnglishEnabled),
             String(latinLexiconFrenchEnabled),
             String(latinLexiconGermanEnabled),
@@ -694,6 +714,11 @@ struct ContentView: View {
         bool(SettingsKeys.scriptVariantSuppressConfusable, scriptVariantSuppressConfusable, "紛らわしい別字を抑制")
         bool(SettingsKeys.scriptVariantSuppressLookalike, scriptVariantSuppressLookalike, "見分けにくい字形を抑制")
         bool(SettingsKeys.scriptVariantSuppressPersonNameVariant, scriptVariantSuppressPersonNameVariant, "人名で生きている異体字を抑制")
+        bool(SettingsKeys.kanaGakiSuppressAdverb, kanaGakiSuppressAdverb, "かなで書く言葉: 副詞を抑制")
+        bool(SettingsKeys.kanaGakiSuppressConjunction, kanaGakiSuppressConjunction, "かなで書く言葉: 接続詞を抑制")
+        bool(SettingsKeys.kanaGakiSuppressAuxiliary, kanaGakiSuppressAuxiliary, "かなで書く言葉: 補助の言葉・挨拶を抑制")
+        bool(SettingsKeys.kanaGakiSuppressFormalNoun, kanaGakiSuppressFormalNoun, "かなで書く言葉: 形式名詞を抑制")
+        bool(SettingsKeys.kanaGakiSuppressDemonstrative, kanaGakiSuppressDemonstrative, "かなで書く言葉: 指示語・代名詞を抑制")
         bool(SettingsKeys.emojiCandidateDisplayEnabled, emojiCandidateDisplayEnabled, "emojis & les émoticônes: emoji 😀")
         str(SettingsKeys.radicalStrokeCountStyle, radicalStrokeCountStyleRawValue, "部首の画数の数え方")
         bool(SettingsKeys.ordinalMeKanjiPreferred, ordinalMeKanjiPreferred, "序数化suffixe – me(première…): 順序の『目』を漢字で先に")
@@ -1246,6 +1271,14 @@ struct ContentView: View {
             confusable: $scriptVariantSuppressConfusable,
             lookalike: $scriptVariantSuppressLookalike,
             personNameVariant: $scriptVariantSuppressPersonNameVariant
+        )
+
+        KanaGakiSettingsSection(
+            adverb: $kanaGakiSuppressAdverb,
+            conjunction: $kanaGakiSuppressConjunction,
+            auxiliary: $kanaGakiSuppressAuxiliary,
+            formalNoun: $kanaGakiSuppressFormalNoun,
+            demonstrative: $kanaGakiSuppressDemonstrative
         )
 
         RadicalStrokeCountSettingsSection(

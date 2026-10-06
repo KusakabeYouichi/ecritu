@@ -908,7 +908,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             XCTAssertEqual(list.first, reading, "reading=\(reading) list=\(list)")
         }
         let sekkaku = converter.candidates(for: "せっかく", limit: 8, systemCandidateMode: .surface)
-        XCTAssertEqual(sekkaku.dropFirst().first, "折角", "list=\(sekkaku)")
+        // 折角 は かなで書く言葉(副詞)で、初期設定では出さない(3404)
+        XCTAssertFalse(sekkaku.contains("折角"), "list=\(sekkaku)")
         let fudan = converter.candidates(for: "ふだん", limit: 8, systemCandidateMode: .surface)
         XCTAssertEqual(fudan.dropFirst().first, "普段", "list=\(fudan)")
     }
@@ -1391,7 +1392,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         try prepareRealLMDictionary()
 
         let sokoNi = converter.candidates(for: "そこに", limit: 6, systemCandidateMode: .surface)
-        XCTAssertEqual(Array(sokoNi.prefix(3)), ["そこに", "底に", "其処に"], "list=\(sokoNi)")
+        // 其処 は かなで書く言葉(指示語・代名詞)で、初期設定では出さない(3404)
+        XCTAssertEqual(Array(sokoNi.prefix(2)), ["そこに", "底に"], "list=\(sokoNi)")
+        XCTAssertFalse(sokoNi.contains("其処に"), "list=\(sokoNi)")
     }
 
     // はなにみず: 文頭の裸の係助詞 は が組む は+何+水(unigram 計 11133)が
@@ -3345,7 +3348,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             ("そう", ["そう", "層", "総", "想"]),
             ("みん", ["明", "民", "みん", "泯"]),
             ("いけだ", ["池田", "イケダ", "いけだ", "池だ"]),
-            ("これ", ["これ", "此れ", "之"]),
+            ("これ", ["これ"]),  // 此れ/之 は かなで書く言葉(初期設定は抑制。3404)
             ("ぎょう", ["行", "業", "尭"]),
             ("けん", ["県", "件", "券", "権"]),
             ("しつ", ["質", "室"]),
@@ -3449,7 +3452,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             ("ながのし", ["長野市"]),
             ("にっせい", ["ニッセイ", "日生", "日成"]),
             ("いわた", ["岩田", "イワタ"]),
-            ("および", ["および", "及び", "及"]),
+            ("および", ["および"]),  // 及び/及 は かなで書く言葉(初期設定は抑制。3404)
             ("じょじし", ["叙事詩"]),
             ("とだ", ["戸田", "とだ"]),
             ("しょうぞうが", ["肖像画"]),
@@ -7185,7 +7188,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // 何故 が引き続き候補に出ることを確認する。
         let single = converter.candidates(for: "なぜ", limit: 10, systemCandidateMode: .surface)
         XCTAssertEqual(single.first, "なぜ", "single=\(single)")
-        XCTAssertTrue(single.contains("何故"), "single=\(single)")
+        // 何故 は かなで書く言葉(指示語・代名詞)で、初期設定では出さない(3404)
+        XCTAssertFalse(single.contains("何故"), "single=\(single)")
     }
 
     // 実LM回帰: きがした→気がした。気が+する はサ変名詞と見なされず供給経路が無い一方、
@@ -11299,7 +11303,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         try injectSuppression(["うまい": ["熟寝", "熟睡", "右舞"]])
 
         let takusan = converter.candidates(for: "たくさん", limit: 8, systemCandidateMode: .surface)
-        XCTAssertEqual(Array(takusan.prefix(2)), ["たくさん", "沢山"], "takusan=\(takusan)")
+        // 沢山 は かなで書く言葉(副詞)で、初期設定では出さない(3404)
+        XCTAssertEqual(takusan.first, "たくさん", "takusan=\(takusan)")
+        XCTAssertFalse(takusan.contains("沢山"), "takusan=\(takusan)")
         XCTAssertFalse(takusan.contains("託さん"), "takusan=\(takusan)")
         XCTAssertFalse(takusan.contains("托さん"), "takusan=\(takusan)")
 
@@ -11445,7 +11451,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let expectations: [(String, [String])] = [
             ("いままで", ["今まで", "いままで", "今迄"]),
             ("とき", ["とき", "時"]),
-            ("いつ", ["いつ", "何時"]),
+            ("いつ", ["いつ"]),  // 何時 は かなで書く言葉(指示語・代名詞。初期設定は抑制。3404)
             ("あって", ["あって", "会って", "合って", "有って"]),
             ("しじょう", ["市場", "私情"]),
             ("きょうかい", ["協会", "教会", "境界"])
@@ -21030,6 +21036,39 @@ extension KanaKanjiConverterRegressionTests {
         try loadDeviceAddedVocabulary()
         let list = converter.candidates(for: "ひとり", limit: 10, systemCandidateMode: .surface)
         XCTAssertEqual(Array(list.prefix(5)), ["1人", "ひとり", "一人", "火取り", "独り"], "\(list)")
+    }
+
+    // 3404: かなで書く言葉(KanaGakiTable)。初期設定は全部抑制=漢字を出さない。抑制しない仲間は かな が先頭で漢字は後ろ
+    func testKanaGakiSuppressionAndKanaFirst() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        converter.setKanaGakiSuppressedCategories(Set(KanaGakiCategory.allCases))
+        let iwayuru = converter.candidates(for: "いわゆる", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(iwayuru.first, "いわゆる", "\(iwayuru)")
+        XCTAssertFalse(iwayuru.contains("所謂"), "\(iwayuru)")
+        XCTAssertFalse(converter.candidates(for: "すなわち", limit: 6, systemCandidateMode: .surface).contains("即ち"))
+        XCTAssertFalse(converter.candidates(for: "ここ", limit: 8, systemCandidateMode: .surface).contains("此処"))
+        let kudasai = converter.candidates(for: "してください", limit: 6, systemCandidateMode: .surface)
+        XCTAssertFalse(kudasai.contains(where: { $0.contains("下さい") }), "\(kudasai)")
+        let multi = converter.multiClauseCandidates(for: "いわゆるかぜをひいた", systemCandidateMode: .surface)
+        XCTAssertFalse(multi.contains(where: { $0.contains("所謂") }), "multi=\(multi.prefix(4))")
+        let koko = converter.multiClauseCandidates(for: "ここにあるものをかってください", systemCandidateMode: .surface)
+        XCTAssertFalse(koko.prefix(3).contains(where: { $0.contains("此処") || $0.contains("下さい") }), "multi=\(koko.prefix(4))")
+        // 1 字の語は合成の中では巻き込まない(事件/為替/時計)
+        XCTAssertEqual(converter.candidates(for: "じけん", limit: 3, systemCandidateMode: .surface).first, "事件")
+        XCTAssertEqual(converter.candidates(for: "とけい", limit: 3, systemCandidateMode: .surface).first, "時計")
+
+        // 抑制しない(保守的初期設定の 形式名詞/指示語): かな が先頭、漢字は残る
+        converter.setKanaGakiSuppressedCategories([.adverb, .conjunction, .auxiliary])
+        let koto = converter.candidates(for: "こと", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(koto.first, "こと", "\(koto)")
+        XCTAssertTrue(koto.contains("事"), "\(koto)")
+        let kokoKanaFirst = converter.candidates(for: "ここ", limit: 40, systemCandidateMode: .surface)
+        XCTAssertEqual(kokoKanaFirst.first, "ここ", "\(kokoKanaFirst)")
+        XCTAssertTrue(kokoKanaFirst.contains("此処"), "\(kokoKanaFirst)")
+        // 副詞は抑制のまま
+        XCTAssertFalse(converter.candidates(for: "いわゆる", limit: 6, systemCandidateMode: .surface).contains("所謂"))
+        converter.setKanaGakiSuppressedCategories(Set(KanaGakiCategory.allCases))
     }
 
     func testAcceaRegistered() throws {
