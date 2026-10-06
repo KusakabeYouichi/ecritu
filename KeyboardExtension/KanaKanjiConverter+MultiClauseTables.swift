@@ -78,7 +78,11 @@ extension KanaKanjiConverter {
         "りょう": ["両"],
         // 最(さい)=wc 8884 で 18 位(くろあちあさいとうぶ→クロアチア際東部、ユーザ報告 2880)。
         // 最+方位 の隣接ボーナス(multiClauseBigramPairBonuses)はノードが立たないと効かない
-        "さい": ["最"]
+        "さい": ["最"],
+        // 接尾辞も同じ扱い(名前は接頭辞のままだが、TopK から漏れる生産的な語を立てる表)。港(こう)は Sudachi core に読みが無く
+        // references/suffixes.plist で辞書の後ろに足したため wc が弱く TopK に入らない。ノードが立てば LM(港 5079、
+        // 横浜→港 1978)が効く(よこはまこう→横浜こう、ユーザ報告 3397)
+        "こう": ["港"]
     ]
     // 変種の並びだけを下げる隣接ペア(prev\t表層 → 加算)。DP の最良経路は別の規則で守られている
     // (三分の一 は直前が 分 のとき免除)が、変種順は各ノードの素のコスト差で決まるため DP 側の減点が
@@ -2083,6 +2087,13 @@ extension KanaKanjiConverter {
     static let multiClauseImperativeParticlePenalty = 3000
     // 名詞の直後の かな せい(所為)は非文(〜のせい と の が要る)。ヴェトナムせい が ヴェトナム製 を抜いていた(ユーザ報告 3269)
     static let multiClauseKanaSeiAfterNounPenalty = 2000
+    // 同じ減点を当てる かな 1 語(名詞の直後には単独で来ない接尾辞の読み)。こう は 港/工/高 の接尾で、七類こう/日本こう が
+    // 七類港/日本港 を抜いていた(かな こう 4590 < 港 5079、地名→港 の bigram が無い。ユーザ報告 3397)
+    static let multiClauseKanaSuffixAfterNounSurfaces: Set<String> = ["せい", "こう"]
+    // 名詞(漢字・カタカナ)の直後の接尾辞への加点。港 は地名の後ろに付く生産的な接尾辞だが、珍しい地名(七類 wc10000)では
+    // 地名→港 の bigram が無く、し+散る+以降 のような分割に 404 差で負けていた(しちるいこう、ユーザ報告 3397)
+    static let multiClauseNounSuffixAfterNounBonusSurfaces: Set<String> = ["港"]
+    static let multiClauseNounSuffixAfterNounBonus = 1500
     static let multiClauseKatakanaAfterTeFormPenalty = 2000
     // 名詞の直後で助詞を飲み込む一字漢字の活用形(テスト+派しなくて)の減点と、対象の読みの頭(3294)
     static let multiClauseParticleSwallowingKanjiVerbPenalty = 3000

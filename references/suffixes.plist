@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+
+	<!-- ■ 接尾辞の補い: Sudachi core に読みの項目が無い接尾辞(tools/build_suffix_vocab.py)。辞書(sqlite)の Premier の後ろに足すので、
+	     単独の読みでは既存の語より後ろに並ぶ。cost は語コスト(必須)。同じ表記の別の読みのコスト+2500 未満にしないと、連文節が
+	     LM を信用しない(別の読みの統計を借りない安全策)。連文節では LM の unigram/bigram が効き、地名+港 のような組で選ばれる(3397) -->
+	<dict><key>phrase</key><string>港</string><key>shortcut</key><string>こう</string><key>cost</key><integer>5500</integer></dict>	<!-- 横浜港/七類港 が 横浜こう/七類功 になっていた(ユーザ報告 3397)。名古屋港 は 1 語で辞書にあるので出ていた -->
+</array>
+</plist>

@@ -2052,12 +2052,19 @@ extension KanaKanjiConverter {
                     || (prevLast == "て" && prev.allSatisfy { ("ぁ"..."ゖ").contains($0) }) {
                 penalty += Self.multiClauseKatakanaAfterTeFormPenalty
             }
-            // 名詞の直後の かな せい(定数コメント参照。3269)。助詞・述語の直後、かな語の直後は対象外
-            if isKanaIdentity, surface == "せい", !prevIsBOS, !prevIsKanaIdentity,
+            // 名詞の直後の かな せい/こう(定数コメント参照。3269/3397)。助詞・述語の直後、かな語の直後は対象外
+            if isKanaIdentity, Self.multiClauseKanaSuffixAfterNounSurfaces.contains(surface), !prevIsBOS, !prevIsKanaIdentity,
                 !prevIsInflectionDerived, !prevIsDictionaryFormPredicate,
                 containsKanji(prev) || Self.isKatakanaString(prev),
                 !Self.multiClauseCaseParticleSurfacesID.contains(prevID) {
                 penalty += Self.multiClauseKanaSeiAfterNounPenalty
+            }
+            // 名詞の直後の接尾辞 港(定数コメント参照。3397)。条件は上の かな せい/こう と同じ
+            if !isKanaIdentity, Self.multiClauseNounSuffixAfterNounBonusSurfaces.contains(surface), !prevIsBOS, !prevIsKanaIdentity,
+                !prevIsInflectionDerived, !prevIsDictionaryFormPredicate,
+                containsKanji(prev) || Self.isKatakanaString(prev),
+                !Self.multiClauseCaseParticleSurfacesID.contains(prevID) {
+                penalty -= Self.multiClauseNounSuffixAfterNounBonus
             }
             // 形式名詞の直後の ある の漢字表層(聞いたこと会った。定数コメント参照。3262)
             if !isKanaIdentity, reading.hasPrefix("あ"),

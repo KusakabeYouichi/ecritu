@@ -20959,6 +20959,23 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertFalse(converter.candidates(for: "あの", limit: 8, systemCandidateMode: .surface).contains("あのォ"))
     }
 
+    // 3397: 地名+こう は 港。港(こう)は Sudachi core に読みが無く(名古屋港 は 1 語で有った)、references/suffixes.plist で補う。
+    // 名詞の直後の かな こう を下げ、港 に加点する(七類 のような珍しい地名でも)
+    func testPlaceNamePortSuffix() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for (reading, expected) in [("よこはまこう", "横浜港"), ("しちるいこう", "七類港"), ("なごやこう", "名古屋港"),
+                                    ("はこだてこう", "函館港"), ("ななおこう", "七尾港"), ("なほとかこう", "ナホトカ港")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            let shown = multi.isEmpty ? converter.candidates(for: reading, limit: 3, systemCandidateMode: .surface) : multi
+            XCTAssertEqual(shown.first, expected, "\(reading): \(shown.prefix(3))")
+        }
+        XCTAssertEqual(converter.multiClauseCandidates(for: "よこはまこうにつく", systemCandidateMode: .surface).first?.hasPrefix("横浜港に"), true)
+        // こう を含むほかの語は変えない
+        XCTAssertEqual(converter.candidates(for: "こう", limit: 3, systemCandidateMode: .surface).first, "こう")
+        XCTAssertEqual(converter.candidates(for: "けんこう", limit: 3, systemCandidateMode: .surface).first, "健康")
+    }
+
     func testAcceaRegistered() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()

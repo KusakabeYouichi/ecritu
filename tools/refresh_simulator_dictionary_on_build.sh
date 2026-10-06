@@ -60,6 +60,10 @@ REF_ASTRONOMIQUE_PLIST="$ROOT_DIR/references/astronomique.plist"
 # 読みがぶつかる語で一般語を押しのけないため)。実行時の補助語彙(.eccs)には読みがぶつからない病名だけ足す。
 REF_MEDICAUX_PLIST="$ROOT_DIR/references/médicaux.plist"
 TMP_MEDICAUX="$ROOT_DIR/tmp/ÉcrituMedicauxVocab.json"
+# 接尾辞の補い(Sudachi core に読みが無い 港(こう) 等、3397)。病名と同じく sqlite の Premier の後ろに足す(常に入れる)
+REF_SUFFIXES_PLIST="$ROOT_DIR/references/suffixes.plist"
+TMP_SUFFIXES="$ROOT_DIR/tmp/ÉcrituSuffixesVocab.json"
+TMP_SUFFIX_COSTS="$ROOT_DIR/tmp/ÉcrituSuffixesCosts.json"
 TMP_MEDICAUX_STATE="$ROOT_DIR/tmp/.medicaux.state"
 INCLUDE_MEDICAUX="${ECRITU_INCLUDE_MEDICAUX:-0}"
 REF_EMOJI_PLIST="$ROOT_DIR/references/emoji.plist"
@@ -185,6 +189,8 @@ python3 tools/build_second_vocab_from_references.py \
   --input-plist "$REF_ASTRONOMIQUE_PLIST" \
   --output "$TMP_SECOND" \
   --output-inflections "$TMP_SECOND_INFLECTIONS"
+
+python3 tools/build_suffix_vocab.py "$REF_SUFFIXES_PLIST" --vocab-out "$TMP_SUFFIXES" --costs-out "$TMP_SUFFIX_COSTS"
 
 if is_truthy "$INCLUDE_MEDICAUX"; then
   python3 tools/build_second_vocab_from_references.py \
@@ -347,6 +353,9 @@ needs_sqlite_regeneration() {
   if [[ "$(cat "$TMP_MEDICAUX_STATE" 2>/dev/null)" != "$(medicaux_state)" ]]; then
     return 0
   fi
+  if [[ -f "$TMP_SUFFIXES" && "$TMP_SUFFIXES" -nt "$TMP_SQLITE" ]]; then
+    return 0
+  fi
   if [[ -f "$TMP_MEDICAUX" && "$TMP_MEDICAUX" -nt "$TMP_SQLITE" ]]; then
     return 0
   fi
@@ -413,6 +422,10 @@ regenerate_sqlite_if_possible() {
   )
 
   # 病名は Premier の後ろ = 同じ読みでは既存の語より後ろの rank(偽性 が 犠牲 を押しのけない)
+  # 接尾辞の補いは Premier の後ろ(rank が後ろ)で、語コストは plist の値(後置きの弱いコストにはしない)
+  if [[ -f "$TMP_SUFFIXES" && -f "$TMP_SUFFIX_COSTS" ]]; then
+    sqlite_args+=(--vocab-json "$TMP_SUFFIXES" --normalized-vocab-json "$TMP_SUFFIXES" --costs-json "$TMP_SUFFIX_COSTS")
+  fi
   if [[ -f "$TMP_MEDICAUX" ]]; then
     sqlite_args+=(--trailing-vocab-json "$TMP_MEDICAUX" --normalized-vocab-json "$TMP_MEDICAUX")
   fi
