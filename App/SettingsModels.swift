@@ -74,6 +74,8 @@ enum SettingsKeys {
     static let kanaKanjiInitialAjoutVocabularyAppliedSignature = "kanaKanjiInitialUserDictionaryAppliedSignature"
     // 追加語彙播種の記録(削除同期用)。抑制側 AppliedSeed と同機構
     static let kanaKanjiInitialAjoutVocabularyAppliedSeed = "kanaKanjiInitialUserDictionaryAppliedSeed"
+    // 初回インストールの初期設定(現代的初期設定)を当てたかの印(3406)。userSettingsKeys には入れない(戦略的初期設定で消さない)
+    static let initialPresetApplied = "initialPresetApplied"
     // misc 分離以前の Ajout 播種残骸の one-shot 清掃(2390)実行済みフラグ
     static let kanaKanjiLearnedVocabulary = "kanaKanjiLearnedVocabulary"
     static let kanaKanjiLearningVocabularyMigrationCompleted = "kanaKanjiLearningVocabularyMigrationCompleted"

@@ -11,6 +11,7 @@ import UIKit
 enum LogoMenuAction: String, CaseIterable, Identifiable {
     case strategicDefaults
     case conservativeDefaults
+    case contemporaryDefaults
     case copyYAML
     case stashSettings
     case restoreStashedSettings
@@ -24,6 +25,7 @@ enum LogoMenuAction: String, CaseIterable, Identifiable {
         switch self {
         case .strategicDefaults: return "戦略的初期設定"
         case .conservativeDefaults: return "保守的初期設定"
+        case .contemporaryDefaults: return "現代的初期設定"
         case .copyYAML: return "設定をクリップボードにコピー"
         case .stashSettings: return "現在の設定を退避"
         case .restoreStashedSettings: return "退避した設定を復元"
@@ -35,8 +37,9 @@ enum LogoMenuAction: String, CaseIterable, Identifiable {
 
     var subtitle: String {
         switch self {
-        case .strategicDefaults: return "初期設定(標準)に戻す"
+        case .strategicDefaults: return "組み込みの標準値に戻す"
         case .conservativeDefaults: return "作者の使用設定にする"
+        case .contemporaryDefaults: return "保守的+かなで書く言葉をすべて抑制"
         case .copyYAML: return "YAML 形式"
         case .stashSettings: return "再インストール後も残る場所に保存"
         case .restoreStashedSettings: return "退避していた設定に戻す"
@@ -50,6 +53,7 @@ enum LogoMenuAction: String, CaseIterable, Identifiable {
         switch self {
         case .strategicDefaults: return "arrow.counterclockwise"
         case .conservativeDefaults: return "person.crop.circle"
+        case .contemporaryDefaults: return "textformat.alt"
         case .copyYAML: return "doc.on.clipboard"
         case .stashSettings: return "tray.and.arrow.down"
         case .restoreStashedSettings: return "tray.and.arrow.up"
@@ -62,7 +66,7 @@ enum LogoMenuAction: String, CaseIterable, Identifiable {
     // 設定を書き換える項目は確認ダイアログを挟む(ユーザ指定)
     var needsConfirmation: Bool {
         switch self {
-        case .strategicDefaults, .conservativeDefaults, .restoreStashedSettings: return true
+        case .strategicDefaults, .conservativeDefaults, .contemporaryDefaults, .restoreStashedSettings: return true
         case .copyYAML, .stashSettings, .openManual, .openPrivacyPolicy, .about: return false
         }
     }
@@ -406,6 +410,15 @@ extension ContentView {
         SettingsKeys.userDictionaryCandidateDisplayMode: UserDictionaryCandidateDisplayModeOption.on.rawValue
     ]
 
+    // 現代的初期設定(contemporary、ユーザ指定 3406)= 保守的初期設定 + かなで書く言葉(X.8)をすべて抑制(ひらがな側に寄せる)
+    static let contemporaryPresetValues: [String: Any] = conservativePresetValues.merging([
+        SettingsKeys.kanaGakiSuppressAdverb: true,
+        SettingsKeys.kanaGakiSuppressConjunction: true,
+        SettingsKeys.kanaGakiSuppressAuxiliary: true,
+        SettingsKeys.kanaGakiSuppressFormalNoun: true,
+        SettingsKeys.kanaGakiSuppressDemonstrative: true
+    ]) { _, new in new }
+
     // ──── ジェスチャー ────
 
     // ロゴ枠・メニュー項目枠・ドラッグ座標はすべて .global(ウィンドウ座標)で測る。
@@ -451,6 +464,8 @@ extension ContentView {
             return !currentSettingsMatch(preset: [:])
         case .conservativeDefaults:
             return !currentSettingsMatch(preset: Self.conservativePresetValues)
+        case .contemporaryDefaults:
+            return !currentSettingsMatch(preset: Self.contemporaryPresetValues)
         case .restoreStashedSettings:
             // 退避した設定が無ければ選べない(ユーザー指定)
             return settingsStashSavedAt != nil
@@ -591,7 +606,7 @@ extension ContentView {
             UIApplication.shared.open(Self.manualURL)
         case .openPrivacyPolicy:
             UIApplication.shared.open(Self.privacyPolicyURL)
-        case .strategicDefaults, .conservativeDefaults, .restoreStashedSettings:
+        case .strategicDefaults, .conservativeDefaults, .contemporaryDefaults, .restoreStashedSettings:
             break
         }
     }
@@ -600,9 +615,11 @@ extension ContentView {
     func logoMenuConfirmationMessage(for action: LogoMenuAction) -> String {
         switch action {
         case .strategicDefaults:
-            return "すべての設定を初期設定(標準)に戻します。語彙・学習内容はそのままです。"
+            return "すべての設定を組み込みの標準値(戦略的初期設定)に戻します。語彙・学習内容はそのままです。"
         case .conservativeDefaults:
             return "すべての設定を作者の使用設定(3x3+わ・AZERTY・後置修飾・littlebear式のフリック 等)にします。語彙・学習内容はそのままです。"
+        case .contemporaryDefaults:
+            return "すべての設定を保守的初期設定と同じにし、かなで書く言葉(所謂・即ち・事・此処 など)は 5 つの仲間すべてで漢字を出さないようにします。語彙・学習内容はそのままです。"
         case .restoreStashedSettings:
             if let stash = loadSettingsStash() {
                 let formatter = DateFormatter()
@@ -620,10 +637,13 @@ extension ContentView {
         switch action {
         case .strategicDefaults:
             applyStrategicDefaults()
-            showSettingsToast("初期設定(標準)に戻しました")
+            showSettingsToast("戦略的初期設定にしました")
         case .conservativeDefaults:
             applyConservativePreset()
             showSettingsToast("保守的初期設定にしました")
+        case .contemporaryDefaults:
+            applyPreset(Self.contemporaryPresetValues)
+            showSettingsToast("現代的初期設定にしました")
         case .restoreStashedSettings:
             if restoreStashedSettings() {
                 showSettingsToast("退避した設定を復元しました")
@@ -651,9 +671,34 @@ extension ContentView {
     }
 
     func applyConservativePreset() {
+        applyPreset(Self.conservativePresetValues)
+    }
+
+    // 初めてインストールしたときは現代的初期設定にする(ユーザ指定 3406)。既存の端末(語彙の初期投入の記録か
+    // 設定の保存があるもの)はアップデートしても変えない。連絡先の候補だけは「使わない」のまま: 現代的初期設定の元の
+    // 保守的初期設定は 名前のみ だが、それは本人がメニューで選んだときの値。自動で当てると、本人の操作なしに
+    // 連絡先を使う設定になる(App Store 審査ガイドライン 5.1.1)
+    func applyInitialPresetIfFreshInstall() {
+        guard let defaults = Self.sharedDefaults,
+            !defaults.bool(forKey: SettingsKeys.initialPresetApplied) else {
+            return
+        }
+        defaults.set(true, forKey: SettingsKeys.initialPresetApplied)
+        let isExistingInstall = defaults.object(forKey: SettingsKeys.kanaKanjiInitialAjoutVocabularyAppliedSeed) != nil
+            || defaults.object(forKey: SettingsKeys.kanaKanjiInitialAjoutVocabularyMigrated) != nil
+            || Self.userSettingsKeys.contains { defaults.object(forKey: $0) != nil }
+        guard !isExistingInstall else {
+            return
+        }
+        var preset = Self.contemporaryPresetValues
+        preset[SettingsKeys.contactCandidateDisplayMode] = ContactCandidateDisplayModeOption.off.rawValue
+        applyPreset(preset)
+    }
+
+    func applyPreset(_ preset: [String: Any]) {
         guard let defaults = Self.sharedDefaults else { return }
         removeAllUserSettings()
-        for (key, value) in Self.conservativePresetValues {
+        for (key, value) in preset {
             defaults.set(value, forKey: key)
         }
         SettingsSyncNotification.postSettingsDidChange()
