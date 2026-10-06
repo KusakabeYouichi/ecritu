@@ -4,6 +4,9 @@ import Foundation
 // お/ご 丁寧接頭辞ファミリの派生。
 extension KanaKanjiConverter {
     static let politePrefixPassthroughPrefixes: [String] = ["お", "ご"]
+    // お/ご+語幹 の合成で、語幹の LM unigram がこれより高い(=珍しい)か無いときは作らない(3395)。
+    // 料理 4934 / 酒 5387 / 稽古 6455 は残り、良吏 8139・綾里(LM なし)・料り(LM なし)は落ちる。LM の無い辞書(テストの小辞書)では判定しない
+    static let politePrefixStemMaxUnigramCost = 7500
 
     // 呼ばれるたびに組んで並べ替えていた(サンプルで約 2%。3038)。内容は静的なので 1 回だけ作る
     static func honorificOSuruInflectionSuffixes() -> [String] {
@@ -418,8 +421,16 @@ extension KanaKanjiConverter {
                     initialAjoutVocabulary: initialAjoutVocabulary,
                     systemCandidateMode: systemCandidateMode
                 )
-                derived.append(contentsOf: bareRenyou.prefix(1))
-                deferredBareRenyou.append(contentsOf: bareRenyou.dropFirst())
+                // 連用形が LM に無いか珍しい(お料り/お以ち)なら作らない(連文節 b3 の語幹 LM 判定と同じ趣旨。3395)
+                let bareRenyouStemCosts = store.wordLMUnigramCosts(
+                    for: bareRenyou.map { String($0.dropFirst(prefix.count)) }
+                )
+                let usableBareRenyou = !store.hasWordLMMetadata ? bareRenyou : bareRenyou.filter { surface in
+                    let stemSurface = String(surface.dropFirst(prefix.count))
+                    return (bareRenyouStemCosts[stemSurface] ?? Int.max) <= Self.politePrefixStemMaxUnigramCost
+                }
+                derived.append(contentsOf: usableBareRenyou.prefix(1))
+                deferredBareRenyou.append(contentsOf: usableBareRenyou.dropFirst())
             }
             derived.append(
                 contentsOf: politePrefixRenyouCandidates(
@@ -478,10 +489,18 @@ extension KanaKanjiConverter {
             // 立ち、正解の 語彙+の 経路を跨いで しょーとかっとごいの→ショートカットご井野 になっていた(ユーザ報告 2910)。
             // 花(4268、名/姓 両登録)のような常用語は残す(お花)
             let stemPersonNames = store.personNameKinds(for: stem)
+            // 語幹が LM に無いか珍しい(お綾里/お良吏)なら作らない。追加語彙・seed の語幹は除く(3395)
+            let stemUnigramCosts = store.wordLMUnigramCosts(for: stemCandidates)
 
             for candidate in stemCandidates {
                 if let wc = stemWordCosts[candidate],
                     wc >= KanaKanjiConverter.CandidateScore.harvestTierWordCostFloor,
+                    !userCandidateSet.contains(candidate),
+                    !(KanaKanjiSeedDictionary.seed[stem]?.contains(candidate) ?? false) {
+                    continue
+                }
+                if store.hasWordLMMetadata,
+                    (stemUnigramCosts[candidate] ?? Int.max) > Self.politePrefixStemMaxUnigramCost,
                     !userCandidateSet.contains(candidate),
                     !(KanaKanjiSeedDictionary.seed[stem]?.contains(candidate) ?? false) {
                     continue
