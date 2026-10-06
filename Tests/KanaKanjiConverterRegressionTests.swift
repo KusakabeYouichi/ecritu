@@ -9834,7 +9834,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         converter.clearSharedDataCaches()
         converter.invalidateCandidateCache()
         let single = converter.candidates(for: "せき", limit: 12, systemCandidateMode: .surface)
-        XCTAssertEqual(Array(single.prefix(6)), ["席", "関", "咳", "堰", "責", "籍"], "single=\(single)")
+        // 3389 でユーザ指定の順に変えた(旧 席/関/咳/堰/責/籍)
+        XCTAssertEqual(Array(single.prefix(6)), ["席", "咳", "堰", "積", "責", "関"], "single=\(single)")
         XCTAssertFalse(single.prefix(8).contains("せき"), "single=\(single)")
         // 直前確定が数字 → 席 が先頭(隻=船舶の助数詞は2番手)
         let boosted = KanaKanjiConverter.digitContextCounterBoostedCandidates(
@@ -20870,6 +20871,27 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "つよいかぜがふく", systemCandidateMode: .surface).first, "強い風が吹く")
         let kotsu = converter.candidates(for: "こつ", limit: 4, systemCandidateMode: .surface)
         XCTAssertEqual(kotsu.first, "コツ", "\(kotsu)")
+    }
+
+    // 3388: かった は 買った / 勝った / 飼った(カタカナ収穫の カッタ が先頭だった。カッタ は抑制)
+    func testKattaOrder() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let list = converter.candidates(for: "かった", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(3)), ["買った", "勝った", "飼った"], "\(list)")
+        XCTAssertFalse(list.contains("カッタ"), "\(list)")
+        // 形容詞の かった(たかかった/よかった)は変えない
+        let takaMulti = converter.multiClauseCandidates(for: "たかかった", systemCandidateMode: .surface)
+        let taka = takaMulti.isEmpty ? converter.candidates(for: "たかかった", limit: 3, systemCandidateMode: .surface) : takaMulti
+        XCTAssertEqual(taka.first, "高かった", "\(taka.prefix(3))")
+    }
+
+    // 3389: せき は 席 / 咳 / 堰 / 積 / 責 / 関 / 籍 / 咳き / 寂
+    func testSekiOrder() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let list = converter.candidates(for: "せき", limit: 12, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(9)), ["席", "咳", "堰", "積", "責", "関", "籍", "咳き", "寂"], "\(list)")
     }
 
     func testAcceaRegistered() throws {
