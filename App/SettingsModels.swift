@@ -99,6 +99,9 @@ enum SettingsKeys {
     // 最後に当てた初期設定(SettingsBasePreset の rawValue。3432)。ロゴ長押しメニューの下線と、各項目の「変更済み」の印の
     // 比べる相手。userSettingsKeys には入れない(初期設定を当てるときに消さない)。退避・復元では一緒に保存・復元する
     static let settingsBasePreset = "settingsBasePreset"
+    // 初めてのインストールで連絡先の候補を「使わない」で始めた印(3437)。立っている間は「使わない」を X.16 の基準の値にする。
+    // 初期設定を行なうと消える
+    static let settingsBaseContactsStartedOff = "settingsBaseContactsStartedOff"
     // misc 分離以前の Ajout 播種残骸の one-shot 清掃(2390)実行済みフラグ
     static let kanaKanjiLearnedVocabulary = "kanaKanjiLearnedVocabulary"
     static let kanaKanjiLearningVocabularyMigrationCompleted = "kanaKanjiLearningVocabularyMigrationCompleted"
