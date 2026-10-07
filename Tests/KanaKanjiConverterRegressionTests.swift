@@ -20882,6 +20882,17 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3420: ふくさよう は 副作用 が先頭。Sudachi の語コストが収穫帯(10057)でも語LMに載る複合語は収穫帯に落とさず、
+    // 語尾 よう が活用らしく見えるだけの読みでは 福+さよう 等の合成に +220 しない(一般則)
+    func testFukusayouDictionaryCompoundLeads() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let list = converter.candidates(for: "ふくさよう", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(list.first, "副作用", "\(list)")
+        let multi = converter.multiClauseCandidates(for: "ふくさようが", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "副作用が", "multi=\(multi.prefix(4))")
+    }
+
     // 3381: べにしょうが は 紅しょうが / 紅生姜 の順(辞書に 1 語で無く 紅+省+が が先頭だった)
     func testBenishougaRegistered() throws {
         try prepareRealLMDictionary()
