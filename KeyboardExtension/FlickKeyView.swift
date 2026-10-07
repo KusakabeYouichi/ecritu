@@ -16,10 +16,6 @@ enum KeyboardStuckTouchDiagnostics {
     // FlickKeyView に格納プロパティを足すとキー群の巨大なタプルが太る(2921 のスタック超過)ので、
     // キー側でなくここへ置いて受け手(selectKanaModeSwitcher)が読む。測れなかったときは nil
     static var lastCommitDurationMs: Int?
-    // 調査用(3136): UIKit が触れたと判断した時刻。SwiftUI のジェスチャへ届くまでの遅れを測る。原因判明後に外す
-    static var lastRawTouchBeganAt: CFAbsoluteTime = 0
-    // 同(3151): 触れた位置(キーボードの枠の中の座標)。遅れが画面のどのあたりで出るのかを見る
-    nonisolated(unsafe) static var lastRawTouchLocation: CGPoint = .zero
 }
 
 enum LongPressCandidatePanelPlacement {
@@ -201,20 +197,6 @@ struct FlickKeyView: View {
                     .minimumScaleFactor(0.6)
                     .padding(.horizontal, 2)
                     .foregroundStyle(Color.white)
-                    #if DEBUG
-                    // 調査用(3157): 実際に緑の面が描かれた時刻。ジェスチャの判定が届くのは 80ms でも、
-                    // 描き直しが遅ければ体感は遅い。触れてから描かれるまでを測る。原因判明後に外す
-                    .onAppear {
-                        if KeyboardStuckTouchDiagnostics.lastRawTouchBeganAt > 0 {
-                            let ms = Int(
-                                (CFAbsoluteTimeGetCurrent() - KeyboardStuckTouchDiagnostics.lastRawTouchBeganAt) * 1000
-                            )
-                            KeyboardStuckTouchDiagnostics.onTouchForensics?(
-                                "緑になるまで キー[\(touchForensicsLabel ?? kana.center)] \(ms)ms"
-                            )
-                        }
-                    }
-                    #endif
             } else if let idleReplacement {
                 idleReplacement
                     .offset(y: centerLabelOffsetY)
@@ -686,27 +668,6 @@ struct FlickKeyView: View {
             }
             .onChanged { value in
                 if !isTouching {
-                    #if DEBUG
-                    // 調査用(3136/3138): 触れてから SwiftUI の判定に届くまで。キーの位置で違うのかを見るため、
-                    // 左下キー以外でも 150ms を超えたものは記録する(画面端のシステム操作による配送遅れの疑い)
-                    if KeyboardStuckTouchDiagnostics.lastRawTouchBeganAt > 0 {
-                        let ms = Int((CFAbsoluteTimeGetCurrent() - KeyboardStuckTouchDiagnostics.lastRawTouchBeganAt) * 1000)
-                        let point = KeyboardStuckTouchDiagnostics.lastRawTouchLocation
-                        // 事象そのものの時刻との差。SwiftUI が渡す value.time は「起動からの秒数を
-                        // 2001 年起点の Date に入れた」値なので、Date() と引き算しても意味がない
-                        // (実測 811663665742ms)。systemUptime と引き算する(3156)
-                        let sinceEventMs = Int(
-                            (ProcessInfo.processInfo.systemUptime - value.time.timeIntervalSinceReferenceDate) * 1000
-                        )
-                        let where_ = "位置=(\(Int(point.x)),\(Int(point.y))) 事象からの遅れ\(sinceEventMs)ms"
-                        if let touchForensicsLabel {
-                            KeyboardStuckTouchDiagnostics.onTouchForensics?("触れてから判定まで \(touchForensicsLabel) \(ms)ms \(where_)")
-                        } else {
-                            // 調査中(3151)は全キーを記録して、遅れが画面のどのあたりで出るのかを見る
-                            KeyboardStuckTouchDiagnostics.onTouchForensics?("触れてから判定まで キー[\(kana.center)] \(ms)ms \(where_)")
-                        }
-                    }
-                    #endif
                     onTouchStateChanged(true)
                     didTriggerLongPressAction = false
                     scheduleLongPressIfNeeded()
