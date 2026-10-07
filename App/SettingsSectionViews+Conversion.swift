@@ -412,8 +412,8 @@ struct KakikaeSettingsSection: View {
         switch option {
         case .beforeOnly: return Self.beforeExamples
         case .afterOnly: return Self.afterExamples
-        case .bothBeforeFirst: return "両方を出し、書きかえ前を先に(醗酵 → 発酵)"
-        case .bothAfterFirst: return "両方を出し、書きかえ後を先に(発酵 → 醗酵)"
+        case .bothBeforeFirst: return "両方を出し、本来の漢字を先に(醗酵 → 発酵)"
+        case .bothAfterFirst: return "両方を出し、常用漢字を先に(発酵 → 醗酵)"
         }
     }
 
@@ -476,7 +476,7 @@ struct KakikaeSettingsSection: View {
                 }
             }
 
-            Text("表外字を同じ音の常用漢字に置き換えた書き方(1956 年 国語審議会報告『同音の漢字による書きかえ』の \(KakikaeTable.switchablePairs.count) 語)の扱いを選びます。『醗酵前』『蒸溜所』のような、その語を含む語にも効きます。1 字単位の書きかえ(廻→回、智→知 など)は人名・地名を巻き込むので対象外です。報告の後に常用漢字に加わった字の組(臆測⇄憶測、肝腎⇄肝心、研磨⇄研摩 など)は、どれを選んでも両方を出します。追加語彙に登録した語と、学習した語は対象外です。初期設定は 書きかえ前だけ で、保守的初期設定では 両方(後を先に)、現代的初期設定では 書きかえ後だけ です。この設定ができる前から使っている端末は、以前から書きかえ前を先頭にしていた語(醗酵・日蝕・棲息)を変えないよう 両方(前を先に) にしてあります。")
+            Text("表外字を同じ音の常用漢字に置き換えた書き方(1956 年 国語審議会報告『同音の漢字による書きかえ』の \(KakikaeTable.switchablePairs.count) 語)の扱いを選びます。『醗酵前』『蒸溜所』のような、その語を含む語にも効きます。1 字単位の書きかえ(廻→回、智→知 など)は人名・地名を巻き込むので対象外です。報告の後に常用漢字に加わった字の組(臆測⇄憶測、肝腎⇄肝心、研磨⇄研摩 など)は、どれを選んでも両方を出します。追加語彙に登録した語と、学習した語は対象外です。初期設定は 本来の漢字だけ で、保守的初期設定では 両方(常用漢字を先に)、現代的初期設定では 常用漢字だけ です。この設定ができる前から使っている端末は、以前から本来の漢字を先頭にしていた語(醗酵・日蝕・棲息)を変えないよう 両方(本来の漢字を先に) にしてあります。")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
