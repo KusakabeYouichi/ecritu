@@ -98,5 +98,8 @@ DerivedData/
 # Local signing overrides
 Config/Signing.local.xcconfig
 
+# 病名語彙は配布の許諾が無いうちは手元だけに置く(公開リポジトリに載せると加工データの一般公開になる。3410)
+references/médicaux.plist
+
 # Claude Code per-developer settings
 .claude/settings.local.json
