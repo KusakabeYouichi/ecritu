@@ -23,8 +23,7 @@ struct AccentColorSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("V.3 アクセントカラー")
-                .font(.headline)
+            SettingsCardHeadline("V.3 アクセントカラー")
 
             HStack(spacing: 8) {
                 ForEach(AccentColorOption.allCases) { option in
@@ -79,8 +78,7 @@ struct ThemeColorSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("V.4 テーマカラー")
-                .font(.headline)
+            SettingsCardHeadline("V.4 テーマカラー")
 
             VStack(spacing: 8) {
                 ForEach(KeyboardBackgroundThemeOption.allCases) { option in
@@ -174,8 +172,7 @@ struct FlickGuideDisplaySettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("G.1 ガイド文字表示")
-                .font(.headline)
+            SettingsCardHeadline("G.1 ガイド文字表示")
 
             VStack(alignment: .leading, spacing: 10) {
                 Text("かな入力")

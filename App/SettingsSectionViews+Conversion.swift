@@ -10,8 +10,7 @@ struct KanaPostModifierFlickDakutenSettingsSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             Toggle(isOn: $isEnabled) {
-                Text("E.7 後置修飾キーのフリックで濁点・半濁点")
-                    .font(.headline)
+                SettingsCardHeadline("E.7 後置修飾キーのフリックで濁点・半濁点")
             }
 
             Text("オンの場合、後置修飾キーを上フリックで濁点(゛)、右フリックで半濁点(゜)を強制します。オフにすると上/右フリックは中央タップと同じ扱いになり、誤って『つ→づ』になるのを抑止できます(2タップで『つ→っ→づ』は引き続き可能)。")
@@ -57,8 +56,7 @@ struct ContactCandidateDisplaySettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("X.16 iOSの連絡先の姓、名、会社名")
-                .font(.headline)
+            SettingsCardHeadline("X.16 iOSの連絡先の姓、名、会社名")
 
             VStack(spacing: 8) {
                 ForEach(ContactCandidateDisplayModeOption.allCases) { option in
@@ -144,8 +142,7 @@ struct RadicalStrokeCountSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("X.10 部首の画数の数え方")
-                .font(.headline)
+            SettingsCardHeadline("X.10 部首の画数の数え方")
 
             Text("単漢字入力(モード切替キーの下フリック)の部首一覧を並べる画数です。流儀が分かれる部首だけ個別に選べます(艸/辵/食 は単独では6画/7画/9画で、ここの数字はその部首として数えるときの画数です)。")
                 .font(.footnote)
@@ -246,8 +243,7 @@ struct EmojiKaomojiCandidateSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("X.15 emojis & les émoticônes")
-                .font(.headline)
+            SettingsCardHeadline("X.15 emojis & les émoticônes")
 
             VStack(spacing: 10) {
                 Toggle("emoji 😀", isOn: $enablesEmojiCandidates)
@@ -271,8 +267,7 @@ struct LatinLexiconSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("E.8 欧文サジェスチョンの言語")
-                .font(.headline)
+            SettingsCardHeadline("E.8 欧文サジェスチョンの言語")
 
             VStack(spacing: 10) {
                 Toggle("français (フランス語・15,000語)", isOn: $enablesFrench)
@@ -302,8 +297,7 @@ struct ScriptVariantSuppressionSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("X.7 旧字体・異体字の候補")
-                .font(.headline)
+            SettingsCardHeadline("X.7 旧字体・異体字の候補")
 
             // 例の括弧の前で必ず改行する(端末幅で中途半端に折り返すと読みにくい。ユーザ指定 3001)
             Toggle(isOn: $kyujitai) {
@@ -359,8 +353,7 @@ struct KanaGakiSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("X.8 かなで書く言葉の候補")
-                .font(.headline)
+            SettingsCardHeadline("X.8 かなで書く言葉の候補")
 
             // 例の括弧の前で必ず改行する(X.7 と同じ。ユーザ指定 3001)
             toggle($adverb, .adverb)
@@ -419,8 +412,7 @@ struct KakikaeSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("X.9 常用漢字による書きかえ")
-                .font(.headline)
+            SettingsCardHeadline("X.9 常用漢字による書きかえ")
 
             VStack(spacing: 8) {
                 ForEach(KakikaePreference.allCases) { option in
@@ -490,8 +482,7 @@ struct HistoricalKanaCandidatesSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("X.3 旧仮名遣い候補")
-                .font(.headline)
+            SettingsCardHeadline("X.3 旧仮名遣い候補")
 
             Toggle("旧仮名遣いの候補を含める", isOn: $isEnabled)
                 .toggleStyle(.switch)
@@ -509,8 +500,7 @@ struct IterationMarkCandidatesSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("X.4 仮名の踊り字候補")
-                .font(.headline)
+            SettingsCardHeadline("X.4 仮名の踊り字候補")
 
             Toggle("仮名の踊り字の候補を含める", isOn: $isEnabled)
                 .toggleStyle(.switch)
@@ -537,8 +527,7 @@ struct ScriptVariantModeSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text(title)
-                .font(.headline)
+            SettingsCardHeadline(title)
 
             Picker(title, selection: selection) {
                 ForEach(ScriptVariantModeOption.allCases) { option in

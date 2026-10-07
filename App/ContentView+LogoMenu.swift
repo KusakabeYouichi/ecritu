@@ -205,6 +205,8 @@ struct SettingsStash: Codable {
     let editionNumber: String
     let savedAt: Date
     let values: [String: Value]
+    // 退避したときの基準の初期設定(SettingsBasePreset の rawValue。3432)。これより前に退避したものには無い
+    var basePreset: String?
 }
 
 extension ContentView {
@@ -496,6 +498,62 @@ extension ContentView {
 
     // 「今の設定」が、その初期設定を当てた直後の状態と同じか。初期設定の適用は
     // 「全キーを消してから preset を書く」なので、preset に無いキーは組み込み初期値が期待値(実効値で比較)
+    // ──── 基準の初期設定(3432) ────
+
+    // 最後に当てた初期設定。値が無い端末は現代的初期設定とみなす(ユーザ指定)
+    static var currentBasePreset: SettingsBasePreset {
+        sharedDefaults?.string(forKey: SettingsKeys.settingsBasePreset)
+            .flatMap(SettingsBasePreset.init(rawValue:)) ?? .fallback
+    }
+
+    static func recordBasePreset(_ preset: SettingsBasePreset) {
+        sharedDefaults?.set(preset.rawValue, forKey: SettingsKeys.settingsBasePreset)
+    }
+
+    // 初期設定ごとの値(preset に無いキーは組み込みの初期値が期待値)。戦略的初期設定は組み込みの初期値そのもの
+    static func presetValues(for base: SettingsBasePreset) -> [String: Any] {
+        switch base {
+        case .strategic: return [:]
+        case .conservative: return conservativePresetValues
+        case .contemporary: return contemporaryPresetValues
+        }
+    }
+
+    // 指定のキーのどれかが、基準の初期設定の値から変わっているか(各項目の「変更済み」の印。3432)
+    static func isModifiedFromBasePreset(keys: [String]) -> Bool {
+        guard let defaults = sharedDefaults else {
+            return false
+        }
+        let preset = presetValues(for: currentBasePreset)
+        for key in keys {
+            let effective = defaults.object(forKey: key) ?? builtInDefaultValues[key]
+            // 連絡先の候補を「使わない」にしているのは変更扱いにしない。初めてのインストールは現代的初期設定でも
+            // ここだけ「使わない」で始める(審査ガイドライン 5.1.1)ので、印が最初から付いてしまう
+            if key == SettingsKeys.contactCandidateDisplayMode,
+                (effective as? String) == ContactCandidateDisplayModeOption.off.rawValue {
+                continue
+            }
+            let expected = preset[key] ?? builtInDefaultValues[key]
+            guard let effective = effective as? NSObject, let expected = expected as? NSObject else {
+                continue
+            }
+            if !effective.isEqual(expected) {
+                return true
+            }
+        }
+        return false
+    }
+
+    // 基準の初期設定がまだ記録されていない端末に 1 回だけ現代的初期設定を記録する(3432、ユーザ指定)。
+    // 初めてインストールした端末は直前の applyInitialPresetIfFreshInstall が記録しているので素通り
+    func applyBasePresetDefaultIfNeeded() {
+        guard let defaults = Self.sharedDefaults,
+            defaults.object(forKey: SettingsKeys.settingsBasePreset) == nil else {
+            return
+        }
+        Self.recordBasePreset(.fallback)
+    }
+
     private func currentSettingsMatch(preset: [String: Any]) -> Bool {
         guard let defaults = Self.sharedDefaults else {
             return false
@@ -562,8 +620,10 @@ extension ContentView {
                 .frame(width: 26)
             VStack(alignment: .leading, spacing: 1) {
                 HStack(alignment: .firstTextBaseline, spacing: 4) {
+                    // 最後に当てた初期設定に下線(3432)
                     Text(action.title)
                         .font(.body.weight(.semibold))
+                        .underline(action == Self.currentBasePreset.menuAction)
                     if action == .restoreStashedSettings, let savedAt = settingsStashSavedAt {
                         Text(settingsStashSavedAtLabel(savedAt))
                             .font(.caption)
@@ -650,6 +710,7 @@ extension ContentView {
             showSettingsToast("保守的初期設定にしました")
         case .contemporaryDefaults:
             applyPreset(Self.contemporaryPresetValues)
+            Self.recordBasePreset(.contemporary)
             showSettingsToast("現代的初期設定にしました")
         case .restoreStashedSettings:
             if restoreStashedSettings() {
@@ -674,11 +735,13 @@ extension ContentView {
 
     func applyStrategicDefaults() {
         removeAllUserSettings()
+        Self.recordBasePreset(.strategic)
         SettingsSyncNotification.postSettingsDidChange()
     }
 
     func applyConservativePreset() {
         applyPreset(Self.conservativePresetValues)
+        Self.recordBasePreset(.conservative)
     }
 
     // 初めてインストールしたときは現代的初期設定にする(ユーザ指定 3406)。既存の端末(語彙の初期投入の記録か
@@ -700,6 +763,7 @@ extension ContentView {
         var preset = Self.contemporaryPresetValues
         preset[SettingsKeys.contactCandidateDisplayMode] = ContactCandidateDisplayModeOption.off.rawValue
         applyPreset(preset)
+        Self.recordBasePreset(.contemporary)
     }
 
     // 同音の漢字による書きかえ(3422)の値がまだ無い端末(この設定より前から使っている人)に 1 回だけ 両方(本来の漢字を先に)を書く。
@@ -732,7 +796,10 @@ extension ContentView {
             }
         }
         let editionNumber = (Bundle.main.infoDictionary?["CFBundleVersion"] as? String) ?? "?"
-        let stash = SettingsStash(editionNumber: editionNumber, savedAt: Date(), values: values)
+        let stash = SettingsStash(
+            editionNumber: editionNumber, savedAt: Date(), values: values,
+            basePreset: Self.currentBasePreset.rawValue
+        )
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
         guard let data = try? encoder.encode(stash), SettingsStashStore.save(data) else {
@@ -755,6 +822,10 @@ extension ContentView {
         removeAllUserSettings()
         for (key, value) in stash.values where Self.userSettingsKeys.contains(key) {
             defaults.set(value.anyValue, forKey: key)
+        }
+        // 基準の初期設定も戻す(3432)。これより前の退避には無いので、そのときは今の記録のまま
+        if let base = stash.basePreset.flatMap(SettingsBasePreset.init(rawValue:)) {
+            Self.recordBasePreset(base)
         }
         SettingsSyncNotification.postSettingsDidChange()
         return true

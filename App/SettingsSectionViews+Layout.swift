@@ -80,8 +80,7 @@ struct LandscapeCandidateSideSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("V.1 ラテン文字候補ペイン (horizontal)")
-                .font(.headline)
+            SettingsCardHeadline("V.1 ラテン文字候補ペイン (horizontal)")
 
             Button {
                 latinSuggestionMode = usesLandscapeLatinSuggestionPane ? .off : .sidebar
@@ -141,8 +140,7 @@ struct LandscapeNumberPaneSideSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("V.2 数字ペイン配列 (horizontal)")
-                .font(.headline)
+            SettingsCardHeadline("V.2 数字ペイン配列 (horizontal)")
 
             DraggablePanePairRow(
                 items: paneOrder,
@@ -179,8 +177,7 @@ struct NumberLayoutSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("L.3 数字配列")
-                .font(.headline)
+            SettingsCardHeadline("L.3 数字配列")
 
             settingsSubItem("数字入力") {
                 Picker("数字入力", selection: $selection) {
