@@ -2,6 +2,13 @@ import SwiftUI
 import XCTest
 import SQLite3
 
+// リポジトリのフォルダー。このファイル(Tests/ の直下)の場所から割り出す。clone した場所や
+// ユーザー名に依らず動き、作者の手元のパスをコードに残さない(3414)
+let ecrituRepositoryRoot = URL(fileURLWithPath: #filePath)
+    .deletingLastPathComponent()
+    .deletingLastPathComponent()
+    .path
+
 final class KanaKanjiConverterRegressionTests: XCTestCase {
     private var defaultsSuiteName = ""
     private var converter: KanaKanjiConverter!
@@ -17,7 +24,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // 従来の containerURL は UUID group ごとに別コンテナ=テスト間隔離だったので、
         // テストごとのサブディレクトリーで同じ隔離を保つ(共有にすると2件が挙動変化)
         testContainerURL = URL(
-            fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/test_app_group/\(defaultsSuiteName)",
+            fileURLWithPath: "\(ecrituRepositoryRoot)/tmp/test_app_group/\(defaultsSuiteName)",
             isDirectory: true
         )
         KanaKanjiStore.sharedContainerURLOverride = testContainerURL
@@ -31,7 +38,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // シミュレータ内に AppGroup コンテナが13万件・辞書コピー8.2万件まで蓄積し、
     // ディスクを埋めて全体スイートが73件失敗した(2026-08-13)。現方式は tearDown で
     // 消えるが、クラッシュや強制終了では残るため、起動時に残骸を掃除して再発を防ぐ。
-    static let testAppGroupRootPath = "/Users/kusakabe/Git/ecritu/tmp/test_app_group"
+    static let testAppGroupRootPath = "\(ecrituRepositoryRoot)/tmp/test_app_group"
     private static var didPurgeStaleTestContainers = false
 
     static func purgeStaleTestContainersIfNeeded() {
@@ -1614,7 +1621,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // オフセット表の検証(3306)を通ること。検証が厳しすぎて実物を nil にしても、呼び出し側は黙って
     // JSON 経路へ落ちる(常駐が約 6.8MB 増えるだけ)ので、ここで明示的に確かめる
     func testBuiltSupplementalVocabCompactFilePassesValidation() throws {
-        let url = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/ÉcrituSecondVocab.eccs")
+        let url = URL(fileURLWithPath: "\(ecrituRepositoryRoot)/tmp/ÉcrituSecondVocab.eccs")
         guard FileManager.default.fileExists(atPath: url.path) else {
             throw XCTSkip("tmp/ÉcrituSecondVocab.eccs not available on this machine")
         }
@@ -2414,14 +2421,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // かな活用形は misc(InitialMisc)の curated 供給。実機相当にするため全部注入する
         var merged: [String: [String]] = [:]
         for name in ["InitialSupprVocabMigration", "InitialSupprHiddenVocabMigration"] {
-            let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/\(name).json"))
+            let data = try Data(contentsOf: URL(fileURLWithPath: "\(ecrituRepositoryRoot)/KeyboardExtension/\(name).json"))
             for (reading, candidates) in try JSONDecoder().decode([String: [String]].self, from: data) {
                 merged[reading, default: []].append(contentsOf: candidates)
             }
         }
         UserDefaults(suiteName: defaultsSuiteName)?.set(try JSONEncoder().encode(merged), forKey: "ÉcrituSuppr_Vocab")
         for name in ["InitialAjoutVocabMigration", "InitialMiscVocabMigration"] {
-            let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/\(name).json"))
+            let data = try Data(contentsOf: URL(fileURLWithPath: "\(ecrituRepositoryRoot)/KeyboardExtension/\(name).json"))
             for (reading, candidates) in try JSONDecoder().decode([String: [String]].self, from: data) {
                 for candidate in candidates.reversed() {
                     converter.store.addUserEntry(reading: reading, candidate: candidate)
@@ -2455,14 +2462,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         try prepareRealLMDictionary()
         var merged: [String: [String]] = [:]
         for name in ["InitialSupprVocabMigration", "InitialSupprHiddenVocabMigration"] {
-            let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/\(name).json"))
+            let data = try Data(contentsOf: URL(fileURLWithPath: "\(ecrituRepositoryRoot)/KeyboardExtension/\(name).json"))
             for (reading, candidates) in try JSONDecoder().decode([String: [String]].self, from: data) {
                 merged[reading, default: []].append(contentsOf: candidates)
             }
         }
         UserDefaults(suiteName: defaultsSuiteName)?.set(try JSONEncoder().encode(merged), forKey: "\u{c9}crituSuppr_Vocab")
         for name in ["InitialAjoutVocabMigration", "InitialMiscVocabMigration"] {
-            let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/\(name).json"))
+            let data = try Data(contentsOf: URL(fileURLWithPath: "\(ecrituRepositoryRoot)/KeyboardExtension/\(name).json"))
             for (reading, candidates) in try JSONDecoder().decode([String: [String]].self, from: data) {
                 for candidate in candidates.reversed() {
                     converter.store.addUserEntry(reading: reading, candidate: candidate)
@@ -2588,14 +2595,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         try prepareRealLMDictionary()
         var merged: [String: [String]] = [:]
         for name in ["InitialSupprVocabMigration", "InitialSupprHiddenVocabMigration"] {
-            let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/\(name).json"))
+            let data = try Data(contentsOf: URL(fileURLWithPath: "\(ecrituRepositoryRoot)/KeyboardExtension/\(name).json"))
             for (reading, candidates) in try JSONDecoder().decode([String: [String]].self, from: data) {
                 merged[reading, default: []].append(contentsOf: candidates)
             }
         }
         UserDefaults(suiteName: defaultsSuiteName)?.set(try JSONEncoder().encode(merged), forKey: "\u{c9}crituSuppr_Vocab")
         for name in ["InitialAjoutVocabMigration", "InitialMiscVocabMigration"] {
-            let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/\(name).json"))
+            let data = try Data(contentsOf: URL(fileURLWithPath: "\(ecrituRepositoryRoot)/KeyboardExtension/\(name).json"))
             for (reading, candidates) in try JSONDecoder().decode([String: [String]].self, from: data) {
                 for candidate in candidates.reversed() {
                     converter.store.addUserEntry(reading: reading, candidate: candidate)
@@ -2636,7 +2643,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     func testRegressionRealLMDemoNakattaKanaLeading() throws {
         try prepareRealLMDictionary()
         for name in ["InitialAjoutVocabMigration", "InitialMiscVocabMigration"] {
-            let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/\(name).json"))
+            let data = try Data(contentsOf: URL(fileURLWithPath: "\(ecrituRepositoryRoot)/KeyboardExtension/\(name).json"))
             for (reading, candidates) in try JSONDecoder().decode([String: [String]].self, from: data) {
                 for candidate in candidates.reversed() {
                     converter.store.addUserEntry(reading: reading, candidate: candidate)
@@ -2659,14 +2666,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         try prepareRealLMDictionary()
         var merged: [String: [String]] = [:]
         for name in ["InitialSupprVocabMigration", "InitialSupprHiddenVocabMigration"] {
-            let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/\(name).json"))
+            let data = try Data(contentsOf: URL(fileURLWithPath: "\(ecrituRepositoryRoot)/KeyboardExtension/\(name).json"))
             for (reading, candidates) in try JSONDecoder().decode([String: [String]].self, from: data) {
                 merged[reading, default: []].append(contentsOf: candidates)
             }
         }
         UserDefaults(suiteName: defaultsSuiteName)?.set(try JSONEncoder().encode(merged), forKey: "\u{c9}crituSuppr_Vocab")
         for name in ["InitialAjoutVocabMigration", "InitialMiscVocabMigration"] {
-            let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/\(name).json"))
+            let data = try Data(contentsOf: URL(fileURLWithPath: "\(ecrituRepositoryRoot)/KeyboardExtension/\(name).json"))
             for (reading, candidates) in try JSONDecoder().decode([String: [String]].self, from: data) {
                 for candidate in candidates.reversed() {
                     converter.store.addUserEntry(reading: reading, candidate: candidate)
@@ -2695,7 +2702,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     func testRegressionRealLMSeiseiOrder() throws {
         try prepareRealLMDictionary()
         for name in ["InitialAjoutVocabMigration", "InitialMiscVocabMigration"] {
-            let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/\(name).json"))
+            let data = try Data(contentsOf: URL(fileURLWithPath: "\(ecrituRepositoryRoot)/KeyboardExtension/\(name).json"))
             for (reading, candidates) in try JSONDecoder().decode([String: [String]].self, from: data) {
                 for candidate in candidates.reversed() {
                     converter.store.addUserEntry(reading: reading, candidate: candidate)
@@ -2730,14 +2737,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         try prepareRealLMDictionary()
         var merged: [String: [String]] = [:]
         for name in ["InitialSupprVocabMigration", "InitialSupprHiddenVocabMigration"] {
-            let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/\(name).json"))
+            let data = try Data(contentsOf: URL(fileURLWithPath: "\(ecrituRepositoryRoot)/KeyboardExtension/\(name).json"))
             for (reading, candidates) in try JSONDecoder().decode([String: [String]].self, from: data) {
                 merged[reading, default: []].append(contentsOf: candidates)
             }
         }
         UserDefaults(suiteName: defaultsSuiteName)?.set(try JSONEncoder().encode(merged), forKey: "\u{c9}crituSuppr_Vocab")
         for name in ["InitialAjoutVocabMigration", "InitialMiscVocabMigration"] {
-            let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/\(name).json"))
+            let data = try Data(contentsOf: URL(fileURLWithPath: "\(ecrituRepositoryRoot)/KeyboardExtension/\(name).json"))
             for (reading, candidates) in try JSONDecoder().decode([String: [String]].self, from: data) {
                 for candidate in candidates.reversed() {
                     converter.store.addUserEntry(reading: reading, candidate: candidate)
@@ -2765,7 +2772,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     func testRegressionRealLMKatsuCompounds() throws {
         try prepareRealLMDictionary()
         for name in ["InitialAjoutVocabMigration", "InitialMiscVocabMigration"] {
-            let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/\(name).json"))
+            let data = try Data(contentsOf: URL(fileURLWithPath: "\(ecrituRepositoryRoot)/KeyboardExtension/\(name).json"))
             for (reading, candidates) in try JSONDecoder().decode([String: [String]].self, from: data) {
                 for candidate in candidates.reversed() {
                     converter.store.addUserEntry(reading: reading, candidate: candidate)
@@ -2801,7 +2808,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     func testRegressionRealLMNahaCityWaterBureau() throws {
         try prepareRealLMDictionary()
         for name in ["InitialAjoutVocabMigration", "InitialMiscVocabMigration"] {
-            let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/\(name).json"))
+            let data = try Data(contentsOf: URL(fileURLWithPath: "\(ecrituRepositoryRoot)/KeyboardExtension/\(name).json"))
             for (reading, candidates) in try JSONDecoder().decode([String: [String]].self, from: data) {
                 for candidate in candidates.reversed() {
                     converter.store.addUserEntry(reading: reading, candidate: candidate)
@@ -2896,7 +2903,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     func testRegressionRealLMVocabAdditions2564() throws {
         try prepareRealLMDictionary()
         for name in ["InitialAjoutVocabMigration", "InitialMiscVocabMigration"] {
-            let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/\(name).json"))
+            let data = try Data(contentsOf: URL(fileURLWithPath: "\(ecrituRepositoryRoot)/KeyboardExtension/\(name).json"))
             let dict = try JSONDecoder().decode([String: [String]].self, from: data)
             for (reading, candidates) in dict {
                 for candidate in candidates.reversed() {
@@ -3255,7 +3262,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
 
-        let tsvURL = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/lm_rank_mismatch.tsv")
+        let tsvURL = URL(fileURLWithPath: "\(ecrituRepositoryRoot)/tmp/lm_rank_mismatch.tsv")
         guard FileManager.default.fileExists(atPath: tsvURL.path) else {
             throw XCTSkip("先に tools/audit_lm_rank_mismatch.py を実行して TSV を生成すること")
         }
@@ -3598,7 +3605,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             return Double(stats.size_allocated) / 1_048_576
         }
         var db: OpaquePointer?
-        guard sqlite3_open_v2("/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite", &db, SQLITE_OPEN_READONLY, nil) == SQLITE_OK else {
+        guard sqlite3_open_v2("\(ecrituRepositoryRoot)/tmp/kana_kanji_dictionary.sqlite", &db, SQLITE_OPEN_READONLY, nil) == SQLITE_OK else {
             throw XCTSkip("sqlite を開けない")
         }
         defer { sqlite3_close(db) }
@@ -3754,7 +3761,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             return Double(stats.size_in_use) / 1_048_576
         }
         var db: OpaquePointer?
-        guard sqlite3_open_v2("/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite", &db, SQLITE_OPEN_READONLY, nil) == SQLITE_OK else {
+        guard sqlite3_open_v2("\(ecrituRepositoryRoot)/tmp/kana_kanji_dictionary.sqlite", &db, SQLITE_OPEN_READONLY, nil) == SQLITE_OK else {
             throw XCTSkip("sqlite を開けない")
         }
         defer { sqlite3_close(db) }
@@ -3914,7 +3921,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
 
-        let tsvURL = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/katakana_emphasis_drop.tsv")
+        let tsvURL = URL(fileURLWithPath: "\(ecrituRepositoryRoot)/tmp/katakana_emphasis_drop.tsv")
         guard FileManager.default.fileExists(atPath: tsvURL.path) else {
             throw XCTSkip("先に tools/audit_katakana_emphasis_drop.py を実行して TSV を生成すること")
         }
@@ -3947,7 +3954,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
 
-        let tsvURL = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/katakana_emphasis_drop.tsv")
+        let tsvURL = URL(fileURLWithPath: "\(ecrituRepositoryRoot)/tmp/katakana_emphasis_drop.tsv")
         guard FileManager.default.fileExists(atPath: tsvURL.path) else {
             throw XCTSkip("先に tools/audit_katakana_emphasis_drop.py を実行して TSV を生成すること")
         }
@@ -3980,7 +3987,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
 
-        let tsvURL = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/lm_rank_mismatch.tsv")
+        let tsvURL = URL(fileURLWithPath: "\(ecrituRepositoryRoot)/tmp/lm_rank_mismatch.tsv")
         guard FileManager.default.fileExists(atPath: tsvURL.path) else {
             throw XCTSkip("先に tools/audit_lm_rank_mismatch.py を実行して TSV を生成すること")
         }
@@ -4033,7 +4040,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
 
-        let tsvURL = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/fragment_undercut.tsv")
+        let tsvURL = URL(fileURLWithPath: "\(ecrituRepositoryRoot)/tmp/fragment_undercut.tsv")
         guard FileManager.default.fileExists(atPath: tsvURL.path) else {
             throw XCTSkip("先に tools/audit_fragment_undercut.py を実行して TSV を生成すること")
         }
@@ -4065,7 +4072,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
 
-        let tsvURL = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/wc_anomaly.tsv")
+        let tsvURL = URL(fileURLWithPath: "\(ecrituRepositoryRoot)/tmp/wc_anomaly.tsv")
         guard FileManager.default.fileExists(atPath: tsvURL.path) else {
             throw XCTSkip("先に tools/audit_wc_anomaly.py を実行して TSV を生成すること")
         }
@@ -7018,12 +7025,12 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     func testRegressionRealLMKaoNankaimoWithFullVocab() throws {
         try prepareRealLMDictionary()
         // 実機相当の抑制を注入(1912確立の手順)
-        let supprData = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/InitialSupprHiddenVocabMigration.json"))
+        let supprData = try Data(contentsOf: URL(fileURLWithPath: "\(ecrituRepositoryRoot)/KeyboardExtension/InitialSupprHiddenVocabMigration.json"))
         UserDefaults(suiteName: defaultsSuiteName)?.set(supprData, forKey: "ÉcrituSuppr_Vocab")
         // 実機相当の追加語彙(sacoche+misc)を注入 — テストバンドルには JSON が載らず
         // initialAjoutVocabulary が空のため(ろーまにいたる事件の教訓)
         for name in ["InitialAjoutVocabMigration", "InitialMiscVocabMigration"] {
-            let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/\(name).json"))
+            let data = try Data(contentsOf: URL(fileURLWithPath: "\(ecrituRepositoryRoot)/KeyboardExtension/\(name).json"))
             let dict = try JSONDecoder().decode([String: [String]].self, from: data)
             for (reading, candidates) in dict {
                 for candidate in candidates.reversed() {
@@ -7071,10 +7078,10 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // 実機相当の追加語彙全注入で固定する。
     func testRegressionRealLMSquareNiSurebaKeepsKanaParticle() throws {
         try prepareRealLMDictionary()
-        let supprData = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/InitialSupprHiddenVocabMigration.json"))
+        let supprData = try Data(contentsOf: URL(fileURLWithPath: "\(ecrituRepositoryRoot)/KeyboardExtension/InitialSupprHiddenVocabMigration.json"))
         UserDefaults(suiteName: defaultsSuiteName)?.set(supprData, forKey: "ÉcrituSuppr_Vocab")
         for name in ["InitialAjoutVocabMigration", "InitialMiscVocabMigration"] {
-            let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/\(name).json"))
+            let data = try Data(contentsOf: URL(fileURLWithPath: "\(ecrituRepositoryRoot)/KeyboardExtension/\(name).json"))
             let dict = try JSONDecoder().decode([String: [String]].self, from: data)
             for (reading, candidates) in dict {
                 for candidate in candidates.reversed() {
@@ -7736,10 +7743,10 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // のみ再現)。分断される側の 背中側 も curated 化(ろーま事件の処方箋)。
     func testRegressionRealLMSenakagawaPrefersSenakaGawa() throws {
         try prepareRealLMDictionary()
-        let supprData = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/InitialSupprHiddenVocabMigration.json"))
+        let supprData = try Data(contentsOf: URL(fileURLWithPath: "\(ecrituRepositoryRoot)/KeyboardExtension/InitialSupprHiddenVocabMigration.json"))
         UserDefaults(suiteName: defaultsSuiteName)?.set(supprData, forKey: "ÉcrituSuppr_Vocab")
         for name in ["InitialAjoutVocabMigration", "InitialMiscVocabMigration"] {
-            let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/\(name).json"))
+            let data = try Data(contentsOf: URL(fileURLWithPath: "\(ecrituRepositoryRoot)/KeyboardExtension/\(name).json"))
             let dict = try JSONDecoder().decode([String: [String]].self, from: data)
             for (reading, candidates) in dict {
                 for candidate in candidates.reversed() {
@@ -8134,10 +8141,10 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         try prepareRealLMDictionary()
         // 実機同等の全語彙注入(curated ある→ある が dfp=false で先着し のね クランプを
         // 失わせる回帰の再現。エンジン直呼びだけでは検出できない=ろーま事件の教訓)
-        let supprData = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/InitialSupprHiddenVocabMigration.json"))
+        let supprData = try Data(contentsOf: URL(fileURLWithPath: "\(ecrituRepositoryRoot)/KeyboardExtension/InitialSupprHiddenVocabMigration.json"))
         UserDefaults(suiteName: defaultsSuiteName)?.set(supprData, forKey: "ÉcrituSuppr_Vocab")
         for name in ["InitialAjoutVocabMigration", "InitialMiscVocabMigration"] {
-            let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/\(name).json"))
+            let data = try Data(contentsOf: URL(fileURLWithPath: "\(ecrituRepositoryRoot)/KeyboardExtension/\(name).json"))
             let dict = try JSONDecoder().decode([String: [String]].self, from: data)
             for (reading, candidates) in dict {
                 for candidate in candidates.reversed() {
@@ -8347,10 +8354,10 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // seed へ(順序のみ)。そうだ/そうだね の かな先頭(f5afe34 の目的)は seed で維持。
     func testRegressionRealLMUmasoudaNoUma() throws {
         try prepareRealLMDictionary()
-        let supprData = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/InitialSupprHiddenVocabMigration.json"))
+        let supprData = try Data(contentsOf: URL(fileURLWithPath: "\(ecrituRepositoryRoot)/KeyboardExtension/InitialSupprHiddenVocabMigration.json"))
         UserDefaults(suiteName: defaultsSuiteName)?.set(supprData, forKey: "ÉcrituSuppr_Vocab")
         for name in ["InitialAjoutVocabMigration", "InitialMiscVocabMigration"] {
-            let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/\(name).json"))
+            let data = try Data(contentsOf: URL(fileURLWithPath: "\(ecrituRepositoryRoot)/KeyboardExtension/\(name).json"))
             let dict = try JSONDecoder().decode([String: [String]].self, from: data)
             for (r, cs) in dict { for c in cs.reversed() { converter.store.addUserEntry(reading: r, candidate: c) } }
         }
@@ -8970,7 +8977,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         includeMisc: Bool = true,
         includeSuppression: Bool = true
     ) throws {
-        let root = "/Users/kusakabe/Git/ecritu/KeyboardExtension"
+        let root = "\(ecrituRepositoryRoot)/KeyboardExtension"
 
         func loadJSON(_ name: String) -> [String: [String]] {
             let url = URL(fileURLWithPath: "\(root)/\(name).json")
@@ -9185,7 +9192,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         try loadDeviceAddedVocabulary(includeSuppression: false)
         var suppression = try JSONDecoder().decode(
             [String: [String]].self,
-            from: Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/InitialSupprHiddenVocabMigration.json"))
+            from: Data(contentsOf: URL(fileURLWithPath: "\(ecrituRepositoryRoot)/KeyboardExtension/InitialSupprHiddenVocabMigration.json"))
         )
         suppression["かわいい", default: []].append("可愛い")
         try injectSuppression(suppression)
@@ -10214,10 +10221,10 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // 変種の curated かな識別区間 delta 補正で 皆やってる が2番手に入る。
     func testRegressionRealLMBatch2404Multi() throws {
         try prepareRealLMDictionary()
-        let supprData = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/InitialSupprHiddenVocabMigration.json"))
+        let supprData = try Data(contentsOf: URL(fileURLWithPath: "\(ecrituRepositoryRoot)/KeyboardExtension/InitialSupprHiddenVocabMigration.json"))
         UserDefaults(suiteName: defaultsSuiteName)?.set(supprData, forKey: "ÉcrituSuppr_Vocab")
         for name in ["InitialAjoutVocabMigration", "InitialMiscVocabMigration"] {
-            let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/\(name).json"))
+            let data = try Data(contentsOf: URL(fileURLWithPath: "\(ecrituRepositoryRoot)/KeyboardExtension/\(name).json"))
             let dict = try JSONDecoder().decode([String: [String]].self, from: data)
             for (r, cs) in dict { for c in cs.reversed() { converter.store.addUserEntry(reading: r, candidate: c) } }
         }
@@ -11593,7 +11600,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // 完全一致入力から字形が候補に出ることを一括検査する。
     func testRegressionRealLMRadicalNameSuppliesForm() throws {
         KanjiRadicalCatalog.resourceDirectoryURLOverride = URL(
-            fileURLWithPath: "/Users/kusakabe/Git/ecritu/references", isDirectory: true
+            fileURLWithPath: "\(ecrituRepositoryRoot)/references", isDirectory: true
         )
         defer { KanjiRadicalCatalog.resourceDirectoryURLOverride = nil }
         try prepareRealLMDictionary()
@@ -11640,7 +11647,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // 部首カテゴリー分類表(bushu.plist)の読み込みと、8カテゴリーへの割り振り(2444)
     func testKanjiRadicalCatalogCategories() throws {
         KanjiRadicalCatalog.resourceDirectoryURLOverride = URL(
-            fileURLWithPath: "/Users/kusakabe/Git/ecritu/references", isDirectory: true
+            fileURLWithPath: "\(ecrituRepositoryRoot)/references", isDirectory: true
         )
         defer { KanjiRadicalCatalog.resourceDirectoryURLOverride = nil }
         let forms = KanjiRadicalCatalog.allForms
@@ -11755,7 +11762,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     func testKanjiRadicalIndexLookup() throws {
         let store = KanaKanjiStore(appGroupID: defaultsSuiteName)
         store.kanjiRadicalIndexDirectoryURLOverride = URL(
-            fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension", isDirectory: true
+            fileURLWithPath: "\(ecrituRepositoryRoot)/KeyboardExtension", isDirectory: true
         )
         let index = store.kanjiRadicalIndex()
         XCTAssertFalse(index.isEmpty, "索引が読めていない")
@@ -12535,7 +12542,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     func testLatinSuggestionMatchedQueryIsTrailingWordAfterFallback() throws {
         let store = KanaKanjiStore(appGroupID: defaultsSuiteName)
         store.genericLatinLexiconDirectoryURLOverride = URL(
-            fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension", isDirectory: true
+            fileURLWithPath: "\(ecrituRepositoryRoot)/KeyboardExtension", isDirectory: true
         )
         store.setGenericLatinLexiconEnabledLanguages(["en"])
         let lookup = store.latinSuggestionsWithMatchedQuery(prefix: "Early Bir", limit: 8)
@@ -12569,7 +12576,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     func testGenericLatinLexiconSuggestions() throws {
         let store = KanaKanjiStore(appGroupID: defaultsSuiteName)
         store.genericLatinLexiconDirectoryURLOverride = URL(
-            fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension", isDirectory: true
+            fileURLWithPath: "\(ecrituRepositoryRoot)/KeyboardExtension", isDirectory: true
         )
         // 既定は全言語OFF(サジェストに汎用語が混ざらない)
         XCTAssertFalse(store.latinSuggestions(prefix: "informa", limit: 8).contains("information"))
@@ -12680,7 +12687,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             XCTFail("render failed")
             return
         }
-        try data.write(to: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/manual_hero_kana.png"))
+        try data.write(to: URL(fileURLWithPath: "\(ecrituRepositoryRoot)/tmp/manual_hero_kana.png"))
         print("PROBE screenshot: \(image.size)")
     }
 
@@ -12699,7 +12706,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
-        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
+        let source = URL(fileURLWithPath: "\(ecrituRepositoryRoot)/tmp/kana_kanji_dictionary.sqlite")
         guard fileManager.fileExists(atPath: source.path) else {
             throw XCTSkip("real LM sqlite not available on this machine")
         }
@@ -12712,7 +12719,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // 補助語彙(SecondVocab)も実機同等に配備する(テストバンドルには載らないため、
         // 生成物 tmp/ÉcrituSecondVocab.json を共有コンテナへ。ジャングリア の
         // 補助語彙カタカナ免除などの検証に必要)
-        let secondVocabSource = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/ÉcrituSecondVocab.json")
+        let secondVocabSource = URL(fileURLWithPath: "\(ecrituRepositoryRoot)/tmp/ÉcrituSecondVocab.json")
         if fileManager.fileExists(atPath: secondVocabSource.path) {
             let secondVocabDestination = container.appendingPathComponent("ÉcrituSecondVocab.json")
             if !fileManager.fileExists(atPath: secondVocabDestination.path) {
@@ -12720,7 +12727,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             }
         }
         // 畳んだ補助語彙(ビルドが tmp に書き出す。3030)。あれば実機同様にこちらが優先される
-        let secondVocabCompactSource = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/ÉcrituSecondVocab.eccs")
+        let secondVocabCompactSource = URL(fileURLWithPath: "\(ecrituRepositoryRoot)/tmp/ÉcrituSecondVocab.eccs")
         if fileManager.fileExists(atPath: secondVocabCompactSource.path) {
             let destination = container.appendingPathComponent("ÉcrituSecondVocab.eccs")
             if !fileManager.fileExists(atPath: destination.path) {
@@ -12728,7 +12735,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             }
         }
         // 欧文サジェストの追加語彙側索引(ビルドが tmp に前計算する。2770)
-        let latinSupplementalSource = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/LatinSuggestionSupplemental.txt")
+        let latinSupplementalSource = URL(fileURLWithPath: "\(ecrituRepositoryRoot)/tmp/LatinSuggestionSupplemental.txt")
         if fileManager.fileExists(atPath: latinSupplementalSource.path) {
             let latinSupplementalDestination = container.appendingPathComponent("LatinSuggestionSupplemental.txt")
             if !fileManager.fileExists(atPath: latinSupplementalDestination.path) {
