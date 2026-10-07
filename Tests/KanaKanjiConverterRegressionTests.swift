@@ -20902,6 +20902,66 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "ぶっかけ"))
     }
 
+    // 3422: 同音の漢字による書きかえ(臆測⇄憶測)の 4 択。単文節・連文節・複合語(醗酵前)と、後から常用漢字に
+    // 加わった字の組(肝腎⇄肝心)は常に両方
+    func testKakikaePreferenceModes() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        func single(_ reading: String) -> [String] {
+            converter.candidates(for: reading, limit: 12, systemCandidateMode: .surface)
+        }
+        func index(_ list: [String], _ word: String) -> Int? { list.firstIndex(of: word) }
+
+        converter.setKakikaePreference(.afterOnly)
+        var list = single("おくそく")
+        XCTAssertNotNil(index(list, "憶測"), "\(list)")
+        list = single("かいてん")
+        XCTAssertNotNil(index(list, "回転"), "\(list)")
+        XCTAssertNil(index(list, "廻転"), "\(list)")
+        var multi = converter.multiClauseCandidates(for: "かいてんがはやい", systemCandidateMode: .surface)
+        XCTAssertFalse(multi.contains { $0.contains("廻転") }, "multi=\(multi.prefix(4))")
+
+        converter.setKakikaePreference(.beforeOnly)
+        list = single("かいてん")
+        XCTAssertNotNil(index(list, "廻転"), "\(list)")
+        XCTAssertNil(index(list, "回転"), "\(list)")
+        multi = converter.multiClauseCandidates(for: "かいてんがはやい", systemCandidateMode: .surface)
+        XCTAssertFalse(multi.contains { $0.contains("回転") }, "multi=\(multi.prefix(4))")
+        // 連文節は区切りを保ったまま表記だけ差し替える(ノードを下げると 大風の全長 になっていた)
+        multi = converter.multiClauseCandidates(for: "たいふうのぜんちょう", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "颱風の前兆", "multi=\(multi.prefix(4))")
+        // 書きかえ後の語の中(一丁目)は書きかえ前にしない
+        XCTAssertFalse(KanaKanjiConverter.applyKakikae(.beforeOnly, toMultiClauseCandidates: ["三一丁目"]).contains("三一挺目"))
+
+        converter.setKakikaePreference(.bothBeforeFirst)
+        list = single("かいてん")
+        if let before = index(list, "廻転"), let after = index(list, "回転") {
+            XCTAssertLessThan(before, after, "\(list)")
+        } else {
+            XCTFail("\(list)")
+        }
+
+        converter.setKakikaePreference(.bothAfterFirst)
+        list = single("かいてん")
+        if let before = index(list, "廻転"), let after = index(list, "回転") {
+            XCTAssertLessThan(after, before, "\(list)")
+        } else {
+            XCTFail("\(list)")
+        }
+
+        // 複合語の中の書きかえ前(醗酵前 → 発酵前)
+        converter.setKakikaePreference(.afterOnly)
+        list = single("はっこうまえ")
+        XCTAssertFalse(list.contains("醗酵前"), "\(list)")
+
+        // 後から常用漢字に加わった字の組は設定に関わらず両方
+        converter.setKakikaePreference(.afterOnly)
+        list = single("かんじん")
+        XCTAssertNotNil(index(list, "肝腎"), "\(list)")
+        XCTAssertNotNil(index(list, "肝心"), "\(list)")
+        converter.setKakikaePreference(.bothAfterFirst)
+    }
+
     // 3381: べにしょうが は 紅しょうが / 紅生姜 の順(辞書に 1 語で無く 紅+省+が が先頭だった)
     func testBenishougaRegistered() throws {
         try prepareRealLMDictionary()

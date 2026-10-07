@@ -69,6 +69,9 @@ final class KanaKanjiConverter {
     // かなで書く言葉(所謂/即ち/下さい/事/此処 等。KanaGakiTable)を抑制する仲間。入っていない仲間は抑制せず、
     // かなを先頭にして漢字はその後ろに置く(3404)。初期設定は全部抑制
     var kanaGakiSuppressedCategories: Set<KanaGakiCategory> = Set(KanaGakiCategory.allCases)
+    // 同音の漢字による書きかえ(臆測⇄憶測。KakikaeTable、3422)。キーボードが設定を読んで入れる。
+    // nil(設定を入れる前)は並びに触らない。キーボードは値の無い端末でも 両方(前を先に) を入れる
+    var kakikaePreference: KakikaePreference?
     // め終わり読みの『め/目』選好(コンテナー設定。applyMeSuffixPreferences 参照)。
     // 序数(première…): true=漢字『目』を先に(既定。1973年内閣告示第2号 通則4 の表記)。
     // 形容詞語幹(un peu…): true=『目』形も出す(かな『め』が先)。既定はオフ(告示 付表の語1)。
@@ -171,6 +174,16 @@ final class KanaKanjiConverter {
                 return
             }
             kanaGakiSuppressedCategories = categories
+            invalidateCandidateCache()
+        }
+    }
+
+    func setKakikaePreference(_ preference: KakikaePreference) {
+        withStateLock {
+            guard kakikaePreference != preference else {
+                return
+            }
+            kakikaePreference = preference
             invalidateCandidateCache()
         }
     }
@@ -942,6 +955,71 @@ final class KanaKanjiConverter {
         )
         applyScriptVariantSurfaceSuppression(context, to: &scores)
         applyKanaGakiPreference(context, to: &scores)
+        applyKakikaePreference(context, to: &scores)
+    }
+
+    // 同音の漢字による書きかえ(KakikaeTable、3422)。候補の中の書きかえ前の語(臆測/醗酵前)は書きかえ後の表記を作り、
+    // 書きかえ後の語(憶測/回転寿司)は書きかえ前の表記を作って、設定どおりに片方を落とすか、好む側を上に並べる。
+    // 書きかえ後の語は普通の語の一部になりやすい(一丁→一丁目)ので、前の表記を作るのは候補が語そのものか、
+    // 作った表記が同じ読みの候補に既にあるときだけ。追加語彙・学習語彙の語は対象外
+    private func applyKakikaePreference(
+        _ context: CandidateGenerationContext,
+        to scores: inout [String: Int]
+    ) {
+        guard let preference = withStateLock({ kakikaePreference }) else {
+            return
+        }
+        let exempt = context.userCandidateSet.union(context.learnedCandidates)
+        let original = scores
+        func occurrence(in candidate: String, matchingBefore: Bool) -> (before: String, after: String)? {
+            let index = matchingBefore ? KakikaeTable.switchablePairsByBeforeHead : KakikaeTable.switchablePairsByAfterHead
+            var rest = Substring(candidate)
+            while let head = rest.first {
+                if let pairs = index[head],
+                    let pair = pairs.first(where: { rest.hasPrefix(matchingBefore ? $0.before : $0.after) }) {
+                    return pair
+                }
+                rest = rest.dropFirst()
+            }
+            return nil
+        }
+        for (candidate, score) in original where !exempt.contains(candidate) {
+            let beforeForm: String
+            let afterForm: String
+            if let pair = occurrence(in: candidate, matchingBefore: true) {
+                beforeForm = candidate
+                afterForm = candidate.replacingOccurrences(of: pair.before, with: pair.after)
+            } else if let pair = occurrence(in: candidate, matchingBefore: false) {
+                let made = candidate.replacingOccurrences(of: pair.after, with: pair.before)
+                guard candidate == pair.after || original[made] != nil else {
+                    continue
+                }
+                beforeForm = made
+                afterForm = candidate
+            } else {
+                continue
+            }
+            let top = max(score, original[beforeForm] ?? Int.min, original[afterForm] ?? Int.min)
+            let preferred = preference.prefersBefore ? beforeForm : afterForm
+            let other = preference.prefersBefore ? afterForm : beforeForm
+            switch preference {
+            case .beforeOnly, .afterOnly:
+                // 出さない側を落とし、出す側は(無ければ作って)二つのうち高い方の点にする
+                scores.removeValue(forKey: other)
+                scores[preferred] = max(scores[preferred] ?? Int.min, top)
+            case .bothBeforeFirst, .bothAfterFirst:
+                // 両方あって前後が逆のときだけ入れ替える(他の候補との位置は動かさない)。好む側が無ければ作って上に置く
+                if let preferredScore = scores[preferred], let otherScore = scores[other] {
+                    if preferredScore <= otherScore {
+                        scores[preferred] = otherScore
+                        scores[other] = preferredScore < otherScore ? preferredScore : otherScore - 1
+                    }
+                } else if scores[preferred] == nil, let otherScore = scores[other] {
+                    scores[preferred] = otherScore
+                    scores[other] = otherScore - 1
+                }
+            }
+        }
     }
 
     // かなで書く言葉(KanaGakiTable、3404)。抑制する仲間は漢字の候補を落としてかなに置き換え、抑制しない仲間は
