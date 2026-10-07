@@ -24,6 +24,8 @@ targets:
       - path: KeyboardExtension/KanaGakiTable.swift
       - path: KeyboardExtension/KaCounterVariantPreference.swift
       - path: KeyboardExtension/OkuriganaVariantPreference.swift
+      - path: KeyboardExtension/KakikaeTable.swift
+      - path: KeyboardExtension/KakikaePreference.swift
       - path: third_party/APP_STORE_OPEN_SOURCE_NOTICES.md
         buildPhase: resources
       - path: third_party/sudachidict/LICENSE-2.0.txt

@@ -108,6 +108,8 @@ enum SettingsKeys {
     static let ordinalMeKanjiPreferred = "ordinalMeKanjiPreferred"
     static let kaCounterVariantPreference = "kaCounterVariantPreference"
     static let okuriganaVariantPreference = "okuriganaVariantPreference"
+    // 同音の漢字による書きかえ(KakikaePreference の rawValue。3422)
+    static let kakikaePreference = "kakikaePreference"
     static let adjectiveMeKanjiCandidatesEnabled = "adjectiveMeKanjiCandidatesEnabled"
     static let suspendMemorySlimmingEnabled = "suspendMemorySlimmingEnabled"
     static let mazegakiCandidateMode = "mazegakiCandidateMode"

@@ -249,6 +249,7 @@ extension ContentView {
         SettingsKeys.emojiCandidateDisplayEnabled, SettingsKeys.radicalStrokeCountStyle,
         SettingsKeys.ordinalMeKanjiPreferred, SettingsKeys.adjectiveMeKanjiCandidatesEnabled, SettingsKeys.kaCounterVariantPreference,
         SettingsKeys.okuriganaVariantPreference,
+        SettingsKeys.kakikaePreference,
         SettingsKeys.suspendMemorySlimmingEnabled, SettingsKeys.kaomojiCandidateDisplayEnabled,
         SettingsKeys.contactCandidateDisplayMode, SettingsKeys.userDictionaryCandidateDisplayMode
     ]
@@ -328,6 +329,8 @@ extension ContentView {
         SettingsKeys.adjectiveMeKanjiCandidatesEnabled: false,
         SettingsKeys.kaCounterVariantPreference: KaCounterVariantPreference.default.encoded,
         SettingsKeys.okuriganaVariantPreference: OkuriganaVariantPreference.default.encoded,
+        // 同音の漢字による書きかえは 書きかえ前だけ(ユーザ指定 3422)
+        SettingsKeys.kakikaePreference: KakikaePreference.strategicDefault.rawValue,
         SettingsKeys.suspendMemorySlimmingEnabled: true,
         SettingsKeys.kaomojiCandidateDisplayEnabled: true,
         SettingsKeys.contactCandidateDisplayMode: ContactCandidateDisplayModeOption.off.rawValue,
@@ -404,6 +407,7 @@ extension ContentView {
         SettingsKeys.ordinalMeKanjiPreferred: false,
         SettingsKeys.kaCounterVariantPreference: KaCounterVariantPreference.conservative.encoded,  // 保守的=か・箇・ヶ・カ をオン(標準は か のみ)
         SettingsKeys.okuriganaVariantPreference: OkuriganaVariantPreference.conservative.encoded,  // 保守的=本則を先に許容も出す(標準は本則だけ)
+        SettingsKeys.kakikaePreference: KakikaePreference.bothAfterFirst.rawValue,  // 保守的=書きかえ後を先に前も出す(ユーザ指定 3422)
         SettingsKeys.adjectiveMeKanjiCandidatesEnabled: true,
         SettingsKeys.suspendMemorySlimmingEnabled: true,
         SettingsKeys.kaomojiCandidateDisplayEnabled: true,
@@ -412,12 +416,14 @@ extension ContentView {
     ]
 
     // 現代的初期設定(contemporary、ユーザ指定 3406)= 保守的初期設定 + かなで書く言葉(X.8)をすべて抑制(ひらがな側に寄せる)
+    // + 同音の漢字による書きかえ(X.9)は書きかえ後だけ(3422)
     static let contemporaryPresetValues: [String: Any] = conservativePresetValues.merging([
         SettingsKeys.kanaGakiSuppressAdverb: true,
         SettingsKeys.kanaGakiSuppressConjunction: true,
         SettingsKeys.kanaGakiSuppressAuxiliary: true,
         SettingsKeys.kanaGakiSuppressFormalNoun: true,
-        SettingsKeys.kanaGakiSuppressDemonstrative: true
+        SettingsKeys.kanaGakiSuppressDemonstrative: true,
+        SettingsKeys.kakikaePreference: KakikaePreference.afterOnly.rawValue
     ]) { _, new in new }
 
     // ──── ジェスチャー ────
@@ -694,6 +700,18 @@ extension ContentView {
         var preset = Self.contemporaryPresetValues
         preset[SettingsKeys.contactCandidateDisplayMode] = ContactCandidateDisplayModeOption.off.rawValue
         applyPreset(preset)
+    }
+
+    // 同音の漢字による書きかえ(3422)の値がまだ無い端末(この設定より前から使っている人)に 1 回だけ 両方(後を先に)を書く。
+    // 組み込みの標準値(戦略的初期設定)は 書きかえ前だけ なので、書かないとアップデートした途端に 回転→廻転 等になる。
+    // 初めてインストールした端末は直前の applyInitialPresetIfFreshInstall が 書きかえ後だけ を書いているので素通り
+    func applyKakikaeDefaultForExistingInstallIfNeeded() {
+        guard let defaults = Self.sharedDefaults,
+            defaults.object(forKey: SettingsKeys.kakikaePreference) == nil else {
+            return
+        }
+        defaults.set(KakikaePreference.existingInstallDefault.rawValue, forKey: SettingsKeys.kakikaePreference)
+        SettingsSyncNotification.postSettingsDidChange()
     }
 
     func applyPreset(_ preset: [String: Any]) {

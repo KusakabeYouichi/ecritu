@@ -19,6 +19,9 @@ emoji.plist				# [絵文字] CLDR ja アノテーション由来(SudachiPyで読
 personnalités.plist	# [人名]
 kanagaki.plist			# [かなで書く言葉] 所謂/即ち/下さい/事/此処 等、漢字で書けるが今はかなで書くことが多い語。節(■ 英名 日本語名)が仲間で、コンテナー X.8 で仲間ごとに抑制/かな先頭を選ぶ。
 						#   plist を直したら python3 tools/build_kanagaki_table.py で KeyboardExtension/KanaGakiTable.swift を作り直してコミット(アプリの設定画面の例もこの表から並ぶ)。3404
+kakikae.plist			# [同音の漢字による書きかえ] 1956 年 国語審議会報告の語の書きかえ 307 組(醗酵→発酵 等。文化庁 漢字小委員会 H27.11.27 資料 3 の全文から)。
+						#   コンテナー X.9 で 書きかえ前だけ/後だけ/両方(前を先に/後を先に)を選ぶ。節 keepBoth は報告の後に常用漢字に加わった字の組で常に両方。
+						#   1 字の代用字(廻→回 等 41 字)は人名・地名を巻き込むので入れていない。plist を直したら python3 tools/build_kakikae_table.py。3422
 suffixes.plist			# [接尾辞の補い] Sudachi core に読みの項目が無い接尾辞(港(こう) 等)。tools/build_suffix_vocab.py で sqlite の Premier の後ろに足す(cost 必須。同じ表記の別の読み+2500 未満)。常に入る(3397)
 médicaux.plist			# [病名] ICD10対応標準病名マスター(MEDIS-DC 配布、標準病名マスター作業班 編集。byomei.org の ICD 階層病名ブラウザから取得)の病名 27,662 件を「梅毒性/大動脈弁閉鎖不全症」の粒度で機械的に切り分け、読みは辞書+macOS 解析の突き合わせのうえ AI が医学の慣用読みで全件点検(2026-10-05)。
 						#   さらに MEDIS 病名マスター 5.18(byomei518.zip、~/med/medis518)の病名表記カナを切片に割り振り、点検済みの読みと違う公式の読み 949 件を別の行で足した(発疹 はっしん/ほっしん 等)
