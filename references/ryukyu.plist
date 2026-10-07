@@ -192,6 +192,7 @@
 	<dict><key>phrase</key><string>安勢理</string><key>shortcut</key><string>あせり</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>遊びなーいちまん</string><key>shortcut</key><string>あそびなーいちまん</string></dict>
 	<dict><key>phrase</key><string>安田</string><key>shortcut</key><string>あだ</string></dict>
+	<dict><key>phrase</key><string>足立屋</string><key>shortcut</key><string>あだちや</string></dict>
 	<dict><key>phrase</key><string>安多栄</string><key>shortcut</key><string>あたえ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>安田ヶ島</string><key>shortcut</key><string>あだがーしま</string></dict>
 	<dict><key>phrase</key><string>安谷屋</string><key>shortcut</key><string>あだにや</string></dict>	<!-- Sudachiにもある -->
