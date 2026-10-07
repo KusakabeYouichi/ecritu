@@ -2098,6 +2098,10 @@ extension KanaKanjiConverter {
     // 地名→港 の bigram が無く、し+散る+以降 のような分割に 404 差で負けていた(しちるいこう、ユーザ報告 3397)
     static let multiClauseNounSuffixAfterNounBonusSurfaces: Set<String> = ["港"]
     static let multiClauseNounSuffixAfterNounBonus = 1500
+    // 入力の終わりを文末と見なさない接尾辞。〜的 は な/に が続く途中の形で、Wikipedia の「的。で文が終わらない」統計
+    // (的→EOS が高い)が断片入力と食い違う。治療てき/興味てき/対症療法てき が 敵(→EOS が安い)に負けていた
+    // (ユーザ報告 3419)。観測 EOS を fallback より重くしない(かな助詞の扱いと同じ)
+    static let multiClauseEOSNotSentenceFinalSuffixSurfaces: Set<String> = ["的"]
     static let multiClauseKatakanaAfterTeFormPenalty = 2000
     // 名詞の直後で助詞を飲み込む一字漢字の活用形(テスト+派しなくて)の減点と、対象の読みの頭(3294)
     static let multiClauseParticleSwallowingKanjiVerbPenalty = 3000
@@ -3080,6 +3084,7 @@ extension KanaKanjiConverter {
     static let multiClauseBindingParticleSwallowedAfterCaseParticlesID = MultiClauseIDSet(multiClauseBindingParticleSwallowedAfterCaseParticles)
     static let multiClauseCaseParticleEndingPhrasesID = MultiClauseIDSet(multiClauseCaseParticleEndingPhrases)
     static let multiClauseCaseParticleSurfacesID = MultiClauseIDSet(multiClauseCaseParticleSurfaces)
+    static let multiClauseEOSNotSentenceFinalSuffixSurfacesID = MultiClauseIDSet(multiClauseEOSNotSentenceFinalSuffixSurfaces)
     static let multiClauseClauseInitialKanaExistentialPastsID = MultiClauseIDSet(multiClauseClauseInitialKanaExistentialPasts)
     static let multiClauseCollocationBridgeParticlesID = MultiClauseIDSet(multiClauseCollocationBridgeParticles)
     static let multiClauseColloquialExplanatoryTailReadingsID = MultiClauseIDSet(multiClauseColloquialExplanatoryTailReadings)
