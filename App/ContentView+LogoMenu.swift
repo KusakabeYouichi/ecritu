@@ -416,14 +416,14 @@ extension ContentView {
     ]
 
     // 現代的初期設定(contemporary、ユーザ指定 3406)= 保守的初期設定 + かなで書く言葉(X.8)をすべて抑制(ひらがな側に寄せる)
-    // + 同音の漢字による書きかえ(X.9)は常用漢字だけ(3422)
+    // + 同音の漢字による書きかえ(X.9)は 両方(本来の漢字を先に)(3422、3431 で変更)
     static let contemporaryPresetValues: [String: Any] = conservativePresetValues.merging([
         SettingsKeys.kanaGakiSuppressAdverb: true,
         SettingsKeys.kanaGakiSuppressConjunction: true,
         SettingsKeys.kanaGakiSuppressAuxiliary: true,
         SettingsKeys.kanaGakiSuppressFormalNoun: true,
         SettingsKeys.kanaGakiSuppressDemonstrative: true,
-        SettingsKeys.kakikaePreference: KakikaePreference.afterOnly.rawValue
+        SettingsKeys.kakikaePreference: KakikaePreference.bothBeforeFirst.rawValue
     ]) { _, new in new }
 
     // ──── ジェスチャー ────
@@ -704,7 +704,7 @@ extension ContentView {
 
     // 同音の漢字による書きかえ(3422)の値がまだ無い端末(この設定より前から使っている人)に 1 回だけ 両方(本来の漢字を先に)を書く。
     // 組み込みの標準値(戦略的初期設定)は 本来の漢字だけ なので、書かないとアップデートした途端に 回転→廻転 等になる。
-    // 初めてインストールした端末は直前の applyInitialPresetIfFreshInstall が 常用漢字だけ を書いているので素通り
+    // 初めてインストールした端末は直前の applyInitialPresetIfFreshInstall が 両方(本来の漢字を先に) を書いているので素通り
     func applyKakikaeDefaultForExistingInstallIfNeeded() {
         guard let defaults = Self.sharedDefaults,
             defaults.object(forKey: SettingsKeys.kakikaePreference) == nil else {
