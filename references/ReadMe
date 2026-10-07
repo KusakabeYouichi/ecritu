@@ -28,6 +28,8 @@ médicaux.plist			# [病名] ICD10対応標準病名マスター(MEDIS-DC 配布
 						#   配布できるのは、正式版(2027 年 4 月上旬予定、MEDIS から公表)の条件しだいか、5.18 で MEDIS の使用許諾(医療機関以外での使用・配布は申請要、改変して配るなら
 						#   「MEDIS-DCの標準マスターを利用」と明記)を得たとき。それまでは ECRITU_INCLUDE_MEDICAUX=1(Config/Signing.local.xcconfig)の手元ビルドだけで入る。
 						#   提出前検査(verify_archive_artifacts.sh)は入っていれば止める
+#   このファイル自体も git に入れない(.gitignore。リポジトリが公開なので、載せると加工データの一般公開になる)。
+#   2026-10-07 に履歴からも消した(3410)。手元の控えは ~/med/backup/médicaux.plist
 						#   入り方: sqlite には Premier の後ろ(同じ読みでは一般語より後ろ・弱いコスト)。実行時の補助語彙には読みがぶつからない病名だけ足す(tools/merge_medicaux_runtime_vocab.py)
 bushu.plist				# [部首] 漢字ピッカーの部首→位置分類表(拡張に同梱)。部首名は慣用名、位置分類は字形から判断(作者が全件確認)、画数は事実。部首番号のみ Unihan kRSKangxi と照合。KANJIDIC 等からの取り込みではない(2026-09-04 確認)
 
