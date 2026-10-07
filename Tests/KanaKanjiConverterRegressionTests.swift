@@ -20859,6 +20859,16 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3418: つきあたり は 突き当たり の次に 月当たり / 月あたり(月額を言うとき)
+    func testTsukiatariOffersPerMonth() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let list = converter.candidates(for: "つきあたり", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(3)), ["突き当たり", "月当たり", "月あたり"], "\(list)")
+        let multi = converter.multiClauseCandidates(for: "つきあたり", systemCandidateMode: .surface)
+        XCTAssertTrue(multi.isEmpty || multi.first == "突き当たり", "multi=\(multi.prefix(4))")
+    }
+
     // 3381: べにしょうが は 紅しょうが / 紅生姜 の順(辞書に 1 語で無く 紅+省+が が先頭だった)
     func testBenishougaRegistered() throws {
         try prepareRealLMDictionary()
