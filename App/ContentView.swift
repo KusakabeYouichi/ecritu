@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20261007212119"
+    private static let editionUpdatedAtRaw: String = "20261007212945"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -723,7 +723,7 @@ struct ContentView: View {
         bool(SettingsKeys.kanaGakiSuppressAuxiliary, kanaGakiSuppressAuxiliary, "かなで書く言葉: 補助の言葉・挨拶を抑制")
         bool(SettingsKeys.kanaGakiSuppressFormalNoun, kanaGakiSuppressFormalNoun, "かなで書く言葉: 形式名詞を抑制")
         bool(SettingsKeys.kanaGakiSuppressDemonstrative, kanaGakiSuppressDemonstrative, "かなで書く言葉: 指示語・代名詞を抑制")
-        str(SettingsKeys.kakikaePreference, kakikaePreferenceRawValue, "常用漢字による書きかえ: beforeOnly(書きかえ前だけ)/afterOnly(書きかえ後だけ)/bothBeforeFirst(両方、前を先に)/bothAfterFirst(両方、後を先に)")
+        str(SettingsKeys.kakikaePreference, kakikaePreferenceRawValue, "常用漢字による書きかえ: beforeOnly(本来の漢字だけ)/afterOnly(常用漢字だけ)/bothBeforeFirst(両方、前を先に)/bothAfterFirst(両方、後を先に)")
         bool(SettingsKeys.emojiCandidateDisplayEnabled, emojiCandidateDisplayEnabled, "emojis & les émoticônes: emoji 😀")
         str(SettingsKeys.radicalStrokeCountStyle, radicalStrokeCountStyleRawValue, "部首の画数の数え方")
         bool(SettingsKeys.ordinalMeKanjiPreferred, ordinalMeKanjiPreferred, "序数化suffixe – me(première…): 順序の『目』を漢字で先に")
