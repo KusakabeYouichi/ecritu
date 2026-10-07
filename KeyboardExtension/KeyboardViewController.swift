@@ -724,9 +724,11 @@ final class KeyboardViewController: UIInputViewController {
             self?.recordStuckTouchForceClear(detail)
         }
         // 調査用ログ(記号面切替 2838): 左下キーの commit ごとの接触詳細。原因判明後に外す
+        #if DEBUG
         KeyboardStuckTouchDiagnostics.onTouchForensics = { [weak self] detail in
             self?.appendKeyboardDiagnosticsLog("接触詳細 \(detail)")
         }
+        #endif
         updateKeyboardDiagnosticsHeartbeat(event: "viewWillAppear", appendLog: true)
         // 高さが落ち着くまで面を隠す(定義コメント参照。3100)
         isAwaitingInitialHeightSettle = true

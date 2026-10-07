@@ -822,6 +822,8 @@ struct FlickKeyView: View {
                 let commitDurationMs = touchBeganAt.map { Int(value.time.timeIntervalSince($0) * 1000) }
                 KeyboardStuckTouchDiagnostics.lastCommitDurationMs = commitDurationMs
                 // 調査用ログ(記号面切替 2838): 触った覚えの無い左下キー commit の接触詳細。原因判明後に外す
+                // 受け手のログは Debug だけなので、Release では文字列も組み立てない(3413)
+                #if DEBUG
                 if let touchForensicsLabel {
                     let size = keyFrameInGlobal.size
                     let start = value.startLocation
@@ -834,6 +836,7 @@ struct FlickKeyView: View {
                     )
                     KeyboardStuckTouchDiagnostics.onTouchForensics?(detail)
                 }
+                #endif
 
                 finalizeTouchInteractionState()
 

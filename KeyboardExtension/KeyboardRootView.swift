@@ -1426,19 +1426,25 @@ extension KeyboardRootView {
 
         if let previous, previous.initialInputMode != signal.initialInputMode {
             if inputMode != signal.initialInputMode {
-                inputModeChangeTrigger = "フィールド trait 追従"
+                #if DEBUG
+                inputModeChangeTrigger = "フィールド trait 追従"  // 調査用ログ(記号面切替 2838)
+                #endif
                 inputMode = signal.initialInputMode
                 return
             }
         }
         if previous == nil || previous?.inputMode != signal.inputMode {
             // 調査用ログ(記号面切替 2838): 引き金とサブモードを添える。原因判明後に外す
+            #if DEBUG
             var detail = inputModeChangeTrigger
             if signal.inputMode == .emoji {
                 detail += " sub=\(emojiInputSubmode)"
             }
             onInputModeChanged(signal.inputMode, detail)
             inputModeChangeTrigger = "面内キー"
+            #else
+            onInputModeChanged(signal.inputMode, "")
+            #endif
         }
         // 面の切り替え(サブモードの切り替えを含む)で、削除キーのでばぐ表示(数字と色)を更新する(3304)。
         // 文字の変化(textDidChange)でしか更新していなかったため、絵文字パネルで増えたぶんが次の変換のときに
