@@ -164,8 +164,17 @@ def is_kana_like(text: str) -> bool:
     return has_kana
 
 
+KATAKANA_CLASS = "ァ-ヺー"
+# カタカナ語の区切りに混入したハイフン類(ゲイ‐リュサック/セブン-イレブン)は中黒に(ユーザ指定 3426)
+KATAKANA_HYPHEN_PATTERN = re.compile(f"(?<=[{KATAKANA_CLASS}])[‐‑－\\-](?=[{KATAKANA_CLASS}])")
+# 長音の代わりに混入したマイナス記号(コンピュ−タ−)は長音に(3426)
+KATAKANA_MINUS_AS_CHOON_PATTERN = re.compile(f"(?<=[{KATAKANA_CLASS}])−")
+
+
 def normalize_candidate(text: str) -> str:
-    return text.strip()
+    text = text.strip()
+    text = KATAKANA_MINUS_AS_CHOON_PATTERN.sub("ー", text)
+    return KATAKANA_HYPHEN_PATTERN.sub("・", text)
 
 
 def decode_unicode_escape_sequences(text: str) -> str:
