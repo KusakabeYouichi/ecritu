@@ -11,6 +11,10 @@ on:
       - main
   workflow_dispatch:
 
+# CI は検査だけなので、渡される鍵は読み取りだけにする(3412)
+permissions:
+  contents: read
+
 jobs:
   release-build:
     # macos-26 には Xcode 26 しか無い。Xcode 27 は専用イメージ(公開プレビュー)にある
