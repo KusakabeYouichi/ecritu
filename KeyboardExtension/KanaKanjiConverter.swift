@@ -72,6 +72,10 @@ final class KanaKanjiConverter {
     // 同音の漢字による書きかえ(臆測⇄憶測。KakikaeTable、3422)。キーボードが設定を読んで入れる。
     // nil(設定を入れる前)は並びに触らない。キーボードは値の無い端末でも 両方(前を先に) を入れる
     var kakikaePreference: KakikaePreference?
+    // 変換候補に絵文字を出すか。コンテナーの emoji 候補(X.15)に従う(3423)。読みからの絵文字(ねこ→🐱)はキーボード側で
+    // 止めているが、国旗(drapeaux の 🇫🇷 等は辞書に入っている)と学習した絵文字はここで止める。
+    // 追加語彙(ショートカット)の絵文字はこの設定に関わらず出す
+    var emojiCandidatesEnabled = true
     // め終わり読みの『め/目』選好(コンテナー設定。applyMeSuffixPreferences 参照)。
     // 序数(première…): true=漢字『目』を先に(既定。1973年内閣告示第2号 通則4 の表記)。
     // 形容詞語幹(un peu…): true=『目』形も出す(かな『め』が先)。既定はオフ(告示 付表の語1)。
@@ -176,6 +180,31 @@ final class KanaKanjiConverter {
             kanaGakiSuppressedCategories = categories
             invalidateCandidateCache()
         }
+    }
+
+    func setEmojiCandidatesEnabled(_ enabled: Bool) {
+        withStateLock {
+            guard emojiCandidatesEnabled != enabled else {
+                return
+            }
+            emojiCandidatesEnabled = enabled
+            invalidateCandidateCache()
+        }
+    }
+
+    // 絵文字を含むか。国旗(地域指示記号)、絵文字表示が既定の字(🐱)、異体字セレクタ 16 付きの絵文字(☺︎ でなく ☺️)。
+    // ★・☆・✕ のような記号(絵文字表示が既定でない)は含めない
+    static func containsEmoji(_ text: String) -> Bool {
+        let scalars = Array(text.unicodeScalars)
+        for (index, scalar) in scalars.enumerated() {
+            if (0x1F1E6...0x1F1FF).contains(scalar.value) || scalar.properties.isEmojiPresentation {
+                return true
+            }
+            if scalar.properties.isEmoji, index + 1 < scalars.count, scalars[index + 1].value == 0xFE0F {
+                return true
+            }
+        }
+        return false
     }
 
     func setKakikaePreference(_ preference: KakikaePreference) {
@@ -956,6 +985,13 @@ final class KanaKanjiConverter {
         applyScriptVariantSurfaceSuppression(context, to: &scores)
         applyKanaGakiPreference(context, to: &scores)
         applyKakikaePreference(context, to: &scores)
+        // emoji 候補がオフなら絵文字(国旗・学習した絵文字)を出さない(3423)。追加語彙(ショートカット)の絵文字は残す
+        if !withStateLock({ emojiCandidatesEnabled }) {
+            for candidate in Array(scores.keys)
+            where Self.containsEmoji(candidate) && !context.userCandidateSet.contains(candidate) {
+                scores.removeValue(forKey: candidate)
+            }
+        }
     }
 
     // 同音の漢字による書きかえ(KakikaeTable、3422)。候補の中の書きかえ前の語(臆測/醗酵前)は書きかえ後の表記を作り、

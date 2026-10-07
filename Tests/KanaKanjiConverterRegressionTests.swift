@@ -20962,6 +20962,23 @@ extension KanaKanjiConverterRegressionTests {
         converter.setKakikaePreference(.bothAfterFirst)
     }
 
+    // 3423: emoji 候補がオフなら国旗(drapeaux)も変換候補に出さない。★ 等の記号は絵文字扱いしない
+    func testEmojiOffHidesFlagCandidates() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        XCTAssertTrue(converter.candidates(for: "たいわん", limit: 12, systemCandidateMode: .surface).contains("🇹🇼"))
+        converter.setEmojiCandidatesEnabled(false)
+        let list = converter.candidates(for: "たいわん", limit: 12, systemCandidateMode: .surface)
+        XCTAssertFalse(list.contains { KanaKanjiConverter.containsEmoji($0) }, "\(list)")
+        XCTAssertTrue(list.contains("台湾"), "\(list)")
+        let multi = converter.multiClauseCandidates(for: "たいわんにいく", systemCandidateMode: .surface)
+        XCTAssertFalse(multi.contains { KanaKanjiConverter.containsEmoji($0) }, "multi=\(multi.prefix(4))")
+        XCTAssertFalse(KanaKanjiConverter.containsEmoji("キャン★ドゥ"))
+        XCTAssertFalse(KanaKanjiConverter.containsEmoji("☆印"))
+        XCTAssertTrue(KanaKanjiConverter.containsEmoji("🐱"))
+        XCTAssertTrue(KanaKanjiConverter.containsEmoji("☺️"))
+    }
+
     // 3381: べにしょうが は 紅しょうが / 紅生姜 の順(辞書に 1 語で無く 紅+省+が が先頭だった)
     func testBenishougaRegistered() throws {
         try prepareRealLMDictionary()

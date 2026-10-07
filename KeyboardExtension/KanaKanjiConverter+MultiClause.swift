@@ -216,12 +216,16 @@ extension KanaKanjiConverter {
         minReadingCountOverride: Int? = nil,
         precedingCharacter: Character? = nil
     ) -> [String] {
-        let candidates = multiClauseCandidatesBeforeKakikae(
+        var candidates = multiClauseCandidatesBeforeKakikae(
             for: reading,
             systemCandidateMode: systemCandidateMode,
             minReadingCountOverride: minReadingCountOverride,
             precedingCharacter: precedingCharacter
         )
+        // emoji 候補がオフなら絵文字を含む連文節の候補も出さない(3423)
+        if !withStateLock({ emojiCandidatesEnabled }) {
+            candidates.removeAll { Self.containsEmoji($0) }
+        }
         guard let preference = withStateLock({ kakikaePreference }), !candidates.isEmpty else {
             return candidates
         }
