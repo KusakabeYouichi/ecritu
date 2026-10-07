@@ -216,6 +216,71 @@ extension KanaKanjiConverter {
         minReadingCountOverride: Int? = nil,
         precedingCharacter: Character? = nil
     ) -> [String] {
+        let candidates = multiClauseCandidatesBeforeKakikae(
+            for: reading,
+            systemCandidateMode: systemCandidateMode,
+            minReadingCountOverride: minReadingCountOverride,
+            precedingCharacter: precedingCharacter
+        )
+        guard let preference = withStateLock({ kakikaePreference }), !candidates.isEmpty else {
+            return candidates
+        }
+        return Self.applyKakikae(preference, toMultiClauseCandidates: candidates)
+    }
+
+    // 同音の漢字による書きかえ(KakikaeTable、3422)を連文節の結果に当てる。ラティスでノードを下げると区切りごと
+    // 変わる(颱風 は語コストが高く、台風 を禁止すると たいふうのぜんちょう が 大風の全長 になる)ので、区切りは
+    // そのままにして表記だけ差し替える。書きかえ前→後(醗酵→発酵)はどこでも、後→前(回転→廻転)は語の終わり
+    // (直後が漢字でない)ときだけ(一丁目→一挺目 のような語の中を巻き込まない)。両方を出すときは好む側を先に並べる
+    static func applyKakikae(_ preference: KakikaePreference, toMultiClauseCandidates candidates: [String]) -> [String] {
+        func rewritten(_ text: String, toBefore: Bool) -> String {
+            let index = toBefore ? KakikaeTable.switchablePairsByAfterHead : KakikaeTable.switchablePairsByBeforeHead
+            var result = ""
+            var rest = Substring(text)
+            while let head = rest.first {
+                if let pairs = index[head],
+                    let pair = pairs.first(where: { rest.hasPrefix(toBefore ? $0.after : $0.before) }) {
+                    let from = toBefore ? pair.after : pair.before
+                    let to = toBefore ? pair.before : pair.after
+                    let following = rest.dropFirst(from.count).first
+                    if !toBefore || following.map({ !isKanjiCharacter($0) }) ?? true {
+                        result += to
+                        rest = rest.dropFirst(from.count)
+                        continue
+                    }
+                }
+                result.append(head)
+                rest = rest.dropFirst()
+            }
+            return result
+        }
+        var output: [String] = []
+        var seen = Set<String>()
+        func append(_ text: String) {
+            if seen.insert(text).inserted {
+                output.append(text)
+            }
+        }
+        for candidate in candidates {
+            let preferred = rewritten(candidate, toBefore: preference.prefersBefore)
+            append(preferred)
+            if preference == .bothBeforeFirst || preference == .bothAfterFirst {
+                append(candidate)
+            }
+        }
+        return output
+    }
+
+    private static func isKanjiCharacter(_ character: Character) -> Bool {
+        character.unicodeScalars.contains { (0x4E00...0x9FFF).contains($0.value) || (0x3400...0x4DBF).contains($0.value) || $0.value == 0x3005 }
+    }
+
+    private func multiClauseCandidatesBeforeKakikae(
+        for reading: String,
+        systemCandidateMode: KanaKanjiCandidateSourceMode,
+        minReadingCountOverride: Int?,
+        precedingCharacter: Character?
+    ) -> [String] {
         let digitPrefixed = precedingCharacter.map(Self.isCounterBoostDigit) ?? false
         guard store.hasWordLMMetadata else {
             return []

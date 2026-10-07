@@ -55,6 +55,11 @@ extension KeyboardViewController {
         }
         kanaKanjiConverter.setKanaGakiSuppressedCategories(kanaGakiSuppressed)
 
+        // 同音の漢字による書きかえ(3422)。値が無い(アプリを開く前の更新直後)ときは 両方(後を先に)
+        kanaKanjiConverter.setKakikaePreference(
+            KakikaePreference.decode(sharedDefaults?.string(forKey: SharedDefaultsKeys.kakikaePreference))
+        )
+
         kanaKanjiConverter.setOrdinalMeKanjiPreferred(
             sharedBoolValue(
                 from: sharedDefaults,

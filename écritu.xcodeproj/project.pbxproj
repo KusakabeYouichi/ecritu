@@ -17,6 +17,8 @@
 		D59BF9A4723705982B6A326B /* KanaGakiTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 009FC4DE8AD0A95B683E1490 /* KanaGakiTable.swift */; };
 		0DE7B13833F2917EFD596F15 /* KaCounterVariantPreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3AF807717D293F1CFC3598 /* KaCounterVariantPreference.swift */; };
 		C1E5DB422C47D25880BCC0D8 /* OkuriganaVariantPreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D934D40B6494AEA0275382 /* OkuriganaVariantPreference.swift */; };
+		1B042B69834DF2F3F95B5F5E /* KakikaeTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 066C630D82063E19AB061BB3 /* KakikaeTable.swift */; };
+		364D785880653A6640998D1B /* KakikaePreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = F786A277D18B8FAFAC9D0A82 /* KakikaePreference.swift */; };
 		A1B2C3D4E5F600000T000002 /* DateFormatCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000FF08 /* DateFormatCatalog.swift */; };
 		A1B2C3D4E5F600000T000003 /* FlickKeyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E47697B4A1DF6C69AD1AD3A /* FlickKeyView.swift */; };
 		A1B2C3D4E5F600000T000004 /* FormattedNumberCalendarGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000FF0A /* FormattedNumberCalendarGridView.swift */; };
@@ -142,6 +144,8 @@
 		CB6F5A1C4C72208BD3194AA8 /* KanaGakiTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 009FC4DE8AD0A95B683E1490 /* KanaGakiTable.swift */; };
 		4A33C802ABCB82C4980C79A3 /* KaCounterVariantPreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3AF807717D293F1CFC3598 /* KaCounterVariantPreference.swift */; };
 		18CDA1EACCF5CD1A23660FEC /* OkuriganaVariantPreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D934D40B6494AEA0275382 /* OkuriganaVariantPreference.swift */; };
+		9865EBB09826029AF6A08953 /* KakikaeTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 066C630D82063E19AB061BB3 /* KakikaeTable.swift */; };
+		389BC5A7039D69E23021D5CE /* KakikaePreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = F786A277D18B8FAFAC9D0A82 /* KakikaePreference.swift */; };
 		8D78613535A703BDB593E778 /* KanaKanjiStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CDFD7A0DB06E1D737E502DF /* KanaKanjiStore.swift */; };
 		8F8895266804EE4794A101EE /* KaomojiCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = C52949EB4A52E9D891A305A3 /* KaomojiCatalog.swift */; };
 		9CD485B6F82D22898978D8C4 /* KeyboardViewController+InputHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBF85556C12EA4F6FBD4883 /* KeyboardViewController+InputHandling.swift */; };
@@ -175,6 +179,8 @@
 		BD7A160B19DDC9CC80CAA944 /* KanaGakiTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 009FC4DE8AD0A95B683E1490 /* KanaGakiTable.swift */; };
 		CDF448E37D898133E60724A8 /* KaCounterVariantPreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3AF807717D293F1CFC3598 /* KaCounterVariantPreference.swift */; };
 		5912EF241EFFCF00FE3C59AE /* OkuriganaVariantPreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D934D40B6494AEA0275382 /* OkuriganaVariantPreference.swift */; };
+		051FCD3A6136F426F1108795 /* KakikaeTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 066C630D82063E19AB061BB3 /* KakikaeTable.swift */; };
+		714E1DB43EC46C87D0EDC265 /* KakikaePreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = F786A277D18B8FAFAC9D0A82 /* KakikaePreference.swift */; };
 		ECDBEEB3F6EF91C0EB7C3E85 /* KeyboardViewController+Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBCA2A2C0BECA4CEC1F55BFB /* KeyboardViewController+Layout.swift */; };
 		F769B10A75C8DE3CBA5F9F78 /* KanaKanjiConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40E7E9146201A6F655CCD5D /* KanaKanjiConverter.swift */; };
 		405E08C8A5D34B7FBFB7990A /* KanaKanjiInflectionRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2992579AD50D4D629ED7B731 /* KanaKanjiInflectionRules.swift */; };
@@ -255,6 +261,8 @@
 		009FC4DE8AD0A95B683E1490 /* KanaGakiTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KanaGakiTable.swift; sourceTree = "<group>"; };
 		3C3AF807717D293F1CFC3598 /* KaCounterVariantPreference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaCounterVariantPreference.swift; sourceTree = "<group>"; };
 		81D934D40B6494AEA0275382 /* OkuriganaVariantPreference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OkuriganaVariantPreference.swift; sourceTree = "<group>"; };
+		066C630D82063E19AB061BB3 /* KakikaeTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KakikaeTable.swift; sourceTree = "<group>"; };
+		F786A277D18B8FAFAC9D0A82 /* KakikaePreference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KakikaePreference.swift; sourceTree = "<group>"; };
 		3E243E0E4A8BE9229D7694DE /* kana_kanji_inflection_dictionary.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = kana_kanji_inflection_dictionary.json; sourceTree = "<group>"; };
 		3E9058C9AC20A9C771D55DFC /* Edition.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Edition.xcconfig; sourceTree = "<group>"; };
 		4B5F60406235BC88C1D35F20 /* KeyboardExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = KeyboardExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -428,6 +436,8 @@
 				009FC4DE8AD0A95B683E1490 /* KanaGakiTable.swift */,
 				3C3AF807717D293F1CFC3598 /* KaCounterVariantPreference.swift */,
 				81D934D40B6494AEA0275382 /* OkuriganaVariantPreference.swift */,
+				066C630D82063E19AB061BB3 /* KakikaeTable.swift */,
+				F786A277D18B8FAFAC9D0A82 /* KakikaePreference.swift */,
 				175BA54F5130F67FF3A05039 /* FlickKanaLayout.swift */,
 				E5F74D99919C4D40677DFB1B /* FlickKanaMap.swift */,
 				4E47697B4A1DF6C69AD1AD3A /* FlickKeyView.swift */,
@@ -842,6 +852,8 @@
 				D59BF9A4723705982B6A326B /* KanaGakiTable.swift in Sources */,
 				0DE7B13833F2917EFD596F15 /* KaCounterVariantPreference.swift in Sources */,
 				C1E5DB422C47D25880BCC0D8 /* OkuriganaVariantPreference.swift in Sources */,
+				1B042B69834DF2F3F95B5F5E /* KakikaeTable.swift in Sources */,
+				364D785880653A6640998D1B /* KakikaePreference.swift in Sources */,
 				A1B2C3D4E5F600000T000002 /* DateFormatCatalog.swift in Sources */,
 				A1B2C3D4E5F600000T000003 /* FlickKeyView.swift in Sources */,
 				A1B2C3D4E5F600000T000004 /* FormattedNumberCalendarGridView.swift in Sources */,
@@ -922,6 +934,8 @@
 				BD7A160B19DDC9CC80CAA944 /* KanaGakiTable.swift in Sources */,
 				CDF448E37D898133E60724A8 /* KaCounterVariantPreference.swift in Sources */,
 				5912EF241EFFCF00FE3C59AE /* OkuriganaVariantPreference.swift in Sources */,
+				051FCD3A6136F426F1108795 /* KakikaeTable.swift in Sources */,
+				714E1DB43EC46C87D0EDC265 /* KakikaePreference.swift in Sources */,
 				8BCC1E4F9906F5BEA4C9AFCF /* EcrituApp.swift in Sources */,
 				B03E6564B72E74C154837470 /* SettingsModels.swift in Sources */,
 				DB34668D73DDDCE6D95BF320 /* SettingsSectionViews.swift in Sources */,
@@ -951,6 +965,8 @@
 				CB6F5A1C4C72208BD3194AA8 /* KanaGakiTable.swift in Sources */,
 				4A33C802ABCB82C4980C79A3 /* KaCounterVariantPreference.swift in Sources */,
 				18CDA1EACCF5CD1A23660FEC /* OkuriganaVariantPreference.swift in Sources */,
+				9865EBB09826029AF6A08953 /* KakikaeTable.swift in Sources */,
+				389BC5A7039D69E23021D5CE /* KakikaePreference.swift in Sources */,
 				0B7C9000DDE3B341088C24C3 /* FlickKanaLayout.swift in Sources */,
 				D1CDEBCB8939BC969433777A /* FlickKanaMap.swift in Sources */,
 				55453E798FC6382F14E94B48 /* FlickKeyView.swift in Sources */,
