@@ -21046,6 +21046,16 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertFalse(list.contains("氷酢酸"), "\(list)")
     }
 
+    // 3428: まぜがわ は 馬瀬川(compenser に登録。合成では 混ぜ側 になっていた)
+    func testMazegawaRegistered() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let list = converter.candidates(for: "まぜがわ", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(list.first, "馬瀬川", "\(list)")
+        let multi = converter.multiClauseCandidates(for: "まぜがわの", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "馬瀬川の", "multi=\(multi.prefix(4))")
+    }
+
     // 3381: べにしょうが は 紅しょうが / 紅生姜 の順(辞書に 1 語で無く 紅+省+が が先頭だった)
     func testBenishougaRegistered() throws {
         try prepareRealLMDictionary()
