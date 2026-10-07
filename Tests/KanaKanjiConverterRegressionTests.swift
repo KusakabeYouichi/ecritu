@@ -21005,6 +21005,19 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi.first, "すぐに行く", "multi=\(multi.prefix(4))")
     }
 
+    // 3426: カタカナ固有名詞に混入したハイフンは中黒、長音の代わりのマイナス記号は長音に(辞書を作るときに直す)
+    func testKatakanaHyphenNormalizedToNakaguro() throws {
+        try prepareRealLMDictionary()
+        for (reading, expected) in [
+            ("どんきほーて", "ドン・キホーテ"), ("せぶんいれぶん", "セブン・イレブン"), ("げーりゅさっく", "ゲイ・リュサック"),
+            ("こんぴゅーたー", "コンピューター")
+        ] {
+            let list = converter.candidates(for: reading, limit: 10, systemCandidateMode: .surface)
+            XCTAssertTrue(list.contains(expected), "\(reading): \(list)")
+            XCTAssertFalse(list.contains { $0.contains("‐") || $0.contains("−") || $0.contains("-") }, "\(reading): \(list)")
+        }
+    }
+
     // 3381: べにしょうが は 紅しょうが / 紅生姜 の順(辞書に 1 語で無く 紅+省+が が先頭だった)
     func testBenishougaRegistered() throws {
         try prepareRealLMDictionary()
