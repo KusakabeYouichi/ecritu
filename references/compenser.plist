@@ -414,6 +414,9 @@
 	        <dict><key>phrase</key><string>隠州</string><key>shortcut</key><string>おんしゅう</string><key>pos</key><string>名詞</string></dict>
 	        <dict><key>phrase</key><string>隠州</string><key>shortcut</key><string>いんしゅう</string><key>pos</key><string>名詞</string></dict>
 
+	<!-- 地名(部品は辞書にあるが合成では勝てないもの) -->
+	        <dict><key>phrase</key><string>馬瀬川</string><key>shortcut</key><string>まぜがわ</string><key>pos</key><string>名詞</string></dict>	<!-- 岐阜県の川(飛騨川の支流)。馬瀬(9219)+川 の合成は 混ぜ+側 に 4,000 以上負け、がわ の 川 はノードも作られない(ユーザ指定 3428) -->
+
 	<!-- 植物 -->
 	        <dict><key>phrase</key><string>黒葉</string><key>shortcut</key><string>こくよう</string></dict>
 	        <dict><key>phrase</key><string>夜香木</string><key>shortcut</key><string>やこうぼく</string></dict>
