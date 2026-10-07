@@ -3809,6 +3809,56 @@ extension KanaKanjiConverter {
         var pathIndices = solved.pathIndices
         Self.multiClausePhaseProbe?("DP")
 
+        // 末尾が助詞 1 字のとき、助詞を除いた部分(先頭)だけで最良になる語に揃える(3424)。上の 2720 は先頭が 1 語の
+        // ときだけで、いい+感じ のような合成の先頭では いいかんじ→いい感じ が いいかんじの→いい漢字の になっていた
+        // (漢字→の 954 ≪ 感じ→の 2048 の Wikipedia の偏り)。同じ DP の結果から「先頭だけで終わる」最良ノードを求め、
+        // 助詞の直前のノードと食い違って、その語を通る経路との差が小さいときだけ差し替える
+        if n >= 3, let tailChar = chars.last, Self.multiClauseSingleTopParticleTails.contains(tailChar),
+            pathIndices.count >= 2, let lastIdx = pathIndices.last,
+            nodes[lastIdx].start == n - 1, nodes[lastIdx].isKanaIdentity {
+            let leadEnd = n - 1
+            let pathLeadIdx = pathIndices[pathIndices.count - 2]
+            var leadBestIdx = -1
+            var leadBestTotal = infinity
+            for idx in nodesEndingAt[leadEnd] where best[idx] < infinity {
+                let eosCost = transitionCost(
+                    prev: nodes[idx].surface,
+                    prevAuxTail: auxTailByNode[idx],
+                    surface: Self.multiClauseEOSMarker,
+                    reading: "",
+                    prevID: nodes[idx].surfaceID,
+                    prevAuxTailID: auxTailIDByNode[idx],
+                    surfaceID: SID.EOS,
+                    readingID: SID.empty,
+                    isSeedListed: false,
+                    minWordCostKnown: true,
+                    surfaceMinWordCost: nil,
+                    isDictWord: true,
+                    isCurated: false,
+                    isInflectionDerived: false
+                )
+                if best[idx] + eosCost < leadBestTotal {
+                    leadBestTotal = best[idx] + eosCost
+                    leadBestIdx = idx
+                }
+            }
+            // 2720 と同じ除外: 時相名詞(昨日/最近 等。手調整済み)と、先頭の語+この助詞の bigram が未観測の形
+            // (最近が=LM が構造的に否定している)は差し替えない
+            if leadBestIdx >= 0, leadBestIdx != pathLeadIdx,
+                !nodes[leadBestIdx].isKanaIdentity,
+                nodes[leadBestIdx].start == nodes[pathLeadIdx].start,
+                Self.multiClauseConversationalTemporalNounUnigramCaps[nodes[leadBestIdx].surface] == nil,
+                Self.multiClauseConversationalTemporalNounUnigramCaps[nodes[pathLeadIdx].surface] == nil,
+                bigramCosts["\(nodes[leadBestIdx].surface)\t\(tailChar)"] != nil,
+                let aligned = solveViterbi(allowedStartNodeIndex: nil, requiredNodeIndices: [leadBestIdx]),
+                aligned.bestTotal - bestTotal <= Self.multiClauseLeadAloneBestBeforeParticleMaxLoss {
+                best = aligned.best
+                backPointer = aligned.backPointer
+                bestTotal = aligned.bestTotal
+                pathIndices = aligned.pathIndices
+            }
+        }
+
         // 並列動詞の表記整合(2771): かうかかわないか の最良が 買うか+飼わないか(か→飼わ の bigram だけ
         // 観測)のように、同じ読み語幹の動詞が2か所で別の漢字になった経路は、片方だけ bigram が
         // 引けた偶然の産物で、読み手には筋が通らない。両スパンに同じ漢字語幹の兄弟が揃うとき
