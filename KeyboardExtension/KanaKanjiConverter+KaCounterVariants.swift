@@ -28,6 +28,7 @@ extension KanaKanjiConverter {
     struct KaCounterOccurrence {
         let variantIndex: Int        // か の位置(Character 配列の添字)
         let coversWholeCandidate: Bool  // 接頭+か+基底 が候補全体(1か所/数か月/三か所)か、文中の一部(数か月前の話)か
+        var hasPrefix = true         // 数字・数・何・幾・漢数字の接頭があるか(か条 単独は false)
     }
 
     // 候補文字列中の「接頭+か+基底」を 1 つ見つける。
@@ -73,14 +74,16 @@ extension KanaKanjiConverter {
                 }
                 continue
             }
-            if index == 0 {
-                return KaCounterOccurrence(variantIndex: index, coversWholeCandidate: 1 + baseLength == chars.count)
+            // 接頭なしは候補全体が か+基底(か条/か月 単独)のときだけ。箇条書き のような語の一部は表記ゆれにしない
+            // (か条書き が先頭になっていた。ユーザ報告 3435)
+            if index == 0, 1 + baseLength == chars.count {
+                return KaCounterOccurrence(variantIndex: index, coversWholeCandidate: true, hasPrefix: false)
             }
         }
         return nil
     }
 
-    func applyKaCounterVariantPreference(reading: String, to candidates: [String]) -> [String] {
+    func applyKaCounterVariantPreference(reading: String, to candidates: [String], precedingCharacter: Character? = nil) -> [String] {
         guard candidates.count >= 1 else {
             return candidates
         }
@@ -97,6 +100,7 @@ extension KanaKanjiConverter {
             let skeleton: [Character]
             let variantIndex: Int
             let coversWholeCandidate: Bool
+            let hasPrefix: Bool
         }
         var slots: [String: Slot] = [:]
         var membership: [String] = []  // 各候補が属する骨格キー(空なら独立)
@@ -113,7 +117,8 @@ extension KanaKanjiConverter {
             if slots[key] == nil {
                 slots[key] = Slot(
                     skeleton: skeleton, variantIndex: occurrence.variantIndex,
-                    coversWholeCandidate: occurrence.coversWholeCandidate
+                    coversWholeCandidate: occurrence.coversWholeCandidate,
+                    hasPrefix: occurrence.hasPrefix
                 )
             }
             membership.append(key)
@@ -121,6 +126,38 @@ extension KanaKanjiConverter {
         }
         guard touched else {
             return candidates
+        }
+        // 接頭なし(か条/か国 単独)の組は、後ろにその組より語LMの頻度が高い別の語(過剰/過酷)があれば、その語の後ろへ回す
+        // (3435、ユーザ指定: 数字の後ろでないなら 過剰 が先頭)。組の頻度は 箇+基底(箇条/箇所/箇国)で見る。
+        // か条/カ国 のような仮名の形は数字とともに使う形で、単独の語としての頻度の目安にならない。
+        // 入力欄の直前が数字・数・何・幾(確定済みの 3 の後に かこく)なら回さない(ユーザ指定)
+        var candidates = candidates
+        let followsCounterPrefix = precedingCharacter.map { Self.kaCounterArabicPrefixCharacters.contains($0) } ?? false
+        for (key, slot) in slots where !slot.hasPrefix && !followsCounterPrefix {
+            guard let first = membership.firstIndex(of: key) else {
+                continue
+            }
+            var kaForm = slot.skeleton
+            kaForm[slot.variantIndex] = "箇"
+            let independent = candidates.indices.filter { $0 > first && membership[$0].isEmpty }
+            guard !independent.isEmpty else {
+                continue
+            }
+            let unigrams = store.wordLMUnigramCosts(for: [String(kaForm)] + independent.map { candidates[$0] })
+            let threshold = unigrams[String(kaForm)] ?? Int.max
+            guard let target = independent.first(where: { (unigrams[candidates[$0]] ?? Int.max) < threshold }) else {
+                continue
+            }
+            // 組の要素を target の直後へ移す(相対順は保つ)
+            let groupIndices = membership.indices.filter { membership[$0] == key && $0 < target }
+            let moved = groupIndices.map { (candidates[$0], membership[$0]) }
+            for index in groupIndices.reversed() {
+                candidates.remove(at: index)
+                membership.remove(at: index)
+            }
+            let insertAt = target - groupIndices.count + 1
+            candidates.insert(contentsOf: moved.map(\.0), at: insertAt)
+            membership.insert(contentsOf: moved.map(\.1), at: insertAt)
         }
 
         var result: [String] = []
