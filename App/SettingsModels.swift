@@ -2,13 +2,28 @@ import SwiftUI
 import CoreFoundation
 import UIKit
 
-// 最後に当てた初期設定(3432)。値が無い端末(この印より前から使っている人)は現代的初期設定とみなす(ユーザ指定)
+// 最後に当てた初期設定(3432)。値が無い端末(この印より前から使っている人)は現代的初期設定とみなす(ユーザ指定)。
+// 保存する値はフランス語(ユーザ指定 3433)。é の NFC/NFD の違いは Swift の文字列比較が同じものとして扱う
 enum SettingsBasePreset: String, CaseIterable {
-    case strategic
-    case conservative
-    case contemporary
+    case strategic = "stratégique"
+    case conservative = "conservateur"
+    case contemporary = "contemporain"
 
     static let fallback: SettingsBasePreset = .contemporary
+
+    // 保存された値から。3432 の英語の値(strategic/conservative/contemporary)も読み替える
+    init?(storedValue: String) {
+        if let preset = SettingsBasePreset(rawValue: storedValue) {
+            self = preset
+            return
+        }
+        switch storedValue {
+        case "strategic": self = .strategic
+        case "conservative": self = .conservative
+        case "contemporary": self = .contemporary
+        default: return nil
+        }
+    }
 
     var menuAction: LogoMenuAction {
         switch self {

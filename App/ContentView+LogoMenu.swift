@@ -503,7 +503,7 @@ extension ContentView {
     // 最後に当てた初期設定。値が無い端末は現代的初期設定とみなす(ユーザ指定)
     static var currentBasePreset: SettingsBasePreset {
         sharedDefaults?.string(forKey: SettingsKeys.settingsBasePreset)
-            .flatMap(SettingsBasePreset.init(rawValue:)) ?? .fallback
+            .flatMap(SettingsBasePreset.init(storedValue:)) ?? .fallback
     }
 
     static func recordBasePreset(_ preset: SettingsBasePreset) {
@@ -547,11 +547,17 @@ extension ContentView {
     // 基準の初期設定がまだ記録されていない端末に 1 回だけ現代的初期設定を記録する(3432、ユーザ指定)。
     // 初めてインストールした端末は直前の applyInitialPresetIfFreshInstall が記録しているので素通り
     func applyBasePresetDefaultIfNeeded() {
-        guard let defaults = Self.sharedDefaults,
-            defaults.object(forKey: SettingsKeys.settingsBasePreset) == nil else {
+        guard let defaults = Self.sharedDefaults else {
             return
         }
-        Self.recordBasePreset(.fallback)
+        guard let stored = defaults.string(forKey: SettingsKeys.settingsBasePreset) else {
+            Self.recordBasePreset(.fallback)
+            return
+        }
+        // 3432 の英語の値(contemporary 等)はフランス語の値に書き直す(3433)
+        if let preset = SettingsBasePreset(storedValue: stored), stored != preset.rawValue {
+            Self.recordBasePreset(preset)
+        }
     }
 
     private func currentSettingsMatch(preset: [String: Any]) -> Bool {
@@ -824,7 +830,7 @@ extension ContentView {
             defaults.set(value.anyValue, forKey: key)
         }
         // 基準の初期設定も戻す(3432)。これより前の退避には無いので、そのときは今の記録のまま
-        if let base = stash.basePreset.flatMap(SettingsBasePreset.init(rawValue:)) {
+        if let base = stash.basePreset.flatMap(SettingsBasePreset.init(storedValue:)) {
             Self.recordBasePreset(base)
         }
         SettingsSyncNotification.postSettingsDidChange()

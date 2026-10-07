@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20261008002425"
+    private static let editionUpdatedAtRaw: String = "20261008003702"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -635,7 +635,7 @@ struct ContentView: View {
             "# écritu 設定 (YAML エクスポート)",
             "# \(Self.editionNumberText)",
             "# \(formatter.string(from: Date()))",
-            "# 基準の初期設定: \(Self.currentBasePreset.title)"
+            "# 基準の初期設定: \(Self.currentBasePreset.title)(\(Self.currentBasePreset.rawValue))"
         ]
 
         func group(_ title: String) {
