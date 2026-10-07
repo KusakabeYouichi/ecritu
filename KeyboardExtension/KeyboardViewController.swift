@@ -1447,57 +1447,6 @@ final class KeyboardViewController: UIInputViewController {
         updateKeyboardHeightIfNeeded()
     }
 
-    // DEBUG だけに置く(3301): 中の ProcessInfo.systemUptime は「必要な理由」の申告が要る API(起動時刻の区分)。
-    // Release にシンボルが残ると PrivacyInfo.xcprivacy との不一致(ITMS-91053)になる。認識器を付ける側も DEBUG だけ
-    #if DEBUG
-    // 調査用(3136): UIKit が触れたと判断した時刻を記録するだけの認識器。状態を変えないので他の操作を邪魔しない。
-    // 押下表示(緑)が出るまでの体感の遅さが、UIKit→SwiftUI の受け渡しにあるのかを測るために入れた。原因判明後に外す
-    private final class RawTouchProbeGestureRecognizer: UIGestureRecognizer {
-        override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
-            KeyboardStuckTouchDiagnostics.lastRawTouchBeganAt = CFAbsoluteTimeGetCurrent()
-            if let view, let touch = touches.first {
-                KeyboardStuckTouchDiagnostics.lastRawTouchLocation = touch.location(in: view)
-            }
-            // 遅れが「指→拡張プロセス」で生じているのか「拡張プロセスの中」なのかを分ける(3148)。
-            // UITouch.timestamp は端末が指を検出した時刻(systemUptime と同じ基準)なので、
-            // 受け取った瞬間との差が iOS 側の配信遅れになる。あわせてメインキューに空の仕事を
-            // 積み、それが走るまでの時間でメインスレッドの詰まりを測る
-            let deliveryDelayMs = touches.first.map {
-                Int((ProcessInfo.processInfo.systemUptime - $0.timestamp) * 1000)
-            } ?? -1
-            let queuedAt = CFAbsoluteTimeGetCurrent()
-            DispatchQueue.main.async {
-                let mainDelayMs = Int((CFAbsoluteTimeGetCurrent() - queuedAt) * 1000)
-                if deliveryDelayMs > 30 || mainDelayMs > 30 {
-                    KeyboardStuckTouchDiagnostics.onTouchForensics?(
-                        "生タッチの内訳 配信遅れ\(deliveryDelayMs)ms メインの詰まり\(mainDelayMs)ms"
-                    )
-                }
-            }
-            // この touch を追っている認識器の一覧(3161)。縦画面でだけ 750ms 遅れる原因が
-            // システム側のジェスチャー調停なら、ここに名前が出る。delaysTouchesBegan も添える
-            if let touch = touches.first {
-                let names = (touch.gestureRecognizers ?? []).map { recognizer -> String in
-                    let name = String(describing: type(of: recognizer))
-                    return recognizer.delaysTouchesBegan ? name + "(遅延あり)" : name
-                }
-                KeyboardStuckTouchDiagnostics.onTouchForensics?(
-                    "生タッチの認識器 \(names.joined(separator: ", "))"
-                )
-            }
-            // ログの時刻そのもので突き合わせるため、生のタッチ側にも 1 行残す(差分計算の当てにならなさを排除)
-            KeyboardStuckTouchDiagnostics.onTouchForensics?("生タッチ began n=\(touches.count)")
-            super.touchesBegan(touches, with: event)
-        }
-
-        // 指を離した時刻も残す(3152)。SwiftUI の判定が離した後に来ているのかを見る
-        override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent) {
-            KeyboardStuckTouchDiagnostics.onTouchForensics?("生タッチ ended")
-            super.touchesEnded(touches, with: event)
-        }
-    }
-    #endif
-
     // 解体時に外枠(self.view = UIInputView)の中身を空にする(3282)。実機のメモリーグラフ(2026-09-30 00:32、
     // footprint 39.5MB)で、解体済みの個体 40 体ぶんの UIInputView が、背景のグラデーション層・レイアウト計算
     // エンジン(NSISEngine)・タッチ計測のジェスチャー・描画の保存領域(CABackingStore 78)を抱えたまま残っていた。
@@ -1522,19 +1471,8 @@ final class KeyboardViewController: UIInputViewController {
         root.layer.contents = nil
     }
 
-    private func installRawTouchProbeIfNeeded() {
-        #if DEBUG
-        let probe = RawTouchProbeGestureRecognizer(target: nil, action: nil)
-        probe.cancelsTouchesInView = false
-        probe.delaysTouchesBegan = false
-        probe.delaysTouchesEnded = false
-        view.addGestureRecognizer(probe)
-        #endif
-    }
-
     private func setupKeyboardView() {
         defer { MemoryForensics.notePhase("面(SwiftUI)の組み立て") }
-        installRawTouchProbeIfNeeded()
         let configuration = makeRenderConfiguration()
         let host = UIHostingController(rootView: makeRootView(from: configuration))
         addChild(host)
