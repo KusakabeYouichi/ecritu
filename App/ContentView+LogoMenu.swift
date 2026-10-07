@@ -702,7 +702,7 @@ extension ContentView {
         applyPreset(preset)
     }
 
-    // 同音の漢字による書きかえ(3422)の値がまだ無い端末(この設定より前から使っている人)に 1 回だけ 両方(後を先に)を書く。
+    // 同音の漢字による書きかえ(3422)の値がまだ無い端末(この設定より前から使っている人)に 1 回だけ 両方(前を先に)を書く。
     // 組み込みの標準値(戦略的初期設定)は 書きかえ前だけ なので、書かないとアップデートした途端に 回転→廻転 等になる。
     // 初めてインストールした端末は直前の applyInitialPresetIfFreshInstall が 書きかえ後だけ を書いているので素通り
     func applyKakikaeDefaultForExistingInstallIfNeeded() {
