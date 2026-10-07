@@ -320,6 +320,9 @@ extension KanaKanjiConverter {
     // bigram 938 が 果汁→の 1562 より安い差 660)。助詞1字は語義をほとんど絞らないので、この場面では
     // 単文節の先頭を優先し、bigram 差がこの値を超える強い文脈だけ LM に従う。
     static let multiClauseSingleTopBeforeParticleBonus = 700
+    // 同じ趣旨で、先頭だけで最良になる語(いい+感じ)を通る経路に差し替えてよい損失の上限(3424)。いいかんじの は
+    // 感じ→の と 漢字→の の bigram 差 1094 から 前の部分の差 287 を引いた 807 で 漢字 に負けていた
+    static let multiClauseLeadAloneBestBeforeParticleMaxLoss = 1000
     // 〜まち: 名詞に続く まち は生産的な接尾 待ち(順番待ち/返事待ち/効果測定待ち)だが、LM は
     // 町 4577 < 街 5103 < 待ち 5928 で、前の語→町 が未観測(=地名複合ではない)でも 町 を採り
     // 効果測定町/順番町 になっていた(ユーザ報告 2723)。前の語が漢字2字以上の名詞で、
