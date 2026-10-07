@@ -20893,6 +20893,15 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi.first, "副作用が", "multi=\(multi.prefix(4))")
     }
 
+    // 3421: ぶっかけ は ぶっかけ → 打っ掛け → 打っ欠け(表示層のかな先頭も見る)
+    func testBukkakeOrder() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let list = converter.candidates(for: "ぶっかけ", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(3)), ["ぶっかけ", "打っ掛け", "打っ欠け"], "\(list)")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "ぶっかけ"))
+    }
+
     // 3381: べにしょうが は 紅しょうが / 紅生姜 の順(辞書に 1 語で無く 紅+省+が が先頭だった)
     func testBenishougaRegistered() throws {
         try prepareRealLMDictionary()
