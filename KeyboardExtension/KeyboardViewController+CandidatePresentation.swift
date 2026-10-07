@@ -428,7 +428,10 @@ extension KeyboardViewController {
         // 助数詞「か」の表記(1か所/数か月)を設定順に(連文節混じりの一覧にも一様に効かせる。2816)
         let kaOrdered = kanaKanjiConverter.applyOkuriganaVariantPreference(
             reading: cacheKey.reading,
-            to: kanaKanjiConverter.applyKaCounterVariantPreference(reading: cacheKey.reading, to: boosted)
+            to: kanaKanjiConverter.applyKaCounterVariantPreference(
+                reading: cacheKey.reading, to: boosted,
+                precedingCharacter: textDocumentProxy.documentContextBeforeInput?.last
+            )
         )
 
         // 文頭の感動詞(おっと 等)はかなを先頭へ(定数コメント参照。2846)。main 実行なので proxy 可
