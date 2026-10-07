@@ -437,10 +437,17 @@ extension KeyboardViewController {
 
                 self.currentInputMode = mode
                 // 調査用ログ(記号面切替 2838): 引き金(changeDetail)を添える。原因判明後に外す
+                #if DEBUG
                 self.updateKeyboardDiagnosticsHeartbeat(
                     event: "入力モード変更 \(self.keyboardInputModeName(previousMode)) -> \(self.keyboardInputModeName(mode)) 引き金=\(changeDetail)",
                     appendLog: true
                 )
+                #else
+                self.updateKeyboardDiagnosticsHeartbeat(
+                    event: "入力モード変更 \(self.keyboardInputModeName(previousMode)) -> \(self.keyboardInputModeName(mode))",
+                    appendLog: true
+                )
+                #endif
                 // 絵文字モードはピッカー構築で footprint が跳ねる。長寿命プロセスが高水位の
                 // まま切り替えると per-process limit の jetsam で即死する(2026-08-14 17:01
                 // 実測: footprint 63MB 圏で latin→emoji 切替直後に jetsam(1)
