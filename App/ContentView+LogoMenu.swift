@@ -207,6 +207,7 @@ struct SettingsStash: Codable {
     let values: [String: Value]
     // 退避したときの基準の初期設定(SettingsBasePreset の rawValue。3432)。これより前に退避したものには無い
     var basePreset: String?
+    var basePresetContactsStartedOff: Bool?
 }
 
 extension ContentView {
@@ -506,8 +507,10 @@ extension ContentView {
             .flatMap(SettingsBasePreset.init(rawValue:)) ?? .fallback
     }
 
-    static func recordBasePreset(_ preset: SettingsBasePreset) {
+    // 初期設定を記録する。初めてのインストールの「連絡先は使わないで始めた」印は、初期設定を行なったら消す(3437)
+    static func recordBasePreset(_ preset: SettingsBasePreset, contactsStartedOff: Bool = false) {
         sharedDefaults?.set(preset.rawValue, forKey: SettingsKeys.settingsBasePreset)
+        sharedDefaults?.set(contactsStartedOff, forKey: SettingsKeys.settingsBaseContactsStartedOff)
     }
 
     // 初期設定ごとの値(preset に無いキーは組み込みの初期値が期待値)。戦略的初期設定は組み込みの初期値そのもの
@@ -527,13 +530,13 @@ extension ContentView {
         let preset = presetValues(for: currentBasePreset)
         for key in keys {
             let effective = defaults.object(forKey: key) ?? builtInDefaultValues[key]
-            // 連絡先の候補を「使わない」にしているのは変更扱いにしない。初めてのインストールは現代的初期設定でも
-            // ここだけ「使わない」で始める(審査ガイドライン 5.1.1)ので、印が最初から付いてしまう
+            // 初めてのインストールは現代的初期設定でも連絡先の候補だけ「使わない」で始める(審査ガイドライン 5.1.1)。
+            // その端末では次に初期設定を行なうまで「使わない」を基準の値とする(3437。印が最初から付かないように)
+            var expected = preset[key] ?? builtInDefaultValues[key]
             if key == SettingsKeys.contactCandidateDisplayMode,
-                (effective as? String) == ContactCandidateDisplayModeOption.off.rawValue {
-                continue
+                defaults.bool(forKey: SettingsKeys.settingsBaseContactsStartedOff) {
+                expected = ContactCandidateDisplayModeOption.off.rawValue
             }
-            let expected = preset[key] ?? builtInDefaultValues[key]
             guard let effective = effective as? NSObject, let expected = expected as? NSObject else {
                 continue
             }
@@ -764,7 +767,7 @@ extension ContentView {
         var preset = Self.contemporaryPresetValues
         preset[SettingsKeys.contactCandidateDisplayMode] = ContactCandidateDisplayModeOption.off.rawValue
         applyPreset(preset)
-        Self.recordBasePreset(.contemporary)
+        Self.recordBasePreset(.contemporary, contactsStartedOff: true)
     }
 
     // 同音の漢字による書きかえ(3422)の値がまだ無い端末(この設定より前から使っている人)に 1 回だけ 両方(本来の漢字を先に)を書く。
@@ -799,7 +802,8 @@ extension ContentView {
         let editionNumber = (Bundle.main.infoDictionary?["CFBundleVersion"] as? String) ?? "?"
         let stash = SettingsStash(
             editionNumber: editionNumber, savedAt: Date(), values: values,
-            basePreset: Self.currentBasePreset.rawValue
+            basePreset: Self.currentBasePreset.rawValue,
+            basePresetContactsStartedOff: Self.sharedDefaults?.bool(forKey: SettingsKeys.settingsBaseContactsStartedOff) ?? false
         )
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
@@ -826,7 +830,7 @@ extension ContentView {
         }
         // 基準の初期設定も戻す(3432)。これより前の退避には無いので、そのときは今の記録のまま
         if let base = stash.basePreset.flatMap(SettingsBasePreset.init(rawValue:)) {
-            Self.recordBasePreset(base)
+            Self.recordBasePreset(base, contactsStartedOff: stash.basePresetContactsStartedOff ?? false)
         }
         SettingsSyncNotification.postSettingsDidChange()
         return true
