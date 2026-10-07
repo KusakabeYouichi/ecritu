@@ -11,20 +11,6 @@ enum SettingsBasePreset: String, CaseIterable {
 
     static let fallback: SettingsBasePreset = .contemporary
 
-    // 保存された値から。3432 の英語の値(strategic/conservative/contemporary)も読み替える
-    init?(storedValue: String) {
-        if let preset = SettingsBasePreset(rawValue: storedValue) {
-            self = preset
-            return
-        }
-        switch storedValue {
-        case "strategic": self = .strategic
-        case "conservative": self = .conservative
-        case "contemporary": self = .contemporary
-        default: return nil
-        }
-    }
-
     var menuAction: LogoMenuAction {
         switch self {
         case .strategic: return .strategicDefaults
