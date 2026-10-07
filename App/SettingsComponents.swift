@@ -2,6 +2,117 @@ import SwiftUI
 import UIKit
 import UniformTypeIdentifiers
 
+// 各項目が基準の初期設定(最後に当てた初期設定)から変わっているかの印(3432)。設定の値が変わるたびに描き直すため、
+// UserDefaults の変更通知を数えるだけの観測対象を持つ
+final class SettingsChangeTracker: ObservableObject {
+    static let shared = SettingsChangeTracker()
+    @Published private(set) var revision = 0
+    private var observer: NSObjectProtocol?
+
+    private init() {
+        observer = NotificationCenter.default.addObserver(
+            forName: UserDefaults.didChangeNotification, object: nil, queue: .main
+        ) { [weak self] _ in
+            self?.revision += 1
+        }
+    }
+}
+
+// 項目番号(X.9 等)→ その項目が表示・編集する設定キー(3432。ContentView のカード群と照合済み)
+enum SettingsCardKeys {
+    static let keysByCardID: [String: [String]] = [
+        "E.1": [SettingsKeys.directionProfile],
+        "E.2": [SettingsKeys.keyRepeatInitialDelay, SettingsKeys.keyRepeatInterval],
+        "E.3": [SettingsKeys.idleCommitEnabled, SettingsKeys.idleCommitInterval],
+        "E.4": [SettingsKeys.composingTextStyle],
+        "E.5": [SettingsKeys.kanaModeSwitcherTapAction, SettingsKeys.kanaModeSwitcherRightFlickAction, SettingsKeys.kanaModeSwitcherUpFlickAction],
+        "E.6": [SettingsKeys.kanaPostModifierEmptyTapAction, SettingsKeys.kanaPostModifierEmptyTapKaomojiCategory,
+                SettingsKeys.kanaPostModifierEmptyTapEmojiCategory, SettingsKeys.kanaPostModifierEmptyTapSymbolCategory],
+        "E.7": [SettingsKeys.kanaPostModifierFlickDakutenEnabled],
+        "E.8": [SettingsKeys.latinLexiconEnglishEnabled, SettingsKeys.latinLexiconFrenchEnabled,
+                SettingsKeys.latinLexiconGermanEnabled, SettingsKeys.latinLexiconItalianEnabled],
+        "F.1": [SettingsKeys.numberThousandsSeparator, SettingsKeys.numberGroupFourDigits, SettingsKeys.numberDecimalSeparator,
+                SettingsKeys.numberUnitProductSeparator, SettingsKeys.numberLitreSymbol],
+        "F.2": [SettingsKeys.degreeSymbol],
+        "F.3": [SettingsKeys.calendarWeekStart, SettingsKeys.calendarWeekdayLanguage, SettingsKeys.calendarSundayColor,
+                SettingsKeys.calendarFridayColor, SettingsKeys.calendarSaturdayColor, SettingsKeys.dateFormatStyle],
+        "G.1": [SettingsKeys.kanaFlickGuideDisplayMode, SettingsKeys.latinFlickGuideDisplayMode,
+                SettingsKeys.numberFlickGuideDisplayMode, SettingsKeys.modifierFlickGuideDisplayMode],
+        "L.1": [SettingsKeys.kanaLayoutMode],
+        "L.2": [SettingsKeys.latinLayoutMode],
+        "L.3": [SettingsKeys.numberLayoutMode, SettingsKeys.formattedNumberKeypadLayout],
+        "L.4": [SettingsKeys.basicSymbolOrder],
+        "L.5": [SettingsKeys.kanaModifierPlacement],
+        "V.1": [SettingsKeys.landscapeCandidateSide, SettingsKeys.landscapeLatinSuggestionMode],
+        "V.2": [SettingsKeys.landscapeNumberPaneSide],
+        "V.3": [SettingsKeys.accentPalette],
+        "V.4": [SettingsKeys.keyboardBackgroundTheme],
+        "X.1": [SettingsKeys.delimiterAutoCommitCandidate],
+        "X.2": [SettingsKeys.kanaKanjiCandidateSourceMode],
+        "X.3": [SettingsKeys.historicalKanaCandidatesEnabled],
+        "X.4": [SettingsKeys.iterationMarkCandidatesEnabled],
+        "X.5": [SettingsKeys.katakanaEmphasisCandidateMode],
+        "X.6": [SettingsKeys.mazegakiCandidateMode],
+        "X.7": [SettingsKeys.scriptVariantSuppressKyujitai, SettingsKeys.scriptVariantSuppressItaiji, SettingsKeys.scriptVariantSuppressRyakuji,
+                SettingsKeys.scriptVariantSuppressConfusable, SettingsKeys.scriptVariantSuppressLookalike, SettingsKeys.scriptVariantSuppressPersonNameVariant],
+        "X.8": [SettingsKeys.kanaGakiSuppressAdverb, SettingsKeys.kanaGakiSuppressConjunction, SettingsKeys.kanaGakiSuppressAuxiliary,
+                SettingsKeys.kanaGakiSuppressFormalNoun, SettingsKeys.kanaGakiSuppressDemonstrative],
+        "X.9": [SettingsKeys.kakikaePreference],
+        "X.10": [SettingsKeys.radicalStrokeCountStyle],
+        "X.11": [SettingsKeys.kaCounterVariantPreference],
+        "X.12": [SettingsKeys.okuriganaVariantPreference],
+        "X.13": [SettingsKeys.ordinalMeKanjiPreferred],
+        "X.14": [SettingsKeys.adjectiveMeKanjiCandidatesEnabled],
+        "X.15": [SettingsKeys.emojiCandidateDisplayEnabled, SettingsKeys.kaomojiCandidateDisplayEnabled],
+        "X.16": [SettingsKeys.contactCandidateDisplayMode],
+        "X.17": [SettingsKeys.userDictionaryCandidateDisplayMode]
+    ]
+
+    // 見出しの先頭の番号(「X.9 常用漢字による書きかえ」→ X.9)
+    static func cardID(fromTitle title: String) -> String? {
+        guard let first = title.split(separator: " ", maxSplits: 1).first,
+            keysByCardID[String(first)] != nil else {
+            return nil
+        }
+        return String(first)
+    }
+}
+
+// 見出しの右に置く「変更済み」の印。基準の初期設定から変わっている項目にだけ、小さく淡く出す(3432、ユーザ指定)
+struct SettingsModifiedMark: View {
+    let title: String
+    @ObservedObject private var tracker = SettingsChangeTracker.shared
+
+    var body: some View {
+        let _ = tracker.revision
+        if let cardID = SettingsCardKeys.cardID(fromTitle: title),
+            let keys = SettingsCardKeys.keysByCardID[cardID],
+            ContentView.isModifiedFromBasePreset(keys: keys) {
+            Text("●")
+                .font(.system(size: 8))
+                .foregroundStyle(Color.accentColor.opacity(0.75))
+                .accessibilityLabel("初期設定から変更あり")
+        }
+    }
+}
+
+// 項目の見出し(太字)と変更済みの印(3432)
+struct SettingsCardHeadline: View {
+    let title: String
+
+    init(_ title: String) {
+        self.title = title
+    }
+
+    var body: some View {
+        HStack(alignment: .center, spacing: 5) {
+            Text(title)
+                .font(.headline)
+            SettingsModifiedMark(title: title)
+        }
+    }
+}
+
 // 設定カードの見出し。subtitle(旧タイトルの仏語例など)は小さく薄い字で 2 行目に置く(2817)
 struct SettingsCardTitle: View {
     let title: String
@@ -9,8 +120,7 @@ struct SettingsCardTitle: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text(title)
-                .font(.headline)
+            SettingsCardHeadline(title)
             if let subtitle {
                 Text(subtitle)
                     .font(.caption)

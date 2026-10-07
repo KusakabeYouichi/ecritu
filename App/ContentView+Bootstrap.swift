@@ -850,6 +850,7 @@ extension ContentView {
             // 初回インストールなら現代的初期設定に(語彙の初期投入=migration より先に判定する。3406)
             applyInitialPresetIfFreshInstall()
             applyKakikaeDefaultForExistingInstallIfNeeded()
+            applyBasePresetDefaultIfNeeded()
             refreshSettingsStashSavedAt()
             clearKeyboardDiagnosticsIfInstallChanged()
             recordKeyboardExtensionRegistrationState()
