@@ -3727,9 +3727,11 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         guard ProcessInfo.processInfo.environment["DIAG_EMOJIVM"] != nil else {
             throw XCTSkip("DIAG_EMOJIVM=1 のときだけ実行")
         }
-        print("DIAGEMOJI before \(MemoryForensics.vmRegionSummaryByTag())")
+        // 字の大きさは DIAG_EMOJIVM_PT で変えられる(候補欄は 16pt semibold。3416)
+        let pointSize = ProcessInfo.processInfo.environment["DIAG_EMOJIVM_PT"].flatMap { Double($0) } ?? 24
+        print("DIAGEMOJI pt=\(pointSize) scale=\(UIScreen.main.scale) before \(MemoryForensics.vmRegionSummaryByTag())")
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: 60, height: 60))
-        label.font = .systemFont(ofSize: 24)
+        label.font = .systemFont(ofSize: CGFloat(pointSize), weight: pointSize == 24 ? .regular : .semibold)
         let renderer = UIGraphicsImageRenderer(size: label.bounds.size)
         var count = 0
         for scalar in 0x1F300...0x1F64F {
