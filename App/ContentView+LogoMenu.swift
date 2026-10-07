@@ -618,9 +618,9 @@ extension ContentView {
         case .strategicDefaults:
             return "すべての設定を組み込みの標準値(戦略的初期設定)に戻します。語彙・学習内容はそのままです。"
         case .conservativeDefaults:
-            return "すべての設定を作者の使用設定(3x3+わ・AZERTY・後置修飾・littlebear式のフリック 等)にします。語彙・学習内容はそのままです。"
+            return "すべての設定を作者の使用設定(3x3+わ・AZERTY・後置修飾・littlebear式のフリック 等)にします。iOS の連絡先の名前も候補に使う設定になり、まだ許可していなければ連絡先へのアクセスの許可を求めます。語彙・学習内容はそのままです。"
         case .contemporaryDefaults:
-            return "すべての設定を保守的初期設定と同じにし、かなで書く言葉(所謂・即ち・事・此処 など)は 5 つの仲間すべてで漢字を出さないようにします。語彙・学習内容はそのままです。"
+            return "すべての設定を保守的初期設定と同じにし、かなで書く言葉(所謂・即ち・事・此処 など)は 5 つの仲間すべてで漢字を出さないようにします。iOS の連絡先の名前も候補に使う設定になり、まだ許可していなければ連絡先へのアクセスの許可を求めます。語彙・学習内容はそのままです。"
         case .restoreStashedSettings:
             if let stash = loadSettingsStash() {
                 let formatter = DateFormatter()
