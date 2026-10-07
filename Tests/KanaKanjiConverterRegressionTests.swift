@@ -20991,6 +20991,20 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3425: すぐ/すぐに は かな が先、ハイフン入りのゴミ(す‐ぐ)は出さない
+    func testSuguKanaFirst() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("すぐ", ["すぐ", "直ぐ"]), ("すぐに", ["すぐに", "直ぐに"])] {
+            let list = converter.candidates(for: reading, limit: 6, systemCandidateMode: .surface)
+            XCTAssertEqual(Array(list.prefix(2)), expected, "\(list)")
+            XCTAssertFalse(list.contains { $0.contains("‐") }, "\(list)")
+            XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: reading), reading)
+        }
+        let multi = converter.multiClauseCandidates(for: "すぐにいく", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "すぐに行く", "multi=\(multi.prefix(4))")
+    }
+
     // 3381: べにしょうが は 紅しょうが / 紅生姜 の順(辞書に 1 語で無く 紅+省+が が先頭だった)
     func testBenishougaRegistered() throws {
         try prepareRealLMDictionary()
