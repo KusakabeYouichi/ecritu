@@ -20979,6 +20979,18 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(KanaKanjiConverter.containsEmoji("☺️"))
     }
 
+    // 3424: 語+助詞 1 字で、先頭だけのときの最良の語に揃える(先頭が合成のとき。いいかんじ→いい感じ なら いいかんじの→いい感じの)
+    func testLeadAloneBestKeptBeforeParticle() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for (reading, expected) in [
+            ("いいかんじの", "いい感じの"), ("いいきょうぎの", "いい競技の"), ("いいぶたいの", "いい舞台の")
+        ] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "\(reading): \(multi.prefix(4))")
+        }
+    }
+
     // 3381: べにしょうが は 紅しょうが / 紅生姜 の順(辞書に 1 語で無く 紅+省+が が先頭だった)
     func testBenishougaRegistered() throws {
         try prepareRealLMDictionary()
