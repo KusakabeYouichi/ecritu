@@ -1656,7 +1656,8 @@ extension KanaKanjiConverter {
                     // 半減圧縮でも 出すと が ダスト(EOS1648)に負ける。かな助詞 prev の観測 EOS は
                     // fallback より重くしない(よ→EOS 等、安い側の観測信号は保つ)。
                     if Self.multiClauseCaseParticleSurfacesID.contains(prevID)
-                        || Self.multiClauseFinalParticleReadingsID.contains(prevID) {
+                        || Self.multiClauseFinalParticleReadingsID.contains(prevID)
+                        || Self.multiClauseEOSNotSentenceFinalSuffixSurfacesID.contains(prevID) {
                         base = min(base, fallback)
                     }
                 } else {

@@ -20869,6 +20869,19 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(multi.isEmpty || multi.first == "突き当たり", "multi=\(multi.prefix(4))")
     }
 
+    // 3419: 名詞+てき の連文節は 的 が先頭(的→文末 の統計で 敵 に負けていた。一般則)
+    func testNounTekiPrefersSuffixTeki() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for (reading, expected) in [
+            ("たいしょうりょうほうてき", "対症療法的"), ("ちりょうてき", "治療的"),
+            ("きょうみてき", "興味的"), ("かんきょうてき", "環境的"), ("ちいきてき", "地域的")
+        ] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "\(reading): \(multi.prefix(4))")
+        }
+    }
+
     // 3381: べにしょうが は 紅しょうが / 紅生姜 の順(辞書に 1 語で無く 紅+省+が が先頭だった)
     func testBenishougaRegistered() throws {
         try prepareRealLMDictionary()
