@@ -613,6 +613,20 @@ extension KanaKanjiConverter {
         }
 
         let trustedDirectCandidates = Set(systemCandidates.prefix(3))
+        // 語尾が活用らしく見えるだけの読み(ふくさよう の よう)。活用の派生が 1 つも無く、辞書の先頭語が語LMに
+        // 普通の頻度で載る漢字語なら、語尾一致の +220 を合成(福+さよう/吹く+さよう)には与えない。
+        // 副作用(1200)が +220 された 福さよう(1260)以下 19 個の下だった(ユーザ報告 3420)
+        let suffixLooksInflectedOnly: Bool = {
+            guard inflectionDerivedCandidates.isEmpty,
+                let rank0 = systemCandidates.first,
+                rank0 != reading,
+                !containsHiragana(rank0),
+                !KanaKanjiConverter.isPureKatakanaCandidate(rank0),
+                let unigram = store.wordLMUnigramCosts(for: [rank0])[rank0] else {
+                return false
+            }
+            return unigram <= Self.lmDominantDictBoostMaxBestUnigram
+        }()
         // 純カタカナの suffix 一致語(ハネダ/シマダ: 語尾 ダ がかな だ に一致)は Sudachi の強調収穫で、
         // LM 未収録なら +500 の対象にしない(+220 のかな識別と同じ扱い)。LM に在る カナダ/オランダ/ホンダ は従来どおり(3214)
         let katakanaCandidates = scores.keys.filter { KanaKanjiConverter.isPureKatakanaCandidate($0) }
@@ -632,7 +646,7 @@ extension KanaKanjiConverter {
                 if candidate != reading, systemCandidates.contains(candidate),
                     !KanaKanjiConverter.isPureKatakanaCandidate(candidate) || katakanaUnigrams[candidate] != nil {
                     delta += 500
-                } else {
+                } else if !(suffixLooksInflectedOnly && !systemCandidates.contains(candidate)) {
                     delta += 220
                 }
             } else if !containsHiragana(candidate),

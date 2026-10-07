@@ -300,6 +300,8 @@ final class KanaKanjiConverter {
         // 残す(ゆずか の 柚佳 等、名前入力の受け皿として選択可能な位置を保つ)。
         static let harvestTierDictionary = 1030
         static let harvestTierWordCostFloor = 10000
+        // 収穫帯から外す語LM unigram の上限(3420)。副作用 6024。7500 では件数が倍(約 1.6 万)になり人名が増える
+        static let harvestTierLMAttestedMaxUnigramCost = 7000
         // 完全一致専用候補(踊り字 等)。辞書語より下位に置き、末尾寄りに出す。
         static let exactReadingOnly = 300
         // 外来語のカタカナ保護(辞書コスト基準)。SudachiDict のカタカナ強調収穫は元の語と
@@ -500,12 +502,38 @@ final class KanaKanjiConverter {
         var harvestTierCandidates: [String] = []
         var supplementalSystemCandidates: [String] = []
         var unpromotedSupplementalCandidates: [String] = []
+        // 語コストが収穫帯でも、語LMに普通の頻度で載る複合語は収穫帯に落とさない(3420)。Sudachi は分けられる複合語
+        // (副作用/国会議員/電子レンジ)に高い語コストを付けるので、副作用 が 福+さよう 等の合成の下の 20 番目だった。
+        // 表層 unigram は別の読みの頻度も数える(西=にし、小石=こいし)ので、2 字以上で、この読みがその表層の
+        // いちばん安い読みのときだけ(該当は辞書全体で約 5,200 語、ほぼ全部が一般の複合語)
+        let lmAttestedHarvestExempt: Set<String> = {
+            // かな・カタカナの収穫(ちば/シゲル)は対象外(読みのエコーで、語LMの頻度は別の用法のもの)
+            let targets = context.systemCandidates.filter {
+                $0.count >= 2 && containsKanji($0) && (wordCosts[$0] ?? 0) >= CandidateScore.harvestTierWordCostFloor
+            }
+            guard !targets.isEmpty else {
+                return []
+            }
+            let unigrams = store.wordLMUnigramCosts(for: targets)
+            let attested = targets.filter { (unigrams[$0] ?? Int.max) < CandidateScore.harvestTierLMAttestedMaxUnigramCost }
+            guard !attested.isEmpty else {
+                return []
+            }
+            let minCosts = store.candidateMinWordCosts(for: attested)
+            return Set(attested.filter { candidate in
+                guard let cost = wordCosts[candidate], let minCost = minCosts[candidate] else {
+                    return false
+                }
+                return cost <= minCost
+            })
+        }()
         for candidate in context.systemCandidates {
             if promotesSupplemental, supplementalCandidates.contains(candidate) {
                 supplementalSystemCandidates.append(candidate)
             } else if let cost = wordCosts[candidate],
                 cost >= CandidateScore.harvestTierWordCostFloor,
-                !seedExempt.contains(candidate) {
+                !seedExempt.contains(candidate),
+                !lmAttestedHarvestExempt.contains(candidate) {
                 // 押し上げない補助語彙は、収穫帯(1030、合成より下)に落とさず合成より前に出す(3326、ユーザ指定)。
                 // たまや で ryukyu の 玉家(語コストが収穫帯)が 玉や/多摩や の後ろの 13 番目だった。
                 // 語コストが普通の帯の補助語彙(海葱/器官 等)は従来どおり普通の語として並べる(全網で 11 件の順位が動いた)
