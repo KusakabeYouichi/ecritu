@@ -20838,6 +20838,27 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi.first, "吉野家で食べた", "multi=\(multi.prefix(4))")
     }
 
+    // 3417: お菓子・飲み物(compenser に登録)は カタカナ → 原語 の順で出る
+    func testPatisserieAndDrinkVocabularyRegistered() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let expected: [(String, String, String)] = [
+            ("ぎもーゔ", "ギモーヴ", "Guimauve"),
+            ("まかろん", "マカロン", "macaron"),
+            ("らでゅれ", "ラデュレ", "Ladurée"),
+            ("ぴえーるえるめ", "ピエール・エルメ", "Pierre Hermé"),
+            ("かぬれ", "カヌレ", "cannelé"),
+            ("かぬれどぼるどー", "カヌレ・ド・ボルドー", "cannelé de Bordeaux"),
+            ("まんたろー", "マンタロー", "menthe à l'eau"),
+            ("じゅどらんじゅ", "ジュドランジュ", "Jus d'Orange")
+        ]
+        for (reading, katakana, original) in expected {
+            let list = converter.candidates(for: reading, limit: 6, systemCandidateMode: .surface)
+            XCTAssertEqual(list.first, katakana, "\(reading): \(list)")
+            XCTAssertTrue(list.contains(original), "\(reading): \(list)")
+        }
+    }
+
     // 3381: べにしょうが は 紅しょうが / 紅生姜 の順(辞書に 1 語で無く 紅+省+が が先頭だった)
     func testBenishougaRegistered() throws {
         try prepareRealLMDictionary()

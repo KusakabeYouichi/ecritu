@@ -309,6 +309,23 @@
 	        <dict><key>phrase</key><string>Ficelle</string><key>shortcut</key><string>ふぃせる</string></dict>
 	        <dict><key>phrase</key><string>Parisien</string><key>shortcut</key><string>ぱりじゃん</string></dict>
 	        <dict><key>phrase</key><string>Batard</string><key>shortcut</key><string>ばたーる</string></dict>
+	<!-- お菓子・飲み物(カタカナと原語を同じ読みで。ユーザ提供 3417) -->
+	        <dict><key>phrase</key><string>ギモーヴ</string><key>shortcut</key><string>ぎもーゔ</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>Guimauve</string><key>shortcut</key><string>ぎもーゔ</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>マカロン</string><key>shortcut</key><string>まかろん</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>macaron</string><key>shortcut</key><string>まかろん</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>ラデュレ</string><key>shortcut</key><string>らでゅれ</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>Ladurée</string><key>shortcut</key><string>らでゅれ</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>ピエール・エルメ</string><key>shortcut</key><string>ぴえーるえるめ</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>Pierre Hermé</string><key>shortcut</key><string>ぴえーるえるめ</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>カヌレ</string><key>shortcut</key><string>かぬれ</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>cannelé</string><key>shortcut</key><string>かぬれ</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>カヌレ・ド・ボルドー</string><key>shortcut</key><string>かぬれどぼるどー</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>cannelé de Bordeaux</string><key>shortcut</key><string>かぬれどぼるどー</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>マンタロー</string><key>shortcut</key><string>まんたろー</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>menthe à l&#x27;eau</string><key>shortcut</key><string>まんたろー</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>ジュドランジュ</string><key>shortcut</key><string>じゅどらんじゅ</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>Jus d&#x27;Orange</string><key>shortcut</key><string>じゅどらんじゅ</string><key>pos</key><string>名詞</string></dict>
 	<!-- バター(AOP バターの産地と銘柄。カタカナと原語を同じ読みで。ユーザ提供の資料 2911) -->
 	<!-- □ A.O.P. (原産地呼称) -->
 	        <dict><key>phrase</key><string>シャラント・ポワトゥー</string><key>shortcut</key><string>しゃらんとぽわとぅー</string></dict>	<!-- AOP 最大の産地。12 時間以上の長期熟成、ナッツのような香り。溶けにくく伸びが良い -->
