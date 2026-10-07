@@ -21056,6 +21056,14 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi.first, "馬瀬川の", "multi=\(multi.prefix(4))")
     }
 
+    // 3436: しゅどう は 手動 → 主導 → 主働 → 首藤 → 主動 → 朱銅 → 主胴 → 衆道 → 酒道
+    func testShudouOrder() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let list = converter.candidates(for: "しゅどう", limit: 9, systemCandidateMode: .surface)
+        XCTAssertEqual(list, ["手動", "主導", "主働", "首藤", "主動", "朱銅", "主胴", "衆道", "酒道"], "\(list)")
+    }
+
     // 3381: べにしょうが は 紅しょうが / 紅生姜 の順(辞書に 1 語で無く 紅+省+が が先頭だった)
     func testBenishougaRegistered() throws {
         try prepareRealLMDictionary()
