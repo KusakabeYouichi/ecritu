@@ -2,6 +2,25 @@ import SwiftUI
 import CoreFoundation
 import UIKit
 
+// 最後に当てた初期設定(3432)。値が無い端末(この印より前から使っている人)は現代的初期設定とみなす(ユーザ指定)
+enum SettingsBasePreset: String, CaseIterable {
+    case strategic
+    case conservative
+    case contemporary
+
+    static let fallback: SettingsBasePreset = .contemporary
+
+    var menuAction: LogoMenuAction {
+        switch self {
+        case .strategic: return .strategicDefaults
+        case .conservative: return .conservativeDefaults
+        case .contemporary: return .contemporaryDefaults
+        }
+    }
+
+    var title: String { menuAction.title }
+}
+
 enum SettingsKeys {
     // App Group ID は App/Info.plist の EcrituAppGroupIdentifier(= $(ECRITU_APP_GROUP_IDENTIFIER)、拡張と同じ設定値)から読む。
     // 以前は INFOPLIST_KEY_ で指定していたが Xcode は独自キーを生成物に入れず、たまたま同じ規則のこの代替で一致していた
@@ -76,6 +95,9 @@ enum SettingsKeys {
     static let kanaKanjiInitialAjoutVocabularyAppliedSeed = "kanaKanjiInitialUserDictionaryAppliedSeed"
     // 初回インストールの初期設定(現代的初期設定)を当てたかの印(3406)。userSettingsKeys には入れない(戦略的初期設定で消さない)
     static let initialPresetApplied = "initialPresetApplied"
+    // 最後に当てた初期設定(SettingsBasePreset の rawValue。3432)。ロゴ長押しメニューの下線と、各項目の「変更済み」の印の
+    // 比べる相手。userSettingsKeys には入れない(初期設定を当てるときに消さない)。退避・復元では一緒に保存・復元する
+    static let settingsBasePreset = "settingsBasePreset"
     // misc 分離以前の Ajout 播種残骸の one-shot 清掃(2390)実行済みフラグ
     static let kanaKanjiLearnedVocabulary = "kanaKanjiLearnedVocabulary"
     static let kanaKanjiLearningVocabularyMigrationCompleted = "kanaKanjiLearningVocabularyMigrationCompleted"

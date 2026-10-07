@@ -22,8 +22,7 @@ struct KeyRepeatSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("E.2 削除キーリピート")
-                .font(.headline)
+            SettingsCardHeadline("E.2 削除キーリピート")
 
             VStack(alignment: .leading, spacing: 12) {
                 VStack(alignment: .leading, spacing: 6) {
@@ -136,8 +135,7 @@ struct ComposingTextStyleSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("E.4 未確定の方式")
-                .font(.headline)
+            SettingsCardHeadline("E.4 未確定の方式")
 
             // 3 方式の並び(選択中は枠付き)。以前は未実装の方式を灰色で押せなくする(isAvailable)ための自前の並びだった
             HStack(spacing: 8) {
@@ -192,8 +190,7 @@ struct IdleCommitSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("E.3 自動確定(アイドル)")
-                .font(.headline)
+            SettingsCardHeadline("E.3 自動確定(アイドル)")
 
             Toggle("入力が止まったら未確定を自動確定", isOn: $idleCommitEnabled)
                 .font(.subheadline.weight(.semibold))
@@ -542,8 +539,7 @@ struct KanaModeSwitcherAssignmentSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("E.5 かな左下キー割り当て")
-                .font(.headline)
+            SettingsCardHeadline("E.5 かな左下キー割り当て")
 
             VStack(alignment: .leading, spacing: 10) {
                 Text("タップ")
@@ -620,8 +616,7 @@ struct KanaPostModifierEmptyTapAssignmentSection: View {
                     .alignmentGuide(.firstTextBaseline) { dimensions in
                         dimensions[VerticalAlignment.center] + 6
                     }
-                Text("E.6 タップ (後置修飾、未確定なし)")
-                    .font(.headline)
+                SettingsCardHeadline("E.6 タップ (後置修飾、未確定なし)")
                     .lineLimit(1)
                     .minimumScaleFactor(0.85)
             }
