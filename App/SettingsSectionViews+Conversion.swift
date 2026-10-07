@@ -255,7 +255,7 @@ struct EmojiKaomojiCandidateSettingsSection: View {
             }
             .toggleStyle(.switch)
 
-            Text("かな漢字変換の候補に絵文字/顔文字を含めるかを切り替えます。")
+            Text("かな漢字変換の候補に絵文字を出すかどうか、顔文字を出すかどうかを切り替えます。emoji をオフにすると、『ねこ→🐱』のような絵文字も、『たいわん→🇹🇼』のような国旗も、以前に選んで学習した絵文字も候補に出なくなります。追加語彙(ショートカット)に登録した絵文字だけは出ます。絵文字画面はこの設定に関わらず使えます。初期設定はどちらもオンです。")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
