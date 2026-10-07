@@ -8832,7 +8832,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         defer { converter.setKaCounterVariantPreference(.default) }
         let boosted = converter.applyKaCounterVariantPreference(
             reading: "かこく",
-            to: KanaKanjiConverter.digitContextCounterBoostedCandidates(cands, reading: "かこく", precedingCharacter: "3")
+            to: KanaKanjiConverter.digitContextCounterBoostedCandidates(cands, reading: "かこく", precedingCharacter: "3"),
+            precedingCharacter: "3"
         )
         XCTAssertEqual(Array(boosted.prefix(2)), ["か国", "箇国"], "boosted=\(boosted.prefix(6))")
         // 過酷/苛酷 は counter の後ろ。
@@ -14758,7 +14759,10 @@ extension KanaKanjiConverterRegressionTests {
         // 戦略的初期設定は か だけ
         XCTAssertEqual(converter.candidates(for: "いっかしょ", limit: 8, systemCandidateMode: .surface), ["1か所"])
         XCTAssertEqual(converter.candidates(for: "すうかげつ", limit: 8, systemCandidateMode: .surface), ["数か月"])
-        XCTAssertEqual(converter.candidates(for: "かこく", limit: 3, systemCandidateMode: .surface).first, "か国")
+        // 数字の後ろでない かこく は 過酷 が先頭、か国 はその後ろ(3435、ユーザ指定)
+        let kakokuAlone = converter.candidates(for: "かこく", limit: 3, systemCandidateMode: .surface)
+        XCTAssertEqual(kakokuAlone.first, "過酷", "\(kakokuAlone)")
+        XCTAssertTrue(kakokuAlone.contains("か国"), "\(kakokuAlone)")
         XCTAssertFalse(converter.candidates(for: "かこく", limit: 8, systemCandidateMode: .surface).contains("カ国"))
         XCTAssertEqual(converter.multiClauseCandidates(for: "すうかこくたいおう", systemCandidateMode: .surface), ["数か国対応"])
         // 地名は触らない
@@ -21062,6 +21066,27 @@ extension KanaKanjiConverterRegressionTests {
         try loadDeviceAddedVocabulary()
         let list = converter.candidates(for: "しゅどう", limit: 9, systemCandidateMode: .surface)
         XCTAssertEqual(list, ["手動", "主導", "主働", "首藤", "主動", "朱銅", "主胴", "衆道", "酒道"], "\(list)")
+    }
+
+    // 3435: 数字・何・数の後ろでない かじょう は 過剰 が先頭、箇条書き は表記ゆれに展開しない。数字の後ろは か条 が先頭
+    func testKaCounterWithoutPrefixYieldsToCommonWord() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        converter.setKaCounterVariantPreference(.conservative)
+        defer { converter.setKaCounterVariantPreference(.default) }
+        let kajou = converter.candidates(for: "かじょう", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(kajou.first, "過剰", "\(kajou)")
+        XCTAssertEqual(Array(kajou.dropFirst().prefix(4)), ["か条", "箇条", "ヶ条", "カ条"], "\(kajou)")
+        let kajougaki = converter.candidates(for: "かじょうがき", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(kajougaki.first, "箇条書き", "\(kajougaki)")
+        XCTAssertFalse(kajougaki.contains("か条書き"), "\(kajougaki)")
+        // 確定済みの数字の後ろ(表示層と同じ流れ)
+        let afterDigit = converter.applyKaCounterVariantPreference(
+            reading: "かじょう",
+            to: KanaKanjiConverter.digitContextCounterBoostedCandidates(kajou, reading: "かじょう", precedingCharacter: "3"),
+            precedingCharacter: "3"
+        )
+        XCTAssertEqual(afterDigit.first, "か条", "\(afterDigit)")
     }
 
     // 3381: べにしょうが は 紅しょうが / 紅生姜 の順(辞書に 1 語で無く 紅+省+が が先頭だった)
