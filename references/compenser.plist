@@ -322,9 +322,9 @@
 	        <dict><key>phrase</key><string>cannelé</string><key>shortcut</key><string>かぬれ</string><key>pos</key><string>名詞</string></dict>
 	        <dict><key>phrase</key><string>カヌレ・ド・ボルドー</string><key>shortcut</key><string>かぬれどぼるどー</string><key>pos</key><string>名詞</string></dict>
 	        <dict><key>phrase</key><string>cannelé de Bordeaux</string><key>shortcut</key><string>かぬれどぼるどー</string><key>pos</key><string>名詞</string></dict>
-	        <dict><key>phrase</key><string>マンタロー</string><key>shortcut</key><string>まんたろー</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>マンタ・ロー</string><key>shortcut</key><string>まんたろー</string><key>pos</key><string>名詞</string></dict>
 	        <dict><key>phrase</key><string>menthe à l&#x27;eau</string><key>shortcut</key><string>まんたろー</string><key>pos</key><string>名詞</string></dict>
-	        <dict><key>phrase</key><string>ジュドランジュ</string><key>shortcut</key><string>じゅどらんじゅ</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>ジュ・ド・ランジュ</string><key>shortcut</key><string>じゅどらんじゅ</string><key>pos</key><string>名詞</string></dict>
 	        <dict><key>phrase</key><string>Jus d&#x27;Orange</string><key>shortcut</key><string>じゅどらんじゅ</string><key>pos</key><string>名詞</string></dict>
 	<!-- バター(AOP バターの産地と銘柄。カタカナと原語を同じ読みで。ユーザ提供の資料 2911) -->
 	<!-- □ A.O.P. (原産地呼称) -->

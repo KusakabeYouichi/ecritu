@@ -20849,8 +20849,8 @@ extension KanaKanjiConverterRegressionTests {
             ("ぴえーるえるめ", "ピエール・エルメ", "Pierre Hermé"),
             ("かぬれ", "カヌレ", "cannelé"),
             ("かぬれどぼるどー", "カヌレ・ド・ボルドー", "cannelé de Bordeaux"),
-            ("まんたろー", "マンタロー", "menthe à l'eau"),
-            ("じゅどらんじゅ", "ジュドランジュ", "Jus d'Orange")
+            ("まんたろー", "マンタ・ロー", "menthe à l'eau"),
+            ("じゅどらんじゅ", "ジュ・ド・ランジュ", "Jus d'Orange")
         ]
         for (reading, katakana, original) in expected {
             let list = converter.candidates(for: reading, limit: 6, systemCandidateMode: .surface)
