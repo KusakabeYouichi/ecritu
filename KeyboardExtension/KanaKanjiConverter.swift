@@ -1005,7 +1005,9 @@ final class KanaKanjiConverter {
         guard let preference = withStateLock({ kakikaePreference }) else {
             return
         }
-        let exempt = context.userCandidateSet.union(context.learnedCandidates)
+        // 対象外は利用者が自分で入れた語(追加語彙=ショートカット、学習語彙)だけ。初期投入の misc/compenser
+        // (交叉点/氷酢酸 等の変換対策語)は X.9 に従わせる(ユーザ指定 3427)
+        let exempt = Set(context.ajoutVocabulary[context.reading] ?? []).union(context.learnedCandidates)
         let original = scores
         func occurrence(in candidate: String, matchingBefore: Bool) -> (before: String, after: String)? {
             let index = matchingBefore ? KakikaeTable.switchablePairsByBeforeHead : KakikaeTable.switchablePairsByAfterHead

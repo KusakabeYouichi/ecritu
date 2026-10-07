@@ -74,6 +74,8 @@ final class KanaKanjiStore {
     // 漢字1文字ピッカーの索引(mmap)。テスト用に読み込み元を差し替えられるようにする。
     var cachedKanjiRadicalIndex: KanjiRadicalFileIndex?
     var kanjiRadicalIndexDirectoryURLOverride: URL?
+    // テスト用: bundle 未同梱の環境(unit test)で初期投入の語彙(sacoche+misc)を直接渡す(3427)
+    var initialAjoutVocabularyOverride: [String: [String]]?
     private var cachedSystemCandidateSources: [String: [String: Set<String>]]?
     private var cachedInflectionDictionary: [String: [String: String]]?
     // 読み別の inflection_classes キャッシュ(連文節の辞書形述語判定用)
@@ -1198,6 +1200,9 @@ final class KanaKanjiStore {
         var combined = loadBundled(KanaKanjiStorageKeys.initialAjoutVocabularyResourceName)
         for (reading, candidates) in loadBundled(KanaKanjiStorageKeys.initialMiscDictionaryResourceName) {
             combined[reading, default: []].append(contentsOf: candidates)
+        }
+        if let override = initialAjoutVocabularyOverride {
+            combined = override
         }
 
         let normalized = normalizeDictionary(combined)

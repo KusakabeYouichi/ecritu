@@ -21018,6 +21018,34 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3427: 初期投入の misc の語(交叉点/氷醋酸)も X.9 に従う。実機と同じく misc は初期投入(バンドル)から読み、
+    // 手動の追加語彙には入れない(手動の追加語彙は対象外)
+    func testKakikaeAppliesToInitialMiscVocabulary() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeMisc: false)
+        let store = KanaKanjiStore(appGroupID: defaultsSuiteName)
+        let miscURL = URL(fileURLWithPath: "\(ecrituRepositoryRoot)/KeyboardExtension/InitialMiscVocabMigration.json")
+        store.initialAjoutVocabularyOverride = try JSONDecoder().decode([String: [String]].self, from: Data(contentsOf: miscURL))
+        let converter = KanaKanjiConverter(store: store)
+        func single(_ reading: String) -> [String] {
+            converter.candidates(for: reading, limit: 12, systemCandidateMode: .surface)
+        }
+        converter.setKakikaePreference(.afterOnly)
+        var list = single("こうさてん")
+        XCTAssertFalse(list.contains("交叉点"), "\(list)")
+        XCTAssertTrue(list.contains("交差点"), "\(list)")
+        list = single("ひょうさくさん")
+        XCTAssertEqual(list.first, "氷酢酸", "\(list)")
+        XCTAssertFalse(list.contains("氷醋酸"), "\(list)")
+        converter.setKakikaePreference(.beforeOnly)
+        list = single("こうさてん")
+        XCTAssertTrue(list.contains("交叉点"), "\(list)")
+        XCTAssertFalse(list.contains("交差点"), "\(list)")
+        list = single("ひょうさくさん")
+        XCTAssertEqual(list.first, "氷醋酸", "\(list)")
+        XCTAssertFalse(list.contains("氷酢酸"), "\(list)")
+    }
+
     // 3381: べにしょうが は 紅しょうが / 紅生姜 の順(辞書に 1 語で無く 紅+省+が が先頭だった)
     func testBenishougaRegistered() throws {
         try prepareRealLMDictionary()
