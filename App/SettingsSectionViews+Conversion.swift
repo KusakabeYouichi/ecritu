@@ -384,42 +384,99 @@ struct KanaGakiSettingsSection: View {
     }
 }
 
-// 同音の漢字による書きかえ(3422)。例は KakikaeTable(references/kakikae.plist から生成)の先頭から並べる
+// 常用漢字による書きかえ(3422。見出しは 3429 で変更)。選択肢はラジオボタン式で全部見せ、前だけ/後だけ には
+// 出る語を同じ順に並べて対応が分かるようにする(ユーザ指定 3429)
 struct KakikaeSettingsSection: View {
     @Binding var rawValue: String
 
-    static let exampleLimit = 8
+    // 例に並べる書きかえ前の語(よく見る語を選んだ。表の先頭からだと 愛慾/安佚 のような見慣れない語になる)。
+    // 表に無い語は落とす
+    static let exampleBefores = [
+        "醗酵", "廻転", "衣裳", "暗誦", "編輯", "叡智", "蒸溜", "交叉", "奇蹟", "註釈", "根柢", "洗滌", "刺戟", "綜合", "抒情",
+        "障碍", "稀少", "史蹟", "防禦", "颱風", "煽情", "弘報", "熔接", "蒐集", "古稀", "下剋上", "掩護", "恩誼", "遺蹟"
+    ].filter { KakikaeTable.afterByBefore[$0] != nil }
 
-    static let examples: String = {
-        let shown = KakikaeTable.switchablePairs.prefix(exampleLimit).map { "\($0.before)→\($0.after)" }
-        return shown.joined(separator: "、") + " など"
-    }()
+    static var beforeExamples: String {
+        exampleBefores.joined(separator: "、") + " など"
+    }
+
+    static var afterExamples: String {
+        exampleBefores.compactMap { KakikaeTable.afterByBefore[$0] }.joined(separator: "、") + " など"
+    }
 
     private var preference: KakikaePreference {
         KakikaePreference(rawValue: rawValue) ?? .strategicDefault
     }
 
+    private func subtitle(for option: KakikaePreference) -> String {
+        switch option {
+        case .beforeOnly: return Self.beforeExamples
+        case .afterOnly: return Self.afterExamples
+        case .bothBeforeFirst: return "両方を出し、書きかえ前を先に(醗酵 → 発酵)"
+        case .bothAfterFirst: return "両方を出し、書きかえ後を先に(発酵 → 醗酵)"
+        }
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("X.9 同音の漢字による書きかえ")
+            Text("X.9 常用漢字による書きかえ")
                 .font(.headline)
 
-            Text("(\(Self.examples))")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
-
-            Picker("同音の漢字による書きかえ", selection: Binding(
-                get: { preference },
-                set: { rawValue = $0.rawValue }
-            )) {
+            VStack(spacing: 8) {
                 ForEach(KakikaePreference.allCases) { option in
-                    Text(option.title).tag(option)
+                    let isSelected = preference == option
+
+                    Button {
+                        rawValue = option.rawValue
+                    } label: {
+                        HStack(alignment: .top, spacing: 9) {
+                            VStack(alignment: .leading, spacing: 3) {
+                                Text(option.title)
+                                    .font(.subheadline.weight(.semibold))
+                                    .foregroundStyle(.primary)
+                                    .fixedSize(horizontal: false, vertical: true)
+
+                                Text(subtitle(for: option))
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+
+                            Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                                .font(.system(size: 16, weight: .semibold))
+                                .foregroundStyle(
+                                    isSelected
+                                        ? Color.accentColor
+                                        : AppTheme.subduedIcon
+                                )
+                        }
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 9)
+                        .background(
+                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                .fill(
+                                    isSelected
+                                        ? AppTheme.selectedControlBackground
+                                        : AppTheme.controlBackground
+                                )
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                .stroke(
+                                    isSelected
+                                        ? AppTheme.emphasisBorder
+                                        : AppTheme.subtleBorder,
+                                    lineWidth: isSelected ? 1.2 : 1
+                                )
+                        )
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(option.title)
                 }
             }
-            .pickerStyle(.menu)
 
-            Text("表外字を同じ音の常用漢字に置き換えた書き方(1956 年 国語審議会報告『同音の漢字による書きかえ』の \(KakikaeTable.switchablePairs.count) 語)の扱いを選びます。『醗酵前』『蒸溜所』のような、その語を含む語にも効きます。1 字単位の書きかえ(廻→回、智→知 など)は人名・地名を巻き込むので対象外です。報告の後に常用漢字に加わった字の組(臆測⇄憶測、肝腎⇄肝心、研磨⇄研摩 など)は、どれを選んでも両方を出します。追加語彙に登録した語と、学習した語は対象外です。初期設定は 書きかえ前だけ で、保守的初期設定では 両方(後を先に)、現代的初期設定では 書きかえ後だけ です。この設定ができる前から使っている端末は、今までの候補に近い 両方(後を先に) にしてあります。")
+            Text("表外字を同じ音の常用漢字に置き換えた書き方(1956 年 国語審議会報告『同音の漢字による書きかえ』の \(KakikaeTable.switchablePairs.count) 語)の扱いを選びます。『醗酵前』『蒸溜所』のような、その語を含む語にも効きます。1 字単位の書きかえ(廻→回、智→知 など)は人名・地名を巻き込むので対象外です。報告の後に常用漢字に加わった字の組(臆測⇄憶測、肝腎⇄肝心、研磨⇄研摩 など)は、どれを選んでも両方を出します。追加語彙に登録した語と、学習した語は対象外です。初期設定は 書きかえ前だけ で、保守的初期設定では 両方(後を先に)、現代的初期設定では 書きかえ後だけ です。この設定ができる前から使っている端末は、以前から書きかえ前を先頭にしていた語(醗酵・日蝕・棲息)を変えないよう 両方(前を先に) にしてあります。")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
