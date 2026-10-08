@@ -959,7 +959,9 @@ extension KeyboardViewController {
             sourceTextForFallbackReplacement: sourceText
         )
 
-        if learn, allowsLearningInCurrentField {
+        // 日付の候補(あさって→10月10日 等)は日ごとに変わるので学習しない(3445)
+        if learn, allowsLearningInCurrentField,
+            !RelativeDateCandidates.isGeneratedCandidate(committedText, reading: sourceReading) {
             kanaKanjiConverter.learn(
                 reading: sourceReading,
                 candidate: committedText,
@@ -1001,7 +1003,8 @@ extension KeyboardViewController {
             sourceTextForFallbackReplacement: conversion.sourceText
         )
 
-        if learn, allowsLearningInCurrentField {
+        if learn, allowsLearningInCurrentField,
+            !RelativeDateCandidates.isGeneratedCandidate(committedText, reading: conversion.reading) {
             kanaKanjiConverter.learn(
                 reading: conversion.reading,
                 candidate: committedText

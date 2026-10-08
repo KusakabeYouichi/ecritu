@@ -169,4 +169,50 @@ extension KeyboardCandidateMergingTests {
         )
         XCTAssertEqual(SupplementaryCandidateMerger.demotingPresentationTailSeed(input, reading: "ほんとだ"), input)
     }
+
+    // あさって 等の相対の日付語を実際の日付へ(カレンダーの日付書式に合わせる。3445)
+    private func relativeDateTestNow() -> Date {
+        Calendar(identifier: .gregorian).date(from: DateComponents(year: 2026, month: 10, day: 8, hour: 12))!
+    }
+
+    func testRelativeDateCandidatesFollowDateFormatStyle() {
+        let now = relativeDateTestNow()
+        XCTAssertEqual(
+            RelativeDateCandidates.candidates(for: "あさって", style: .japanese, now: now),
+            ["10月10日", "10月10日(土)", "10月10日土曜日",
+             "2026年10月10日", "2026年10月10日 (土)", "2026年10月10日 土曜日", "土曜日"]
+        )
+        XCTAssertEqual(
+            RelativeDateCandidates.candidates(for: "きのう", style: .american, now: now).first,
+            "10/7/2026"
+        )
+        XCTAssertEqual(
+            RelativeDateCandidates.candidates(for: "さらいげつ", style: .japanese, now: now),
+            ["12月", "2026年12月"]
+        )
+        XCTAssertEqual(
+            RelativeDateCandidates.candidates(for: "らいげつ", style: .french, now: now),
+            ["novembre", "novembre 2026", "11/2026"]
+        )
+        XCTAssertEqual(
+            RelativeDateCandidates.candidates(for: "らいねん", style: .japanese, now: now),
+            ["2027年"]
+        )
+        XCTAssertTrue(RelativeDateCandidates.candidates(for: "あさっての", style: .japanese, now: now).isEmpty)
+    }
+
+    func testRelativeDateCandidatesInsertAfterTwoWordsAndAreNotLearned() {
+        let now = relativeDateTestNow()
+        let inserted = RelativeDateCandidates.inserting(
+            into: ["明後日", "あさって", "朝って", "土曜日"],
+            reading: "あさって",
+            style: .japanese,
+            now: now
+        )
+        XCTAssertEqual(Array(inserted.prefix(3)), ["明後日", "あさって", "10月10日"])
+        XCTAssertEqual(inserted.last, "朝って")
+        XCTAssertEqual(inserted.filter { $0 == "土曜日" }.count, 1)
+        XCTAssertTrue(RelativeDateCandidates.isGeneratedCandidate("10/10/2026", reading: "あさって", now: now))
+        XCTAssertFalse(RelativeDateCandidates.isGeneratedCandidate("明後日", reading: "あさって", now: now))
+    }
 }

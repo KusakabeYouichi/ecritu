@@ -444,9 +444,16 @@ extension KeyboardViewController {
         // 温度の度記号を設定の字形へ(内部正規形 °C/°F → ℃/℉ 等。同じになった候補は畳む。2773)
         let styled = degreeSymbolStyle.styled(interjectionOrdered)
 
+        // あさって→10月10日(土) 等の実際の日付(カレンダーの日付書式に合わせる。3445)
+        let dated = RelativeDateCandidates.inserting(
+            into: styled,
+            reading: cacheKey.reading,
+            style: currentDateFormatStyle
+        )
+
         let presentation = CandidatePresentation(
             composingText: cacheKey.composingRawText,
-            candidates: styled,
+            candidates: dated,
             selectedIndex: nil
         )
 
@@ -507,17 +514,31 @@ extension KeyboardViewController {
         }
         let supplementaryCandidates = supplementaryLexiconCandidates(for: reading)
 
+        let merged: [String]
         if supplementaryCandidates.isEmpty {
-            return Array(converterCandidates.prefix(limit))
+            merged = Array(converterCandidates.prefix(limit))
+        } else {
+            merged = SupplementaryCandidateMerger.mergeSupplementaryAndConverterCandidates(
+                reading: reading,
+                supplementaryCandidates: supplementaryCandidates,
+                converterCandidates: converterCandidates,
+                contactCandidates: contactCandidatesForMergeWindow(reading: reading),
+                limit: limit
+            )
         }
 
-        return SupplementaryCandidateMerger.mergeSupplementaryAndConverterCandidates(
-            reading: reading,
-            supplementaryCandidates: supplementaryCandidates,
-            converterCandidates: converterCandidates,
-            contactCandidates: contactCandidatesForMergeWindow(reading: reading),
-            limit: limit
+        // 表示経路(applyAsyncCandidateGenerationResult)と同じ位置に日付を入れる(3445)
+        return RelativeDateCandidates.inserting(
+            into: merged,
+            reading: KanaTextNormalizer.normalizedReading(reading),
+            style: currentDateFormatStyle
         )
+    }
+
+    // コンテナーの「カレンダー > 日付書式」の方式。相対の日付語の候補に使う(3445)
+    var currentDateFormatStyle: DateFormatStyle {
+        let raw = sharedDefaults?.string(forKey: SharedDefaultsKeys.dateFormatStyle) ?? ""
+        return DateFormatStyle(rawValue: raw) ?? .japanese
     }
 
     func candidatesForPresentation(
