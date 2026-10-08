@@ -2964,7 +2964,8 @@ extension KanaKanjiConverter {
                             cost -= Self.multiClauseDigitContextCounterBonus
                         }
                         // 列挙の といった(定数コメント参照。2878)。文頭は直前が述語になり得ないので無条件
-                        if Self.isEnumerationToIttaKanaNode(surface: node.surface, reading: node.reading) {
+                        if Self.isEnumerationToIttaKanaNode(surface: node.surface, reading: node.reading),
+                            !Self.isToIttaFollowedByPredicateTail(chars: chars, from: node.end, n: n) {
                             cost = min(cost, Self.multiClauseEnumerationToIttaKanaCost)
                         }
                         // 意志形+と+思う(定数コメント参照。2973)。文頭がこの形の典型(いこうと思ったら)
@@ -3231,6 +3232,10 @@ extension KanaKanjiConverter {
                                     || Self.multiClauseQuotativeAdverbReadingsID.contains(prevPrev.readingID) {
                                     cost -= Self.multiClauseQuotativeIuAfterPredicateBonus
                                 }
+                            } else if prevNode.readingID == SID.と, prevNode.start == 0 {
+                                // 文頭の と(前の文を確定してから といったのに と続けた形)も引用。と の前は確定済みの
+                                // 述語と見なす(と言ったのに。ユーザ指定 3459)。は(はいった=入った)は対象外
+                                cost -= Self.multiClauseQuotativeIuAfterPredicateBonus
                             }
                         }
                         // 人+と の直後の いった/いって は同行の 行った(友達と行った。2883、ユーザ指定)。
