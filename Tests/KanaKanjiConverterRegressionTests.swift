@@ -21124,6 +21124,20 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3460: にる は 似る 先頭(にてるね→似てるね)。を の直後は 煮る(野菜を煮て/魚を煮た)
+    func testNiruResembleFirst() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.candidates(for: "にてるね", limit: 6, systemCandidateMode: .surface).first, "似てるね")
+        for (reading, expected) in [
+            ("にてるね", "似てるね"), ("かたちがにてる", "形が似てる"), ("ははににてる", "母に似てる"),
+            ("やさいをにて", "野菜を煮て"), ("さかなをにた", "魚を煮た"), ("にくをにている", "肉を煮ている")
+        ] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertTrue(multi.isEmpty ? reading == "" : multi.first == expected, "\(reading) multi=\(multi.prefix(4))")
+        }
+    }
+
     // 3456: こんねん は 今年、みょうねん は 明年 が先頭(3457: さくじつ は 昨日)
     func testKonnenMyounenOrder() throws {
         try prepareRealLMDictionary()
