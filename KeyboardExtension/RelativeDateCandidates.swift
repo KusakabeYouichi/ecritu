@@ -48,7 +48,8 @@ enum RelativeDateCandidates {
         "こんねん": Offset(unit: .year, value: 0),
         "らいねん": Offset(unit: .year, value: 1),
         "みょうねん": Offset(unit: .year, value: 1),
-        "さらいねん": Offset(unit: .year, value: 2)
+        "さらいねん": Offset(unit: .year, value: 2),
+        "らいらいねん": Offset(unit: .year, value: 2)
     ]
 
     // 月・年はドラムに書式が無いので、方式ごとにここで持つ(トークンは DateFormatCatalog と同じ)。

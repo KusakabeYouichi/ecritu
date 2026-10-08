@@ -21100,10 +21100,15 @@ extension KanaKanjiConverterRegressionTests {
     func testRairaigetsuOrder() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
-        let list = converter.candidates(for: "らいらいげつ", limit: 6, systemCandidateMode: .normalise)
-        XCTAssertEqual(Array(list.prefix(2)), ["来来月", "来々月"], "\(list)")
-        let multi = converter.multiClauseCandidates(for: "らいらいげつ", systemCandidateMode: .normalise)
-        XCTAssertTrue(multi.isEmpty || multi.first == "来来月", "multi=\(multi.prefix(4))")
+        // 3458: らいらいねん/らいらいしゅう も同型
+        for (reading, expected) in [
+            ("らいらいげつ", ["来来月", "来々月"]), ("らいらいねん", ["来来年", "来々年"]), ("らいらいしゅう", ["来来週", "来々週"])
+        ] {
+            let list = converter.candidates(for: reading, limit: 6, systemCandidateMode: .normalise)
+            XCTAssertEqual(Array(list.prefix(2)), expected, "\(list)")
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .normalise)
+            XCTAssertTrue(multi.isEmpty || multi.first == expected[0], "multi=\(multi.prefix(4))")
+        }
     }
 
     // 3456: こんねん は 今年、みょうねん は 明年 が先頭(3457: さくじつ は 昨日)
