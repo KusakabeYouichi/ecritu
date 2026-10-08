@@ -493,11 +493,14 @@ extension KeyboardViewController {
         }
         let beforeMB = currentFootprintMB()
         let beforeSnapshot = MemoryForensics.snapshot()
+        let layersBefore = retainedLayerSummary()
         host.willMove(toParent: nil)
         host.view.removeFromSuperview()
         host.removeFromParent()
         stripHostingViewForRelease(host)
         hostingController = nil
+        releaseBackgroundGradientLayerForRelease()
+        logRetainedLayersAfterRelease(reason: "zombie-\(reason)", layersBefore: layersBefore)
         lastRenderConfiguration = nil
         // 解放したビュー階層のページをOSへ返す(2646)。実測でビュー解放だけでは
         // footprint が動かなかった(57.7→57.7)— malloc が抱えたままだった
@@ -512,6 +515,24 @@ extension KeyboardViewController {
             line: #line,
             function: #function
         )
+    }
+
+    // ホストと背景の層を外したときの記録(調査用 3462)。外す前の層の要約と、外した直後・1.5 秒後の cg_data を並べる
+    // (描画物の返却は Core Animation の次のコミットで起きるので、直後だけでは減ったか分からない)。
+    // deinit からは呼ばれない(weak self を作ってよい経路)
+    func logRetainedLayersAfterRelease(reason: String, layersBefore: String) {
+        let cgNow = MemoryForensics.cgDataRegionSummary()
+        let layersAfter = retainedLayerSummary()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
+            guard let self else {
+                return
+            }
+            self.appendKeyboardDiagnosticsLog(
+                "層の後始末 reason=\(reason) 前{\(layersBefore)} 後{\(layersAfter)} 直後 \(cgNow) 1.5秒後 \(MemoryForensics.cgDataRegionSummary())"
+                    + " alive=\(Self.liveControllerCensus.allObjects.count)",
+                critical: true
+            )
+        }
     }
 
     // honorsSlimmingToggle: 通常の非表示時(viewWillDisappear/viewDidDisappear)だけ true。
@@ -585,11 +606,14 @@ extension KeyboardViewController {
 
         if releaseHostingView,
             let host = hostingController {
+            let layersBefore = retainedLayerSummary()
             host.willMove(toParent: nil)
             host.view.removeFromSuperview()
             host.removeFromParent()
             stripHostingViewForRelease(host)
             hostingController = nil
+            releaseBackgroundGradientLayerForRelease()
+            logRetainedLayersAfterRelease(reason: reason, layersBefore: layersBefore)
         }
 
         lastRenderConfiguration = nil
