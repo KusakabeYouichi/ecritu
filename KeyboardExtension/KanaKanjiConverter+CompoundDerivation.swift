@@ -732,6 +732,15 @@ extension KanaKanjiConverter {
             // 本来の 号店 を押しのけていた。合成は語が無いときの受け皿なので、人手宣言のある
             // 読みでは出番がない
             let readingHasSeedWord = KanaKanjiSeedDictionary.seed[reading] != nil
+            // 末尾に助詞 1 字が付いた形(いがい+に)も同じ。ただし助数詞の読みが seed 語の途中で切るとき
+            // (い|がいに → 位がいに)だけ止める。助数詞の読みが seed 語そのもの(かい+に → 回に)は残す(ユーザ報告 3455)
+            let seedStemBeforeParticle: String? = {
+                guard reading.count >= 3, let last = reading.last, "にでをがはもとへのや".contains(last) else {
+                    return nil
+                }
+                let stem = String(reading.dropLast())
+                return KanaKanjiSeedDictionary.seed[stem] != nil ? stem : nil
+            }()
             // 序数(助数詞読み+め: かいめ/まいめ 等)は applyMeSuffixPreferences が 回目/回め を設定順で先頭に
             // 置いている。ここで短い助数詞の前方一致(か+いめ→課いめ)を合成して前置すると序数を押し下げるので
             // 合成しない(2814)
@@ -741,7 +750,8 @@ extension KanaKanjiConverter {
                 .union(digitContextAdditionalCounterSurfacesByReading.keys)
                 .sorted(by: { $0.count != $1.count ? $0.count > $1.count : $0 < $1 })
             where !readingHasSeedWord && !isOrdinalMeReading
-                && reading.count > counterReading.count && reading.hasPrefix(counterReading) {
+                && reading.count > counterReading.count && reading.hasPrefix(counterReading)
+                && !(seedStemBeforeParticle.map { counterReading.count < $0.count } ?? false) {
                 let surfaces = Self.digitBoostCounterSurfaces(for: counterReading) ?? []
                 let tail = String(reading.dropFirst(counterReading.count))
                 // 末尾の長さでは制限しない(ユーザ指定 2700)。数字につながる1文節め(助数詞読み)が

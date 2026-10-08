@@ -21435,6 +21435,28 @@ extension KanaKanjiConverterRegressionTests {
         converter.setKanaGakiSuppressedCategories(Set(KanaGakiCategory.allCases))
     }
 
+    // 3455: 14 確定→いがいに は 以外に が先頭(助数詞 位 + がいに の合成を出さない)。かいに→回に は残す
+    func testDigitContextCounterDoesNotSplitSeedWordBeforeParticle() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let tail: (String) -> String? = { [converter] in converter.counterTailConversion($0) }
+        let igaini = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+            converter.candidates(for: "いがいに", limit: 12, systemCandidateMode: .surface),
+            reading: "いがいに",
+            precedingCharacter: "4",
+            tailConversion: tail
+        )
+        XCTAssertEqual(igaini.first, "以外に", "\(igaini)")
+        XCTAssertFalse(igaini.contains(where: { $0.hasPrefix("位") }), "\(igaini)")
+        let kaini = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+            converter.candidates(for: "かいに", limit: 12, systemCandidateMode: .surface),
+            reading: "かいに",
+            precedingCharacter: "1",
+            tailConversion: tail
+        )
+        XCTAssertEqual(kaini.first, "回に", "\(kaini)")
+    }
+
     // 3454: あるいは/もしくは で 或いは/若しくは が出る(Sudachi は あるいわ/もしくわ 読みのみ)。X.8 の接続詞に従う
     func testAruiwaMoshikuwaSupplied() throws {
         try prepareRealLMDictionary()
