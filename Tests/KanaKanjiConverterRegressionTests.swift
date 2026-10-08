@@ -21096,6 +21096,16 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(list.first, "先月", "\(list)")
     }
 
+    // 3451: らいらいげつ は 来来月 → 来々月(連文節は 雷来月 を組んでいた)
+    func testRairaigetsuOrder() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let list = converter.candidates(for: "らいらいげつ", limit: 6, systemCandidateMode: .normalise)
+        XCTAssertEqual(Array(list.prefix(2)), ["来来月", "来々月"], "\(list)")
+        let multi = converter.multiClauseCandidates(for: "らいらいげつ", systemCandidateMode: .normalise)
+        XCTAssertTrue(multi.isEmpty || multi.first == "来来月", "multi=\(multi.prefix(4))")
+    }
+
     // 3436: しゅどう は 手動 → 主導 → 主働 → 首藤 → 主動 → 朱銅 → 主胴 → 衆道 → 酒道
     func testShudouOrder() throws {
         try prepareRealLMDictionary()
