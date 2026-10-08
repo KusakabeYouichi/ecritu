@@ -487,7 +487,7 @@ struct HistoricalKanaCandidatesSettingsSection: View {
             Toggle("旧仮名遣いの候補を含める", isOn: $isEnabled)
                 .toggleStyle(.switch)
 
-            Text("『かえる→変へる』のような歴史的仮名遣い(ゐ/ゑ/ヰ/ヱ を含む表記)を変換結果に含めるかを切り替えます。初期設定はオフ(現代仮名遣いのみ)です。")
+            Text("『かえる→変へる』『なおさら→なほ更』のような歴史的仮名遣いの表記を変換結果に含めるかを切り替えます。人名と、都をどり のような固有名詞はオフでも出します。初期設定はオフ(現代仮名遣いのみ)です。")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }

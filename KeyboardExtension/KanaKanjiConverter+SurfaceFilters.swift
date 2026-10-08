@@ -719,6 +719,73 @@ extension KanaKanjiConverter {
     // 旧仮名遣い専用の仮名。ゐ/ゑ(ひらがな)・ヰ/ヱ(カタカナ)。設定「旧仮名遣いの候補を含める」で制御。
     static let historicalKanaScalars: Set<Character> = ["ゐ", "ゑ", "ヰ", "ヱ"]
 
+    // 歴史的仮名遣いの書き方 → 打った読み(現代仮名遣い)での仮名。なほ更(なおさら)/言ひ分/考へる/
+    // 自づと/一しよ(いっしょ)/矢つ張り 等。拗音・促音の大書き(や/ゆ/よ/つ)も旧表記として扱う(3452)
+    static let historicalKanaSpellingToModern: [Character: Character] = [
+        "は": "わ", "ひ": "い", "ふ": "う", "へ": "え", "ほ": "お", "を": "お",
+        "ゐ": "い", "ゑ": "え", "づ": "ず", "ぢ": "じ",
+        "つ": "っ", "や": "ゃ", "ゆ": "ゅ", "よ": "ょ"
+    ]
+
+    // 旧仮名の書き方だが固有名詞として現役のもの(人名は person_names で別に守る)
+    static let historicalKanaSpellingKeepSurfaces: Set<String> = [
+        "都をどり", "函館どつく", "函館どつく前"
+    ]
+
+    // 候補のひらがなが読みと食い違い、その食い違いが歴史的仮名遣いで説明できるとき true(3452)。
+    // 漢字・カタカナ等は読みの 1 文字以上に対応させ、ひらがなは読みの同じ位置の文字と突き合わせる。
+    // 素直に一致する対応があれば false(現代仮名遣い)。沖縄語の の→ぬ や 〜/ッ の崩し書きのように
+    // 旧仮名で説明できない食い違いも false(ここでは扱わない)。
+    static func isHistoricalKanaSpelling(_ candidate: String, reading: String) -> Bool {
+        let surface = Array(candidate)
+        guard surface.contains(where: { historicalKanaSpellingToModern[$0] != nil }) else {
+            return false
+        }
+        let readingCharacters = Array(reading)
+        func isHiragana(_ character: Character) -> Bool {
+            guard let scalar = character.unicodeScalars.first, character.unicodeScalars.count == 1 else {
+                return false
+            }
+            return (0x3041...0x3096).contains(scalar.value)
+        }
+        func aligns(allowHistorical: Bool) -> Bool {
+            // memo[i][j]: surface[i...] が reading[j...] に対応できるか(nil=未計算)
+            var memo = [[Bool?]](
+                repeating: [Bool?](repeating: nil, count: readingCharacters.count + 1),
+                count: surface.count + 1
+            )
+            func go(_ i: Int, _ j: Int) -> Bool {
+                if let known = memo[i][j] {
+                    return known
+                }
+                let result: Bool
+                if i == surface.count {
+                    result = j == readingCharacters.count
+                } else if isHiragana(surface[i]) {
+                    if j < readingCharacters.count,
+                        readingCharacters[j] == surface[i]
+                            || (allowHistorical && historicalKanaSpellingToModern[surface[i]] == readingCharacters[j]) {
+                        result = go(i + 1, j + 1)
+                    } else {
+                        result = false
+                    }
+                } else {
+                    var found = false
+                    var k = j + 1
+                    while !found, k <= readingCharacters.count {
+                        found = go(i + 1, k)
+                        k += 1
+                    }
+                    result = found
+                }
+                memo[i][j] = result
+                return result
+            }
+            return go(0, 0)
+        }
+        return !aligns(allowHistorical: false) && aligns(allowHistorical: true)
+    }
+
     // 旧字体・異体字 → 現代の標準字体。小分類ごとにコンテナー設定でオン/オフする(2991)。
     // 抑制は「同じ読みに標準字体版の候補が実在するとき」だけで、標準字体版が無い固有名詞
     // (和氣あず未/國場組/守禮門/魚香肉絲 等)はそのまま残る。人名(Sudachi の姓/名)は
@@ -844,6 +911,13 @@ extension KanaKanjiConverter {
             return !rest.contains(where: { Self.iterationMarkScalars.contains($0) })
         }
 
+        // 追加語彙・学習語彙に読みごと登録された旧仮名の書き方は残す(旧仮名の判定が出たときだけ見る)
+        func isUserHistoricalSpellingWord(_ candidate: String) -> Bool {
+            [store.ajoutVocabulary(), store.initialAjoutVocabulary(), store.learnedDictionary()].contains {
+                $0[reading]?.contains(candidate) ?? false
+            }
+        }
+
         return candidates.filter { candidate in
             // 旧仮名文字(ゐゑヰヱ)を含む表層(ぐらゐ/ゐる/ウヰスキー 等)は旧仮名遣い。
             if !historicalAllowed, candidate.contains(where: { Self.historicalKanaScalars.contains($0) }) {
@@ -856,6 +930,15 @@ extension KanaKanjiConverter {
             }
             // える動詞の へる 旧仮名活用(給へる/覚へる 等)。読みが える 終わりの時のみ(旧仮名側)。
             if !historicalAllowed, reading.hasSuffix("える"), candidate.count >= 2, candidate.hasSuffix("へる") {
+                return false
+            }
+            // 歴史的仮名遣いの書き方全般(なほ更/言ひ分/考へる/自づと 等。3452)。旧仮名で書きたいときは
+            // 旧仮名で打つ前提(ユーザ方針)。人名(志づ子/ゑみ子)と現役の固有名詞は残す
+            if !historicalAllowed,
+                !Self.historicalKanaSpellingKeepSurfaces.contains(candidate),
+                Self.isHistoricalKanaSpelling(candidate, reading: reading),
+                !isUserHistoricalSpellingWord(candidate),
+                store.personNameKinds(for: reading)[candidate] == nil {
                 return false
             }
             return true
