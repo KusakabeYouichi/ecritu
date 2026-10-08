@@ -38,6 +38,8 @@
 	<dict><key>phrase</key><string>宛ら</string><key>shortcut</key><string>さながら</string></dict>
 	<dict><key>phrase</key><string>頗る</string><key>shortcut</key><string>すこぶる</string></dict>
 	<dict><key>phrase</key><string>屡々</string><key>shortcut</key><string>しばしば</string></dict>
+	<dict><key>phrase</key><string>尚更</string><key>shortcut</key><string>なおさら</string></dict>	<!-- ユーザ指定 3453 -->
+	<dict><key>phrase</key><string>尚さら</string><key>shortcut</key><string>なおさら</string></dict>
 	<dict><key>phrase</key><string>偶々</string><key>shortcut</key><string>たまたま</string></dict>
 	<dict><key>phrase</key><string>稍</string><key>shortcut</key><string>やや</string></dict>
 	<dict><key>phrase</key><string>予て</string><key>shortcut</key><string>かねて</string></dict>

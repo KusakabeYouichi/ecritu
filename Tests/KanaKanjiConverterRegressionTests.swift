@@ -21419,6 +21419,54 @@ extension KanaKanjiConverterRegressionTests {
         converter.setKanaGakiSuppressedCategories(Set(KanaGakiCategory.allCases))
     }
 
+    // 3453: なおさら は かなで書く言葉(副詞)。抑制しなくても かな が先頭(なおさらだ も)
+    func testNaosaraKanaFirst() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for suppressed in [Set(KanaGakiCategory.allCases), []] {
+            converter.setKanaGakiSuppressedCategories(suppressed)
+            for reading in ["なおさら", "なおさらだ"] {
+                let list = converter.candidates(for: reading, limit: 6, systemCandidateMode: .surface)
+                XCTAssertEqual(list.first, reading, "\(suppressed.count) \(list)")
+                let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+                XCTAssertFalse(multi.first?.contains("尚更") ?? false, "multi=\(multi.prefix(4))")
+            }
+        }
+        converter.setKanaGakiSuppressedCategories(Set(KanaGakiCategory.allCases))
+    }
+
+    // 3452: 歴史的仮名遣いの書き方(なほ更/言ひ分/考へる/自づと)は X.3 がオフなら出さない。人名・固有名詞は残す
+    func testHistoricalKanaSpellingFiltered() {
+        typealias C = KanaKanjiConverter
+        XCTAssertTrue(C.isHistoricalKanaSpelling("なほ更", reading: "なおさら"))
+        XCTAssertTrue(C.isHistoricalKanaSpelling("なほ更だ", reading: "なおさらだ"))
+        XCTAssertTrue(C.isHistoricalKanaSpelling("云ひ分", reading: "いいぶん"))
+        XCTAssertTrue(C.isHistoricalKanaSpelling("考へる", reading: "かんがえる"))
+        XCTAssertTrue(C.isHistoricalKanaSpelling("自づと", reading: "おのずと"))
+        XCTAssertTrue(C.isHistoricalKanaSpelling("一しよ", reading: "いっしょ"))
+        // 現代仮名遣い・旧仮名で説明できない食い違いは対象外
+        XCTAssertFalse(C.isHistoricalKanaSpelling("尚更", reading: "なおさら"))
+        XCTAssertFalse(C.isHistoricalKanaSpelling("言わば", reading: "いわば"))
+        XCTAssertFalse(C.isHistoricalKanaSpelling("八重瀬の万歳", reading: "えーじぬまんざい"))
+        XCTAssertFalse(C.isHistoricalKanaSpelling("ひよこ", reading: "ひよこ"))
+        XCTAssertFalse(C.isHistoricalKanaSpelling("日はく", reading: "ひはく"))
+    }
+
+    func testHistoricalKanaSpellingFilteredInCandidates() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, old) in [("なおさら", "なほ更"), ("いいぶん", "云ひ分"), ("ゆうひ", "ゆふ日")] {
+            let list = converter.candidates(for: reading, limit: 20, systemCandidateMode: .surface)
+            XCTAssertFalse(list.contains(old), "\(reading) \(list)")
+        }
+        let multi = converter.multiClauseCandidates(for: "なおさらだ", systemCandidateMode: .surface)
+        XCTAssertFalse(multi.contains(where: { $0.contains("なほ") }), "multi=\(multi.prefix(4))")
+        // X.3 を入れれば出る
+        converter.setHistoricalKanaSurfaceAllowed(true)
+        XCTAssertTrue(converter.candidates(for: "なおさら", limit: 20, systemCandidateMode: .surface).contains("なほ更"))
+        converter.setHistoricalKanaSurfaceAllowed(false)
+    }
+
     func testAcceaRegistered() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
