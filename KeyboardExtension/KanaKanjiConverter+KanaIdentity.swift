@@ -111,11 +111,6 @@ extension KanaKanjiConverter {
         if Self.kanaHarvestDemotedReadings.contains(normalized) {
             return false
         }
-        // 漢字を先に出す動詞の語幹(しゃべる→喋る。ユーザ指定 3442)。LM は かな と漢字がほぼ同じ頻度(6831 対 6774)で
-        // かな正書の語幹と判定され、しゃべれるやつか の かな が表示層で先頭に戻っていた
-        if Self.kanaIdentityLeadingExcludedVerbStems.contains(where: { normalized.hasPrefix($0) }) {
-            return false
-        }
         // 比較の より(は/も)+まし(ないよりはましだ)はかなが正書。連文節はかな最良を返すが、根拠が無いと全かなエコー抑制で
         // 落ちて 増しだ/倍田 の変種だけが残る(ユーザ報告 2898)
         for phrase in ["よりはまし", "よりもまし", "よりまし"] where normalized.contains(phrase) {

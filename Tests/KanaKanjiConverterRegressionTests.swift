@@ -21125,8 +21125,10 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertFalse(multi.contains { $0.contains("喋べ") }, "multi=\(multi)")
         let single = converter.candidates(for: "しゃべる", limit: 8, systemCandidateMode: .surface)
         XCTAssertFalse(single.contains("喋べる"), "\(single)")
-        // 表示層でも かな を先頭に戻さない
-        XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "しゃべれるやつか"))
+        // 表示層は かな正書の根拠(keepKana)があり、かな が上位 3 位以内なら位置を保つ(2 位のまま)。
+        // 根拠を外すと かな は末尾へ回される(3 位以下になった。実機 3442)
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "しゃべれるやつか"))
+        XCTAssertEqual(multi.firstIndex(of: "しゃべれるやつか"), 1, "multi=\(multi.prefix(4))")
     }
 
     // 3381: べにしょうが は 紅しょうが / 紅生姜 の順(辞書に 1 語で無く 紅+省+が が先頭だった)
