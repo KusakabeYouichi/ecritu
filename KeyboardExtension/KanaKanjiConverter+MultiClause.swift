@@ -3329,6 +3329,11 @@ extension KanaKanjiConverter {
                             prevNode.readingID == SID.に || prevNode.readingID == SID.と {
                             cost -= Self.multiClauseResembleAfterParticleBonus
                         }
+                        // 逆に を の直後の にる 系は 煮る(野菜を煮て)。基底 seed を 似る 先頭にした(3460)ので対で持つ
+                        if node.surface.hasPrefix("煮"), node.reading.hasPrefix("に"),
+                            prevNode.isKanaIdentity, prevNode.readingID == SID.を {
+                            cost -= Self.multiClauseSimmerAfterWoBonus
+                        }
                         // 列挙の といった(定数コメント参照。2878)。直前が述語なら引用の と+言った なので触れない
                         // LM 未収録の稀語(遺句 等)は「述語でない prev」として抜け道になる(述語の
                         // 行く+と+言った より 遺句+といった が安くなる)ので、prev は LM 実在語
