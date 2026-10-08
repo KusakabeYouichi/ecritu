@@ -21138,6 +21138,14 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3461: かけた は 掛けた → 書けた → 描けた → 賭けた → 欠けた(かな は末尾)
+    func testKaketaOrder() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let list = converter.candidates(for: "かけた", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(5)), ["掛けた", "書けた", "描けた", "賭けた", "欠けた"], "\(list)")
+    }
+
     // 3456: こんねん は 今年、みょうねん は 明年 が先頭(3457: さくじつ は 昨日)
     func testKonnenMyounenOrder() throws {
         try prepareRealLMDictionary()
