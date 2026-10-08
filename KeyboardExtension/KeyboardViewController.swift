@@ -1469,6 +1469,57 @@ final class KeyboardViewController: UIInputViewController {
         hostView?.layer.contents = nil
     }
 
+    // 背景のグラデーション層を外す(3462)。ゾンビ・未表示の後始末でホストの中身を空にしても(3443)cg_data の 1.4MB が
+    // 個体の数だけ残ったため、もう一つの描画物であるこの層を疑って外す。再表示の setupKeyboardView →
+    // applyKeyboardBaseBackground が作り直す
+    func releaseBackgroundGradientLayerForRelease() {
+        guard Thread.isMainThread, let layer = backgroundGradientLayer else {
+            return
+        }
+        layer.removeFromSuperlayer()
+        layer.contents = nil
+        backgroundGradientLayer = nil
+    }
+
+    // 個体の画面に残っている層の要約(調査用 3462)。層の数・描画済みの中身(contents)を持つ層・グラデーション層を、
+    // 種類とピクセル寸法(KB)で並べる。cg_data の 1.4MB の持ち主を名前で突き止めるため
+    func retainedLayerSummary() -> String {
+        var layerCount = 0
+        var items: [String] = []
+        func visit(_ layer: CALayer, depth: Int) {
+            layerCount += 1
+            let scale = layer.contentsScale
+            let pixelWidth = Int(layer.bounds.width * scale)
+            let pixelHeight = Int(layer.bounds.height * scale)
+            if let contents = layer.contents {
+                let typeName: String
+                if CFGetTypeID(contents as CFTypeRef) == CGImage.typeID {
+                    let image = contents as! CGImage
+                    typeName = "CGImage\(image.width)x\(image.height)=\(image.bytesPerRow * image.height / 1024)KB"
+                } else {
+                    typeName = String(describing: type(of: contents))
+                }
+                items.append("\(type(of: layer))[\(pixelWidth)x\(pixelHeight)]:\(typeName)")
+            } else if layer is CAGradientLayer {
+                items.append("CAGradientLayer[\(pixelWidth)x\(pixelHeight)=\(pixelWidth * pixelHeight * 4 / 1024)KB相当]")
+            }
+            guard depth < 12 else {
+                return
+            }
+            for sublayer in layer.sublayers ?? [] {
+                visit(sublayer, depth: depth + 1)
+            }
+        }
+        if let root = viewIfLoaded?.layer {
+            visit(root, depth: 0)
+        }
+        if let hostLayer = hostingController?.view.layer, hostLayer.superlayer == nil {
+            visit(hostLayer, depth: 0)
+        }
+        let shown = items.prefix(8).joined(separator: " ")
+        return "層=\(layerCount) 中身あり=\(items.count) [\(shown)]"
+    }
+
     func stripViewShellForDisposal() {
         guard Thread.isMainThread else {
             return
