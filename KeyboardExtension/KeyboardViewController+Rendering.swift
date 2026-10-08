@@ -439,7 +439,7 @@ extension KeyboardViewController {
                 // 調査用ログ(記号面切替 2838): 引き金(changeDetail)を添える。原因判明後に外す
                 #if DEBUG
                 self.updateKeyboardDiagnosticsHeartbeat(
-                    event: "入力モード変更 \(self.keyboardInputModeName(previousMode)) -> \(self.keyboardInputModeName(mode)) 引き金=\(changeDetail)",
+                    event: "入力モード変更 \(self.keyboardInputModeName(previousMode)) -> \(self.keyboardInputModeName(mode)) 引き金=\(changeDetail) \(MemoryForensics.cgDataRegionSummary())",
                     appendLog: true
                 )
                 #else

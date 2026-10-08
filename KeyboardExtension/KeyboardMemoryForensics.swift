@@ -470,6 +470,43 @@ extension MemoryForensics {
         return "off"
         #endif
     }
+
+    // CoreGraphics のデータ領域(VM タグ 54 = cg_data)の量と、領域ごとの大きさ(KB、大きい順)。
+    // 正体の切り分け用(3441): どの操作で増えるかを面の切り替えごとに記録し、領域の大きさから画像の寸法を推す
+    static func cgDataRegionSummary() -> String {
+        #if DEBUG
+        var sizesKB: [Int] = []
+        var address: mach_vm_address_t = 0
+        var iterations = 0
+        while iterations < 8192 {
+            iterations += 1
+            var size: mach_vm_size_t = 0
+            var info = vm_region_submap_info_64()
+            var count = mach_msg_type_number_t(
+                MemoryLayout<vm_region_submap_info_64>.size / MemoryLayout<Int32>.size
+            )
+            var depth: natural_t = 0
+            let kern = withUnsafeMutablePointer(to: &info) { pointer in
+                pointer.withMemoryRebound(to: Int32.self, capacity: Int(count)) { rebound in
+                    ecritu_mach_vm_region_recurse(mach_task_self_, &address, &size, &depth, rebound, &count)
+                }
+            }
+            guard kern == KERN_SUCCESS else { break }
+            if info.is_submap == 0, info.user_tag == 54 {
+                let dirty = Int(info.pages_dirtied) + Int(info.pages_swapped_out)
+                if dirty > 0 {
+                    sizesKB.append(dirty * 16)
+                }
+            }
+            address += size
+        }
+        let totalMB = Double(sizesKB.reduce(0, +)) / 1024
+        let sizes = sizesKB.sorted(by: >).prefix(30).map(String.init).joined(separator: ",")
+        return "cg_data=\(String(format: "%.1f", totalMB))MB(\(sizesKB.count)r) KB[\(sizes)]"
+        #else
+        return "off"
+        #endif
+    }
 }
 
 // mach_vm_region_recurse も同様に直接束ねる(自タスクへの照会は entitlement 不要)。

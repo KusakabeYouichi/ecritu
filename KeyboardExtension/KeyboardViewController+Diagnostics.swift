@@ -608,7 +608,7 @@ extension KeyboardViewController {
                 CFAbsoluteTimeGetCurrent() - Self.lastHiddenAttributionLogAt >= 120 {
                 Self.lastHiddenAttributionLogAt = CFAbsoluteTimeGetCurrent()
                 appendKeyboardDiagnosticsLog(
-                    "MEMFORENSICS帰属@非表示 fp=\(String(format: "%.1f", fp)) \(MemoryForensics.loadSummary) \(MemoryForensics.vmRegionSummaryByTag())",
+                    "MEMFORENSICS帰属@非表示 fp=\(String(format: "%.1f", fp)) \(MemoryForensics.loadSummary) \(MemoryForensics.vmRegionSummaryByTag()) \(MemoryForensics.cgDataRegionSummary())",
                     critical: true
                 )
                 // 内訳(3208): used 28〜31MB のうち変換キャッシュは Mac の模擬で 7.5MB 止まりだった。
