@@ -215,4 +215,23 @@ extension KeyboardCandidateMergingTests {
         XCTAssertTrue(RelativeDateCandidates.isGeneratedCandidate("10/10/2026", reading: "あさって", now: now))
         XCTAssertFalse(RelativeDateCandidates.isGeneratedCandidate("明後日", reading: "あさって", now: now))
     }
+
+    // 前ゼロの書式(03月04日 / 04/03/2026)は日付の候補に出さない
+    func testRelativeDateCandidatesExcludeZeroPaddedTemplates() {
+        let now = Calendar(identifier: .gregorian).date(from: DateComponents(year: 2026, month: 3, day: 2, hour: 12))!
+        XCTAssertEqual(
+            RelativeDateCandidates.candidates(for: "あさって", style: .japanese, now: now),
+            ["3月4日", "3月4日(水)", "3月4日水曜日",
+             "2026年3月4日", "2026年3月4日 (水)", "2026年3月4日 水曜日", "水曜日"]
+        )
+        XCTAssertEqual(
+            RelativeDateCandidates.candidates(for: "あさって", style: .british, now: now).first,
+            "4/3/2026"
+        )
+        XCTAssertFalse(RelativeDateCandidates.candidates(for: "あさって", style: .french, now: now).contains("04/03/2026"))
+        XCTAssertEqual(
+            RelativeDateCandidates.candidates(for: "らいげつ", style: .american, now: now),
+            ["April", "April 2026", "4/2026"]
+        )
+    }
 }
