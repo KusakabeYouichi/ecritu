@@ -21098,6 +21098,22 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertGreaterThanOrEqual(list.firstIndex(of: "彌馬升") ?? 0, 7, "\(list)")
     }
 
+    // 3439: 数字の後の だんかい は 段階(段+回 の合成 段回 は誤字なので作らない)。辞書語が無い 2次試験 は従来どおり
+    func testDigitDankaiDoesNotSynthesizeDankai() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let tail: (String) -> String? = { [converter] tail in converter!.counterTailConversion(tail) }
+        let dankai = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+            converter.candidates(for: "だんかい", limit: 8, systemCandidateMode: .surface),
+            reading: "だんかい", precedingCharacter: "2", tailConversion: tail)
+        XCTAssertFalse(dankai.contains("段回"), "\(dankai)")
+        XCTAssertEqual(dankai.first, "段階", "\(dankai)")
+        let shiken = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+            converter.candidates(for: "じしけん", limit: 8, systemCandidateMode: .surface),
+            reading: "じしけん", precedingCharacter: "2", tailConversion: tail)
+        XCTAssertEqual(shiken.first, "次試験", "\(shiken)")
+    }
+
     // 3381: べにしょうが は 紅しょうが / 紅生姜 の順(辞書に 1 語で無く 紅+省+が が先頭だった)
     func testBenishougaRegistered() throws {
         try prepareRealLMDictionary()

@@ -775,7 +775,13 @@ extension KanaKanjiConverter {
                     let keepsLeadingParticle: (String) -> Bool = { converted in
                         !particleLedTail || converted.first == tail.first
                     }
-                    if !counterPromotableKanaTails.contains(tail),
+                    // 読み全体に 助数詞の字で始まる漢字の辞書語(だんかい→段階)があるときは、末尾だけを変換した
+                    // 合成(段+回=段回)を作らない。辞書語が正しい語で、合成は誤字になる(ユーザ報告 3439)
+                    let hasDictionaryCompoundWithSurface = candidates.contains {
+                        $0.count > surface.count && $0.hasPrefix(surface) && KanaKanjiConverter.isAllKanjiSurface($0)
+                    }
+                    if !hasDictionaryCompoundWithSurface,
+                        !counterPromotableKanaTails.contains(tail),
                         let convertedTail = tailConversion?(tail),
                         convertedTail != tail,
                         keepsLeadingParticle(convertedTail),
