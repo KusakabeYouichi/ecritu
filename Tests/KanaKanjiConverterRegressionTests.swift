@@ -21088,6 +21088,14 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "あさって"))
     }
 
+    // 3450: せんげつ は 先月 が 繊月 より前
+    func testSengetsuOrder() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let list = converter.candidates(for: "せんげつ", limit: 6, systemCandidateMode: .normalise)
+        XCTAssertEqual(list.first, "先月", "\(list)")
+    }
+
     // 3436: しゅどう は 手動 → 主導 → 主働 → 首藤 → 主動 → 朱銅 → 主胴 → 衆道 → 酒道
     func testShudouOrder() throws {
         try prepareRealLMDictionary()
