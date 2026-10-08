@@ -21089,6 +21089,15 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(afterDigit.first, "か条", "\(afterDigit)")
     }
 
+    // 3438: みましょう は 見ましょう が先頭、彌馬升(邪馬台国の官名)は最後
+    func testMimashouPutsAncientTitleLast() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let list = converter.candidates(for: "みましょう", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(list.first, "見ましょう", "\(list)")
+        XCTAssertGreaterThanOrEqual(list.firstIndex(of: "彌馬升") ?? 0, 7, "\(list)")
+    }
+
     // 3381: べにしょうが は 紅しょうが / 紅生姜 の順(辞書に 1 語で無く 紅+省+が が先頭だった)
     func testBenishougaRegistered() throws {
         try prepareRealLMDictionary()
