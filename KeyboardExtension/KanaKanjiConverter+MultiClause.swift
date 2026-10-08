@@ -1517,6 +1517,11 @@ extension KanaKanjiConverter {
                 }
             }
         }
+        // 人名でない辞書語が立つ区間(3440 の「人名が末尾の助詞を飲み込む」判定に使う。やつ が立つ区間)
+        var nonPersonDictWordSpanKeys = Set<String>()
+        for node in nodes where node.isDictWord && !node.isKanaIdentity && personNameKindByNodeKey[node.key] == nil {
+            nonPersonDictWordSpanKeys.insert(node.spanKey)
+        }
         // 人名減点の「割られた語」判定: LM が知る辞書語(満席)がまたぐ境界(まん|せきな の 2)。
         // 何|円札 は 何円 が LM 未収録なので対象外 → 何円札 は従来どおり(2845)
         var lmKnownWordCrossesBoundary = [Bool](repeating: false, count: n + 1)
@@ -3054,6 +3059,18 @@ extension KanaKanjiConverter {
                             lmKnownWordCrossesBoundary[node.start],
                             !(personNameKindByNodeKey[prevNode.key] == "姓" && nodeKind == "名") {
                             cost += Self.multiClauseHarvestedPersonNameAfterFragmentPenalty
+                        }
+                        // 述語の直後の人名が末尾の助詞を飲み込む形(しゃべれる+八束=やつ+か。定数コメント参照。3440)
+                        if personNameKindByNodeKey[nodeKeySV] != nil, !node.isCurated,
+                            node.end - node.start >= 3,
+                            let tail = node.reading.last,
+                            Self.multiClausePersonNameSwallowedParticleTails.contains(tail),
+                            prevNode.isInflectionDerived || prevNode.isDictionaryFormPredicate
+                                // かな表記の述語(しゃべれる)はかな識別ノードとして立つ。連体形の語尾で見る
+                                || (prevNode.isKanaIdentity && prevNode.reading.count >= 2
+                                    && (prevNode.reading.last.map { "るたいうくすつぬぶむぐ".contains($0) } ?? false)),
+                            nonPersonDictWordSpanKeys.contains(spanKeyByStart[node.start][node.end - 1]) {
+                            cost += Self.multiClausePersonNameSwallowingParticlePenalty
                         }
                         // 名詞直後の裸のかな「な」は形容動詞語幹にしか付かない(定数コメント参照)。
                         // ただし直後が の/ん(なので/なのは/なのに/なんです)は断定の助動詞 な
