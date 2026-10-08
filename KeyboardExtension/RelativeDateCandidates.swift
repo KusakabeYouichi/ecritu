@@ -16,8 +16,10 @@ enum RelativeDateCandidates {
         let value: Int
     }
 
-    // 候補の差し込み位置(0 起点)。純正と同じく、語の表記 2 つの直後に置く。
+    // 候補の差し込み位置(0 起点)。純正と同じく、語の表記 2 つの直後に日付を 2 つ、
+    // そこへ語の 3 番目の候補を 1 つ挟んで、残りの日付を続ける(3〜4 番目と 6 番目以降)。
     static let insertionIndex = 2
+    static let leadingDateCount = 2
 
     static let offsetsByReading: [String: Offset] = [
         "さきおととい": Offset(unit: .day, value: -3),
@@ -141,7 +143,13 @@ enum RelativeDateCandidates {
         }
         let dateSet = Set(dates)
         var result = candidates.filter { !dateSet.contains($0) }
-        result.insert(contentsOf: dates, at: min(insertionIndex, result.count))
+        let start = min(insertionIndex, result.count)
+        let leading = Array(dates.prefix(leadingDateCount))
+        let trailing = Array(dates.dropFirst(leadingDateCount))
+        result.insert(contentsOf: leading, at: start)
+        // 語の候補が 3 つ以上あるときだけ 1 つ挟む(無ければ日付を続けて並べる)
+        let trailingStart = start + leading.count + (result.count > start + leading.count ? 1 : 0)
+        result.insert(contentsOf: trailing, at: trailingStart)
         return result
     }
 
