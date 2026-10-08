@@ -21106,6 +21106,16 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(multi.isEmpty || multi.first == "来来月", "multi=\(multi.prefix(4))")
     }
 
+    // 3456: こんねん は 今年、みょうねん は 明年 が先頭
+    func testKonnenMyounenOrder() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("こんねん", "今年"), ("みょうねん", "明年")] {
+            let list = converter.candidates(for: reading, limit: 6, systemCandidateMode: .normalise)
+            XCTAssertEqual(list.first, expected, "\(list)")
+        }
+    }
+
     // 3436: しゅどう は 手動 → 主導 → 主働 → 首藤 → 主動 → 朱銅 → 主胴 → 衆道 → 酒道
     func testShudouOrder() throws {
         try prepareRealLMDictionary()
