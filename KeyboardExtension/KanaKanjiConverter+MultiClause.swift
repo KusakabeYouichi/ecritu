@@ -2745,6 +2745,10 @@ extension KanaKanjiConverter {
             }
             // Wikipedia 偏りの同音語(官僚/呼称/河川/大気/対比/人命)を連文節でだけ後ろへ(定数コメント参照。2890)。
             // サ変派生(対比した/退避した)は読み・表層とも接頭一致で見る
+            // かな表記の降格(定数コメント参照。3442)
+            if isKanaIdentity, let demotion = Self.multiClauseKanaIdentityDemotionsByReading[reading] {
+                penalty += demotion
+            }
             if !isKanaIdentity {
                 for (readingKey, demotions) in Self.multiClauseHomophoneDemotionsByReading
                 where reading == readingKey || (isInflectionDerived && reading.hasPrefix(readingKey)) {
