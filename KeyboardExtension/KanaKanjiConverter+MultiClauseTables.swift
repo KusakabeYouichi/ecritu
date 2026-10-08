@@ -1950,6 +1950,21 @@ extension KanaKanjiConverter {
         reading == "といった" && surface == reading
     }
 
+    // 列挙の といった は後ろに名詞が来る(A、B といった C)。のに/けど/から/よ 等が続くなら述語の 言った
+    // (といったのに→と言ったのに)なので、文頭のクランプを掛けない(ユーザ指定 3459)
+    static let multiClauseToIttaPredicateFollowers: [String] = [
+        "のに", "のか", "のだ", "のです", "んだ", "んです", "けど", "けれど", "から", "ので", "でしょ", "だろ",
+        "じゃ", "よ", "ね", "な", "か", "し", "が", "って", "ら"
+    ]
+
+    static func isToIttaFollowedByPredicateTail(chars: [Character], from start: Int, n: Int) -> Bool {
+        guard start < n else {
+            return false
+        }
+        let rest = String(chars[start..<n])
+        return multiClauseToIttaPredicateFollowers.contains { rest.hasPrefix($0) }
+    }
+
     // 補助動詞 おる の活用読み(2877、抜き取り検査で 39 件)。「乾燥しており」が 乾燥して折り に
     // なっていた。ておく と同型で、て/で の直後の おる 系はかなが正書(〜ており/〜ておりました)。
     // 本動詞の 折る/織る は を の後(紙を折る)に立つので、て/で 直後に限れば巻き込まない。

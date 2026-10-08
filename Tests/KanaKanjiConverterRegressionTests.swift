@@ -21111,6 +21111,19 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3459: 文頭の といったのに/といったけど は と言った…(列挙の といった 果物 はかなのまま、はいったのに は 入ったのに)
+    func testToIttaNoniQuotative() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("といったのに", "と言ったのに"), ("といったけど", "と言ったけど"),
+            ("りんごやみかんといったくだもの", "リンゴやみかんといった果物"), ("はいったのに", "入ったのに")
+        ] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "multi=\(multi.prefix(4))")
+        }
+    }
+
     // 3456: こんねん は 今年、みょうねん は 明年 が先頭(3457: さくじつ は 昨日)
     func testKonnenMyounenOrder() throws {
         try prepareRealLMDictionary()
