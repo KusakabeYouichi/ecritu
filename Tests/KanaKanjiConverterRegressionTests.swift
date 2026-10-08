@@ -21435,6 +21435,22 @@ extension KanaKanjiConverterRegressionTests {
         converter.setKanaGakiSuppressedCategories(Set(KanaGakiCategory.allCases))
     }
 
+    // 3454: あるいは/もしくは で 或いは/若しくは が出る(Sudachi は あるいわ/もしくわ 読みのみ)。X.8 の接続詞に従う
+    func testAruiwaMoshikuwaSupplied() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        converter.setKanaGakiSuppressedCategories([])
+        for (reading, kanji) in [("あるいは", "或いは"), ("もしくは", "若しくは")] {
+            let list = converter.candidates(for: reading, limit: 6, systemCandidateMode: .surface)
+            XCTAssertEqual(Array(list.prefix(2)), [reading, kanji], "\(list)")
+        }
+        converter.setKanaGakiSuppressedCategories(Set(KanaGakiCategory.allCases))
+        for (reading, kanji) in [("あるいは", "或いは"), ("もしくは", "若しくは")] {
+            let list = converter.candidates(for: reading, limit: 6, systemCandidateMode: .surface)
+            XCTAssertFalse(list.contains(kanji), "\(list)")
+        }
+    }
+
     // 3452: 歴史的仮名遣いの書き方(なほ更/言ひ分/考へる/自づと)は X.3 がオフなら出さない。人名・固有名詞は残す
     func testHistoricalKanaSpellingFiltered() {
         typealias C = KanaKanjiConverter
