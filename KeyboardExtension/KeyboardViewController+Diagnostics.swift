@@ -496,6 +496,7 @@ extension KeyboardViewController {
         host.willMove(toParent: nil)
         host.view.removeFromSuperview()
         host.removeFromParent()
+        stripHostingViewForRelease(host)
         hostingController = nil
         lastRenderConfiguration = nil
         // 解放したビュー階層のページをOSへ返す(2646)。実測でビュー解放だけでは
@@ -587,6 +588,7 @@ extension KeyboardViewController {
             host.willMove(toParent: nil)
             host.view.removeFromSuperview()
             host.removeFromParent()
+            stripHostingViewForRelease(host)
             hostingController = nil
         }
 

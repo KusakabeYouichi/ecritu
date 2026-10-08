@@ -1454,12 +1454,30 @@ final class KeyboardViewController: UIInputViewController {
     // 参照の根は SwiftUI 内部の追跡情報がレイアウト計算エンジンを握っていることで、écritu からは断てない。
     // 外枠が残っても軽くなるよう、層・ジェスチャー・子ビュー・制約を外す。解体中なので weak self は作らない。
     // UIKit の操作なのでメインスレッドのときだけ行う
+    // 手放す SwiftUI のホストの画面の中身を空にする(3443)。ゾンビの個体はホストへの参照を外しても(hosting=false)、
+    // SwiftUI の内部がホストの画面をつかんだまま残り、個体ごとに 1.4MB の画像(VM タグ cg_data。画面幅×約300ドット)を
+    // 抱えていた(10 体で 14MB。実機の記録 3441)。参照を断てないので、中身(子ビュー・層・描画内容)を外して軽くする
+    func stripHostingViewForRelease(_ host: UIHostingController<KeyboardRootView>) {
+        guard Thread.isMainThread else {
+            return
+        }
+        let hostView = host.view
+        for subview in hostView?.subviews ?? [] {
+            subview.removeFromSuperview()
+        }
+        hostView?.layer.sublayers?.forEach { $0.removeFromSuperlayer() }
+        hostView?.layer.contents = nil
+    }
+
     func stripViewShellForDisposal() {
         guard Thread.isMainThread else {
             return
         }
         backgroundGradientLayer?.removeFromSuperlayer()
         backgroundGradientLayer = nil
+        if let host = hostingController {
+            stripHostingViewForRelease(host)
+        }
         guard let root = viewIfLoaded else {
             return
         }
