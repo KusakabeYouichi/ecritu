@@ -209,6 +209,7 @@
 	<dict><key>phrase</key><string>ツて</string><key>shortcut</key><string>って</string></dict>	<!-- 引用/終助詞 って のカタカナ・カタカナ混じり表記(ッテ/ッて/ツて/っテ)。かな って が正書 -->
 	<dict><key>phrase</key><string>うツかり</string><key>shortcut</key><string>うっかり</string></dict>
 	<!-- ※ ギンコウ: 銀行 のカタカナ表記ゆれ収穫(wc が 銀行 と同値3295=同一語彙の別表記)。ナカノ/アシタ 族 -->
+	<dict><key>phrase</key><string>アサッテ</string><key>shortcut</key><string>あさって</string></dict>	<!-- アサッテ: 明後日 のカタカナ表記ゆれ収穫(wc が あさって と同値4710=同一語彙の別表記。固有名詞ではない)。あさって の 2 位を占めていた(ユーザ指定 3449) -->
 	<dict><key>phrase</key><string>タイワン</string><key>shortcut</key><string>たいわん</string></dict>	<!-- タイワン: 台湾 のカタカナ表記ゆれ収穫(たいわん rank1)。カタカナ需要は無く候補を汚すため 抑制(ユーザ指定 2529)。🇹🇼/台湾/台灣 は温存 -->
 	<!-- ※ イイね: 今どき流行らない書き方(イイ=カタカナ強調)。いい+ね 合成由来なので読み いいね の直接ペアで抑制(イイ感じ 等、他の読みでの イイ は温存)。※踊り字 いゝね は旧仮名・踊り字トグルのフィルタで制御(個別抑制は撤去) -->
 

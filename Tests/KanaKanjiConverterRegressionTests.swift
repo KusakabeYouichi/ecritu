@@ -3375,7 +3375,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             ("ちょうこくか", ["彫刻家", "彫刻か"]),
             ("わだ", ["和田", "輪だ", "和だ"]),
             ("しそうか", ["思想家"]),
-            ("きょう", ["今日", "京"]),
+            ("きょう", ["今日", "きょう", "京"]),  // かな きょう は 京 の前(3449)
             ("うんどうか", ["運動家", "運動か"]),
             ("けいせい", ["形成", "京成", "傾城"]),
             ("から", ["から", "唐"]),
@@ -21070,6 +21070,22 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(multi.isEmpty || multi.first == "一昨日", "multi=\(multi.prefix(4))")
         let multiTail = converter.multiClauseCandidates(for: "いっさくじつの", systemCandidateMode: .surface)
         XCTAssertEqual(multiTail.first, "一昨日の", "multi=\(multiTail.prefix(4))")
+    }
+
+    // 3449: きょう は 今日 → きょう → 京、あさって は 明後日 → あさって(アサッテ は抑制)
+    func testKyouAndAsatteOrder() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            let kyou = converter.candidates(for: "きょう", limit: 6, systemCandidateMode: mode)
+            XCTAssertEqual(Array(kyou.prefix(3)), ["今日", "きょう", "京"], "\(kyou)")
+            let asatte = converter.candidates(for: "あさって", limit: 6, systemCandidateMode: mode)
+            XCTAssertEqual(Array(asatte.prefix(2)), ["明後日", "あさって"], "\(asatte)")
+            XCTAssertFalse(asatte.contains("アサッテ"), "\(asatte)")
+        }
+        // 表示層: かな(2 位)が先頭から外されない
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "きょう"))
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "あさって"))
     }
 
     // 3436: しゅどう は 手動 → 主導 → 主働 → 首藤 → 主動 → 朱銅 → 主胴 → 衆道 → 酒道
