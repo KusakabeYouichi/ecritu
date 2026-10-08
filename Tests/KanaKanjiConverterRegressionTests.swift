@@ -21106,11 +21106,11 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(multi.isEmpty || multi.first == "来来月", "multi=\(multi.prefix(4))")
     }
 
-    // 3456: こんねん は 今年、みょうねん は 明年 が先頭
+    // 3456: こんねん は 今年、みょうねん は 明年 が先頭(3457: さくじつ は 昨日)
     func testKonnenMyounenOrder() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
-        for (reading, expected) in [("こんねん", "今年"), ("みょうねん", "明年")] {
+        for (reading, expected) in [("こんねん", "今年"), ("みょうねん", "明年"), ("さくじつ", "昨日")] {
             let list = converter.candidates(for: reading, limit: 6, systemCandidateMode: .normalise)
             XCTAssertEqual(list.first, expected, "\(list)")
         }
