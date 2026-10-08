@@ -21114,6 +21114,15 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(shiken.first, "次試験", "\(shiken)")
     }
 
+    // 3440: 述語の直後で人名が末尾の助詞を飲み込まない(しゃべれるやつか→しゃべれる八束 だった)
+    func testPersonNameDoesNotSwallowTrailingParticleAfterPredicate() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let multi = converter.multiClauseCandidates(for: "しゃべれるやつか", systemCandidateMode: .surface)
+        XCTAssertEqual(Set(multi.prefix(2)), ["しゃべれるやつか", "喋れるやつか"], "multi=\(multi.prefix(4))")
+        XCTAssertFalse(multi.prefix(4).contains { $0.contains("八束") }, "multi=\(multi.prefix(4))")
+    }
+
     // 3381: べにしょうが は 紅しょうが / 紅生姜 の順(辞書に 1 語で無く 紅+省+が が先頭だった)
     func testBenishougaRegistered() throws {
         try prepareRealLMDictionary()

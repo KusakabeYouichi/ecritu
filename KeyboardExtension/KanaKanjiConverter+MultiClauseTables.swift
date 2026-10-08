@@ -2101,6 +2101,11 @@ extension KanaKanjiConverter {
     // 地名→港 の bigram が無く、し+散る+以降 のような分割に 404 差で負けていた(しちるいこう、ユーザ報告 3397)
     static let multiClauseNounSuffixAfterNounBonusSurfaces: Set<String> = ["港"]
     static let multiClauseNounSuffixAfterNounBonus = 1500
+    // 述語の直後の人名(姓/名)で、読みが助詞で終わり、助詞を除いた読みに人名でない辞書語が立つもの(八束=やつ+か)。
+    // 述語の連体形の後ろは普通の名詞(やつ/こと/もの)+助詞が自然で、人名が助詞を飲み込んだ形に 263 差で負けていた
+    // (しゃべれるやつか→しゃべれる八束。ユーザ報告 3440)
+    static let multiClausePersonNameSwallowedParticleTails: Set<Character> = Set("かがはもをにでとのや")
+    static let multiClausePersonNameSwallowingParticlePenalty = 1500
     // 入力の終わりを文末と見なさない接尾辞。〜的 は な/に が続く途中の形で、Wikipedia の「的。で文が終わらない」統計
     // (的→EOS が高い)が断片入力と食い違う。治療てき/興味てき/対症療法てき が 敵(→EOS が安い)に負けていた
     // (ユーザ報告 3419)。観測 EOS を fallback より重くしない(かな助詞の扱いと同じ)
