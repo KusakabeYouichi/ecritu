@@ -21119,8 +21119,14 @@ extension KanaKanjiConverterRegressionTests {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
         let multi = converter.multiClauseCandidates(for: "しゃべれるやつか", systemCandidateMode: .surface)
-        XCTAssertEqual(Set(multi.prefix(2)), ["しゃべれるやつか", "喋れるやつか"], "multi=\(multi.prefix(4))")
+        // 喋れる → しゃべれる の順(ユーザ指定 3442)。誤った送り仮名 喋べれる は出さない
+        XCTAssertEqual(Array(multi.prefix(2)), ["喋れるやつか", "しゃべれるやつか"], "multi=\(multi.prefix(4))")
         XCTAssertFalse(multi.prefix(4).contains { $0.contains("八束") }, "multi=\(multi.prefix(4))")
+        XCTAssertFalse(multi.contains { $0.contains("喋べ") }, "multi=\(multi)")
+        let single = converter.candidates(for: "しゃべる", limit: 8, systemCandidateMode: .surface)
+        XCTAssertFalse(single.contains("喋べる"), "\(single)")
+        // 表示層でも かな を先頭に戻さない
+        XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "しゃべれるやつか"))
     }
 
     // 3381: べにしょうが は 紅しょうが / 紅生姜 の順(辞書に 1 語で無く 紅+省+が が先頭だった)

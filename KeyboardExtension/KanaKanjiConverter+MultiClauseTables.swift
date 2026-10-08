@@ -2501,6 +2501,14 @@ extension KanaKanjiConverter {
     // 対比 5778 vs 退避 6485。人名(wc 11703 の収穫底値)は seed 掲載で床免除される。
     // 下線(かせん)は同音語が多い(河川/架線/歌仙/寡占/貸せん)ので個別降格でなく seed 順ボーナス側(かせん)で持ち上げる。
     // 以前は 耳下腺(収穫床 8700)が 時+下線 に割れたが、耳下腺 を misc の curated にして解消(2891)
+    // かな表記(読みそのもの)の降格(読み → 加算)。LM がかな表記だけを知り漢字表記を知らない語で、漢字を先に出すため。
+    // しゃべれる: LM には かな の しゃべれる(7884)しか無く 喋れる は未収録で、しゃべれるやつか の先頭が かな だった
+    // (ユーザ指定 3442。単文節は辞書順で 喋れる が先頭)
+    static let multiClauseKanaIdentityDemotionsByReading: [String: Int] = [
+        "しゃべれる": 1500
+    ]
+    // 表示層で かな を先頭に保たない動詞の語幹(読みの先頭一致。3442)
+    static let kanaIdentityLeadingExcludedVerbStems: [String] = ["しゃべ"]
     static let multiClauseHomophoneDemotionsByReading: [String: [String: Int]] = [
         "かんりょう": ["官僚": 800],
         // 勝(かち): 主読み しょう(3勝/勝率)の LM 統計(勝 4795、勝→だ 3344)を借りて 勝ちだな/価値だな に勝っていた。
