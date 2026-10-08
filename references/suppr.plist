@@ -24,6 +24,8 @@
 	<dict><key>phrase</key><string>帰える</string><key>shortcut</key><string>かえる</string></dict>	<!-- 帰る の誤った送り仮名(告示の本則・許容のどちらにも無い)。活用形(帰えって/帰えります)まで候補を汚す(ユーザ指摘 2820) -->
 	<dict><key>phrase</key><string>重そう</string><key>shortcut</key><string>じゅうそう</string></dict>	<!-- 重そう(じゅうそう): 重そう は おもそう(重い+そう)であり じゅうそう と読む語ではない(ユーザ指摘 2818) -->
 	<dict><key>phrase</key><string>ママぁ</string><key>shortcut</key><string>まま</string></dict>	<!-- 読み違いの誤エントリ(ままぁ であるべき)。まま の候補は seed {ママ、まま、侭、間々} -->
+	<dict><key>phrase</key><string>喋べる</string><key>shortcut</key><string>しゃべる</string></dict>	<!-- 喋る の誤った送り仮名(喋 は表外字で、告示の本則・許容のどちらにも無い)。活用形(喋べれる/喋べった)まで候補を汚す(ユーザ指摘 3442) -->
+	<dict><key>phrase</key><string>喋べれる</string><key>shortcut</key><string>しゃべれる</string></dict>	<!-- 同上(可能形の辞書エントリ。3442) -->
 	<dict><key>phrase</key><string>す‐ぐ</string><key>shortcut</key><string>すぐ</string></dict>	<!-- かなの途中にハイフン(U+2010)が入った Sudachi のゴミ。すぐ の 4 番目に出ていた(ユーザ指摘 3425) -->
 	<dict><key>phrase</key><string>げん‐ぷ</string><key>shortcut</key><string>げんぷ</string></dict>	<!-- 同じくハイフン入りのゴミ(3425) -->
 	<dict><key>phrase</key><string>脱‐存</string><key>shortcut</key><string>だつぞん</string></dict>	<!-- 同じくハイフン入りのゴミ(3425) -->
