@@ -54,7 +54,7 @@ enum RelativeDateCandidates {
         case .japanese:
             return ["m月", "aaaa年m月"]
         case .french, .british, .american:
-            return ["mmm", "mmm aaaa", "mm/aaaa"]
+            return ["mmm", "mmm aaaa", "m/aaaa"]
         }
     }
 
@@ -67,9 +67,18 @@ enum RelativeDateCandidates {
         }
     }
 
-    // 日はドラムの書式一覧+曜日だけ(土曜日 / Saturday / samedi)。
+    // 日はドラムの書式一覧から前ゼロの書式(mm/jj)を除いたもの+曜日だけ(土曜日 / Saturday / samedi)。
     static func dayTemplates(for style: DateFormatStyle) -> [String] {
-        DateFormatCatalog.variants(for: style) + ["jjjj"]
+        DateFormatCatalog.variants(for: style).filter { !isZeroPadded($0) } + ["jjjj"]
+    }
+
+    // 月名(mmm)・曜日(jjj/jjjj)を除いて mm か jj が残れば前ゼロの書式
+    static func isZeroPadded(_ template: String) -> Bool {
+        let stripped = template
+            .replacingOccurrences(of: "mmm", with: "_")
+            .replacingOccurrences(of: "jjjj", with: "_")
+            .replacingOccurrences(of: "jjj", with: "_")
+        return stripped.contains("mm") || stripped.contains("jj")
     }
 
     static func candidates(
