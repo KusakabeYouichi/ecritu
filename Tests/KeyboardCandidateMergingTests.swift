@@ -209,8 +209,17 @@ extension KeyboardCandidateMergingTests {
             style: .japanese,
             now: now
         )
-        XCTAssertEqual(Array(inserted.prefix(3)), ["明後日", "あさって", "10月10日"])
-        XCTAssertEqual(inserted.last, "朝って")
+        // 純正と同じ並び: 日付は 3〜4 番目、語の 3 番目の候補を 5 番目に挟んで 6 番目以降
+        XCTAssertEqual(inserted, [
+            "明後日", "あさって", "10月10日", "10月10日(土)", "朝って",
+            "10月10日土曜日", "2026年10月10日", "2026年10月10日 (土)", "2026年10月10日 土曜日", "土曜日"
+        ])
+        // 語の候補が 2 つしか無ければ日付を続けて並べる
+        XCTAssertEqual(
+            RelativeDateCandidates.inserting(into: ["明後日", "あさって"], reading: "あさって", style: .japanese, now: now)
+                .prefix(5),
+            ["明後日", "あさって", "10月10日", "10月10日(土)", "10月10日土曜日"]
+        )
         XCTAssertEqual(inserted.filter { $0 == "土曜日" }.count, 1)
         XCTAssertTrue(RelativeDateCandidates.isGeneratedCandidate("10/10/2026", reading: "あさって", now: now))
         XCTAssertFalse(RelativeDateCandidates.isGeneratedCandidate("明後日", reading: "あさって", now: now))
