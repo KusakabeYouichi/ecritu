@@ -40,6 +40,7 @@ enum RelativeDateCandidates {
         "こんげつ": Offset(unit: .month, value: 0),
         "らいげつ": Offset(unit: .month, value: 1),
         "さらいげつ": Offset(unit: .month, value: 2),
+        "らいらいげつ": Offset(unit: .month, value: 2),
         "おととし": Offset(unit: .year, value: -2),
         "きょねん": Offset(unit: .year, value: -1),
         "さくねん": Offset(unit: .year, value: -1),
