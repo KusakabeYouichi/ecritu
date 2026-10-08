@@ -21060,6 +21060,18 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi.first, "馬瀬川の", "multi=\(multi.prefix(4))")
     }
 
+    // 3448: いっさくじつ は 一昨日(辞書は おととい 読みのみで、連文節が 一昨実/一策実 を組んでいた)
+    func testIssakujitsuRegistered() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let list = converter.candidates(for: "いっさくじつ", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(list.first, "一昨日", "\(list)")
+        let multi = converter.multiClauseCandidates(for: "いっさくじつ", systemCandidateMode: .surface)
+        XCTAssertTrue(multi.isEmpty || multi.first == "一昨日", "multi=\(multi.prefix(4))")
+        let multiTail = converter.multiClauseCandidates(for: "いっさくじつの", systemCandidateMode: .surface)
+        XCTAssertEqual(multiTail.first, "一昨日の", "multi=\(multiTail.prefix(4))")
+    }
+
     // 3436: しゅどう は 手動 → 主導 → 主働 → 首藤 → 主動 → 朱銅 → 主胴 → 衆道 → 酒道
     func testShudouOrder() throws {
         try prepareRealLMDictionary()
