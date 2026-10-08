@@ -20,6 +20,7 @@
 		1B042B69834DF2F3F95B5F5E /* KakikaeTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 066C630D82063E19AB061BB3 /* KakikaeTable.swift */; };
 		364D785880653A6640998D1B /* KakikaePreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = F786A277D18B8FAFAC9D0A82 /* KakikaePreference.swift */; };
 		A1B2C3D4E5F600000T000002 /* DateFormatCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000FF08 /* DateFormatCatalog.swift */; };
+		0ACA4CDD62A8F63672FDA514 /* RelativeDateCandidates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EB998F735DB40F4EEE1C655 /* RelativeDateCandidates.swift */; };
 		A1B2C3D4E5F600000T000003 /* FlickKeyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E47697B4A1DF6C69AD1AD3A /* FlickKeyView.swift */; };
 		A1B2C3D4E5F600000T000004 /* FormattedNumberCalendarGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000FF0A /* FormattedNumberCalendarGridView.swift */; };
 		A1B2C3D4E5F600000T000005 /* KaomojiCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = C52949EB4A52E9D891A305A3 /* KaomojiCatalog.swift */; };
@@ -60,6 +61,7 @@
 		A1B2C3D4E5F600000000FF03 /* KeyboardRootView+FormattedNumberLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000FF04 /* KeyboardRootView+FormattedNumberLayout.swift */; };
 		A1B2C3D4E5F600000000FF05 /* SIUnitCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000FF06 /* SIUnitCatalog.swift */; };
 		A1B2C3D4E5F600000000FF07 /* DateFormatCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000FF08 /* DateFormatCatalog.swift */; };
+		D7ED406024C1D1B29A93E999 /* RelativeDateCandidates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EB998F735DB40F4EEE1C655 /* RelativeDateCandidates.swift */; };
 		A1B2C3D4E5F600000000FF09 /* FormattedNumberCalendarGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000FF0A /* FormattedNumberCalendarGridView.swift */; };
 		A1B2C3D4E5F600000000DD01 /* KeyboardRootView+Header.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000DD02 /* KeyboardRootView+Header.swift */; };
 		1574B0356912D7E82C120E75 /* KanaKanjiSeedDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 280DC806280D22AF5EF91508 /* KanaKanjiSeedDictionary.swift */; };
@@ -303,6 +305,7 @@
 		A1B2C3D4E5F600000000FF04 /* KeyboardRootView+FormattedNumberLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "KeyboardRootView+FormattedNumberLayout.swift"; sourceTree = "<group>"; };
 		A1B2C3D4E5F600000000FF06 /* SIUnitCatalog.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SIUnitCatalog.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F600000000FF08 /* DateFormatCatalog.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DateFormatCatalog.swift; sourceTree = "<group>"; };
+		4EB998F735DB40F4EEE1C655 /* RelativeDateCandidates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelativeDateCandidates.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F600000000FF0A /* FormattedNumberCalendarGridView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FormattedNumberCalendarGridView.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F600000000DD02 /* KeyboardRootView+Header.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "KeyboardRootView+Header.swift"; sourceTree = "<group>"; };
 		B2F1069200465BA796649E29 /* KeyboardExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = KeyboardExtension.entitlements; sourceTree = "<group>"; };
@@ -508,6 +511,7 @@
 				A1B2C3D4E5F600000000FF04 /* KeyboardRootView+FormattedNumberLayout.swift */,
 				A1B2C3D4E5F600000000FF06 /* SIUnitCatalog.swift */,
 				A1B2C3D4E5F600000000FF08 /* DateFormatCatalog.swift */,
+				4EB998F735DB40F4EEE1C655 /* RelativeDateCandidates.swift */,
 				A1B2C3D4E5F600000000FF0A /* FormattedNumberCalendarGridView.swift */,
 				A1B2C3D4E5F600000000DD02 /* KeyboardRootView+Header.swift */,
 				66A8F5EFF71215E8B8F00101 /* SupplementaryCandidateMerger.swift */,
@@ -855,6 +859,7 @@
 				1B042B69834DF2F3F95B5F5E /* KakikaeTable.swift in Sources */,
 				364D785880653A6640998D1B /* KakikaePreference.swift in Sources */,
 				A1B2C3D4E5F600000T000002 /* DateFormatCatalog.swift in Sources */,
+				0ACA4CDD62A8F63672FDA514 /* RelativeDateCandidates.swift in Sources */,
 				A1B2C3D4E5F600000T000003 /* FlickKeyView.swift in Sources */,
 				A1B2C3D4E5F600000T000004 /* FormattedNumberCalendarGridView.swift in Sources */,
 				A1B2C3D4E5F600000T000005 /* KaomojiCatalog.swift in Sources */,
@@ -1021,6 +1026,7 @@
 				A1B2C3D4E5F600000000FF03 /* KeyboardRootView+FormattedNumberLayout.swift in Sources */,
 				A1B2C3D4E5F600000000FF05 /* SIUnitCatalog.swift in Sources */,
 				A1B2C3D4E5F600000000FF07 /* DateFormatCatalog.swift in Sources */,
+				D7ED406024C1D1B29A93E999 /* RelativeDateCandidates.swift in Sources */,
 				A1B2C3D4E5F600000000FF09 /* FormattedNumberCalendarGridView.swift in Sources */,
 				A1B2C3D4E5F600000000DD01 /* KeyboardRootView+Header.swift in Sources */,
 				DB967B134FC1CDBD2C451957 /* SupplementaryCandidateMerger.swift in Sources */,

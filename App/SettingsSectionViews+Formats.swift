@@ -86,7 +86,7 @@ struct CalendarSettingsGroupSection: View {
                 .pickerStyle(.segmented)
             }
 
-            Text("書式化数値モードのカレンダーの設定です。方式に応じてドラムの書式候補と月名・曜日名が変わります。")
+            Text("書式化数値モードのカレンダーの設定です。方式に応じてドラムの書式候補と月名・曜日名が変わります。きょう・あさって・らいげつ などを打ったときに出る実際の日付の候補も、この方式に合わせます。")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
