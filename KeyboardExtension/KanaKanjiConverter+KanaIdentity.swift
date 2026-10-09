@@ -626,6 +626,16 @@ extension KanaKanjiConverter {
                 return true
             }
         }
+        // seed でかなを 2 番目までに置き、連文節でも seed 順(かな込み)を使う読み(こつ: コツ→こつ→骨)で終わる句は、
+        // 全かな(ちょっとしたこつ)も正書の候補として残す(3476、ユーザ指定: 1 位 ちょっとしたコツ、2 位 ちょっとしたこつ)
+        if normalized.count >= 4 {
+            for suffix in Self.multiClauseSeedOrderVariantKanaLeadReadings
+            where normalized.count - suffix.count >= 2 && normalized.hasSuffix(suffix) {
+                if KanaKanjiSeedDictionary.seed[suffix]?.prefix(2).contains(suffix) == true {
+                    return true
+                }
+            }
+        }
         if (store.ajoutVocabulary()[normalized] ?? []).contains(normalized) {
             return true
         }
