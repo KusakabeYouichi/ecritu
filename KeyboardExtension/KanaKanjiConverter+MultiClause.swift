@@ -1522,6 +1522,11 @@ extension KanaKanjiConverter {
         for node in nodes where node.isDictWord && !node.isKanaIdentity && personNameKindByNodeKey[node.key] == nil {
             nonPersonDictWordSpanKeys.insert(node.spanKey)
         }
+        // 述語(活用派生・辞書形の用言)が立つ区間(3472 の「語尾 る+終助詞 を 1 語が飲み込む」判定に使う。つきる が立つ区間)
+        var predicateSpanKeys = Set<String>()
+        for node in nodes where !node.isKanaIdentity && (node.isInflectionDerived || node.isDictionaryFormPredicate) {
+            predicateSpanKeys.insert(node.spanKey)
+        }
         // 人名減点の「割られた語」判定: LM が知る辞書語(満席)がまたぐ境界(まん|せきな の 2)。
         // 何|円札 は 何円 が LM 未収録なので対象外 → 何円札 は従来どおり(2845)
         var lmKnownWordCrossesBoundary = [Bool](repeating: false, count: n + 1)
@@ -3076,6 +3081,15 @@ extension KanaKanjiConverter {
                                     && (prevNode.reading.last.map { "るたいうくすつぬぶむぐ".contains($0) } ?? false)),
                             nonPersonDictWordSpanKeys.contains(spanKeyByStart[node.start][node.end - 1]) {
                             cost += Self.multiClausePersonNameSwallowingParticlePenalty
+                        }
+                        // 文末の「る+終助詞」を 1 語(ルネ/ルナ/ルカ 等の名前)が飲み込み、用言を 連用形+名前 に割る形
+                        // (それにつきるね → それにつき+ルネ。定数コメント参照。3472)。直前から る までの区間に用言が立つときだけ
+                        if node.end == n, node.end - node.start == 2, !node.isKanaIdentity, !node.isCurated,
+                            node.reading.first == "る",
+                            let tail = node.reading.last,
+                            Self.multiClauseVerbEndingSwallowedFinalParticles.contains(tail),
+                            predicateSpanKeys.contains(spanKeyByStart[prevNode.start][node.start + 1]) {
+                            cost += Self.multiClauseVerbEndingSwallowingPenalty
                         }
                         // 名詞直後の裸のかな「な」は形容動詞語幹にしか付かない(定数コメント参照)。
                         // ただし直後が の/ん(なので/なのは/なのに/なんです)は断定の助動詞 な
