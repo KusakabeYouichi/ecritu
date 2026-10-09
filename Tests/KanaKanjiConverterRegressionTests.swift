@@ -21650,4 +21650,13 @@ extension KanaKanjiConverterRegressionTests {
             XCTAssertEqual(multi.first, "何個" + String(reading.dropFirst(3)), "multi=\(multi.prefix(4))")
         }
     }
+
+    // 3470: むぎのほ は 麦の穂(のほ を 1 語にした 野甫 等に負けて 麦野甫 だった)
+    func testMuginohoRegistered() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.candidates(for: "むぎのほ", limit: 6, systemCandidateMode: .surface).first, "麦の穂")
+        let multi = converter.multiClauseCandidates(for: "むぎのほが", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "麦の穂が", "multi=\(multi.prefix(4))")
+    }
 }
