@@ -21709,4 +21709,13 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertFalse(list.contains("亡かった") || list.contains("失かった"), "\(list)")
         XCTAssertEqual(Array(list.prefix(2)), ["なかった", "無かった"], "\(list)")
     }
+
+    // 3476: ちょっとしたこつ は コツ → こつ(骨 は LM の ほね/こつ 両読みの統計で強かった)
+    func testKotsuOrderInPhrase() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let multi = converter.multiClauseCandidates(for: "ちょっとしたこつ", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(multi.prefix(2)), ["ちょっとしたコツ", "ちょっとしたこつ"], "multi=\(multi.prefix(4))")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "ちょっとしたこつ"))
+    }
 }
