@@ -313,6 +313,7 @@
 	<dict><key>phrase</key><string>常習性</string><key>shortcut</key><string>じょうしゅうせい</string><key>pos</key><string>名詞</string></dict>	<!-- 常習性: 辞書・LM とも 1 語で無く、城州製/上州製/常習製 の合成ばかりだった(ユーザ報告 3278) -->
 	<dict><key>phrase</key><string>アクセア</string><key>shortcut</key><string>あくせあ</string><key>pos</key><string>名詞</string></dict>	<!-- アクセア(出力・印刷サービスの企業名): 辞書・LM とも無い(ユーザ指定 3276) -->
 	<dict><key>phrase</key><string>板目紙</string><key>shortcut</key><string>いためがみ</string><key>pos</key><string>名詞</string></dict>	<!-- 板目紙: Sudachi にあるが wc 15036 の収穫底値帯で、連文節の いた+女神 に負けていた(ユーザ報告 3271) -->
+	<dict><key>phrase</key><string>麦の穂</string><key>shortcut</key><string>むぎのほ</string><key>pos</key><string>名詞</string></dict>	<!-- 麦の穂: のほ を 1 語にした 野甫(野甫島)/乃帆/野保/野歩 が、の+穂(穂は LM 6406 と少なめ)の 2 語より安く、麦野甫 になっていた(ユーザ指定 3470) -->
 	<dict><key>phrase</key><string>金麦</string><key>shortcut</key><string>きんむぎ</string><key>pos</key><string>名詞</string></dict>	<!-- 金麦(サントリーのビール系飲料の銘柄): Sudachi・LM とも無く、勤務木/きんむ木 の合成ばかりだった(ユーザ指定 3270) -->
 	<dict><key>phrase</key><string>低音のキレ</string><key>shortcut</key><string>ていおんのきれ</string><key>pos</key><string>名詞</string></dict>	<!-- 低音のキレ: 低温/低音 の同音で LM(低温 5701 < 低音 6455)が 低温 を選び、キレ もカタカナ強調の抑制で消えていた(ユーザ指定 3262)。キレ は きれ の seed でも出す -->
 	<dict><key>phrase</key><string>天皇家</string><key>shortcut</key><string>てんのうけ</string><key>pos</key><string>名詞</string></dict>	<!-- 天皇家(てんのうけ): Sudachi に無く、天皇+け の合成頼み。け→家 は読み別 wc が高く 天皇け が先頭、さらに てんのうけに は Sudachi のレア語 家尼(けに)に食われて 天皇家尼 になっていた(ユーザ報告 3250) -->
