@@ -838,11 +838,11 @@ extension ContentView {
 
     // ──── トースト ────
 
-    func showSettingsToast(_ message: String) {
+    func showSettingsToast(_ message: String, duration: TimeInterval = 1.8) {
         withAnimation(.easeOut(duration: 0.15)) {
             settingsToastMessage = message
         }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.8) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
             withAnimation(.easeIn(duration: 0.3)) {
                 if settingsToastMessage == message {
                     settingsToastMessage = nil

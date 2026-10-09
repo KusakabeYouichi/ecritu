@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20261009151424"
+    private static let editionUpdatedAtRaw: String = "20261009153845"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -544,6 +544,23 @@ struct ContentView: View {
     // キーボードがフルアクセスありで最後に表示された時刻(3466。キーボードが共有領域に書く)
     @State var keyboardFullAccessConfirmedAt: Date? = ContentView.readKeyboardFullAccessConfirmedAt()
 
+    // 設定を変えたとき、フルアクセスを一度も確認できていなければ届かないかもしれないと知らせる(3467)。
+    // オンでキーボードを一度でも使った人には出さない(上部の状態表示と違い 7 日の期限は見ない)。起動ごとに 1 回まで
+    @State var didShowFullAccessSettingsNotice = false
+
+    func showFullAccessSettingsNoticeIfNeeded() {
+        guard isKeyboardCurrentlyEnabled,
+            !didShowFullAccessSettingsNotice,
+            Self.readKeyboardFullAccessConfirmedAt() == nil else {
+            return
+        }
+        didShowFullAccessSettingsNotice = true
+        showSettingsToast(
+            "フルアクセスがまだ確認できていないので、この変更はキーボードに届かないかもしれません(上の「設定を開く」から確認できます)",
+            duration: 5
+        )
+    }
+
     static func readKeyboardFullAccessConfirmedAt() -> Date? {
         let raw = sharedDefaults?.double(forKey: SettingsKeys.keyboardFullAccessConfirmedAt) ?? 0
         return raw > 0 ? Date(timeIntervalSince1970: raw) : nil
@@ -760,11 +777,14 @@ struct ContentView: View {
             VStack {
                 Text(settingsToastMessage)
                     .font(.footnote.weight(.semibold))
+                    .multilineTextAlignment(.center)
                     .foregroundStyle(.primary)
                     .padding(.horizontal, 14)
                     .padding(.vertical, 10)
-                    .background(.ultraThinMaterial, in: Capsule())
+                    // 複数行(フルアクセスの知らせ 3467)でも崩れないよう角丸の四角にし、画面の端から離す
+                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
                     .shadow(color: .black.opacity(0.12), radius: 8, y: 3)
+                    .padding(.horizontal, 24)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
             .allowsHitTesting(false)
@@ -1596,6 +1616,7 @@ struct ContentView: View {
             }
             .onChange(of: settingsSyncSignature) { _ in
                 SettingsSyncNotification.postSettingsDidChange()
+                showFullAccessSettingsNoticeIfNeeded()
             }
             .onChange(of: userDictionaryCandidateDisplayModeRawValue) { newValue in
                 // 「使う」にしたとき、iOS のユーザ辞書の ☻ 語をショートカットへ取り込む予約(3244)
