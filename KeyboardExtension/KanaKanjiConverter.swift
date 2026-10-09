@@ -985,6 +985,11 @@ final class KanaKanjiConverter {
         applyScriptVariantSurfaceSuppression(context, to: &scores)
         applyKanaGakiPreference(context, to: &scores)
         applyKakikaePreference(context, to: &scores)
+        // 受け身・尊敬の される が付かない サ変名詞(発酵/発効/発光 等)+される は末尾へ(3483)
+        for candidate in Array(scores.keys)
+        where Self.isNonPassivizableSuruForm(candidate) && !context.userCandidateSet.contains(candidate) {
+            scores[candidate] = min(scores[candidate] ?? 0, CandidateScore.exactReadingOnly - 50)
+        }
         // emoji 候補がオフなら絵文字(国旗・学習した絵文字)を出さない(3423)。追加語彙(ショートカット)の絵文字は残す
         if !withStateLock({ emojiCandidatesEnabled }) {
             for candidate in Array(scores.keys)

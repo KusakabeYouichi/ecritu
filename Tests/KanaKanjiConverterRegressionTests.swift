@@ -21736,4 +21736,22 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "よげんがあたっちゃった", systemCandidateMode: .surface).first, "予言が当たっちゃった")
         XCTAssertEqual(converter.candidates(for: "あたわず", limit: 4, systemCandidateMode: .surface).first, "能わず")
     }
+
+    // 3483: される が付かない サ変名詞(発酵/発効/発光 等)+される は後ろ。はっこうされる は 発行される が先頭。はっ酵 は抑制
+    func testNonPassivizableSuruNouns() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for reading in ["はっこうされる", "はっこうされた"] {
+            let single = converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+            XCTAssertEqual(single.first, "発行" + String(reading.dropFirst(4)), "\(single)")
+            XCTAssertFalse(single.contains(where: { $0.contains("はっ酵") }), "\(single)")
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, "発行" + String(reading.dropFirst(4)), "multi=\(multi.prefix(4))")
+        }
+        XCTAssertEqual(converter.multiClauseCandidates(for: "しょうひんがはっこうされる", systemCandidateMode: .surface).first, "商品が発行される")
+        // する は従来どおり(発酵する は普通)
+        XCTAssertTrue(converter.candidates(for: "はっこうする", limit: 8, systemCandidateMode: .surface).prefix(3).contains { $0.hasSuffix("酵する") })
+        XCTAssertTrue(KanaKanjiConverter.isNonPassivizableSuruForm("発光される"))
+        XCTAssertFalse(KanaKanjiConverter.isNonPassivizableSuruForm("発光させる"))
+    }
 }
