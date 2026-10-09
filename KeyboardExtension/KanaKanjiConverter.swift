@@ -1248,6 +1248,13 @@ final class KanaKanjiConverter {
                     uni[candidate] != nil || altBest == nil {
                     return false
                 }
+                // カタカナの語+かなの付属語(パリは/パリに)は、先頭のカタカナを自分の読み(ぱり)で外来語か判定する(3468)。
+                // 読み全体(ぱりは)の辞書コストも LM も無いので、上の保護が効かず、surface モードで 巴里は があると
+                // パリは が強調として消えていた(ユーザ報告: ぱり は パリ が先頭なのに ぱりは に パリは が出ない)
+                if let (stem, stemReading) = Self.katakanaStemWithKanaTail(candidate, reading: reading),
+                    isLoanwordKatakanaStem(stem, stemReading: stemReading) {
+                    return false
+                }
                 guard let kataUni = uni[candidate] else {
                     // LM未収録のカタカナ化は、かな/漢字の代替が存在する限り強調とみなす
                     return altBest != nil || !kanjiAlternatives.isEmpty
@@ -1269,6 +1276,51 @@ final class KanaKanjiConverter {
                 break
             }
         }
+    }
+
+    // 先頭がカタカナ(長音を含む)の連で、残りが全部ひらがなの候補を、カタカナ部分とその読みに分ける(3468)。
+    // パリは/ぱりは → (パリ, ぱり)。形が違えば nil
+    static func katakanaStemWithKanaTail(_ candidate: String, reading: String) -> (String, String)? {
+        let characters = Array(candidate)
+        var splitIndex = 0
+        while splitIndex < characters.count, isKatakanaString(String(characters[splitIndex])) {
+            splitIndex += 1
+        }
+        guard splitIndex > 0, splitIndex < characters.count else {
+            return nil
+        }
+        let tail = String(characters[splitIndex...])
+        guard tail.allSatisfy({ ("ぁ"..."ゖ").contains($0) }), reading.hasSuffix(tail) else {
+            return nil
+        }
+        let stem = String(characters[..<splitIndex])
+        let stemReading = String(reading.dropLast(tail.count))
+        guard hiraganizedKanaOnlySurface(stem) == stemReading else {
+            return nil
+        }
+        return (stem, stemReading)
+    }
+
+    // カタカナの語が、その読みで正当な外来語表記か(3468)。上の外来語保護と同じ基準(辞書コストの差、または
+    // LM でかな・漢字の代わりより安い)を、語の読みで当てる
+    func isLoanwordKatakanaStem(_ stem: String, stemReading: String) -> Bool {
+        let wordCosts = store.wordCosts(for: stemReading)
+        guard !wordCosts.isEmpty else {
+            return false
+        }
+        let kanjiAlternatives = wordCosts.keys.filter { Self.containsKanjiCandidate($0) }
+        let uni = store.wordLMUnigramCosts(for: [stem, stemReading] + kanjiAlternatives)
+        let altBest = (kanjiAlternatives.compactMap { uni[$0] } + [uni[stemReading]].compactMap { $0 }).min()
+        let nonKatakanaBest = wordCosts.filter { !Self.isKatakanaString($0.key) }.values.min()
+        if let stemWordCost = wordCosts[stem], let nonKatakanaBest,
+            nonKatakanaBest - stemWordCost >= CandidateScore.loanwordKatakanaWordCostGap,
+            uni[stem] != nil || altBest == nil {
+            return true
+        }
+        if let stemUni = uni[stem] {
+            return altBest.map { stemUni < $0 } ?? true
+        }
+        return false
     }
 
     // ステージ5: スコア降順に整列し、旧形容詞/旧仮名フィルタを通して確定する。
