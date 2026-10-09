@@ -272,13 +272,12 @@ struct FlickKeyView: View {
         }
         .contentShape(Rectangle())
         .gesture(flickGesture)
-        .background(
-            GeometryReader { proxy in
-                Color.clear
-                    .preference(key: FlickKeyFramePreferenceKey.self, value: proxy.frame(in: .global))
-            }
-        )
-        .onPreferenceChange(FlickKeyFramePreferenceKey.self) { newValue in
+        // キー枠の測定(横長の長押しパネルを画面端で寄せる計算に使う)。以前は GeometryReader+preference で、
+        // キーごとに背景のビュー・preference の受け渡し・変更通知が AttributeGraph に常駐していた。
+        // onGeometryChange は値が変わったときだけ呼ばれる軽い仕組み(3480。実機メモリグラフで SwiftUI 内部が約 2MB)
+        .onGeometryChange(for: CGRect.self) { proxy in
+            proxy.frame(in: .global)
+        } action: { newValue in
             keyFrameInGlobal = newValue
         }
         .onChange(of: isGestureInProgress) { inProgress in
@@ -973,14 +972,6 @@ struct FlickKeyView: View {
         let rawIndex = Int(round((locationX - longPressAnchorLocationX) / slotWidth))
 
         return max(0, min(longPressCandidates.count - 1, rawIndex))
-    }
-}
-
-private struct FlickKeyFramePreferenceKey: PreferenceKey {
-    static var defaultValue: CGRect = .zero
-
-    static func reduce(value: inout CGRect, nextValue: () -> CGRect) {
-        value = nextValue()
     }
 }
 
