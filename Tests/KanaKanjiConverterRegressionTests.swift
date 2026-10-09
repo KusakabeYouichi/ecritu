@@ -21689,4 +21689,15 @@ extension KanaKanjiConverterRegressionTests {
             XCTAssertEqual(multi.first, expected, "multi=\(multi.prefix(4))")
         }
     }
+
+    // 3474: なかったらしい の単文節に 無かったらしい(推量の らしい が付属語の表に無かった)
+    func testRashiiPostfix() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        // 表示は 連文節(先頭 なかったらしい)→ 単文節 の順。単文節の並びはキャッシュ次第で揺れるので上位に居るかを見る
+        let list = converter.candidates(for: "なかったらしい", limit: 6, systemCandidateMode: .surface)
+        XCTAssertTrue(list.prefix(3).contains("無かったらしい"), "\(list)")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "なかったらしい", systemCandidateMode: .surface).first, "なかったらしい")
+        XCTAssertEqual(converter.candidates(for: "あたらしい", limit: 3, systemCandidateMode: .surface).first, "新しい")
+    }
 }
