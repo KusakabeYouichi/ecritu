@@ -1949,7 +1949,7 @@ extension KanaKanjiConverter {
     static let multiClauseNonPassivizableSuruPenalty = 4000
     // 国名+籍 の加点(3485)。〜国(米国/英国/外国)とカタカナ(フランス)は形で、それ以外の国・地域名はこの表で見る
     static let multiClauseNationalityPrefixSurfaces: Set<String> = ["日本", "台湾", "香港", "朝鮮", "中華民国"]
-    static let multiClauseNationalitySuffixBonus = 2500
+    static let multiClauseNationalitySuffixBonus = 4000
     // 列挙の といった(A、B といった C)。かな 4 字の素通り(28000)しかノードが無く、
     // と+行った/言った(7099)に勝てない。引用の と+言った(述語直後)以外はかなにクランプする
     // (2878、抜き取り検査 8 件)
