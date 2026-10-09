@@ -21640,4 +21640,14 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertNil(KanaKanjiConverter.katakanaStemWithKanaTail("パリ", reading: "ぱり"))
         XCTAssertEqual(KanaKanjiConverter.katakanaStemWithKanaTail("パリは", reading: "ぱりは")?.0, "パリ")
     }
+
+    // 3469: なんこも/なんこか は 何個も/何個か が先頭(連文節は LM の 南湖 が強かった)
+    func testNankoMoCountFirst() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for reading in ["なんこも", "なんこか"] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, "何個" + String(reading.dropFirst(3)), "multi=\(multi.prefix(4))")
+        }
+    }
 }
