@@ -21700,4 +21700,13 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "なかったらしい", systemCandidateMode: .surface).first, "なかったらしい")
         XCTAssertEqual(converter.candidates(for: "あたらしい", limit: 3, systemCandidateMode: .surface).first, "新しい")
     }
+
+    // 3475: 亡い/失い(読み ない の形容詞)は Sudachi の誤り。亡かった/失かった を出さない
+    func testNaiMisreadAdjectivesSuppressed() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let list = converter.candidates(for: "なかった", limit: 8, systemCandidateMode: .surface)
+        XCTAssertFalse(list.contains("亡かった") || list.contains("失かった"), "\(list)")
+        XCTAssertEqual(Array(list.prefix(2)), ["なかった", "無かった"], "\(list)")
+    }
 }

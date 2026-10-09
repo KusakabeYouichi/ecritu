@@ -6,6 +6,8 @@
 
 	<!-- ■ 誤エントリ: 辞書の誤った読み・存在しない表記(学習でも古語でもなく明確な誤り) -->
 	<dict><key>phrase</key><string>出来得る</string><key>shortcut</key><string>できえる</string></dict>	<!-- 出来得る は できうる と読む(できえる と読むのは聞かない。ユーザ指定 3401)。できえる は で消える にする -->
+	<dict><key>phrase</key><string>亡い</string><key>shortcut</key><string>ない</string></dict>	<!-- 亡い/失い: Sudachi が 読み ない の形容詞として持つが、そういう語は無い(亡き/失う の誤収穫)。亡かった/失かった のようなあり得ない活用を出していた(ユーザ指定 3475) -->
+	<dict><key>phrase</key><string>失い</string><key>shortcut</key><string>ない</string></dict>
 	<dict><key>phrase</key><string>継なぐ</string><key>shortcut</key><string>つなぐ</string></dict>	<!-- 継ぐ(つぐ)の非標準送り仮名。継なぎましょ 等の派生を出さない(ユーザ指定 2736) -->
 	<dict><key>phrase</key><string>宣野座</string><key>shortcut</key><string>ぎのざ</string></dict>	<!-- 正しくは 宜野座(沖縄県宜野座村)。宣(せん)と宜(ぎ)の字形類似で辞書収穫にも混入した誤表記 -->
 	<dict><key>phrase</key><string>感ぢ</string><key>shortcut</key><string>かんじ</string></dict>	<!-- 感ぢ: SudachiDict small_lex の 感じ の表記ゆれ収穫。感じ は歴史的仮名遣いでも かんじ で ぢ にならない誤り(ユーザ指定 3337) -->
