@@ -21146,6 +21146,17 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(list.prefix(5)), ["掛けた", "書けた", "描けた", "賭けた", "欠けた"], "\(list)")
     }
 
+    // 3463: はなしろ/はなしろさん で 英城 は姓の最後(LM の 英城 は別読みの統計)
+    func testHanashiroEijouLast() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let single = converter.candidates(for: "はなしろ", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(4)), ["花城", "玻名城", "波名城", "英城"], "\(single)")
+        let multi = converter.multiClauseCandidates(for: "はなしろさん", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "花城さん", "multi=\(multi.prefix(4))")
+        XCTAssertFalse(multi.prefix(3).contains("英城さん"), "multi=\(multi.prefix(4))")
+    }
+
     // 3456: こんねん は 今年、みょうねん は 明年 が先頭(3457: さくじつ は 昨日)
     func testKonnenMyounenOrder() throws {
         try prepareRealLMDictionary()
