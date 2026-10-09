@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20261009104540"
+    private static let editionUpdatedAtRaw: String = "20261009151424"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -539,6 +539,14 @@ struct ContentView: View {
 
     var showsSetupStepsAtTop: Bool {
         !isKeyboardCurrentlyEnabled && !setupStepsDismissed
+    }
+
+    // キーボードがフルアクセスありで最後に表示された時刻(3466。キーボードが共有領域に書く)
+    @State var keyboardFullAccessConfirmedAt: Date? = ContentView.readKeyboardFullAccessConfirmedAt()
+
+    static func readKeyboardFullAccessConfirmedAt() -> Date? {
+        let raw = sharedDefaults?.double(forKey: SettingsKeys.keyboardFullAccessConfirmedAt) ?? 0
+        return raw > 0 ? Date(timeIntervalSince1970: raw) : nil
     }
 
     static func detectKeyboardEnabled() -> Bool {
@@ -1530,6 +1538,14 @@ struct ContentView: View {
                             SetupStepsSection(steps: setupSteps, onDismiss: { setupStepsDismissed = true })
                         }
 
+                        // フルアクセスの状態(3466)。キーボードを有効にした後だけ出す
+                        if isKeyboardCurrentlyEnabled {
+                            FullAccessStatusSection(
+                                confirmedAt: keyboardFullAccessConfirmedAt,
+                                privacyPolicyURL: Self.privacyPolicyURL
+                            )
+                        }
+
                         // 設定カード群は初回フレーム描画後に遅延構築する(下の .task が1フレーム後に
                         // フラグを立てる)。起動直後はロゴ+ヘッダーだけを即描画し、白背景の
                         // Loading 表示が長引かないようにする。
@@ -1614,6 +1630,8 @@ struct ContentView: View {
 
                 // 有効化状態を読み直す(設定アプリで有効化して戻ってきた直後に反映。2790)
                 isKeyboardCurrentlyEnabled = Self.detectKeyboardEnabled()
+                // 設定アプリでフルアクセスをオンにしてキーボードを開き、戻ってきた直後に反映(3466)
+                keyboardFullAccessConfirmedAt = Self.readKeyboardFullAccessConfirmedAt()
 
                 // バックグラウンド滞在中に拡張が書いた診断(起動/未到達カウント・
                 // ログ行)を表示へ反映する。onAppearは復帰では再発火しないため、

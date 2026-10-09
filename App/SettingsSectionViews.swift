@@ -285,6 +285,80 @@ struct SetupStepsSection: View {
     }
 }
 
+// フルアクセスの状態(3466)。アプリからは直接分からないので、キーボードがフルアクセスありで表示されたときに共有領域へ
+// 書く時刻で判断する(届いていればオン)。7 日より古ければ、その後オフにした可能性があるので未確認に戻す。
+// 未確認のときは、効かなくなる機能・設定アプリへの近道・通信しないことの説明を出す(審査 4.4.1: 強要はしない)
+struct FullAccessStatusSection: View {
+    let confirmedAt: Date?
+    let privacyPolicyURL: URL
+
+    static let staleInterval: TimeInterval = 7 * 24 * 3600
+
+    private var isConfirmed: Bool {
+        guard let confirmedAt else {
+            return false
+        }
+        return Date().timeIntervalSince(confirmedAt) < Self.staleInterval
+    }
+
+    private func dateText(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ja_JP")
+        formatter.dateFormat = "M月d日 H:mm"
+        return formatter.string(from: date)
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 8) {
+                Image(systemName: isConfirmed ? "checkmark.circle.fill" : "exclamationmark.circle")
+                    .foregroundStyle(isConfirmed ? Color.green : Color.orange)
+                Text(isConfirmed ? "フルアクセス: オン" : "フルアクセス: 未確認")
+                    .font(.headline)
+                Spacer(minLength: 8)
+                if let confirmedAt {
+                    Text("\(dateText(confirmedAt)) に確認")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            if !isConfirmed {
+                Text(
+                    "キーボードからの確認が届いていません。[フルアクセスを許可]がオフだと、学習の保存、"
+                        + "追加語彙・抑制語彙、このアプリで変えた設定がキーボードに届きません(入力と変換はそのまま使えます)。"
+                )
+                .font(.subheadline)
+                .fixedSize(horizontal: false, vertical: true)
+
+                Button {
+                    if let url = URL(string: UIApplication.openSettingsURLString) {
+                        UIApplication.shared.open(url)
+                    }
+                } label: {
+                    Label("設定を開く", systemImage: "gear")
+                        .font(.subheadline.weight(.semibold))
+                }
+                .buttonStyle(.borderedProminent)
+
+                Text("開いた画面の「キーボード」で[フルアクセスを許可]をオンにしてください。オンにしたあと一度 écritu のキーボードを開くと、ここが「オン」になります。")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Text("écritu には通信のコードがありません。フルアクセスは、このアプリとキーボードで設定と学習を共有するためだけに使い、打った内容が外へ送られることはありません。")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Link("プライバシーについて", destination: privacyPolicyURL)
+                    .font(.footnote)
+            }
+        }
+        .settingsCardStyle()
+    }
+}
+
 // 変換キャッシュのクリア。キーボード拡張はプロセス内に読みごとの候補キャッシュ(96件)を持ち、
 // quick postfix 経路がそれを語幹の候補列として読むため内容が並びに影響する。設定変更の世代
 // カウンタを +1 すると、キーボード側が次の表示または Darwin 通知で clearSharedDataCaches() を

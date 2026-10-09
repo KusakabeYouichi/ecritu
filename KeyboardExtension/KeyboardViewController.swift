@@ -477,6 +477,9 @@ final class KeyboardViewController: UIInputViewController {
         static let calendarFridayColor = "calendarFridayColor"
         static let calendarSaturdayColor = "calendarSaturdayColor"
         static let dateFormatStyle = "dateFormatStyle"
+        // キーボードがフルアクセスありで表示された最後の時刻(3466)。アプリがフルアクセスの状態を示すのに使う。
+        // 共有領域に書けるのはオンのときだけなので、届いていればオンと言える。打った内容は含まない
+        static let keyboardFullAccessConfirmedAt = "keyboardFullAccessConfirmedAt"
         static let latinLexiconFrenchEnabled = "latinLexiconFrenchEnabled"
         static let latinLexiconGermanEnabled = "latinLexiconGermanEnabled"
         static let latinLexiconItalianEnabled = "latinLexiconItalianEnabled"
@@ -982,6 +985,7 @@ final class KeyboardViewController: UIInputViewController {
         super.viewDidAppear(animated)
         setNeedsUpdateOfScreenEdgesDeferringSystemGestures()
         updateKeyboardDiagnosticsHeartbeat(event: "viewDidAppear", appendLog: true)
+        recordFullAccessConfirmationIfNeeded()
         // ホスト接続が確立した後に地球儀キーの要否を 1 回だけ読む(定義コメント参照。2824)。変わっていれば再描画
         let needsSwitchKey = needsInputModeSwitchKey
         if needsSwitchKey != cachedNeedsInputModeSwitchKey {
@@ -1518,6 +1522,20 @@ final class KeyboardViewController: UIInputViewController {
         }
         let shown = items.prefix(8).joined(separator: " ")
         return "層=\(layerCount) 中身あり=\(items.count) [\(shown)]"
+    }
+
+    // フルアクセスありで表示されたことを共有領域に記録する(3466。Release でも動く。診断ログとは別)。
+    // 書き込みは 10 分に 1 回まで
+    func recordFullAccessConfirmationIfNeeded() {
+        guard hasFullAccess, let defaults = sharedDefaults else {
+            return
+        }
+        let now = Date().timeIntervalSince1970
+        let last = defaults.double(forKey: SharedDefaultsKeys.keyboardFullAccessConfirmedAt)
+        guard now - last > 600 else {
+            return
+        }
+        defaults.set(now, forKey: SharedDefaultsKeys.keyboardFullAccessConfirmedAt)
     }
 
     func stripViewShellForDisposal() {
