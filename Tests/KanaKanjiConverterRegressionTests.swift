@@ -21754,4 +21754,14 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(KanaKanjiConverter.isNonPassivizableSuruForm("発光される"))
         XCTAssertFalse(KanaKanjiConverter.isNonPassivizableSuruForm("発光させる"))
     }
+
+    // 3484: せきだけ は 席だけ(文頭の点数で 籍 が 席 より安かった)。こせきだけ の 戸籍だけ は残る
+    func testSekiDakeSeatFirst() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("せきだけ", "席だけ"), ("せきだけよやく", "席だけ予約"), ("こせきだけ", "戸籍だけ")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "multi=\(multi.prefix(4))")
+        }
+    }
 }
