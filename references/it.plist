@@ -68,6 +68,10 @@
 	<dict><key>phrase</key><string>MacBook</string><key>shortcut</key><string>まっくぶっく</string></dict>
 	<dict><key>phrase</key><string>Macintosh</string><key>shortcut</key><string>まっきんとっしゅ</string></dict>
 	<dict><key>phrase</key><string>Newton</string><key>shortcut</key><string>にゅーとん</string></dict>	<!-- 1993-1998 の携帯情報端末。フリック入力の Hanabi(style-hanabi の由来)が動いた機種(ユーザ指定 3018) -->
+	<dict><key>phrase</key><string>Magic Mouse</string><key>shortcut</key><string>まじっくまうす</string></dict>
+	<dict><key>phrase</key><string>Magic Keyboard</string><key>shortcut</key><string>まじっくきーぼーど</string></dict>
+	<dict><key>phrase</key><string>Smart Keyboard</string><key>shortcut</key><string>すまーときーぼーど</string></dict>
+	<dict><key>phrase</key><string>Smart Keyboard Folio</string><key>shortcut</key><string>すまーときーぼーどふぉりお</string></dict>
 
 	<!-- OSや機能 -->
 	<dict><key>phrase</key><string>MagSafe</string><key>shortcut</key><string>まぐせいふ</string></dict>
@@ -112,6 +116,8 @@
 	<dict><key>phrase</key><string>Yosemite</string><key>shortcut</key><string>よせみて</string></dict>
 	<dict><key>phrase</key><string>Time Machine</string><key>shortcut</key><string>たいむましーん</string></dict>
 	<dict><key>phrase</key><string>Time Machine</string><key>shortcut</key><string>たいむましん</string></dict>
+	<dict><key>phrase</key><string>Touch ID</string><key>shortcut</key><string>たっちあいでぃー</string></dict>
+	<dict><key>phrase</key><string>Face ID</string><key>shortcut</key><string>ふぇいすあいでぃー</string></dict>
 
 	<!-- サーヴィス -->
 	<dict><key>phrase</key><string>App Store</string><key>shortcut</key><string>あっぷすとあ</string></dict>
