@@ -394,8 +394,10 @@ extension MemoryForensics {
                 address += size
                 continue
             }
-            // internal(アプリ由来 dirty)+ 圧縮器へ退避済み(どちらも footprint に計上)
-            let dirty = Int(info.pages_dirtied) + Int(info.pages_swapped_out)
+            // internal(アプリ由来 dirty)+ 圧縮器へ退避済み(どちらも footprint に計上)。
+            // dirtied は「一度でも書いたページ」で、手放した後も数え続ける(cg_data が 1.4MB×個体数に見えたが、
+            // メモリグラフでは常駐 32KB だった。3479)。常駐との少ない方を取り、今メモリにある書き込み済みだけを数える
+            let dirty = Self.footprintPages(info)
             if dirty > 0 {
                 totalsByTag[info.user_tag, default: (0, 0)].dirtyPages += dirty
                 totalsByTag[info.user_tag, default: (0, 0)].regions += 1
@@ -471,6 +473,11 @@ extension MemoryForensics {
         #endif
     }
 
+    // footprint に効くページ数(3479): 今メモリにある書き込み済み(dirtied と resident の少ない方)+ 圧縮退避済み
+    static func footprintPages(_ info: vm_region_submap_info_64) -> Int {
+        min(Int(info.pages_dirtied), Int(info.pages_resident)) + Int(info.pages_swapped_out)
+    }
+
     // CoreGraphics のデータ領域(VM タグ 54 = cg_data)の量と、領域ごとの大きさ(KB、大きい順)。
     // 正体の切り分け用(3441): どの操作で増えるかを面の切り替えごとに記録し、領域の大きさから画像の寸法を推す
     static func cgDataRegionSummary() -> String {
@@ -493,7 +500,7 @@ extension MemoryForensics {
             }
             guard kern == KERN_SUCCESS else { break }
             if info.is_submap == 0, info.user_tag == 54 {
-                let dirty = Int(info.pages_dirtied) + Int(info.pages_swapped_out)
+                let dirty = Self.footprintPages(info)
                 if dirty > 0 {
                     sizesKB.append(dirty * 16)
                 }
