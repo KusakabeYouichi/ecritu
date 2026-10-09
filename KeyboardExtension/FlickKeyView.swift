@@ -239,10 +239,15 @@ struct FlickKeyView: View {
                     .offset(resolvedPreviewOffset)
             }
 
+        }
+        // 横長の長押しパネル(英字のアクセント候補)もキーの大きさに影響しない overlay に置く(3488)。以前は ZStack の
+        // 子で、パネルの幅までキーが広がり同じ段の他のキーを押し縮めていた(上段では消えた。ユーザ報告の画像)
+        .overlay {
             if longPressIsActive,
                 !longPressCandidates.isEmpty,
                 longPressCandidateAxis == .horizontal {
                 longPressCandidatePanel
+                    .fixedSize()
                     .offset(x: candidatePanelOffsetX, y: candidatePanelOffsetY)
                     .zIndex(KeyboardLayerZIndex.floatingOverlay)
             }
