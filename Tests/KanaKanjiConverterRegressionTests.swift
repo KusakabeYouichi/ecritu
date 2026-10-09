@@ -21659,4 +21659,14 @@ extension KanaKanjiConverterRegressionTests {
         let multi = converter.multiClauseCandidates(for: "むぎのほが", systemCandidateMode: .surface)
         XCTAssertEqual(multi.first, "麦の穂が", "multi=\(multi.prefix(4))")
     }
+
+    // 3471: つきなみで/つきなみな は 月並みで/月並みな(LM 未収録の 月並み を misc に。LM の 月次 が先頭を取っていた)
+    func testTsukinamiRegistered() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("つきなみで", "月並みで"), ("つきなみな", "月並みな"), ("つきなみなひょうげん", "月並みな表現")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "multi=\(multi.prefix(4))")
+        }
+    }
 }
