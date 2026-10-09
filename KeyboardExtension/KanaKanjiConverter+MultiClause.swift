@@ -3354,6 +3354,14 @@ extension KanaKanjiConverter {
                             prevNode.readingID == SID.に || prevNode.readingID == SID.と {
                             cost -= Self.multiClauseResembleAfterParticleBonus
                         }
+                        // 国名+籍(日本籍/米国籍/フランス籍)。LM に 国名→籍 が無いと 関野(せきの、姓)が 籍+の を飲み込み
+                        // 日本関野/米国関野 になっていた(中国籍/韓国籍 は LM にあって正しい。ユーザ指定 3485)
+                        if node.surface == "籍", node.reading == "せき", !prevNode.isKanaIdentity,
+                            prevNode.surface.hasSuffix("国")
+                                || Self.isKatakanaString(prevNode.surface)
+                                || Self.multiClauseNationalityPrefixSurfaces.contains(prevNode.surface) {
+                            cost -= Self.multiClauseNationalitySuffixBonus
+                        }
                         // 受け身・尊敬の される が付かない サ変名詞(発酵/発効/発光 等。3483)。1 ノード(発酵される)でも、
                         // 名詞+され…(発酵+される)の 2 ノードでも減点する
                         // される は さ+れる の 2 ノードに割れることもあるので、名詞の直後の入力が され かで見る
