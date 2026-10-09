@@ -133,6 +133,14 @@
 	<dict><key>phrase</key><string>i-mode</string><key>shortcut</key><string>あいもーど</string></dict>	<!-- NTT ドコモの携帯電話向けインターネット接続サーヴィス。公式表記は小文字 i + ハイフン(ユーザ指定 2925) -->
 	<dict><key>phrase</key><string>iモード</string><key>shortcut</key><string>あいもーど</string></dict>
 	<dict><key>phrase</key><string>マイカード</string><key>shortcut</key><string>まいかーど</string><key>pos</key><string>名詞</string></dict>	<!-- 読み まいかーど が辞書に 1 件も無く候補なしだった(ユーザ指定 2939) -->	<!-- 日本語表記。読み あいもーど は辞書に 1 件も無かった -->
+	<dict><key>phrase</key><string>Apple Home</string><key>shortcut</key><string>あっぷるほーむ</string></dict>
+	<dict><key>phrase</key><string>アップル・ホーム</string><key>shortcut</key><string>あっぷるほーむ</string></dict>
+	<dict><key>phrase</key><string>HomeKit</string><key>shortcut</key><string>ほーむきっと</string></dict>
+	<dict><key>phrase</key><string>ホームキット</string><key>shortcut</key><string>ほーむきっと</string></dict>
+	<dict><key>phrase</key><string>Thread</string><key>shortcut</key><string>すれっど</string></dict>
+	<dict><key>phrase</key><string>スレッド</string><key>shortcut</key><string>すれっど</string></dict>
+	<dict><key>phrase</key><string>Matter</string><key>shortcut</key><string>またー</string></dict>
+	<dict><key>phrase</key><string>マター</string><key>shortcut</key><string>またー</string></dict>
 
 	<!-- アプリ -->
 	<dict><key>phrase</key><string>Finder</string><key>shortcut</key><string>ふぁいんだー</string></dict>
