@@ -338,6 +338,7 @@ struct KeyboardDiagnosticsSection: View {
     let isSessionActive: Bool
     let failSafeProfile: String
     let lastHeartbeatText: String
+    let lastHeartbeatDate: Date?
     let lastEvent: String
     let lastSessionID: String
     let installMarker: String
@@ -373,6 +374,23 @@ struct KeyboardDiagnosticsSection: View {
         logLines.joined(separator: "\n")
     }
 
+    // 最終ハートビートが 24 時間より古い(または一度も無い)ときの警告文(3464)
+    static let heartbeatStaleThreshold: TimeInterval = 24 * 3600
+    private var heartbeatStaleWarning: String? {
+        guard let lastHeartbeatDate else {
+            return "キーボードからの記録が一度も届いていません。écritu のキーボードを使ったのにこの表示が出るなら、"
+                + "フルアクセスがオフです(設定 › 一般 › キーボード › キーボード › écritu › フルアクセスを許可)。"
+                + "オフのままでは診断ログが取れません。"
+        }
+        let hours = Int(Date().timeIntervalSince(lastHeartbeatDate) / 3600)
+        guard Date().timeIntervalSince(lastHeartbeatDate) > Self.heartbeatStaleThreshold else {
+            return nil
+        }
+        return "キーボードからの記録が \(hours) 時間届いていません。この間に écritu のキーボードを使っていたなら、"
+            + "フルアクセスがオフです(設定 › 一般 › キーボード › キーボード › écritu › フルアクセスを許可)。"
+            + "オフのままでは診断ログが取れません。"
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 8) {
@@ -394,6 +412,15 @@ struct KeyboardDiagnosticsSection: View {
                         Capsule(style: .continuous)
                             .fill((isSessionActive ? Color.green : Color.secondary).opacity(0.12))
                     )
+            }
+
+            // キーボードからの記録が途絶えている警告(3464)。フルアクセスがオフだとキーボードは共有領域に書けず、
+            // ログもハートビートも届かない。テスターが空のログを送ってくることがあったので、コピーする画面で知らせる
+            if let warning = heartbeatStaleWarning {
+                Text(warning)
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.red)
+                    .fixedSize(horizontal: false, vertical: true)
             }
 
             VStack(alignment: .leading, spacing: 3) {
