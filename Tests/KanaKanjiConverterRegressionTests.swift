@@ -21679,4 +21679,14 @@ extension KanaKanjiConverterRegressionTests {
             XCTAssertEqual(multi.first, expected, "multi=\(multi.prefix(4))")
         }
     }
+
+    // 3473: たきたてごはん は 炊きたてご飯(辞書の 炊きたて が下限 8700 で重く、焚き+たて 7200 に負けていた)
+    func testTakitateGohan() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("たきたてごはん", "炊きたてご飯"), ("たきたての", "炊きたての")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "multi=\(multi.prefix(4))")
+        }
+    }
 }
