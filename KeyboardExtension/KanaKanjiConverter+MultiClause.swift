@@ -226,6 +226,13 @@ extension KanaKanjiConverter {
         if !withStateLock({ emojiCandidatesEnabled }) {
             candidates.removeAll { Self.containsEmoji($0) }
         }
+        // 受け身・尊敬の される が付かない サ変名詞+される(商品が醗酵される 等)を含む候補は後ろへ(3483)。
+        // ラティスの減点で最良からは外れるが、差し替えの変種として 2 位以降に残るため
+        let hasNonPassivizable = candidates.contains { Self.containsNonPassivizableSuruForm($0) }
+        if hasNonPassivizable {
+            candidates = candidates.filter { !Self.containsNonPassivizableSuruForm($0) }
+                + candidates.filter { Self.containsNonPassivizableSuruForm($0) }
+        }
         guard let preference = withStateLock({ kakikaePreference }), !candidates.isEmpty else {
             return candidates
         }
@@ -2973,6 +2980,10 @@ extension KanaKanjiConverter {
                             !Self.isToIttaFollowedByPredicateTail(chars: chars, from: node.end, n: n) {
                             cost = min(cost, Self.multiClauseEnumerationToIttaKanaCost)
                         }
+                        // 受け身・尊敬の される が付かない サ変名詞+される(3483)。文頭の 1 ノード
+                        if Self.isNonPassivizableSuruForm(node.surface) {
+                            cost += Self.multiClauseNonPassivizableSuruPenalty
+                        }
                         // 意志形+と+思う(定数コメント参照。2973)。文頭がこの形の典型(いこうと思ったら)
                         if Self.isVolitionalBeforeOmou(node: node, chars: chars, n: n) {
                             cost -= Self.multiClauseVolitionalBeforeOmouBonus
@@ -3342,6 +3353,14 @@ extension KanaKanjiConverter {
                             prevNode.isKanaIdentity,
                             prevNode.readingID == SID.に || prevNode.readingID == SID.と {
                             cost -= Self.multiClauseResembleAfterParticleBonus
+                        }
+                        // 受け身・尊敬の される が付かない サ変名詞(発酵/発効/発光 等。3483)。1 ノード(発酵される)でも、
+                        // 名詞+され…(発酵+される)の 2 ノードでも減点する
+                        // される は さ+れる の 2 ノードに割れることもあるので、名詞の直後の入力が され かで見る
+                        if Self.isNonPassivizableSuruForm(node.surface)
+                            || (Self.nonPassivizableSuruNouns.contains(prevNode.surface)
+                                && node.start + 1 < n && chars[node.start] == "さ" && chars[node.start + 1] == "れ") {
+                            cost += Self.multiClauseNonPassivizableSuruPenalty
                         }
                         // 逆に を の直後の にる 系は 煮る(野菜を煮て)。基底 seed を 似る 先頭にした(3460)ので対で持つ
                         if node.surface.hasPrefix("煮"), node.reading.hasPrefix("に"),

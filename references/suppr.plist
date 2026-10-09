@@ -217,6 +217,7 @@
 	<!-- ※ イイね: 今どき流行らない書き方(イイ=カタカナ強調)。いい+ね 合成由来なので読み いいね の直接ペアで抑制(イイ感じ 等、他の読みでの イイ は温存)。※踊り字 いゝね は旧仮名・踊り字トグルのフィルタで制御(個別抑制は撤去) -->
 
 	<!-- ■ 交ぜ書き・表記ゆれの収穫(石ユ/ぜい金 等、意味のない混ぜ表記) -->
+	<dict><key>phrase</key><string>はっ酵</string><key>shortcut</key><string>はっこう</string></dict>	<!-- はっ酵: 発酵 の交ぜ書き(醗 を避けた書きかえの名残)。はっ酵する/される まで出ていた(ユーザ指定 3483) -->
 	<dict><key>phrase</key><string>街しょう</string><key>shortcut</key><string>がいしょう</string></dict>	<!-- 街しょう: 街娼 の交ぜ書きの収穫。由来不明で出さない(ユーザ指定 3392) -->
 	<dict><key>phrase</key><string>ススめる</string><key>shortcut</key><string>すすめる</string></dict>	<!-- 交ぜ書き収穫。同上 -->
 	<dict><key>phrase</key><string>感ジ</string><key>shortcut</key><string>かんじ</string></dict>	<!-- 感ジ: 感じ の交ぜ書き。使わない表記(ユーザ指定 3267) -->
