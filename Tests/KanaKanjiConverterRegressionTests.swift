@@ -21688,6 +21688,10 @@ extension KanaKanjiConverterRegressionTests {
             let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
             XCTAssertEqual(multi.first, expected, "multi=\(multi.prefix(4))")
         }
+        // 3478: 焚きたて/炷きたて と 誤判 は上位に出さない(2 位は 炊きたてごはん)
+        let gohan = converter.multiClauseCandidates(for: "たきたてごはん", systemCandidateMode: .surface)
+        XCTAssertEqual(gohan.dropFirst().first, "炊きたてごはん", "multi=\(gohan.prefix(4))")
+        XCTAssertFalse(gohan.prefix(4).contains(where: { $0.contains("焚") || $0.contains("炷") || $0.contains("誤判") }), "multi=\(gohan.prefix(4))")
     }
 
     // 3474: なかったらしい の単文節に 無かったらしい(推量の らしい が付属語の表に無かった)
