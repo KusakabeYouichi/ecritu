@@ -1083,6 +1083,36 @@ extension KanaKanjiConverter {
     // 定着した交ぜ書き(常用漢字外回避ではなく主流表記になっているもの)。分類から除外する。
     // 交ぜ書き判定の許可リスト。漢字+かな混在だが現代の標準表記であるもの。
     // 今まで は 今迄(旧表記・全漢字)が辞書にあるため交ぜ書き扱いで抑制されていた(2455)。
+    // 受け身・尊敬の される が付かない サ変名詞(3483、ユーザ指定 はっこうされる)。自然現象・状態変化の、意志の無い自動詞で、
+    // 主語が人にならない(尊敬の される も無い)。辞書に自他の区別が無く、LM も される/させる を さ+れる/さ+せる に割るので
+    // 区別できない(発酵させる は普通)ため、人手の表で持つ。到着/卒業 のように人が主語の語は尊敬の される があるので入れない
+    static let nonPassivizableSuruNouns: Set<String> = [
+        "発酵", "醗酵", "発効", "発光", "発向", "発芽", "発熱", "発火", "発生", "発病",
+        "沸騰", "腐敗", "蒸発", "膨張", "劣化", "老化", "風化", "結露", "落雷", "噴火"
+    ]
+
+    // 表の名詞+され…(される/された/されて/されない 等)の候補か
+    static func isNonPassivizableSuruForm(_ candidate: String) -> Bool {
+        guard candidate.contains("され") else {
+            return false
+        }
+        for noun in nonPassivizableSuruNouns where candidate.hasPrefix(noun) {
+            let rest = candidate.dropFirst(noun.count)
+            if rest.hasPrefix("され"), rest.allSatisfy({ ("ぁ"..."ゖ").contains($0) }) {
+                return true
+            }
+        }
+        return false
+    }
+
+    // 句の中に 表の名詞+され を含むか(連文節の結果用。商品が醗酵される)
+    static func containsNonPassivizableSuruForm(_ candidate: String) -> Bool {
+        guard candidate.contains("され") else {
+            return false
+        }
+        return nonPassivizableSuruNouns.contains { candidate.contains($0 + "され") }
+    }
+
     static let mazegakiAllowlistedSurfaces: Set<String> = [
         "子ども", "子どもたち", "子どもの日", "今まで",
         // 正当な送り仮名語が同読み全漢字語の部分列に誤マッチしていた(2637):
