@@ -199,6 +199,15 @@ extension KeyboardViewController {
                 refreshKeyboardStateAsync()
                 return
             }
+            // 調査用(3481): 未確定の 1 字消しで、ホストが確定済みの文字まで消す現象(メッセージで新着・通知が来た直後に
+            // 数文字消える、ユーザ報告)の証拠を取る。メッセージは context に未確定を含めないので、未確定を消す前後で
+            // 確定済みの文字数は変わらないはず。減っていたら消えた数と前後の長さを critical に残す
+            #if DEBUG
+            invalidateTextContextCache()
+            let committedContextBeforeDelete = currentTextContextBeforeInput()
+            let markedBeforeDelete = composingRawText
+            let sinceOwnEditBeforeDeleteMs = Int((CFAbsoluteTimeGetCurrent() - lastTextProxyEditAt) * 1000)
+            #endif
             composingRawText.removeLast()
 
             if !composingReading.isEmpty {
@@ -211,6 +220,28 @@ extension KeyboardViewController {
             } else {
                 setMarkedComposingText(composingRawText)
             }
+
+            #if DEBUG
+            // ホストから届く context は setMarkedText の直後だと古いことがあるので、少し待ってから比べる
+            let markedAfterDelete = composingRawText
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
+                guard let self else {
+                    return
+                }
+                self.invalidateTextContextCache()
+                let committedContextAfterDelete = self.currentTextContextBeforeInput()
+                let lostCount = committedContextBeforeDelete.count - committedContextAfterDelete.count
+                // context に未確定を含めるホストでは、未確定の 1 字ぶん減るのが正常
+                let includesMarkedInContext = committedContextBeforeDelete.hasSuffix(markedBeforeDelete)
+                if lostCount > (includesMarkedInContext ? 1 : 0) {
+                    self.appendKeyboardDiagnosticsLogFromInputHandling(
+                        "未確定の1字消しで確定済みが減った lost=\(lostCount) context=len\(committedContextBeforeDelete.count)→len\(committedContextAfterDelete.count)"
+                            + " markedLen=\(markedBeforeDelete.count)→\(markedAfterDelete.count) sinceOwnEditMs=\(sinceOwnEditBeforeDeleteMs)",
+                        critical: true
+                    )
+                }
+            }
+            #endif
 
             refreshKeyboardStateAsync()
             return
