@@ -413,6 +413,9 @@ struct KeyboardDiagnosticsSection: View {
     let failSafeProfile: String
     let lastHeartbeatText: String
     let lastHeartbeatDate: Date?
+    // キーボードがフルアクセスありで最後に開かれた時刻(3466)。新しい版を入れると診断ログ(ハートビート)は消えるが
+    // こちらは残るので、警告の判断に使う(3482)
+    let fullAccessConfirmedAt: Date?
     let lastEvent: String
     let lastSessionID: String
     let installMarker: String
@@ -451,7 +454,10 @@ struct KeyboardDiagnosticsSection: View {
     // 最終ハートビートが 24 時間より古い(または一度も無い)ときの警告文(3464)
     static let heartbeatStaleThreshold: TimeInterval = 24 * 3600
     private var heartbeatStaleWarning: String? {
-        guard let lastHeartbeatDate else {
+        // ハートビートとフルアクセスの確認時刻の新しい方で判断する。新しい版を入れた直後はハートビートが消えているが、
+        // フルアクセスの確認が新しければ記録は届く状態なので警告しない(3482、ユーザ指摘: オン表示と矛盾)
+        let lastSignal = [lastHeartbeatDate, fullAccessConfirmedAt].compactMap { $0 }.max()
+        guard let lastHeartbeatDate = lastSignal else {
             return "キーボードからの記録が一度も届いていません。écritu のキーボードを使ったのにこの表示が出るなら、"
                 + "フルアクセスがオフです(設定 › 一般 › キーボード › キーボード › écritu › フルアクセスを許可)。"
                 + "オフのままでは診断ログが取れません。"
