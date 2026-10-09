@@ -21764,4 +21764,17 @@ extension KanaKanjiConverterRegressionTests {
             XCTAssertEqual(multi.first, expected, "multi=\(multi.prefix(4))")
         }
     }
+
+    // 3485: 国名+籍(日本籍の/米国籍の/フランス籍の)。LM に 国名→籍 が無いと 関野(姓)が 籍+の を飲み込んでいた
+    func testNationalitySuffixSeki() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("にほんせきの", "日本籍の"), ("べいこくせきの", "米国籍の"), ("えいこくせきの", "英国籍の"),
+            ("たいわんせきの", "台湾籍の"), ("ふらんすせきの", "フランス籍の"), ("ちゅうごくせきの", "中国籍の"), ("せきだけ", "席だけ")
+        ] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "multi=\(multi.prefix(4))")
+        }
+    }
 }
