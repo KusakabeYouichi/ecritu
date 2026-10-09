@@ -51,6 +51,8 @@ enum SettingsKeys {
     static let numberLayoutMode = "numberLayoutMode"
     static let formattedNumberKeypadLayout = "formattedNumberKeypadLayout"
     static let dateFormatStyle = "dateFormatStyle"
+    // キーボードがフルアクセスありで表示された最後の時刻(3466。キーボードが書く)
+    static let keyboardFullAccessConfirmedAt = "keyboardFullAccessConfirmedAt"
     static let numberThousandsSeparator = "numberThousandsSeparator"
     static let numberDecimalSeparator = "numberDecimalSeparator"
     static let numberGroupFourDigits = "numberGroupFourDigits"
