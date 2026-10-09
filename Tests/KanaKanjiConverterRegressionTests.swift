@@ -21623,3 +21623,21 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(store.shortcutVocabulary().first, " ・ ")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 3468: ぱりは/ぱりに で パリは/パリに が出る(surface モードで 巴里は があると、読み全体で外来語保護が効かず
+    // カタカナ強調として消えていた)。先頭のカタカナ語を自分の読みで判定する
+    func testKatakanaLoanwordWithParticleKept() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            _ = converter.candidates(for: "ぱり", limit: 12, systemCandidateMode: mode)
+            for reading in ["ぱりは", "ぱりに", "ぱりの"] {
+                let list = converter.candidates(for: reading, limit: 12, systemCandidateMode: mode)
+                XCTAssertEqual(list.first, "パリ" + String(reading.dropFirst(2)), "\(mode) \(list)")
+            }
+        }
+        XCTAssertNil(KanaKanjiConverter.katakanaStemWithKanaTail("パリ", reading: "ぱり"))
+        XCTAssertEqual(KanaKanjiConverter.katakanaStemWithKanaTail("パリは", reading: "ぱりは")?.0, "パリ")
+    }
+}
