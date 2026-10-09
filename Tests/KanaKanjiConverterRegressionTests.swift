@@ -21777,4 +21777,14 @@ extension KanaKanjiConverterRegressionTests {
             XCTAssertEqual(multi.first, expected, "multi=\(multi.prefix(4))")
         }
     }
+
+    // 3486: そのせきの は その席の(積→の が安く その積の だった)
+    func testSonoSekiNoSeat() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("そのせきの", "その席の"), ("そのせきは", "その席は"), ("せきのじゅんばん", "席の順番")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "multi=\(multi.prefix(4))")
+        }
+    }
 }
