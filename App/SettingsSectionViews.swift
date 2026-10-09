@@ -294,11 +294,16 @@ struct FullAccessStatusSection: View {
 
     static let staleInterval: TimeInterval = 7 * 24 * 3600
 
-    private var isConfirmed: Bool {
+    // 確認済み(7 日以内)か。置き場所の判断(3489: 未確認なら冒頭、オンなら末尾)にも使うので static
+    static func isConfirmed(_ confirmedAt: Date?) -> Bool {
         guard let confirmedAt else {
             return false
         }
-        return Date().timeIntervalSince(confirmedAt) < Self.staleInterval
+        return Date().timeIntervalSince(confirmedAt) < staleInterval
+    }
+
+    private var isConfirmed: Bool {
+        Self.isConfirmed(confirmedAt)
     }
 
     private func dateText(_ date: Date) -> String {

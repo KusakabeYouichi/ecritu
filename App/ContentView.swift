@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20261010080217"
+    private static let editionUpdatedAtRaw: String = "20261010082635"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -1450,11 +1450,24 @@ struct ContentView: View {
         ThirdPartyLicensesSection()
     }
 
+    private var fullAccessStatusCard: some View {
+        FullAccessStatusSection(
+            confirmedAt: keyboardFullAccessConfirmedAt,
+            privacyPolicyURL: Self.privacyPolicyURL
+        )
+    }
+
     @ViewBuilder
     private var diagnosticsSettingsCards: some View {
         ConversionCacheSettingsSection(
             suspendMemorySlimmingEnabled: $suspendMemorySlimmingEnabled
         )
+
+        // フルアクセスがオン(確認済み)のときの置き場所。末尾、診断ログの前(3489)
+        if isKeyboardCurrentlyEnabled,
+            FullAccessStatusSection.isConfirmed(keyboardFullAccessConfirmedAt) {
+            fullAccessStatusCard
+        }
 
         // キーボード診断ログは開発ビルド専用(キーボード側の記録も
         // DEBUG 専用のため、リリースでは常に空。審査ガイドライン2.2対策)
@@ -1559,12 +1572,11 @@ struct ContentView: View {
                             SetupStepsSection(steps: setupSteps, onDismiss: { setupStepsDismissed = true })
                         }
 
-                        // フルアクセスの状態(3466)。キーボードを有効にした後だけ出す
-                        if isKeyboardCurrentlyEnabled {
-                            FullAccessStatusSection(
-                                confirmedAt: keyboardFullAccessConfirmedAt,
-                                privacyPolicyURL: Self.privacyPolicyURL
-                            )
+                        // フルアクセスの状態(3466)。キーボードを有効にした後だけ出す。未確認のときは冒頭に置いて気づかせ、
+                        // オンになったら末尾(診断ログの前)へ移す(ユーザ指定 3489)
+                        if isKeyboardCurrentlyEnabled,
+                            !FullAccessStatusSection.isConfirmed(keyboardFullAccessConfirmedAt) {
+                            fullAccessStatusCard
                         }
 
                         // 設定カード群は初回フレーム描画後に遅延構築する(下の .task が1フレーム後に
