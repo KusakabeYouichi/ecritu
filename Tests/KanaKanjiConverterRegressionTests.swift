@@ -21787,4 +21787,14 @@ extension KanaKanjiConverterRegressionTests {
             XCTAssertEqual(multi.first, expected, "multi=\(multi.prefix(4))")
         }
     }
+
+    // 3487: にほんせきを は 日本籍を(国名+籍 の加点を 2500→4000。を へのつながりが重かった)
+    func testNationalitySuffixSekiWo() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("にほんせきを", "日本籍を"), ("べいこくせきを", "米国籍を"), ("にほんせき", "日本籍")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "multi=\(multi.prefix(4))")
+        }
+    }
 }
