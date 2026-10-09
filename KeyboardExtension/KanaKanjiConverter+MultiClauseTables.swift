@@ -2124,6 +2124,10 @@ extension KanaKanjiConverter {
     // (しゃべれるやつか→しゃべれる八束。ユーザ報告 3440)
     static let multiClausePersonNameSwallowedParticleTails: Set<Character> = Set("かがはもをにでとのや")
     static let multiClausePersonNameSwallowingParticlePenalty = 1500
+    // 文末の「る+終助詞」を飲み込む 2 字の語(ルネ 5922 等。名前の収穫)。直前+る に用言が立つ(つき+る=尽きる)なら、
+    // 用言+終助詞(尽きる+ね)に勝たせる(ユーザ報告 3472: それにつきるね → それにつきルネ)
+    static let multiClauseVerbEndingSwallowedFinalParticles: Set<Character> = ["ね", "よ", "な", "わ", "ぞ", "さ", "か"]
+    static let multiClauseVerbEndingSwallowingPenalty = 3000
     // 入力の終わりを文末と見なさない接尾辞。〜的 は な/に が続く途中の形で、Wikipedia の「的。で文が終わらない」統計
     // (的→EOS が高い)が断片入力と食い違う。治療てき/興味てき/対症療法てき が 敵(→EOS が安い)に負けていた
     // (ユーザ報告 3419)。観測 EOS を fallback より重くしない(かな助詞の扱いと同じ)
