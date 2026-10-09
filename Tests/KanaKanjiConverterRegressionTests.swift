@@ -21669,4 +21669,14 @@ extension KanaKanjiConverterRegressionTests {
             XCTAssertEqual(multi.first, expected, "multi=\(multi.prefix(4))")
         }
     }
+
+    // 3472: それにつきるね は それに尽きるね(文末の る+ね を名前 ルネ が飲み込み つき+ルネ に割っていた)
+    func testVerbEndingNotSwallowedByName() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("それにつきるね", "それに尽きるね"), ("つきるね", "尽きるね"), ("それにつきるよ", "それに尽きるよ")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "multi=\(multi.prefix(4))")
+        }
+    }
 }
