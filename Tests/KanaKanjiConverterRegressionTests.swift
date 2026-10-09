@@ -21718,4 +21718,18 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(multi.prefix(2)), ["ちょっとしたコツ", "ちょっとしたこつ"], "multi=\(multi.prefix(4))")
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "ちょっとしたこつ"))
     }
+
+    // 3477: あたっちゃった は 当たっちゃった(能う の促音便 能っ… は無い形。能わず/能う限り は残す)
+    func testAtauOnbinSuppressed() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for reading in ["あたっちゃった", "あたった", "あたって"] {
+            let list = converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+            XCTAssertFalse(list.contains(where: { $0.hasPrefix("能っ") }), "\(list)")
+            XCTAssertEqual(list.first(where: { $0 != reading }), "当た" + String(reading.dropFirst(2)), "\(list)")
+            XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: reading), reading)
+        }
+        XCTAssertEqual(converter.multiClauseCandidates(for: "よげんがあたっちゃった", systemCandidateMode: .surface).first, "予言が当たっちゃった")
+        XCTAssertEqual(converter.candidates(for: "あたわず", limit: 4, systemCandidateMode: .surface).first, "能わず")
+    }
 }
