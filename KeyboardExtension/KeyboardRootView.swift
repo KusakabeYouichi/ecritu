@@ -102,12 +102,18 @@ struct KeyboardRootView: View {
     @State var latinShiftState: LatinShiftState = .off
     @State private var lastLatinShiftTapAt: Date? = nil
     // フルアクセス案内を閉じたか。オフのままでも変換は動くので、閉じれば通常どおり使える。
-    // ビュー階層が作り直されると戻る(未設定という異常状態なので、また出るのが妥当)。
     // フルアクセス未許可の案内を閉じた記録。拡張ローカルの UserDefaults.standard に永続化する
     // (フルアクセス無しでも書ける)。以前は @State で、アプリ切替ごとに案内が全面に再表示され
-    // 「フルアクセス必須」に見えていた(ガイドライン 4.4.1。2785)
-    @State private var didDismissFullAccessNotice = UserDefaults.standard.bool(forKey: KeyboardRootView.fullAccessNoticeDismissedKey)
-    static let fullAccessNoticeDismissedKey = "didDismissFullAccessNotice"
+    // 「フルアクセス必須」に見えていた(ガイドライン 4.4.1。2785)。
+    // 閉じた記録は版(edition)ごと(3464)。一度閉じると二度と出ず、テスターがオフのまま診断ログが取れていないことに
+    // 気づけなかった。新しい版を入れたら 1 回だけ出し直す
+    @State private var didDismissFullAccessNotice = UserDefaults.standard.string(
+        forKey: KeyboardRootView.fullAccessNoticeDismissedEditionKey
+    ) == KeyboardRootView.currentEdition
+    static let fullAccessNoticeDismissedEditionKey = "fullAccessNoticeDismissedEdition"
+    static var currentEdition: String {
+        (Bundle.main.infoDictionary?["CFBundleVersion"] as? String) ?? ""
+    }
     // 面を切り替えるキー(左下)の接触時間の下限(ms)。これより短い接触では面を変えない(2938)。
     // 根拠: 机に置いた衝撃での誤発火が 58ms(開始位置はキーの外、移動量 41pt の下フリック)。
     // 人の意図的なタップ/フリックは概ね 80ms 以上。文字入力のキーには効かせない
@@ -1325,7 +1331,7 @@ struct KeyboardRootView: View {
 
             Button {
                 didDismissFullAccessNotice = true
-                UserDefaults.standard.set(true, forKey: Self.fullAccessNoticeDismissedKey)
+                UserDefaults.standard.set(Self.currentEdition, forKey: Self.fullAccessNoticeDismissedEditionKey)
             } label: {
                 Image(systemName: "xmark.circle.fill")
                     .font(.system(size: 16))
