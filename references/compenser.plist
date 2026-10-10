@@ -192,7 +192,7 @@
 	        <dict><key>phrase</key><string>ブーダン・ノワール</string><key>shortcut</key><string>ぶーだんのわーる</string></dict>
 	        <dict><key>phrase</key><string>フェネグリーク</string><key>shortcut</key><string>ふぇねぐりーく</string></dict>
 	        <dict><key>phrase</key><string>カルナローリ</string><key>shortcut</key><string>かるなろーり</string></dict>
-	        <dict><key>phrase</key><string>スパゲッティーニ</string><key>shortcut</key><string>すぱげってぃーに</string></dict>
+	        <!-- パスタの形状の節(3497)へ移した: スパゲッティーニ(すぱげってぃーに) -->
 	        <dict><key>phrase</key><string>テット・ド・フロマージュ</string><key>shortcut</key><string>てっとどふろまーじゅ</string></dict>
 	        <dict><key>phrase</key><string>テット・ド・モアンヌ</string><key>shortcut</key><string>てっとどもあんぬ</string></dict>
 	        <dict><key>phrase</key><string>北京烤鴨</string><key>shortcut</key><string>ぺいちんかおやー</string></dict>
@@ -326,6 +326,80 @@
 	        <dict><key>phrase</key><string>menthe à l&#x27;eau</string><key>shortcut</key><string>まんたろー</string><key>pos</key><string>名詞</string></dict>
 	        <dict><key>phrase</key><string>ジュ・ド・ランジュ</string><key>shortcut</key><string>じゅどらんじゅ</string><key>pos</key><string>名詞</string></dict>
 	        <dict><key>phrase</key><string>Jus d&#x27;Orange</string><key>shortcut</key><string>じゅどらんじゅ</string><key>pos</key><string>名詞</string></dict>
+	<!-- パスタの形状(カタカナと伊語を同じ読みで。番号は資料の品番。ユーザ提供 3497) -->
+	        <dict><key>phrase</key><string>ラザーニャ</string><key>shortcut</key><string>らざーにゃ</string><key>pos</key><string>名詞</string></dict>	<!-- No.1 -->
+	        <dict><key>phrase</key><string>Lasagna</string><key>shortcut</key><string>らざーにゃ</string><key>pos</key><string>名詞</string></dict>	<!-- No.1 -->
+	        <dict><key>phrase</key><string>リングイーネ</string><key>shortcut</key><string>りんぐいーね</string><key>pos</key><string>名詞</string></dict>	<!-- No.7 -->
+	        <dict><key>phrase</key><string>Linguine</string><key>shortcut</key><string>りんぐいーね</string><key>pos</key><string>名詞</string></dict>	<!-- No.7 -->
+	        <dict><key>phrase</key><string>リングイーネ・ピッコレ</string><key>shortcut</key><string>りんぐいーねぴっこれ</string><key>pos</key><string>名詞</string></dict>	<!-- No.8 -->
+	        <dict><key>phrase</key><string>Linguine Piccole</string><key>shortcut</key><string>りんぐいーねぴっこれ</string><key>pos</key><string>名詞</string></dict>	<!-- No.8 -->
+	        <dict><key>phrase</key><string>カッペリーニ</string><key>shortcut</key><string>かっぺりーに</string><key>pos</key><string>名詞</string></dict>	<!-- No.9 -->
+	        <dict><key>phrase</key><string>Capellini</string><key>shortcut</key><string>かっぺりーに</string><key>pos</key><string>名詞</string></dict>	<!-- No.9 -->
+	        <dict><key>phrase</key><string>フェデリーニ</string><key>shortcut</key><string>ふぇでりーに</string><key>pos</key><string>名詞</string></dict>	<!-- No.10 -->
+	        <dict><key>phrase</key><string>Fedelini</string><key>shortcut</key><string>ふぇでりーに</string><key>pos</key><string>名詞</string></dict>	<!-- No.10 -->
+	        <dict><key>phrase</key><string>スパゲッティーニ</string><key>shortcut</key><string>すぱげってぃーに</string><key>pos</key><string>名詞</string></dict>	<!-- No.11 -->
+	        <dict><key>phrase</key><string>Spaghettini</string><key>shortcut</key><string>すぱげってぃーに</string><key>pos</key><string>名詞</string></dict>	<!-- No.11 -->
+	        <dict><key>phrase</key><string>スパゲッティ</string><key>shortcut</key><string>すぱげってぃ</string><key>pos</key><string>名詞</string></dict>	<!-- No.12 -->
+	        <dict><key>phrase</key><string>Spaghetti</string><key>shortcut</key><string>すぱげってぃ</string><key>pos</key><string>名詞</string></dict>	<!-- No.12 -->
+	        <dict><key>phrase</key><string>マッケローニ・アッラ・キタッラ</string><key>shortcut</key><string>まっけろーにあっらきたっら</string><key>pos</key><string>名詞</string></dict>	<!-- No.13 -->
+	        <dict><key>phrase</key><string>Maccheroni alla chitarra</string><key>shortcut</key><string>まっけろーにあっらきたっら</string><key>pos</key><string>名詞</string></dict>	<!-- No.13 -->
+	        <dict><key>phrase</key><string>ブカティーニ・ピッコリ</string><key>shortcut</key><string>ぶかてぃーにぴっこり</string><key>pos</key><string>名詞</string></dict>	<!-- No.14 -->
+	        <dict><key>phrase</key><string>Bucatini piccoli</string><key>shortcut</key><string>ぶかてぃーにぴっこり</string><key>pos</key><string>名詞</string></dict>	<!-- No.14 -->
+	        <dict><key>phrase</key><string>ミッレ・リーゲ</string><key>shortcut</key><string>みっれりーげ</string><key>pos</key><string>名詞</string></dict>	<!-- No.25 -->
+	        <dict><key>phrase</key><string>Mille righe</string><key>shortcut</key><string>みっれりーげ</string><key>pos</key><string>名詞</string></dict>	<!-- No.25 -->
+	        <dict><key>phrase</key><string>フスィリ</string><key>shortcut</key><string>ふすぃり</string><key>pos</key><string>名詞</string></dict>	<!-- No.34 -->
+	        <dict><key>phrase</key><string>Fusilli</string><key>shortcut</key><string>ふすぃり</string><key>pos</key><string>名詞</string></dict>	<!-- No.34 -->
+	        <dict><key>phrase</key><string>フジッリ</string><key>shortcut</key><string>ふじっり</string><key>pos</key><string>名詞</string></dict>	<!-- No.34 -->
+	        <dict><key>phrase</key><string>Fusilli</string><key>shortcut</key><string>ふじっり</string><key>pos</key><string>名詞</string></dict>	<!-- No.34 -->
+	        <dict><key>phrase</key><string>ペンネ・リガーテ</string><key>shortcut</key><string>ぺんねりがーて</string><key>pos</key><string>名詞</string></dict>	<!-- No.41 -->
+	        <dict><key>phrase</key><string>Penne rigate</string><key>shortcut</key><string>ぺんねりがーて</string><key>pos</key><string>名詞</string></dict>	<!-- No.41 -->
+	        <dict><key>phrase</key><string>コンキリエ・リガーテ</string><key>shortcut</key><string>こんきりえりがーて</string><key>pos</key><string>名詞</string></dict>	<!-- No.50 -->
+	        <dict><key>phrase</key><string>Conchiglie rigate</string><key>shortcut</key><string>こんきりえりがーて</string><key>pos</key><string>名詞</string></dict>	<!-- No.50 -->
+	        <dict><key>phrase</key><string>ファルファーレ</string><key>shortcut</key><string>ふぁるふぁーれ</string><key>pos</key><string>名詞</string></dict>	<!-- No.93 -->
+	        <dict><key>phrase</key><string>Farfalle</string><key>shortcut</key><string>ふぁるふぁーれ</string><key>pos</key><string>名詞</string></dict>	<!-- No.93 -->
+	        <dict><key>phrase</key><string>カサレッチャ</string><key>shortcut</key><string>かされっちゃ</string><key>pos</key><string>名詞</string></dict>	<!-- No.88 -->
+	        <dict><key>phrase</key><string>Casareccia</string><key>shortcut</key><string>かされっちゃ</string><key>pos</key><string>名詞</string></dict>	<!-- No.88 -->
+	        <dict><key>phrase</key><string>オレキエッテ</string><key>shortcut</key><string>おれきえって</string><key>pos</key><string>名詞</string></dict>	<!-- No.91 -->
+	        <dict><key>phrase</key><string>Orecchiette</string><key>shortcut</key><string>おれきえって</string><key>pos</key><string>名詞</string></dict>	<!-- No.91 -->
+	        <dict><key>phrase</key><string>ジータ・タリアータ</string><key>shortcut</key><string>じーたたりあーた</string><key>pos</key><string>名詞</string></dict>	<!-- No.118 -->
+	        <dict><key>phrase</key><string>Zita tagliata</string><key>shortcut</key><string>じーたたりあーた</string><key>pos</key><string>名詞</string></dict>	<!-- No.118 -->
+	        <dict><key>phrase</key><string>パッケリ</string><key>shortcut</key><string>ぱっけり</string><key>pos</key><string>名詞</string></dict>	<!-- No.125 -->
+	        <dict><key>phrase</key><string>Paccheri</string><key>shortcut</key><string>ぱっけり</string><key>pos</key><string>名詞</string></dict>	<!-- No.125 -->
+	        <dict><key>phrase</key><string>ヴェルミチェッリ</string><key>shortcut</key><string>ゔぇるみちぇっり</string><key>pos</key><string>名詞</string></dict>	<!-- No.170 -->
+	        <dict><key>phrase</key><string>Vermicelli</string><key>shortcut</key><string>ゔぇるみちぇっり</string><key>pos</key><string>名詞</string></dict>	<!-- No.170 -->
+	        <dict><key>phrase</key><string>フェットゥチーネ</string><key>shortcut</key><string>ふぇっとぅちーね</string><key>pos</key><string>名詞</string></dict>	<!-- No.303 -->
+	        <dict><key>phrase</key><string>Fettuccine</string><key>shortcut</key><string>ふぇっとぅちーね</string><key>pos</key><string>名詞</string></dict>	<!-- No.303 -->
+	        <dict><key>phrase</key><string>フェットゥチーネ・コン・スピナーチ</string><key>shortcut</key><string>ふぇっとぅちーねこんすぴなーち</string><key>pos</key><string>名詞</string></dict>	<!-- No.310 -->
+	        <dict><key>phrase</key><string>Fettuccine con spinaci</string><key>shortcut</key><string>ふぇっとぅちーねこんすぴなーち</string><key>pos</key><string>名詞</string></dict>	<!-- No.310 -->
+	<!-- パスタのソース(カタカナと伊語を同じ読みで。ユーザ提供 3497) -->
+	        <dict><key>phrase</key><string>アマトリチャーナ</string><key>shortcut</key><string>あまとりちゃーな</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>amatriciana</string><key>shortcut</key><string>あまとりちゃーな</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>アラビアータ</string><key>shortcut</key><string>あらびあーた</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>arrabbiata</string><key>shortcut</key><string>あらびあーた</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>カチョエペペ</string><key>shortcut</key><string>かちょえぺぺ</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>cacio e pepe</string><key>shortcut</key><string>かちょえぺぺ</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>カルボナーラ</string><key>shortcut</key><string>かるぼなーら</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>carbonara</string><key>shortcut</key><string>かるぼなーら</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>カレッティエッラ</string><key>shortcut</key><string>かれってぃえっら</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>carrettiera</string><key>shortcut</key><string>かれってぃえっら</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>ジェノベーゼ</string><key>shortcut</key><string>じぇのべーぜ</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>genovese</string><key>shortcut</key><string>じぇのべーぜ</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>プッタネスカ</string><key>shortcut</key><string>ぷったねすか</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>puttanesca</string><key>shortcut</key><string>ぷったねすか</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>ペスカトーレ</string><key>shortcut</key><string>ぺすかとーれ</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>pescatora</string><key>shortcut</key><string>ぺすかとーれ</string><key>pos</key><string>名詞</string></dict>	<!-- 伊語は alla pescatora(漁師風)。日本の ペスカトーレ は pescatore(漁師)から -->
+	        <dict><key>phrase</key><string>ペペロンチーノ</string><key>shortcut</key><string>ぺぺろんちーの</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>peperoncino</string><key>shortcut</key><string>ぺぺろんちーの</string><key>pos</key><string>名詞</string></dict>	<!-- aglio, olio e peperoncino の略 -->
+	        <dict><key>phrase</key><string>ポモドーロ</string><key>shortcut</key><string>ぽもどーろ</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>pomodoro</string><key>shortcut</key><string>ぽもどーろ</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>ボロネーゼ</string><key>shortcut</key><string>ぼろねーぜ</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>bolognese</string><key>shortcut</key><string>ぼろねーぜ</string><key>pos</key><string>名詞</string></dict>	<!-- ragù alla bolognese -->
+	        <dict><key>phrase</key><string>ボンゴレ・ビアンコ</string><key>shortcut</key><string>ぼんごれびあんこ</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>vongole bianco</string><key>shortcut</key><string>ぼんごれびあんこ</string><key>pos</key><string>名詞</string></dict>	<!-- 伊語は alle vongole in bianco -->
+	        <dict><key>phrase</key><string>ボンゴレ・ロッソ</string><key>shortcut</key><string>ぼんごれろっそ</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>vongole rosso</string><key>shortcut</key><string>ぼんごれろっそ</string><key>pos</key><string>名詞</string></dict>	<!-- 伊語は alle vongole in rosso -->
+	        <dict><key>phrase</key><string>ラグー</string><key>shortcut</key><string>らぐー</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>ragù</string><key>shortcut</key><string>らぐー</string><key>pos</key><string>名詞</string></dict>
 	<!-- バター(AOP バターの産地と銘柄。カタカナと原語を同じ読みで。ユーザ提供の資料 2911) -->
 	<!-- □ A.O.P. (原産地呼称) -->
 	        <dict><key>phrase</key><string>シャラント・ポワトゥー</string><key>shortcut</key><string>しゃらんとぽわとぅー</string></dict>	<!-- AOP 最大の産地。12 時間以上の長期熟成、ナッツのような香り。溶けにくく伸びが良い -->
