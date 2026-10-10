@@ -21869,4 +21869,14 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi.first, "まだ空きもあるから", "multi=\(multi.prefix(4))")
         XCTAssertEqual(converter.multiClauseCandidates(for: "あきがない", systemCandidateMode: .surface).first, "空きがない")
     }
+
+    // 3498: けいしょう は 継承→敬称→軽傷→軽症→警鐘→景勝→形象→慶尚→桂昌→敬章(ユーザ指定。辞書順は 渓床/軽少/軽捷 が 2〜4 位だった)
+    func testKeishouOrder() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            let list = converter.candidates(for: "けいしょう", limit: 12, systemCandidateMode: mode)
+            XCTAssertEqual(Array(list.prefix(10)), ["継承", "敬称", "軽傷", "軽症", "警鐘", "景勝", "形象", "慶尚", "桂昌", "敬章"], "\(mode) \(list)")
+        }
+    }
 }
