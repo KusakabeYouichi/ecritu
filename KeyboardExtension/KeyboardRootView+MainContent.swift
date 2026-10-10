@@ -67,7 +67,7 @@ extension KeyboardRootView {
                             kana: kana
                         ) {
                             // AZERTY: 右シフトの位置に アポストロフィー + 削除(3512。定義コメント参照)
-                            portraitLatinApostropheKeyView(width: bottomRowKeyMetrics?.apostrophe, rowIndex: rowIndex)
+                            latinApostropheKeyView(width: bottomRowKeyMetrics?.apostrophe, rowIndex: rowIndex)
                             inlineLatinDeleteKey(fixedWidth: bottomRowKeyMetrics?.delete)
                         } else if shouldReplacePortraitClavierRightShiftWithDelete(
                             rowIndex: rowIndex,
@@ -123,7 +123,7 @@ extension KeyboardRootView {
 
                     if shouldAppendPortraitQwertyDeleteKey(rowIndex: rowIndex) {
                         // QWERTY: 右端に アポストロフィー + 削除(3512。定義コメント参照)
-                        portraitLatinApostropheKeyView(width: bottomRowKeyMetrics?.apostrophe, rowIndex: rowIndex)
+                        latinApostropheKeyView(width: bottomRowKeyMetrics?.apostrophe, rowIndex: rowIndex)
                         inlineLatinDeleteKey(fixedWidth: bottomRowKeyMetrics?.delete)
                     }
                 }
