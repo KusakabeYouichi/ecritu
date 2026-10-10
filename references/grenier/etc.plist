@@ -2473,5 +2473,7 @@
 	<dict><key>phrase</key><string>内陸中央部</string><key>shortcut</key><string>ないりくちゅうおうぶ</string></dict>
 	<dict><key>phrase</key><string>油田地帯</string><key>shortcut</key><string>ゆでんちたい</string></dict>
 	<dict><key>phrase</key><string>岩山</string><key>shortcut</key><string>いわやま</string></dict>	<!-- Sudachiにもある -->
+
+	<dict><key>phrase</key><string>カケル</string><key>shortcut</key><string>かける</string></dict> <!-- 『×』 -->
 </array>
 </plist>
