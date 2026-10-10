@@ -1,4 +1,5 @@
 import XCTest
+import SwiftUI
 import UIKit
 
 // 寸法・位置の端末別分岐(KeyboardLayoutMetrics)の回帰テスト(2609)。
@@ -225,22 +226,25 @@ extension KeyboardLayoutMetricsTests {
         let spacing: CGFloat = 6
         let rowWidth: CGFloat = 381
 
-        // QWERTY: 英字 7 字、削除/シフトに配る余白 29。以前は シフト+7 字+削除 の 9 キー
+        // QWERTY: アポストロフィーは中段右端(3515)なので、下段(シフト+7 字+削除、余白 29)は足す前のまま
         let qwerty = KeyboardRootView.portraitLatinBottomRowKeyMetrics(
-            availableRowWidth: rowWidth, spacing: spacing, slackWidth: 29, letterCount: 7)
+            availableRowWidth: rowWidth, spacing: spacing, slackWidth: 29, letterCount: 7, includesApostrophe: false)
         let previousQwertyLetter = (rowWidth - 29 - spacing * 8) / 9
+        XCTAssertEqual(qwerty.letter, previousQwertyLetter, accuracy: 0.01)
         XCTAssertEqual(qwerty.delete, previousQwertyLetter + 29 / 2, accuracy: 0.01)
-        // シフトも足す前の幅のまま(3514)
         XCTAssertEqual(qwerty.shift, qwerty.delete, accuracy: 0.01)
-        XCTAssertEqual(qwerty.apostrophe, qwerty.letter / 2, accuracy: 0.01)
-        XCTAssertEqual(
-            qwerty.shift + qwerty.letter * 7 + qwerty.apostrophe + qwerty.delete + spacing * 9,
-            rowWidth, accuracy: 0.01)
-        XCTAssertGreaterThan(qwerty.letter, previousQwertyLetter - 3.5, "英字の幅 \(qwerty.letter) ← \(previousQwertyLetter)")
+        XCTAssertEqual(qwerty.apostrophe, 0)
+        XCTAssertEqual(qwerty.shift + qwerty.letter * 7 + qwerty.delete + spacing * 8, rowWidth, accuracy: 0.01)
+        // 中段(9 字)の右端に半分幅のアポストロフィー。英字は上段(10 字)より広いまま
+        let middleApostrophe = KeyboardRootView.portraitQwertyMiddleRowApostropheWidth(
+            availableRowWidth: rowWidth, spacing: spacing, letterCount: 9)
+        let middleLetter = (rowWidth - middleApostrophe - spacing * 9) / 9
+        XCTAssertEqual(middleApostrophe, middleLetter / 2, accuracy: 0.01)
+        XCTAssertGreaterThan(middleLetter, (rowWidth - spacing * 9) / 10, "中段 \(middleLetter) は上段より広い")
 
         // AZERTY: 英字 6 字、余白なし。以前は シフト+6 字+削除 の 8 キーが等幅
         let azerty = KeyboardRootView.portraitLatinBottomRowKeyMetrics(
-            availableRowWidth: rowWidth, spacing: spacing, slackWidth: 0, letterCount: 6)
+            availableRowWidth: rowWidth, spacing: spacing, slackWidth: 0, letterCount: 6, includesApostrophe: true)
         let previousAzertyKey = (rowWidth - spacing * 7) / 8
         XCTAssertEqual(azerty.delete, previousAzertyKey, accuracy: 0.01)
         XCTAssertEqual(azerty.shift, previousAzertyKey, accuracy: 0.01)
@@ -250,5 +254,44 @@ extension KeyboardLayoutMetricsTests {
             rowWidth, accuracy: 0.01)
         // AZERTY は分け合う英字が 6 字なので 1 字あたり 4.2pt(QWERTY は 3.1pt)。シフトと削除は縮めない(3514)
         XCTAssertGreaterThan(azerty.letter, previousAzertyKey - 4.5, "英字の幅 \(azerty.letter) ← \(previousAzertyKey)")
+    }
+}
+
+// 押している間の吹き出し(白・太字・rounded・緑のカプセル)で「’」が描けること(3515)。
+// 実機で「左フリックの吹き出しが緑の丸だけ」という報告の切り分けで、字は描けるが 24pt では白い点が
+// 約 4×4pt しかないと分かった(40pt で 7×7pt、48pt で 9×9pt)。白い画素の数を残しておく
+extension KeyboardLayoutMetricsTests {
+    @MainActor
+    func testApostrophePreviewGlyphRendersVisiblePixels() {
+        for (text, size) in [("’", CGFloat(24)), ("’", 40), ("'", 24)] {
+            let view = Text(text)
+                .font(.system(size: size, weight: .bold, design: .rounded))
+                .lineLimit(1)
+                .minimumScaleFactor(0.6)
+                .allowsTightening(true)
+                .foregroundStyle(.white)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(Capsule().fill(Color.green))
+            let renderer = ImageRenderer(content: view)
+            renderer.scale = 2
+            guard let cg = renderer.cgImage else {
+                XCTFail("render failed: \(text) \(size)")
+                continue
+            }
+            let w = cg.width, h = cg.height
+            var data = [UInt8](repeating: 0, count: w * h * 4)
+            let ctx = CGContext(
+                data: &data, width: w, height: h, bitsPerComponent: 8, bytesPerRow: w * 4,
+                space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)!
+            ctx.draw(cg, in: CGRect(x: 0, y: 0, width: w, height: h))
+            var white = 0
+            for i in stride(from: 0, to: data.count, by: 4)
+            where data[i] > 240 && data[i + 1] > 240 && data[i + 2] > 240 && data[i + 3] > 200 {
+                white += 1
+            }
+            print("GLYPH text=\(text) size=\(size) image=\(w)x\(h) whitePixels=\(white)")
+            XCTAssertGreaterThan(white, 10, "\(text) \(size)")
+        }
     }
 }

@@ -308,8 +308,9 @@ struct KeyboardRootView: View {
         // 左は物理的な左(フリック方向の流儀で並べ替えない)
         usesProfileDependentGuideOrder: false
     )
-    // 押している間の吹き出しの字の大きさ。「’」は字の上端の小さな点で、既定の 24pt では見えない(3514)
-    static let latinApostrophePreviewFontSize: CGFloat = 40
+    // 押している間の吹き出しの字の大きさ。「’」は字の上端の小さな点で、既定の 24pt では白い点が約 4×4pt しか
+    // 描かれず見えない(描画テスト testApostrophePreviewGlyphRendersVisiblePixels。3514/3515)。48pt で約 9×9pt
+    static let latinApostrophePreviewFontSize: CGFloat = 48
 
     func portraitLatinBottomRowKeyMetrics(rowIndex: Int) -> PortraitLatinBottomRowKeyMetrics? {
         guard usesPortraitLatinInlineDeleteLayout,
@@ -326,23 +327,27 @@ struct KeyboardRootView: View {
             : 0
         let availableRowWidth = max(1, estimatedKeyboardWidth - leadingControlWidth)
 
+        // QWERTY のアポストロフィーは中段右端(3515。portraitQwertyMiddleRowApostropheWidth 参照)なので下段には無い
         return Self.portraitLatinBottomRowKeyMetrics(
             availableRowWidth: availableRowWidth,
             spacing: keyboardRowSpacing,
             slackWidth: portraitLatinQwertyBottomRowSlackWidth,
-            letterCount: latinLayoutMode == .azerty ? 6 : 7
+            letterCount: latinLayoutMode == .azerty ? 6 : 7,
+            includesApostrophe: latinLayoutMode == .azerty
         )
     }
 
     // 純粋関数(テスト用に分離)。slackWidth は QWERTY で削除/シフトに配る余白(AZERTY は 0)。
     // アポストロフィーを足す前の並び(シフト+英字+削除。QWERTY は 9 キー、AZERTY は 8 キー)の
     // シフトと削除の幅をそのまま使い、残りの幅を英字とアポストロフィー(英字の半分)で分ける。
-    // 当初はシフトも英字と一緒に縮めていたが、AZERTY で 3.6pt 狭くなり打ちにくかった(ユーザ報告 3514)
+    // 当初はシフトも英字と一緒に縮めていたが、AZERTY で 3.6pt 狭くなり打ちにくかった(ユーザ報告 3514)。
+    // includesApostrophe が false(QWERTY)なら以前の並びのまま(apostrophe は 0)
     static func portraitLatinBottomRowKeyMetrics(
         availableRowWidth: CGFloat,
         spacing: CGFloat,
         slackWidth: CGFloat,
-        letterCount: Int
+        letterCount: Int,
+        includesApostrophe: Bool
     ) -> PortraitLatinBottomRowKeyMetrics {
         let letters = CGFloat(letterCount)
         // 以前の並び: シフト + 英字 + 削除(キー数 letters+2、隙間 letters+1)
@@ -352,6 +357,10 @@ struct KeyboardRootView: View {
             (availableRowWidth - slackWidth - spacing * (previousKeyCount - 1)) / previousKeyCount
         )
         let edgeWidth = previousLetterWidth + slackWidth / 2
+        guard includesApostrophe else {
+            return PortraitLatinBottomRowKeyMetrics(
+                letter: previousLetterWidth, shift: edgeWidth, delete: edgeWidth, apostrophe: 0)
+        }
         // 新しい並び: シフト + 英字 + アポストロフィー + 削除(隙間 letters+2)
         let remaining = availableRowWidth - edgeWidth * 2 - spacing * (letters + 2)
         let letterWidth = max(1, remaining / (letters + latinApostropheKeyWidthFactor))
@@ -362,6 +371,36 @@ struct KeyboardRootView: View {
             delete: edgeWidth,
             apostrophe: letterWidth * latinApostropheKeyWidthFactor
         )
+    }
+
+    // 縦向き QWERTY の中段(asdfghjkl)右端のアポストロフィーの幅(3515、ユーザ指定)。中段は 9 字で上段(10 字)より
+    // 広いので、ここに半分幅のキーを足しても英字は上段より広いまま(iPhone 15: 33.5 → 31.0pt、上段 29.5pt)。
+    // 下段(シフト+7 字+削除)は触らない。英字は伸縮のままなので、ここでは英字が半分幅の分だけ詰まる幅を返す
+    func portraitQwertyMiddleRowApostropheWidth(rowIndex: Int) -> CGFloat? {
+        guard usesPortraitLatinInlineDeleteLayout,
+            latinLayoutMode == .qwerty,
+            rowIndex == 1 else {
+            return nil
+        }
+        let estimatedKeyboardWidth = max(1, keyboardContainerWidth - keyboardHorizontalPadding * 2)
+        let leadingControlWidth: CGFloat = showsCompactLeftModeSwitchButtons
+            ? (leftModeSwitchButtonWidth + keyboardRowSpacing)
+            : 0
+        return Self.portraitQwertyMiddleRowApostropheWidth(
+            availableRowWidth: max(1, estimatedKeyboardWidth - leadingControlWidth),
+            spacing: keyboardRowSpacing,
+            letterCount: rows.indices.contains(1) ? rows[1].count : 9
+        )
+    }
+
+    static func portraitQwertyMiddleRowApostropheWidth(
+        availableRowWidth: CGFloat,
+        spacing: CGFloat,
+        letterCount: Int
+    ) -> CGFloat {
+        let letters = CGFloat(letterCount)
+        let letterWidth = max(1, (availableRowWidth - spacing * letters) / (letters + latinApostropheKeyWidthFactor))
+        return letterWidth * latinApostropheKeyWidthFactor
     }
 
     func shouldReplacePortraitAzertyRightShiftWithDelete(

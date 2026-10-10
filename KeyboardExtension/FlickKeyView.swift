@@ -26,6 +26,7 @@ enum KeyboardStuckTouchDiagnostics {
     static var longPressProbeDeliveryDelayMs: Int?
     static var longPressProbeKeyMidY: CGFloat?
     static var longPressProbeTouchHandlingMs: Int?
+    static var longPressProbeCompensationMs: Int?
     static var longPressProbeDeliveredAt: Date?
     static var longPressProbeFiredAt: Date?
     #endif
@@ -706,7 +707,7 @@ struct FlickKeyView: View {
                     #endif
                     onTouchStateChanged(true)
                     didTriggerLongPressAction = false
-                    scheduleLongPressIfNeeded()
+                    scheduleLongPressIfNeeded(touchTime: value.time)
                     resetSecondaryFlickState()
                     scheduleStuckTouchWatchdog()
                     touchBeganAt = value.time
@@ -916,12 +917,35 @@ struct FlickKeyView: View {
     // 盤を出したまま何も選ばずに離したとき、これ以内なら「ただのタップ」とみなす(3174)
     static let paletteTapReleaseMaxMs = 400
 
-    private func scheduleLongPressIfNeeded() {
+    // 長押しの待ち時間は、指が触れた時刻(touchTime。端末の稼働時間基準)から数える(3515)。
+    // 実機(2026-10-11)では、下段(常に)と中段(ときどき)で、触れてから onChanged が届くまでに約 0.67 秒の
+    // 遅れがあった(上段は約 0.1 秒。自前の接触処理は 0ms なので OS 側の配送)。届いてから 0.35 秒数えると
+    // 下段のアクサン候補だけ 1.1 秒かかって見える。届いた時点で既に 0.35 秒以上押していれば、すぐ出す。
+    // フリックが効くキー(かな)は、遅れて届いた最初のイベントが既に移動中のことがあるので補正しない
+    private func longPressDelayCompensation(touchTime: Date) -> TimeInterval {
+        guard !allowsDirectionalFlick, !longPressCandidates.isEmpty else {
+            return 0
+        }
+        let deliveryDelay = ProcessInfo.processInfo.systemUptime - touchTime.timeIntervalSinceReferenceDate
+        // 稼働時間基準でない Date が来たら(負や桁違い)補正しない
+        guard deliveryDelay > 0, deliveryDelay < 5 else {
+            return 0
+        }
+        return deliveryDelay
+    }
+
+    private func scheduleLongPressIfNeeded(touchTime: Date) {
         guard !longPressCandidates.isEmpty || onLongPress != nil else {
             return
         }
 
         cancelLongPressTimer()
+        let compensation = longPressDelayCompensation(touchTime: touchTime)
+        #if DEBUG
+        if !longPressCandidates.isEmpty {
+            KeyboardStuckTouchDiagnostics.longPressProbeCompensationMs = Int((compensation * 1000).rounded())
+        }
+        #endif
 
         let workItem = DispatchWorkItem {
             if let onLongPress {
@@ -945,7 +969,7 @@ struct FlickKeyView: View {
 
         longPressWorkItem = workItem
         DispatchQueue.main.asyncAfter(
-            deadline: .now() + (longPressDelayOverride ?? Metrics.longPressDelay),
+            deadline: .now() + max(0, (longPressDelayOverride ?? Metrics.longPressDelay) - compensation),
             execute: workItem
         )
     }
@@ -977,6 +1001,7 @@ struct FlickKeyView: View {
         KeyboardStuckTouchDiagnostics.onTouchForensics?(
             "長押し計測 key=\(label) 配送遅れ=\(deliveryDelayMs)ms"
                 + " 接触処理=\(KeyboardStuckTouchDiagnostics.longPressProbeTouchHandlingMs ?? -1)ms"
+                + " 補正=\(KeyboardStuckTouchDiagnostics.longPressProbeCompensationMs ?? 0)ms"
                 + " タイマー=\(timerMs)ms(予定 \(plannedMs))"
                 + " パネル出現=\(appearMs)ms 合計=\(deliveryDelayMs + timerMs + appearMs)ms"
                 + String(format: " キー中心y=%.0f/画面高=%.0f(下端まで %.0fpt)", midY, screenHeight, screenHeight - midY)
