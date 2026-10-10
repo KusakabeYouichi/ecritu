@@ -104,7 +104,9 @@ enum RawTouchLongPress {
     static func touchBegan(id: ObjectIdentifier, at point: CGPoint) {
         consumedKeyID = nil
         consumedAt = nil
-        guard trackedTouchID == nil else {
+        // UITouch は UIKit が使い回すので、同じ id で began が来たら新しい接触として扱う(終わりを取りこぼした保険)。
+        // 別の id なら 2 本目の指なので無視する
+        guard trackedTouchID == nil || trackedTouchID == id else {
             return
         }
         trackedTouchID = id
@@ -163,6 +165,19 @@ enum RawTouchLongPress {
         }
         activeKeyID = nil
         events.send(Event(keyID: keyID, globalX: point.x, kind: cancelled ? .cancel : .end))
+    }
+
+    // 認識器がリセットされた(接触の列が終わった、または他の認識器に妨げられた)。追跡を解き、盤が出ていれば取り消す
+    static func recognizerDidReset() {
+        guard trackedTouchID != nil else {
+            return
+        }
+        trackedTouchID = nil
+        cancelPending()
+        if let keyID = activeKeyID {
+            activeKeyID = nil
+            events.send(Event(keyID: keyID, globalX: lastGlobalX, kind: .cancel))
+        }
     }
 
     // 受け手(FlickKeyView)が生タッチ側で確定したときに呼ぶ。遅れて届く SwiftUI の判定に「済み」を伝える
@@ -262,6 +277,25 @@ final class RawTouchLongPressGestureRecognizer: UIGestureRecognizer {
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent) {
         super.touchesCancelled(touches, with: event)
         forward(touches, phase: .cancelled)
+    }
+
+    // 版 3438 の実機ログでは 2 本目以降の touch が捨てられていた(「生タッチ 判定」が無い)。SwiftUI の認識器が
+    // 始まった時点で UIKit がこの認識器を妨げて(prevent)リセットし、touchesEnded/Cancelled が来ないまま
+    // 追跡が残ったため。妨げられず・妨げずの認識器にし、リセットでも追跡を解く(3522)
+    override func canBePrevented(by preventingGestureRecognizer: UIGestureRecognizer) -> Bool {
+        false
+    }
+
+    override func canPrevent(_ preventedGestureRecognizer: UIGestureRecognizer) -> Bool {
+        false
+    }
+
+    override func reset() {
+        super.reset()
+        #if DEBUG
+        KeyboardStuckTouchDiagnostics.onTouchForensics?("生タッチ reset state=\(state.rawValue)")  // 調査用ログ(3522)
+        #endif
+        RawTouchLongPress.recognizerDidReset()
     }
 
     static func install(on view: UIView, coordinateView: UIView) {
