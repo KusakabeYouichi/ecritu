@@ -21892,4 +21892,14 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(converter.multiClauseCandidates(for: "もうまく", systemCandidateMode: .surface).isEmpty)
         XCTAssertEqual(converter.candidates(for: "もうまく", limit: 3, systemCandidateMode: .surface).first, "網膜")
     }
+
+    // 3500: ものめんやろ は も飲めんやろ が先頭(派生述語の後ろが終助詞の連なりなら跨ぎ減点を払い戻す)。燃えないね/戻らないよ は無傷
+    func testBOSParticleOverlapRefundBeforeFinalParticles() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("ものめんやろ", "も飲めんやろ"), ("もえないね", "燃えないね"), ("もどらないよ", "戻らないよ"), ("もいけんやろ", "も行けんやろ")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "multi=\(multi.prefix(4))")
+        }
+    }
 }

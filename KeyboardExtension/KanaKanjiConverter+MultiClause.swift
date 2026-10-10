@@ -3153,8 +3153,13 @@ extension KanaKanjiConverter {
                             // 漢字 1 字+かなで始まる派生述語(使ってない)でも、それが入力の末尾まで届く 4 かな以上の活用形なら
                             // 払い戻す(3499)。もつかってない が 持つ+勝手+ない に負けていた(ユーザ報告)。網膜=もうまく の
                             // うまく は派生でなく、にでない の 出ない は 3 かななので対象外のまま
-                            let longDerivedToEnd = node.end == n && node.reading.count >= 4
-                                && (node.surface.first.map { containsKanji(String($0)) } ?? false)
+                            // 派生述語の後ろが終助詞の連なり(飲めん+やろ)だけなら、末尾まで届くのと同じ扱い(3 かな以上。3500)。
+                            // ものめんやろ の も飲めんやろ が もの+面+やろ の 2 番目止まりだった(ユーザ指定: 先頭に)
+                            let kanjiInitialDerived = node.surface.first.map { containsKanji(String($0)) } ?? false
+                            let longDerivedToEnd = kanjiInitialDerived
+                                && ((node.end == n && node.reading.count >= 4)
+                                    || (node.end < n && node.reading.count >= 3
+                                        && Self.multiClauseBOSRefundPredicateFollowers.contains(String(chars[node.end..<n]))))
                             if hasScriptedDictWordFromStart,
                                 Self.multiClauseBOSPenalizedParticlesID.contains(prevNode.surfaceID),
                                 (node.surface.count >= 2
