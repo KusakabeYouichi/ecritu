@@ -3168,6 +3168,33 @@ extension KanaKanjiConverter {
                                 cost -= Self.multiClauseSentenceInitialParticleOverlapPenalty
                             }
                         }
+                        // 文頭の で/と(減点の無い助詞)+漢字 2 字以上で始まる派生述語(で+開始しないと)は、文の途中から打った形として
+                        // 加点する(3502)。でかいししないと は 追加語彙の でかい(床 1500)+視し+ないと が勝ち、で開始しないと が 2 番目
+                        // 止まりだった(ユーザ指定: 先頭に)。文頭から丸ごと活用形が読める読み(でんわした=電話した、でかける=出かける)は対象外
+                        if prevNode.start == 0, prevNode.isKanaIdentity,
+                            prevNode.readingID == SID.で || prevNode.readingID == SID.と,
+                            node.isInflectionDerived, !hasInflectionDerivedWordFromStart,
+                            node.surface.count >= 2,
+                            node.surface.prefix(2).allSatisfy({ containsKanji(String($0)) }),
+                            node.end == n || Self.multiClauseBOSRefundPredicateFollowers.contains(String(chars[node.end..<n])) {
+                            cost -= Self.multiClauseBOSDeToKanjiPredicateBonus
+                        }
+                        // 形容詞+名詞+ない(でかい+四肢+ない)は、が を落とした口語の 名詞+ない(時間ない)ではない。ペア段で付く
+                        // 加点(4000)をここで打ち消す(3501)。でかいししないと が でかい四肢ないと で、で+開始しないと(3495 の別解)が
+                        // 3 番目止まりだった(ユーザ指定: 先頭に)。形容詞は い で終わる活用派生か、い で終わる 3 かな以上の追加語彙(でかい/やばい)
+                        if node.surfaceID == SID.ない, node.readingID == SID.ない,
+                            !prevNode.isKanaIdentity, !prevNode.isInflectionDerived, containsKanji(prevNode.surface),
+                            backPointer[prevIdx] >= 0 {
+                            let prevPrev = nodes[backPointer[prevIdx]]
+                            let prevPrevIsAdjective = prevPrev.surface.hasSuffix("い")
+                                && (prevPrev.isInflectionDerived
+                                    || (prevPrev.isCurated && prevPrev.isKanaIdentity && prevPrev.reading.count >= 3))
+                            if prevPrevIsAdjective,
+                                let gaBigram = store.wordLMBigramCost(prev: prevNode.surface, cur: "が"),
+                                gaBigram < Self.multiClauseGaDropNaiMaxGaBigram {
+                                cost += Self.multiClauseGaDropNaiBonus
+                            }
+                        }
                         // に/と の直後の かな であっても は 出会っても の場面(定数コメント参照。2818)
                         if node.surfaceID == SID.であっても, node.readingID == SID.であっても,
                             prevNode.readingID == SID.に || prevNode.readingID == SID.と {
