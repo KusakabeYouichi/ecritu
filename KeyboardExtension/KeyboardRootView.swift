@@ -308,10 +308,6 @@ struct KeyboardRootView: View {
         // 左は物理的な左(フリック方向の流儀で並べ替えない)
         usesProfileDependentGuideOrder: false
     )
-    // 押している間の吹き出しの字の大きさ。「’」は字の上端の小さな点で、既定の 24pt では白い点が約 4×4pt しか
-    // 描かれず見えない(描画テスト testApostrophePreviewGlyphRendersVisiblePixels。3514/3515)。48pt で約 9×9pt
-    static let latinApostrophePreviewFontSize: CGFloat = 48
-
     func portraitLatinBottomRowKeyMetrics(rowIndex: Int) -> PortraitLatinBottomRowKeyMetrics? {
         guard usesPortraitLatinInlineDeleteLayout,
             rowIndex == 2 else {
@@ -1300,8 +1296,6 @@ struct KeyboardRootView: View {
             mainLabelFontWeight: rowKeyMainLabelFontWeight,
             showsDirectionalHints: showsFlickGuideCharacters,
             allowsDirectionalFlick: true,
-            // 「’」は字の上端の小さな点なので、既定の 24pt だと白い吹き出しの中でほぼ見えない(実機の画像 3514)
-            activePreviewFontSize: Self.latinApostrophePreviewFontSize,
             onTouchStateChanged: { isTouching in
                 updateActiveLayer(isTouching, layerIndex: rowIndex)
             }

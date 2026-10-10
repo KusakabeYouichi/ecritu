@@ -257,41 +257,66 @@ extension KeyboardLayoutMetricsTests {
     }
 }
 
-// 押している間の吹き出し(白・太字・rounded・緑のカプセル)で「’」が描けること(3515)。
-// 実機で「左フリックの吹き出しが緑の丸だけ」という報告の切り分けで、字は描けるが 24pt では白い点が
-// 約 4×4pt しかないと分かった(40pt で 7×7pt、48pt で 9×9pt)。白い画素の数を残しておく
+// 押している間の吹き出し(白・太字・rounded・緑のカプセル)が、半幅のアポストロフィーのキー(約 15pt)の中でも
+// 字を描くこと(3516)。ZStack がキーの幅を提案するので、fixedSize が無いと字の取り分が負になり緑の丸だけになる
+// (実機の報告 3514〜3515。48pt に大きくしても空のままだった)。白い画素の数で判定する
 extension KeyboardLayoutMetricsTests {
     @MainActor
-    func testApostrophePreviewGlyphRendersVisiblePixels() {
-        for (text, size) in [("’", CGFloat(24)), ("’", 40), ("'", 24)] {
-            let view = Text(text)
-                .font(.system(size: size, weight: .bold, design: .rounded))
-                .lineLimit(1)
-                .minimumScaleFactor(0.6)
-                .allowsTightening(true)
-                .foregroundStyle(.white)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
-                .background(Capsule().fill(Color.green))
-            let renderer = ImageRenderer(content: view)
-            renderer.scale = 2
-            guard let cg = renderer.cgImage else {
-                XCTFail("render failed: \(text) \(size)")
-                continue
+    private func whitePixelCount(previewText: String, keyWidth: CGFloat, fixedSize: Bool) -> Int? {
+        let text = Text(previewText)
+            .font(.system(size: 24, weight: .bold, design: .rounded))
+            .lineLimit(1)
+            .minimumScaleFactor(0.6)
+            .allowsTightening(true)
+        let capsule = Group {
+            if fixedSize {
+                text.fixedSize()
+            } else {
+                text
             }
-            let w = cg.width, h = cg.height
-            var data = [UInt8](repeating: 0, count: w * h * 4)
-            let ctx = CGContext(
-                data: &data, width: w, height: h, bitsPerComponent: 8, bytesPerRow: w * 4,
-                space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)!
-            ctx.draw(cg, in: CGRect(x: 0, y: 0, width: w, height: h))
-            var white = 0
-            for i in stride(from: 0, to: data.count, by: 4)
-            where data[i] > 240 && data[i + 1] > 240 && data[i + 2] > 240 && data[i + 3] > 200 {
-                white += 1
-            }
-            print("GLYPH text=\(text) size=\(size) image=\(w)x\(h) whitePixels=\(white)")
-            XCTAssertGreaterThan(white, 10, "\(text) \(size)")
         }
+        .foregroundStyle(.white)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 6)
+        .background(Capsule().fill(Color.green))
+        let view = ZStack {
+            Color.blue
+            capsule
+        }
+        .frame(width: keyWidth, height: 44)
+        .padding(30)
+        .background(Color.gray)
+        let renderer = ImageRenderer(content: view)
+        renderer.scale = 2
+        guard let cg = renderer.cgImage else {
+            return nil
+        }
+        let w = cg.width, h = cg.height
+        var data = [UInt8](repeating: 0, count: w * h * 4)
+        let ctx = CGContext(
+            data: &data, width: w, height: h, bitsPerComponent: 8, bytesPerRow: w * 4,
+            space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)!
+        ctx.draw(cg, in: CGRect(x: 0, y: 0, width: w, height: h))
+        var white = 0
+        for i in stride(from: 0, to: data.count, by: 4)
+        where data[i] > 240 && data[i + 1] > 240 && data[i + 2] > 240 && data[i + 3] > 200 {
+            white += 1
+        }
+        return white
+    }
+
+    @MainActor
+    func testApostrophePreviewRendersInsideHalfWidthKey() {
+        let narrowKeyWidth: CGFloat = 15
+        guard let without = whitePixelCount(previewText: "’", keyWidth: narrowKeyWidth, fixedSize: false),
+            let with = whitePixelCount(previewText: "’", keyWidth: narrowKeyWidth, fixedSize: true),
+            let wideKey = whitePixelCount(previewText: "ゐ", keyWidth: 60, fixedSize: true) else {
+            XCTFail("render failed")
+            return
+        }
+        print("PREVIEW narrow fixedSize=0: \(without) / fixedSize=1: \(with) / wide ゐ: \(wideKey)")
+        XCTAssertEqual(without, 0, "fixedSize 無しでは字が描かれない(この前提が変わったら FlickKeyView の注記を見直す)")
+        XCTAssertGreaterThan(with, 10, "fixedSize ありなら半幅のキーでも ’ が描かれる")
+        XCTAssertGreaterThan(wideKey, 100, "広いキーの通常の字も描かれる")
     }
 }

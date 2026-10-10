@@ -246,6 +246,9 @@ struct FlickKeyView: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.6)
                     .allowsTightening(true)
+                    // 吹き出しはキーの幅に縛らず字の幅で描く(3516)。ZStack はキーの幅を提案するので、半幅の
+                    // アポストロフィーのキー(約 15pt)では字の取り分が負になり、緑のカプセルだけで字が描かれなかった
+                    .fixedSize()
                     .foregroundStyle(.white)
                     .padding(.horizontal, activePreviewHorizontalPadding)
                     .padding(.vertical, 6)
