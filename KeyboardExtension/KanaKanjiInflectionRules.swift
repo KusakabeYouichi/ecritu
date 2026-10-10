@@ -2078,7 +2078,16 @@ extension KanaKanjiConverter {
         rules.append(contentsOf: makeSuruInflectionRules())
         let suruRange = suruStart..<rules.count
         rules.append(contentsOf: makeKuruInflectionRules())
-        return (rules, suruRange)
+        // 追加で育てた配列は入れ物が倍々に広がり、7,927 本(64B×7,927=約 500KB)に対して約 900KB を占めていた
+        // (実機のメモリグラフ 2026-10-10)。本数ぴったりの入れ物に写し直す(3491)。Array(スライス) は全体を指す
+        // スライスだと元の入れ物をそのまま使い回すので縮まない
+        let compactRules = Array(unsafeUninitializedCapacity: rules.count) { buffer, initializedCount in
+            for (index, rule) in rules.enumerated() {
+                buffer[index] = rule
+            }
+            initializedCount = rules.count
+        }
+        return (compactRules, suruRange)
     }()
     static let allInflectionRules: [InflectionRule] = inflectionRuleTable.rules
     // サ変(する)ルールだけは丁寧接頭辞の接尾辞列挙が参照する。実体は allInflectionRules の範囲
