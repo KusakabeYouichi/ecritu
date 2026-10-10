@@ -56,6 +56,52 @@ enum MemoryForensics {
     // 変化台帳の行に添える文脈(生存個体の内訳。KeyboardViewController が設定する)
     nonisolated(unsafe) static var driftExtraContext: (() -> String)?
 
+    // A4. footprint 高水位台帳(3507)
+    // 高水位台帳(A)は malloc の alloc が育ったときしか刻まず、変化台帳(A2)は 5MB 動いたときに変換の終端と
+    // 診断イベントでしか読まない。実機 2026-10-11 01:1x は削除キーのバッジが fp 52 を示したのに、ログの最大は
+    // 48.2(表示後 4 秒のサンプラ)で、alloc は 60MB のまま動かず 1 行も残らなかった。
+    // fp がプロセス生涯の最大を 1MB 以上更新し、かつ 50MB 以上なら、操作タグ付きで 1 行と、帰属(vmTags。
+    // region 走査のみで確保ゼロ・クラス表不使用なので安全)を 1 行残す。操作終端(noteOperation)のほか、
+    // 削除キーのバッジが fp を読む経路(updateMemoryFailSafeProfile)からも呼ぶので、変換していない瞬間の上昇も拾う
+    nonisolated(unsafe) private static var footprintHighWaterMB: Double = 0
+    static let footprintHighWaterThresholdMB: Double = 50
+    static let footprintHighWaterStepMB: Double = 1
+
+    /// footprint 高水位の更新を刻む。`footprintMB` は呼び出し側が読み済みなら渡す(読み直しを省く。テストでも注入)。
+    /// 刻んだら true
+    @discardableResult
+    static func noteFootprintHighWater(_ tag: @autoclosure () -> String, footprintMB: Double? = nil) -> Bool {
+        #if DEBUG
+        guard let footprint = footprintMB ?? currentPhysFootprintMB() else {
+            return false
+        }
+        ledgerLock.lock()
+        let previous = footprintHighWaterMB
+        guard footprint >= footprintHighWaterThresholdMB,
+            footprint - previous >= footprintHighWaterStepMB else {
+            ledgerLock.unlock()
+            return false
+        }
+        footprintHighWaterMB = footprint
+        ledgerLock.unlock()
+
+        var stats = malloc_statistics_t()
+        malloc_zone_statistics(nil, &stats)
+        logSink?(
+            "MEMFORENSICS高水位(fp) \(String(format: "%.1f", previous))→\(String(format: "%.1f", footprint))"
+                + " op=\(tag())"
+                + " alloc=\(String(format: "%.1f", Double(stats.size_allocated) / 1_048_576))"
+                + " used=\(String(format: "%.1f", Double(stats.size_in_use) / 1_048_576))"
+                + " \(loadSummary)"
+                + (driftExtraContext.map { " " + $0() } ?? "")
+        )
+        logSink?("MEMFORENSICS帰属@高水位(fp) \(vmRegionSummaryByTag())")
+        return true
+        #else
+        return false
+        #endif
+    }
+
     static func notePhase(_ name: @autoclosure () -> String) {
         #if DEBUG
         guard let footprint = currentPhysFootprintMB() else {
@@ -128,6 +174,8 @@ enum MemoryForensics {
     /// 初回呼び出しはベースラインとして必ず1件出る。
     static func noteOperation(_ tag: @autoclosure () -> String) {
         #if DEBUG
+        // footprint 側の高水位(A4、3507)。alloc が動かない上昇もここで拾う
+        noteFootprintHighWater(tag())
         var stats = malloc_statistics_t()
         malloc_zone_statistics(nil, &stats)
         let alloc = Int(stats.size_allocated)

@@ -38,6 +38,27 @@ final class MemoryForensicsTests: XCTestCase {
         XCTAssertTrue(watermarkLines.last?.contains("op=テスト") ?? false, "captured=\(captured)")
     }
 
+    // footprint 高水位台帳(A4、3507): 50MB 以上で生涯最大を 1MB 以上更新したときだけ、高水位行と帰属行が出ること。
+    // 値は注入する(実際の fp に依存しない)。他テストと静的状態を共有するので、桁違いに大きい値で進める
+    func testFootprintHighWaterEmitsOnlyOnNewPeak() {
+        var captured: [String] = []
+        MemoryForensics.logSink = { captured.append($0) }
+        defer { MemoryForensics.logSink = nil }
+
+        XCTAssertTrue(MemoryForensics.noteFootprintHighWater("テスト1", footprintMB: 10_000))
+        XCTAssertEqual(captured.count, 2, "高水位行+帰属行: \(captured)")
+        XCTAssertTrue(captured[0].contains("MEMFORENSICS高水位(fp)") && captured[0].contains("op=テスト1"), "\(captured)")
+        XCTAssertTrue(captured[1].hasPrefix("MEMFORENSICS帰属@高水位(fp)"), "\(captured)")
+        // 1MB 未満の更新と、下がった値は刻まない
+        XCTAssertFalse(MemoryForensics.noteFootprintHighWater("テスト2", footprintMB: 10_000.5))
+        XCTAssertFalse(MemoryForensics.noteFootprintHighWater("テスト3", footprintMB: 9_000))
+        XCTAssertEqual(captured.count, 2, "\(captured)")
+        // 1MB 以上の更新で再び刻む
+        XCTAssertTrue(MemoryForensics.noteFootprintHighWater("テスト4", footprintMB: 10_001))
+        XCTAssertEqual(captured.count, 4, "\(captured)")
+        XCTAssertTrue(captured[2].contains("10000.0→10001.0") && captured[2].contains("op=テスト4"), "\(captured)")
+    }
+
     // スパイク窓: 前後差分の行が出ること(minDeltaMB を負にして必ずログさせる)
     func testSpikeWindowEmitsDeltaLine() {
         var captured: [String] = []
