@@ -944,6 +944,9 @@ extension KanaKanjiConverter {
     // 連用形+に(目的)直後の移動動詞ボーナス。北(名詞)5190+に→北4818 級を、来た(活用OOV
     // 7200)が上回れる水準に。移動動詞は 来/行/帰/戻 始まりの漢字表層で判定する。
     static let multiClauseRenyouNiMotionVerbBonus = 3500
+    // 連用形+に(目的)の直後の状態動詞への減点(3503)
+    static let multiClauseRenyouNiStatefulVerbPrefixes: [String] = ["住", "居", "暮ら", "済", "澄"]
+    static let multiClauseRenyouNiStatefulVerbPenalty = 2000
     // 88 星座の標準和名(日本天文学会。astronomique.plist と対)。Sudachi の漢字/カタカナ表記(大熊座 15148、サソリ座 3703)は
     // 標準名(おおぐま座 18503)より word_cost が安く連文節で勝ってしまう(ぽらりすはこぐまざ→ポラリスは小熊座。2895)。
     // この読みでは標準名以外の 〜座 を減点する
