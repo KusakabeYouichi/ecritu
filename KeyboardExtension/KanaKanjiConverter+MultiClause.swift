@@ -4094,9 +4094,14 @@ extension KanaKanjiConverter {
         var bosParticleSplitAlternatives: [String] = []
         if let firstIndex = pathIndices.first {
             let first = nodes[firstIndex]
-            if first.start == 0, first.isInflectionDerived, !first.isKanaIdentity, first.end >= 3,
+            // 先頭がかな正書の辞書語(もの)で、助詞に割ると活用派生の述語が立つ読み(も+飲めんやろ)も同じ(3493)。
+            // ものめんやろ は もの+面+やろ だけで、文の途中から打った も飲めんやろ が候補に無かった(ユーザ報告)。
+            // こちらは割った直後が活用派生(飲めん)のときだけ(辞書語まで許すと は+何か のような雑音が増える)
+            let firstIsKanaDictWord = first.isDictWord && first.isKanaIdentity && first.end >= 2
+            if first.start == 0,
+                (first.isInflectionDerived && !first.isKanaIdentity && first.end >= 3) || firstIsKanaDictWord,
                 let head = first.reading.first,
-                Self.multiClauseBOSPenalizedParticles.contains(String(head)),
+                Self.multiClauseBOSParticleSplitAlternativeHeads.contains(String(head)),
                 let alternative = solveViterbi(allowedStartNodeIndex: nil, forcedBoundary: 1),
                 alternative.pathIndices.count >= 2,
                 alternative.bestTotal - bestTotal <= Self.multiClauseBOSParticleSplitAlternativeMaxDelta {

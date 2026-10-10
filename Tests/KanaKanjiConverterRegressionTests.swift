@@ -21830,4 +21830,22 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(KanaKanjiConverter.numeralUnitCompositions(for: "おく"), ["億"])
         XCTAssertEqual(KanaKanjiConverter.numeralUnitCompositions(for: "まんぼん"), ["万本"])
     }
+
+    // 3493: ものめんやろ は もの面やろ の次に も飲めんやろ(文頭を助詞に割った別解。先頭がかなの辞書語 もの でも出す)
+    func testBOSParticleSplitAlternativeAfterKanaDictWord() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let multi = converter.multiClauseCandidates(for: "ものめんやろ", systemCandidateMode: .surface)
+        XCTAssertTrue(multi.prefix(3).contains("も飲めんやろ"), "multi=\(multi.prefix(4))")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "ものめない", systemCandidateMode: .surface).first, "も飲めない")
+    }
+
+    // 3495: でかいししないと に で開始しないと が出る(文頭を で/と に割った別解)
+    func testBOSParticleSplitAlternativeWithDe() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let multi = converter.multiClauseCandidates(for: "でかいししないと", systemCandidateMode: .surface)
+        XCTAssertTrue(multi.prefix(3).contains("で開始しないと"), "multi=\(multi.prefix(4))")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "かいししないと", systemCandidateMode: .surface).first, "開始しないと")
+    }
 }
