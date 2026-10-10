@@ -304,8 +304,12 @@ struct KeyboardRootView: View {
         up: "",
         right: "",
         down: "",
-        left: "’"
+        left: "’",
+        // 左は物理的な左(フリック方向の流儀で並べ替えない)
+        usesProfileDependentGuideOrder: false
     )
+    // 押している間の吹き出しの字の大きさ。「’」は字の上端の小さな点で、既定の 24pt では見えない(3514)
+    static let latinApostrophePreviewFontSize: CGFloat = 40
 
     func portraitLatinBottomRowKeyMetrics(rowIndex: Int) -> PortraitLatinBottomRowKeyMetrics? {
         guard usesPortraitLatinInlineDeleteLayout,
@@ -332,7 +336,8 @@ struct KeyboardRootView: View {
 
     // 純粋関数(テスト用に分離)。slackWidth は QWERTY で削除/シフトに配る余白(AZERTY は 0)。
     // アポストロフィーを足す前の並び(シフト+英字+削除。QWERTY は 9 キー、AZERTY は 8 キー)の
-    // 削除キーの幅をそのまま使い、残りの幅を シフト(英字+余白の半分)と英字とアポストロフィー(英字の半分)で分ける
+    // シフトと削除の幅をそのまま使い、残りの幅を英字とアポストロフィー(英字の半分)で分ける。
+    // 当初はシフトも英字と一緒に縮めていたが、AZERTY で 3.6pt 狭くなり打ちにくかった(ユーザ報告 3514)
     static func portraitLatinBottomRowKeyMetrics(
         availableRowWidth: CGFloat,
         spacing: CGFloat,
@@ -346,15 +351,15 @@ struct KeyboardRootView: View {
             1,
             (availableRowWidth - slackWidth - spacing * (previousKeyCount - 1)) / previousKeyCount
         )
-        let deleteWidth = previousLetterWidth + slackWidth / 2
+        let edgeWidth = previousLetterWidth + slackWidth / 2
         // 新しい並び: シフト + 英字 + アポストロフィー + 削除(隙間 letters+2)
-        let remaining = availableRowWidth - deleteWidth - spacing * (letters + 2) - slackWidth / 2
-        let letterWidth = max(1, remaining / (letters + 1 + latinApostropheKeyWidthFactor))
+        let remaining = availableRowWidth - edgeWidth * 2 - spacing * (letters + 2)
+        let letterWidth = max(1, remaining / (letters + latinApostropheKeyWidthFactor))
 
         return PortraitLatinBottomRowKeyMetrics(
             letter: letterWidth,
-            shift: letterWidth + slackWidth / 2,
-            delete: deleteWidth,
+            shift: edgeWidth,
+            delete: edgeWidth,
             apostrophe: letterWidth * latinApostropheKeyWidthFactor
         )
     }
@@ -1256,6 +1261,8 @@ struct KeyboardRootView: View {
             mainLabelFontWeight: rowKeyMainLabelFontWeight,
             showsDirectionalHints: showsFlickGuideCharacters,
             allowsDirectionalFlick: true,
+            // 「’」は字の上端の小さな点なので、既定の 24pt だと白い吹き出しの中でほぼ見えない(実機の画像 3514)
+            activePreviewFontSize: Self.latinApostrophePreviewFontSize,
             onTouchStateChanged: { isTouching in
                 updateActiveLayer(isTouching, layerIndex: rowIndex)
             }
