@@ -324,6 +324,8 @@ extension KanaKanjiConverter {
         let initialAjoutVocabulary = store.initialAjoutVocabulary()
         let learnedDictionary = store.learnedDictionary()
         let manualAjoutVocabulary = store.ajoutVocabulary()
+        // 1 区間の上限(12 字)を超える追加語彙の読みの長さ(3505。定義コメント参照)
+        let curatedLongReadingLengths = n > Self.multiClauseMaxSegmentReadingCount ? store.curatedLongReadingLengths() : []
 
         // --- 1. ラティスのノード列挙 ---
         let scratch = takeMultiClauseScratch()
@@ -1142,6 +1144,33 @@ extension KanaKanjiConverter {
                         isInflectionDerived: isInflectionDerived,
                         wordCost: wordCost,
                         isDictionaryFormPredicate: isDictionaryFormPredicate,
+                        spanKey: spanKeyByStart[start][end]
+                    ))
+                    nodesEndingAt[end].append(index)
+                    nodesStartingAt[start].append(index)
+                }
+            }
+            // 1 区間の上限(12 字)を超える追加語彙は、その長さだけ別に引いて curated ノードに立てる(3505)。上限のままだと
+            // アーリオ・オリオ・エ・ペペロンチーノ(15 字)は 1 ノードに立てず、断片の合成(アーリオ+おり+追え+ペペロンチーノ)が
+            // 必ず最良になっていた(ユーザ報告)。読み全体なら 1 ノードが最良になり「単文節に任せる」で空を返す
+            for len in curatedLongReadingLengths where start + len <= n {
+                let end = start + len
+                let segmentReading = Self.spanString(chars, start..<end)
+                let suppressed = suppressedByReading[segmentReading]
+                var seen = Set<String>()
+                for surface in (initialAjoutVocabulary[segmentReading] ?? []) + (manualAjoutVocabulary[segmentReading] ?? [])
+                    where seen.insert(surface).inserted && !(suppressed?.contains(surface) ?? false) {
+                    let index = nodes.count
+                    nodes.append(MultiClauseNode(
+                        start: start,
+                        end: end,
+                        surface: surface,
+                        reading: segmentReading,
+                        isDictWord: true,
+                        isCurated: true,
+                        isInflectionDerived: false,
+                        wordCost: nil,
+                        isDictionaryFormPredicate: false,
                         spanKey: spanKeyByStart[start][end]
                     ))
                     nodesEndingAt[end].append(index)
