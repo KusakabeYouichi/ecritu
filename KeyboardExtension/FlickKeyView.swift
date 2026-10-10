@@ -16,6 +16,15 @@ enum KeyboardStuckTouchDiagnostics {
     // FlickKeyView に格納プロパティを足すとキー群の巨大なタプルが太る(2921 のスタック超過)ので、
     // キー側でなくここへ置いて受け手(selectKanaModeSwitcher)が読む。測れなかったときは nil
     static var lastCommitDurationMs: Int?
+    // 調査用ログ(長押しパネルの遅れ 3507): 下段(c 等)のアクサン候補だけ出るのが遅い件。接触の時刻(value.time)、
+    // onChanged が届いた時刻、タイマー発火、パネル出現 の 4 点を 1 本指前提で記録し、パネルの onAppear で 1 行流す。
+    // 原因判明後に外す
+    #if DEBUG
+    static var longPressProbeLabel: String?
+    static var longPressProbeTouchAt: Date?
+    static var longPressProbeDeliveredAt: Date?
+    static var longPressProbeFiredAt: Date?
+    #endif
 }
 
 enum LongPressCandidatePanelPlacement {
@@ -250,6 +259,11 @@ struct FlickKeyView: View {
                     .fixedSize()
                     .offset(x: candidatePanelOffsetX, y: candidatePanelOffsetY)
                     .zIndex(KeyboardLayerZIndex.floatingOverlay)
+                    .onAppear {
+                        #if DEBUG
+                        reportLongPressProbe()  // 調査用ログ(長押しパネルの遅れ 3507)
+                        #endif
+                    }
             }
         }
         // 縦の盤(面選択のパレット)はキーの左上を基準に置く(3128)。キー枠の測定値(preference)は
@@ -678,6 +692,15 @@ struct FlickKeyView: View {
                     resetSecondaryFlickState()
                     scheduleStuckTouchWatchdog()
                     touchBeganAt = value.time
+                    // 調査用ログ(長押しパネルの遅れ 3507): 接触の時刻と届いた時刻(差が配送遅れ)
+                    #if DEBUG
+                    if !longPressCandidates.isEmpty {
+                        KeyboardStuckTouchDiagnostics.longPressProbeLabel = longPressCandidates.first
+                        KeyboardStuckTouchDiagnostics.longPressProbeTouchAt = value.time
+                        KeyboardStuckTouchDiagnostics.longPressProbeDeliveredAt = Date()
+                        KeyboardStuckTouchDiagnostics.longPressProbeFiredAt = nil
+                    }
+                    #endif
                 }
                 isTouching = true
                 latestTouchLocationX = value.location.x
@@ -893,6 +916,9 @@ struct FlickKeyView: View {
             }
 
             longPressIsActive = true
+            #if DEBUG
+            KeyboardStuckTouchDiagnostics.longPressProbeFiredAt = Date()  // 調査用ログ(長押しパネルの遅れ 3507)
+            #endif
             activeDirection = .milieu
             longPressAnchorLocationX = latestTouchLocationX
             longPressAnchorLocationY = latestTouchLocationY
@@ -913,6 +939,29 @@ struct FlickKeyView: View {
         longPressWorkItem?.cancel()
         longPressWorkItem = nil
     }
+
+    #if DEBUG
+    // 調査用ログ(長押しパネルの遅れ 3507): 接触→配送→タイマー発火→パネル出現 の各区間(ms)を診断ログへ 1 行。
+    // 配送遅れ = 指が触れた時刻(value.time)と onChanged が届いた時刻の差。下段だけ大きければ OS 側の遅延、
+    // パネル出現だけ大きければ描画(main の詰まり)。原因判明後に外す
+    private func reportLongPressProbe() {
+        guard let label = KeyboardStuckTouchDiagnostics.longPressProbeLabel,
+            let touchAt = KeyboardStuckTouchDiagnostics.longPressProbeTouchAt,
+            let deliveredAt = KeyboardStuckTouchDiagnostics.longPressProbeDeliveredAt,
+            let firedAt = KeyboardStuckTouchDiagnostics.longPressProbeFiredAt else {
+            return
+        }
+        KeyboardStuckTouchDiagnostics.longPressProbeLabel = nil
+        let now = Date()
+        func ms(_ from: Date, _ to: Date) -> Int { Int((to.timeIntervalSince(from) * 1000).rounded()) }
+        let plannedMs = Int(((longPressDelayOverride ?? Metrics.longPressDelay) * 1000).rounded())
+        KeyboardStuckTouchDiagnostics.onTouchForensics?(
+            "長押し計測 key=\(label) 配送遅れ=\(ms(touchAt, deliveredAt))ms"
+                + " タイマー=\(ms(deliveredAt, firedAt))ms(予定 \(plannedMs))"
+                + " パネル出現=\(ms(firedAt, now))ms 合計=\(ms(touchAt, now))ms"
+        )
+    }
+    #endif
 
     private func scheduleStuckTouchWatchdog() {
         // SwiftUI の @GestureState reset / .onEnded がメインスレッド過負荷等で
