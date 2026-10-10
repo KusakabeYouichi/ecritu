@@ -2662,9 +2662,17 @@ extension KanaKanjiConverter {
     // 文頭の裸の助詞を跨いで LM 収録の辞書語が立つとき(もうまく=網膜、はなにみず=花に水)の追加減点(2819)。
     // も(BOS 減点込み 5172)+うまく(かな副詞ボーナスで -500)が 網膜(7579)を 2900 差で跨いでいた
     static let multiClauseSentenceInitialParticleOverlapPenalty = 3500
+    // 文頭の で/と+漢字 2 字以上の派生述語への加点(3502)。追加語彙のかな語の床(1500)に勝つ幅
+    static let multiClauseBOSDeToKanjiPredicateBonus = 2500
     // 文頭助詞に割った代替経路(適用箇所のコメント参照。3142)を出す上限。はいったばかり で
     // は+行った は 入った より 1783 高い。桁違いに高い経路(助詞から始まる断片が成立しない読み)は出さない
     static let multiClauseBOSParticleSplitAlternativeMaxDelta = 4000
+    // 文頭助詞の跨ぎ減点を払い戻す派生述語の後ろに続いてよい終助詞の連なり(3500)。終助詞の表+関西の やろ/やん/ねん
+    static let multiClauseBOSRefundPredicateFollowers: Set<String> = multiClauseFinalParticleReadings.union([
+        "やろ", "やろう", "やろな", "やん", "やんか", "やんな", "ねん", "やな", "やで", "やし", "で", "わ",
+        // 述語の後ろに付く接続助詞(しないと/しないのに/したとか。3502)
+        "と", "とか", "のに", "ので", "けど", "から", "し"
+    ])
     // 文頭を助詞に割った別解を出す助詞(3142/3493/3495)。減点の表(上)に で/と を足したもの。で は語頭にもなるので減点はしないが、
     // でかいししないと が でかい+四肢 だけで で+開始しないと が候補に無かった(ユーザ報告)。コストは動かさず別解として添える
     static let multiClauseBOSParticleSplitAlternativeHeads: Set<String> = multiClauseBOSPenalizedParticles.union(["で", "と"])
