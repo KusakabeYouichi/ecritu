@@ -21840,6 +21840,18 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "ものめない", systemCandidateMode: .surface).first, "も飲めない")
     }
 
+    // 3494: の/なの/ん やかな正書の代名詞の直後の なら も仮定(ぜんぶだめなのなら→全部だめなのなら。奈良 は後ろ)。大阪と奈良 は残る
+    func testConditionalNaraAfterNominalizer() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("ぜんぶだめなのなら", "全部だめなのなら"), ("それならいい", "それならいい"), ("いくならいく", "行くなら行く")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "multi=\(multi.prefix(4))")
+        }
+        let osaka = converter.multiClauseCandidates(for: "おおさかとなら", systemCandidateMode: .surface)
+        XCTAssertTrue(osaka.prefix(2).contains("大阪と奈良"), "multi=\(osaka.prefix(4))")
+    }
+
     // 3495: でかいししないと に で開始しないと が出る(文頭を で/と に割った別解)
     func testBOSParticleSplitAlternativeWithDe() throws {
         try prepareRealLMDictionary()

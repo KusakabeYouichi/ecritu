@@ -4797,6 +4797,13 @@ extension KanaKanjiConverter {
         if prev.isInflectionDerived {
             return true
         }
+        // かなの の/なの/ん(説明・名詞化: だめなの+なら、行くん+なら)と、かな正書の代名詞(それ+なら)の直後も
+        // 仮定の なら(3494。ぜんぶだめなのなら が 全部だめなの奈良 だった、ユーザ報告)
+        if prev.isKanaIdentity,
+            prev.reading.hasSuffix("の") || prev.reading.hasSuffix("ん")
+                || multiClauseConditionalNaraKanaPrevReadings.contains(prev.reading) {
+            return true
+        }
         return prev.surface.last.map { multiClausePredicateTailCharacters.contains($0) } ?? false
     }
 
