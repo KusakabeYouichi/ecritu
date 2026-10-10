@@ -995,12 +995,6 @@
 	<dict><key>phrase</key><string>Penicillium roqueforti</string><key>shortcut</key><string>ぺにしりうむろっくふぉるてぃ</string></dict>	<!-- ペニシリウム・ロックフォルティ -->
 	<dict><key>phrase</key><string>Botrytis</string><key>shortcut</key><string>ぼとりてぃす</string></dict>	<!-- ボトリティス -->
 
-	<dict><key>phrase</key><string>ハネツキアブラムシ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: はねつきあぶらむし -->
-	<dict><key>phrase</key><string>ブドウネアブラムシ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: ぶどうねあぶらむし -->
-	<dict><key>phrase</key><string>カビ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: かび -->
-	<dict><key>phrase</key><string>カイガラムシ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: かいがらむし -->
-	<dict><key>phrase</key><string>アメリカアブラムシ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: あめりかあぶらむし -->
-
 	<!-- ■ 文明・神話名 -->
 	<dict><key>phrase</key><string>Islam</string><key>shortcut</key><string>いすらむ</string></dict>	<!-- イスラム -->
 	<dict><key>phrase</key><string>Ottoman</string><key>shortcut</key><string>おすまん</string></dict>	<!-- オスマン -->
@@ -1196,55 +1190,6 @@
 	<dict><key>phrase</key><string>yeast</string><key>shortcut</key><string>いーすと</string></dict>	<!-- イースト -->
 	<dict><key>phrase</key><string>Zwiebelkuchen</string><key>shortcut</key><string>つゔぃーべるくーへん</string></dict>	<!-- ツヴィーベルクーヘン -->
 	<dict><key>phrase</key><string>ワカピラウ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: わかぴらう -->
-
-	<dict><key>phrase</key><string>イカ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: いか -->
-	<dict><key>phrase</key><string>イチゴ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: いちご -->
-	<dict><key>phrase</key><string>イノシシ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: いのしし -->
-	<dict><key>phrase</key><string>イワシ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: いわし -->
-	<dict><key>phrase</key><string>エビ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: えび -->
-	<dict><key>phrase</key><string>カラスミ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: からすみ -->
-	<dict><key>phrase</key><string>カワカマス</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: かわかます -->
-	<dict><key>phrase</key><string>キノコ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: きのこ -->
-	<dict><key>phrase</key><string>コウリャン</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: こうりゃん -->
-	<dict><key>phrase</key><string>コケモモ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: こけもも -->
-	<dict><key>phrase</key><string>サクランボ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: さくらんぼ -->
-	<dict><key>phrase</key><string>ザクロ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: ざくろ -->
-	<dict><key>phrase</key><string>サツマイモ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: さつまいも -->
-	<dict><key>phrase</key><string>サトウキビ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: さとうきび -->
-	<dict><key>phrase</key><string>ジャガイモ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: じゃがいも -->
-	<dict><key>phrase</key><string>ショウガ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: しょうが -->
-	<dict><key>phrase</key><string>スズキ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: すずき -->
-	<dict><key>phrase</key><string>スモモ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: すもも -->
-	<dict><key>phrase</key><string>タマネギ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: たまねぎ -->
-	<dict><key>phrase</key><string>チョウセンアザミ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: ちょうせんあざみ -->
-	<dict><key>phrase</key><string>ツナマヨネーズ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: つなまよねーず -->
-	<dict><key>phrase</key><string>トウガラシ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: とうがらし -->
-	<dict><key>phrase</key><string>トウモロコシ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: とうもろこし -->
-	<dict><key>phrase</key><string>ナス</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: なす -->
-	<dict><key>phrase</key><string>ナマズ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: なまず -->
-	<dict><key>phrase</key><string>ニガヨモギ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: にがよもぎ -->
-	<dict><key>phrase</key><string>ニンジン</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: にんじん -->
-	<dict><key>phrase</key><string>ニンニク</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: にんにく -->
-	<dict><key>phrase</key><string>パクチー</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: ぱくちー -->
-	<dict><key>phrase</key><string>ハチミツ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: はちみつ -->
-	<dict><key>phrase</key><string>バラ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: ばら -->
-	<dict><key>phrase</key><string>ブルボス</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: ぶるぼす -->
-	<dict><key>phrase</key><string>ヤギ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: やぎ -->
-	<dict><key>phrase</key><string>ヤツメウナギ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: やつめうなぎ -->
-	<dict><key>phrase</key><string>ヤマウズラ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: やまうずら -->
-	<dict><key>phrase</key><string>リュウゼツラン</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: りゅうぜつらん -->
-
-	<dict><key>phrase</key><string>アサツキ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: あさつき -->
-	<dict><key>phrase</key><string>アサリ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: あさり -->
-	<dict><key>phrase</key><string>アワビ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: あわび -->
-	<dict><key>phrase</key><string>アンズ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: あんず -->
-
-	<dict><key>phrase</key><string>ナッツクッキー</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: なっつくっきー -->
-	<dict><key>phrase</key><string>ドライ・イチジク</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: どらいいちじく -->
-	<dict><key>phrase</key><string>クッキングシート</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: くっきんぐしーと -->
-	<dict><key>phrase</key><string>トマトベース</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: とまとべーす -->
-	<dict><key>phrase</key><string>ニンニクスープ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: にんにくすーぷ -->
-	<dict><key>phrase</key><string>ツナマヨネーズソース</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: つなまよねーずそーす -->
 
 	<!-- ■ 時代 -->
 	<dict><key>phrase</key><string>Oxfordian</string><key>shortcut</key><string>おっくすふぉーでぃあん</string></dict>	<!-- オックスフォーディアン -->
@@ -1545,7 +1490,7 @@
 	<dict><key>phrase</key><string>methoxypyrazine</string><key>shortcut</key><string>めときしぴらじん</string></dict>	<!-- メトキシピラジン -->
 	<dict><key>phrase</key><string>lactic acid</string><key>shortcut</key><string>らくてぃっくあしっど</string></dict>	<!-- ラクティック・アシッド -->
 	<dict><key>phrase</key><string>resveratrol</string><key>shortcut</key><string>れすべらとろーる</string></dict>	<!-- レスベラトロール -->
-	<dict><key>phrase</key><string>vanillin</string><key>shortcut</key><string>ゔぁにりん</string></dict>	<!-- ヴァニリン -->`
+	<dict><key>phrase</key><string>vanillin</string><key>shortcut</key><string>ゔぁにりん</string></dict>	<!-- ヴァニリン -->
 	<dict><key>phrase</key><string>レトロン</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: れとろん -->
 
 	<dict><key>phrase</key><string>カルキ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: かるき -->
@@ -1588,13 +1533,6 @@
 	<dict><key>phrase</key><string>Winzergenossenschaft</string><key>shortcut</key><string>ゔぃんつぁーげのっせんしゃふと</string></dict>	<!-- ヴィンツァーゲノッセンシャフト -->
 
 	<dict><key>phrase</key><string>スパークリングワインメーカー</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: すぱーくりんぐわいんめーかー -->
-
-	<!-- ■ 米の品種・芋の品種 -->
-	<dict><key>phrase</key><string>カケル</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: かける -->
-	<dict><key>phrase</key><string>コガネセンガン</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: こがねせんがん -->
-	<dict><key>phrase</key><string>コナホマレ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: こなほまれ -->
-	<dict><key>phrase</key><string>シロユタカ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: しろゆたか -->
-	<dict><key>phrase</key><string>ダイチノユメ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: だいちのゆめ -->
 
 	<!-- ■ 茶 -->
 	<dict><key>phrase</key><string>Earl Grey</string><key>shortcut</key><string>あーるぐれい</string></dict>	<!-- アールグレイ -->
@@ -1693,10 +1631,72 @@
 	<!-- ■ 風 -->
 	<dict><key>phrase</key><string>scirocco</string><key>shortcut</key><string>しろっこ</string></dict>	<!-- シロッコ -->
 	<dict><key>phrase</key><string>tramontane</string><key>shortcut</key><string>とらもんたん</string></dict>	<!-- トラモンタン -->
-	<dict><key>phrase</key><string>bora</string><key>shortcut</key><string>ぼら</string></dict>	<!-- ボラ -->
 	<dict><key>phrase</key><string>bora</string><key>shortcut</key><string>ぼーら</string></dict>	<!-- ボーラ -->
 	<dict><key>phrase</key><string>poniente</string><key>shortcut</key><string>ぽにえんて</string></dict>	<!-- ポニエンテ -->
 	<dict><key>phrase</key><string>mistral</string><key>shortcut</key><string>みすとらる</string></dict>	<!-- ミストラル -->
 	<dict><key>phrase</key><string>levante</string><key>shortcut</key><string>ればんて</string></dict>	<!-- レバンテ -->
+
+	<!-- ================================================================================================== -->
+	<dict><key>phrase</key><string>イカ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: いか -->
+	<dict><key>phrase</key><string>イチゴ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: いちご -->
+	<dict><key>phrase</key><string>イノシシ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: いのしし -->
+	<dict><key>phrase</key><string>イワシ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: いわし -->
+	<dict><key>phrase</key><string>エビ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: えび -->
+	<dict><key>phrase</key><string>カラスミ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: からすみ -->
+	<dict><key>phrase</key><string>カワカマス</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: かわかます -->
+	<dict><key>phrase</key><string>キノコ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: きのこ -->
+	<dict><key>phrase</key><string>コウリャン</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: こうりゃん -->
+	<dict><key>phrase</key><string>コケモモ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: こけもも -->
+	<dict><key>phrase</key><string>サクランボ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: さくらんぼ -->
+	<dict><key>phrase</key><string>ザクロ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: ざくろ -->
+	<dict><key>phrase</key><string>サツマイモ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: さつまいも -->
+	<dict><key>phrase</key><string>サトウキビ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: さとうきび -->
+	<dict><key>phrase</key><string>ジャガイモ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: じゃがいも -->
+	<dict><key>phrase</key><string>ショウガ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: しょうが -->
+	<dict><key>phrase</key><string>スズキ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: すずき -->
+	<dict><key>phrase</key><string>スモモ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: すもも -->
+	<dict><key>phrase</key><string>タマネギ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: たまねぎ -->
+	<dict><key>phrase</key><string>チョウセンアザミ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: ちょうせんあざみ -->
+	<dict><key>phrase</key><string>ツナマヨネーズ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: つなまよねーず -->
+	<dict><key>phrase</key><string>トウガラシ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: とうがらし -->
+	<dict><key>phrase</key><string>トウモロコシ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: とうもろこし -->
+	<dict><key>phrase</key><string>ナス</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: なす -->
+	<dict><key>phrase</key><string>ナマズ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: なまず -->
+	<dict><key>phrase</key><string>ニガヨモギ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: にがよもぎ -->
+	<dict><key>phrase</key><string>ニンジン</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: にんじん -->
+	<dict><key>phrase</key><string>ニンニク</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: にんにく -->
+	<dict><key>phrase</key><string>パクチー</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: ぱくちー -->
+	<dict><key>phrase</key><string>ハチミツ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: はちみつ -->
+	<dict><key>phrase</key><string>バラ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: ばら -->
+	<dict><key>phrase</key><string>ブルボス</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: ぶるぼす -->
+	<dict><key>phrase</key><string>bora</string><key>shortcut</key><string>ぼら</string></dict>	<!-- ボラ -->
+	<dict><key>phrase</key><string>ヤギ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: やぎ -->
+	<dict><key>phrase</key><string>ヤツメウナギ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: やつめうなぎ -->
+	<dict><key>phrase</key><string>ヤマウズラ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: やまうずら -->
+	<dict><key>phrase</key><string>リュウゼツラン</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: りゅうぜつらん -->
+
+	<dict><key>phrase</key><string>アサツキ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: あさつき -->
+	<dict><key>phrase</key><string>アサリ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: あさり -->
+	<dict><key>phrase</key><string>アワビ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: あわび -->
+	<dict><key>phrase</key><string>アンズ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: あんず -->
+
+	<dict><key>phrase</key><string>ナッツクッキー</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: なっつくっきー -->
+	<dict><key>phrase</key><string>ドライ・イチジク</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: どらいいちじく -->
+	<dict><key>phrase</key><string>クッキングシート</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: くっきんぐしーと -->
+	<dict><key>phrase</key><string>トマトベース</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: とまとべーす -->
+	<dict><key>phrase</key><string>ニンニクスープ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: にんにくすーぷ -->
+	<dict><key>phrase</key><string>ツナマヨネーズソース</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: つなまよねーずそーす -->
+
+	<dict><key>phrase</key><string>ハネツキアブラムシ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: はねつきあぶらむし -->
+	<dict><key>phrase</key><string>ブドウネアブラムシ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: ぶどうねあぶらむし -->
+	<dict><key>phrase</key><string>カビ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: かび -->
+	<dict><key>phrase</key><string>カイガラムシ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: かいがらむし -->
+	<dict><key>phrase</key><string>アメリカアブラムシ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: あめりかあぶらむし -->
+
+	<!-- ■ 米の品種・芋の品種 -->
+	<dict><key>phrase</key><string>コガネセンガン</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: こがねせんがん -->
+	<dict><key>phrase</key><string>コナホマレ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: こなほまれ -->
+	<dict><key>phrase</key><string>シロユタカ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: しろゆたか -->
+	<dict><key>phrase</key><string>ダイチノユメ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: だいちのゆめ -->
 </array>
 </plist>
