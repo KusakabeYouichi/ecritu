@@ -21860,4 +21860,13 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(multi.prefix(3).contains("で開始しないと"), "multi=\(multi.prefix(4))")
         XCTAssertEqual(converter.multiClauseCandidates(for: "かいししないと", systemCandidateMode: .surface).first, "開始しないと")
     }
+
+    // 3496: まだあきもあるから は まだ空きもあるから(空き+ある の連語。も も橋渡し)
+    func testAkiMoAruCollocation() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let multi = converter.multiClauseCandidates(for: "まだあきもあるから", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "まだ空きもあるから", "multi=\(multi.prefix(4))")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "あきがない", systemCandidateMode: .surface).first, "空きがない")
+    }
 }
