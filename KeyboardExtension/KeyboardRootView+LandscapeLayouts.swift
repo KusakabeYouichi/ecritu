@@ -31,7 +31,11 @@ extension KeyboardRootView {
             : [",", "/", "'"]
 
         return marks.map { mark in
-            FlickKanaSet(
+            // AZERTY の「'」は縦向きと同じ定義(中心 '、左フリック ’。3515)。QWERTY は中段右端に別に置く
+            if mark == "'" {
+                return Self.latinApostropheKey
+            }
+            return FlickKanaSet(
                 label: mark,
                 center: mark,
                 up: "",
@@ -792,6 +796,8 @@ extension KeyboardRootView {
                 longPressCandidates: longPressCandidates(for: kana),
                 longPressCandidatePanelPlacement: longPressCandidatePanelPlacement(forRowIndex: rowIndex),
                 allowsDirectionalFlick: allowsDirectionalFlick(for: kana),
+                // アポストロフィーの左フリック「’」は小さな点なので吹き出しの字を大きく(3514。他は FlickKeyView の既定 24)
+                activePreviewFontSize: kana == Self.latinApostropheKey ? Self.latinApostrophePreviewFontSize : 24,
                 onTouchStateChanged: { isTouching in
                     updateActiveLayer(isTouching, layerIndex: rowIndex)
                 }
