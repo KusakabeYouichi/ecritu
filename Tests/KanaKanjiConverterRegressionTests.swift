@@ -21902,4 +21902,20 @@ extension KanaKanjiConverterRegressionTests {
             XCTAssertEqual(multi.first, expected, "multi=\(multi.prefix(4))")
         }
     }
+
+    // 3501/3502: でかいししないと は で開始しないと が先頭(形容詞+名詞+ない の口語加点を打ち消し、文頭の で/と+漢字述語を加点)。
+    // 時間ないよ/問題ないよ/返事ないし と、文頭から丸ごと活用形が読める 電話した/出掛ける/止まった は無傷
+    func testDeKanjiPredicateAfterBOS() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("でかいししないと", "で開始しないと"), ("でせつめいした", "で説明した"), ("とおもった", "と思った"),
+                                    ("へんじないし", "返事ないし"), ("じかんないよ", "時間ないよ"), ("もんだいないよ", "問題ないよ")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "multi=\(multi.prefix(4))")
+        }
+        for (reading, expected) in [("でんわした", "電話した"), ("でかける", "出掛ける"), ("とまった", "止まった")] {
+            XCTAssertEqual(converter.candidates(for: reading, limit: 3, systemCandidateMode: .surface).first, expected)
+            XCTAssertTrue(converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).isEmpty, reading)
+        }
+    }
 }
