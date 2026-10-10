@@ -21809,4 +21809,25 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertGreaterThan(lastCharacters.count, 20)
         XCTAssertLessThan(lastCharacters.capacity, 512, "capacity=\(lastCharacters.capacity)")
     }
+
+    // 3492: 数字の直後の 単位+助数詞(3+まんぼん→万本、5+せんえん→千円、1+おくえん→億円、3+まん→万)。
+    // 以前は 万 が助数詞の表に無く、間んぼん/マンボン の合成ばかりだった。せんち(センチ)は単位扱いしない
+    func testNumeralUnitWithCounterAfterDigit() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("3まんぼん", "万本"), ("5せんえん", "千円"), ("1おくえん", "億円"), ("2まんにん", "万人"),
+            ("3まん", "万"), ("3せんまんえん", "千万円"), ("3まんぼんの", "万本の")
+        ] {
+            let list = converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+            XCTAssertEqual(list.first, expected, "\(reading) \(list)")
+            XCTAssertFalse(list.contains(where: { $0.hasPrefix("間ん") || $0.hasPrefix("マンボ") }), "\(reading) \(list)")
+        }
+        XCTAssertEqual(converter.candidates(for: "3せんち", limit: 4, systemCandidateMode: .surface).first, "センチ")
+        XCTAssertNil(KanaKanjiConverter.numeralUnitCompositions(for: "ほん"))
+        // 単位だけは 万/億/兆 に限る(3+ぜん は 膳 のまま)
+        XCTAssertNil(KanaKanjiConverter.numeralUnitCompositions(for: "ぜん"))
+        XCTAssertEqual(KanaKanjiConverter.numeralUnitCompositions(for: "おく"), ["億"])
+        XCTAssertEqual(KanaKanjiConverter.numeralUnitCompositions(for: "まんぼん"), ["万本"])
+    }
 }
