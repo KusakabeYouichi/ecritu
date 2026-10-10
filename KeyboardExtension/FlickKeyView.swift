@@ -110,7 +110,16 @@ enum RawTouchLongPress {
         trackedTouchID = id
         lastGlobalX = point.x
         cancelPending()
-        guard let keyID = frames.first(where: { $0.value.contains(point) })?.key else {
+        let matched = frames.first(where: { $0.value.contains(point) })?.key
+        #if DEBUG
+        // 調査用ログ(3521): 触れた位置がどの枠に当たったか。当たらなければ一番近い枠を出す(座標系のずれの切り分け)
+        if let matched {
+            KeyboardStuckTouchDiagnostics.onTouchForensics?("生タッチ 判定 key=\(matched) 枠=\(frames[matched].map { String(format: "(%.0f,%.0f %.0fx%.0f)", $0.minX, $0.minY, $0.width, $0.height) } ?? "")")
+        } else if let nearest = frames.min(by: { hypot($0.value.midX - point.x, $0.value.midY - point.y) < hypot($1.value.midX - point.x, $1.value.midY - point.y) }) {
+            KeyboardStuckTouchDiagnostics.onTouchForensics?(String(format: "生タッチ 判定 none 最寄り=%@ 枠=(%.0f,%.0f %.0fx%.0f)", nearest.key, nearest.value.minX, nearest.value.minY, nearest.value.width, nearest.value.height))
+        }
+        #endif
+        guard let keyID = matched else {
             return
         }
         #if DEBUG
@@ -124,6 +133,9 @@ enum RawTouchLongPress {
             pendingKeyID = nil
             pendingWorkItem = nil
             activeKeyID = keyID
+            #if DEBUG
+            KeyboardStuckTouchDiagnostics.onTouchForensics?("生タッチ 起動 key=\(keyID)")  // 調査用ログ(3521)
+            #endif
             events.send(Event(keyID: keyID, globalX: lastGlobalX, kind: .activate))
         }
         pendingWorkItem = workItem
@@ -1180,6 +1192,9 @@ struct FlickKeyView: View {
         let localX = event.globalX - keyFrameInGlobal.minX
         switch event.kind {
         case .activate:
+            #if DEBUG
+            KeyboardStuckTouchDiagnostics.onTouchForensics?("生タッチ 受理 key=\(event.keyID) 盤=\(longPressIsActive ? 1 : 0)")  // 調査用ログ(3521)
+            #endif
             guard !longPressIsActive, !didTriggerLongPressAction else {
                 return
             }
