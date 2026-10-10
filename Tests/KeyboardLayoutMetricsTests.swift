@@ -230,7 +230,8 @@ extension KeyboardLayoutMetricsTests {
             availableRowWidth: rowWidth, spacing: spacing, slackWidth: 29, letterCount: 7)
         let previousQwertyLetter = (rowWidth - 29 - spacing * 8) / 9
         XCTAssertEqual(qwerty.delete, previousQwertyLetter + 29 / 2, accuracy: 0.01)
-        XCTAssertEqual(qwerty.shift, qwerty.letter + 29 / 2, accuracy: 0.01)
+        // シフトも足す前の幅のまま(3514)
+        XCTAssertEqual(qwerty.shift, qwerty.delete, accuracy: 0.01)
         XCTAssertEqual(qwerty.apostrophe, qwerty.letter / 2, accuracy: 0.01)
         XCTAssertEqual(
             qwerty.shift + qwerty.letter * 7 + qwerty.apostrophe + qwerty.delete + spacing * 9,
@@ -242,12 +243,12 @@ extension KeyboardLayoutMetricsTests {
             availableRowWidth: rowWidth, spacing: spacing, slackWidth: 0, letterCount: 6)
         let previousAzertyKey = (rowWidth - spacing * 7) / 8
         XCTAssertEqual(azerty.delete, previousAzertyKey, accuracy: 0.01)
-        XCTAssertEqual(azerty.shift, azerty.letter, accuracy: 0.01)
+        XCTAssertEqual(azerty.shift, previousAzertyKey, accuracy: 0.01)
         XCTAssertEqual(azerty.apostrophe, azerty.letter / 2, accuracy: 0.01)
         XCTAssertEqual(
             azerty.shift + azerty.letter * 6 + azerty.apostrophe + azerty.delete + spacing * 8,
             rowWidth, accuracy: 0.01)
-        // AZERTY は分け合う英字が 6 字なので 1 字あたり 3.6pt(QWERTY は 2.7pt)
-        XCTAssertGreaterThan(azerty.letter, previousAzertyKey - 4, "英字の幅 \(azerty.letter) ← \(previousAzertyKey)")
+        // AZERTY は分け合う英字が 6 字なので 1 字あたり 4.2pt(QWERTY は 3.1pt)。シフトと削除は縮めない(3514)
+        XCTAssertGreaterThan(azerty.letter, previousAzertyKey - 4.5, "英字の幅 \(azerty.letter) ← \(previousAzertyKey)")
     }
 }

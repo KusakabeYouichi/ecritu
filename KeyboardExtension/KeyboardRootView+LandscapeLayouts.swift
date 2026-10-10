@@ -828,6 +828,7 @@ extension KeyboardRootView {
             mainLabelFontWeight: rowKeyMainLabelFontWeight,
             showsDirectionalHints: showsFlickGuideCharacters,
             allowsDirectionalFlick: true,
+            activePreviewFontSize: Self.latinApostrophePreviewFontSize,
             onTouchStateChanged: { isTouching in
                 updateActiveLayer(isTouching, layerIndex: 1)
             }
