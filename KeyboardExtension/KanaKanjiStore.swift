@@ -172,7 +172,10 @@ final class KanaKanjiStore {
     }
     private var cachedInitialAjoutVocabulary: [String: [String]]?
     private var cachedInitialShortcutVocabulary: [String]?
-    var cachedAjoutVocabulary: [String: [String]]?
+    var cachedAjoutVocabulary: [String: [String]]? {
+        didSet { cachedCuratedLongReadingLengths = nil }
+    }
+    private var cachedCuratedLongReadingLengths: Set<Int>?
     var cachedLearnedDictionary: [String: [String]]?
     private var cachedSuppressedCandidatesByReading: [String: Set<String>]?
     private var cachedShortcutVocabulary: [String]?
@@ -1148,6 +1151,24 @@ final class KanaKanjiStore {
         let normalized = normalizeDictionary(decoded)
         withCacheLock { cachedAjoutVocabulary = normalized }
         return normalized
+    }
+
+    // 連文節の 1 区間の上限(12 字)を超える追加語彙(初期+手動)の読みの長さ(3505)。ラティスは上限内の長さしか
+    // 走査しないので、超える長さは追加語彙に限って別に引く(9 件、13〜15 字。アーリオ・オリオ・エ・ペペロンチーノ 等)
+    func curatedLongReadingLengths() -> Set<Int> {
+        if let cached = withCacheLock({ cachedCuratedLongReadingLengths }) {
+            return cached
+        }
+        let cap = KanaKanjiConverter.multiClauseMaxSegmentReadingCount
+        var lengths = Set<Int>()
+        for key in initialAjoutVocabulary().keys where key.count > cap {
+            lengths.insert(key.count)
+        }
+        for key in ajoutVocabulary().keys where key.count > cap {
+            lengths.insert(key.count)
+        }
+        withCacheLock { cachedCuratedLongReadingLengths = lengths }
+        return lengths
     }
 
     func learnedDictionary() -> [String: [String]] {

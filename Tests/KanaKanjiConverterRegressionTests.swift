@@ -21939,4 +21939,17 @@ extension KanaKanjiConverterRegressionTests {
             XCTAssertEqual(multi.first, expected, "multi=\(multi.prefix(4))")
         }
     }
+
+    // 3505: 読み全体に一致する追加語彙が 12 字を超えると連文節は 1 ノードに立てず、断片の合成(アーリオおり追えペペロンチーノ)が
+    // 追加語彙の前に並んでいた(ユーザ報告)。超える長さは追加語彙に限って別に引き 1 ノードに立てる。読み全体なら 1 ノードが最良で空(単文節に委ねる)、助詞つきは格子で組む
+    func testWholeReadingCuratedBeyondSegmentCapDefersToSingleClause() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.candidates(for: "あーりおおりおえぺぺろんちーの", limit: 3, systemCandidateMode: .surface).first, "アーリオ・オリオ・エ・ペペロンチーノ")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "あーりおおりおえぺぺろんちーの", systemCandidateMode: .surface), [])
+        XCTAssertEqual(converter.candidates(for: "かちょえぺぺ", limit: 3, systemCandidateMode: .surface).first, "カチョ・エ・ペペ")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "かちょえぺぺ", systemCandidateMode: .surface), [])
+        // 部分一致(助詞つき)では追加語彙が格子に載り、連文節が組む
+        XCTAssertEqual(converter.multiClauseCandidates(for: "あーりおおりおえぺぺろんちーのを", systemCandidateMode: .surface).first, "アーリオ・オリオ・エ・ペペロンチーノを")
+    }
 }
