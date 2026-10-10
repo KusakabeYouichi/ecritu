@@ -3489,6 +3489,12 @@ extension KanaKanjiConverter {
                             Self.isMotionVerbSurface(node.surface) {
                             cost -= Self.multiClauseRenyouNiMotionVerbBonus
                         }
+                        // 逆に、連用形+に(目的)の直後に状態の動詞(住む/居る/暮らす/済む)は続かない(3503)。
+                        // とかいにすんでる が と+買いに+住んでる で、都会に住んでる(1 点差)に勝っていた(ユーザ指定)
+                        if renyouNiNodeKeys.contains(prevNode.key), node.isInflectionDerived,
+                            Self.multiClauseRenyouNiStatefulVerbPrefixes.contains(where: { node.surface.hasPrefix($0) }) {
+                            cost += Self.multiClauseRenyouNiStatefulVerbPenalty
+                        }
                         // より(は/も)+まし は比較の まし/マシ(定数コメント参照。2898)
                         // 直前の切り方(よりは 1 ノード/より+は)に依らず、読み列で より(は/も) を見る
                         if node.reading.hasPrefix("まし"), node.start >= 2,
