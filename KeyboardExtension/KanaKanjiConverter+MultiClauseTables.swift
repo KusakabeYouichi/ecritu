@@ -2657,6 +2657,9 @@ extension KanaKanjiConverter {
     // 文頭助詞に割った代替経路(適用箇所のコメント参照。3142)を出す上限。はいったばかり で
     // は+行った は 入った より 1783 高い。桁違いに高い経路(助詞から始まる断片が成立しない読み)は出さない
     static let multiClauseBOSParticleSplitAlternativeMaxDelta = 4000
+    // 文頭を助詞に割った別解を出す助詞(3142/3493/3495)。減点の表(上)に で/と を足したもの。で は語頭にもなるので減点はしないが、
+    // でかいししないと が でかい+四肢 だけで で+開始しないと が候補に無かった(ユーザ報告)。コストは動かさず別解として添える
+    static let multiClauseBOSParticleSplitAlternativeHeads: Set<String> = multiClauseBOSPenalizedParticles.union(["で", "と"])
     // 上の重ね減点は 3 字以上の語に限っていた(這う=はう 7272/乳=にう 6054 を潰さないため)が、2 字でも LM unigram が
     // この値以下の常用語(何 4529)が文頭から立つなら同じく適用する。なにするひと→な+にする+人 で 何する人 が
     // 候補から消えていた(ユーザ報告 2840)。這う/乳 は閾値の外
