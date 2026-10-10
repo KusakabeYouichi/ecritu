@@ -796,8 +796,6 @@ extension KeyboardRootView {
                 longPressCandidates: longPressCandidates(for: kana),
                 longPressCandidatePanelPlacement: longPressCandidatePanelPlacement(forRowIndex: rowIndex),
                 allowsDirectionalFlick: allowsDirectionalFlick(for: kana),
-                // アポストロフィーの左フリック「’」は小さな点なので吹き出しの字を大きく(3514。他は FlickKeyView の既定 24)
-                activePreviewFontSize: kana == Self.latinApostropheKey ? Self.latinApostrophePreviewFontSize : 24,
                 onTouchStateChanged: { isTouching in
                     updateActiveLayer(isTouching, layerIndex: rowIndex)
                 }
@@ -834,7 +832,6 @@ extension KeyboardRootView {
             mainLabelFontWeight: rowKeyMainLabelFontWeight,
             showsDirectionalHints: showsFlickGuideCharacters,
             allowsDirectionalFlick: true,
-            activePreviewFontSize: Self.latinApostrophePreviewFontSize,
             onTouchStateChanged: { isTouching in
                 updateActiveLayer(isTouching, layerIndex: 1)
             }
