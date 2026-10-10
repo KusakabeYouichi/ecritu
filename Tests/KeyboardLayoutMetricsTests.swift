@@ -217,3 +217,37 @@ final class KeyboardLayoutMetricsTests: XCTestCase {
         XCTAssertFalse(KeyboardLayoutMetrics.assumesHomeIndicator(shorterScreenEdge: 834, longerScreenEdge: 1194, isPhone: false))
     }
 }
+
+// 縦向き QWERTY/AZERTY の下段にアポストロフィーのキーを足しても(3512)、削除キーの幅は足す前と同じで、
+// 幅の合計は段の幅に収まり、英字は 3pt 程度しか狭くならないこと
+extension KeyboardLayoutMetricsTests {
+    func testPortraitLatinBottomRowApostropheKeepsDeleteWidth() {
+        let spacing: CGFloat = 6
+        let rowWidth: CGFloat = 381
+
+        // QWERTY: 英字 7 字、削除/シフトに配る余白 29。以前は シフト+7 字+削除 の 9 キー
+        let qwerty = KeyboardRootView.portraitLatinBottomRowKeyMetrics(
+            availableRowWidth: rowWidth, spacing: spacing, slackWidth: 29, letterCount: 7)
+        let previousQwertyLetter = (rowWidth - 29 - spacing * 8) / 9
+        XCTAssertEqual(qwerty.delete, previousQwertyLetter + 29 / 2, accuracy: 0.01)
+        XCTAssertEqual(qwerty.shift, qwerty.letter + 29 / 2, accuracy: 0.01)
+        XCTAssertEqual(qwerty.apostrophe, qwerty.letter / 2, accuracy: 0.01)
+        XCTAssertEqual(
+            qwerty.shift + qwerty.letter * 7 + qwerty.apostrophe + qwerty.delete + spacing * 9,
+            rowWidth, accuracy: 0.01)
+        XCTAssertGreaterThan(qwerty.letter, previousQwertyLetter - 3.5, "英字の幅 \(qwerty.letter) ← \(previousQwertyLetter)")
+
+        // AZERTY: 英字 6 字、余白なし。以前は シフト+6 字+削除 の 8 キーが等幅
+        let azerty = KeyboardRootView.portraitLatinBottomRowKeyMetrics(
+            availableRowWidth: rowWidth, spacing: spacing, slackWidth: 0, letterCount: 6)
+        let previousAzertyKey = (rowWidth - spacing * 7) / 8
+        XCTAssertEqual(azerty.delete, previousAzertyKey, accuracy: 0.01)
+        XCTAssertEqual(azerty.shift, azerty.letter, accuracy: 0.01)
+        XCTAssertEqual(azerty.apostrophe, azerty.letter / 2, accuracy: 0.01)
+        XCTAssertEqual(
+            azerty.shift + azerty.letter * 6 + azerty.apostrophe + azerty.delete + spacing * 8,
+            rowWidth, accuracy: 0.01)
+        // AZERTY は分け合う英字が 6 字なので 1 字あたり 3.6pt(QWERTY は 2.7pt)
+        XCTAssertGreaterThan(azerty.letter, previousAzertyKey - 4, "英字の幅 \(azerty.letter) ← \(previousAzertyKey)")
+    }
+}
