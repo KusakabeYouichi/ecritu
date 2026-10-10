@@ -3112,6 +3112,7 @@ extension KanaKanjiConverter {
         static let であっても = MultiClauseSymbols.id("であっても")
         static let でも = MultiClauseSymbols.id("でも")
         static let と = MultiClauseSymbols.id("と")
+        static let で = MultiClauseSymbols.id("で")
         static let な = MultiClauseSymbols.id("な")
         static let ない = MultiClauseSymbols.id("ない")
         static let ないで = MultiClauseSymbols.id("ないで")
