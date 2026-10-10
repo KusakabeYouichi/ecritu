@@ -294,11 +294,11 @@ struct KeyboardRootView: View {
         let apostrophe: CGFloat
     }
 
-    static let portraitLatinApostropheKeyWidthFactor: CGFloat = 0.5
+    static let latinApostropheKeyWidthFactor: CGFloat = 0.5
 
     // 下段右端のアポストロフィーのキー。中心は「'」(U+0027。メール・URI・パスワードで要る方)、
     // 左フリックに「’」(U+2019。組版用)。英字でないキーなので QWERTY/AZERTY でもフリックが効く
-    static let portraitLatinApostropheKey = FlickKanaSet(
+    static let latinApostropheKey = FlickKanaSet(
         label: "'",
         center: "'",
         up: "",
@@ -349,13 +349,13 @@ struct KeyboardRootView: View {
         let deleteWidth = previousLetterWidth + slackWidth / 2
         // 新しい並び: シフト + 英字 + アポストロフィー + 削除(隙間 letters+2)
         let remaining = availableRowWidth - deleteWidth - spacing * (letters + 2) - slackWidth / 2
-        let letterWidth = max(1, remaining / (letters + 1 + portraitLatinApostropheKeyWidthFactor))
+        let letterWidth = max(1, remaining / (letters + 1 + latinApostropheKeyWidthFactor))
 
         return PortraitLatinBottomRowKeyMetrics(
             letter: letterWidth,
             shift: letterWidth + slackWidth / 2,
             delete: deleteWidth,
-            apostrophe: letterWidth * portraitLatinApostropheKeyWidthFactor
+            apostrophe: letterWidth * latinApostropheKeyWidthFactor
         )
     }
 
@@ -1246,11 +1246,11 @@ struct KeyboardRootView: View {
     }
 
     @ViewBuilder
-    // 縦向き QWERTY/AZERTY の下段右端のアポストロフィーのキー(3512。portraitLatinApostropheKey 参照)。
+    // 縦向き QWERTY/AZERTY の下段右端のアポストロフィーのキー(3512。latinApostropheKey 参照)。
     // 英字キーと同じ FlickKeyView で、左フリックに「’」。長押し候補は無い
-    func portraitLatinApostropheKeyView(width: CGFloat?, rowIndex: Int) -> some View {
+    func latinApostropheKeyView(width: CGFloat?, rowIndex: Int) -> some View {
         let key = FlickKeyView(
-            kana: Self.portraitLatinApostropheKey,
+            kana: Self.latinApostropheKey,
             onCommit: commitText,
             mainLabelFontSize: 26,
             mainLabelFontWeight: rowKeyMainLabelFontWeight,

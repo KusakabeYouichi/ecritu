@@ -818,11 +818,19 @@ extension KeyboardRootView {
             .frame(width: fixedWidth, height: mainFlickKeyHeight)
     }
 
+    // 横向きタイプライター配列(QWERTY)の中段右端のアポストロフィー。縦向きの下段右端(3512)と同じ
+    // FlickKanaSet(中心 '、左フリック ’)にして、押しボタンからフリックキーへ(3513)
     func landscapeLatinInlineApostropheKey(fixedWidth: CGFloat) -> some View {
-        ActionKeyButton(
-            title: "'",
-            fontSize: 20,
-            action: { commitText("'") }
+        FlickKeyView(
+            kana: Self.latinApostropheKey,
+            onCommit: commitText,
+            mainLabelFontSize: 25,
+            mainLabelFontWeight: rowKeyMainLabelFontWeight,
+            showsDirectionalHints: showsFlickGuideCharacters,
+            allowsDirectionalFlick: true,
+            onTouchStateChanged: { isTouching in
+                updateActiveLayer(isTouching, layerIndex: 1)
+            }
         )
             .frame(width: fixedWidth, height: mainFlickKeyHeight)
     }
