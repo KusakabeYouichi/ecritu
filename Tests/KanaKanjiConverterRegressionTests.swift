@@ -21798,3 +21798,15 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 3491: 活用規則の表は本数ぴったりの入れ物(倍々に広がった空きを残さない)。末尾文字の集合も中身に見合う大きさ
+    func testInflectionRuleTableIsCompact() {
+        let rules = KanaKanjiConverter.allInflectionRules
+        XCTAssertGreaterThan(rules.count, 5000)
+        XCTAssertLessThan(rules.capacity, rules.count + rules.count / 8, "capacity=\(rules.capacity) count=\(rules.count)")
+        let lastCharacters = KanaKanjiConverter.inflectionRuleSuffixLastCharacters
+        XCTAssertGreaterThan(lastCharacters.count, 20)
+        XCTAssertLessThan(lastCharacters.capacity, 512, "capacity=\(lastCharacters.capacity)")
+    }
+}
