@@ -4109,7 +4109,7 @@ extension KanaKanjiConverter {
                 let verbIndex = alternative.pathIndices[1]
                 let verbNode = nodes[verbIndex]
                 if particleNode.surface == String(head), particleNode.reading == String(head),
-                    verbNode.isInflectionDerived || verbNode.isDictWord,
+                    firstIsKanaDictWord ? verbNode.isInflectionDerived : (verbNode.isInflectionDerived || verbNode.isDictWord),
                     !verbNode.isKanaIdentity, verbNode.surface != verbNode.reading {
                     var surfaces = alternative.pathIndices.map { nodes[$0].surface }
                     let joinedAlt = surfaces.joined()

@@ -707,6 +707,9 @@ extension KanaKanjiConverter {
         "句読点\t打": 2500,
         "雨\t打": 2500,
         "波\t打": 2500,
+        // 空き+ある/ない(まだあきもあるから。3496、ユーザ指定)。秋(5103)が 空き(6254)より安く まだ秋もあるから だった
+        // 幅は まだ→秋 の bigram ぶん(3,404)を越える値
+        "空き\tある": 3600, "空き\tあり": 3600, "空き\tあっ": 3600, "空き\tない": 3600, "空き\tなし": 3600, "空き\t無": 3600,
     ]
     // 連語の後段は表層の前方一致で引く(解けて/解けてきます 等の活用派生ノードにも効かせる。2739)
     // 後段は丁寧接頭辞 お/ご を剥がした表層でも照合する(春慶塗の お箸。2809)
@@ -738,7 +741,8 @@ extension KanaKanjiConverter {
     // 上の連語を挟める1字助詞(の/が/を/は)
     // に も橋渡しに含める(紙に印刷。2836)。表は prevPrev\t表層 の完全一致なので、に を足しても他の組には影響しない
     // から/と も同じ理由で足す(北から南へ/北と東。2885)
-    static let multiClauseCollocationBridgeParticles: Set<String> = ["の", "が", "を", "は", "に", "から", "と"]
+    // も も橋渡しにする(まだ空きもあるから。3496)
+    static let multiClauseCollocationBridgeParticles: Set<String> = ["の", "が", "を", "は", "に", "から", "と", "も"]
     // 1字の格助詞(multiClauseCaseParticleSurfaces の1字分)+連体の の
     static let multiClauseSingleTopParticleTails: Set<Character> = ["に", "を", "が", "へ", "と", "で", "は", "も", "の"]
 
