@@ -1531,6 +1531,10 @@ extension KeyboardViewController {
         // バッファーの変異はロック下で行ない、defaults への書き込みは Data の写し(COW)で外に出す。
         let maxLineCount = 320
         let state = diagnosticsState
+        // 使われていない個体(別個体がオーナー=ゾンビ・予備)はバッファーを抱えない(3490)。以前は降格でバッファーを捨てても、
+        // ゾンビの生存確認や層の後始末を 1 行書くたびに 320 行ぶん(160KB)を読み直して持ち続け、実機のメモリグラフで
+        // 使われていない個体 24 体 × 160KB ≒ 3.7MB が Data として残っていた(2026-10-10)。書いたらその場で保存して手放す
+        let dropsBufferAfterSave = isConfirmedNonOwnerSession()
         let immediateSave: Data? = state.diagnosticsLogLock.withLock {
             if state.diagnosticsLogTextBuffer == nil {
                 let existing = diagnosticsLogLines(from: sharedDefaults).suffix(maxLineCount)
@@ -1549,9 +1553,14 @@ extension KeyboardViewController {
                 maxLineCount: maxLineCount
             )
             // 解体中: 作業項目([weak self])を作らず、その場で保存する
-            if critical || state.diagnosticsIsDeinitializing {
+            if critical || state.diagnosticsIsDeinitializing || dropsBufferAfterSave {
                 state.diagnosticsLogLinesDirty = false
-                return state.diagnosticsLogTextBuffer ?? Data()
+                let text = state.diagnosticsLogTextBuffer ?? Data()
+                if dropsBufferAfterSave {
+                    state.diagnosticsLogTextBuffer = nil
+                    state.diagnosticsLogTextLineCount = 0
+                }
+                return text
             }
             state.diagnosticsLogLinesDirty = true
             return nil
