@@ -1696,8 +1696,9 @@ extension KeyboardViewController {
         // 受けるため、固まる/空白になる。オーナー権は viewWillAppear で主張する(2532)。
         sharedDefaults.set(diagnosticsState.diagnosticsSessionID, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastSessionID)
         persistKeyboardDiagnosticsFailSafeProfile(in: sharedDefaults)
+        // 版(edition)を添える(3520)。実機ログがどのビルドのものか、ログだけで分かるように
         appendKeyboardDiagnosticsLog(
-            "キーボード拡張セッション開始",
+            "キーボード拡張セッション開始 版=\((Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String) ?? "?")",
             file: #fileID,
             line: #line,
             function: #function
