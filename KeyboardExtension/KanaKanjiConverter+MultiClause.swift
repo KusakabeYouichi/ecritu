@@ -3150,10 +3150,16 @@ extension KanaKanjiConverter {
                             // 文頭助詞の跨ぎ減点(3500。網膜=もうまく 対策)も、直後が漢字 2 字以上で始まる派生述語
                             // (指定され/設定した)なら払い戻す。にしていされています が にして(curated 1500)+医されています に
                             // 負けていた(抜き取り検査 6 件、2888)。うまく(かな)/出ない(1 字)は対象外で 網膜 は無傷
+                            // 漢字 1 字+かなで始まる派生述語(使ってない)でも、それが入力の末尾まで届く 4 かな以上の活用形なら
+                            // 払い戻す(3499)。もつかってない が 持つ+勝手+ない に負けていた(ユーザ報告)。網膜=もうまく の
+                            // うまく は派生でなく、にでない の 出ない は 3 かななので対象外のまま
+                            let longDerivedToEnd = node.end == n && node.reading.count >= 4
+                                && (node.surface.first.map { containsKanji(String($0)) } ?? false)
                             if hasScriptedDictWordFromStart,
                                 Self.multiClauseBOSPenalizedParticlesID.contains(prevNode.surfaceID),
-                                node.surface.count >= 2,
-                                node.surface.prefix(2).allSatisfy({ containsKanji(String($0)) }) {
+                                (node.surface.count >= 2
+                                    && node.surface.prefix(2).allSatisfy({ containsKanji(String($0)) }))
+                                    || longDerivedToEnd {
                                 cost -= Self.multiClauseSentenceInitialParticleOverlapPenalty
                             }
                         }

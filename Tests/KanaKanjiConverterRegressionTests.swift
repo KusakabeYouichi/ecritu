@@ -21879,4 +21879,17 @@ extension KanaKanjiConverterRegressionTests {
             XCTAssertEqual(Array(list.prefix(10)), ["継承", "敬称", "軽傷", "軽症", "警鐘", "景勝", "形象", "慶尚", "桂昌", "敬章"], "\(mode) \(list)")
         }
     }
+
+    // 3499: もつかってない は も使ってない(文頭の も の跨ぎ減点を、末尾まで届く 4 かな以上の派生述語なら漢字 1 字始まりでも払い戻す)。
+    // 網膜(もうまく)/入らない(はいらない) は連文節が空のまま(単文節が答える)
+    func testBOSParticleOverlapRefundForLongDerivedPredicate() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("もつかってない", "も使ってない"), ("もつかってる", "も使ってる"), ("もみえない", "も見えない")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "multi=\(multi.prefix(4))")
+        }
+        XCTAssertTrue(converter.multiClauseCandidates(for: "もうまく", systemCandidateMode: .surface).isEmpty)
+        XCTAssertEqual(converter.candidates(for: "もうまく", limit: 3, systemCandidateMode: .surface).first, "網膜")
+    }
 }
