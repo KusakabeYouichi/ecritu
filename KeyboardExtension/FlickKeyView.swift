@@ -202,8 +202,11 @@ private struct RawLongPressReceiver: ViewModifier {
 
 // 生タッチを RawTouchLongPress へ流すだけの認識器。状態を変えない(.possible のまま)ので他の操作を邪魔しない
 final class RawTouchLongPressGestureRecognizer: UIGestureRecognizer {
+    // 位置を取る座標系(SwiftUI の .global = ホスティングビュー)。認識器自体はルートの view に付ける
+    weak var coordinateView: UIView?
+
     private func forward(_ touches: Set<UITouch>, phase: UITouch.Phase) {
-        guard let view else {
+        guard let view = coordinateView ?? view else {
             return
         }
         for touch in touches {
@@ -211,6 +214,13 @@ final class RawTouchLongPressGestureRecognizer: UIGestureRecognizer {
             let point = touch.location(in: view)
             switch phase {
             case .began:
+                #if DEBUG
+                // 調査用ログ(3518): 生タッチが届いた時刻と位置。配送遅れは端末が指を検出した時刻(touch.timestamp)との差
+                let deliveryMs = Int(((RawTouchLongPress.uptimeNow() - touch.timestamp) * 1000).rounded())
+                KeyboardStuckTouchDiagnostics.onTouchForensics?(
+                    String(format: "生タッチ began (%.0f,%.0f) 配送遅れ=%dms 登録キー=%d", point.x, point.y, deliveryMs,
+                        RawTouchLongPress.registeredKeyCount))
+                #endif
                 RawTouchLongPress.touchBegan(id: id, at: point)
             case .moved:
                 RawTouchLongPress.touchMoved(id: id, to: point)
@@ -242,8 +252,9 @@ final class RawTouchLongPressGestureRecognizer: UIGestureRecognizer {
         forward(touches, phase: .cancelled)
     }
 
-    static func install(on view: UIView) {
+    static func install(on view: UIView, coordinateView: UIView) {
         let recognizer = RawTouchLongPressGestureRecognizer(target: nil, action: nil)
+        recognizer.coordinateView = coordinateView
         recognizer.cancelsTouchesInView = false
         recognizer.delaysTouchesBegan = false
         recognizer.delaysTouchesEnded = false
