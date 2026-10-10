@@ -2213,9 +2213,17 @@ extension KanaKanjiConverter {
     static let multiClauseInflectionMaxSegmentReadingCount = 12  // 活用派生を試みる span 長上限
     // 活用ルールの readingSuffix 末尾文字。span がこのどれかで終わる時だけ活用派生を試みる
     // (ルール全走査の回数を抑える事前フィルタ)。
-    static let inflectionRuleSuffixLastCharacters: Set<Character> = Set(
-        KanaKanjiConverter.allInflectionRules.compactMap { $0.readingSuffix.last }
-    )
+    // 1 字ずつ入れて作る(3491)。Set(配列) は配列の長さ(活用規則 約 1 万)ぶんの入れ物を確保するので、
+    // 中身が数十字でも 278KB を占めていた(実機のメモリグラフ 2026-10-10)。順に入れれば中身の数に見合う大きさ(数 KB)で済む
+    static let inflectionRuleSuffixLastCharacters: Set<Character> = {
+        var characters = Set<Character>()
+        for rule in KanaKanjiConverter.allInflectionRules {
+            if let last = rule.readingSuffix.last {
+                characters.insert(last)
+            }
+        }
+        return characters
+    }()
     static let multiClauseBOSMarker = "<BOS>"
     static let multiClauseEOSMarker = "<EOS>"
     // LM コスト定数(cost = -logP × scale, scale=500 で学習)。sim_lm.py で検証した値と一致させる。
