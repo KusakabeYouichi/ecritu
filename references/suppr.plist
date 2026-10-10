@@ -191,6 +191,8 @@
 	<dict><key>phrase</key><string>唐菜</string><key>shortcut</key><string>からな</string></dict>
 	<dict><key>phrase</key><string>親拝</string><key>shortcut</key><string>しんぱい</string></dict>	<!-- 親拝/進拝: しんぱい のレア語収穫。inflection_classes に suru 登録されており(心配は未登録=メタデータ穴)、心配しなくて 等の正規形より先に 親拝しなくて を導出する -->
 	<dict><key>phrase</key><string>進拝</string><key>shortcut</key><string>しんぱい</string></dict>
+	<dict><key>phrase</key><string>集り</string><key>shortcut</key><string>あつまり</string></dict>	<!-- 集り(あつまり): 集まり の送り仮名を省いた表記(たかり なら 集り でよい)。あつまり では 集まり だけでよい(ユーザ指定 3506) -->
+	<dict><key>phrase</key><string>集</string><key>shortcut</key><string>あつまり</string></dict>	<!-- 集(あつまり): 単漢字の訓読み収穫。同上(ユーザ指定 3506) -->
 
 	<!-- ■ カタカナ収穫・カタカナ強調(かな/漢字の正書を勝たせる) -->
 	<dict><key>phrase</key><string>カッタ</string><key>shortcut</key><string>かった</string></dict>	<!-- カッタ: Sudachi のカタカナ収穫(wc 2344 と極端に安い)。かった の先頭を取り 買った/勝った を押し下げていた(ユーザ報告 3388) -->
@@ -233,6 +235,8 @@
 	<dict><key>phrase</key><string>細きん</string><key>shortcut</key><string>さいきん</string></dict>	<!-- 細きん(さいきん): 細菌 の交ぜ書き収穫(菌 だけかな)。意味のない表記ゆれなので抑制 -->
 	<dict><key>phrase</key><string>危ぐ</string><key>shortcut</key><string>きぐ</string></dict>	<!-- 危ぐ(きぐ): 危惧 の交ぜ書き(惧 が常用漢字外だった頃の書き換え。2010年の改定で惧は常用漢字に入っており現行表記ではない)。word_cost が 危惧 と同値(6518)で候補上位に並ぶ -->
 	<dict><key>phrase</key><string>河う</string><key>shortcut</key><string>かわう</string></dict>	<!-- 河う(かわう): 鳥のカワウ=河鵜 の交ぜ書き(鵜が常用外)。名詞なのに読み かわう に活用クラス行が 無いため五段う動詞と推論され、河って/河ってきて を生成して 変わってきてる を逆転していた。 交ぜ書き判定はかな部分1文字を対象外(漢字+助詞と区別不能)なので構造的にすり抜ける。 クラス推論側は 2465 で塞いだが、交ぜ書きエントリ自体も残す価値が無いので抑制する -->
+	<dict><key>phrase</key><string>価い</string><key>shortcut</key><string>あたい</string></dict>	<!-- 価い/値い(あたい): 送り仮名の付け方に無い送り(本則は 価/値)。seed {値、価、直} の単漢字は段階ブーストが小さく、この 2 つを下へ回せないので抑制(ユーザ判定 3506) -->
+	<dict><key>phrase</key><string>値い</string><key>shortcut</key><string>あたい</string></dict>
 
 	<!-- ■ 非文法・実用ゼロの合成(学習しても出さない) -->
 	<dict><key>phrase</key><string>連れて言って</string><key>shortcut</key><string>つれていって</string></dict>	<!-- 連れて行って が正書。誤選択で学習しても復活させない(抑制は学習より強い) -->
