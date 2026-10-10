@@ -691,6 +691,40 @@ final class KeyboardModeTransitionTests: XCTestCase {
 // (2026-09-19 のログ)。表示→非表示→参照を捨てる の後に deinit するかを Mac で直接見る。
 // 解放されなければプロセス内(écritu 側)に掴んでいるものがある
 final class KeyboardViewControllerLifecycleTests: XCTestCase {
+    // 3490: 別個体がセッションのオーナー(=この個体はゾンビ・予備)のとき、診断ログを 1 行書いても 320 行ぶんの
+    // バッファー(160KB)を抱えない。オーナーの個体は従来どおりバッファーを持つ(5 秒バッチ)
+    @MainActor
+    func testNonOwnerControllerDoesNotRetainDiagnosticsLogBuffer() throws {
+        let controller = KeyboardViewController()
+        guard let defaults = controller.sharedDefaults else {
+            throw XCTSkip("App Group の UserDefaults が無い")
+        }
+        let key = KeyboardViewController.SharedDefaultsKeys.keyboardDiagnosticsSessionOwnerToken
+        let previousToken = defaults.string(forKey: key)
+        defer {
+            if let previousToken {
+                defaults.set(previousToken, forKey: key)
+            } else {
+                defaults.removeObject(forKey: key)
+            }
+        }
+
+        defaults.set("other-process:other-controller", forKey: key)
+        controller.appendKeyboardDiagnosticsLog("非オーナーの追記 3490")
+        let nonOwnerBuffer = controller.diagnosticsState.diagnosticsLogLock.withLock {
+            controller.diagnosticsState.diagnosticsLogTextBuffer
+        }
+        XCTAssertNil(nonOwnerBuffer, "非オーナーの個体がバッファーを抱えている")
+
+        defaults.set(controller.diagnosticsSessionOwnerToken(), forKey: key)
+        controller.appendKeyboardDiagnosticsLog("オーナーの追記 3490")
+        let ownerBuffer = controller.diagnosticsState.diagnosticsLogLock.withLock {
+            controller.diagnosticsState.diagnosticsLogTextBuffer
+        }
+        XCTAssertNotNil(ownerBuffer, "オーナーの個体はバッファーを持つ")
+        controller.persistBufferedKeyboardDiagnostics()
+    }
+
     // 診断ログの追記はメインと候補生成キューの両方から来る(初回変換の区間計測 e93b85ae)。
     // バッファーの切り詰め(320 行超)を同時に走らせると removeSubrange が範囲外で SIGTRAP
     // (実機 3106/3110 で 2 件、数時間放置→数文字打つと落ちる)。ロック下でなければここで落ちる。
