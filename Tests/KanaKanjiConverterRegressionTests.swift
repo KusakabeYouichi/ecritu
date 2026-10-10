@@ -21929,4 +21929,14 @@ extension KanaKanjiConverterRegressionTests {
             XCTAssertEqual(multi.first, expected, "multi=\(multi.prefix(4))")
         }
     }
+
+    // 3504: でかいいえ は でかい家(形容詞の直後の派生動詞 言え を減点)。新しい家/長い間/近いうち は無傷
+    func testAdjectiveNotFollowedByDerivedVerb() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("でかいいえ", "でかい家"), ("あたらしいいえ", "新しい家"), ("ながいあいだ", "長い間"), ("ちかいうち", "近いうち")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "multi=\(multi.prefix(4))")
+        }
+    }
 }
