@@ -21918,4 +21918,15 @@ extension KanaKanjiConverterRegressionTests {
             XCTAssertTrue(converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).isEmpty, reading)
         }
     }
+
+    // 3503: とかいにすんでる は 都会に住んでる(連用形+に の直後の状態動詞 住む を減点)。友達と買いに行った/飲みに誘った/食べに来た は無傷
+    func testRenyouNiNotFollowedByStativeVerb() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("とかいにすんでる", "都会に住んでる"), ("とかいにすんでいる", "都会に住んでいる"),
+                                    ("ともだちとかいにいった", "友達と買いに行った"), ("のみにさそった", "飲みに誘った"), ("たべにきた", "食べに来た")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "multi=\(multi.prefix(4))")
+        }
+    }
 }
