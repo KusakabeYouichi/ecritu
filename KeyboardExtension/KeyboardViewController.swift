@@ -1574,6 +1574,12 @@ final class KeyboardViewController: UIInputViewController {
         // 位置だけ SwiftUI の .global と同じホスティングビューの座標で取る(3518。3517 のホスティングビュー付けは
         // 実機で一度も起動しなかった)
         RawTouchLongPressGestureRecognizer.install(on: view, coordinateView: host.view)
+        #if DEBUG
+        // 調査用ログ(3520): 取り付けたこと自体を残す(「生タッチ began」が無いときに、付け先か配送かを分ける)
+        appendKeyboardDiagnosticsLog(
+            "生タッチ認識器を取り付け view=\(type(of: view)) 認識器数=\(view.gestureRecognizers?.count ?? 0)",
+            file: #fileID, line: #line, function: #function)
+        #endif
 
         // 面は窓の下端に中身の高さで固定する(3265)。上端の制約(補正ぶん下げる)は優先度を下げて残し、中身の高さが
         // 決まる前(0)だけ効かせる。窓が中身より低いあいだは上端を越えないよう >= で抑える
