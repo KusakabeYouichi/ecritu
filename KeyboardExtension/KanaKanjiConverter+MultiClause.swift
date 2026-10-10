@@ -3495,6 +3495,16 @@ extension KanaKanjiConverter {
                             Self.multiClauseRenyouNiStatefulVerbPrefixes.contains(where: { node.surface.hasPrefix($0) }) {
                             cost += Self.multiClauseRenyouNiStatefulVerbPenalty
                         }
+                        // 形容詞(い で終わる活用派生・3 かな以上の追加語彙)の直後に活用派生の動詞は立たない(でかい+言え。3504)。
+                        // 形容詞は名詞を修飾する(でかい家)。派生の形容詞・否定(〜い で終わる)と 連用形+に は対象外
+                        if node.isInflectionDerived, !node.isKanaIdentity, node.surface.count >= 2,
+                            !(node.reading.last.map { $0 == "い" } ?? false),
+                            !renyouNiNodeKeys.contains(node.key),
+                            prevNode.surface.hasSuffix("い"),
+                            prevNode.isInflectionDerived
+                                || (prevNode.isCurated && prevNode.isKanaIdentity && prevNode.reading.count >= 3) {
+                            cost += Self.multiClauseAdjectiveBeforeVerbPenalty
+                        }
                         // より(は/も)+まし は比較の まし/マシ(定数コメント参照。2898)
                         // 直前の切り方(よりは 1 ノード/より+は)に依らず、読み列で より(は/も) を見る
                         if node.reading.hasPrefix("まし"), node.start >= 2,
