@@ -376,7 +376,7 @@
 	        <dict><key>phrase</key><string>amatriciana</string><key>shortcut</key><string>あまとりちゃーな</string><key>pos</key><string>名詞</string></dict>
 	        <dict><key>phrase</key><string>アラビアータ</string><key>shortcut</key><string>あらびあーた</string><key>pos</key><string>名詞</string></dict>
 	        <dict><key>phrase</key><string>arrabbiata</string><key>shortcut</key><string>あらびあーた</string><key>pos</key><string>名詞</string></dict>
-	        <dict><key>phrase</key><string>カチョエペペ</string><key>shortcut</key><string>かちょえぺぺ</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>カチョ・エ・ペペ</string><key>shortcut</key><string>かちょえぺぺ</string><key>pos</key><string>名詞</string></dict>
 	        <dict><key>phrase</key><string>cacio e pepe</string><key>shortcut</key><string>かちょえぺぺ</string><key>pos</key><string>名詞</string></dict>
 	        <dict><key>phrase</key><string>カルボナーラ</string><key>shortcut</key><string>かるぼなーら</string><key>pos</key><string>名詞</string></dict>
 	        <dict><key>phrase</key><string>carbonara</string><key>shortcut</key><string>かるぼなーら</string><key>pos</key><string>名詞</string></dict>
@@ -388,6 +388,8 @@
 	        <dict><key>phrase</key><string>puttanesca</string><key>shortcut</key><string>ぷったねすか</string><key>pos</key><string>名詞</string></dict>
 	        <dict><key>phrase</key><string>ペスカトーレ</string><key>shortcut</key><string>ぺすかとーれ</string><key>pos</key><string>名詞</string></dict>
 	        <dict><key>phrase</key><string>pescatora</string><key>shortcut</key><string>ぺすかとーれ</string><key>pos</key><string>名詞</string></dict>	<!-- 伊語は alla pescatora(漁師風)。日本の ペスカトーレ は pescatore(漁師)から -->
+	        <dict><key>phrase</key><string>アーリオ・オリオ・エ・ペペロンチーノ</string><key>shortcut</key><string>あーりおおりおえぺぺろんちーの</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>aglio, olio e peperoncino</string><key>shortcut</key><string>あーりおおりおえぺぺろんちーの</string><key>pos</key><string>名詞</string></dict>	<!-- aglio, olio e peperoncino の略 -->
 	        <dict><key>phrase</key><string>ペペロンチーノ</string><key>shortcut</key><string>ぺぺろんちーの</string><key>pos</key><string>名詞</string></dict>
 	        <dict><key>phrase</key><string>peperoncino</string><key>shortcut</key><string>ぺぺろんちーの</string><key>pos</key><string>名詞</string></dict>	<!-- aglio, olio e peperoncino の略 -->
 	        <dict><key>phrase</key><string>ポモドーロ</string><key>shortcut</key><string>ぽもどーろ</string><key>pos</key><string>名詞</string></dict>
