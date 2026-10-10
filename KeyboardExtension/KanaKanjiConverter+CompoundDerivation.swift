@@ -647,6 +647,41 @@ extension KanaKanjiConverter {
         "かいそう": ["階層"]
     ]
 
+    // 数の単位(十/百/千/万/億/兆)の読み。数字の直後の まんぼん/せんえん/おくえん は 単位+助数詞(3万本/5千円/1億円)として
+    // 組む(ユーザ指定 3492)。以前は 万 が助数詞の表に無く、ま+んぼん(間んぼん)や マンボン の合成ばかりだった
+    static let numeralUnitSurfacesByReading: [String: String] = [
+        "じゅう": "十", "ひゃく": "百", "びゃく": "百", "ぴゃく": "百", "せん": "千", "ぜん": "千",
+        "まん": "万", "おく": "億", "ちょう": "兆"
+    ]
+
+    // 読みの先頭から単位の読みを剥がし(せんまん→千万)、残りが助数詞の読み(ぼん/えん/にん。助詞 1 字が付いた
+    // ぼんの/えんを も可)なら 単位+助数詞(+助詞)を、残りが空なら単位だけを返す。単位で始まらない読み、残りが助数詞でない
+    // 読み(せんち/まんげつ 等)は nil
+    static func numeralUnitCompositions(for reading: String) -> [String]? {
+        var rest = Substring(reading)
+        var units = ""
+        while let (unitReading, unitSurface) = numeralUnitSurfacesByReading.first(where: { rest.hasPrefix($0.key) }) {
+            rest = rest.dropFirst(unitReading.count)
+            units += unitSurface
+        }
+        guard !units.isEmpty else {
+            return nil
+        }
+        if rest.isEmpty {
+            // 単位だけの読みは 万/億/兆(3万/1億 と書く)に限る。十/百/千 は 30/300/3000 と書くので組まず、
+            // 3+ぜん は従来どおり助数詞の 膳 が先頭(回帰テスト testRegressionRealLMCounterGapsAndHitoInai)
+            return units.last.map { "万億兆".contains($0) } == true ? [units] : nil
+        }
+        if let counterSurfaces = digitBoostCounterSurfaces(for: String(rest)) {
+            return counterSurfaces.map { units + $0 }
+        }
+        if rest.count >= 2, let particle = rest.last, "のにをがはもでとへ".contains(particle),
+            let counterSurfaces = digitBoostCounterSurfaces(for: String(rest.dropLast())) {
+            return counterSurfaces.map { units + $0 + String(particle) }
+        }
+        return nil
+    }
+
     // 英字の直後で先頭に来るべき語(ユーザー指定 3390)。A確定→がた→A型(既定は がた/ガタ/方/型 の順で 型 が出なかった)
     static let latinContextPreferredSurfacesByReading: [String: [String]] = [
         "がた": ["型"]
@@ -710,9 +745,13 @@ extension KanaKanjiConverter {
             return candidates
         }
         let present = Set(candidates)
+        // 数の単位+助数詞(3+まんぼん→万本。定数コメント参照。3492)。組めたら最優先で前置し、下の 助数詞+かな末尾 の
+        // 合成(ま+んぼん→間んぼん)は作らない
+        let unitCompositions = Self.numeralUnitCompositions(for: reading) ?? []
+        var boosted: [String] = unitCompositions.filter { !suppressedCandidates.contains($0) }
         // 数字文脈限定の助数詞供給(定数コメント参照)。抑制済み表層は復活させない。
-        var boosted: [String] = (Self.supplementalCounterSurfacesByReading[reading] ?? [])
-            .filter { !present.contains($0) && !suppressedCandidates.contains($0) }
+        boosted += (Self.supplementalCounterSurfacesByReading[reading] ?? [])
+            .filter { !present.contains($0) && !suppressedCandidates.contains($0) && !boosted.contains($0) }
         // 助数詞ではないが数字の直後なら先頭に来るべき語(定数コメント参照。3185)
         boosted += (Self.digitContextPreferredSurfacesByReading[reading] ?? [])
             .filter { !boosted.contains($0) && !suppressedCandidates.contains($0) }
@@ -731,6 +770,8 @@ extension KanaKanjiConverter {
             // しない(2681)。2確定→ごうてん で 号+てん の合成(号点/号てん/合点/合てん)が
             // 本来の 号店 を押しのけていた。合成は語が無いときの受け皿なので、人手宣言のある
             // 読みでは出番がない
+            // 単位+助数詞(万本)が組めた読みでは、助数詞+かな末尾の合成(間んぼん)は要らない(3492)
+            let hasUnitComposition = !unitCompositions.isEmpty
             let readingHasSeedWord = KanaKanjiSeedDictionary.seed[reading] != nil
             // 末尾に助詞 1 字が付いた形(いがい+に)も同じ。ただし助数詞の読みが seed 語の途中で切るとき
             // (い|がいに → 位がいに)だけ止める。助数詞の読みが seed 語そのもの(かい+に → 回に)は残す(ユーザ報告 3455)
@@ -749,7 +790,7 @@ extension KanaKanjiConverter {
             for counterReading in Set(numericCounterSuffixCandidatesByReading.keys)
                 .union(digitContextAdditionalCounterSurfacesByReading.keys)
                 .sorted(by: { $0.count != $1.count ? $0.count > $1.count : $0 < $1 })
-            where !readingHasSeedWord && !isOrdinalMeReading
+            where !readingHasSeedWord && !isOrdinalMeReading && !hasUnitComposition
                 && reading.count > counterReading.count && reading.hasPrefix(counterReading)
                 && !(seedStemBeforeParticle.map { counterReading.count < $0.count } ?? false) {
                 let surfaces = Self.digitBoostCounterSurfaces(for: counterReading) ?? []
