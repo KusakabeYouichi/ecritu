@@ -773,6 +773,9 @@ extension KeyboardViewController {
             Int(footprintMB.rounded(.up))
         )
         diagnosticsState.memoryFootprintCurrentMB = Int(footprintMB.rounded())
+        // footprint 高水位台帳(MEMFORENSICS A4、3507)。バッジが読む fp をそのまま渡し、変換していない瞬間の
+        // 上昇(ゾンビ個体の積み上がり・面の切替)も操作タグ付きで残す
+        MemoryForensics.noteFootprintHighWater("バッジ更新:\(trigger)", footprintMB: footprintMB)
         diagnosticsState.memoryFootprintProcessPeakMB = max(
             diagnosticsState.memoryFootprintProcessPeakMB,
             diagnosticsState.memoryFootprintPeakMB
