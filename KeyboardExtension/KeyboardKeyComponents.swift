@@ -71,47 +71,68 @@ struct LatinShiftKeyButton: View {
         return KeyboardThemePalette.keyBorder
     }
 
+    // 長押し(ロック)までの時間。指を置いたまま 0.4 秒で locked
+    private static let longPressDuration: TimeInterval = 0.4
+    @State private var isPressing = false
+    @State private var longPressWorkItem: DispatchWorkItem?
+
     var body: some View {
-        Button(action: {
-            if didTriggerLongPress {
-                didTriggerLongPress = false
-                return
-            }
+        // 指を置いた瞬間に切り替える(3507)。以前は Button(指を離したときに action)で、押してから色と矢印が
+        // 変わるまでに「指を離すまでの時間」が丸ごと乗り、アニメーションが遅いように見えていた(ユーザ報告)。
+        // 長押しのロックは自前のタイマー(0.4 秒。LongPressGesture と同じ長さ)。タップで on にした後に
+        // そのまま押し続けると locked になり、ダブルタップ(0.28 秒以内の 2 度目)の locked も変わらない
+        VStack(spacing: 2) {
+            Image(systemName: shiftSymbolName)
+                .font(.system(size: 19, weight: .semibold))
+                .foregroundStyle(shiftForegroundColor)
+                .offset(x: shiftSymbolHorizontalOffset, y: shiftSymbolVerticalOffset)
 
-            onTap()
-        }) {
-            VStack(spacing: 2) {
-                Image(systemName: shiftSymbolName)
-                    .font(.system(size: 19, weight: .semibold))
-                    .foregroundStyle(shiftForegroundColor)
-                    .offset(x: shiftSymbolHorizontalOffset, y: shiftSymbolVerticalOffset)
-
-                Capsule()
-                    .fill(shiftForegroundColor.opacity(isLocked ? 0.95 : 0))
-                    .frame(width: 16, height: 2)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(
-                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .fill(shiftBackgroundColor)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .stroke(
-                        shiftBorderColor,
-                        lineWidth: isLocked ? 1.4 : 1
-                    )
-            )
+            Capsule()
+                .fill(shiftForegroundColor.opacity(isLocked ? 0.95 : 0))
+                .frame(width: 16, height: 2)
         }
-        .buttonStyle(.plain)
-        .simultaneousGesture(
-            LongPressGesture(minimumDuration: 0.4)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .fill(shiftBackgroundColor)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .stroke(
+                    shiftBorderColor,
+                    lineWidth: isLocked ? 1.4 : 1
+                )
+        )
+        .contentShape(Rectangle())
+        .gesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { _ in
+                    guard !isPressing else {
+                        return
+                    }
+                    isPressing = true
+                    didTriggerLongPress = false
+                    onTap()
+                    let workItem = DispatchWorkItem {
+                        didTriggerLongPress = true
+                        onLongPress()
+                    }
+                    longPressWorkItem = workItem
+                    DispatchQueue.main.asyncAfter(deadline: .now() + Self.longPressDuration, execute: workItem)
+                }
                 .onEnded { _ in
-                    didTriggerLongPress = true
-                    onLongPress()
+                    isPressing = false
+                    longPressWorkItem?.cancel()
+                    longPressWorkItem = nil
                 }
         )
+        .onDisappear {
+            isPressing = false
+            longPressWorkItem?.cancel()
+            longPressWorkItem = nil
+        }
         .accessibilityLabel(isLocked ? "シフト ロック中" : "シフト")
+        .accessibilityAddTraits(.isButton)
     }
 }
 
