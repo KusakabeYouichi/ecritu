@@ -1,4 +1,5 @@
 import XCTest
+import Combine
 import SwiftUI
 import UIKit
 
@@ -318,5 +319,79 @@ extension KeyboardLayoutMetricsTests {
         XCTAssertEqual(without, 0, "fixedSize 無しでは字が描かれない(この前提が変わったら FlickKeyView の注記を見直す)")
         XCTAssertGreaterThan(with, 10, "fixedSize ありなら半幅のキーでも ’ が描かれる")
         XCTAssertGreaterThan(wideKey, 100, "広いキーの通常の字も描かれる")
+    }
+}
+
+// 生タッチ駆動の長押し(RawTouchLongPress 3516)の状態機械。枠の登録→触れた位置のキー→0.35 秒で起動→
+// 動き/離しの合図、離すのが早ければ起動しない、生タッチ側で確定した印は 1 回だけ取れる
+extension KeyboardLayoutMetricsTests {
+    @MainActor
+    private func collectRawLongPressEvents(
+        timeout: TimeInterval,
+        _ body: () -> Void
+    ) -> [RawTouchLongPress.Event] {
+        var received: [RawTouchLongPress.Event] = []
+        let subscription = RawTouchLongPress.events.sink { received.append($0) }
+        body()
+        let waiter = expectation(description: "raw long press")
+        DispatchQueue.main.asyncAfter(deadline: .now() + timeout) { waiter.fulfill() }
+        wait(for: [waiter], timeout: timeout + 2)
+        subscription.cancel()
+        return received
+    }
+
+    @MainActor
+    func testRawTouchLongPressActivatesAfterDelayAndFollowsTheFinger() {
+        RawTouchLongPress.resetForTesting()
+        defer { RawTouchLongPress.resetForTesting() }
+        RawTouchLongPress.register(keyID: "c", frame: CGRect(x: 100, y: 150, width: 30, height: 44))
+        RawTouchLongPress.register(keyID: "v", frame: CGRect(x: 136, y: 150, width: 30, height: 44))
+        XCTAssertEqual(RawTouchLongPress.registeredKeyCount, 2)
+
+        let touch = ObjectIdentifier(NSObject())
+        let events = collectRawLongPressEvents(timeout: RawTouchLongPress.delay + 0.25) {
+            RawTouchLongPress.touchBegan(id: touch, at: CGPoint(x: 110, y: 170))
+            RawTouchLongPress.touchMoved(id: touch, to: CGPoint(x: 112, y: 170))  // 起動前の動きは流さない
+            DispatchQueue.main.asyncAfter(deadline: .now() + RawTouchLongPress.delay + 0.1) {
+                RawTouchLongPress.touchMoved(id: touch, to: CGPoint(x: 150, y: 170))
+                RawTouchLongPress.touchEnded(id: touch, at: CGPoint(x: 152, y: 170), cancelled: false)
+            }
+        }
+        XCTAssertEqual(events.map(\.kind), [.activate, .move, .end])
+        XCTAssertEqual(events.map(\.keyID), ["c", "c", "c"], "起動したキーに付いて行く(隣の v に入っても変えない)")
+        XCTAssertEqual(events.map(\.globalX), [112, 150, 152])
+
+        XCTAssertFalse(RawTouchLongPress.takeConsumed(keyID: "c"))
+        RawTouchLongPress.noteConsumed(keyID: "c")
+        XCTAssertFalse(RawTouchLongPress.takeConsumed(keyID: "v"))
+        XCTAssertTrue(RawTouchLongPress.takeConsumed(keyID: "c"))
+        XCTAssertFalse(RawTouchLongPress.takeConsumed(keyID: "c"), "印は 1 回だけ")
+    }
+
+    @MainActor
+    func testRawTouchLongPressDoesNotActivateForShortTapOrOutsideKeys() {
+        RawTouchLongPress.resetForTesting()
+        defer { RawTouchLongPress.resetForTesting() }
+        RawTouchLongPress.register(keyID: "c", frame: CGRect(x: 100, y: 150, width: 30, height: 44))
+
+        let shortTap = ObjectIdentifier(NSObject())
+        let shortTapEvents = collectRawLongPressEvents(timeout: RawTouchLongPress.delay + 0.2) {
+            RawTouchLongPress.touchBegan(id: shortTap, at: CGPoint(x: 110, y: 170))
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                RawTouchLongPress.touchEnded(id: shortTap, at: CGPoint(x: 110, y: 170), cancelled: false)
+            }
+        }
+        XCTAssertTrue(shortTapEvents.isEmpty, "0.35 秒より前に離したら起動しない")
+
+        let outside = ObjectIdentifier(NSObject())
+        let outsideEvents = collectRawLongPressEvents(timeout: RawTouchLongPress.delay + 0.2) {
+            RawTouchLongPress.touchBegan(id: outside, at: CGPoint(x: 10, y: 10))
+        }
+        XCTAssertTrue(outsideEvents.isEmpty, "登録の無い場所は何もしない")
+        RawTouchLongPress.touchEnded(id: outside, at: CGPoint(x: 10, y: 10), cancelled: false)
+
+        RawTouchLongPress.noteConsumed(keyID: "c")
+        RawTouchLongPress.touchBegan(id: ObjectIdentifier(NSObject()), at: CGPoint(x: 10, y: 10))
+        XCTAssertFalse(RawTouchLongPress.takeConsumed(keyID: "c"), "次の接触が始まったら古い印は捨てる")
     }
 }

@@ -1,3 +1,4 @@
+import Combine
 import SwiftUI
 
 enum FlickGuideDisplayMode: String {
@@ -29,7 +30,219 @@ enum KeyboardStuckTouchDiagnostics {
     static var longPressProbeCompensationMs: Int?
     static var longPressProbeDeliveredAt: Date?
     static var longPressProbeFiredAt: Date?
+    // 生タッチ駆動で盤を出したときは、触れてから起動までを生タッチ側の時刻で出す(3516)
+    static var longPressProbeRawBeganAt: Date?
+    static var longPressProbeRawActivatedAt: Date?
     #endif
+}
+
+// 生タッチ駆動の長押し(3516)。縦画面では画面下端のシステム操作の門番(_UISystemGestureGate)が、下の段に
+// 触れた touch を約 0.75 秒握ってから SwiftUI のジェスチャーへ配る(3172 で名指し。待ちの指定を外しても
+// 効かず、門番を止めるとホストが落ちた 3173/3181)。一方、面に付けた素の UIGestureRecognizer には
+// 30ms 以内に届く(3150 の実測)。そこで、アクサン候補を持つ英字キー(フリックの効かないキー)だけ、
+// 素の認識器で見た touch から長押しの待ちを数え、盤を SwiftUI の判定より先に出す。
+//
+// 役割分担: ここは「触れた位置がどのキーか」「0.35 秒経った」「指が動いた/離れた」を Combine で流すだけ。
+// 盤の表示・候補の選択・確定は受け手の FlickKeyView が今までどおり行なう。遅れて届いた SwiftUI の
+// ジェスチャーは、盤が出ていればそのまま引き継ぎ(選択と確定は SwiftUI 側)、生タッチ側で既に確定して
+// いれば何もしない(takeConsumed)。キーの枠は FlickKeyView が onGeometryChange で登録する(SwiftUI の
+// .global = ホスティングビューの座標。認識器もホスティングビューに付ける)
+enum RawTouchLongPress {
+    enum Kind {
+        case activate
+        case move
+        case end
+        case cancel
+    }
+
+    struct Event {
+        let keyID: String
+        let globalX: CGFloat
+        let kind: Kind
+    }
+
+    static let events = PassthroughSubject<Event, Never>()
+    static let delay: TimeInterval = 0.35
+    // 生タッチ側で確定した押しの印は、SwiftUI の判定が届かないまま残っても次の接触で捨てる。念のため期限も置く
+    static let consumedLifetime: TimeInterval = 1.5
+
+    private static var frames: [String: CGRect] = [:]
+    private static var trackedTouchID: ObjectIdentifier?
+    private static var pendingKeyID: String?
+    private static var pendingWorkItem: DispatchWorkItem?
+    private static var activeKeyID: String?
+    private static var lastGlobalX: CGFloat = 0
+    private static var consumedKeyID: String?
+    private static var consumedAt: Date?
+
+    static func keyID(for kana: FlickKanaSet) -> String {
+        kana.center.lowercased()
+    }
+
+    static func register(keyID: String, frame: CGRect) {
+        if frame.isEmpty {
+            frames[keyID] = nil
+        } else {
+            frames[keyID] = frame
+        }
+    }
+
+    static func unregister(keyID: String) {
+        frames[keyID] = nil
+    }
+
+    static var registeredKeyCount: Int {
+        frames.count
+    }
+
+    static func touchBegan(id: ObjectIdentifier, at point: CGPoint) {
+        consumedKeyID = nil
+        consumedAt = nil
+        guard trackedTouchID == nil else {
+            return
+        }
+        trackedTouchID = id
+        lastGlobalX = point.x
+        cancelPending()
+        guard let keyID = frames.first(where: { $0.value.contains(point) })?.key else {
+            return
+        }
+        #if DEBUG
+        KeyboardStuckTouchDiagnostics.longPressProbeRawBeganAt = Date()
+        #endif
+        pendingKeyID = keyID
+        let workItem = DispatchWorkItem {
+            guard let keyID = pendingKeyID else {
+                return
+            }
+            pendingKeyID = nil
+            pendingWorkItem = nil
+            activeKeyID = keyID
+            events.send(Event(keyID: keyID, globalX: lastGlobalX, kind: .activate))
+        }
+        pendingWorkItem = workItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: workItem)
+    }
+
+    static func touchMoved(id: ObjectIdentifier, to point: CGPoint) {
+        guard id == trackedTouchID else {
+            return
+        }
+        lastGlobalX = point.x
+        if let activeKeyID {
+            events.send(Event(keyID: activeKeyID, globalX: point.x, kind: .move))
+        }
+    }
+
+    static func touchEnded(id: ObjectIdentifier, at point: CGPoint, cancelled: Bool) {
+        guard id == trackedTouchID else {
+            return
+        }
+        trackedTouchID = nil
+        cancelPending()
+        guard let keyID = activeKeyID else {
+            return
+        }
+        activeKeyID = nil
+        events.send(Event(keyID: keyID, globalX: point.x, kind: cancelled ? .cancel : .end))
+    }
+
+    // 受け手(FlickKeyView)が生タッチ側で確定したときに呼ぶ。遅れて届く SwiftUI の判定に「済み」を伝える
+    static func noteConsumed(keyID: String) {
+        consumedKeyID = keyID
+        consumedAt = Date()
+    }
+
+    static func takeConsumed(keyID: String) -> Bool {
+        guard consumedKeyID == keyID, let consumedAt else {
+            return false
+        }
+        consumedKeyID = nil
+        self.consumedAt = nil
+        return Date().timeIntervalSince(consumedAt) <= consumedLifetime
+    }
+
+    private static func cancelPending() {
+        pendingWorkItem?.cancel()
+        pendingWorkItem = nil
+        pendingKeyID = nil
+    }
+
+    // テスト用: 状態を初期に戻す
+    static func resetForTesting() {
+        frames = [:]
+        trackedTouchID = nil
+        cancelPending()
+        activeKeyID = nil
+        lastGlobalX = 0
+        consumedKeyID = nil
+        consumedAt = nil
+    }
+}
+
+// 対象のキーだけ RawTouchLongPress の合図を購読する(全キーに onReceive を付けると購読の分だけ SwiftUI 内部が太る)
+private struct RawLongPressReceiver: ViewModifier {
+    let enabled: Bool
+    let handler: (RawTouchLongPress.Event) -> Void
+
+    func body(content: Content) -> some View {
+        if enabled {
+            content.onReceive(RawTouchLongPress.events, perform: handler)
+        } else {
+            content
+        }
+    }
+}
+
+// 生タッチを RawTouchLongPress へ流すだけの認識器。状態を変えない(.possible のまま)ので他の操作を邪魔しない
+final class RawTouchLongPressGestureRecognizer: UIGestureRecognizer {
+    private func forward(_ touches: Set<UITouch>, phase: UITouch.Phase) {
+        guard let view else {
+            return
+        }
+        for touch in touches {
+            let id = ObjectIdentifier(touch)
+            let point = touch.location(in: view)
+            switch phase {
+            case .began:
+                RawTouchLongPress.touchBegan(id: id, at: point)
+            case .moved:
+                RawTouchLongPress.touchMoved(id: id, to: point)
+            case .ended:
+                RawTouchLongPress.touchEnded(id: id, at: point, cancelled: false)
+            default:
+                RawTouchLongPress.touchEnded(id: id, at: point, cancelled: true)
+            }
+        }
+    }
+
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
+        super.touchesBegan(touches, with: event)
+        forward(touches, phase: .began)
+    }
+
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent) {
+        super.touchesMoved(touches, with: event)
+        forward(touches, phase: .moved)
+    }
+
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent) {
+        super.touchesEnded(touches, with: event)
+        forward(touches, phase: .ended)
+    }
+
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent) {
+        super.touchesCancelled(touches, with: event)
+        forward(touches, phase: .cancelled)
+    }
+
+    static func install(on view: UIView) {
+        let recognizer = RawTouchLongPressGestureRecognizer(target: nil, action: nil)
+        recognizer.cancelsTouchesInView = false
+        recognizer.delaysTouchesBegan = false
+        recognizer.delaysTouchesEnded = false
+        view.addGestureRecognizer(recognizer)
+    }
 }
 
 enum LongPressCandidatePanelPlacement {
@@ -306,7 +519,11 @@ struct FlickKeyView: View {
             proxy.frame(in: .global)
         } action: { newValue in
             keyFrameInGlobal = newValue
+            if isRawLongPressDriven {
+                RawTouchLongPress.register(keyID: rawLongPressKeyID, frame: newValue)
+            }
         }
+        .modifier(RawLongPressReceiver(enabled: isRawLongPressDriven, handler: handleRawLongPress))
         .onChange(of: isGestureInProgress) { inProgress in
             if !inProgress {
                 finalizeTouchInteractionState()
@@ -314,6 +531,9 @@ struct FlickKeyView: View {
         }
         .onDisappear {
             finalizeTouchInteractionState()
+            if isRawLongPressDriven {
+                RawTouchLongPress.unregister(keyID: rawLongPressKeyID)
+            }
         }
         .zIndex(isTouching ? KeyboardLayerZIndex.touchingKey : 0)
     }
@@ -694,6 +914,11 @@ struct FlickKeyView: View {
             }
             .onChanged { value in
                 if !isTouching {
+                    // 生タッチ側で既に確定した押し(RawTouchLongPress 3516)。遅れて届いた SwiftUI の判定では何もしない
+                    if isRawLongPressDriven, RawTouchLongPress.takeConsumed(keyID: rawLongPressKeyID) {
+                        didTriggerLongPressAction = true
+                        return
+                    }
                     // 調査用ログ(長押しパネルの遅れ 3507): 接触の時刻と届いた時刻(差が配送遅れ)。接触開始の処理
                     // (onTouchStateChanged 等)より前に取り、OS の配送と自前の処理を切り分ける(3511)。
                     // 自前の処理の時間は「接触処理」として別に出す
@@ -920,6 +1145,72 @@ struct FlickKeyView: View {
     // 盤を出したまま何も選ばずに離したとき、これ以内なら「ただのタップ」とみなす(3174)
     static let paletteTapReleaseMaxMs = 400
 
+    // 生タッチ駆動の長押し(RawTouchLongPress 3516)の対象: アクサン候補を持ちフリックの効かない英字キー
+    private var isRawLongPressDriven: Bool {
+        !allowsDirectionalFlick && !longPressCandidates.isEmpty && longPressCandidateAxis == .horizontal && onLongPress == nil
+    }
+
+    private var rawLongPressKeyID: String {
+        RawTouchLongPress.keyID(for: kana)
+    }
+
+    // 生タッチ側からの合図。盤を出す/選択を動かす/離したら確定。SwiftUI のジェスチャーが既に届いている
+    // (isGestureInProgress)なら選択と確定は SwiftUI 側に任せ、ここでは盤を出すだけ
+    private func handleRawLongPress(_ event: RawTouchLongPress.Event) {
+        guard event.keyID == rawLongPressKeyID else {
+            return
+        }
+        let localX = event.globalX - keyFrameInGlobal.minX
+        switch event.kind {
+        case .activate:
+            guard !longPressIsActive, !didTriggerLongPressAction else {
+                return
+            }
+            cancelLongPressTimer()
+            if !isTouching {
+                isTouching = true
+                onTouchStateChanged(true)
+            }
+            activeDirection = .milieu
+            latestTouchLocationX = localX
+            latestTouchLocationY = keyFrameInGlobal.height * 0.5
+            longPressAnchorLocationX = localX
+            longPressAnchorLocationY = latestTouchLocationY
+            highlightedLongPressIndex = 0
+            longPressIsActive = true
+            #if DEBUG
+            KeyboardStuckTouchDiagnostics.longPressProbeLabel = longPressCandidates.first
+            KeyboardStuckTouchDiagnostics.longPressProbeRawActivatedAt = Date()
+            KeyboardStuckTouchDiagnostics.longPressProbeFiredAt = nil
+            #endif
+        case .move:
+            guard longPressIsActive, !isGestureInProgress else {
+                return
+            }
+            latestTouchLocationX = localX
+            highlightedLongPressIndex = longPressIndex(for: localX)
+        case .end:
+            guard longPressIsActive, !isGestureInProgress else {
+                return
+            }
+            let committedText = longPressCandidates.indices.contains(highlightedLongPressIndex)
+                ? longPressCandidates[highlightedLongPressIndex]
+                : kana.output(for: .milieu)
+            RawTouchLongPress.noteConsumed(keyID: rawLongPressKeyID)
+            finalizeTouchInteractionState()
+            if let onCommitWithDirection {
+                onCommitWithDirection(committedText, .milieu)
+            } else {
+                onCommit(committedText)
+            }
+        case .cancel:
+            guard longPressIsActive, !isGestureInProgress else {
+                return
+            }
+            finalizeTouchInteractionState()
+        }
+    }
+
     // 長押しの待ち時間は、指が触れた時刻(touchTime。端末の稼働時間基準)から数える(3515)。
     // 実機(2026-10-11)では、下段(常に)と中段(ときどき)で、触れてから onChanged が届くまでに約 0.67 秒の
     // 遅れがあった(上段は約 0.1 秒。自前の接触処理は 0ms なので OS 側の配送)。届いてから 0.35 秒数えると
@@ -956,6 +1247,10 @@ struct FlickKeyView: View {
                 onLongPress()
                 return
             }
+            // 生タッチ側が先に盤を出していたら、選択位置をここで戻さない(3516)
+            guard !longPressIsActive else {
+                return
+            }
 
             longPressIsActive = true
             #if DEBUG
@@ -987,6 +1282,21 @@ struct FlickKeyView: View {
     // 配送遅れ = 指が触れた時刻(value.time)と onChanged が届いた時刻の差。下段だけ大きければ OS 側の遅延、
     // パネル出現だけ大きければ描画(main の詰まり)。原因判明後に外す
     private func reportLongPressProbe() {
+        if let label = KeyboardStuckTouchDiagnostics.longPressProbeLabel,
+            let activatedAt = KeyboardStuckTouchDiagnostics.longPressProbeRawActivatedAt {
+            // 生タッチ駆動(3516): 触れてから起動まで(生タッチ側の時刻)と、起動からパネル出現まで
+            KeyboardStuckTouchDiagnostics.longPressProbeLabel = nil
+            KeyboardStuckTouchDiagnostics.longPressProbeRawActivatedAt = nil
+            let now = Date()
+            let beganAt = KeyboardStuckTouchDiagnostics.longPressProbeRawBeganAt
+            let sinceBeganMs = beganAt.map { Int((activatedAt.timeIntervalSince($0) * 1000).rounded()) } ?? -1
+            let appearMs = Int((now.timeIntervalSince(activatedAt) * 1000).rounded())
+            KeyboardStuckTouchDiagnostics.onTouchForensics?(
+                "長押し計測(生タッチ駆動) key=\(label) 触れてから起動=\(sinceBeganMs)ms パネル出現=\(appearMs)ms"
+                    + " 合計=\(sinceBeganMs + appearMs)ms 登録キー=\(RawTouchLongPress.registeredKeyCount)"
+            )
+            return
+        }
         guard let label = KeyboardStuckTouchDiagnostics.longPressProbeLabel,
             let deliveryDelayMs = KeyboardStuckTouchDiagnostics.longPressProbeDeliveryDelayMs,
             let deliveredAt = KeyboardStuckTouchDiagnostics.longPressProbeDeliveredAt,

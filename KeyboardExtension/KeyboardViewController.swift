@@ -1569,6 +1569,9 @@ final class KeyboardViewController: UIInputViewController {
         view.clipsToBounds = false
 
         view.addSubview(host.view)
+        // 下の段の touch を門番が握っている間に長押しの盤を出すための素の認識器(RawTouchLongPress 3516)。
+        // SwiftUI の .global と同じ座標で位置を取るため、ホスティングビューに付ける
+        RawTouchLongPressGestureRecognizer.install(on: host.view)
 
         // 面は窓の下端に中身の高さで固定する(3265)。上端の制約(補正ぶん下げる)は優先度を下げて残し、中身の高さが
         // 決まる前(0)だけ効かせる。窓が中身より低いあいだは上端を越えないよう >= で抑える
