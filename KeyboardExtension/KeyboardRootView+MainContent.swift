@@ -121,9 +121,12 @@ extension KeyboardRootView {
                         }
                     }
 
+                    // QWERTY: 中段(asdfghjkl)の右端に半分幅のアポストロフィー(3515。横向きの配列と同じ位置)
+                    if let apostropheWidth = portraitQwertyMiddleRowApostropheWidth(rowIndex: rowIndex) {
+                        latinApostropheKeyView(width: apostropheWidth, rowIndex: rowIndex)
+                    }
+
                     if shouldAppendPortraitQwertyDeleteKey(rowIndex: rowIndex) {
-                        // QWERTY: 右端に アポストロフィー + 削除(3512。定義コメント参照)
-                        latinApostropheKeyView(width: bottomRowKeyMetrics?.apostrophe, rowIndex: rowIndex)
                         inlineLatinDeleteKey(fixedWidth: bottomRowKeyMetrics?.delete)
                     }
                 }
