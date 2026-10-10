@@ -5281,7 +5281,6 @@
 	<dict><key>phrase</key><string>タイ米</string><key>shortcut</key><string>たいまい</string></dict>
 	<dict><key>phrase</key><string>亀ノ尾</string><key>shortcut</key><string>かめのお</string></dict>
 	<dict><key>phrase</key><string>華吹雪</string><key>shortcut</key><string>はなふぶき</string></dict>
-	<dict><key>phrase</key><string>カケル</string><key>shortcut</key><string>かける</string></dict>
 	<dict><key>phrase</key><string>コナホマレ</string><key>shortcut</key><string>こなほまれ</string></dict>
 	<dict><key>phrase</key><string>コガネセンガン</string><key>shortcut</key><string>こがねせんがん</string></dict>
 	<dict><key>phrase</key><string>シロユタカ</string><key>shortcut</key><string>しろゆたか</string></dict>
@@ -5877,7 +5876,6 @@
 	<dict><key>phrase</key><string>高温熱風</string><key>shortcut</key><string>こうおんねっぷう</string></dict>
 	<dict><key>phrase</key><string>ケープ・ドクター</string><key>shortcut</key><string>けーぷどくたー</string></dict>
 	<dict><key>phrase</key><string>シロッコ</string><key>shortcut</key><string>しろっこ</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>ボラ</string><key>shortcut</key><string>ぼら</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ボーラ</string><key>shortcut</key><string>ぼーら</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>冷風</string><key>shortcut</key><string>れいふう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>寒気</string><key>shortcut</key><string>かんき</string></dict>	<!-- Sudachiにもある -->
@@ -8337,6 +8335,7 @@
 	<dict><key>phrase</key><string>フライ料理</string><key>shortcut</key><string>ふらいりょうり</string></dict>
 	<dict><key>phrase</key><string>ベシャメルソース</string><key>shortcut</key><string>べしゃめるそーす</string></dict>
 	<dict><key>phrase</key><string>ポーチドエッグ</string><key>shortcut</key><string>ぽーちどえっぐ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>ボラ</string><key>shortcut</key><string>ぼら</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>マカロン</string><key>shortcut</key><string>まかろん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>マッシュドポテト</string><key>shortcut</key><string>まっしゅどぽてと</string></dict>
 	<dict><key>phrase</key><string>ミルクパン生地</string><key>shortcut</key><string>みるくぱんきじ</string></dict>
