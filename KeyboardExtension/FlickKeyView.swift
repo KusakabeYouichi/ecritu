@@ -23,7 +23,7 @@ enum KeyboardStuckTouchDiagnostics {
     #if DEBUG
     static var longPressProbeLabel: String?
     // DragGesture.Value.time は端末の稼働時間を基準にした Date(2001 年基準の wall clock ではない)。
-    // 配送遅れは systemUptime と突き合わせて届いた時点で ms に直す(実測 2026-10-11: 下段 c だけ +660ms)
+    // 配送遅れは稼働時間(RawTouchLongPress.uptimeNow)と突き合わせて届いた時点で ms に直す(実測 2026-10-11: 下段 c だけ +660ms)
     static var longPressProbeDeliveryDelayMs: Int?
     static var longPressProbeKeyMidY: CGFloat?
     static var longPressProbeTouchHandlingMs: Int?
@@ -77,6 +77,12 @@ enum RawTouchLongPress {
 
     static func keyID(for kana: FlickKanaSet) -> String {
         kana.center.lowercased()
+    }
+
+    // 端末の稼働時間(秒)。UITouch.timestamp / DragGesture.Value.time と同じ基準(起動からの経過、スリープ中は止まる)。
+    // ProcessInfo.systemUptime は「必要な理由」の申告が要る API(3301)なので、Release で使う経路はこちら
+    static func uptimeNow() -> TimeInterval {
+        Double(DispatchTime.now().uptimeNanoseconds) / 1_000_000_000
     }
 
     static func register(keyID: String, frame: CGRect) {
@@ -927,7 +933,7 @@ struct FlickKeyView: View {
                     if !longPressCandidates.isEmpty {
                         KeyboardStuckTouchDiagnostics.longPressProbeLabel = longPressCandidates.first
                         KeyboardStuckTouchDiagnostics.longPressProbeDeliveryDelayMs = Int(
-                            ((ProcessInfo.processInfo.systemUptime - value.time.timeIntervalSinceReferenceDate) * 1000).rounded())
+                            ((RawTouchLongPress.uptimeNow() - value.time.timeIntervalSinceReferenceDate) * 1000).rounded())
                         KeyboardStuckTouchDiagnostics.longPressProbeKeyMidY = keyFrameInGlobal.midY
                         KeyboardStuckTouchDiagnostics.longPressProbeDeliveredAt = probeStartedAt
                         KeyboardStuckTouchDiagnostics.longPressProbeFiredAt = nil
@@ -1220,7 +1226,7 @@ struct FlickKeyView: View {
         guard !allowsDirectionalFlick, !longPressCandidates.isEmpty else {
             return 0
         }
-        let deliveryDelay = ProcessInfo.processInfo.systemUptime - touchTime.timeIntervalSinceReferenceDate
+        let deliveryDelay = RawTouchLongPress.uptimeNow() - touchTime.timeIntervalSinceReferenceDate
         // 稼働時間基準でない Date が来たら(負や桁違い)補正しない
         guard deliveryDelay > 0, deliveryDelay < 5 else {
             return 0
