@@ -284,9 +284,31 @@ struct KeyboardRootView: View {
         return (topRowLetterWidth + keyboardRowSpacing) * trailingPitchFactor
     }
 
-    func portraitQwertyBottomRowKeyMetrics(rowIndex: Int) -> (letter: CGFloat, edge: CGFloat)? {
+    // 縦向きの QWERTY/AZERTY の下段(シフト+英字+アポストロフィー+削除)のキー幅(3512)。
+    // アポストロフィー(')は英単語・メール・URI・パスワード用で頻度が低く字も細いので、英字の半分の幅の
+    // 狭いキーにする。幅は 削除キーを足す前と同じに保ち(ユーザ指定)、残りをシフトと英字で分ける
+    struct PortraitLatinBottomRowKeyMetrics: Equatable {
+        let letter: CGFloat
+        let shift: CGFloat
+        let delete: CGFloat
+        let apostrophe: CGFloat
+    }
+
+    static let portraitLatinApostropheKeyWidthFactor: CGFloat = 0.5
+
+    // 下段右端のアポストロフィーのキー。中心は「'」(U+0027。メール・URI・パスワードで要る方)、
+    // 左フリックに「’」(U+2019。組版用)。英字でないキーなので QWERTY/AZERTY でもフリックが効く
+    static let portraitLatinApostropheKey = FlickKanaSet(
+        label: "'",
+        center: "'",
+        up: "",
+        right: "",
+        down: "",
+        left: "’"
+    )
+
+    func portraitLatinBottomRowKeyMetrics(rowIndex: Int) -> PortraitLatinBottomRowKeyMetrics? {
         guard usesPortraitLatinInlineDeleteLayout,
-            latinLayoutMode == .qwerty,
             rowIndex == 2 else {
             return nil
         }
@@ -299,17 +321,42 @@ struct KeyboardRootView: View {
             ? (leftModeSwitchButtonWidth + keyboardRowSpacing)
             : 0
         let availableRowWidth = max(1, estimatedKeyboardWidth - leadingControlWidth)
-        let spacingCount: CGFloat = 8
-        let keyCount: CGFloat = 9
-        let letterKeyWidth = max(
-            1,
-            (availableRowWidth
-                - portraitLatinQwertyBottomRowSlackWidth
-                - keyboardRowSpacing * spacingCount) / keyCount
-        )
-        let edgeKeyWidth = letterKeyWidth + portraitLatinQwertyBottomRowSlackWidth / 2
 
-        return (letter: letterKeyWidth, edge: edgeKeyWidth)
+        return Self.portraitLatinBottomRowKeyMetrics(
+            availableRowWidth: availableRowWidth,
+            spacing: keyboardRowSpacing,
+            slackWidth: portraitLatinQwertyBottomRowSlackWidth,
+            letterCount: latinLayoutMode == .azerty ? 6 : 7
+        )
+    }
+
+    // 純粋関数(テスト用に分離)。slackWidth は QWERTY で削除/シフトに配る余白(AZERTY は 0)。
+    // アポストロフィーを足す前の並び(シフト+英字+削除。QWERTY は 9 キー、AZERTY は 8 キー)の
+    // 削除キーの幅をそのまま使い、残りの幅を シフト(英字+余白の半分)と英字とアポストロフィー(英字の半分)で分ける
+    static func portraitLatinBottomRowKeyMetrics(
+        availableRowWidth: CGFloat,
+        spacing: CGFloat,
+        slackWidth: CGFloat,
+        letterCount: Int
+    ) -> PortraitLatinBottomRowKeyMetrics {
+        let letters = CGFloat(letterCount)
+        // 以前の並び: シフト + 英字 + 削除(キー数 letters+2、隙間 letters+1)
+        let previousKeyCount = letters + 2
+        let previousLetterWidth = max(
+            1,
+            (availableRowWidth - slackWidth - spacing * (previousKeyCount - 1)) / previousKeyCount
+        )
+        let deleteWidth = previousLetterWidth + slackWidth / 2
+        // 新しい並び: シフト + 英字 + アポストロフィー + 削除(隙間 letters+2)
+        let remaining = availableRowWidth - deleteWidth - spacing * (letters + 2) - slackWidth / 2
+        let letterWidth = max(1, remaining / (letters + 1 + portraitLatinApostropheKeyWidthFactor))
+
+        return PortraitLatinBottomRowKeyMetrics(
+            letter: letterWidth,
+            shift: letterWidth + slackWidth / 2,
+            delete: deleteWidth,
+            apostrophe: letterWidth * portraitLatinApostropheKeyWidthFactor
+        )
     }
 
     func shouldReplacePortraitAzertyRightShiftWithDelete(
@@ -1196,6 +1243,32 @@ struct KeyboardRootView: View {
             cornerBadgeText: showsMemoryPressure ? memoryPressureDeleteKeyBadge : nil,
             action: action ?? onDeleteBackward
         )
+    }
+
+    @ViewBuilder
+    // 縦向き QWERTY/AZERTY の下段右端のアポストロフィーのキー(3512。portraitLatinApostropheKey 参照)。
+    // 英字キーと同じ FlickKeyView で、左フリックに「’」。長押し候補は無い
+    func portraitLatinApostropheKeyView(width: CGFloat?, rowIndex: Int) -> some View {
+        let key = FlickKeyView(
+            kana: Self.portraitLatinApostropheKey,
+            onCommit: commitText,
+            mainLabelFontSize: 26,
+            mainLabelFontWeight: rowKeyMainLabelFontWeight,
+            showsDirectionalHints: showsFlickGuideCharacters,
+            allowsDirectionalFlick: true,
+            onTouchStateChanged: { isTouching in
+                updateActiveLayer(isTouching, layerIndex: rowIndex)
+            }
+        )
+
+        if let width {
+            key
+                .frame(width: width, height: mainFlickKeyHeight)
+        } else {
+            key
+                .frame(maxWidth: .infinity)
+                .frame(height: mainFlickKeyHeight)
+        }
     }
 
     @ViewBuilder

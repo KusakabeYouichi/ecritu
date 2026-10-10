@@ -54,7 +54,7 @@ extension KeyboardRootView {
 
             ForEach(Array(rows.enumerated()), id: \.offset) { rowIndex, row in
                 HStack(spacing: keyboardRowSpacing) {
-                    let qwertyBottomRowKeyMetrics = portraitQwertyBottomRowKeyMetrics(rowIndex: rowIndex)
+                    let bottomRowKeyMetrics = portraitLatinBottomRowKeyMetrics(rowIndex: rowIndex)
                     let compactLeftModeSwitchSlot = isKanaFiveByTwoMode ? rowIndex + 1 : rowIndex
 
                     if showsCompactLeftModeSwitchButtons && compactLeftModeSwitchSlot < 4 {
@@ -65,7 +65,11 @@ extension KeyboardRootView {
                         if shouldReplacePortraitAzertyRightShiftWithDelete(
                             rowIndex: rowIndex,
                             kana: kana
-                        ) || shouldReplacePortraitClavierRightShiftWithDelete(
+                        ) {
+                            // AZERTY: 右シフトの位置に アポストロフィー + 削除(3512。定義コメント参照)
+                            portraitLatinApostropheKeyView(width: bottomRowKeyMetrics?.apostrophe, rowIndex: rowIndex)
+                            inlineLatinDeleteKey(fixedWidth: bottomRowKeyMetrics?.delete)
+                        } else if shouldReplacePortraitClavierRightShiftWithDelete(
                             rowIndex: rowIndex,
                             kana: kana
                         ) {
@@ -78,9 +82,9 @@ extension KeyboardRootView {
                                 onLongPress: handleLatinShiftLongPress
                             )
 
-                            if let qwertyBottomRowKeyMetrics {
+                            if let bottomRowKeyMetrics {
                                 shiftKey
-                                    .frame(width: qwertyBottomRowKeyMetrics.edge, height: mainFlickKeyHeight)
+                                    .frame(width: bottomRowKeyMetrics.shift, height: mainFlickKeyHeight)
                             } else {
                                 shiftKey
                                     .frame(maxWidth: .infinity)
@@ -106,9 +110,9 @@ extension KeyboardRootView {
                                 }
                             )
 
-                            if let qwertyBottomRowKeyMetrics {
+                            if let bottomRowKeyMetrics {
                                 letterKey
-                                    .frame(width: qwertyBottomRowKeyMetrics.letter, height: mainFlickKeyHeight)
+                                    .frame(width: bottomRowKeyMetrics.letter, height: mainFlickKeyHeight)
                             } else {
                                 letterKey
                                     .frame(maxWidth: .infinity)
@@ -118,7 +122,9 @@ extension KeyboardRootView {
                     }
 
                     if shouldAppendPortraitQwertyDeleteKey(rowIndex: rowIndex) {
-                        inlineLatinDeleteKey(fixedWidth: qwertyBottomRowKeyMetrics?.edge)
+                        // QWERTY: 右端に アポストロフィー + 削除(3512。定義コメント参照)
+                        portraitLatinApostropheKeyView(width: bottomRowKeyMetrics?.apostrophe, rowIndex: rowIndex)
+                        inlineLatinDeleteKey(fixedWidth: bottomRowKeyMetrics?.delete)
                     }
                 }
                 .padding(horizontalInsetsForMainRow(rowIndex))
