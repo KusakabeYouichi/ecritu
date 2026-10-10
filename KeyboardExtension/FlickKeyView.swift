@@ -21,7 +21,10 @@ enum KeyboardStuckTouchDiagnostics {
     // 原因判明後に外す
     #if DEBUG
     static var longPressProbeLabel: String?
-    static var longPressProbeTouchAt: Date?
+    // DragGesture.Value.time は端末の稼働時間を基準にした Date(2001 年基準の wall clock ではない)。
+    // 配送遅れは systemUptime と突き合わせて届いた時点で ms に直す(実測 2026-10-11: 下段 c だけ +660ms)
+    static var longPressProbeDeliveryDelayMs: Int?
+    static var longPressProbeKeyMidY: CGFloat?
     static var longPressProbeDeliveredAt: Date?
     static var longPressProbeFiredAt: Date?
     #endif
@@ -696,7 +699,9 @@ struct FlickKeyView: View {
                     #if DEBUG
                     if !longPressCandidates.isEmpty {
                         KeyboardStuckTouchDiagnostics.longPressProbeLabel = longPressCandidates.first
-                        KeyboardStuckTouchDiagnostics.longPressProbeTouchAt = value.time
+                        KeyboardStuckTouchDiagnostics.longPressProbeDeliveryDelayMs = Int(
+                            ((ProcessInfo.processInfo.systemUptime - value.time.timeIntervalSinceReferenceDate) * 1000).rounded())
+                        KeyboardStuckTouchDiagnostics.longPressProbeKeyMidY = keyFrameInGlobal.midY
                         KeyboardStuckTouchDiagnostics.longPressProbeDeliveredAt = Date()
                         KeyboardStuckTouchDiagnostics.longPressProbeFiredAt = nil
                     }
@@ -946,7 +951,7 @@ struct FlickKeyView: View {
     // パネル出現だけ大きければ描画(main の詰まり)。原因判明後に外す
     private func reportLongPressProbe() {
         guard let label = KeyboardStuckTouchDiagnostics.longPressProbeLabel,
-            let touchAt = KeyboardStuckTouchDiagnostics.longPressProbeTouchAt,
+            let deliveryDelayMs = KeyboardStuckTouchDiagnostics.longPressProbeDeliveryDelayMs,
             let deliveredAt = KeyboardStuckTouchDiagnostics.longPressProbeDeliveredAt,
             let firedAt = KeyboardStuckTouchDiagnostics.longPressProbeFiredAt else {
             return
@@ -955,10 +960,15 @@ struct FlickKeyView: View {
         let now = Date()
         func ms(_ from: Date, _ to: Date) -> Int { Int((to.timeIntervalSince(from) * 1000).rounded()) }
         let plannedMs = Int(((longPressDelayOverride ?? Metrics.longPressDelay) * 1000).rounded())
+        let timerMs = ms(deliveredAt, firedAt)
+        let appearMs = ms(firedAt, now)
+        let midY = KeyboardStuckTouchDiagnostics.longPressProbeKeyMidY ?? -1
+        let screenHeight = UIScreen.main.bounds.height
         KeyboardStuckTouchDiagnostics.onTouchForensics?(
-            "長押し計測 key=\(label) 配送遅れ=\(ms(touchAt, deliveredAt))ms"
-                + " タイマー=\(ms(deliveredAt, firedAt))ms(予定 \(plannedMs))"
-                + " パネル出現=\(ms(firedAt, now))ms 合計=\(ms(touchAt, now))ms"
+            "長押し計測 key=\(label) 配送遅れ=\(deliveryDelayMs)ms"
+                + " タイマー=\(timerMs)ms(予定 \(plannedMs))"
+                + " パネル出現=\(appearMs)ms 合計=\(deliveryDelayMs + timerMs + appearMs)ms"
+                + String(format: " キー中心y=%.0f/画面高=%.0f(下端まで %.0fpt)", midY, screenHeight, screenHeight - midY)
         )
     }
     #endif
