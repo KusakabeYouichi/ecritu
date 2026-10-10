@@ -1796,6 +1796,10 @@ extension KanaKanjiConverter {
     // (買うなら/するなら/食べるなら)。奈良/楢/ナラ への漢字・カタカナ化を EOS で減点する。
     // ただし体言+と直後(大阪と奈良)は正当な地名なので、直前が述語のときだけ発火させる。
     static let multiClauseConditionalParticleReadings: Set<String> = ["なら"]
+    // かな正書の代名詞・指示語。この直後の なら も仮定(それなら/ここなら。3494)
+    static let multiClauseConditionalNaraKanaPrevReadings: Set<String> = [
+        "それ", "これ", "あれ", "どれ", "こいつ", "そいつ", "あいつ", "ここ", "そこ", "あそこ", "どこ"
+    ]
     // 辞書形述語(終止形動詞/形容詞)の末尾かな。短spanレア読み床の免除判定で、
     // inflection_classes への問い合わせ対象を「漢字+この尾」の表層に絞る形状ゲート。
     static let multiClauseDictionaryFormTailCharacters: Set<Character> = [
