@@ -22262,8 +22262,8 @@ extension KanaKanjiConverterRegressionTests {
         // 掬んだけど(seed 4 番目)が出て 蒸すんだけど が無かった(ユーザ報告)
         XCTAssertTrue(musunda.contains("蒸すんだけど"), "multi=\(musunda)")
         let yudete = converter.multiClauseCandidates(for: "ゆでてからむすんだけど", systemCandidateMode: .surface)
-        XCTAssertEqual(yudete.first, "茹でてから結んだけど", "multi=\(yudete)")
-        XCTAssertTrue(yudete.prefix(3).contains("茹でてから蒸すんだけど"), "multi=\(yudete)")
+        // 2 番目に(ユーザ指定 3553)。同区間の 1 文節変種(ゆでてから/掬んだけど)より前
+        XCTAssertEqual(Array(yudete.prefix(2)), ["茹でてから結んだけど", "茹でてから蒸すんだけど"], "multi=\(yudete)")
     }
 
     // はいるきなくした(ユーザ報告 3532): 入る来鳴くした(来鳴く=Sudachi のレア語)が先頭で 入る気 が無かった。辞書形述語+気 に加点
@@ -22289,8 +22289,11 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.candidates(for: "てに", limit: 4, systemCandidateMode: .surface).first, "手に")
         // ぬれたてで: たて複合 1 ノード(濡れたて)の区間を た形+残り に割った代替経路で 濡れた手で を第2候補に(3538)。
         // 塗れたて(塗る の可能形+たて)は suppr
+        // たて複合が LM 未収録(濡れたて)なら た形+名詞 を先頭に(ユーザ指定 3553)。出来たて は LM にあるので従来どおり
         let nureta = converter.multiClauseCandidates(for: "ぬれたてで", systemCandidateMode: .surface)
-        XCTAssertEqual(Array(nureta.prefix(2)), ["濡れたてで", "濡れた手で"], "multi=\(nureta)")
+        XCTAssertEqual(Array(nureta.prefix(2)), ["濡れた手で", "濡れたてで"], "multi=\(nureta)")
+        let dekitate = converter.multiClauseCandidates(for: "できたてで", systemCandidateMode: .surface)
+        XCTAssertTrue(dekitate.first?.hasPrefix("出来") == true && dekitate.first?.hasSuffix("てで") == true, "multi=\(dekitate)")
         XCTAssertFalse(nureta.contains("塗れたてで"), "multi=\(nureta)")
     }
 
