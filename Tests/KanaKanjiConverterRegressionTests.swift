@@ -22197,6 +22197,9 @@ extension KanaKanjiConverterRegressionTests {
         for reading in ["べいこくにおくれれば", "べいこくへおくれれば"] {
             let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
             XCTAssertEqual(multi.first, reading.contains("へ") ? "米国へ送れれば" : "米国に送れれば", "reading=\(reading) multi=\(multi)")
+            // 連語ボーナス(4500)が変種の差分にそのまま入ると 遅れれば/後れれば が上限 4000 を超えて消えた(ユーザ報告 3537)
+            let particle = reading.contains("へ") ? "へ" : "に"
+            XCTAssertEqual(Array(multi.prefix(3)), ["米国\(particle)送れれば", "米国\(particle)遅れれば", "米国\(particle)後れれば"], "reading=\(reading) multi=\(multi)")
         }
         let kaigi = converter.multiClauseCandidates(for: "かいぎにおくれれば", systemCandidateMode: .surface)
         XCTAssertEqual(kaigi.first, "会議に遅れれば", "multi=\(kaigi)")
