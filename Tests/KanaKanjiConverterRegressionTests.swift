@@ -22150,6 +22150,21 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(brilliance.first, "ブリリアンス", "single=\(brilliance)")
     }
 
+    // ぱすぽーとはもってるよ(ユーザ報告 3529): を 落としのカタカナ名詞+動詞の割引が ハモってる(カタカナ語幹の派生)にも
+    // 効き、は+持ってる を 1 ノードで抜いていた。割引は漢字始まりの動詞に限る
+    func testRegressionRealLMPassportWaMotteru() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let multi = converter.multiClauseCandidates(for: "ぱすぽーとはもってるよ", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "パスポートは持ってるよ", "multi=\(multi)")
+        XCTAssertFalse(multi.contains("パスポートハモってるよ"), "multi=\(multi)")
+        let hamoru = converter.multiClauseCandidates(for: "みんなでハモってる", systemCandidateMode: .surface)
+        XCTAssertEqual(hamoru.first, "みんなでハモってる", "multi=\(hamoru)")
+        // ログ取って 型の割引は残る
+        let log = converter.multiClauseCandidates(for: "ろぐとって", systemCandidateMode: .surface)
+        XCTAssertEqual(log.first, "ログ取って", "multi=\(log)")
+    }
+
     // ためそうと: 試そうと が先頭(ユーザ指定 3526)。ぎんこうとくまないと: 組む が 汲む より先(ユーザ指定 3526)
     func testRegressionRealLMTamesoutoAndKumanaito() throws {
         try prepareRealLMDictionary()

@@ -2240,7 +2240,11 @@ extension KanaKanjiConverter {
             // を を落とした口語の カタカナ名詞+漢字動詞(ログ取って/データ取って/メモ取って)。名詞→を の bigram が強い名詞の
             // 直後に限る(定数コメント参照。2828)。漢字名詞まで広げると 機能+値上がりした/土地+似合った/規約+煮そう のような
             // 誤分割を後押しした(全網で 8 件退行)ので、語境界が明確なカタカナ語だけ
+            // 動詞は漢字始まりに限る(3529、ユーザ報告: ぱすぽーとはもってるよ→パスポートハモってるよ)。カタカナ語幹の
+            // 派生(ハモってる)まで割り引くと、は+持ってる(1687+5000)を 1 ノードの ハモってる(5700)が抜いた。
+            // ログ取って 型の対象は漢字動詞なので、カタカナ語幹は元から想定外
             if isInflectionDerived, !isKanaIdentity,
+                surface.unicodeScalars.first.map({ (0x4E00...0x9FFF).contains($0.value) || (0x3400...0x4DBF).contains($0.value) }) == true,
                 !prevIsInflectionDerived, !prevIsDictionaryFormPredicate, !prevIsKanaIdentity,
                 !prevIsBOS, prev.count >= 2,
                 Self.isKatakanaString(prev),
