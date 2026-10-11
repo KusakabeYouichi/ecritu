@@ -2502,6 +2502,13 @@ extension KanaKanjiConverter {
                 let head = reading.first, Self.multiClauseNegativeNFollowingParticleHeads.contains(head) {
                 penalty += Self.multiClauseNegativeNDerivedBeforeCaseParticlePenalty
             }
+            // 形容詞語幹+さ の派生名詞(辛さ/強さ)直後の格助詞は bigram 未観測の backoff(辛さ→が 2533)で
+            // 単漢字名詞の分割(から+差→が 627)に負ける(からさがつよい→から差が強い。ユーザ報告 3537)。名詞化なので格助詞へ素直につなぐ。
+            // かなの さ形(みずみずしさ)にも同じく付け、漢字/かなの並び(seed)は動かさない
+            if isKanaIdentity, prevIsInflectionDerived, prev.count >= 2, prev.hasSuffix("さ"), prevReading?.hasSuffix("さ") == true,
+                Self.multiClauseCaseParticleSurfacesID.contains(surfaceID) {
+                penalty -= Self.multiClauseSaNominalBeforeCaseParticleBonus
+            }
             // 行き先の に/へ 直後のかな いく 族は 行く が正書(定数コメント参照。3119)
             if isKanaIdentity, prevIsKanaIdentity, prevID == SID.に || prevID == SID.へ,
                 Self.multiClauseKanaIkuAfterDestinationParticleReadingsID.contains(readingID) {
