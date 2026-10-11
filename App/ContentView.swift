@@ -442,6 +442,9 @@ struct ContentView: View {
     @AppStorage(SettingsKeys.kanaGakiSuppressDemonstrative, store: Self.sharedDefaults)
     private var kanaGakiSuppressDemonstrative = true
 
+    @AppStorage(SettingsKeys.kanaGakiSuppressAdverbKanaFirst, store: Self.sharedDefaults)
+    private var kanaGakiSuppressAdverbKanaFirst = false
+
     @State var ajoutVocabularyEntries: [VocabularyEntry] = []
     @State var ajoutVocabularyReadingInput = ""
     @State var ajoutVocabularyCandidateInput = ""
@@ -641,6 +644,7 @@ struct ContentView: View {
             String(kanaGakiSuppressAuxiliary),
             String(kanaGakiSuppressFormalNoun),
             String(kanaGakiSuppressDemonstrative),
+            String(kanaGakiSuppressAdverbKanaFirst),
             String(latinLexiconEnglishEnabled),
             String(latinLexiconFrenchEnabled),
             String(latinLexiconGermanEnabled),
@@ -749,6 +753,7 @@ struct ContentView: View {
         bool(SettingsKeys.kanaGakiSuppressAuxiliary, kanaGakiSuppressAuxiliary, "かなで書く言葉: 補助の言葉・挨拶を抑制")
         bool(SettingsKeys.kanaGakiSuppressFormalNoun, kanaGakiSuppressFormalNoun, "かなで書く言葉: 形式名詞を抑制")
         bool(SettingsKeys.kanaGakiSuppressDemonstrative, kanaGakiSuppressDemonstrative, "かなで書く言葉: 指示語・代名詞を抑制")
+        bool(SettingsKeys.kanaGakiSuppressAdverbKanaFirst, kanaGakiSuppressAdverbKanaFirst, "かなで書く言葉: 副詞(漢字も残す)を抑制")
         str(SettingsKeys.kakikaePreference, kakikaePreferenceRawValue, "常用漢字による書きかえ: beforeOnly(本来の漢字だけ)/afterOnly(常用漢字だけ)/bothBeforeFirst(両方、前を先に)/bothAfterFirst(両方、後を先に)")
         bool(SettingsKeys.emojiCandidateDisplayEnabled, emojiCandidateDisplayEnabled, "emojis & les émoticônes: emoji 😀")
         str(SettingsKeys.radicalStrokeCountStyle, radicalStrokeCountStyleRawValue, "部首の画数の数え方")
@@ -1312,7 +1317,8 @@ struct ContentView: View {
             conjunction: $kanaGakiSuppressConjunction,
             auxiliary: $kanaGakiSuppressAuxiliary,
             formalNoun: $kanaGakiSuppressFormalNoun,
-            demonstrative: $kanaGakiSuppressDemonstrative
+            demonstrative: $kanaGakiSuppressDemonstrative,
+            adverbKanaFirst: $kanaGakiSuppressAdverbKanaFirst
         )
 
         KakikaeSettingsSection(rawValue: $kakikaePreferenceRawValue)

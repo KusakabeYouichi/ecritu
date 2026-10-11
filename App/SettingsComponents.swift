@@ -56,7 +56,7 @@ enum SettingsCardKeys {
         "X.7": [SettingsKeys.scriptVariantSuppressKyujitai, SettingsKeys.scriptVariantSuppressItaiji, SettingsKeys.scriptVariantSuppressRyakuji,
                 SettingsKeys.scriptVariantSuppressConfusable, SettingsKeys.scriptVariantSuppressLookalike, SettingsKeys.scriptVariantSuppressPersonNameVariant],
         "X.8": [SettingsKeys.kanaGakiSuppressAdverb, SettingsKeys.kanaGakiSuppressConjunction, SettingsKeys.kanaGakiSuppressAuxiliary,
-                SettingsKeys.kanaGakiSuppressFormalNoun, SettingsKeys.kanaGakiSuppressDemonstrative],
+                SettingsKeys.kanaGakiSuppressFormalNoun, SettingsKeys.kanaGakiSuppressDemonstrative, SettingsKeys.kanaGakiSuppressAdverbKanaFirst],
         "X.9": [SettingsKeys.kakikaePreference],
         "X.10": [SettingsKeys.radicalStrokeCountStyle],
         "X.11": [SettingsKeys.kaCounterVariantPreference],

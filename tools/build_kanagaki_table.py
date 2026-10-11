@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "references" / "kanagaki.plist"
 DST = ROOT / "KeyboardExtension" / "KanaGakiTable.swift"
 
-HEADER = re.compile(r"<!--\s*■\s*(\w+)\s+(.+?)\s*-->")
+HEADER = re.compile(r"<!--\s*■\s*(\w+)\s+(.+?)(?:\s+default=(on|off))?\s*-->")
 ENTRY = re.compile(r"<key>phrase</key><string>([^<]+)</string><key>shortcut</key><string>([^<]+)</string>")
 
 
@@ -23,10 +23,13 @@ def swift_string(s: str) -> str:
 
 def main() -> int:
     groups = []  # [(id, title, [(surface, reading)])]
+    defaults_off = set()  # 初期設定が「抑制しない」(かな先頭、漢字も残す)の仲間。見出し末尾の default=off(3552)
     for line in SRC.read_text(encoding="utf-8").splitlines():
         header = HEADER.search(line)
         if header:
             groups.append((header.group(1), header.group(2), []))
+            if header.group(3) == "off":
+                defaults_off.add(header.group(1))
             continue
         entry = ENTRY.search(line)
         if entry and groups:
@@ -53,6 +56,15 @@ def main() -> int:
         "",
         "    var settingsKey: String {",
         '        "kanaGakiSuppress" + rawValue.prefix(1).uppercased() + rawValue.dropFirst()',
+        "    }",
+        "",
+        "    // 初期設定で抑制するか(plist の見出しの default=off の仲間は かな先頭で漢字も残す。3552)",
+        "    var suppressedByDefault: Bool {",
+        "        switch self {",
+    ]
+    out += [f"        case .{gid}: return {'false' if gid in defaults_off else 'true'}" for gid, _, _ in groups]
+    out += [
+        "        }",
         "    }",
         "}",
         "",

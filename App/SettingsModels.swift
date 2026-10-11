@@ -132,6 +132,8 @@ enum SettingsKeys {
     static let kanaGakiSuppressAuxiliary = "kanaGakiSuppressAuxiliary"
     static let kanaGakiSuppressFormalNoun = "kanaGakiSuppressFormalNoun"
     static let kanaGakiSuppressDemonstrative = "kanaGakiSuppressDemonstrative"
+    // 副詞(漢字も残す): 初期設定はオフ=かなを先頭にして漢字はその後ろ(3552)
+    static let kanaGakiSuppressAdverbKanaFirst = "kanaGakiSuppressAdverbKanaFirst"
     static let radicalStrokeCountStyle = "radicalStrokeCountStyle"
     static let ordinalMeKanjiPreferred = "ordinalMeKanjiPreferred"
     static let kaCounterVariantPreference = "kaCounterVariantPreference"

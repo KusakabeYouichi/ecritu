@@ -248,7 +248,7 @@ extension ContentView {
         SettingsKeys.scriptVariantSuppressRyakuji, SettingsKeys.scriptVariantSuppressConfusable, SettingsKeys.scriptVariantSuppressLookalike,
         SettingsKeys.scriptVariantSuppressPersonNameVariant,
         SettingsKeys.kanaGakiSuppressAdverb, SettingsKeys.kanaGakiSuppressConjunction, SettingsKeys.kanaGakiSuppressAuxiliary,
-        SettingsKeys.kanaGakiSuppressFormalNoun, SettingsKeys.kanaGakiSuppressDemonstrative,
+        SettingsKeys.kanaGakiSuppressFormalNoun, SettingsKeys.kanaGakiSuppressDemonstrative, SettingsKeys.kanaGakiSuppressAdverbKanaFirst,
         SettingsKeys.emojiCandidateDisplayEnabled, SettingsKeys.radicalStrokeCountStyle,
         SettingsKeys.ordinalMeKanjiPreferred, SettingsKeys.adjectiveMeKanjiCandidatesEnabled, SettingsKeys.kaCounterVariantPreference,
         SettingsKeys.okuriganaVariantPreference,
@@ -326,6 +326,7 @@ extension ContentView {
         SettingsKeys.kanaGakiSuppressAuxiliary: true,
         SettingsKeys.kanaGakiSuppressFormalNoun: true,
         SettingsKeys.kanaGakiSuppressDemonstrative: true,
+        SettingsKeys.kanaGakiSuppressAdverbKanaFirst: false,
         SettingsKeys.emojiCandidateDisplayEnabled: true,
         SettingsKeys.radicalStrokeCountStyle: "",
         SettingsKeys.ordinalMeKanjiPreferred: true,
@@ -405,6 +406,7 @@ extension ContentView {
         SettingsKeys.kanaGakiSuppressAuxiliary: true,
         SettingsKeys.kanaGakiSuppressFormalNoun: false,
         SettingsKeys.kanaGakiSuppressDemonstrative: false,
+        SettingsKeys.kanaGakiSuppressAdverbKanaFirst: false,
         SettingsKeys.emojiCandidateDisplayEnabled: true,
         SettingsKeys.radicalStrokeCountStyle: "140:4,113:5,184:8",
         SettingsKeys.ordinalMeKanjiPreferred: false,
@@ -426,6 +428,7 @@ extension ContentView {
         SettingsKeys.kanaGakiSuppressAuxiliary: true,
         SettingsKeys.kanaGakiSuppressFormalNoun: true,
         SettingsKeys.kanaGakiSuppressDemonstrative: true,
+        SettingsKeys.kanaGakiSuppressAdverbKanaFirst: false,
         SettingsKeys.kakikaePreference: KakikaePreference.bothBeforeFirst.rawValue
     ]) { _, new in new }
 

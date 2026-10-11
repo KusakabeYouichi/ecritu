@@ -3404,7 +3404,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             ("ひろし", ["弘", "寛", "博"]),
             ("まい", ["枚", "舞", "マイ", "まい"]),
             ("ほんやくか", ["翻訳家", "翻訳か", "本薬か"]),
-            ("かなり", ["かなり", "可成", "可なり", "香菜里"]),  // 可 は 2736 で suppr
+            ("かなり", ["かなり", "可なり", "香菜里"]),  // 可 は 2736 で suppr。可成 は 3552 でかな書き(抑制)
             ("わたり", ["渡り", "わたり", "ワタリ", "渡"]),
             ("くれ", ["暮れ", "呉", "暮"]),
             ("ゆく", ["行く", "往く", "ゆく"]),
@@ -3570,7 +3570,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             ("はん", ["版", "班", "藩", "はん", "ハン"]),
             ("ろん", ["論", "ロン", "崙", "ろん"]),
             ("だん", ["段", "談", "団", "ダン", "檀"]),
-            ("まま", ["ママ", "まま", "侭", "間々"])
+            ("まま", ["ママ", "まま", "侭"])  // 間々 は 3552 でかな書き(抑制)
         ]
         var failures: [String] = []
         for (reading, expected) in expectations {
@@ -7572,7 +7572,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let hokaMulti = converter.multiClauseCandidates(for: "おもいのほか", systemCandidateMode: .surface)
         XCTAssertFalse(hokaMulti.contains(where: { $0.contains("重い") }), "multi=\(hokaMulti)")
         let hoka = converter.candidates(for: "おもいのほか", limit: 6, systemCandidateMode: .surface)
-        XCTAssertEqual(hoka.first, "思いの外", "single=\(hoka)")
+        XCTAssertEqual(hoka.first, "おもいのほか", "思いの外 は 副詞(漢字も残す) でかな先頭(3552) single=\(hoka)")
     }
 
     // 実LM回帰: りょうが→量が/凌駕。合成の 量+が が丸ごと語(凌駕/リョウガ/楞加)より後ろに
@@ -10694,7 +10694,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         )
         XCTAssertEqual(
             converter.multiClauseCandidates(for: "いったんていし", systemCandidateMode: .surface).first,
-            "一旦停止"
+            "いったん停止"  // 一旦 は 副詞(漢字も残す) でかな先頭(3552)
         )
         XCTAssertEqual(
             converter.multiClauseCandidates(for: "いつだったんだろう", systemCandidateMode: .surface).first,
@@ -11348,7 +11348,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // 文脈条件外は無傷(一旦停止/韃靼そば系/なんだろう)
         XCTAssertEqual(
             converter.multiClauseCandidates(for: "いったんていし", systemCandidateMode: .surface).first,
-            "一旦停止"
+            "いったん停止"  // 一旦 は 副詞(漢字も残す) でかな先頭(3552)
         )
         XCTAssertTrue(
             converter.multiClauseCandidates(for: "だったんそば", systemCandidateMode: .surface)
@@ -12127,7 +12127,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let multi = converter.multiClauseCandidates(for: "えんやすによるねあがり", systemCandidateMode: .surface)
         XCTAssertEqual(multi.first, "円安による値上がり", "multi=\(multi.prefix(5))")
         let tanni = converter.multiClauseCandidates(for: "たんにえんやすによるねあがり", systemCandidateMode: .surface)
-        XCTAssertEqual(tanni.first, "単に円安による値上がり", "multi=\(tanni.prefix(5))")
+        XCTAssertEqual(tanni.first, "たんに円安による値上がり", "単に は 副詞(漢字も残す) でかな先頭(3552) multi=\(tanni.prefix(5))")
     }
 
     // あいゆ→アイユ: 辞書に実在(wc2148)だが同読みの漢字収穫(愛由/藍結=収穫底値)があるため
@@ -19639,7 +19639,9 @@ extension KanaKanjiConverterRegressionTests {
         try loadDeviceAddedVocabulary()
         let candidates = converter.candidates(for: "しいて", limit: 10, systemCandidateMode: .surface)
         XCTAssertEqual(candidates.first, "敷いて", "candidates=\(candidates)")
-        XCTAssertEqual(candidates.dropFirst().first, "強いて", "candidates=\(candidates)")
+        // 強いて は 3552 で副詞のかな書き(初期設定は抑制)。かなは残り、漢字は出ない
+        XCTAssertTrue(candidates.contains("しいて"), "candidates=\(candidates)")
+        XCTAssertFalse(candidates.contains("強いて"), "candidates=\(candidates)")
     }
 
     // ユーザ報告 3202: しめじ は食品としてかな書きが普通で、占地 はまず見ない(辞書 rank は 占地0)
@@ -20147,7 +20149,7 @@ extension KanaKanjiConverterRegressionTests {
         try loadDeviceAddedVocabulary()
         XCTAssertEqual(converter.multiClauseCandidates(for: "とうぶんのうど", systemCandidateMode: .surface).first, "糖分濃度")
         XCTAssertEqual(converter.multiClauseCandidates(for: "とうぶんのあいだ", systemCandidateMode: .surface).first, "当分の間")
-        XCTAssertEqual(Array(converter.candidates(for: "とうぶん", limit: 3, systemCandidateMode: .surface)), ["糖分", "当分", "等分"])
+        XCTAssertEqual(Array(converter.candidates(for: "とうぶん", limit: 3, systemCandidateMode: .surface)), ["糖分", "とうぶん", "当分"])  // 当分 は 副詞(漢字も残す): かなを当分のすぐ上に(3552)
     }
 
     // 3250: 五段の裸の連用形(語幹 3 かな以上)を派生で供給する(さそいだし→誘い出し)。短い語幹は対象外
@@ -21000,9 +21002,11 @@ extension KanaKanjiConverterRegressionTests {
     func testSuguKanaFirst() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
-        for (reading, expected) in [("すぐ", ["すぐ", "直ぐ"]), ("すぐに", ["すぐに", "直ぐに"])] {
+        // 直ぐ は 3552 で副詞のかな書き(初期設定は抑制)
+        for (reading, expected) in [("すぐ", ["すぐ"]), ("すぐに", ["すぐに"])] {
             let list = converter.candidates(for: reading, limit: 6, systemCandidateMode: .surface)
-            XCTAssertEqual(Array(list.prefix(2)), expected, "\(list)")
+            XCTAssertEqual(Array(list.prefix(1)), expected, "\(list)")
+            XCTAssertFalse(list.contains { $0.hasPrefix("直ぐ") }, "\(list)")
             XCTAssertFalse(list.contains { $0.contains("‐") }, "\(list)")
             XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: reading), reading)
         }
@@ -21452,7 +21456,7 @@ extension KanaKanjiConverterRegressionTests {
     func testKanaGakiSuppressionAndKanaFirst() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
-        converter.setKanaGakiSuppressedCategories(Set(KanaGakiCategory.allCases))
+        converter.setKanaGakiSuppressedCategories(Set(KanaGakiCategory.allCases.filter(\.suppressedByDefault)))
         let iwayuru = converter.candidates(for: "いわゆる", limit: 6, systemCandidateMode: .surface)
         XCTAssertEqual(iwayuru.first, "いわゆる", "\(iwayuru)")
         XCTAssertFalse(iwayuru.contains("所謂"), "\(iwayuru)")
@@ -21478,14 +21482,14 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(kokoKanaFirst.contains("此処"), "\(kokoKanaFirst)")
         // 副詞は抑制のまま
         XCTAssertFalse(converter.candidates(for: "いわゆる", limit: 6, systemCandidateMode: .surface).contains("所謂"))
-        converter.setKanaGakiSuppressedCategories(Set(KanaGakiCategory.allCases))
+        converter.setKanaGakiSuppressedCategories(Set(KanaGakiCategory.allCases.filter(\.suppressedByDefault)))
     }
 
     // 3453: なおさら は かなで書く言葉(副詞)。抑制しなくても かな が先頭(なおさらだ も)
     func testNaosaraKanaFirst() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
-        for suppressed in [Set(KanaGakiCategory.allCases), []] {
+        for suppressed in [Set(KanaGakiCategory.allCases.filter(\.suppressedByDefault)), []] {
             converter.setKanaGakiSuppressedCategories(suppressed)
             for reading in ["なおさら", "なおさらだ"] {
                 let list = converter.candidates(for: reading, limit: 6, systemCandidateMode: .surface)
@@ -21494,7 +21498,7 @@ extension KanaKanjiConverterRegressionTests {
                 XCTAssertFalse(multi.first?.contains("尚更") ?? false, "multi=\(multi.prefix(4))")
             }
         }
-        converter.setKanaGakiSuppressedCategories(Set(KanaGakiCategory.allCases))
+        converter.setKanaGakiSuppressedCategories(Set(KanaGakiCategory.allCases.filter(\.suppressedByDefault)))
     }
 
     // 3455: 14 確定→いがいに は 以外に が先頭(助数詞 位 + がいに の合成を出さない)。かいに→回に は残す
@@ -21528,7 +21532,7 @@ extension KanaKanjiConverterRegressionTests {
             let list = converter.candidates(for: reading, limit: 6, systemCandidateMode: .surface)
             XCTAssertEqual(Array(list.prefix(2)), [reading, kanji], "\(list)")
         }
-        converter.setKanaGakiSuppressedCategories(Set(KanaGakiCategory.allCases))
+        converter.setKanaGakiSuppressedCategories(Set(KanaGakiCategory.allCases.filter(\.suppressedByDefault)))
         for (reading, kanji) in [("あるいは", "或いは"), ("もしくは", "若しくは")] {
             let list = converter.candidates(for: reading, limit: 6, systemCandidateMode: .surface)
             XCTAssertFalse(list.contains(kanji), "\(list)")
@@ -22406,5 +22410,33 @@ extension KanaKanjiConverterRegressionTests {
             XCTAssertFalse(single.contains(bad), "\(bad) single=\(single)")
         }
         XCTAssertEqual(KanaGakiTable.categoryByReadingAndSurface["かならず"]?["必ず"], .adverb, "kanagaki の副詞に 必ず")
+    }
+
+    // 副詞のかな書きの一括追加(3552): /tmp/t の 97 語は副詞(初期設定は抑制)、漢字でもよく書く 305 語は 副詞(漢字も残す)
+    // (初期設定は抑制せず かな先頭)。名詞と同形の語(自然/直接)は入れない。交ぜ書き(一そう/とつ然)は suppr
+    func testRegressionRealLMAdverbKanaGakiBatch() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertFalse(KanaGakiCategory.adverbKanaFirst.suppressedByDefault)
+        XCTAssertTrue(KanaGakiCategory.adverb.suppressedByDefault)
+        XCTAssertEqual(KanaGakiTable.categoryByReadingAndSurface["かなり"]?["可成"], .adverb)
+        XCTAssertEqual(KanaGakiTable.categoryByReadingAndSurface["とくに"]?["特に"], .adverbKanaFirst)
+        XCTAssertNil(KanaGakiTable.categoryByReadingAndSurface["しぜん"]?["自然"], "名詞と同形の語は入れない")
+        // 初期設定(副詞は抑制、副詞(漢字も残す)は抑制しない)
+        converter.setKanaGakiSuppressedCategories(Set(KanaGakiCategory.allCases.filter(\.suppressedByDefault)))
+        defer { converter.setKanaGakiSuppressedCategories(Set(KanaGakiCategory.allCases.filter(\.suppressedByDefault))) }
+        let kanari = converter.candidates(for: "かなり", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(kanari.first, "かなり", "single=\(kanari)")
+        XCTAssertFalse(kanari.contains("可成"), "single=\(kanari)")
+        let tokuni = converter.candidates(for: "とくに", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(tokuni.prefix(2)), ["とくに", "特に"], "single=\(tokuni)")
+        let shizen = converter.candidates(for: "しぜん", limit: 3, systemCandidateMode: .surface)
+        XCTAssertEqual(shizen.first, "自然", "single=\(shizen)")
+        let issou = converter.candidates(for: "いっそう", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(issou.first, "いっそう", "single=\(issou)")
+        XCTAssertFalse(issou.contains("一そう"), "交ぜ書きは suppr single=\(issou)")
+        // 連文節でも かな先頭(抑制しない仲間)
+        let multi = converter.multiClauseCandidates(for: "とくにきをつけて", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "とくに気をつけて", "multi=\(multi)")
     }
 }
