@@ -22139,6 +22139,17 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(single.prefix(8)), ["件", "兼", "県", "券", "権", "軒", "剣", "謙"], "single=\(single)")
     }
 
+    // 運転免許証: misc で 1 語を供給(ユーザ報告 3528)。ブリリアンス: compenser で供給(ユーザ指定 3528)
+    func testRegressionRealLMUntenMenkyoshouAndBrilliance() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let single = converter.candidates(for: "うんてんめんきょしょう", limit: 8, systemCandidateMode: .surface)
+        let multi = converter.multiClauseCandidates(for: "うんてんめんきょしょう", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first ?? single.first, "運転免許証", "multi=\(multi) single=\(single)")
+        let brilliance = converter.candidates(for: "ぶりりあんす", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(brilliance.first, "ブリリアンス", "single=\(brilliance)")
+    }
+
     // ためそうと: 試そうと が先頭(ユーザ指定 3526)。ぎんこうとくまないと: 組む が 汲む より先(ユーザ指定 3526)
     func testRegressionRealLMTamesoutoAndKumanaito() throws {
         try prepareRealLMDictionary()

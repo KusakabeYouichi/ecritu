@@ -33,6 +33,8 @@
 	        <dict><key>phrase</key><string>Vinolet</string><key>shortcut</key><string>ゔぃのれっと</string></dict>	<!-- ユーザ指定 3289 -->
 	        <dict><key>phrase</key><string>VINOLET</string><key>shortcut</key><string>ゔぃのれっと</string></dict>
 	        <dict><key>phrase</key><string>ヴィノレット</string><key>shortcut</key><string>ゔぃのれっと</string></dict>
+	        <dict><key>phrase</key><string>ブリリアンス</string><key>shortcut</key><string>ぶりりあんす</string></dict>	<!-- ブリリアンス: 辞書・LM とも未収録(ユーザ指定 3528) -->
+
 	<!-- 服飾 -->
 	        <dict><key>phrase</key><string>黄麻</string><key>shortcut</key><string>こうま</string></dict>	<!-- Sudachiにもある(基底3位/24、コスト7404) -->
 	        <dict><key>phrase</key><string>ヴェロア</string><key>shortcut</key><string>ゔぇろあ</string></dict>
