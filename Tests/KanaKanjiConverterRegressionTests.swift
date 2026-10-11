@@ -22363,5 +22363,16 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(tsuku.first, "着く", "single=\(tsuku)")
     }
 
+    // 2かいから→階から(3548、ユーザ指定)。seed かいから(回から/会から/貝殻)が助数詞+かな末尾の合成を止めていた
+    func testRegressionRealLMDigitKaikaraPrefersFloor() throws {
+        try prepareRealLMDictionary()
+        let digit = converter.candidates(for: "2かいから", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(digit.prefix(2)), ["階から", "回から"], "single=\(digit)")
+        let plain = converter.candidates(for: "かいから", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(plain.first, "回から", "single=\(plain)")
+        let kai = converter.candidates(for: "2かい", limit: 3, systemCandidateMode: .surface)
+        XCTAssertEqual(kai.first, "回", "single=\(kai)")
+    }
+
     }
 }
