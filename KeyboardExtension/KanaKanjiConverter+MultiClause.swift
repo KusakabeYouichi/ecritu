@@ -2253,6 +2253,10 @@ extension KanaKanjiConverter {
                 woBigram < Self.multiClauseWoDropVerbMaxWoBigram {
                 penalty -= Self.multiClauseWoDropVerbBonus
             }
+            // 辞書形述語+気(入る気/行く気/帰る気。定数コメント参照。3532)
+            if surfaceID == SID.気, readingID == SID.き, prevIsDictionaryFormPredicate {
+                penalty -= Self.multiClauseIntentionKiAfterPredicateBonus
+            }
             // 方向・位置の 1 字漢字(下/上/左/右/前/後…)+カタカナ語(フリック/スワイプ/ページ)は複合名詞。
             // した は し+た(bigram 547)の動詞がかな名詞 下(4332)より安く、したふりっく が したフリック
             // (連体修飾)になっていた(ユーザ報告 2820)。上/左/右 は動詞に割れないので元から通る

@@ -22227,4 +22227,18 @@ extension KanaKanjiConverterRegressionTests {
         let merged = (musunda.first.map { [$0] } ?? []) + musundaSingle.filter { $0 != musunda.first }
         XCTAssertEqual(Array(merged.prefix(2)), ["結んだけど", "蒸すんだけど"], "multi=\(musunda) single=\(musundaSingle)")
     }
+
+    // はいるきなくした(ユーザ報告 3532): 入る来鳴くした(来鳴く=Sudachi のレア語)が先頭で 入る気 が無かった。辞書形述語+気 に加点
+    func testRegressionRealLMHairuKiNakushita() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let multi = converter.multiClauseCandidates(for: "はいるきなくした", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first?.hasPrefix("入る気"), true, "multi=\(multi)")
+        // 連文節の変種は 3 件までで 這入る/侵る の変種も枠を使う。同じ区間の変種(亡くした 等)の並びは遷移ボーナスでは動かないので先頭だけ見る
+        XCTAssertTrue(["入る気なくした", "入る気失くした", "入る気無くした"].contains(multi.first ?? ""), "multi=\(multi)")
+        let iku = converter.multiClauseCandidates(for: "いくきなくした", systemCandidateMode: .surface)
+        XCTAssertEqual(iku.first?.hasPrefix("行く気"), true, "multi=\(iku)")
+        let yaru = converter.multiClauseCandidates(for: "やるきなくした", systemCandidateMode: .surface)
+        XCTAssertEqual(yaru.first?.hasPrefix("やる気"), true, "multi=\(yaru)")
+    }
 }

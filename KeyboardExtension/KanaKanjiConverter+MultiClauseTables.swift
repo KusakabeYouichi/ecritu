@@ -550,6 +550,8 @@ extension KanaKanjiConverter {
         // 火+が/を+通(3531、ユーザ報告: ひがとおりすぎる→比が徹りすぎる/火が透りすぎる)。料理の 火が通る/火を通す/火が通りすぎる。
         // 日→が の隣接ボーナス(上)で 日が が 火が より 600 安くなるぶんも、この連語で 火 側に戻す
         "火\t通": 4500,
+        // 気+を/が+なくし/失くし/無くし(3532。上の隣接ボーナスと対)
+        "気\tなくし": 2000, "気\t失くし": 2000, "気\t無くし": 2000,
         "漢字\t書": 2000, "漢字\t読": 2000, "漢字\t覚え": 2000,
         // 描く が自然な目的語(3362)。描く を連文節で降格したので、絵/図/漫画 等を描く は戻す(活用形 描いた/描いて にも効く。
         // 以前は 絵をかいた が 絵を書いた だった)
@@ -1622,6 +1624,11 @@ extension KanaKanjiConverter {
     // 勝っていた(ユーザ報告 2828)。かな派生(とって)には掛けない(漢字の動詞を先頭にしたい)
     static let multiClauseWoDropVerbMaxWoBigram = 1500
     static let multiClauseWoDropVerbBonus = 1500
+    // 辞書形述語+気(き)のボーナス(3532、ユーザ報告: はいるきなくした→入る来鳴くした)。入る→気 は未観測で 気 は素コスト
+    // (6164)+単漢字名詞→動詞の無助詞減点を受け、Sudachi の 来鳴く(きなく、dictUnknown 8700)+した に負けていた。
+    // 「〜る気(を)なくした/〜る気がしない」の 気 は口語の定型。やる気/本気 は 1 語なので関係ない。
+    // 2000 では 気+なくした(17295)が 来鳴く+し+た(17315)に EOS 込みで 20 勝つだけで、単漢字名詞→動詞の無助詞減点(600)で逆転した
+    static let multiClauseIntentionKiAfterPredicateBonus = 3000
     // を落ちの対象外にする自動詞・存在動詞の活用読み(居る/有る/成る)。を の目的語は他動詞にしか付かないので、
     // ヒト+居ない(いれているひといないかなあ→入れているヒト居ないかなあ)のような 名詞+自動詞 は割り引かない
     static let multiClauseWoDropIntransitiveReadingPrefixes: [String] = ["いる", "いな", "いた", "いて", "いま", "いよ", "ある", "あっ", "あり", "あれ", "あろ", "なる", "なっ", "なら", "なれ", "なり", "なろ"]
@@ -2537,6 +2544,9 @@ extension KanaKanjiConverter {
         // 着る 族を守る(を→来た は curated 来た が床 1500 で立ち、派生 着た 5000 より安い。3000 では足りない)
         "を\t来": -4500,
         "が\t更新": 2500,
+        // 気+なくし/失くし/無くし(3532、ユーザ報告: はいるきなくした)。亡くした は LM に表層があり 気亡くした が先頭になるが、
+        // 気を亡くす は誤り。を 落としの直後(気なくした)と、を/が を挟む形(気を失くした)は下の連語表で
+        "気\tなくし": 2000, "気\t失くし": 2000, "気\t無くし": 2000,
         // に+指示(えいあいにしじ→AIに師事。ユーザ報告 2910)。bigram は に→支持 4370 / 師事 4410 / 指示 4604 で Wikipedia の
         // 人物記事(〜に師事)寄り。フリック入力では 〜に指示(する) が日常
         "に\t指示": 800,
@@ -2949,6 +2959,8 @@ extension KanaKanjiConverter {
             for s in ["語"] { add(s) }
             // 隙(すき)は名詞の直後に立たない(3329)
             for s in ["隙", "すき"] { add(s) }
+            // 辞書形述語+気(3532)
+            for s in ["気", "き"] { add(s) }
             for s in ["ある", "いう", "いち", "いって", "う", "お", "おそい", "か", "かち", "かん", "かんじ", "が", "きた", "くらい", "ぐらい", "こと", "ご", "ごと", "さ", "さん", "し", "した", "して", "します", "じん", "すぎ", "する", "そい", "そう", "た", "たい", "ため", "だ", "っけ", "であっても", "でも", "と", "な", "ない", "ないで", "なん", "に", "にも", "の", "のか", "は", "ひと", "ほうが", "ほうがいい", "ほしい", "まだ", "まち", "も", "もう", "や", "よう", "を", "ん", "ー", "一", "一手", "人", "位置", "価値", "化", "屋", "待ち", "感", "来た", "漢字", "産", "用", "様", "行って"] { add(s) }
             for s in KanaKanjiConverter.multiClauseAdverbKanjiAfterNounSurfaces.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseAuVerbReadings.sorted() { add(s) }
@@ -3093,6 +3105,8 @@ extension KanaKanjiConverter {
         static let ある = MultiClauseSymbols.id("ある")
         static let いう = MultiClauseSymbols.id("いう")
         static let いち = MultiClauseSymbols.id("いち")
+        static let き = MultiClauseSymbols.id("き")
+        static let 気 = MultiClauseSymbols.id("気")
         static let いって = MultiClauseSymbols.id("いって")
         static let う = MultiClauseSymbols.id("う")
         static let お = MultiClauseSymbols.id("お")
