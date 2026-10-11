@@ -33,6 +33,11 @@ enum KeyboardStuckTouchDiagnostics {
     // 生タッチ駆動で盤を出したときは、触れてから起動までを生タッチ側の時刻で出す(3516)
     static var longPressProbeRawBeganAt: Date?
     static var longPressProbeRawActivatedAt: Date?
+    // 調査用ログ(削除キーの 1 文字め 3524): かな面と AZERTY で 1 文字めが消えるまでの時間が違った件。
+    // 生タッチの認識器が見た直近の touch の開始(稼働時間基準)と位置(.global)。削除キーのドラッグ判定が
+    // 届いた時点で突き合わせ、門番の握りか処理の重さかを切り分ける。原因判明後に外す
+    static var rawTouchBeganUptime: TimeInterval?
+    static var rawTouchBeganPoint: CGPoint?
     #endif
 }
 
@@ -102,6 +107,11 @@ enum RawTouchLongPress {
     }
 
     static func touchBegan(id: ObjectIdentifier, at point: CGPoint) {
+        #if DEBUG
+        // 調査用ログ(削除キーの 1 文字め 3524): 枠に入らない touch も記録する(削除キーは枠を登録しない)
+        KeyboardStuckTouchDiagnostics.rawTouchBeganUptime = uptimeNow()
+        KeyboardStuckTouchDiagnostics.rawTouchBeganPoint = point
+        #endif
         consumedKeyID = nil
         consumedAt = nil
         // UITouch は UIKit が使い回すので、同じ id で began が来たら新しい接触として扱う(終わりを取りこぼした保険)。
