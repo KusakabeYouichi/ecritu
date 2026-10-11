@@ -22095,6 +22095,24 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(single.first, "お寿司", "single=\(single)")
     }
 
+    // ひがくれて: 比→が 1076 < 日→が 2959 で 比がくれて/比が暮れて になっていた(ユーザ報告 3527)。
+    // misc の 日が暮れる(一段)で活用形を供給し、日→が の隣接ボーナスで 日が差す 等も 日 に寄せる。が+くれた(友達がくれた)は守る
+    func testRegressionRealLMHigakuretePrefersHigaKurete() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        // curated の 日が暮れる が読み全体を覆うと連文節は空(単文節委譲)。表示先頭 = 連文節最良 ?? 単文節先頭
+        for (reading, expected) in [("ひがくれて", "日が暮れて"), ("ひがくれる", "日が暮れる"), ("ひがくれた", "日が暮れた")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            let single = converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first ?? single.first, expected, "reading=\(reading) multi=\(multi) single=\(single)")
+        }
+        // 日→が の隣接ボーナス: 比が差す でなく 日が(差す/指す の同音順は別件)
+        let sasu = converter.multiClauseCandidates(for: "ひがさす", systemCandidateMode: .surface)
+        XCTAssertTrue(sasu.first?.hasPrefix("日が") == true, "multi=\(sasu)")
+        let tomodachi = converter.multiClauseCandidates(for: "ともだちがくれた", systemCandidateMode: .surface)
+        XCTAssertEqual(tomodachi.first, "友達がくれた", "multi=\(tomodachi)")
+    }
+
     // なくした/なくしたい: 失くした / 無くしたい が先頭(ユーザ指定 3526)
     func testRegressionRealLMNakushitaPerFormSeed() throws {
         try prepareRealLMDictionary()
