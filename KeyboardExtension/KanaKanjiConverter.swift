@@ -290,8 +290,8 @@ final class KanaKanjiConverter {
 
 
     // 候補スコアの基礎点。生成経路ごとの優先順位をここで一元管理する。
-    // 大小関係の意図: 追加語彙 > 学習語彙 > 辞書 > quick postfix > 丁寧接頭辞 > 序数
-    //   > 数値単位 > BFS postfix > 名詞漢字接辞 > 活用 > ガル形。
+    // 大小関係の意図: 追加語彙 > 学習語彙 > 辞書 > 丁寧接頭辞 > 序数
+    //   > 数値単位 > postfix(語幹キャッシュ/BFS とも同点) > 名詞漢字接辞 > 活用 > ガル形。
     // 補正(ブースト/ペナルティ)は +RankingHeuristics の定数を参照。
     enum CandidateScore {
         // 漢数字+ケ/ヶ の地名断片(二ケ所 等)を数詞複合の後ろへ下げる幅(辞書 1200 → 複合 400 未満に)
@@ -307,15 +307,19 @@ final class KanaKanjiConverter {
         static let supplementalVocabulary = 1500
         static let systemDictionary = 1200      // 辞書(sqlite/seed)
         // 押し上げない補助語彙(同読みに LM 実在の一般語がある。上の supplementalVocabulary の注記)の帯(3326)。
-        // 辞書の普通の語(1200)より下、合成の最上位(quickPostfix 1120)のすぐ上。1150 では から の 嘉良(ryukyu の地名)が
+        // 辞書の普通の語(1200)より下、合成(当時の quickPostfix 1120)のすぐ上。1150 では から の 嘉良(ryukyu の地名)が
         // 普通の語の 唐 を抜いた(全網)ので、合成をぎりぎり超える値にする。収穫帯(1030)より上。
         // 普通の語の並びは保ったまま、vin/ryukyu などの語を 名詞+や のような合成の後ろに埋もれさせない
         static let unpromotedSupplementalVocabulary = 1125
-        static let quickPostfix = 1120          // postfix(語幹キャッシュ利用)
         static let politePrefix = 1100          // お/ご 丁寧接頭辞派生
         static let ordinalMeFallback = 1080     // 序数(〜つ目)
         static let numericUnitFallback = 1070   // 数値+単位
+        // postfix 合成は語幹キャッシュ経路(quick)と BFS 探索経路で同じ集合を別々に作るが、点数は同じにする。
+        // quick が 1120 で BFS より上だったころは、直前の読み(おす)がキャッシュにあるかどうか=打鍵の速さで
+        // 丁寧接頭辞(1100)/序数/数値単位との上下が入れ替わり、同じ おすし が お寿司 先頭のときと 押すし 先頭の
+        // ときがあった(実機トレース 3443、Mac でも温めたキャッシュで再現)。2509/2513/3256 も同じ原因の個別対処だった(3534)
         static let bfsPostfix = 1040            // postfix(BFS完全探索)
+        static let quickPostfix = bfsPostfix    // postfix(語幹キャッシュ利用)
         static let nounKanjiAffix = 1000        // 名詞+漢字接辞(課/可/別 等)
         static let inflection = 980             // 活用形派生
         // 五段の裸の連用形(複合動詞 誘い出し/思い出し)への加点。点数は経路ごとに加算されるため、
