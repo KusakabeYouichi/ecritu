@@ -404,6 +404,11 @@
 	        <dict><key>phrase</key><string>vongole rosso</string><key>shortcut</key><string>ぼんごれろっそ</string><key>pos</key><string>名詞</string></dict>	<!-- 伊語は alle vongole in rosso -->
 	        <dict><key>phrase</key><string>ラグー</string><key>shortcut</key><string>らぐー</string><key>pos</key><string>名詞</string></dict>
 	        <dict><key>phrase</key><string>ragù</string><key>shortcut</key><string>らぐー</string><key>pos</key><string>名詞</string></dict>
+	<!-- ピッツァ -->
+	        <dict><key>phrase</key><string>マリナーラ</string><key>shortcut</key><string>まりなーら</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>marinara</string><key>shortcut</key><string>まりなーら</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>マルゲリータ</string><key>shortcut</key><string>まるげりーた</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>Margherita</string><key>shortcut</key><string>まるげりーた</string><key>pos</key><string>名詞</string></dict>
 	<!-- バター(AOP バターの産地と銘柄。カタカナと原語を同じ読みで。ユーザ提供の資料 2911) -->
 	<!-- □ A.O.P. (原産地呼称) -->
 	        <dict><key>phrase</key><string>シャラント・ポワトゥー</string><key>shortcut</key><string>しゃらんとぽわとぅー</string></dict>	<!-- AOP 最大の産地。12 時間以上の長期熟成、ナッツのような香り。溶けにくく伸びが良い -->
