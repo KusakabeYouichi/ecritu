@@ -1449,6 +1449,9 @@ extension KanaKanjiConverter {
         "こと\tだ": 800,
         // 日+が(3527、ユーザ報告: ひがくれて→比がくれて)。日→が 2959 は日付の記事(〜日に/〜日-)に埋もれて高く、比→が 1076
         // (〜の比が)に負けていた。日が暮れる/日が差す/日が沈む は日常の言い回し。差 1883 を埋める
+        // 円+だ(コピュラ。3555、ユーザ報告: 300えんだけどな)。数字が確定済みなら文頭の助数詞ボーナスで 円 が立つが、
+        // 裸の えんだけどな は 円(5137)→だ 3547 が 笑む(wc 9324 の文語寄り)の派生 笑んだ(定額 7200)に 1484 差で負ける
+        "円\tだ": 2000,
         "日\tが": 2000,
         // あの+手帳/手帖(3396、ユーザ報告: あのてちょうを→あの手長を)。あの→手 2245 は あの手この手 の統計で強く、
         // あの→手帳/手帖 は未観測なので、あの+手+長+を が あの+手帖+を より 622 安かった。あの→手 を下げると
@@ -2236,6 +2239,12 @@ extension KanaKanjiConverter {
     static let multiClauseElapsedTimeAfterDurationBonus = 2000
     // 裸の格助詞の直後に立てる文末の終助詞1字(のにな/からな/までね/のにさ)。2873
     static let multiClauseSentenceFinalKanaParticles: Set<String> = ["な", "ね", "よ", "さ", "か"]
+    // 接続助詞(かな)の直後の文末「な」は言いさしの正当な言い回し(だけどな/けどな/のにな/しな。3555、ユーザ報告:
+    // 300えんだけどな→円だけドナ)。文末 な の 2 つの減点(非述語直後 3000+形容動詞でない名詞直後 3000)が けど の後ろにも
+    // 掛かり、だけ+ドナ(人名)の割れ 11951 に だ+けど+な 7491 が 13491 で負けていた
+    static let multiClauseConjunctiveParticlesBeforeFinalNa: Set<String> = [
+        "けど", "けれど", "けれども", "だけど", "ですけど", "し", "のに", "ので", "が", "から", "って", "とか"
+    ]
     // 接尾の 屋 は「その語+屋」が語として実在するときだけ立つ(本屋/花屋/ラーメン屋)。
     // 実在する複合はたいてい辞書に 1 語で載るか、bigram(ラーメン→屋 1247)が観測されている。
     // 観測が無い相手に付く 屋 は分割の産物で、並立・終助詞の や を食う
@@ -3037,6 +3046,7 @@ extension KanaKanjiConverter {
             for s in KanaKanjiConverter.multiClauseSeedFirstLMOverrideReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseSentenceFinalAllKanjiPenaltyReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseSentenceFinalKanaParticles.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseConjunctiveParticlesBeforeFinalNa.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseSentenceInitialKanaConjunctions.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseSouCopulaFollowerReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseSubstantiveNounReadings.sorted() { add(s) }
@@ -3269,6 +3279,7 @@ extension KanaKanjiConverter {
     static let multiClauseSeedFirstLMOverrideReadingsID = MultiClauseIDSet(multiClauseSeedFirstLMOverrideReadings)
     static let multiClauseSentenceFinalAllKanjiPenaltyReadingsID = MultiClauseIDSet(multiClauseSentenceFinalAllKanjiPenaltyReadings)
     static let multiClauseSentenceFinalKanaParticlesID = MultiClauseIDSet(multiClauseSentenceFinalKanaParticles)
+    static let multiClauseConjunctiveParticlesBeforeFinalNaID = MultiClauseIDSet(multiClauseConjunctiveParticlesBeforeFinalNa)
     static let multiClauseSentenceInitialKanaConjunctionsID = MultiClauseIDSet(multiClauseSentenceInitialKanaConjunctions)
     static let multiClauseSouCopulaFollowerReadingsID = MultiClauseIDSet(multiClauseSouCopulaFollowerReadings)
     static let multiClauseSubstantiveNounReadingsID = MultiClauseIDSet(multiClauseSubstantiveNounReadings)

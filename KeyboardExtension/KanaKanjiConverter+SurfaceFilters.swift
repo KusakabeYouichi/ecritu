@@ -43,6 +43,20 @@ extension KanaKanjiConverter {
         "よう"
     ]
 
+    // 名詞+けど は非文(名詞には だけど)。語幹読みが た/だ で終わる全漢字の語(円田/遠田/神田)は名詞で、
+    // 読みの だ がコピュラでないのに けど を直結していた(300えんだけどな→円田けどな が先頭。3555)
+    func filterKanjiNounStemsBeforeConjunctiveParticle(
+        _ candidates: [String],
+        stemReading: String,
+        nextSuffix: String
+    ) -> [String] {
+        guard nextSuffix.hasPrefix("けど") || nextSuffix.hasPrefix("けれど"),
+            let last = stemReading.last, last == "た" || last == "だ" else {
+            return candidates
+        }
+        return candidates.filter { !Self.isAllKanjiSurface($0) }
+    }
+
     static func postfixSuffixRequiresVerbalStem(_ suffix: String, stemReading: String) -> Bool {
         for required in verbalStemRequiredPostfixPrefixes where suffix.hasPrefix(required) {
             return true
