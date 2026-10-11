@@ -240,6 +240,7 @@
 	<dict><key>phrase</key><string>値い</string><key>shortcut</key><string>あたい</string></dict>
 
 	<!-- ■ 非文法・実用ゼロの合成(学習しても出さない) -->
+	<dict><key>phrase</key><string>塗れたて</string><key>shortcut</key><string>ぬれたて</string></dict>	<!-- 塗れる(ぬれる=塗る の可能形)の連用形+たて。塗りたて はあっても 塗れたて は無い(ユーザ指定 3537)。ぬれたてで の変種に出ていた -->
 	<dict><key>phrase</key><string>連れて言って</string><key>shortcut</key><string>つれていって</string></dict>	<!-- 連れて行って が正書。誤選択で学習しても復活させない(抑制は学習より強い) -->
 
 	<!-- ■ 字形が似ていて間違えやすいので抑制する旧字体・異体字・紛らわし表記(誤確定防止) -->

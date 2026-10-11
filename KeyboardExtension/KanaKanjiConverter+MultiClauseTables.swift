@@ -1178,6 +1178,8 @@ extension KanaKanjiConverter {
     static let multiClauseHonorificKanjiPenalty = 3000
     // 地域接尾+産(産地表記)を かな敬称さん より優先するボーナス(2410)
     static let multiClauseRegionalProduceBonus = 3000
+    // た形/たて の区間を割った代替経路の許容差(3537)。結んだ+けど 14600 vs 蒸す+んだけど 20172、濡れたて+で 10886 vs 濡れた+手で 15900
+    static let multiClauseTaFormSplitAlternativeMaxDelta = 6500
 
     // 産 が産地表記になる文脈。地域接尾(愛知県産)に加えて、カタカナの地名
     // (ギリシャ産/アメリカ産/ザクセン産)も対象にする(2878、抜き取り検査 23 件)。
