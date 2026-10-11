@@ -22274,5 +22274,18 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(iku.first?.hasPrefix("行く気"), true, "multi=\(iku)")
         let yaru = converter.multiClauseCandidates(for: "やるきなくした", systemCandidateMode: .surface)
         XCTAssertEqual(yaru.first?.hasPrefix("やる気"), true, "multi=\(yaru)")
+    // てで/てに→手で/手に(3539): て は 1 字の助詞と同形で 手+格助詞 の合成が作られず候補なし(かなだけ)だった(ユーザ報告)
+    func testRegressionRealLMTedeTeniHand() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.candidates(for: "てで", limit: 4, systemCandidateMode: .surface).first, "手で")
+        XCTAssertEqual(converter.candidates(for: "てに", limit: 4, systemCandidateMode: .surface).first, "手に")
+        // ぬれたてで: たて複合 1 ノード(濡れたて)の区間を た形+残り に割った代替経路で 濡れた手で を第2候補に(3538)。
+        // 塗れたて(塗る の可能形+たて)は suppr
+        let nureta = converter.multiClauseCandidates(for: "ぬれたてで", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(nureta.prefix(2)), ["濡れたてで", "濡れた手で"], "multi=\(nureta)")
+        XCTAssertFalse(nureta.contains("塗れたてで"), "multi=\(nureta)")
+    }
+
     }
 }
