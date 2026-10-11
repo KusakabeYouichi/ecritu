@@ -394,4 +394,30 @@ extension KeyboardLayoutMetricsTests {
         RawTouchLongPress.touchBegan(id: ObjectIdentifier(NSObject()), at: CGPoint(x: 10, y: 10))
         XCTAssertFalse(RawTouchLongPress.takeConsumed(keyID: "c"), "次の接触が始まったら古い印は捨てる")
     }
+
+    // 削除キー(3525): firesOnTouchDown で登録したキーは触れた瞬間に .press、離したら .end。delay 後の .activate は来ない
+    @MainActor
+    func testRawTouchPressFiresOnTouchDownForDeleteKey() {
+        RawTouchLongPress.resetForTesting()
+        defer { RawTouchLongPress.resetForTesting() }
+        RawTouchLongPress.register(keyID: "⌫", frame: CGRect(x: 300, y: 100, width: 50, height: 44), firesOnTouchDown: true)
+        RawTouchLongPress.register(keyID: "c", frame: CGRect(x: 100, y: 150, width: 30, height: 44))
+
+        let touch = ObjectIdentifier(NSObject())
+        let events = collectRawLongPressEvents(timeout: RawTouchLongPress.delay + 0.2) {
+            RawTouchLongPress.touchBegan(id: touch, at: CGPoint(x: 320, y: 120))
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                RawTouchLongPress.touchEnded(id: touch, at: CGPoint(x: 320, y: 120), cancelled: false)
+            }
+        }
+        XCTAssertEqual(events.map(\.kind), [.press, .end])
+        XCTAssertEqual(Set(events.map(\.keyID)), ["⌫"])
+
+        // 枠を渡した片づけは、別の枠で登録し直されていれば何もしない(面の切り替えで新旧が同居する間の保険)
+        RawTouchLongPress.register(keyID: "⌫", frame: CGRect(x: 0, y: 0, width: 50, height: 44), firesOnTouchDown: true)
+        RawTouchLongPress.unregister(keyID: "⌫", frame: CGRect(x: 300, y: 100, width: 50, height: 44))
+        XCTAssertEqual(RawTouchLongPress.registeredKeyCount, 2, "古い枠の片づけで新しい枠を消さない")
+        RawTouchLongPress.unregister(keyID: "⌫", frame: CGRect(x: 0, y: 0, width: 50, height: 44))
+        XCTAssertEqual(RawTouchLongPress.registeredKeyCount, 1)
+    }
 }

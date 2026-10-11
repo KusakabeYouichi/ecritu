@@ -51,10 +51,17 @@ enum KeyboardStuckTouchDiagnostics {
 // 盤の表示・候補の選択・確定は受け手の FlickKeyView が今までどおり行なう。遅れて届いた SwiftUI の
 // ジェスチャーは、盤が出ていればそのまま引き継ぎ(選択と確定は SwiftUI 側)、生タッチ側で既に確定して
 // いれば何もしない(takeConsumed)。キーの枠は FlickKeyView が onGeometryChange で登録する(SwiftUI の
-// .global = ホスティングビューの座標。認識器もホスティングビューに付ける)
+// .global = ホスティングビューの座標。認識器は位置だけその座標で取る)
+//
+// 削除キー(3525): 同じ門番で AZERTY の削除キーの 1 文字めが約 0.75 秒遅れ、連続削除の出だしも
+// その分ずれていた(実測 3524: かな 106ms / AZERTY 780ms)。firesOnTouchDown で登録したキーには待たずに
+// .press を流し、受け手(ActionKeyButton)が 1 回めの実行と連続削除の予約をそこから始める
 enum RawTouchLongPress {
     enum Kind {
+        // 長押し用: 触れて delay 後(アクサン候補の盤)
         case activate
+        // 触れた瞬間(削除キーの 1 回めの実行 3525)。firesOnTouchDown で登録したキーだけ
+        case press
         case move
         case end
         case cancel
@@ -72,6 +79,8 @@ enum RawTouchLongPress {
     static let consumedLifetime: TimeInterval = 1.5
 
     private static var frames: [String: CGRect] = [:]
+    // 触れた瞬間に .press を流すキー(削除キー 3525)。それ以外は delay 後に .activate
+    private static var touchDownKeyIDs: Set<String> = []
     private static var trackedTouchID: ObjectIdentifier?
     private static var pendingKeyID: String?
     private static var pendingWorkItem: DispatchWorkItem?
@@ -90,16 +99,27 @@ enum RawTouchLongPress {
         Double(DispatchTime.now().uptimeNanoseconds) / 1_000_000_000
     }
 
-    static func register(keyID: String, frame: CGRect) {
+    static func register(keyID: String, frame: CGRect, firesOnTouchDown: Bool = false) {
         if frame.isEmpty {
             frames[keyID] = nil
         } else {
             frames[keyID] = frame
         }
+        if firesOnTouchDown {
+            touchDownKeyIDs.insert(keyID)
+        } else {
+            touchDownKeyIDs.remove(keyID)
+        }
     }
 
-    static func unregister(keyID: String) {
+    // frame を渡したときは、その枠で登録されているときだけ外す。面の切り替えで同じ keyID の新しいキーが先に
+    // 登録し、古いキーの onDisappear が後から来て新しい枠を消してしまうのを防ぐ(3525)
+    static func unregister(keyID: String, frame: CGRect? = nil) {
+        if let frame, let registered = frames[keyID], registered != frame {
+            return
+        }
         frames[keyID] = nil
+        touchDownKeyIDs.remove(keyID)
     }
 
     static var registeredKeyCount: Int {
@@ -123,6 +143,12 @@ enum RawTouchLongPress {
         lastGlobalX = point.x
         cancelPending()
         guard let keyID = frames.first(where: { $0.value.contains(point) })?.key else {
+            return
+        }
+        if touchDownKeyIDs.contains(keyID) {
+            // 触れた瞬間に流す(削除キー 3525)。離すまで追跡し、.end/.cancel も同じ keyID へ流す
+            activeKeyID = keyID
+            events.send(Event(keyID: keyID, globalX: point.x, kind: .press))
             return
         }
         #if DEBUG
@@ -202,6 +228,7 @@ enum RawTouchLongPress {
     // テスト用: 状態を初期に戻す
     static func resetForTesting() {
         frames = [:]
+        touchDownKeyIDs = []
         trackedTouchID = nil
         cancelPending()
         activeKeyID = nil
@@ -212,7 +239,7 @@ enum RawTouchLongPress {
 }
 
 // 対象のキーだけ RawTouchLongPress の合図を購読する(全キーに onReceive を付けると購読の分だけ SwiftUI 内部が太る)
-private struct RawLongPressReceiver: ViewModifier {
+struct RawLongPressReceiver: ViewModifier {
     let enabled: Bool
     let handler: (RawTouchLongPress.Event) -> Void
 
@@ -583,7 +610,7 @@ struct FlickKeyView: View {
         .onDisappear {
             finalizeTouchInteractionState()
             if isRawLongPressDriven {
-                RawTouchLongPress.unregister(keyID: rawLongPressKeyID)
+                RawTouchLongPress.unregister(keyID: rawLongPressKeyID, frame: keyFrameInGlobal)
             }
         }
         .zIndex(isTouching ? KeyboardLayerZIndex.touchingKey : 0)
@@ -1259,6 +1286,9 @@ struct FlickKeyView: View {
                 return
             }
             finalizeTouchInteractionState()
+        case .press:
+            // 触れた瞬間の合図は削除キー(ActionKeyButton)向け。アクサン候補のキーには来ない
+            break
         }
     }
 

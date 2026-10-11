@@ -1,3 +1,4 @@
+import Combine
 import Foundation
 import SwiftUI
 import UIKit
@@ -136,6 +137,35 @@ struct LatinShiftKeyButton: View {
     }
 }
 
+// 生タッチ駆動の対象キーだけ、枠の登録(onGeometryChange)と合図の購読を付ける(3525)。keyID が nil なら何も足さない
+private struct RawTouchDownKeyModifier: ViewModifier {
+    let keyID: String?
+    let handler: (RawTouchLongPress.Event) -> Void
+    @State private var frameInGlobal: CGRect = .zero
+
+    func body(content: Content) -> some View {
+        if let keyID {
+            content
+                .onGeometryChange(for: CGRect.self) { proxy in
+                    proxy.frame(in: .global)
+                } action: { newValue in
+                    frameInGlobal = newValue
+                    RawTouchLongPress.register(keyID: keyID, frame: newValue, firesOnTouchDown: true)
+                }
+                .onReceive(RawTouchLongPress.events) { event in
+                    if event.keyID == keyID {
+                        handler(event)
+                    }
+                }
+                .onDisappear {
+                    RawTouchLongPress.unregister(keyID: keyID, frame: frameInGlobal)
+                }
+        } else {
+            content
+        }
+    }
+}
+
 struct ActionKeyButton: View {
     let title: String
     var systemImageName: String? = nil
@@ -158,7 +188,13 @@ struct ActionKeyButton: View {
     // 調査用ログ(削除キーの 1 文字め 3524): リピートするキーの 1 回めの実行で、触れてから届くまでと実行の時間を
     // 1 行流すときの見出し(面の名前)。nil なら流さない。DEBUG だけで読む。原因判明後に外す
     var touchProbeLabel: String? = nil
+    // 生タッチ駆動(RawTouchLongPress 3525): リピートするキーの 1 回めの実行と連続の予約を、SwiftUI の判定を
+    // 待たず面の認識器が見た touch から始める。縦画面の下半分ではシステム操作の門番が touch を約 0.75 秒
+    // 握るので、AZERTY の削除キーだけ 1 文字めと連続削除の出だしが遅れていた(実測 3524)。nil なら従来どおり
+    var rawTouchKeyID: String? = nil
     let action: () -> Void
+    // 生タッチ側で 1 回めを実行した時刻。遅れて届く SwiftUI のドラッグ判定はこの時刻から 1 秒以内なら同じ接触とみなす
+    @State private var lastRawPressAt: CFAbsoluteTime = 0
     @State private var didTriggerLongPress = false
     @State private var pendingSingleTapWorkItem: DispatchWorkItem?
     @State private var lastImmediateSingleTapAt: Date?
@@ -268,8 +304,13 @@ struct ActionKeyButton: View {
                             repeatsWhileHolding else {
                         return
                     }
+                    // 生タッチ側が先に実行済みの接触(門番に握られて遅れて届いた)。実行も予約もしない
+                    if rawTouchKeyID != nil,
+                        CFAbsoluteTimeGetCurrent() - lastRawPressAt < Self.repeatTapSuppressionWindow {
+                        return
+                    }
 
-                    beginRepeatingActionIfNeeded(touchTime: value.time)
+                    beginRepeatingActionIfNeeded(touchTime: value.time, route: "SwiftUI")
                 }
                 .onEnded { _ in
                     repeatDragEndedAt = CFAbsoluteTimeGetCurrent()
@@ -277,6 +318,7 @@ struct ActionKeyButton: View {
                     stopRepeatingAction()
                 }
         )
+        .modifier(RawTouchDownKeyModifier(keyID: repeatsWhileHolding ? rawTouchKeyID : nil, handler: handleRawTouch))
         .onChange(of: isRepeatTouchActive) { active in
             guard !active, repeatsWhileHolding else {
                 return
@@ -346,7 +388,26 @@ struct ActionKeyButton: View {
         pendingSingleTapWorkItem = nil
     }
 
-    private func beginRepeatingActionIfNeeded(touchTime: Date) {
+    // 生タッチ側からの合図(3525)。触れた瞬間に 1 回めを実行して連続の予約を始め、離したら止める
+    private func handleRawTouch(_ event: RawTouchLongPress.Event) {
+        switch event.kind {
+        case .press:
+            guard isEnabled else {
+                return
+            }
+            lastRawPressAt = CFAbsoluteTimeGetCurrent()
+            beginRepeatingActionIfNeeded(touchTime: nil, route: "生タッチ")
+        case .end, .cancel:
+            repeatDragEndedAt = CFAbsoluteTimeGetCurrent()
+            cancelRepeatingActionStart()
+            stopRepeatingAction()
+        case .activate, .move:
+            break
+        }
+    }
+
+    // touchTime は SwiftUI のドラッグ判定が届いたときの指が触れた時刻(配送遅れの計測用)。生タッチ側からは nil
+    private func beginRepeatingActionIfNeeded(touchTime: Date?, route: String) {
         guard repeatTimer == nil,
                 repeatStartWorkItem == nil else {
             return
@@ -368,16 +429,15 @@ struct ActionKeyButton: View {
         // 実行 = action() にかかった時間(かな面は未確定文字列の処理が乗る)。原因判明後に外す
         if let touchProbeLabel {
             let uptime = RawTouchLongPress.uptimeNow()
-            let deliveryMs = Int(((uptime - touchTime.timeIntervalSinceReferenceDate) * 1000).rounded())
+            let deliveryMs = touchTime.map { Int(((uptime - $0.timeIntervalSinceReferenceDate) * 1000).rounded()) } ?? 0
             let rawMs = KeyboardStuckTouchDiagnostics.rawTouchBeganUptime.map { Int(((uptime - $0) * 1000).rounded()) } ?? -1
             let fingerY = KeyboardStuckTouchDiagnostics.rawTouchBeganPoint?.y ?? -1
-            let screenHeight = UIScreen.main.bounds.height
             let actionStartedAt = CFAbsoluteTimeGetCurrent()
             action()
             let actionMs = Int(((CFAbsoluteTimeGetCurrent() - actionStartedAt) * 1000).rounded())
             KeyboardStuckTouchDiagnostics.onTouchForensics?(
-                "削除キー計測 面=\(touchProbeLabel) 配送遅れ=\(deliveryMs)ms 生タッチから=\(rawMs)ms 実行=\(actionMs)ms"
-                    + String(format: " 指y=%.0f/画面高=%.0f(下端まで %.0fpt)", fingerY, screenHeight, screenHeight - fingerY)
+                "削除キー計測 面=\(touchProbeLabel) 経路=\(route) 配送遅れ=\(deliveryMs)ms 生タッチから=\(rawMs)ms 実行=\(actionMs)ms"
+                    + String(format: " 指y=%.0f(面の上端から)", fingerY)
             )
             scheduleRepeatingActionStartIfNeeded()
             return
