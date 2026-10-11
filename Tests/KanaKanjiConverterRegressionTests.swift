@@ -22336,8 +22336,8 @@ extension KanaKanjiConverterRegressionTests {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
         let kome = converter.multiClauseCandidates(for: "こめかってた", systemCandidateMode: .surface)
-        XCTAssertEqual(kome.first, "米買ってた", "multi=\(kome)")
-        XCTAssertTrue(kome.contains("コメ買ってた"), "容認(変種に残す) multi=\(kome)")
+        // カタカナ兄弟は変種の 2 番目(ユーザ指定 3554)
+        XCTAssertEqual(Array(kome.prefix(2)), ["米買ってた", "コメ買ってた"], "multi=\(kome)")
         let neko = converter.multiClauseCandidates(for: "ねこをかってた", systemCandidateMode: .surface)
         XCTAssertEqual(neko.first, "猫を買ってた", "multi=\(neko)")
         // seed 先頭がカタカナの語(コツ)は対象外
