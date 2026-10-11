@@ -486,6 +486,8 @@ extension KanaKanjiConverter {
         "県", "道", "府", "都", "市", "町", "村", "州", "郡", "国"
     ]
     static let regionalProduceBoost = 200
+    // 国名+さん の 産(スペイン産)を敬称の合成(Spainさん/スペインさん=postfix 1040)より前に出す幅(3537)
+    static let countryProduceBoost = 300
 
     func applyRegionalProduceBoost(
         for reading: String,
@@ -494,11 +496,17 @@ extension KanaKanjiConverter {
         guard reading.hasSuffix("さん") else {
             return
         }
+        // 国名(語幹に国旗の表層 🇪🇸さん が並ぶ)+さん はカタカナ語幹の 産 を敬称の合成より前に(スペイン産。ユーザ指定 3537)
+        let stemIsCountry = scores.keys.contains { candidate in
+            candidate.hasSuffix("さん") && Self.isFlagEmojiSurface(String(candidate.dropLast(2)))
+        }
         for candidate in scores.keys
         where candidate.count >= 3 && candidate.hasSuffix("産") {
             let beforeSan = candidate[candidate.index(candidate.endIndex, offsetBy: -2)]
             if Self.regionalSuffixCharactersBeforeSan.contains(beforeSan) {
                 scores[candidate, default: 0] += Self.regionalProduceBoost
+            } else if stemIsCountry, Self.isKatakanaString(String(candidate.dropLast())) {
+                scores[candidate, default: 0] += Self.countryProduceBoost
             }
         }
     }

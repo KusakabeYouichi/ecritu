@@ -357,6 +357,8 @@ extension KanaKanjiConverter {
         // 連語文脈でかなを優先するノードのキー(ひび+入る=ひびが入る 等)。日々 でなく ひび を勝たせる。
         var collocationPreferredKanaNodeKeys = Set<String>()
         var collocationPreferredVerbNodeKeys = Set<String>()
+        // 国旗(drapeaux)の表層が立つ区間=国名(スペイン/フランス)。国名+さん は 産(スペイン産)が主(3537)
+        var countryNameSpanKeys = Set<String>()
         var collocationDemotedNodeKeys = Set<String>()
         // 連体詞(こういう 等)+準体助詞 の の直後(=活用派生が述語として自然な位置)。
         var prenominalNoInflectionStarts = Set<Int>()
@@ -1132,6 +1134,9 @@ extension KanaKanjiConverter {
                     }
                     if isInflectionDerived, prenominalNoInflectionStarts.contains(start) {
                         collocationPreferredVerbNodeKeys.insert(spanKeyByStart[start][end] + "-" + surface)
+                    }
+                    if Self.isFlagEmojiSurface(surface) {
+                        countryNameSpanKeys.insert(spanKeyByStart[start][end])
                     }
                     let index = nodes.count
                     nodes.append(MultiClauseNode(
@@ -3694,6 +3699,11 @@ extension KanaKanjiConverter {
                                     prevPersonNameKind: personNameKindByNodeKey[prevNode.key]
                                 ) {
                                 cost -= Self.multiClauseRegionalProduceBonus
+                                // 国名(国旗が立つ区間)+さん は人名ではない。スペイン→さん 3551 が 産(backoff)に 3000 の加点でも
+                                // 勝っていた(フランス産 は bigram 実績で勝つ。ユーザ報告 3537)
+                                if countryNameSpanKeys.contains(prevNode.spanKey) {
+                                    cost -= Self.multiClauseCountryProduceExtraBonus
+                                }
                             } else if node.surfaceID == SID.様,
                                 personNameKindByNodeKey[prevNode.key] != nil {
                                 // 人名+様(定数コメント参照。3187)
@@ -5045,6 +5055,13 @@ extension KanaKanjiConverter {
         let numeral = surface.dropLast(counter.count)
         guard !numeral.isEmpty else { return false }
         return numeral.allSatisfy { multiClauseNumeralCharacters.contains($0) }
+    }
+
+    // 国旗の絵文字(地域指標 2 文字)か。drapeaux 由来の国名判定に使う(3537)
+    static func isFlagEmojiSurface(_ text: String) -> Bool {
+        let scalars = text.unicodeScalars
+        guard scalars.count == 2 else { return false }
+        return scalars.allSatisfy { (0x1F1E6...0x1F1FF).contains($0.value) }
     }
 
     static func isKatakanaString(_ text: String) -> Bool {
