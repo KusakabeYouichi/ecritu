@@ -687,6 +687,13 @@ extension KanaKanjiConverter {
                         surface == KanaKanjiSeedDictionary.seed[segmentReading]?.first {
                         seedOrderNounNodeBonuses[spanKeyByStart[start][end] + "-" + surface] = bonus
                     }
+                    // 漢字が seed 先頭の読みのカタカナ兄弟(コメ/ネコ)は容認するが推奨しない(ユーザ方針 3537)。bigram だけで
+                    // 漢字(米)を抜かないよう定額で下げる(こめかってた→コメ買ってた)。seed 先頭がカタカナの語(コツ)は対象外
+                    if Self.isKatakanaString(surface),
+                        let seedFirst = KanaKanjiSeedDictionary.seed[segmentReading]?.first,
+                        seedFirst != surface, containsKanji(seedFirst) {
+                        seedOrderNounNodeBonuses[spanKeyByStart[start][end] + "-" + surface, default: 0] -= Self.multiClauseKatakanaSeedSiblingDemotion
+                    }
                 }
 
                 // (b) word_costs(Sudachi 由来)から top-K を列挙。抑制語彙は除外。

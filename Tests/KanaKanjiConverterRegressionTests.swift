@@ -22324,5 +22324,19 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(single.first, "スペイン産", "single=\(single)")
     }
 
+    // 漢字が seed 先頭の読みのカタカナ兄弟(コメ)は容認するが推奨しない(3544、ユーザ方針): bigram だけで 米 を抜かない
+    func testRegressionRealLMKomeKattetaPrefersKanji() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let kome = converter.multiClauseCandidates(for: "こめかってた", systemCandidateMode: .surface)
+        XCTAssertEqual(kome.first, "米買ってた", "multi=\(kome)")
+        XCTAssertTrue(kome.contains("コメ買ってた"), "容認(変種に残す) multi=\(kome)")
+        let neko = converter.multiClauseCandidates(for: "ねこをかってた", systemCandidateMode: .surface)
+        XCTAssertEqual(neko.first, "猫を買ってた", "multi=\(neko)")
+        // seed 先頭がカタカナの語(コツ)は対象外
+        let kotsu = converter.candidates(for: "こつ", limit: 3, systemCandidateMode: .surface)
+        XCTAssertEqual(kotsu.first, "コツ", "single=\(kotsu)")
+    }
+
     }
 }

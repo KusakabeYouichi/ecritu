@@ -1184,6 +1184,8 @@ extension KanaKanjiConverter {
     static let multiClauseCountryProduceExtraBonus = 1500
     // 形容詞語幹+さ の派生名詞直後の格助詞への加点(3537)。辛さ→が 2533 - 差→が 627 の差 1906 を越えつつ控えめに
     static let multiClauseSaNominalBeforeCaseParticleBonus = 1200
+    // 漢字が seed 先頭の読みのカタカナ兄弟(コメ/ネコ)の定額減点(3537)。コメ→買ってた の bigram 差 2100 を 米 の 1453 差と合わせて逆転
+    static let multiClauseKatakanaSeedSiblingDemotion = 1500
     // た形/たて の区間を割った代替経路の許容差(3537)。結んだ+けど 14600 vs 蒸す+んだけど 20172、濡れたて+で 10886 vs 濡れた+手で 15900
     static let multiClauseTaFormSplitAlternativeMaxDelta = 6500
 
