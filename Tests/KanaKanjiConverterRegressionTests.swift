@@ -22298,5 +22298,18 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi.first, "辛さが強い", "multi=\(multi)")
     }
 
+    // 文頭の格助詞+辞書形述語の断片(がつよい/がためす。3542): 払い戻しが活用派生にしか効かず 月+よい/がた雌 だった(ユーザ報告)
+    func testRegressionRealLMBOSParticleDictionaryFormPredicateFragment() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("がつよい", "が強い"), ("がためす", "が試す"), ("がでない", "が出ない")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "reading=\(reading) multi=\(multi)")
+        }
+        // 網膜=もうまく(うまく はかな)は従来どおり
+        let moumaku = converter.multiClauseCandidates(for: "もうまく", systemCandidateMode: .surface)
+        XCTAssertNotEqual(moumaku.first, "も旨く", "multi=\(moumaku)")
+    }
+
     }
 }

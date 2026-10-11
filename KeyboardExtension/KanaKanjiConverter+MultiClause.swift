@@ -3191,7 +3191,8 @@ extension KanaKanjiConverter {
                         // ここでの払い戻し(2000)に食われて効かなくなる(実機報告で発覚)
                         if prevNode.start == 0, prevNode.isKanaIdentity,
                             Self.multiClauseBOSParticleBeforePredicateExemptParticlesID.contains(prevNode.surfaceID),
-                            node.isInflectionDerived,
+                            // 辞書形の述語(強い/来る)も派生述語と同じ扱い。がつよい が 月+よい になっていた(ユーザ報告 3537)
+                            node.isInflectionDerived || node.isDictionaryFormPredicate,
                             // 文頭から丸ごと活用形が読めるなら払い戻さない(定義コメント参照。3141)
                             !hasInflectionDerivedWordFromStart,
                             !(node.reading.first.map { $0 == "は" || $0 == "も" } ?? false) {
@@ -3205,8 +3206,9 @@ extension KanaKanjiConverter {
                             // 派生述語の後ろが終助詞の連なり(飲めん+やろ)だけなら、末尾まで届くのと同じ扱い(3 かな以上。3500)。
                             // ものめんやろ の も飲めんやろ が もの+面+やろ の 2 番目止まりだった(ユーザ指定: 先頭に)
                             let kanjiInitialDerived = node.surface.first.map { containsKanji(String($0)) } ?? false
+                            // 辞書形の述語(強い/多い)で入力が終わる 3 かな以上の断片(がつよい)も同じ扱い(3537)
                             let longDerivedToEnd = kanjiInitialDerived
-                                && ((node.end == n && node.reading.count >= 4)
+                                && ((node.end == n && (node.reading.count >= 4 || (node.isDictionaryFormPredicate && node.reading.count >= 3)))
                                     || (node.end < n && node.reading.count >= 3
                                         && Self.multiClauseBOSRefundPredicateFollowers.contains(String(chars[node.end..<n]))))
                             if hasScriptedDictWordFromStart,
