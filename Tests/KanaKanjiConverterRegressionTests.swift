@@ -22338,5 +22338,12 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(kotsu.first, "コツ", "single=\(kotsu)")
     }
 
+    // きょうほん→教本 先頭(3545、ユーザ指定)。辞書順は 狂奔 が rank 0
+    func testRegressionRealLMKyouhonPrefersTextbook() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "きょうほん", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(3)), ["教本", "経本", "狂奔"], "single=\(single)")
+    }
+
     }
 }
