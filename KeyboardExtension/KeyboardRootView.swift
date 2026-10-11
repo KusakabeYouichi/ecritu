@@ -1281,8 +1281,25 @@ struct KeyboardRootView: View {
             repeatInterval: keyRepeatInterval,
             backgroundColorOverride: showsMemoryPressure ? memoryPressureDeleteKeyColor : nil,
             cornerBadgeText: showsMemoryPressure ? memoryPressureDeleteKeyBadge : nil,
+            touchProbeLabel: deleteKeyTouchProbeLabel,
             action: action ?? onDeleteBackward
         )
+    }
+
+    // 調査用ログ(削除キーの 1 文字め 3524): 計測行の見出し。かな面は配列、欧文面は配列の種類まで。原因判明後に外す
+    private var deleteKeyTouchProbeLabel: String? {
+        #if DEBUG
+        switch inputMode {
+        case .kana:
+            return "かな(\(kanaLayoutMode.rawValue))"
+        case .latin:
+            return "欧文(\(latinLayoutMode))"
+        default:
+            return "\(inputMode)"
+        }
+        #else
+        return nil
+        #endif
     }
 
     @ViewBuilder

@@ -155,6 +155,9 @@ struct ActionKeyButton: View {
     var backgroundColorOverride: Color? = nil
     // キー左下隅の小さな注記(メモリ警告回数 等)。
     var cornerBadgeText: String? = nil
+    // 調査用ログ(削除キーの 1 文字め 3524): リピートするキーの 1 回めの実行で、触れてから届くまでと実行の時間を
+    // 1 行流すときの見出し(面の名前)。nil なら流さない。DEBUG だけで読む。原因判明後に外す
+    var touchProbeLabel: String? = nil
     let action: () -> Void
     @State private var didTriggerLongPress = false
     @State private var pendingSingleTapWorkItem: DispatchWorkItem?
@@ -260,13 +263,13 @@ struct ActionKeyButton: View {
                 .updating($isRepeatTouchActive) { _, active, _ in
                     active = true
                 }
-                .onChanged { _ in
+                .onChanged { value in
                     guard isEnabled,
                             repeatsWhileHolding else {
                         return
                     }
 
-                    beginRepeatingActionIfNeeded()
+                    beginRepeatingActionIfNeeded(touchTime: value.time)
                 }
                 .onEnded { _ in
                     repeatDragEndedAt = CFAbsoluteTimeGetCurrent()
@@ -343,7 +346,7 @@ struct ActionKeyButton: View {
         pendingSingleTapWorkItem = nil
     }
 
-    private func beginRepeatingActionIfNeeded() {
+    private func beginRepeatingActionIfNeeded(touchTime: Date) {
         guard repeatTimer == nil,
                 repeatStartWorkItem == nil else {
             return
@@ -359,6 +362,27 @@ struct ActionKeyButton: View {
             return
         }
         repeatSingleActionAt = now
+        #if DEBUG
+        // 調査用ログ(削除キーの 1 文字め 3524): 配送遅れ = 指が触れた時刻(value.time、稼働時間基準)と届いた時刻の差。
+        // 生タッチから = 面の認識器が見た直近の touch 開始からの差(門番に握られていなければ配送遅れとほぼ同じ)。
+        // 実行 = action() にかかった時間(かな面は未確定文字列の処理が乗る)。原因判明後に外す
+        if let touchProbeLabel {
+            let uptime = RawTouchLongPress.uptimeNow()
+            let deliveryMs = Int(((uptime - touchTime.timeIntervalSinceReferenceDate) * 1000).rounded())
+            let rawMs = KeyboardStuckTouchDiagnostics.rawTouchBeganUptime.map { Int(((uptime - $0) * 1000).rounded()) } ?? -1
+            let fingerY = KeyboardStuckTouchDiagnostics.rawTouchBeganPoint?.y ?? -1
+            let screenHeight = UIScreen.main.bounds.height
+            let actionStartedAt = CFAbsoluteTimeGetCurrent()
+            action()
+            let actionMs = Int(((CFAbsoluteTimeGetCurrent() - actionStartedAt) * 1000).rounded())
+            KeyboardStuckTouchDiagnostics.onTouchForensics?(
+                "削除キー計測 面=\(touchProbeLabel) 配送遅れ=\(deliveryMs)ms 生タッチから=\(rawMs)ms 実行=\(actionMs)ms"
+                    + String(format: " 指y=%.0f/画面高=%.0f(下端まで %.0fpt)", fingerY, screenHeight, screenHeight - fingerY)
+            )
+            scheduleRepeatingActionStartIfNeeded()
+            return
+        }
+        #endif
         action()
         scheduleRepeatingActionStartIfNeeded()
     }
