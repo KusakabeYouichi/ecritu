@@ -22290,5 +22290,13 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertFalse(nureta.contains("塗れたてで"), "multi=\(nureta)")
     }
 
+    // からさがつよい→辛さが強い(3541): 形容詞語幹+さ の派生名詞直後の格助詞が backoff で 単漢字 差 の分割に負けていた(ユーザ報告)
+    func testRegressionRealLMKarasaGaTsuyoi() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let multi = converter.multiClauseCandidates(for: "からさがつよい", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "辛さが強い", "multi=\(multi)")
+    }
+
     }
 }
