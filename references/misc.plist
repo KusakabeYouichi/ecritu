@@ -287,6 +287,7 @@
 	<dict><key>phrase</key><string>なかった</string><key>shortcut</key><string>なかった</string></dict>	<!-- 否定過去「なかった」はかなが正書(〜がなかった)。無かった の派生に負けるうえ、長文では変種枠(3件)から押し出されて かな が消える。かな全長curatedで最良化(無かった は2位に残る) -->
 	<dict><key>phrase</key><string>ことはない</string><key>shortcut</key><string>ことはない</string></dict>	<!-- 形式名詞「こと」の否定慣用(することはない/することない)はかなが正書。ことは の word_costs はレア人名(寿羽等)だけで 事は/ことは 単位が無く 事はない/寿羽ない に負ける -->
 	<dict><key>phrase</key><string>ことない</string><key>shortcut</key><string>ことない</string></dict>
+	<dict><key>phrase</key><string>ときには</string><key>shortcut</key><string>ときには</string></dict>	<!-- 形式名詞 とき+には はかなが正書(ひまなときには/でかけるときには は連文節が既にかな最良)。単独の ときには は連文節が 時には を先頭にしていた(ユーザ指定 3537)。読み全体を覆う curated なので単独では単文節(かな先頭)に任せる -->
 	<dict><key>phrase</key><string>ところ</string><key>shortcut</key><string>ところ</string></dict>	<!-- 形式名詞「ところ」はかなが正書(ところもあるが 等)。LMは全かなを最良にするが、全かなエコーガードは curated を含む経路しか返さないため、かな識別curatedで供給して先頭に残す -->	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>によって</string><key>shortcut</key><string>によって</string></dict>	<!-- 助詞相当「によって/により/による」はかなが正書。word_costs に よって/によって が無く、活用派生(寄って/似寄って=似寄る の て形)がノードを埋めて かな素通りが生成されないため、会社似寄って が最良になる。かな識別curatedで供給 -->
 	<dict><key>phrase</key><string>により</string><key>shortcut</key><string>により</string></dict>

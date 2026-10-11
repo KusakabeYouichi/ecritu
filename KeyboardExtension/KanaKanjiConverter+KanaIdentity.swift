@@ -133,6 +133,10 @@ extension KanaKanjiConverter {
         // しているが、全かな読み(いざというとき)は素通りエコー抑制で multi が空になり、
         // 単文節の いざという時 が先頭に出ていた。連体修飾(直前が用言の連体形/という/の)の
         // ときだけ根拠にする — 名詞直後(たとえばの時)や単独の とき は対象外
+        // 単独の ときには もかな先頭(ユーザ指定 3537。misc の curated かな ときには と対)
+        if normalized == "ときには" {
+            return true
+        }
         for tail in ["とき", "ときに", "ときは", "ときの", "ときも", "ときには"]
         where normalized.count > tail.count + 1 && normalized.hasSuffix(tail) {
             let stem = String(normalized.dropLast(tail.count))
