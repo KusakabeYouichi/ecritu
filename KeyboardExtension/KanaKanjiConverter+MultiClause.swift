@@ -4254,7 +4254,19 @@ extension KanaKanjiConverter {
                     !taFormSplitAlternatives.contains(where: { $0.joined == altJoined }) else {
                     continue
                 }
-                taFormSplitAlternatives.append((Self.multiClauseSeedOrderVariantStep, altJoined))
+                // たて複合が LM 未収録(濡れたて)なら、た形+名詞(濡れた手で)を最良にして元の経路を第2候補に(ユーザ指定 3553)。
+                // 出来たて/焼きたて のような常用の たて複合は LM にあるので従来どおり
+                if node.reading.hasSuffix("たて"), unigramCosts[node.surface] == nil {
+                    let originalJoined = bestJoined
+                    best = alternative.best
+                    backPointer = alternative.backPointer
+                    bestTotal = alternative.bestTotal
+                    pathIndices = alternative.pathIndices
+                    taFormSplitAlternatives.append((Int.min / 2, originalJoined))
+                    break
+                }
+                // 同区間の 1 文節変種(かな 茹で/掬んだ)より前の 2 番目に(ユーザ指定 3553)。seed 順変種の刻み(100)の手前
+                taFormSplitAlternatives.append((-1, altJoined))
             }
         }
         // 文頭の裸の助詞に割った代替経路(3142): 最良経路の先頭が「文頭から丸ごと読んだ活用形」
