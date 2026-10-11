@@ -22442,4 +22442,30 @@ extension KanaKanjiConverterRegressionTests {
         let multi = converter.multiClauseCandidates(for: "とくにきをつけて", systemCandidateMode: .surface)
         XCTAssertEqual(multi.first, "とくに気をつけて", "multi=\(multi)")
     }
+
+    // 300えんだけどな→300円だけどな(3555、ユーザ報告: 円だけドナ)。接続助詞 けど の直後の文末 な に文末 な の減点 2 つ
+    // (計 6000)が掛かって だけ+ドナ(人名)に割れていた。名詞+けど(円田けどな)は非文なので連文節・合成とも立てない
+    func testRegressionRealLMEnDakedonaAfterDigit() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let tailConversion: (String) -> String? = { [converter] tail in converter!.counterTailConversion(tail) }
+        let multiDigit = converter.multiClauseCandidates(for: "えんだけどな", systemCandidateMode: .surface, precedingCharacter: "0")
+        let boosted = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+            multiDigit, reading: "えんだけどな", precedingCharacter: "0", tailConversion: tailConversion)
+        XCTAssertEqual(boosted.first, "円だけどな", "boosted=\(boosted)")
+        XCTAssertFalse(boosted.contains { $0.contains("ドナ") || $0.contains("田けど") }, "boosted=\(boosted)")
+        let singleDigit = converter.candidates(for: "300えんだけどな", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(singleDigit.first, "円だけどな", "single=\(singleDigit)")
+        XCTAssertFalse(singleDigit.contains { $0.contains("田けど") }, "single=\(singleDigit)")
+        // 裸の えんだけどな も 円だ(コピュラ)が 笑んだ(文語寄りの派生)より先
+        let multi = converter.multiClauseCandidates(for: "えんだけどな", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "円だけどな", "multi=\(multi)")
+        let dakedona = converter.multiClauseCandidates(for: "だけどな", systemCandidateMode: .surface)
+        XCTAssertEqual(dakedona, ["だけどな"], "multi=\(dakedona)")
+        // 述語+けどな は従来どおり
+        let itta = converter.multiClauseCandidates(for: "いったけどな", systemCandidateMode: .surface)
+        XCTAssertEqual(itta.first, "行ったけどな", "multi=\(itta)")
+        let iya = converter.multiClauseCandidates(for: "いやだけどな", systemCandidateMode: .surface)
+        XCTAssertEqual(iya.first, "嫌だけどな", "multi=\(iya)")
+    }
 }

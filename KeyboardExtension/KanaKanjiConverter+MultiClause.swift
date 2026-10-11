@@ -2766,7 +2766,11 @@ extension KanaKanjiConverter {
                     // 読みでも見る(2852): 表層だけだと かな だめ しかクランプされず、ダメ/駄目 の遷移が
                     // 素通り(7000/字)のままになって だめでしょー の変種が 1 つも出なかった。
                     // 上の述語末尾判定と同じで、表記が違うだけの同じ語は同じ扱いにする
-                    || prev.hasSuffix("め") || (prevReading?.hasSuffix("め") ?? false)) {
+                    || prev.hasSuffix("め") || (prevReading?.hasSuffix("め") ?? false)),
+                // 読みが た/だ で終わる全漢字の語(円田/遠田/神田)は名詞で、読みの だ はコピュラでない。
+                // 名詞+けど は非文(名詞には だけど)なのに述語扱いでクランプされ、300えんだけどな の変種に
+                // 円田けどな/遠田けどな が並んでいた(3555)
+                !Self.isAllKanjiNounWithTaDaReadingTail(surface: prev, reading: prevReading) {
                 base = min(base, Self.multiClauseFinalParticleAfterPredicateCost)
             }
             // 述語(活用派生/辞書形)直後の疑問終助詞「か」1字もクランプ(2700)。2字以上のクラスタと
@@ -3191,6 +3195,9 @@ extension KanaKanjiConverter {
                             // 形容動詞の連体 な とは別物。減点すると の+ニナ(人名)に負ける
                             !(prevNode.isKanaIdentity
                                 && Self.multiClauseCaseParticleSurfacesID.contains(prevNode.surfaceID)),
+                            // 接続助詞(けど/し/のに…)直後の文末 な も対象外(定数コメント参照。3555)
+                            !(node.end == n && prevNode.isKanaIdentity
+                                && Self.multiClauseConjunctiveParticlesBeforeFinalNaID.contains(prevNode.surfaceID)),
                             !(prevNode.surface.count >= 2 && Self.isKatakanaString(prevNode.surface)),
                             !(prevNode.surface.last.map { Self.multiClausePredicateTailCharacters.contains($0) } ?? false),
                             (bigramCosts[prevNode.surface + "\tな"] ?? Int.max)
@@ -3770,6 +3777,9 @@ extension KanaKanjiConverter {
                             node.surfaceID == SID.な,
                             !Self.isPredicateLikePrevForConditional(prevNode),
                             !Self.multiClauseCaseParticleSurfacesID.contains(prevNode.surfaceID),
+                            // 接続助詞(けど/し/のに…)直後も正当(だけどな。定数コメント参照。3555)
+                            !(prevNode.isKanaIdentity
+                                && Self.multiClauseConjunctiveParticlesBeforeFinalNaID.contains(prevNode.surfaceID)),
                             // カタカナ語+な の言いさし(フランスな…)は許す(2823)
                             !(prevNode.surface.count >= 2 && Self.isKatakanaString(prevNode.surface)) {
                             cost += Self.multiClauseSentenceFinalNaAfterNounPenalty
@@ -5036,6 +5046,12 @@ extension KanaKanjiConverter {
 
     // 仮定「なら」の直前が述語(動詞辞書形/形容詞/タ形、または活用派生)か。
     // 述語+なら=かな正書(買うなら)、体言+と+奈良=地名 の区別に使う。
+    // 読みが た/だ で終わる全漢字の表層(円田=えんだ、三田=みた)。述語の た形ではなく名詞(3555)
+    static func isAllKanjiNounWithTaDaReadingTail(surface: String, reading: String?) -> Bool {
+        guard let last = reading?.last, last == "た" || last == "だ" else { return false }
+        return isAllKanjiSurface(surface)
+    }
+
     static func isPredicateLikePrevForConditional(_ prev: MultiClauseNode) -> Bool {
         if prev.isInflectionDerived {
             return true

@@ -122,8 +122,12 @@ extension KanaKanjiConverter {
                 continue
             }
 
-            let nEndingFiltered = filterVerbStemFragmentCandidatesIfNeeded(
-                stemCandidates,
+            let nEndingFiltered = filterKanjiNounStemsBeforeConjunctiveParticle(
+                filterVerbStemFragmentCandidatesIfNeeded(
+                    stemCandidates,
+                    stemReading: stem,
+                    nextSuffix: passthrough
+                ),
                 stemReading: stem,
                 nextSuffix: passthrough
             )
@@ -287,8 +291,12 @@ extension KanaKanjiConverter {
                     if nextStem.count == 1 {
                         stemCandidates.removeAll { $0.count == 1 && Self.isKatakanaString($0) && Self.hiraganizedKanaOnlySurface($0) == nextStem }
                     }
-                    let nEndingFiltered = filterVerbStemFragmentCandidatesIfNeeded(
-                        stemCandidates,
+                    let nEndingFiltered = filterKanjiNounStemsBeforeConjunctiveParticle(
+                        filterVerbStemFragmentCandidatesIfNeeded(
+                            stemCandidates,
+                            stemReading: nextStem,
+                            nextSuffix: nextSuffix
+                        ),
                         stemReading: nextStem,
                         nextSuffix: nextSuffix
                     )
