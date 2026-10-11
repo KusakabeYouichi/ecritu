@@ -22093,6 +22093,19 @@ extension KanaKanjiConverterRegressionTests {
         try loadDeviceAddedVocabulary(includeSuppression: true)
         let single = converter.candidates(for: "おすし", limit: 8, systemCandidateMode: .surface)
         XCTAssertEqual(single.first, "お寿司", "single=\(single)")
+        // 実機では逐次入力で おす が候補キャッシュに載り、語幹キャッシュ経由の合成(押す+し=quickPostfix)が
+        // 丁寧接頭辞派生(お+寿司)を抜いて 押すし が先頭になっていた(実機トレース 3443、打鍵の速さで出たり出なかったり)。
+        // 温めたキャッシュでも同じ並びになること
+        // 実機の取得幅(表示 24×2=48)で、同じ読みのキャッシュ命中を避けて再現する
+        let deviceLimit = 48
+        let cold = Array(converter.candidates(for: "おすし", limit: deviceLimit, systemCandidateMode: .surface).prefix(4))
+        converter.invalidateCandidateCache()
+        for reading in ["お", "おす"] {
+            _ = converter.candidates(for: reading, limit: deviceLimit, systemCandidateMode: .surface)
+        }
+        let warm = Array(converter.candidates(for: "おすし", limit: deviceLimit, systemCandidateMode: .surface).prefix(4))
+        XCTAssertEqual(warm.first, "お寿司", "warm=\(warm) trace=\(converter.scoreTraceForDiagnostics(reading: "おすし") ?? "")")
+        XCTAssertEqual(warm, cold, "warm=\(warm) cold=\(cold)")
     }
 
     // ひがくれて: 比→が 1076 < 日→が 2959 で 比がくれて/比が暮れて になっていた(ユーザ報告 3527)。
