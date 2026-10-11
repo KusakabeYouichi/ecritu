@@ -3358,7 +3358,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             ("いけだ", ["池田", "イケダ", "いけだ", "池だ"]),
             ("これ", ["これ"]),  // 此れ/之 は かなで書く言葉(初期設定は抑制。3404)
             ("ぎょう", ["行", "業", "尭"]),
-            ("けん", ["県", "件", "券", "権"]),
+            ("けん", ["件", "兼", "県", "券"]),  // 3526: 件/兼 を先頭に(ユーザ指定)
             ("しつ", ["質", "室"]),
             ("むかえ", ["迎え", "向かえ"]),
             ("たろう", ["太郎"]),
@@ -3564,7 +3564,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             ("かん", ["缶", "勘", "観", "冠", "かん", "カン"]),
             ("こんご", ["今後", "コンゴ", "こんご", "🇨🇬", "🇨🇩"]),
             // 2637 で 権 を4位に統合({県, 件, 券, 権, ...} のユーザ指定)
-            ("けん", ["県", "件", "券", "権", "ケン", "けん"]),
+            ("けん", ["件", "兼", "県", "券", "権", "軒"]),  // 3526: 件/兼 を先頭に(ユーザ指定)
             ("ねこ", ["猫", "ねこ", "ネコ", "根子", "弥固"]),
             ("ちゃん", ["ちゃん", "チャン", "喜屋武"]),
             ("はん", ["版", "班", "藩", "はん", "ハン"]),
@@ -22066,5 +22066,94 @@ extension KanaKanjiConverterRegressionTests {
             XCTAssertFalse(atsumari.contains("集り"), "mode=\(mode.rawValue) list=\(atsumari)")
             XCTAssertFalse(atsumari.contains("集"), "mode=\(mode.rawValue) list=\(atsumari)")
         }
+    }
+
+    // へん: 変 が先頭、次に 辺(ユーザ指定 3526)。seed が へんに の合成にも波及すること
+    func testRegressionRealLMHenPrefersHenThenAtari() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let single = converter.candidates(for: "へん", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(2)), ["変", "辺"], "single=\(single)")
+        let henni = converter.candidates(for: "へんに", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(henni.first, "変に", "henni=\(henni)")
+        XCTAssertEqual(henni.filter { ["変に", "辺に", "編に", "片に", "偏に"].contains($0) }, ["変に", "辺に", "編に", "片に", "偏に"], "henni=\(henni)")
+    }
+
+    // しょうめい: 照明 が先頭、次に 証明(ユーザ指定 3526)。辞書の rank は 召命 が先頭だった
+    func testRegressionRealLMShoumeiPrefersShoumeiLighting() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let single = converter.candidates(for: "しょうめい", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(7)), ["照明", "証明", "章名", "正銘", "召命", "招命", "詔命"], "single=\(single)")
+    }
+
+    // おすし: お寿司 は辞書語でなく お+寿司 の丁寧接頭辞派生。Mac の clean では先頭に出る(実機で時々消える件 3526 の対照)
+    func testRegressionRealLMOsushiPrefersOsushi() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let single = converter.candidates(for: "おすし", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "お寿司", "single=\(single)")
+    }
+
+    // なくした/なくしたい: 失くした / 無くしたい が先頭(ユーザ指定 3526)
+    func testRegressionRealLMNakushitaPerFormSeed() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let ta = converter.candidates(for: "なくした", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(ta.first, "失くした", "ta=\(ta)")
+        let tai = converter.candidates(for: "なくしたい", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(tai.first, "無くしたい", "tai=\(tai)")
+    }
+
+    // さいど: 再度 が先頭、次に 彩度(ユーザ指定 3526)。辞書の rank は サイド が先頭
+    func testRegressionRealLMSaidoPrefersSaido() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let single = converter.candidates(for: "さいど", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(6)), ["再度", "彩度", "サイド", "砕土", "道祖土", "済度"], "single=\(single)")
+    }
+
+    // けん: 件 が先頭、兼 が 2 番目(seed で供給。ユーザ指定 3526)
+    func testRegressionRealLMKenPrefersKenThenKane() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let single = converter.candidates(for: "けん", limit: 12, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(8)), ["件", "兼", "県", "券", "権", "軒", "剣", "謙"], "single=\(single)")
+    }
+
+    // ためそうと: 試そうと が先頭(ユーザ指定 3526)。ぎんこうとくまないと: 組む が 汲む より先(ユーザ指定 3526)
+    func testRegressionRealLMTamesoutoAndKumanaito() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("ためそうと", "試そうと"), ("ためそうとおもう", "試そうと思う"), ("ぎんこうとくまないと", "銀行と組まないと")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            let single = converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first ?? single.first, expected, "reading=\(reading) multi=\(multi) single=\(single)")
+        }
+        let kumu = converter.candidates(for: "くむ", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(kumu.first, "組む", "kumu=\(kumu)")
+    }
+
+    // へんな: 変な が先頭、次に 平安名(ユーザ指定 3526)
+    func testRegressionRealLMHennaPrefersHenna() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let single = converter.candidates(for: "へんな", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(2)), ["変な", "平安名"], "single=\(single)")
+        let multi = converter.multiClauseCandidates(for: "へんなひと", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "変な人", "multi=\(multi)")
+    }
+
+    // いためる: 炒める/痛める/傷める、かなは末尾(ユーザ指定 3526)。むすんだけど: 結んだけど の次は 蒸すんだけど(ユーザ指定 3526)
+    func testRegressionRealLMItameruAndMusundakedo() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let itameru = converter.candidates(for: "いためる", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(itameru.prefix(3)), ["炒める", "痛める", "傷める"], "itameru=\(itameru)")
+        XCTAssertEqual(itameru.last, "いためる", "かなは末尾 itameru=\(itameru)")
+        let musunda = converter.multiClauseCandidates(for: "むすんだけど", systemCandidateMode: .surface)
+        let musundaSingle = converter.candidates(for: "むすんだけど", limit: 8, systemCandidateMode: .surface)
+        let merged = (musunda.first.map { [$0] } ?? []) + musundaSingle.filter { $0 != musunda.first }
+        XCTAssertEqual(Array(merged.prefix(2)), ["結んだけど", "蒸すんだけど"], "multi=\(musunda) single=\(musundaSingle)")
     }
 }
