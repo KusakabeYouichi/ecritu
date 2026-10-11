@@ -22202,6 +22202,19 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi.first, "変な人", "multi=\(multi)")
     }
 
+    // ひがとおりすぎる(ユーザ報告 3531): 比が徹りすぎる/火が透りすぎる が先頭で 火が通りすぎる が候補に無かった。火+が/を+通 の連語
+    func testRegressionRealLMHigaTooruCollocation() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let sugiru = converter.multiClauseCandidates(for: "ひがとおりすぎる", systemCandidateMode: .surface)
+        XCTAssertEqual(Set(sugiru.prefix(2)), ["火が通りすぎる", "火が通り過ぎる"], "multi=\(sugiru)")
+        for (reading, expected) in [("ひがとおる", "火が通る"), ("ひをとおす", "火を通す"), ("ひがとおって", "火が通って")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            let single = converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first ?? single.first, expected, "reading=\(reading) multi=\(multi) single=\(single)")
+        }
+    }
+
     // いためる: 炒める/痛める/傷める、かなは末尾(ユーザ指定 3526)。むすんだけど: 結んだけど の次は 蒸すんだけど(ユーザ指定 3526)
     func testRegressionRealLMItameruAndMusundakedo() throws {
         try prepareRealLMDictionary()
