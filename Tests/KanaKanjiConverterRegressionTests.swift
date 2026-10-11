@@ -22381,5 +22381,20 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(single.prefix(2)), ["急な", "喜友名"], "single=\(single)")
     }
 
+    // ときには はかな先頭(3550、ユーザ指定)。連文節が 時には を先頭にしていた。misc の curated かな+keepKana
+    func testRegressionRealLMTokinihaKanaLeading() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let single = converter.candidates(for: "ときには", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "ときには", "single=\(single)")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "ときには"))
+        let multi = converter.multiClauseCandidates(for: "ときには", systemCandidateMode: .surface)
+        XCTAssertTrue(multi.isEmpty || multi.first == "ときには", "multi=\(multi)")
+        for (reading, expected) in [("ひまなときには", "暇なときには"), ("でかけるときには", "出かけるときには")] {
+            let m = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(m.first, expected, "reading=\(reading) multi=\(m)")
+        }
+    }
+
     }
 }
