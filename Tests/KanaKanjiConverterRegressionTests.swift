@@ -22163,6 +22163,17 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(brilliance.first, "ブリリアンス", "single=\(brilliance)")
     }
 
+    // カペッリーニ(ユーザ指定 3535): Sudachi の カッペリーニ(かっぺりーに、wc 2148)は伊語 capellini の促音位置の誤りなので suppr で
+    // 抑制し、compenser は カペッリーニ/Capellini を読み かぺっりーに で持つ
+    func testRegressionRealLMCapelliniSpelling() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let correct = converter.candidates(for: "かぺっりーに", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(correct.prefix(2)), ["カペッリーニ", "Capellini"], "single=\(correct)")
+        let wrong = converter.candidates(for: "かっぺりーに", limit: 8, systemCandidateMode: .surface)
+        XCTAssertFalse(wrong.contains("カッペリーニ"), "single=\(wrong)")
+    }
+
     // ぱすぽーとはもってるよ(ユーザ報告 3529): を 落としのカタカナ名詞+動詞の割引が ハモってる(カタカナ語幹の派生)にも
     // 効き、は+持ってる を 1 ノードで抜いていた。割引は漢字始まりの動詞に限る
     func testRegressionRealLMPassportWaMotteru() throws {

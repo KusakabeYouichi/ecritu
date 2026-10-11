@@ -5,6 +5,7 @@
 	<!-- 変換抑制の語彙(キーボードが直接読む。アプリの抑制語彙UIには非表示)。『■ 』で始まる行がグループ見出し(直前に空行)。エントリ行の後ろのコメントはその語の個別理由。『※ 』で始まる行は、対応するエントリが今は無い補足メモ。 -->
 
 	<!-- ■ 誤エントリ: 辞書の誤った読み・存在しない表記(学習でも古語でもなく明確な誤り) -->
+	<dict><key>phrase</key><string>カッペリーニ</string><key>shortcut</key><string>かっぺりーに</string></dict>	<!-- 伊語 capellini の促音位置の誤り(Sudachi small_lex、wc 2148)。正しくは カペッリーニ(compenser に かぺっりーに で登録。ユーザ指定 3535) -->
 	<dict><key>phrase</key><string>出来得る</string><key>shortcut</key><string>できえる</string></dict>	<!-- 出来得る は できうる と読む(できえる と読むのは聞かない。ユーザ指定 3401)。できえる は で消える にする -->
 	<dict><key>phrase</key><string>能っ</string><key>shortcut</key><string>あたっ</string></dict>	<!-- 能う(あたう)の促音便。能う は 能わず/能う限り でしか使わず、能った/能って/能っちゃった は無い形。活用規則が組み、あたっちゃった の先頭を取っていた(ユーザ指定 3477)。能っ+かなの残り の合成抑制で一括して消す(能わず は残る) -->
 	<dict><key>phrase</key><string>亡い</string><key>shortcut</key><string>ない</string></dict>	<!-- 亡い/失い: Sudachi が 読み ない の形容詞として持つが、そういう語は無い(亡き/失う の誤収穫)。亡かった/失かった のようなあり得ない活用を出していた(ユーザ指定 3475) -->
