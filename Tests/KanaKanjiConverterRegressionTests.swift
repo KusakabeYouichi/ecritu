@@ -22396,5 +22396,15 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // かならず(3551、ユーザ報告): 副詞のかな書き(kanagaki)から 必ず が漏れていた。必ズ/必らず/必 は suppr
+    func testRegressionRealLMKanarazuKanaAndSuppression() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let single = converter.candidates(for: "かならず", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "かならず", "single=\(single)")
+        for bad in ["必ズ", "必らず", "必"] {
+            XCTAssertFalse(single.contains(bad), "\(bad) single=\(single)")
+        }
+        XCTAssertEqual(KanaGakiTable.categoryByReadingAndSurface["かならず"]?["必ず"], .adverb, "kanagaki の副詞に 必ず")
     }
 }

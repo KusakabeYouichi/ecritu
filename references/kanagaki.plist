@@ -7,6 +7,7 @@
 	     しない(かなを先頭にして漢字はその後ろ)を選ぶ。節の見出しは「■ 仲間の英名 日本語名」の形で、tools/build_kanagaki_table.py が
 	     KeyboardExtension/KanaGakiTable.swift を作る(plist を直したら道具を流してコミット)。設定画面の例は各節の先頭から順に並ぶ -->
 	<!-- ■ adverb 副詞 -->
+	<dict><key>phrase</key><string>必ず</string><key>shortcut</key><string>かならず</string></dict>	<!-- 副詞の設定から漏れていた(ユーザ報告 3537)。必ズ/必らず/必 は suppr で抑制 -->
 	<dict><key>phrase</key><string>所謂</string><key>shortcut</key><string>いわゆる</string></dict>
 	<dict><key>phrase</key><string>所詮</string><key>shortcut</key><string>しょせん</string></dict>
 	<dict><key>phrase</key><string>流石</string><key>shortcut</key><string>さすが</string></dict>
