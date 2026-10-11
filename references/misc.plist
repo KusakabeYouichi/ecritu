@@ -390,6 +390,7 @@
 	<dict><key>phrase</key><string>お菓子</string><key>shortcut</key><string>おかし</string><key>pos</key><string>名詞</string></dict>	<!-- お菓子: おかし の辞書エントリは 御菓子(wc7812)だけで、現代正書の お菓子 が1件も無い(LM には表層 お菓子6785 が在るのに読みの組が欠落)。御菓子 は LM 未収録なので連文節では dictUnknown 扱いになり、ぼるどーのおかし→ボルドーの丘し のように 丘(LM5514)+し の分割に負ける。curated で供給する -->
 
 	<!-- ■ 分割・断片に負ける語の救済(連文節の区切りを勝たせる固定句) -->
+	<dict><key>phrase</key><string>身に覚え</string><key>shortcut</key><string>みにおぼえ</string></dict>	<!-- 慣用句 身に覚え(がない/がある)。LM に 身に覚え が無く、文頭の 身 6730 と ミニ 6155 の差を に→覚え の bigram で埋めきれず(111 差)みにおぼえがない→ミニ覚えがない だった(ユーザ報告 3556) -->
 	<dict><key>phrase</key><string>次に</string><key>shortcut</key><string>つぎに</string></dict>	<!-- 副詞 次に。連文節が 次+に(bigram 1404)より 継ぎに/次ぎに(連用形+目的の に の派生 7200)を採り、つぎにきたきゃく→継ぎに来た客 になっていた(ユーザ報告 2818) -->
 	<dict><key>phrase</key><string>何でもかんでも</string><key>shortcut</key><string>なんでもかんでも</string></dict>	<!-- 何でもかんでも: 辞書に句として無く 何でも+噛んでも が先頭だった。かんでも は かな書きの慣用句。登録順=候補順(なんでもかんでも が 2 番手。ユーザ指定 3339) -->
 	<dict><key>phrase</key><string>なんでもかんでも</string><key>shortcut</key><string>なんでもかんでも</string></dict>

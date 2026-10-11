@@ -22443,6 +22443,17 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi.first, "とくに気をつけて", "multi=\(multi)")
     }
 
+    // みにおぼえがない→身に覚えがない(3556、ユーザ報告: ミニ覚えがない)。慣用句 身に覚え を misc.plist に curated 登録
+    func testRegressionRealLMMiniOboePrefersMiNiOboe() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let multi = converter.multiClauseCandidates(for: "みにおぼえがない", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "身に覚えがない", "multi=\(multi)")
+        XCTAssertFalse(multi.contains { $0.hasPrefix("ミニ") }, "multi=\(multi)")
+        let single = converter.candidates(for: "みにおぼえ", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "身に覚え", "single=\(single)")
+    }
+
     // 300えんだけどな→300円だけどな(3555、ユーザ報告: 円だけドナ)。接続助詞 けど の直後の文末 な に文末 な の減点 2 つ
     // (計 6000)が掛かって だけ+ドナ(人名)に割れていた。名詞+けど(円田けどな)は非文なので連文節・合成とも立てない
     func testRegressionRealLMEnDakedonaAfterDigit() throws {
