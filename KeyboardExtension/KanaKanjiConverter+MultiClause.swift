@@ -2656,9 +2656,14 @@ extension KanaKanjiConverter {
                     isForbiddenInitialExempt = !prevIsBOS
                         && ((prev.last.map { Self.multiClausePredicateTailCharacters.contains($0) } ?? false)
                             || prevIsKanaNa)
-                } else if first == "ん", prevIsKanaNa,
+                } else if first == "ん",
                     Self.multiClauseColloquialExplanatoryTailReadingsID.contains(readingID) {
-                    isForbiddenInitialExempt = true
+                    // のだ縮約の塊(んだけど/んです 等)も単独 ん と同じく述語の直後(辞書形 蒸す/行く、た形)に立てる。
+                    // な の直後だけだったので 蒸す+んだけど が禁止(100000)され、ゆでてからむすんだけど に
+                    // 茹でてから蒸すんだけど が出なかった(ユーザ報告 3537)
+                    isForbiddenInitialExempt = prevIsKanaNa
+                        || (!prevIsBOS
+                            && (prev.last.map { Self.multiClausePredicateTailCharacters.contains($0) } ?? false))
                 } else if readingID == SID.っけ, isKanaIdentity {
                     // 想起の終助詞 っけ(かな表層のみ。っ気 は対象外)は た/だ 直後(でしたっけ/
                     // だったっけ)だけ正当な っ 始まり。塞ぐと でした+っけ が立てず 弟子たっけ が
@@ -4178,6 +4183,40 @@ extension KanaKanjiConverter {
                 break
             }
         }
+        // た形 1 ノード(結んだ)/たて複合 1 ノード(濡れたて)の区間を割った代替経路(3537): 辞書形述語+んだ(蒸す+んだけど)、
+        // た形+残り(濡れた+手で)は区切りが違うので 1 文節差し替えの変種では作れない。必須ノード付きで再最適化し、
+        // seed 順変種と同じ刻みで第2候補群に出す(コストは動かさない。ゆでてからむすんだけど/ぬれたてで、ユーザ報告)
+        var taFormSplitAlternatives: [(delta: Int, joined: String)] = []
+        do {
+            let bestJoined = pathIndices.map { nodes[$0].surface }.joined()
+            for pos in 0..<pathIndices.count {
+                let node = nodes[pathIndices[pos]]
+                guard node.isInflectionDerived, containsKanji(node.surface), node.reading.count >= 4 else { continue }
+                var requiredIdx: Int? = nil
+                if node.reading.hasSuffix("んだ") {
+                    requiredIdx = nodes.indices.first(where: {
+                        nodes[$0].start == node.start && nodes[$0].end == node.end - 2
+                            && nodes[$0].isDictionaryFormPredicate && containsKanji(nodes[$0].surface)
+                    })
+                } else if node.reading.hasSuffix("たて"), node.end < n {
+                    requiredIdx = nodes.indices.first(where: {
+                        nodes[$0].start == node.start && nodes[$0].end == node.end - 1
+                            && nodes[$0].isInflectionDerived && nodes[$0].reading.hasSuffix("た") && containsKanji(nodes[$0].surface)
+                    })
+                }
+                guard let requiredIdx,
+                    let alternative = solveViterbi(allowedStartNodeIndex: nil, requiredNodeIndices: [requiredIdx]),
+                    alternative.bestTotal - bestTotal <= Self.multiClauseTaFormSplitAlternativeMaxDelta else {
+                    continue
+                }
+                let altJoined = alternative.pathIndices.map { nodes[$0].surface }.joined()
+                guard altJoined != normalized, altJoined != bestJoined,
+                    !taFormSplitAlternatives.contains(where: { $0.joined == altJoined }) else {
+                    continue
+                }
+                taFormSplitAlternatives.append((Self.multiClauseSeedOrderVariantStep, altJoined))
+            }
+        }
         // 文頭の裸の助詞に割った代替経路(3142): 最良経路の先頭が「文頭から丸ごと読んだ活用形」
         // (入った=はいった)で、その読みが文頭助詞で始まるときは、助詞に割った経路(は+行った)も
         // 第2候補群に出す。どちらの読みかは文脈次第(直前に名詞を確定していれば は+行った)なので、
@@ -4820,6 +4859,10 @@ extension KanaKanjiConverter {
         // 助詞に割った代替経路(2771)もコスト差で同列に並べる
         if let particleSplitAlternativeJoined, particleSplitAlternativeJoined != joined {
             variants.append((particleSplitAlternativeDelta, -2, -1, particleSplitAlternativeJoined))
+        }
+        // た形/たて の区間を割った代替経路(3537)は seed 順変種の刻みで
+        for alternative in taFormSplitAlternatives where alternative.joined != joined {
+            variants.append((alternative.delta, -2, -1, alternative.joined))
         }
         // とし を 1 ノードで覆う代替経路(2802)は先頭差し替えと同じ刻みで、1 文節変種(木標とし 等)より前に置く
         if let toShiMergedAlternativeJoined, toShiMergedAlternativeJoined != joined {

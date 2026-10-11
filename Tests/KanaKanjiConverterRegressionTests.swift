@@ -22253,6 +22253,13 @@ extension KanaKanjiConverterRegressionTests {
         let musundaSingle = converter.candidates(for: "むすんだけど", limit: 8, systemCandidateMode: .surface)
         let merged = (musunda.first.map { [$0] } ?? []) + musundaSingle.filter { $0 != musunda.first }
         XCTAssertEqual(Array(merged.prefix(2)), ["結んだけど", "蒸すんだけど"], "multi=\(musunda) single=\(musundaSingle)")
+        // 連文節でも 蒸す+んだけど を代替経路に出す(3538): のだ縮約の塊(んだけど)を辞書形述語の直後に立て、
+        // た形 1 ノード(結んだ)の区間を辞書形+んだ に割った再最適化を第2候補群へ。ゆでてからむすんだけど で
+        // 掬んだけど(seed 4 番目)が出て 蒸すんだけど が無かった(ユーザ報告)
+        XCTAssertTrue(musunda.contains("蒸すんだけど"), "multi=\(musunda)")
+        let yudete = converter.multiClauseCandidates(for: "ゆでてからむすんだけど", systemCandidateMode: .surface)
+        XCTAssertEqual(yudete.first, "茹でてから結んだけど", "multi=\(yudete)")
+        XCTAssertTrue(yudete.prefix(3).contains("茹でてから蒸すんだけど"), "multi=\(yudete)")
     }
 
     // はいるきなくした(ユーザ報告 3532): 入る来鳴くした(来鳴く=Sudachi のレア語)が先頭で 入る気 が無かった。辞書形述語+気 に加点
