@@ -22374,5 +22374,12 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(kai.first, "回", "single=\(kai)")
     }
 
+    // きゅうな→急な、喜友名(3549、ユーザ指定)。人名 喜友名 が辞書 rank 0 で先頭だった
+    func testRegressionRealLMKyuunaPrefersSudden() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "きゅうな", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(2)), ["急な", "喜友名"], "single=\(single)")
+    }
+
     }
 }
