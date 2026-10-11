@@ -518,6 +518,10 @@ extension KanaKanjiConverter {
     static let multiClauseInstrumentPlayVerbBonus = 1500
     // 変種の差分に反映する seed 順ボーナスの上限(2738。pairCost 参照)
     static let multiClauseVariantSeedBonusCap = 600
+    // 変種の差分に入れる連語ボーナス(の を挟む/格助詞を跨ぐ連語)の上限。DP の経路選択には影響しない(表示順位のみ)。
+    // 変種上限(multiClauseVariantMaxDelta 4000)より小さくしないと、連語で勝った区間の兄弟表記が 1 件も残らない
+    // (米国に遅れれば/後れれば。3537)。甲州の果皮 の 公衆の果皮(2500)は上限内なので従来どおり
+    static let multiClauseVariantCollocationBonusCap = 3999
     // 区間の候補がどれも LM に無いときの補助語彙ノードへの加点(3336)。くもじで: 久茂地(ryukyu、wc 9219)と 雲路(wc 7864)が
     // どちらも LM 未収録で、辞書コストだけで 雲路で が先頭だった(単文節は補助語彙の昇格で 久茂地 が先頭。ユーザ報告)
     static let multiClauseUnknownSpanSupplementalBonus = 2000

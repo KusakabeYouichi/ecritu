@@ -4513,9 +4513,11 @@ extension KanaKanjiConverter {
                 // seed 順ボーナスは変種の差分では上限付き(みな/いくつ の 3300 級をそのまま足すと 幾つ の漢字変種が許容差を超えて消える。
                 // 郡(800)を負値から 200 の刻みに戻すには 600 で足りる)
                 var nodeBonus = min(seedOrderNounNodeBonuses[nodeKey] ?? 0, Self.multiClauseVariantSeedBonusCap)
+                // 連語ボーナスは変種の差分では上限(定数コメント参照)付き。4500 の連語(米国→送)をそのまま足すと
+                // 同区間の兄弟(遅れれば/後れれば)の delta が変種上限 4000 を超えて 1 件も残らなかった(ユーザ報告 3537)
                 if Self.multiClauseCollocationBridgeParticles.contains(prevSurface), pos >= 2,
                     let collocationBonus = Self.acrossParticleCollocationBonus(prevPrev: nodes[pathIndices[pos - 2]].surface, surface: node.surface) {
-                    nodeBonus += collocationBonus
+                    nodeBonus += min(collocationBonus, Self.multiClauseVariantCollocationBonusCap)
                 } else if prevSurface == "の", pos >= 2,
                     crossNoCompoundPairs.contains(MultiClauseSymbols.pairKey(nodes[pathIndices[pos - 2]].surfaceID, node.surfaceID)) {
                     nodeBonus += Self.multiClauseCrossNoCompoundBonus
@@ -4523,7 +4525,7 @@ extension KanaKanjiConverter {
                 // 先頭側を差し替えると後段の連語(甲州→果皮)が失われる分も差分に入れる(公衆の果皮 が負値で先頭に来ていた)
                 if pos + 2 < pathIndices.count, Self.multiClauseCollocationBridgeParticles.contains(nodes[pathIndices[pos + 1]].surface),
                     let downstream = Self.acrossParticleCollocationBonus(prevPrev: node.surface, surface: nodes[pathIndices[pos + 2]].surface) {
-                    nodeBonus += downstream
+                    nodeBonus += min(downstream, Self.multiClauseVariantCollocationBonusCap)
                 }
                 let outgoing: Int
                 if let nextNode {
@@ -4583,10 +4585,24 @@ extension KanaKanjiConverter {
                     alt.surface != chosen.surface else {
                     continue
                 }
+                #if DEBUG
+                // 時限トレース: 変種に採らなかった同区間の兄弟とその理由(MULTI_TRACE=1)
+                func variantSkipTrace(_ reason: String) {
+                    if traceEnabled {
+                        print("MULTITRACE variantskip[\(normalized)] \(alt.surface) p\(pos) \(reason)")
+                    }
+                }
+                if traceEnabled {
+                    print("MULTITRACE variantcand[\(normalized)] \(alt.surface) p\(pos)")
+                }
+                #else
+                @inline(__always) func variantSkipTrace(_ reason: String) {}
+                #endif
                 // 終助詞クラスタ区間の非かな表層(なー→ナー/名/菜 等)は変種として出さない
                 // (終助詞はかなが正書。カタカナ・漢字化は不自然)。
                 if Self.multiClauseFinalParticleReadings.contains(alt.reading),
                     alt.surface != alt.reading {
+                    variantSkipTrace("終助詞の非かな")
                     continue
                 }
                 // 敬称区間(さん/さま)の漢字表層(三/讃/様 等)も変種として出さない。
@@ -4599,6 +4615,7 @@ extension KanaKanjiConverter {
                         prevSurface: prevSurface,
                         prevReading: pos > 0 ? nodes[pathIndices[pos - 1]].reading : ""
                     ) {
+                    variantSkipTrace("敬称の漢字")
                     continue
                 }
                 // かな正書の代名詞区間で best がかなを選んでいる場合、旧表記・カタカナへの
@@ -4606,6 +4623,7 @@ extension KanaKanjiConverter {
                 if Self.multiClauseKanaOrthodoxPronounReadings.contains(alt.reading),
                     chosen.surface == chosen.reading,
                     alt.surface != alt.reading {
+                    variantSkipTrace("かな代名詞の旧表記")
                     continue
                 }
                 // 機能語(かな識別免除リスト=助詞/助動詞類)の区間で best がかなを選んで
@@ -4615,6 +4633,7 @@ extension KanaKanjiConverter {
                 if Self.multiClauseKanaIdentityFloorExemptReadings.contains(alt.reading),
                     chosen.surface == chosen.reading,
                     Self.isNonNativeScriptSurface(alt.surface) {
+                    variantSkipTrace("機能語のカタカナ")
                     continue
                 }
                 // 連語クランプ区間(めどが立つ 等)では、非選好の漢字動詞変種
@@ -4623,6 +4642,7 @@ extension KanaKanjiConverter {
                 if collocationPreferredVerbNodeKeys.contains(chosen.key),
                     !collocationPreferredVerbNodeKeys.contains(alt.key),
                     containsKanji(alt.surface) {
+                    variantSkipTrace("連語クランプ外の漢字動詞")
                     continue
                 }
                 // LM 未収録の漢字辞書語(似寄る wc9428 等のレア収穫)も派生と同じ扱い。natural 基準だと
@@ -4636,6 +4656,7 @@ extension KanaKanjiConverter {
                 if chosen.end < n, store.isSuruNoun(reading: chosen.reading, candidate: chosen.surface),
                     Self.readingStartsWithSuruCluster(Self.spanString(chars, chosen.end..<n)),
                     !store.isSuruNoun(reading: alt.reading, candidate: alt.surface) {
+                    variantSkipTrace("サ変でない同読み")
                     continue
                 }
                 let isSeedListedSibling = KanaKanjiSeedDictionary.seed[alt.reading]?.contains(alt.surface) == true
@@ -4716,6 +4737,16 @@ extension KanaKanjiConverter {
                     Self.multiClauseBigramPairBonuses[prevSurface + "\t" + chosen.surface] == nil {
                     delta = max(1, delta - contextBonus)
                 }
+                // 連語(格助詞を跨ぐ 火→通 等)に合う兄弟表記(通りすぎる/通り過ぎる)は、連語外の兄弟(徹り/透り)より前に出す(3537)。
+                // 連語ボーナスを差分で頭打ちにしたぶん連語外の兄弟の delta が下がり、LM の僅差で 徹り が 通りすぎる を抜いた
+                // 同じ種類(活用派生/辞書形述語)の兄弟に限る。温度を計る の 計(名詞、はかる 1 字読み)まで繰り上げない
+                if Self.multiClauseCollocationBridgeParticles.contains(prevSurface), pos >= 2,
+                    alt.isInflectionDerived == chosen.isInflectionDerived,
+                    alt.isDictionaryFormPredicate == chosen.isDictionaryFormPredicate,
+                    Self.acrossParticleCollocationBonus(prevPrev: nodes[pathIndices[pos - 2]].surface, surface: chosen.surface) != nil,
+                    Self.acrossParticleCollocationBonus(prevPrev: nodes[pathIndices[pos - 2]].surface, surface: alt.surface) != nil {
+                    delta = min(delta, Self.multiClauseSeedOrderVariantStep)
+                }
                 // 変種順だけを下げる隣接ペア(の→一。定数コメント参照。2880)
                 if let demotion = Self.multiClauseVariantDemotionPairs[prevSurface + "\t" + alt.surface] {
                     delta += demotion
@@ -4740,6 +4771,11 @@ extension KanaKanjiConverter {
                     && alt.surface == alt.reading
                     && shouldKeepKanaIdentityLeading(for: normalized)
                 guard delta <= variantMaxDelta || isSanctionedFullKanaVariant else {
+                    #if DEBUG
+                    if traceEnabled {
+                        print("MULTITRACE variantdrop[\(normalized)] \(variantJoined) delta=\(delta) max=\(variantMaxDelta) p\(pos)")
+                    }
+                    #endif
                     continue
                 }
                 // 入力そのままの全かな変種は原則捨てる(エコー防止)が、経路に curated ノード
