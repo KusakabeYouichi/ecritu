@@ -22352,5 +22352,16 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(single.prefix(2)), ["投入", "豆乳"], "single=\(single)")
     }
 
+    // つきはじめて→尽き始めて 先頭(3547、ユーザ指定)。基底 つく の並びは変えない
+    func testRegressionRealLMTsukihajimetePrefersTsukiru() throws {
+        try prepareRealLMDictionary()
+        for reading in ["つきはじめて", "つきはじめた", "つきはじめる"] {
+            let single = converter.candidates(for: reading, limit: 4, systemCandidateMode: .surface)
+            XCTAssertEqual(single.first?.hasPrefix("尽き始め"), true, "reading=\(reading) single=\(single)")
+        }
+        let tsuku = converter.candidates(for: "つく", limit: 3, systemCandidateMode: .surface)
+        XCTAssertEqual(tsuku.first, "着く", "single=\(tsuku)")
+    }
+
     }
 }
