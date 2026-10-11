@@ -22165,6 +22165,20 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(log.first, "ログ取って", "multi=\(log)")
     }
 
+    // べいこくにおくれれば(ユーザ報告 3530): に→遅れ の bigram で 送れれば が候補にも出なかった。
+    // seed で 送れる を取得幅に入れ、送り先+に/へ+送 の連語で 米国に送れれば を先頭に。会議に遅れれば は従来どおり
+    func testRegressionRealLMBeikokuNiOkurereba() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for reading in ["べいこくにおくれれば", "べいこくへおくれれば"] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, reading.contains("へ") ? "米国へ送れれば" : "米国に送れれば", "reading=\(reading) multi=\(multi)")
+        }
+        let kaigi = converter.multiClauseCandidates(for: "かいぎにおくれれば", systemCandidateMode: .surface)
+        XCTAssertEqual(kaigi.first, "会議に遅れれば", "multi=\(kaigi)")
+        XCTAssertTrue(kaigi.contains("会議に送れれば"), "送れれば が候補に入ること multi=\(kaigi)")
+    }
+
     // ためそうと: 試そうと が先頭(ユーザ指定 3526)。ぎんこうとくまないと: 組む が 汲む より先(ユーザ指定 3526)
     func testRegressionRealLMTamesoutoAndKumanaito() throws {
         try prepareRealLMDictionary()
