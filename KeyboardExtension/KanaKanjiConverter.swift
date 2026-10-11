@@ -68,7 +68,8 @@ final class KanaKanjiConverter {
         ScriptVariantSuppressionCategory.defaultEnabled
     // かなで書く言葉(所謂/即ち/下さい/事/此処 等。KanaGakiTable)を抑制する仲間。入っていない仲間は抑制せず、
     // かなを先頭にして漢字はその後ろに置く(3404)。初期設定は全部抑制
-    var kanaGakiSuppressedCategories: Set<KanaGakiCategory> = Set(KanaGakiCategory.allCases)
+    // 初期設定: 副詞(漢字も残す) 以外を抑制(3552)。実機は設定読み込みで上書きされる
+    var kanaGakiSuppressedCategories: Set<KanaGakiCategory> = Set(KanaGakiCategory.allCases.filter(\.suppressedByDefault))
     // 同音の漢字による書きかえ(臆測⇄憶測。KakikaeTable、3422)。キーボードが設定を読んで入れる。
     // nil(設定を入れる前)は並びに触らない。キーボードは値の無い端末でも 両方(前を先に) を入れる
     var kakikaePreference: KakikaePreference?

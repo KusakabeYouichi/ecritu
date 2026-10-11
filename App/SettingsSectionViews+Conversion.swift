@@ -340,6 +340,8 @@ struct KanaGakiSettingsSection: View {
     @Binding var auxiliary: Bool
     @Binding var formalNoun: Bool
     @Binding var demonstrative: Bool
+    // 副詞(漢字も残す): 初期設定オフ(かなを先頭に、漢字も残す。3552)
+    @Binding var adverbKanaFirst: Bool
 
     // 例として並べる語の数(超えたら「など」)
     static let exampleLimit = 12
@@ -361,8 +363,9 @@ struct KanaGakiSettingsSection: View {
             toggle($auxiliary, .auxiliary)
             toggle($formalNoun, .formalNoun)
             toggle($demonstrative, .demonstrative)
+            toggle($adverbKanaFirst, .adverbKanaFirst)
 
-            Text("漢字で書けるけれど、今の文章ではかなで書くことが多い言葉です。オンにした仲間は漢字の候補を出さず、かなだけを出します。オフにした仲間も、かなを先頭にして漢字はその後ろに並べます。『所謂風邪』『して下さい』のような続きの中の漢字もかなにします(1 字の語は 事件・為替・時計 などを巻き込まないよう、その語だけを打ったときに限ります)。追加語彙に登録した語と、学習した語は対象外です。初期設定は 5 つともオンで、保守的初期設定では形式名詞と指示語・代名詞がオフ、現代的初期設定では 5 つともオンです。")
+            Text("漢字で書けるけれど、今の文章ではかなで書くことが多い言葉です。オンにした仲間は漢字の候補を出さず、かなだけを出します。オフにした仲間も、かなを先頭にして漢字はその後ろに並べます。『所謂風邪』『して下さい』のような続きの中の漢字もかなにします(1 字の語は 事件・為替・時計 などを巻き込まないよう、その語だけを打ったときに限ります)。追加語彙に登録した語と、学習した語は対象外です。初期設定は 副詞(漢字も残す) だけがオフで、ほかの 5 つはオンです。保守的初期設定では形式名詞と指示語・代名詞もオフ、現代的初期設定では 副詞(漢字も残す) 以外の 5 つがオンです。")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }

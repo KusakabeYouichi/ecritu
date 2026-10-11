@@ -2162,6 +2162,8 @@ extension KanaKanjiConverter {
     static let multiClauseKanaSeiAfterNounPenalty = 2000
     // かなで書く言葉(KanaGakiTable)を抑制しないときの、漢字表記ノードへの減点(かな を先に出す。3404)
     static let multiClauseKanaGakiKanaFirstPenalty = 1500
+    // 副詞(漢字も残す)を抑制しないとき、かな識別を同じ読みの漢字の unigram のすぐ上に置く余白(3552)。漢字側は下げない
+    static let multiClauseKanaGakiKanaFirstMargin = 200
     // 同じ減点を当てる かな 1 語(名詞の直後には単独で来ない接尾辞の読み)。こう は 港/工/高 の接尾で、七類こう/日本こう が
     // 七類港/日本港 を抜いていた(かな こう 4590 < 港 5079、地名→港 の bigram が無い。ユーザ報告 3397)
     static let multiClauseKanaSuffixAfterNounSurfaces: Set<String> = ["せい", "こう"]

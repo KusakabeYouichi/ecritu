@@ -47,10 +47,10 @@ extension KeyboardViewController {
         }
         kanaKanjiConverter.setScriptVariantSuppressionCategories(variantCategories)
 
-        // かなで書く言葉(仲間ごと。初期設定は全部抑制。3404)
+        // かなで書く言葉(仲間ごと。初期設定は 副詞(漢字も残す) 以外は抑制。3404、3552)
         var kanaGakiSuppressed = Set<KanaGakiCategory>()
         for category in KanaGakiCategory.allCases
-        where sharedBoolValue(from: sharedDefaults, key: category.settingsKey, fallback: true) {
+        where sharedBoolValue(from: sharedDefaults, key: category.settingsKey, fallback: category.suppressedByDefault) {
             kanaGakiSuppressed.insert(category)
         }
         kanaKanjiConverter.setKanaGakiSuppressedCategories(kanaGakiSuppressed)

@@ -2837,9 +2837,23 @@ extension KanaKanjiConverter {
             if !isKanaIdentity, !isCurated,
                 let category = KanaGakiTable.categoryByReadingAndSurface[reading]?[surface],
                 category != .formalNoun || prevIsInflectionDerived || prevIsDictionaryFormPredicate {
-                penalty += kanaGakiSuppressed.contains(category)
-                    ? Self.multiClauseForbiddenPenaltyCost
-                    : Self.multiClauseKanaGakiKanaFirstPenalty
+                if kanaGakiSuppressed.contains(category) {
+                    penalty += Self.multiClauseForbiddenPenaltyCost
+                } else if category != .adverbKanaFirst {
+                    penalty += Self.multiClauseKanaGakiKanaFirstPenalty
+                }
+                // 副詞(漢字も残す)は漢字を下げず、下の かな側の加点だけで「かなをその漢字のすぐ上に」(単文節の place と同じ。3552)。
+                // 漢字を下げると同音の別語(糖分/須玖/始めて)が繰り上がる
+            }
+            // 副詞(漢字も残す)を抑制しないとき、かな識別を同じ読みの漢字(特に 4238)のすぐ上に置く加点(とくに 5744 → 4038)。
+            // 文頭(特に気をつけて)にも効かせるため transitionCost の中に置く(3552)
+            if isKanaIdentity, !kanaGakiSuppressed.contains(.adverbKanaFirst),
+                let entries = KanaGakiTable.categoryByReadingAndSurface[reading],
+                let kanaUni = unigramCosts[surface] {
+                let kanjiUni = entries.compactMap { $0.value == .adverbKanaFirst ? unigramCosts[$0.key] : nil }.min()
+                if let kanjiUni, kanaUni + Self.multiClauseKanaGakiKanaFirstMargin > kanjiUni {
+                    penalty -= kanaUni + Self.multiClauseKanaGakiKanaFirstMargin - kanjiUni
+                }
             }
             // 稀な語幹の活用派生(動じよう)は同点の常用語(同じよう)の後ろに(定数コメント参照。2890)。
             // 格助詞の直後(何事にも動じない)は本来の用法なので触らない
