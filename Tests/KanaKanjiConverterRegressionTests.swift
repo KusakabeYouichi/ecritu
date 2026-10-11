@@ -22311,5 +22311,18 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertNotEqual(moumaku.first, "も旨く", "multi=\(moumaku)")
     }
 
+    // 国名+さん→産(3543): 国旗(drapeaux)が立つ読みは人名でない。スペイン→さん の bigram が 産 の backoff に勝っていた(ユーザ指定)。
+    // 日本の地名は姓と同形(千葉さん)なので対象外
+    func testRegressionRealLMCountryNameSanIsProduce() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("すぺいんさん", "スペイン産"), ("ふらんすさん", "フランス産"), ("ちばさん", "千葉さん")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "reading=\(reading) multi=\(multi)")
+        }
+        let single = converter.candidates(for: "すぺいんさん", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "スペイン産", "single=\(single)")
+    }
+
     }
 }
