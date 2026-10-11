@@ -22268,12 +22268,15 @@ extension KanaKanjiConverterRegressionTests {
         try loadDeviceAddedVocabulary(includeSuppression: true)
         let multi = converter.multiClauseCandidates(for: "はいるきなくした", systemCandidateMode: .surface)
         XCTAssertEqual(multi.first?.hasPrefix("入る気"), true, "multi=\(multi)")
-        // 連文節の変種は 3 件までで 這入る/侵る の変種も枠を使う。同じ区間の変種(亡くした 等)の並びは遷移ボーナスでは動かないので先頭だけ見る
-        XCTAssertTrue(["入る気なくした", "入る気失くした", "入る気無くした"].contains(multi.first ?? ""), "multi=\(multi)")
+        // 3540: 先頭 無くした、変種に なくした/失くした(seed なくし の順。ユーザ指定)。連用形 なくし は語幹 LM 判定で 失くし が
+        // 作られず、変種の差分に接頭一致ボーナス(気+無くし)が入らず 亡くした が負の delta で 2 番目だった
+        XCTAssertEqual(Array(multi.prefix(3)), ["入る気無くした", "入る気なくした", "入る気失くした"], "multi=\(multi)")
         let iku = converter.multiClauseCandidates(for: "いくきなくした", systemCandidateMode: .surface)
         XCTAssertEqual(iku.first?.hasPrefix("行く気"), true, "multi=\(iku)")
         let yaru = converter.multiClauseCandidates(for: "やるきなくした", systemCandidateMode: .surface)
-        XCTAssertEqual(yaru.first?.hasPrefix("やる気"), true, "multi=\(yaru)")
+        XCTAssertEqual(yaru.first, "やる気無くした", "やる気 は 1 語なので 気 の表に掛からず やる気亡くした だった(3540) multi=\(yaru)")
+    }
+
     // てで/てに→手で/手に(3539): て は 1 字の助詞と同形で 手+格助詞 の合成が作られず候補なし(かなだけ)だった(ユーザ報告)
     func testRegressionRealLMTedeTeniHand() throws {
         try prepareRealLMDictionary()
