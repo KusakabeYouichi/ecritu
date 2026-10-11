@@ -4561,6 +4561,18 @@ extension KanaKanjiConverter {
                     crossNoCompoundPairs.contains(MultiClauseSymbols.pairKey(nodes[pathIndices[pos - 2]].surfaceID, node.surfaceID)) {
                     nodeBonus += Self.multiClauseCrossNoCompoundBonus
                 }
+                // 隣接ペアの接頭一致ボーナス(気+無くし 等)も DP と同じく差分に入れる(3537)。無いと 気+無くし の優位が
+                // 変種の差分に反映されず、兄弟(亡くし/なくし)が負の delta で seed 順より前に並んだ(はいるきなくした)
+                if let prefixBonuses = Self.multiClauseBigramPrefixPairBonusesByPrev[prevSurface] {
+                    for entry in prefixBonuses where node.surface.hasPrefix(entry.prefix) {
+                        nodeBonus += entry.bonus
+                    }
+                }
+                if let nextNode, let prefixBonuses = Self.multiClauseBigramPrefixPairBonusesByPrev[node.surface] {
+                    for entry in prefixBonuses where nextNode.surface.hasPrefix(entry.prefix) {
+                        nodeBonus += entry.bonus
+                    }
+                }
                 // 先頭側を差し替えると後段の連語(甲州→果皮)が失われる分も差分に入れる(公衆の果皮 が負値で先頭に来ていた)
                 if pos + 2 < pathIndices.count, Self.multiClauseCollocationBridgeParticles.contains(nodes[pathIndices[pos + 1]].surface),
                     let downstream = Self.acrossParticleCollocationBonus(prevPrev: node.surface, surface: nodes[pathIndices[pos + 2]].surface) {
