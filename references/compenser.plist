@@ -335,8 +335,8 @@
 	        <dict><key>phrase</key><string>Linguine</string><key>shortcut</key><string>りんぐいーね</string><key>pos</key><string>名詞</string></dict>	<!-- No.7 -->
 	        <dict><key>phrase</key><string>リングイーネ・ピッコレ</string><key>shortcut</key><string>りんぐいーねぴっこれ</string><key>pos</key><string>名詞</string></dict>	<!-- No.8 -->
 	        <dict><key>phrase</key><string>Linguine Piccole</string><key>shortcut</key><string>りんぐいーねぴっこれ</string><key>pos</key><string>名詞</string></dict>	<!-- No.8 -->
-	        <dict><key>phrase</key><string>カッペリーニ</string><key>shortcut</key><string>かっぺりーに</string><key>pos</key><string>名詞</string></dict>	<!-- No.9 -->
-	        <dict><key>phrase</key><string>Capellini</string><key>shortcut</key><string>かっぺりーに</string><key>pos</key><string>名詞</string></dict>	<!-- No.9 -->
+	        <dict><key>phrase</key><string>カペッリーニ</string><key>shortcut</key><string>かぺっりーに</string><key>pos</key><string>名詞</string></dict>	<!-- No.9。伊語 capellini の促音位置はこちら。Sudachi の カッペリーニ は suppr で抑制(3535) -->
+	        <dict><key>phrase</key><string>Capellini</string><key>shortcut</key><string>かぺっりーに</string><key>pos</key><string>名詞</string></dict>	<!-- No.9 -->
 	        <dict><key>phrase</key><string>フェデリーニ</string><key>shortcut</key><string>ふぇでりーに</string><key>pos</key><string>名詞</string></dict>	<!-- No.10 -->
 	        <dict><key>phrase</key><string>Fedelini</string><key>shortcut</key><string>ふぇでりーに</string><key>pos</key><string>名詞</string></dict>	<!-- No.10 -->
 	        <dict><key>phrase</key><string>スパゲッティーニ</string><key>shortcut</key><string>すぱげってぃーに</string><key>pos</key><string>名詞</string></dict>	<!-- No.11 -->
