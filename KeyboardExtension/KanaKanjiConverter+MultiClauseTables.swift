@@ -2167,6 +2167,8 @@ extension KanaKanjiConverter {
         "え", "け", "げ", "せ", "ぜ", "て", "で", "ね", "へ", "べ", "ぺ", "め", "れ"
     ]
     static let multiClauseImperativeParticlePenalty = 3000
+    // 指示語+って(それって/これって)を 剃れって/反れって(命令形+引用 って)の 1 ノードにしない(3568)
+    static let multiClauseDemonstrativeTteReadings: Set<String> = ["それって", "これって", "あれって", "どれって"]
     // 終止形動詞の直後の 着る 活用形(着なくなる)。気 と取り違える(3566)
     static let multiClauseKiruAfterDictionaryFormVerbPenalty = 3000
     static let multiClauseKiAfterDictionaryFormVerbBonus = 1500

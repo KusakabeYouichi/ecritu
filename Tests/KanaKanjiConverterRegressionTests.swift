@@ -23686,3 +23686,17 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(furuku.contains("を旧くは"), "multi=\(furuku)")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 3568: それって は 剃れって/反れって(命令形+引用)でなく かな(ユーザ報告 それっておいしくない)
+    func testRegressionRealLMSoreTteNotImperative() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let single = converter.candidates(for: "それって", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "それって", "single=\(single)")
+        let multi = converter.multiClauseCandidates(for: "それっておいしくない", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "それっておいしくない", "multi=\(multi)")
+        let kore = converter.multiClauseCandidates(for: "これってなに", systemCandidateMode: .surface)
+        XCTAssertEqual(kore.first, "これって何", "multi=\(kore)")
+    }
+}
