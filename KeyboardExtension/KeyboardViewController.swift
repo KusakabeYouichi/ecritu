@@ -640,6 +640,7 @@ final class KeyboardViewController: UIInputViewController {
         // 差し替えられるため、同期区間の実測を診断ログへ残す(遅い時のみ)。
         let launchStartedAt = CFAbsoluteTimeGetCurrent()
         keyboardLaunchViewDidLoadAt = launchStartedAt
+        beginLaunchTimingRecord()
         startKeyboardDiagnosticsSession()
         // MEMFORENSICS(時限計測 2611): 高水位台帳の出力先。剥がすときはこのブロックと
         // KeyboardMemoryForensics.swift を削除(grep MEMFORENSICS)
@@ -668,6 +669,8 @@ final class KeyboardViewController: UIInputViewController {
         setupKeyboardView()
         let totalMs = Int((CFAbsoluteTimeGetCurrent() - launchStartedAt) * 1000)
         let setupMs = Int((CFAbsoluteTimeGetCurrent() - setupStartedAt) * 1000)
+        launchTimingViewDidLoadMs = totalMs
+        launchTimingSetupMs = setupMs
         if totalMs >= 80 {
             appendKeyboardDiagnosticsLog(
                 "起動同期区間が遅い viewDidLoad=\(totalMs)ms (setupKeyboardView=\(setupMs)ms)"
@@ -714,6 +717,9 @@ final class KeyboardViewController: UIInputViewController {
         defer { MemoryForensics.notePhase("表示の準備(viewWillAppear)") }
         super.viewWillAppear(animated)
         cancelKeyboardAttachWatchdog()
+        if keyboardLaunchViewDidLoadAt > 0, launchTimingToWillAppearMs < 0 {
+            launchTimingToWillAppearMs = Int((CFAbsoluteTimeGetCurrent() - keyboardLaunchViewDidLoadAt) * 1000)
+        }
         // 未到達と数えた後に表示が来たなら遅延復帰として数え直す(cancel より後に呼ぶ)
         recordKeyboardAttachLateRecoveryIfNeeded()
         Self.lastAttachedViewWillAppearAt = CFAbsoluteTimeGetCurrent()
@@ -956,6 +962,12 @@ final class KeyboardViewController: UIInputViewController {
     }
 
     var keyboardLaunchViewDidLoadAt: CFAbsoluteTime = 0
+    // 起動計測の履歴(3573)用。プロセス起動から viewDidLoad まで(新規プロセスだけ意味を持つ)と、各段の所要
+    var launchTimingProcessAgeMs = -1
+    var launchTimingViewDidLoadMs = 0
+    var launchTimingSetupMs = 0
+    var launchTimingToWillAppearMs = -1
+    var launchTimingPageEventsAtLoad: (faults: Int, pageins: Int)?
 
     // 前回のセッションが未確定(marked)を残したままキーボードが閉じた場合(メモの完了ボタン等。
     // 閉じる時点の確定はホストに届かない回がある)、ホスト側には下線付きの marked 範囲が残る。
@@ -1016,6 +1028,7 @@ final class KeyboardViewController: UIInputViewController {
         if keyboardLaunchViewDidLoadAt > 0 {
             let toAppearMs = Int((CFAbsoluteTimeGetCurrent() - keyboardLaunchViewDidLoadAt) * 1000)
             keyboardLaunchViewDidLoadAt = 0
+            recordLaunchTimingEntry(toAppearMs: toAppearMs)
             if toAppearMs >= 250 {
                 appendKeyboardDiagnosticsLog("初回表示まで遅い viewDidLoad→viewDidAppear=\(toAppearMs)ms")
             }
