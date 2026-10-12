@@ -2157,6 +2157,14 @@ extension KanaKanjiConverter {
             if isQuestionKaAfterERowDerived {
                 penalty += Self.multiClauseImperativeParticlePenalty
             }
+            // 副助詞 だけ も 命令形(え段)の直後には付かない。それだけで が 剃れ+だけ+で(剃る の命令形)になっていた
+            // (それだけでみるきなくなる。ユーザ報告 3565)。それ→だけ の bigram(2361)より 未観測の 剃れ→だけ(400)が安かった
+            let isDakeAfterERowDerived = isKanaIdentity && surface == "だけ"
+                && prevIsInflectionDerived && !prevIsKanaIdentity
+                && (prevReading?.last.map { Self.multiClauseERowKanaCharacters.contains($0) } ?? false)
+            if isDakeAfterERowDerived {
+                penalty += Self.multiClauseImperativeParticlePenalty
+            }
             // 着く(到着)は 〜に/へ/まで つく。それ以外の直後(区別つく/気がつく/身につく…の 付く)では 着 を後ろに(3270)。
             // つく の seed は 着く 先頭(つきました=着きました、3251)なので、文脈で 付く に譲る
             if isInflectionDerived, !prevIsBOS, reading.hasPrefix("つ"), surface.hasPrefix("着"),
