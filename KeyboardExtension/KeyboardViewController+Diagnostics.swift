@@ -1804,3 +1804,81 @@ enum ForgottenDetachedControllerGate {
         return !isInWindow && !hasSuperview && !hasParent && !isHostingViewInWindow
     }
 }
+
+
+// 起動の内訳の履歴(3573、ユーザ報告: 入力欄をタップしてからキーボードが開くまでが時々遅い)。
+// 遅い回は時刻を覚えていないことが多いので、起動ごとに 1 行を残し、遅い回(合計 400ms 以上)は別キーにも残す。
+// 共有ログ(320 行)は他の記録で流れるため専用キーを使う。開発ビルド専用(コンテナーの起動計測と同じ)
+extension KeyboardViewController {
+    static let launchTimingHistoryKey = "keyboardLaunchTimingHistory"
+    static let launchTimingSlowHistoryKey = "keyboardLaunchSlowTimingHistory"
+
+    // プロセス開始からの経過(ms)。拡張が起動し直された回(新規プロセス)だけ、起動の前半(dyld/ホスト接続)を表す
+    static func processAgeMilliseconds() -> Int? {
+        var mib: [Int32] = [CTL_KERN, KERN_PROC, KERN_PROC_PID, getpid()]
+        var info = kinfo_proc()
+        var size = MemoryLayout<kinfo_proc>.stride
+        guard sysctl(&mib, UInt32(mib.count), &info, &size, nil, 0) == 0 else {
+            return nil
+        }
+        let start = info.kp_proc.p_un.__p_starttime
+        let startSeconds = Double(start.tv_sec) + Double(start.tv_usec) / 1_000_000
+        return max(0, Int((Date().timeIntervalSince1970 - startSeconds) * 1000))
+    }
+
+    func taskPageEvents() -> (faults: Int, pageins: Int)? {
+        var info = task_events_info()
+        var count = mach_msg_type_number_t(MemoryLayout<task_events_info>.size / MemoryLayout<natural_t>.size)
+        let result = withUnsafeMutablePointer(to: &info) { pointer in
+            pointer.withMemoryRebound(to: integer_t.self, capacity: Int(count)) { rebound in
+                task_info(mach_task_self_, task_flavor_t(TASK_EVENTS_INFO), rebound, &count)
+            }
+        }
+        guard result == KERN_SUCCESS else {
+            return nil
+        }
+        return (Int(info.faults), Int(info.pageins))
+    }
+
+    func beginLaunchTimingRecord() {
+        #if DEBUG
+        launchTimingProcessAgeMs = Self.processAgeMilliseconds() ?? -1
+        launchTimingToWillAppearMs = -1
+        launchTimingPageEventsAtLoad = taskPageEvents()
+        #endif
+    }
+
+    func recordLaunchTimingEntry(toAppearMs: Int) {
+        #if DEBUG
+        guard let defaults = sharedDefaults else {
+            return
+        }
+        var pageText = ""
+        if let end = taskPageEvents(), let start = launchTimingPageEventsAtLoad {
+            pageText = " pageins=\(end.pageins - start.pageins) faults=\(end.faults - start.faults)"
+        }
+        // 新規プロセスは起動から数秒以内に viewDidLoad に着く。長く生きているプロセスの 2 回目以降は前半が無い
+        let isFreshProcess = launchTimingProcessAgeMs >= 0 && launchTimingProcessAgeMs < 10_000
+        let preMs = isFreshProcess ? launchTimingProcessAgeMs : 0
+        let entry = "\(Self.diagnosticsTimestampFormatter.string(from: Date()))"
+            + " total=\(preMs + toAppearMs)ms fresh=\(isFreshProcess)"
+            + " processAge=\(launchTimingProcessAgeMs)ms viewDidLoad=\(launchTimingViewDidLoadMs)ms setup=\(launchTimingSetupMs)ms"
+            + " toWillAppear=\(launchTimingToWillAppearMs)ms toDidAppear=\(toAppearMs)ms"
+            + pageText
+            + " rssMB=\(currentResidentMemoryBytes().map { String(format: "%.0f", Double($0) / 1_048_576) } ?? "?")"
+            + " fpMB=\(currentFootprintMB().map { String(format: "%.0f", $0) } ?? "?")"
+        func append(key: String) {
+            var history = defaults.stringArray(forKey: key) ?? []
+            history.append(entry)
+            if history.count > 40 {
+                history.removeFirst(history.count - 40)
+            }
+            defaults.set(history, forKey: key)
+        }
+        append(key: Self.launchTimingHistoryKey)
+        if preMs + toAppearMs >= 400 {
+            append(key: Self.launchTimingSlowHistoryKey)
+        }
+        #endif
+    }
+}
