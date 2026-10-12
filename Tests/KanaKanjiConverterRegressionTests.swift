@@ -23569,3 +23569,23 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 3562: 泊 を助数詞の本表へ(いっぱくめ→一泊目、ぱくめ→泊目/泊め。ユーザ報告)
+    func testRegressionHakuCounterOrdinalAndCompound() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for reading in ["ぱくめ", "1ぱくめ", "3ぱくめ"] {
+            let list = converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+            XCTAssertEqual(Set(list.prefix(2)), ["泊目", "泊め"], "reading=\(reading) list=\(list)")
+        }
+        let ippaku = converter.multiClauseCandidates(for: "いっぱくめ", systemCandidateMode: .surface)
+        XCTAssertTrue(ippaku.contains("一泊目"), "multi=\(ippaku)")
+        let sanpaku = converter.candidates(for: "さんぱく", limit: 8, systemCandidateMode: .surface)
+        XCTAssertTrue(sanpaku.contains("三泊"), "list=\(sanpaku)")
+        let ippakuSingle = converter.candidates(for: "いっぱく", limit: 8, systemCandidateMode: .surface)
+        XCTAssertTrue(ippakuSingle.contains("一泊"), "list=\(ippakuSingle)")
+        let nihaku = converter.candidates(for: "にはく", limit: 8, systemCandidateMode: .surface)
+        XCTAssertTrue(nihaku.contains("二泊"), "list=\(nihaku)")
+    }
+}
