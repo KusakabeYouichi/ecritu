@@ -595,6 +595,23 @@ extension ContentView {
             forKey: SettingsKeys.containerBootstrapTimingHistory,
             defaults: defaults
         )
+
+        // 遅い回は別キーにも残す(通常の履歴は 40 件で流れる。時刻を覚えていなくても後から吸える)
+        if totalMs >= 200 {
+            var slowHistory = decodeStringArray(
+                forKey: SettingsKeys.containerBootstrapSlowTimingHistory,
+                defaults: defaults
+            )
+            slowHistory.append(entry)
+            if slowHistory.count > 40 {
+                slowHistory.removeFirst(slowHistory.count - 40)
+            }
+            saveStringArray(
+                slowHistory,
+                forKey: SettingsKeys.containerBootstrapSlowTimingHistory,
+                defaults: defaults
+            )
+        }
         #endif
     }
 }
