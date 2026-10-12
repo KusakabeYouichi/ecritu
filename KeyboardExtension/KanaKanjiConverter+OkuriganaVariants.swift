@@ -55,6 +55,7 @@ extension KanaKanjiConverter {
     // 複合語の前部要素として省かれる送り仮名は 取(り)扱う/打(ち)合わせ/引(っ)越し のような活用語尾の断片で、
     // 助詞ではない。山に登る⇄山登る のような組を送り仮名のゆれと誤認しないための除外
     private static let okuriganaNeverOmittedKana: Set<Character> = Set("にをがはのとでへもやかてね")
+    private static let okuriganaNumeralKanji: Set<Character> = Set("一二三四五六七八九十百千万")
 
     private static func isHiragana(_ character: Character) -> Bool {
         guard let scalar = character.unicodeScalars.first else { return false }
@@ -99,6 +100,10 @@ extension KanaKanjiConverter {
             let precededByKanji = index > 0 && isKanji(long[index - 1])
             guard precededByKanji || previousRemoved == index - 1 else { return nil }
             if precededByKanji {
+                // 数詞+つ(三つ井→三井)は活用語尾の送り仮名ではない。三井 の側を許容形として落としていた(3563)
+                if long[index] == "つ", okuriganaNumeralKanji.contains(long[index - 1]) {
+                    return nil
+                }
                 if okuriganaNeverOmittedKana.contains(long[index]) || okuriganaFixedShortFormSingleChars.contains(long[index - 1]) {
                     return nil
                 }
