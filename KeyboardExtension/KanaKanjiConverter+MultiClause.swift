@@ -2148,6 +2148,11 @@ extension KanaKanjiConverter {
                 Self.multiClauseERowKanaCharacters.contains(impMora) {
                 penalty += Self.multiClauseImperativeParticlePenalty
             }
+            // 指示語+って の 1 ノード活用供給(それって→剃れって/反れって)。かな それ+って(9897)より OOV 定額(7200)が
+            // 安く 先頭になっていた(それっておいしくない。ユーザ報告 3568)
+            if isInflectionDerived, !isKanaIdentity, Self.multiClauseDemonstrativeTteReadings.contains(reading) {
+                penalty += Self.multiClauseImperativeParticlePenalty
+            }
             // 活用派生の え段終わり(命令形 抱け/書け、一段の連用 食べ)の直後の終助詞 か(か/かー/かな/かなー)は非文。
             // だけかー が 抱け+かー になっていた(ユーザ報告 3262)。名詞+か(丈か)や 連用形+か(行きか)は無傷
             let isQuestionKaAfterERowDerived = isKanaIdentity && surface.hasPrefix("か")
