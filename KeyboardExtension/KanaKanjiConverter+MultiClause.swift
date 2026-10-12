@@ -4577,6 +4577,8 @@ extension KanaKanjiConverter {
         //        視覚/資格/四角…)で第2候補以降を提示するため。1文字区間(助詞等)は対象外。
         Self.multiClausePhaseProbe?("代替経路")
         var variants: [(delta: Int, order: Int, position: Int, joined: String)] = []
+        // 1 文節差し替えの記録(差し替え先の表層)。複数文節の組み合わせ変種(3567)の材料
+        var positionalAlternatives: [String: (delta: Int, position: Int, surface: String)] = [:]
         var variantOrder = 0
         for (pos, nodeIdx) in pathIndices.enumerated() {
             let chosen = nodes[nodeIdx]
@@ -4955,6 +4957,7 @@ extension KanaKanjiConverter {
                     }
                 }
                 variants.append((delta, variantOrder, pos, variantJoined))
+                positionalAlternatives[variantJoined] = (delta, pos, alt.surface)
                 variantOrder += 1
             }
         }
@@ -5044,6 +5047,31 @@ extension KanaKanjiConverter {
             }
             if results.count >= 1 + Self.multiClauseVariantLimit {
                 break
+            }
+        }
+        // 採った変種どうしが別の文節の差し替えなら、両方を同時に替えた組み合わせも出す(3567)。
+        // かおりはうつしても: 薫は移しても/香りは写しても は出るが、香りは移しても は 1 文節ずつの差し替えでは作れず消えていた。
+        // 差し替えの delta 合計が上限(僅差の組だけ。各 delta も 0 以上=負は文脈ボーナスで押し下げられた側の差し替えで 胡椒の全長かも 級の弱い組を増やさない)以内のものを、合計の小さい順に最大 2 件(変種枠の外に追記)
+        do {
+            let takenPositional = results.compactMap { candidate in
+                positionalAlternatives[candidate].map { (candidate, $0) }
+            }
+            var crossed: [(delta: Int, joined: String)] = []
+            for (lhsIndex, lhs) in takenPositional.enumerated() {
+                for rhs in takenPositional[(lhsIndex + 1)...] where lhs.1.position != rhs.1.position {
+                    let delta = lhs.1.delta + rhs.1.delta
+                    guard lhs.1.delta >= 0, rhs.1.delta >= 0, delta <= Self.multiClauseCrossVariantMaxDelta else { continue }
+                    var crossSegments = segments
+                    crossSegments[lhs.1.position] = lhs.1.surface
+                    crossSegments[rhs.1.position] = rhs.1.surface
+                    let crossJoined = crossSegments.joined()
+                    guard crossJoined != normalized, !results.contains(crossJoined) else { continue }
+                    crossed.append((delta, crossJoined))
+                }
+            }
+            crossed.sort { $0.delta < $1.delta }
+            for entry in crossed.prefix(Self.multiClauseCrossVariantLimit) where !results.contains(entry.joined) {
+                results.append(entry.joined)
             }
         }
         // かなに是正した「なら」の元の漢字版(買う奈良 等)は候補として温存する(#2以降)。

@@ -23661,3 +23661,17 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 3567: 別々の文節を同時に差し替えた組み合わせ変種(かおりはうつしても → 香りは移しても。ユーザ報告)
+    func testRegressionRealLMCrossPositionVariant() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let kaori = converter.multiClauseCandidates(for: "かおりはうつしても", systemCandidateMode: .surface)
+        XCTAssertTrue(kaori.contains("香りは移しても"), "multi=\(kaori)")
+        XCTAssertTrue(kaori.contains("薫は移しても"), "multi=\(kaori)")
+        // 組み合わせで弱い候補を増やさない
+        let kosho = converter.multiClauseCandidates(for: "こしょうのぜんちょうかも", systemCandidateMode: .surface)
+        XCTAssertEqual(kosho.count, 4, "multi=\(kosho)")
+    }
+}
