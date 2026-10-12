@@ -23714,3 +23714,24 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(ii.first, "香りはいい", "multi=\(ii)")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 3571: うつす は 移す が先(ユーザ指定)。写真/答案/ノートなど書き写す物・撮る物の後ろでだけ 写す が先
+    func testRegressionRealLMUtsusuMoveFirstExceptCopyObjects() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let cases: [(String, String)] = [
+            ("かおりをうつしても", "香りを移しても"),
+            ("にもつをうつして", "荷物を移して"),
+            ("データをうつして", "データを移して"),
+            ("しゃしんをうつして", "写真を写して"),
+            ("しゃしんをうつす", "写真を写す"),
+            ("とうあんをうつして", "答案を写して"),
+            ("のーとをうつして", "ノートを写して")
+        ]
+        for (reading, expected) in cases {
+            let result = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(result.first, expected, "\(reading) multi=\(result)")
+        }
+    }
+}
