@@ -373,6 +373,8 @@
 	        <dict><key>phrase</key><string>Fettuccine</string><key>shortcut</key><string>ふぇっとぅちーね</string><key>pos</key><string>名詞</string></dict>	<!-- No.303 -->
 	        <dict><key>phrase</key><string>フェットゥチーネ・コン・スピナーチ</string><key>shortcut</key><string>ふぇっとぅちーねこんすぴなーち</string><key>pos</key><string>名詞</string></dict>	<!-- No.310 -->
 	        <dict><key>phrase</key><string>Fettuccine con spinaci</string><key>shortcut</key><string>ふぇっとぅちーねこんすぴなーち</string><key>pos</key><string>名詞</string></dict>	<!-- No.310 -->
+	        <dict><key>phrase</key><string>タリアテッレ</string><key>shortcut</key><string>たりあてっれ</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>Tagliatelle</string><key>shortcut</key><string>たりあてっれ</string><key>pos</key><string>名詞</string></dict>
 	<!-- パスタのソース(カタカナと伊語を同じ読みで。ユーザ提供 3497) -->
 	        <dict><key>phrase</key><string>アマトリチャーナ</string><key>shortcut</key><string>あまとりちゃーな</string><key>pos</key><string>名詞</string></dict>
 	        <dict><key>phrase</key><string>amatriciana</string><key>shortcut</key><string>あまとりちゃーな</string><key>pos</key><string>名詞</string></dict>
