@@ -220,6 +220,7 @@
 	<dict><key>phrase</key><string>アサッテ</string><key>shortcut</key><string>あさって</string></dict>	<!-- アサッテ: 明後日 のカタカナ表記ゆれ収穫(wc が あさって と同値4710=同一語彙の別表記。固有名詞ではない)。あさって の 2 位を占めていた(ユーザ指定 3449) -->
 	<dict><key>phrase</key><string>タイワン</string><key>shortcut</key><string>たいわん</string></dict>	<!-- タイワン: 台湾 のカタカナ表記ゆれ収穫(たいわん rank1)。カタカナ需要は無く候補を汚すため 抑制(ユーザ指定 2529)。🇹🇼/台湾/台灣 は温存 -->
 	<dict><key>phrase</key><string>草ムラ</string><key>shortcut</key><string>くさむら</string></dict>	<!-- 草ムラ: 草むら のカタカナ強調収穫(ユーザ指定 3560)。草むら/叢 を出す -->
+	<dict><key>phrase</key><string>ノカ</string><key>shortcut</key><string>のか</string></dict>	<!-- ノカ: Sudachi の片仮名固有名詞(のか=野花 等の別表記)。のかな の 1 位を ノカな が取っていた(ユーザ指定 3564)。のか/のかな は かな先頭 -->
 	<!-- ※ イイね: 今どき流行らない書き方(イイ=カタカナ強調)。いい+ね 合成由来なので読み いいね の直接ペアで抑制(イイ感じ 等、他の読みでの イイ は温存)。※踊り字 いゝね は旧仮名・踊り字トグルのフィルタで制御(個別抑制は撤去) -->
 
 	<!-- ■ 交ぜ書き・表記ゆれの収穫(石ユ/ぜい金 等、意味のない混ぜ表記) -->

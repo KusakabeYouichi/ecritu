@@ -23606,3 +23606,18 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 3564: ノカ(Sudachi の片仮名固有名詞)を抑制し、のかな を 1 位に(ユーザ指定)
+    func testRegressionNokaSuppressedNokanaFirst() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for limit in [8, 30] {
+            let list = converter.candidates(for: "のかな", limit: limit, systemCandidateMode: .surface)
+            XCTAssertEqual(list.first, "のかな", "limit=\(limit) list=\(list)")
+            XCTAssertFalse(list.contains("ノカな"), "list=\(list)")
+        }
+        let noka = converter.candidates(for: "のか", limit: 8, systemCandidateMode: .surface)
+        XCTAssertFalse(noka.contains("ノカ"), "list=\(noka)")
+    }
+}
