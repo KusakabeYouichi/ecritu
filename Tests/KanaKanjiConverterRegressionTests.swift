@@ -23700,3 +23700,17 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(kore.first, "これって何", "multi=\(kore)")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 3570: かおり は文中でも 香り が先頭(薫 は 338 差で先頭になっていた。ユーザ報告 かおりはうつしても)
+    func testRegressionRealLMKaoriNounFirstMidSentence() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let ha = converter.multiClauseCandidates(for: "かおりはうつしても", systemCandidateMode: .surface)
+        XCTAssertEqual(ha.first, "香りは移しても", "multi=\(ha)")
+        let wo = converter.multiClauseCandidates(for: "かおりをうつしても", systemCandidateMode: .surface)
+        XCTAssertEqual(wo.first, "香りを移しても", "multi=\(wo)")
+        let ii = converter.multiClauseCandidates(for: "かおりはいい", systemCandidateMode: .surface)
+        XCTAssertEqual(ii.first, "香りはいい", "multi=\(ii)")
+    }
+}
