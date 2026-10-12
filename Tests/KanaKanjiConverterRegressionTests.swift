@@ -23675,3 +23675,14 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(kosho.count, 4, "multi=\(kosho)")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 3568: をふるくは は 助詞 を が付いても 古くは が先(旧くは に入れ替わらない)
+    func testRegressionRealLMWoFurukuOrder() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let furuku = converter.multiClauseCandidates(for: "をふるくは", systemCandidateMode: .surface)
+        XCTAssertEqual(furuku.first, "を古くは", "multi=\(furuku)")
+        XCTAssertTrue(furuku.contains("を旧くは"), "multi=\(furuku)")
+    }
+}
