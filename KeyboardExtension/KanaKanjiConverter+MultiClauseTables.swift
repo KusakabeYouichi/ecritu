@@ -1099,6 +1099,9 @@ extension KanaKanjiConverter {
     // Nベスト風バリアント: 最良経路の1文節を同区間の次点表層に差し替えて提示する件数と、
     // 採用するコスト差の上限(bigram拮抗の第2候補: しかく→視覚/資格 等を拾う)。
     static let multiClauseVariantLimit = 3
+    // 別々の文節を同時に差し替えた組み合わせ変種を、変種枠の外に追記する最大件数(3567)
+    static let multiClauseCrossVariantLimit = 2
+    static let multiClauseCrossVariantMaxDelta = 150
     // 変種枠を文節位置で散らすときのコスト差の上限(2939、ユーザ報告 こしょうのぜんちょうかも)。
     // コスト差順に詰めるだけだと 1 文節が枠を独占し、{故障の全長, 胡椒の全長(100), 呼称の全長(100),
     // 湖沼の全長(256)} と 全長 ばかりで 故障の前兆(451)が 1 つも出ない。1 巡目で「まだ使っていない
