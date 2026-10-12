@@ -163,6 +163,8 @@ enum SettingsKeys {
     // 320行ローテーションに押し流され、起動計測が数回で消えてしまう(実測で5行しか残らず、
     // 遅い回と速い回を比べられなかった)。起動時間はばらつくので、比較には履歴が要る。
     static let containerBootstrapTimingHistory = "containerBootstrapTimingHistory"
+    // 遅い回(200ms 以上)だけの履歴。通常の履歴(40件)は数日で流れるので、引っかかった回を後から拾えるよう別キーに残す(3570)
+    static let containerBootstrapSlowTimingHistory = "containerBootstrapSlowTimingHistory"
     static let keyboardDiagnosticsInstallMarker = "keyboardDiagnosticsInstallMarker"
     static let keyboardDiagnosticsSessionActive = "keyboardDiagnosticsSessionActive"
     static let keyboardDiagnosticsSessionOwnerToken = "keyboardDiagnosticsSessionOwnerToken"
