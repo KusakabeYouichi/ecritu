@@ -23621,3 +23621,20 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertFalse(noka.contains("ノカ"), "list=\(noka)")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 3565: 命令形(え段)の直後に だけ は付かない(それだけで が 剃れ+だけ+で。ユーザ報告)
+    func testRegressionRealLMDakeNotAfterImperativeForm() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let sore = converter.multiClauseCandidates(for: "それだけでみる", systemCandidateMode: .surface)
+        XCTAssertEqual(sore.first, "それだけで見る", "multi=\(sore)")
+        let desu = converter.multiClauseCandidates(for: "それだけです", systemCandidateMode: .surface)
+        XCTAssertEqual(desu.first, "それだけです", "multi=\(desu)")
+        // 終止形+だけ は従来どおり
+        let taberu = converter.multiClauseCandidates(for: "たべるだけ", systemCandidateMode: .surface)
+        XCTAssertEqual(taberu.first, "食べるだけ", "multi=\(taberu)")
+        let shinu = converter.multiClauseCandidates(for: "しぬだけ", systemCandidateMode: .surface)
+        XCTAssertEqual(shinu.first, "死ぬだけ", "multi=\(shinu)")
+    }
+}
