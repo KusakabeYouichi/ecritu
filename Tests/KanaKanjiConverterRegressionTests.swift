@@ -23589,3 +23589,20 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(nihaku.contains("二泊"), "list=\(nihaku)")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 3563: 三井 が 三つ井 の「省略形」として落とされていた(数詞+つ は送り仮名ではない。ユーザ報告)
+    func testRegressionMitsuiNotDroppedAsOkuriganaVariant() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for limit in [8, 30] {
+                let list = converter.candidates(for: "みつい", limit: limit, systemCandidateMode: mode)
+                XCTAssertEqual(list.first, "三井", "mode=\(mode.rawValue) limit=\(limit) list=\(list)")
+                if let tsu = list.firstIndex(of: "三つ井"), let katakana = list.firstIndex(of: "三ツ井") {
+                    XCTAssertGreaterThan(tsu, katakana, "list=\(list)")
+                }
+            }
+        }
+    }
+}
