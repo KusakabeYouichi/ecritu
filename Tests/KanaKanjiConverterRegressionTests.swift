@@ -23638,3 +23638,26 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(shinu.first, "死ぬだけ", "multi=\(shinu)")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 3566: 終止形動詞の直後の きなくなる は 気(見る気なくなる)。着なくなる の取り違えを避ける(ユーザ報告)
+    func testRegressionRealLMKiAfterDictionaryFormVerb() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let cases: [(String, String)] = [
+            ("それだけでみるきなくなる", "それだけで見る気なくなる"),
+            ("それだけでみるきなくなった", "それだけで見る気なくなった"),
+            ("みるきなくなった", "見る気なくなった"),
+            ("いくきなくなった", "行く気なくなった"),
+            ("やるきなくなる", "やる気なくなる"),
+            ("かんがえるきもない", "考える気もない"),
+            // 着る の活用は従来どおり
+            ("ふくをきた", "服を着た"),
+            ("それをきなくなった", "それを着なくなった"),
+        ]
+        for (reading, expected) in cases {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "reading=\(reading) multi=\(multi)")
+        }
+    }
+}

@@ -2165,6 +2165,23 @@ extension KanaKanjiConverter {
             if isDakeAfterERowDerived {
                 penalty += Self.multiClauseImperativeParticlePenalty
             }
+            // 終止形の動詞(見る/やる/行く)の直後の きなく…/きた… は 気(見る気なくなる/やる気がない)で、一段 着る の活用形
+            // (着なくなる)が動詞の終止形に直接続く文は無い。かな みる の直後は OOV 定額の 着なくなる(7200)が
+            // みる→気 の bigram 欠落(6164)より安く、見る着なくなる になっていた(それだけでみるきなくなる。ユーザ報告 3566)
+            if isInflectionDerived, !isKanaIdentity, surface.hasPrefix("着"), reading.hasPrefix("き"),
+                prevIsDictionaryFormPredicate
+                    || (prevIsKanaIdentity && (prevReading?.count ?? 0) >= 2
+                        && (prevReading?.last.map { "るくぐうすつぬぶむ".contains($0) } ?? false)) {
+                penalty += Self.multiClauseKiruAfterDictionaryFormVerbPenalty
+            }
+            // 終止形動詞の直後の 気(見る気/やる気/行く気。連体形+名詞)。bigram が無い動詞が多く(見る→気/気→なくなる 欠落)、
+            // OOV の 水松着なくなった(8700)に負けていた。活用語尾の かな みる も同様に扱う(3566)
+            if surface == "気", reading == "き", !isKanaIdentity,
+                prevIsDictionaryFormPredicate
+                    || (prevIsKanaIdentity && (prevReading?.count ?? 0) >= 2
+                        && (prevReading?.last.map { "るくぐうすつぬぶむ".contains($0) } ?? false)) {
+                penalty -= Self.multiClauseKiAfterDictionaryFormVerbBonus
+            }
             // 着く(到着)は 〜に/へ/まで つく。それ以外の直後(区別つく/気がつく/身につく…の 付く)では 着 を後ろに(3270)。
             // つく の seed は 着く 先頭(つきました=着きました、3251)なので、文脈で 付く に譲る
             if isInflectionDerived, !prevIsBOS, reading.hasPrefix("つ"), surface.hasPrefix("着"),
