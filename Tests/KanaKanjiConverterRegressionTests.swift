@@ -3030,7 +3030,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             ("かろう", ["刈ろう", "家老"]),
             ("こうこ", ["公庫", "香茹", "考古"]),  // 2927 の目視で書き言葉側(公庫)を先頭に
             ("こうし", ["仔牛", "講師", "行使", "格子", "孔子", "光子"]),
-            ("こうしん", ["更新", "香信", "行進"]),  // 2927 の目視で書き言葉側(更新)を先頭に
+            ("こうしん", ["更新", "行進", "香信"]),  // 2927 の目視で書き言葉側(更新)を先頭に
             ("こんだ", ["混んだ", "込んだ", "今田"]),
             ("しんとう", ["浸透", "神道", "心頭", "震盪"]),
             ("するっ", ["するっ", "スルっ", "スルッ"]),
@@ -23808,5 +23808,15 @@ extension KanaKanjiConverterRegressionTests {
         let a = converter.multiClauseCandidates(for: "どうがとってない", systemCandidateMode: .surface)
         XCTAssertEqual(a.first, "動画撮ってない", "multi=\(a)")
         XCTAssertFalse(a.contains { $0.hasPrefix("道が") }, "multi=\(a)")
+    }
+
+    // 3581: こうしん は 更新→行進→香信。きろくこうしん は 記録更新(記録香信 が先頭だった。ユーザ報告)
+    func testRegressionRealLMKoushinOrder() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let single = converter.candidates(for: "こうしん", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(3)), ["更新", "行進", "香信"], "single=\(single)")
+        let a = converter.multiClauseCandidates(for: "きろくこうしん", systemCandidateMode: .surface)
+        XCTAssertEqual(a.first, "記録更新", "multi=\(a)")
     }
 }
