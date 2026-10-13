@@ -665,7 +665,26 @@ extension KanaKanjiConverter {
         "じかんご": ["時間後"],
         "ふんご": ["分後"],
         "ぷんご": ["分後"],
-        "びょうご": ["秒後"]
+        "びょうご": ["秒後"],
+        // 数量+前(1年前/2週間前/3か月前)と 数量+ごと(1年ごと/3か月ごとに。3590)。〜前 は助詞が付くと 年まえに のように前がかなのまま、
+        // 〜ごと は 年呉とに になっていた。接尾の 毎 はかなの ごと(行なう の流儀と同じく、毎回・毎日は対象外)
+        "ねんまえ": ["年前"],
+        "しゅうかんまえ": ["週間前"],
+        "かげつまえ": ["か月前", "カ月前", "ヶ月前", "ヵ月前", "箇月前"],
+        "にちまえ": ["日前"],
+        "じかんまえ": ["時間前"],
+        "ふんまえ": ["分前"],
+        "ぷんまえ": ["分前"],
+        "びょうまえ": ["秒前"],
+        "ねんごと": ["年ごと"],
+        "しゅうかんごと": ["週間ごと"],
+        "かげつごと": ["か月ごと", "カ月ごと", "ヶ月ごと", "ヵ月ごと", "箇月ごと"],
+        "にちごと": ["日ごと"],
+        "じかんごと": ["時間ごと"],
+        "ふんごと": ["分ごと"],
+        "ぷんごと": ["分ごと"],
+        "びょうごと": ["秒ごと"],
+        "かいごと": ["回ごと"]
     ]
 
     // 数の単位(十/百/千/万/億/兆)の読み。数字の直後の まんぼん/せんえん/おくえん は 単位+助数詞(3万本/5千円/1億円)として
@@ -776,10 +795,12 @@ extension KanaKanjiConverter {
         // 助数詞ではないが数字の直後なら先頭に来るべき語(定数コメント参照。3185)
         boosted += (Self.digitContextPreferredSurfacesByReading[reading] ?? [])
             .filter { !boosted.contains($0) && !suppressedCandidates.contains($0) }
-        // 数量+後に助詞が付いた形(1年後に/3か月後には。3589)。読み全体が 〜後+助詞 のときだけ、助詞をかなのまま足す
+        // 数量+後/前/ごと に助詞が付いた形(1年後に/3か月後には/1年前に/1年ごとに。3589/3590)。読み全体が 〜後+助詞 のときだけ、助詞をかなのまま足す
+        // 長い読みを先に(ねんごと+に が ねんご+とに より先)
         for (afterReading, afterSurfaces) in Self.digitContextPreferredSurfacesByReading
-        where afterReading.hasSuffix("ご") && afterReading != "かいから" && reading.count > afterReading.count
-            && reading.hasPrefix(afterReading) {
+            .sorted(by: { $0.key.count != $1.key.count ? $0.key.count > $1.key.count : $0.key < $1.key })
+        where (afterReading.hasSuffix("ご") || afterReading.hasSuffix("まえ") || afterReading.hasSuffix("ごと"))
+            && reading.count > afterReading.count && reading.hasPrefix(afterReading) {
             let tail = String(reading.dropFirst(afterReading.count))
             guard Self.counterAfterParticleTails.contains(tail) else { continue }
             boosted += afterSurfaces.map { $0 + tail }
