@@ -23960,4 +23960,19 @@ extension KanaKanjiConverterRegressionTests {
             XCTAssertEqual((single + multi).first, expected, "\(reading) single=\(single) multi=\(multi)")
         }
     }
+
+    func testRegressionRealLMFutaShiteokeAndKonoteno() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let cases: [(String, [String])] = [
+            ("ふたしておけ", ["蓋しておけ", "ふたしておけ"]), ("ふたしておけば", ["蓋しておけば", "ふたしておけば"]),
+            ("このての", ["この手の"]), ("このてのもの", ["この手のもの"]),
+        ]
+        for (reading, expected) in cases {
+            let single = converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            let all = single + multi
+            XCTAssertEqual(Array(all.prefix(expected.count)), expected, "\(reading) single=\(single) multi=\(multi)")
+        }
+    }
 }
