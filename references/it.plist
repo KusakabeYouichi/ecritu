@@ -4,6 +4,8 @@
 <array>
 	<!-- Apple製品 -->
 	<dict><key>phrase</key><string></string><key>shortcut</key><string>あっぷる</string></dict>
+	<dict><key>phrase</key><string>Apple Silicon</string><key>shortcut</key><string>あっぷるしりこん</string></dict>
+	<dict><key>phrase</key><string>Intel Mac</string><key>shortcut</key><string>いんてるまっく</string></dict>
 	<dict><key>phrase</key><string>AirMac</string><key>shortcut</key><string>えあまっく</string></dict>
 	<dict><key>phrase</key><string>AirMac Express</string><key>shortcut</key><string>えあまっくえくすぷれす</string></dict>
 	<dict><key>phrase</key><string>AirMac Extreme</string><key>shortcut</key><string>えあまっくえくすとりーむ</string></dict>
@@ -19,6 +21,7 @@
 	<dict><key>phrase</key><string>Apple</string><key>shortcut</key><string>あっぷる</string></dict>
 	<dict><key>phrase</key><string>HomePod mini</string><key>shortcut</key><string>ほーむぽっどみに</string></dict>
 	<dict><key>phrase</key><string>HomePod</string><key>shortcut</key><string>ほーむぽっど</string></dict>
+	<dict><key>phrase</key><string>HomeView</string><key>shortcut</key><string>ほーむゔゅー</string></dict>
 	<dict><key>phrase</key><string>iMac</string><key>shortcut</key><string>あいまっく</string></dict>
 	<dict><key>phrase</key><string>iPad</string><key>shortcut</key><string>あいぱっど</string></dict>
 	<dict><key>phrase</key><string>iPad Air</string><key>shortcut</key><string>あいぱっど</string></dict>
@@ -75,6 +78,8 @@
 	<dict><key>phrase</key><string>Smart Keyboard Folio</string><key>shortcut</key><string>すまーときーぼーどふぉりお</string></dict>
 
 	<!-- OSや機能 -->
+	<dict><key>phrase</key><string>Rosetta</string><key>shortcut</key><string>ろぜった</string></dict>
+	<dict><key>phrase</key><string>Boot Camp</string><key>shortcut</key><string>ぶーときゃんぷ</string></dict>
 	<dict><key>phrase</key><string>MagSafe</string><key>shortcut</key><string>まぐせいふ</string></dict>
 	<dict><key>phrase</key><string>Lightning</string><key>shortcut</key><string>らいとにんぐ</string></dict>
 	<dict><key>phrase</key><string>AirDrop</string><key>shortcut</key><string>えあどろっぷ</string></dict>
