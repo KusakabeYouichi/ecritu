@@ -343,8 +343,8 @@ extension ContentView {
 
     static let conservativePresetValues: [String: Any] = [
         SettingsKeys.kanaLayoutMode: KanaLayoutOption.threeByThreePlusWa.rawValue,
-        SettingsKeys.latinLayoutMode: LatinLayoutOption.azerty.rawValue,
-        SettingsKeys.numberLayoutMode: NumberLayoutOption.clavier.rawValue,
+        SettingsKeys.latinLayoutMode: LatinLayoutOption.flick.rawValue,
+        SettingsKeys.numberLayoutMode: NumberLayoutOption.telephone.rawValue,
         SettingsKeys.formattedNumberKeypadLayout: FormattedNumberKeypadOption.calculette.rawValue,
         SettingsKeys.basicSymbolOrder: BasicSymbolOrderOption.ansi.rawValue,
         SettingsKeys.kanaModifierPlacement: KanaModifierPlacementOption.postfix.rawValue,
@@ -691,7 +691,7 @@ extension ContentView {
         case .strategicDefaults:
             return "すべての設定を組み込みの標準値(戦略的初期設定)に戻します。語彙・学習内容はそのままです。"
         case .conservativeDefaults:
-            return "すべての設定を作者の使用設定(3x3+わ・AZERTY・後置修飾・littlebear式のフリック 等)にします。iOS の連絡先の名前も候補に使う設定になり、まだ許可していなければ連絡先へのアクセスの許可を求めます。語彙・学習内容はそのままです。"
+            return "すべての設定を作者の使用設定(3x3+わ・ラテン文字は 3x3・数字は téléphone・後置修飾・littlebear式のフリック 等)にします。iOS の連絡先の名前も候補に使う設定になり、まだ許可していなければ連絡先へのアクセスの許可を求めます。語彙・学習内容はそのままです。"
         case .contemporaryDefaults:
             return "すべての設定を保守的初期設定と同じにし、かなで書く言葉(所謂・即ち・事・此処 など)は 5 つの仲間すべてで漢字を出さないようにします。iOS の連絡先の名前も候補に使う設定になり、まだ許可していなければ連絡先へのアクセスの許可を求めます。語彙・学習内容はそのままです。"
         case .restoreStashedSettings:
