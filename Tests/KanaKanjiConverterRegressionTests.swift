@@ -23763,3 +23763,15 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(a.first, "ざっと目を通す", "multi=\(a)")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 3577: むしろこのほうが は 方 が先(この→法 の連接が 方 より安く 法 が先頭だった。ユーザ報告)
+    func testRegressionRealLMKonoHouGaPrefersKata() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let a = converter.multiClauseCandidates(for: "むしろこのほうが", systemCandidateMode: .surface)
+        XCTAssertEqual(a.first, "むしろこの方が", "multi=\(a)")
+        let b = converter.multiClauseCandidates(for: "このほうがいい", systemCandidateMode: .surface)
+        XCTAssertEqual(b.first, "この方がいい", "multi=\(b)")
+    }
+}
