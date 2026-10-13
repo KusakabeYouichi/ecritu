@@ -108,6 +108,16 @@ Flag names shown on long-press are generated at runtime from Foundation's
   An earlier build had used readings/categories scraped from a third-party
   keyboard's website; those were removed and re-authored.
 
+## pokemon-ime-dic — Pokémon species names
+
+- https://github.com/Umichang/pokemon-ime-dic — MIT License, Copyright (c) 2020 Kai Kuchiki.
+- 893 entries (reading + name, up to Pokédex No. 890) are converted into
+  `references/poké.plist` (2026-10-13) and loaded as supplementary vocabulary
+  (SecondVocab: does not outrank general words that share a reading).
+- The MIT license text is included in `APP_STORE_OPEN_SOURCE_NOTICES.md`
+  (shown in-app). Pokémon and the names of the Pokémon are trademarks of
+  Nintendo, Creatures Inc. and GAME FREAK inc.
+
 ## Unicode License text
 
 `third_party/unicode/UNICODE-LICENSE.txt` (Unicode License v3) is bundled

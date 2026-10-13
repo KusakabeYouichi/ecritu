@@ -1171,6 +1171,10 @@ final class KanaKanjiConverter {
         // は対象外
         var exemptCandidates = context.userCandidateSet.union(context.learnedCandidates)
         exemptCandidates.formUnion(KanaKanjiSeedDictionary.exactReadingOnlySeed[reading] ?? [])
+        // 補助語彙(poké/ryukyu/vin 等の手選別リスト=SecondVocab)のカタカナは強調表記ではない。
+        // ひとかげ=ヒトカゲ/ふしぎだね=フシギダネ のようなポケモンの種族名が、同じ読みにかな・漢字の候補があるだけで
+        // 「LM 未収録のカタカナ化」として抑制されていた(3587)
+        exemptCandidates.formUnion(store.loadSupplementalSystemDictionary().candidates(for: reading))
         var katakanaTargets: [String] = []
         var mazegakiTargets: [String] = []
         var kanjiAlternatives: [String] = []
