@@ -2,7 +2,7 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <array>
-	<!-- ポケモンの種族名(poké): Umichang/pokemon-ime-dic(MIT License, Copyright (c) 2020 Kai Kuchiki, https://github.com/Umichang/pokemon-ime-dic)の用語辞書から取り込み(2026-10-13)。第8世代(図鑑No.890 ムゲンダイナ)まで。種族名だけで、人物・技・道具は含まない。補助語彙(SecondVocab)として読み込むので、同じ読みに LM 実在の一般語がある語(でんりゅう=電流 等)は昇格しない。ポケモンは任天堂・クリーチャーズ・ゲームフリークの商標。 日常語と読みが同じで先頭を奪うため除外した語: コンパン(こんぱん=今般)、カブト(かぶと=兜)、オタチ(おたち=お立ち)、エンテイ(えんてい=堰堤/園庭)、フカマル(ふかまる=深まる)、ヒトツキ(ひとつき=ひと月)、カリキリ(かりきり=借り切り)。読みに ・ : ヴ を含む語は、入力できる読み(かぷこけこ/たいぷぬる/しるゔぁでぃ)に直した -->
+	<!-- ポケモンの種族名(poké): Umichang/pokemon-ime-dic(MIT License, Copyright (c) 2020 Kai Kuchiki, https://github.com/Umichang/pokemon-ime-dic)の用語辞書から取り込み(2026-10-13)。第9世代(図鑑No.1025 モモワロウ)まで(第8世代の No.893〜905 と第9世代は PokéAPI から追加)。種族名だけで、人物・技・道具は含まない。補助語彙(SecondVocab)として読み込むので、同じ読みに LM 実在の一般語がある語(でんりゅう=電流 等)は昇格しない。ポケモンは任天堂・クリーチャーズ・ゲームフリークの商標。 日常語と読みが同じで先頭を奪うため除外した語: ボチ(ぼち=墓地)、カイデン(かいでん=皆伝)、コンパン(こんぱん=今般)、カブト(かぶと=兜)、オタチ(おたち=お立ち)、エンテイ(えんてい=堰堤/園庭)、フカマル(ふかまる=深まる)、ヒトツキ(ひとつき=ひと月)、カリキリ(かりきり=借り切り)。読みに ・ : ヴ を含む語は、入力できる読み(かぷこけこ/たいぷぬる/しるゔぁでぃ)に直した -->
 
 	<!-- ■ 第1世代(カントー) -->
 	<dict><key>phrase</key><string>フシギダネ</string><key>shortcut</key><string>ふしぎだね</string></dict>	<!-- No.1 -->
@@ -907,6 +907,138 @@
 	<dict><key>phrase</key><string>ダクマ</string><key>shortcut</key><string>だくま</string></dict>	<!-- （図鑑No.不明） -->
 	<dict><key>phrase</key><string>ウーラオス</string><key>shortcut</key><string>うーらおす</string></dict>	<!-- （図鑑No.不明） -->
 	<dict><key>phrase</key><string>バドレックス</string><key>shortcut</key><string>ばどれっくす</string></dict>	<!-- （図鑑No.不明） -->
+	<dict><key>phrase</key><string>ザルード</string><key>shortcut</key><string>ざるーど</string></dict>	<!-- No.893 -->
+	<dict><key>phrase</key><string>レジエレキ</string><key>shortcut</key><string>れじえれき</string></dict>	<!-- No.894 -->
+	<dict><key>phrase</key><string>レジドラゴ</string><key>shortcut</key><string>れじどらご</string></dict>	<!-- No.895 -->
+	<dict><key>phrase</key><string>ブリザポス</string><key>shortcut</key><string>ぶりざぽす</string></dict>	<!-- No.896 -->
+	<dict><key>phrase</key><string>レイスポス</string><key>shortcut</key><string>れいすぽす</string></dict>	<!-- No.897 -->
+	<dict><key>phrase</key><string>アヤシシ</string><key>shortcut</key><string>あやしし</string></dict>	<!-- No.899 -->
+	<dict><key>phrase</key><string>バサギリ</string><key>shortcut</key><string>ばさぎり</string></dict>	<!-- No.900 -->
+	<dict><key>phrase</key><string>ガチグマ</string><key>shortcut</key><string>がちぐま</string></dict>	<!-- No.901 -->
+	<dict><key>phrase</key><string>イダイトウ</string><key>shortcut</key><string>いだいとう</string></dict>	<!-- No.902 -->
+	<dict><key>phrase</key><string>オオニューラ</string><key>shortcut</key><string>おおにゅーら</string></dict>	<!-- No.903 -->
+	<dict><key>phrase</key><string>ハリーマン</string><key>shortcut</key><string>はりーまん</string></dict>	<!-- No.904 -->
+	<dict><key>phrase</key><string>ラブトロス</string><key>shortcut</key><string>らぶとろす</string></dict>	<!-- No.905 -->
+
+	<!-- ■ 第9世代(パルデア)。PokéAPI(BSD-3-Clause)の species_names(ja-Hrkt)から追加(2026-10-13) -->
+	<dict><key>phrase</key><string>ニャオハ</string><key>shortcut</key><string>にゃおは</string></dict>	<!-- No.906 -->
+	<dict><key>phrase</key><string>ニャローテ</string><key>shortcut</key><string>にゃろーて</string></dict>	<!-- No.907 -->
+	<dict><key>phrase</key><string>マスカーニャ</string><key>shortcut</key><string>ますかーにゃ</string></dict>	<!-- No.908 -->
+	<dict><key>phrase</key><string>ホゲータ</string><key>shortcut</key><string>ほげーた</string></dict>	<!-- No.909 -->
+	<dict><key>phrase</key><string>アチゲータ</string><key>shortcut</key><string>あちげーた</string></dict>	<!-- No.910 -->
+	<dict><key>phrase</key><string>ラウドボーン</string><key>shortcut</key><string>らうどぼーん</string></dict>	<!-- No.911 -->
+	<dict><key>phrase</key><string>クワッス</string><key>shortcut</key><string>くわっす</string></dict>	<!-- No.912 -->
+	<dict><key>phrase</key><string>ウェルカモ</string><key>shortcut</key><string>うぇるかも</string></dict>	<!-- No.913 -->
+	<dict><key>phrase</key><string>ウェーニバル</string><key>shortcut</key><string>うぇーにばる</string></dict>	<!-- No.914 -->
+	<dict><key>phrase</key><string>グルトン</string><key>shortcut</key><string>ぐるとん</string></dict>	<!-- No.915 -->
+	<dict><key>phrase</key><string>パフュートン</string><key>shortcut</key><string>ぱふゅーとん</string></dict>	<!-- No.916 -->
+	<dict><key>phrase</key><string>タマンチュラ</string><key>shortcut</key><string>たまんちゅら</string></dict>	<!-- No.917 -->
+	<dict><key>phrase</key><string>ワナイダー</string><key>shortcut</key><string>わないだー</string></dict>	<!-- No.918 -->
+	<dict><key>phrase</key><string>マメバッタ</string><key>shortcut</key><string>まめばった</string></dict>	<!-- No.919 -->
+	<dict><key>phrase</key><string>エクスレッグ</string><key>shortcut</key><string>えくすれっぐ</string></dict>	<!-- No.920 -->
+	<dict><key>phrase</key><string>パモ</string><key>shortcut</key><string>ぱも</string></dict>	<!-- No.921 -->
+	<dict><key>phrase</key><string>パモット</string><key>shortcut</key><string>ぱもっと</string></dict>	<!-- No.922 -->
+	<dict><key>phrase</key><string>パーモット</string><key>shortcut</key><string>ぱーもっと</string></dict>	<!-- No.923 -->
+	<dict><key>phrase</key><string>ワッカネズミ</string><key>shortcut</key><string>わっかねずみ</string></dict>	<!-- No.924 -->
+	<dict><key>phrase</key><string>イッカネズミ</string><key>shortcut</key><string>いっかねずみ</string></dict>	<!-- No.925 -->
+	<dict><key>phrase</key><string>パピモッチ</string><key>shortcut</key><string>ぱぴもっち</string></dict>	<!-- No.926 -->
+	<dict><key>phrase</key><string>バウッツェル</string><key>shortcut</key><string>ばうっつぇる</string></dict>	<!-- No.927 -->
+	<dict><key>phrase</key><string>ミニーブ</string><key>shortcut</key><string>みにーぶ</string></dict>	<!-- No.928 -->
+	<dict><key>phrase</key><string>オリーニョ</string><key>shortcut</key><string>おりーにょ</string></dict>	<!-- No.929 -->
+	<dict><key>phrase</key><string>オリーヴァ</string><key>shortcut</key><string>おりーゔぁ</string></dict>	<!-- No.930 -->
+	<dict><key>phrase</key><string>イキリンコ</string><key>shortcut</key><string>いきりんこ</string></dict>	<!-- No.931 -->
+	<dict><key>phrase</key><string>コジオ</string><key>shortcut</key><string>こじお</string></dict>	<!-- No.932 -->
+	<dict><key>phrase</key><string>ジオヅム</string><key>shortcut</key><string>じおづむ</string></dict>	<!-- No.933 -->
+	<dict><key>phrase</key><string>キョジオーン</string><key>shortcut</key><string>きょじおーん</string></dict>	<!-- No.934 -->
+	<dict><key>phrase</key><string>カルボウ</string><key>shortcut</key><string>かるぼう</string></dict>	<!-- No.935 -->
+	<dict><key>phrase</key><string>グレンアルマ</string><key>shortcut</key><string>ぐれんあるま</string></dict>	<!-- No.936 -->
+	<dict><key>phrase</key><string>ソウブレイズ</string><key>shortcut</key><string>そうぶれいず</string></dict>	<!-- No.937 -->
+	<dict><key>phrase</key><string>ズピカ</string><key>shortcut</key><string>ずぴか</string></dict>	<!-- No.938 -->
+	<dict><key>phrase</key><string>ハラバリー</string><key>shortcut</key><string>はらばりー</string></dict>	<!-- No.939 -->
+	<dict><key>phrase</key><string>タイカイデン</string><key>shortcut</key><string>たいかいでん</string></dict>	<!-- No.941 -->
+	<dict><key>phrase</key><string>オラチフ</string><key>shortcut</key><string>おらちふ</string></dict>	<!-- No.942 -->
+	<dict><key>phrase</key><string>マフィティフ</string><key>shortcut</key><string>まふぃてぃふ</string></dict>	<!-- No.943 -->
+	<dict><key>phrase</key><string>シルシュルー</string><key>shortcut</key><string>しるしゅるー</string></dict>	<!-- No.944 -->
+	<dict><key>phrase</key><string>タギングル</string><key>shortcut</key><string>たぎんぐる</string></dict>	<!-- No.945 -->
+	<dict><key>phrase</key><string>アノクサ</string><key>shortcut</key><string>あのくさ</string></dict>	<!-- No.946 -->
+	<dict><key>phrase</key><string>アノホラグサ</string><key>shortcut</key><string>あのほらぐさ</string></dict>	<!-- No.947 -->
+	<dict><key>phrase</key><string>ノノクラゲ</string><key>shortcut</key><string>ののくらげ</string></dict>	<!-- No.948 -->
+	<dict><key>phrase</key><string>リククラゲ</string><key>shortcut</key><string>りくくらげ</string></dict>	<!-- No.949 -->
+	<dict><key>phrase</key><string>ガケガニ</string><key>shortcut</key><string>がけがに</string></dict>	<!-- No.950 -->
+	<dict><key>phrase</key><string>カプサイジ</string><key>shortcut</key><string>かぷさいじ</string></dict>	<!-- No.951 -->
+	<dict><key>phrase</key><string>スコヴィラン</string><key>shortcut</key><string>すこゔぃらん</string></dict>	<!-- No.952 -->
+	<dict><key>phrase</key><string>シガロコ</string><key>shortcut</key><string>しがろこ</string></dict>	<!-- No.953 -->
+	<dict><key>phrase</key><string>ベラカス</string><key>shortcut</key><string>べらかす</string></dict>	<!-- No.954 -->
+	<dict><key>phrase</key><string>ヒラヒナ</string><key>shortcut</key><string>ひらひな</string></dict>	<!-- No.955 -->
+	<dict><key>phrase</key><string>クエスパトラ</string><key>shortcut</key><string>くえすぱとら</string></dict>	<!-- No.956 -->
+	<dict><key>phrase</key><string>カヌチャン</string><key>shortcut</key><string>かぬちゃん</string></dict>	<!-- No.957 -->
+	<dict><key>phrase</key><string>ナカヌチャン</string><key>shortcut</key><string>なかぬちゃん</string></dict>	<!-- No.958 -->
+	<dict><key>phrase</key><string>デカヌチャン</string><key>shortcut</key><string>でかぬちゃん</string></dict>	<!-- No.959 -->
+	<dict><key>phrase</key><string>ウミディグダ</string><key>shortcut</key><string>うみでぃぐだ</string></dict>	<!-- No.960 -->
+	<dict><key>phrase</key><string>ウミトリオ</string><key>shortcut</key><string>うみとりお</string></dict>	<!-- No.961 -->
+	<dict><key>phrase</key><string>オトシドリ</string><key>shortcut</key><string>おとしどり</string></dict>	<!-- No.962 -->
+	<dict><key>phrase</key><string>ナミイルカ</string><key>shortcut</key><string>なみいるか</string></dict>	<!-- No.963 -->
+	<dict><key>phrase</key><string>イルカマン</string><key>shortcut</key><string>いるかまん</string></dict>	<!-- No.964 -->
+	<dict><key>phrase</key><string>ブロロン</string><key>shortcut</key><string>ぶろろん</string></dict>	<!-- No.965 -->
+	<dict><key>phrase</key><string>ブロロローム</string><key>shortcut</key><string>ぶろろろーむ</string></dict>	<!-- No.966 -->
+	<dict><key>phrase</key><string>モトトカゲ</string><key>shortcut</key><string>もととかげ</string></dict>	<!-- No.967 -->
+	<dict><key>phrase</key><string>ミミズズ</string><key>shortcut</key><string>みみずず</string></dict>	<!-- No.968 -->
+	<dict><key>phrase</key><string>キラーメ</string><key>shortcut</key><string>きらーめ</string></dict>	<!-- No.969 -->
+	<dict><key>phrase</key><string>キラフロル</string><key>shortcut</key><string>きらふろる</string></dict>	<!-- No.970 -->
+	<dict><key>phrase</key><string>ハカドッグ</string><key>shortcut</key><string>はかどっぐ</string></dict>	<!-- No.972 -->
+	<dict><key>phrase</key><string>カラミンゴ</string><key>shortcut</key><string>からみんご</string></dict>	<!-- No.973 -->
+	<dict><key>phrase</key><string>アルクジラ</string><key>shortcut</key><string>あるくじら</string></dict>	<!-- No.974 -->
+	<dict><key>phrase</key><string>ハルクジラ</string><key>shortcut</key><string>はるくじら</string></dict>	<!-- No.975 -->
+	<dict><key>phrase</key><string>ミガルーサ</string><key>shortcut</key><string>みがるーさ</string></dict>	<!-- No.976 -->
+	<dict><key>phrase</key><string>ヘイラッシャ</string><key>shortcut</key><string>へいらっしゃ</string></dict>	<!-- No.977 -->
+	<dict><key>phrase</key><string>シャリタツ</string><key>shortcut</key><string>しゃりたつ</string></dict>	<!-- No.978 -->
+	<dict><key>phrase</key><string>コノヨザル</string><key>shortcut</key><string>このよざる</string></dict>	<!-- No.979 -->
+	<dict><key>phrase</key><string>ドオー</string><key>shortcut</key><string>どおー</string></dict>	<!-- No.980 -->
+	<dict><key>phrase</key><string>リキキリン</string><key>shortcut</key><string>りききりん</string></dict>	<!-- No.981 -->
+	<dict><key>phrase</key><string>ノココッチ</string><key>shortcut</key><string>のここっち</string></dict>	<!-- No.982 -->
+	<dict><key>phrase</key><string>ドドゲザン</string><key>shortcut</key><string>どどげざん</string></dict>	<!-- No.983 -->
+	<dict><key>phrase</key><string>イダイナキバ</string><key>shortcut</key><string>いだいなきば</string></dict>	<!-- No.984 -->
+	<dict><key>phrase</key><string>サケブシッポ</string><key>shortcut</key><string>さけぶしっぽ</string></dict>	<!-- No.985 -->
+	<dict><key>phrase</key><string>アラブルタケ</string><key>shortcut</key><string>あらぶるたけ</string></dict>	<!-- No.986 -->
+	<dict><key>phrase</key><string>ハバタクカミ</string><key>shortcut</key><string>はばたくかみ</string></dict>	<!-- No.987 -->
+	<dict><key>phrase</key><string>チヲハウハネ</string><key>shortcut</key><string>ちをはうはね</string></dict>	<!-- No.988 -->
+	<dict><key>phrase</key><string>スナノケガワ</string><key>shortcut</key><string>すなのけがわ</string></dict>	<!-- No.989 -->
+	<dict><key>phrase</key><string>テツノワダチ</string><key>shortcut</key><string>てつのわだち</string></dict>	<!-- No.990 -->
+	<dict><key>phrase</key><string>テツノツツミ</string><key>shortcut</key><string>てつのつつみ</string></dict>	<!-- No.991 -->
+	<dict><key>phrase</key><string>テツノカイナ</string><key>shortcut</key><string>てつのかいな</string></dict>	<!-- No.992 -->
+	<dict><key>phrase</key><string>テツノコウベ</string><key>shortcut</key><string>てつのこうべ</string></dict>	<!-- No.993 -->
+	<dict><key>phrase</key><string>テツノドクガ</string><key>shortcut</key><string>てつのどくが</string></dict>	<!-- No.994 -->
+	<dict><key>phrase</key><string>テツノイバラ</string><key>shortcut</key><string>てつのいばら</string></dict>	<!-- No.995 -->
+	<dict><key>phrase</key><string>セビエ</string><key>shortcut</key><string>せびえ</string></dict>	<!-- No.996 -->
+	<dict><key>phrase</key><string>セゴール</string><key>shortcut</key><string>せごーる</string></dict>	<!-- No.997 -->
+	<dict><key>phrase</key><string>セグレイブ</string><key>shortcut</key><string>せぐれいぶ</string></dict>	<!-- No.998 -->
+	<dict><key>phrase</key><string>コレクレー</string><key>shortcut</key><string>これくれー</string></dict>	<!-- No.999 -->
+	<dict><key>phrase</key><string>サーフゴー</string><key>shortcut</key><string>さーふごー</string></dict>	<!-- No.1000 -->
+	<dict><key>phrase</key><string>チオンジェン</string><key>shortcut</key><string>ちおんじぇん</string></dict>	<!-- No.1001 -->
+	<dict><key>phrase</key><string>パオジアン</string><key>shortcut</key><string>ぱおじあん</string></dict>	<!-- No.1002 -->
+	<dict><key>phrase</key><string>ディンルー</string><key>shortcut</key><string>でぃんるー</string></dict>	<!-- No.1003 -->
+	<dict><key>phrase</key><string>イーユイ</string><key>shortcut</key><string>いーゆい</string></dict>	<!-- No.1004 -->
+	<dict><key>phrase</key><string>トドロクツキ</string><key>shortcut</key><string>とどろくつき</string></dict>	<!-- No.1005 -->
+	<dict><key>phrase</key><string>テツノブジン</string><key>shortcut</key><string>てつのぶじん</string></dict>	<!-- No.1006 -->
+	<dict><key>phrase</key><string>コライドン</string><key>shortcut</key><string>こらいどん</string></dict>	<!-- No.1007 -->
+	<dict><key>phrase</key><string>ミライドン</string><key>shortcut</key><string>みらいどん</string></dict>	<!-- No.1008 -->
+	<dict><key>phrase</key><string>ウネルミナモ</string><key>shortcut</key><string>うねるみなも</string></dict>	<!-- No.1009 -->
+	<dict><key>phrase</key><string>テツノイサハ</string><key>shortcut</key><string>てつのいさは</string></dict>	<!-- No.1010 -->
+	<dict><key>phrase</key><string>カミッチュ</string><key>shortcut</key><string>かみっちゅ</string></dict>	<!-- No.1011 -->
+	<dict><key>phrase</key><string>チャデス</string><key>shortcut</key><string>ちゃです</string></dict>	<!-- No.1012 -->
+	<dict><key>phrase</key><string>ヤバソチャ</string><key>shortcut</key><string>やばそちゃ</string></dict>	<!-- No.1013 -->
+	<dict><key>phrase</key><string>イイネイヌ</string><key>shortcut</key><string>いいねいぬ</string></dict>	<!-- No.1014 -->
+	<dict><key>phrase</key><string>マシマシラ</string><key>shortcut</key><string>ましましら</string></dict>	<!-- No.1015 -->
+	<dict><key>phrase</key><string>キチキギス</string><key>shortcut</key><string>きちきぎす</string></dict>	<!-- No.1016 -->
+	<dict><key>phrase</key><string>オーガポン</string><key>shortcut</key><string>おーがぽん</string></dict>	<!-- No.1017 -->
+	<dict><key>phrase</key><string>ブリジュラス</string><key>shortcut</key><string>ぶりじゅらす</string></dict>	<!-- No.1018 -->
+	<dict><key>phrase</key><string>カミツオロチ</string><key>shortcut</key><string>かみつおろち</string></dict>	<!-- No.1019 -->
+	<dict><key>phrase</key><string>ウガツホムラ</string><key>shortcut</key><string>うがつほむら</string></dict>	<!-- No.1020 -->
+	<dict><key>phrase</key><string>タケルライコ</string><key>shortcut</key><string>たけるらいこ</string></dict>	<!-- No.1021 -->
+	<dict><key>phrase</key><string>テツノイワオ</string><key>shortcut</key><string>てつのいわお</string></dict>	<!-- No.1022 -->
+	<dict><key>phrase</key><string>テツノカシラ</string><key>shortcut</key><string>てつのかしら</string></dict>	<!-- No.1023 -->
+	<dict><key>phrase</key><string>テラパゴス</string><key>shortcut</key><string>てらぱごす</string></dict>	<!-- No.1024 -->
+	<dict><key>phrase</key><string>モモワロウ</string><key>shortcut</key><string>ももわろう</string></dict>	<!-- No.1025 -->
 
 </array>
 </plist>
