@@ -423,6 +423,7 @@ final class KeyboardViewController: UIInputViewController {
         static let directionProfile = "flickDirectionProfile"
         static let kanaLayoutMode = "kanaLayoutMode"
         static let kanaModifierPlacement = "kanaModifierPlacement"
+        static let kanaYaBracketStyle = "kanaYaBracketStyle"
         static let numberLayoutMode = "numberLayoutMode"
         static let latinLayoutMode = "latinLayoutMode"
         static let basicSymbolOrder = "basicSymbolOrder"

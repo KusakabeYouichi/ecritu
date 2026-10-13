@@ -28,6 +28,27 @@ struct DirectionSettingsSection: View {
     }
 }
 
+struct KanaYaBracketSettingsSection: View {
+    @Binding var selection: KanaYaBracketOption
+
+    var body: some View {
+        SegmentedSettingsCard(
+            title: "E.9 『や』キーの左右フリックの括弧",
+            pickerTitle: "『や』キーの左右フリックの括弧",
+            selection: $selection,
+            options: Array(KanaYaBracketOption.allCases),
+            optionTitle: { $0.title },
+            footnote: """
+            『や』キーを左右にフリックしたときに出す括弧を選びます。選ばなかった方の括弧は、同じ側へフリックしたあと指を離さず下へ動かす 2 段階フリックで出せます(上へ動かすと丸括弧です)。
+
+            『』を選ぶと 左右=『』、2 段階フリックの下=「」。「」を選ぶと 左右=「」、2 段階フリックの下=『』になります。初期設定は『』です(保守的初期設定では「」)。
+
+            切り替えは次回のキーボード表示時に反映されます。
+            """
+        )
+    }
+}
+
 struct KanaModifierSettingsSection: View {
     @Binding var selection: KanaModifierPlacementOption
 

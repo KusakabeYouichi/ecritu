@@ -469,6 +469,37 @@ final class KeyboardModeTransitionTests: XCTestCase {
         )
     }
 
+    // 3585: 『や』キーの括弧を「」にすると、1段目が 「/」、2 段階フリックの下が 『/』。他のキーの 「/」 には 2 段階フリックが無い
+    func testYaBracketCornerStyle() {
+        let corner = FlickKanaLayout.rows(for: .none, layoutMode: .fiveByTwo, profile: .ecritu, yaBracket: .corner)
+        let ya = corner.flatMap { $0 }.first { $0.label == "や" }
+        XCTAssertEqual(ya?.up, "「")
+        XCTAssertEqual(ya?.left, "」")
+        XCTAssertEqual(ya?.right, "ゆ")
+        XCTAssertEqual(ya?.down, "よ")
+
+        let double = FlickKanaLayout.rows(for: .none, layoutMode: .fiveByTwo, profile: .ecritu, yaBracket: .doubleCorner)
+        XCTAssertEqual(double.flatMap { $0 }.first { $0.label == "や" }?.up, "『")
+
+        let threeByThree = FlickKanaLayout.rows(for: .none, layoutMode: .threeByThreePlusWa, profile: .littlebear, yaBracket: .corner)
+        let yaLittleBear = threeByThree.flatMap { $0 }.first { $0.label == "や" }?.remapped(for: .littlebear)
+        XCTAssertEqual(yaLittleBear?.left, "「")
+        XCTAssertEqual(yaLittleBear?.right, "」")
+
+        func out(_ primary: String, _ vertical: FlickDirection, ya: Bool) -> String? {
+            FlickKanaLayout.secondaryBracketFlickOutput(forPrimaryOutput: primary, verticalDirection: vertical, isYaKey: ya)
+        }
+        XCTAssertEqual(out("「", .bas, ya: true), "『")
+        XCTAssertEqual(out("」", .bas, ya: true), "』")
+        XCTAssertEqual(out("「", .haut, ya: true), "(")
+        XCTAssertEqual(out("」", .haut, ya: true), ")")
+        XCTAssertNil(out("「", .bas, ya: false))
+        XCTAssertNil(out("」", .bas, ya: false))
+        // 『』 の設定(既定)は従来どおり
+        XCTAssertEqual(out("『", .bas, ya: true), "「")
+        XCTAssertEqual(out("』", .bas, ya: true), "」")
+    }
+
     func testWaSecondaryFlickOutputsForHistoricalKana() {
         // 案C(2026-08-31): を→下=ゐ、ー→下=ゑ、ん→下=〜
         XCTAssertEqual(

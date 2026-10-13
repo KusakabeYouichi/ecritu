@@ -9,6 +9,7 @@ extension KeyboardViewController {
         let directionProfile: FlickDirectionProfile
         let kanaLayoutMode: KanaLayoutMode
         let kanaModifierPlacementMode: KanaModifierPlacementMode
+        let kanaYaBracketMode: KanaYaBracketMode
         let numberLayoutMode: NumberLayoutMode
         let latinLayoutMode: LatinLayoutMode
         let accentPaletteRawValue: String
@@ -165,6 +166,11 @@ extension KeyboardViewController {
             key: SharedDefaultsKeys.kanaModifierPlacement,
             fallback: KanaModifierPlacementMode.prefix
         )
+        let kanaYaBracketMode = sharedEnumValue(
+            from: sharedDefaults,
+            key: SharedDefaultsKeys.kanaYaBracketStyle,
+            fallback: KanaYaBracketMode.doubleCorner
+        )
         let numberLayoutMode = sharedEnumValue(
             from: sharedDefaults,
             key: SharedDefaultsKeys.numberLayoutMode,
@@ -301,6 +307,7 @@ extension KeyboardViewController {
             directionProfile: directionProfile,
             kanaLayoutMode: kanaLayoutMode,
             kanaModifierPlacementMode: kanaModifierPlacementMode,
+            kanaYaBracketMode: kanaYaBracketMode,
             numberLayoutMode: numberLayoutMode,
             latinLayoutMode: latinLayoutMode,
             accentPaletteRawValue: accentPaletteRawValue,
@@ -369,6 +376,7 @@ extension KeyboardViewController {
     }
 
     func makeRootView(from configuration: RenderConfiguration) -> KeyboardRootView {
+        let rootViewYaBracketMode = configuration.kanaYaBracketMode
         var rootView = KeyboardRootView(
             onTextInput: { [weak self] text in
                 self?.handleTextInput(text)
@@ -560,6 +568,7 @@ extension KeyboardViewController {
         )
         // 寸法・位置の端末別分岐(KeyboardLayoutMetrics)。引数順に依存しないよう生成後に渡す。
         rootView.layoutMetrics = layoutMetrics
+        rootView.kanaYaBracketMode = rootViewYaBracketMode
         // 絵文字/顔文字の確定をショートカット語彙の先頭へ(3243)。保存は共有領域、表示側はキャッシュ破棄で次の描画から反映
         rootView.onShortcutCandidateCommitted = { [weak self] text in
             self?.kanaKanjiStore.prependShortcutCandidate(text)

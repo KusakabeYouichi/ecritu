@@ -31,6 +31,7 @@ enum SettingsCardKeys {
         "E.7": [SettingsKeys.kanaPostModifierFlickDakutenEnabled],
         "E.8": [SettingsKeys.latinLexiconEnglishEnabled, SettingsKeys.latinLexiconFrenchEnabled,
                 SettingsKeys.latinLexiconGermanEnabled, SettingsKeys.latinLexiconItalianEnabled],
+        "E.9": [SettingsKeys.kanaYaBracketStyle],
         "F.1": [SettingsKeys.numberThousandsSeparator, SettingsKeys.numberGroupFourDigits, SettingsKeys.numberDecimalSeparator,
                 SettingsKeys.numberUnitProductSeparator, SettingsKeys.numberLitreSymbol],
         "F.2": [SettingsKeys.degreeSymbol],

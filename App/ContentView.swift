@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20261013155319"
+    private static let editionUpdatedAtRaw: String = "20261013160359"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -282,6 +282,12 @@ struct ContentView: View {
         store: Self.sharedDefaults
     )
     private var kanaPostModifierFlickDakutenEnabled = true
+
+    @AppStorage(
+        SettingsKeys.kanaYaBracketStyle,
+        store: Self.sharedDefaults
+    )
+    private var kanaYaBracketStyleRawValue: String = KanaYaBracketOption.doubleCorner.rawValue
 
     @AppStorage(
         SettingsKeys.delimiterAutoCommitCandidate,
@@ -589,6 +595,7 @@ struct ContentView: View {
             landscapeNumberPaneSideRawValue,
             landscapeLatinSuggestionModeRawValue,
             kanaModifierPlacementRawValue,
+            kanaYaBracketStyleRawValue,
             latinLayoutModeRawValue,
             numberLayoutModeRawValue,
             formattedNumberKeypadLayoutRawValue,
@@ -705,6 +712,7 @@ struct ContentView: View {
         str(SettingsKeys.kanaPostModifierEmptyTapEmojiCategory, EmojiCategoryChoice.displayTitle(forID: kanaPostModifierEmptyTapEmojiCategoryID), "タップ (後置修飾、未確定なし): 切替時に開くカテゴリー(絵文字)")
         str(SettingsKeys.kanaPostModifierEmptyTapSymbolCategory, SymbolCategoryChoice.displayTitle(forID: kanaPostModifierEmptyTapSymbolCategoryID), "タップ (後置修飾、未確定なし): 切替時に開くカテゴリー(記号)")
         bool(SettingsKeys.kanaPostModifierFlickDakutenEnabled, kanaPostModifierFlickDakutenEnabled, "後置修飾キーのフリックで濁点・半濁点")
+        str(SettingsKeys.kanaYaBracketStyle, kanaYaBracketStyleRawValue, "『や』キーの左右フリックの括弧")
         str(SettingsKeys.numberThousandsSeparator, numberThousandsSeparatorRawValue, "format numérique: Séparateur de milliers")
         bool(SettingsKeys.numberGroupFourDigits, numberGroupFourDigits, "format numérique: que quatre")
         str(SettingsKeys.numberDecimalSeparator, numberDecimalSeparatorRawValue, "format numérique: Séparateur décimal")
@@ -835,6 +843,12 @@ struct ContentView: View {
     private var landscapeLatinSuggestionModeSelection: Binding<LandscapeLatinSuggestionModeOption> {
         rawValueSelection(from: landscapeLatinSuggestionModeRawValue, default: .sidebar) {
             landscapeLatinSuggestionModeRawValue = $0
+        }
+    }
+
+    private var kanaYaBracketSelection: Binding<KanaYaBracketOption> {
+        rawValueSelection(from: kanaYaBracketStyleRawValue, default: .doubleCorner) {
+            kanaYaBracketStyleRawValue = $0
         }
     }
 
@@ -1222,6 +1236,8 @@ struct ContentView: View {
             enablesGerman: $latinLexiconGermanEnabled,
             enablesItalian: $latinLexiconItalianEnabled
         )
+
+        KanaYaBracketSettingsSection(selection: kanaYaBracketSelection)
     }
 
     @ViewBuilder

@@ -653,7 +653,8 @@ struct FlickKeyView: View {
 
         return FlickKanaLayout.secondaryBracketFlickOutput(
             forPrimaryOutput: kana.output(for: primaryDirection),
-            verticalDirection: verticalDirection
+            verticalDirection: verticalDirection,
+            isYaKey: FlickKanaLayout.isYaKey(kana)
         )
     }
 
@@ -1177,7 +1178,7 @@ struct FlickKeyView: View {
 
             let primaryOutput = kana.output(for: resolvedDirection)
 
-            guard FlickKanaLayout.hasSecondaryFlickOutput(forPrimaryOutput: primaryOutput) else {
+            guard FlickKanaLayout.hasSecondaryFlickOutput(forPrimaryOutput: primaryOutput, isYaKey: FlickKanaLayout.isYaKey(kana)) else {
                 return
             }
 

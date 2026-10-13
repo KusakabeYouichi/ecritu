@@ -230,7 +230,7 @@ extension ContentView {
         SettingsKeys.kanaModeSwitcherTapAction, SettingsKeys.kanaModeSwitcherRightFlickAction, SettingsKeys.kanaModeSwitcherUpFlickAction,
         SettingsKeys.kanaPostModifierEmptyTapAction, SettingsKeys.kanaPostModifierEmptyTapKaomojiCategory,
         SettingsKeys.kanaPostModifierEmptyTapEmojiCategory, SettingsKeys.kanaPostModifierEmptyTapSymbolCategory,
-        SettingsKeys.kanaPostModifierFlickDakutenEnabled,
+        SettingsKeys.kanaPostModifierFlickDakutenEnabled, SettingsKeys.kanaYaBracketStyle,
         SettingsKeys.numberThousandsSeparator, SettingsKeys.numberGroupFourDigits, SettingsKeys.numberDecimalSeparator,
         SettingsKeys.numberUnitProductSeparator, SettingsKeys.numberLitreSymbol, SettingsKeys.degreeSymbol,
         SettingsKeys.calendarWeekStart, SettingsKeys.calendarWeekdayLanguage, SettingsKeys.calendarSundayColor,
@@ -283,6 +283,7 @@ extension ContentView {
         SettingsKeys.kanaPostModifierEmptyTapEmojiCategory: EmojiCategoryChoice.defaultID,
         SettingsKeys.kanaPostModifierEmptyTapSymbolCategory: SymbolCategoryChoice.defaultID,
         SettingsKeys.kanaPostModifierFlickDakutenEnabled: true,
+        SettingsKeys.kanaYaBracketStyle: KanaYaBracketOption.doubleCorner.rawValue,
         SettingsKeys.numberThousandsSeparator: ThousandsSeparatorOption.space.rawValue,
         SettingsKeys.numberGroupFourDigits: false,
         SettingsKeys.numberDecimalSeparator: DecimalSeparatorOption.dot.rawValue,
@@ -362,6 +363,7 @@ extension ContentView {
         SettingsKeys.kanaPostModifierEmptyTapEmojiCategory: "0",            // Personnes
         SettingsKeys.kanaPostModifierEmptyTapSymbolCategory: "0",           // Symboles de base
         SettingsKeys.kanaPostModifierFlickDakutenEnabled: false,
+        SettingsKeys.kanaYaBracketStyle: KanaYaBracketOption.corner.rawValue,   // 保守的=「」(戦略的・現代的は『』。ユーザ指定 3585)
         SettingsKeys.numberThousandsSeparator: ThousandsSeparatorOption.comma.rawValue,
         SettingsKeys.numberGroupFourDigits: true,
         SettingsKeys.numberDecimalSeparator: DecimalSeparatorOption.dot.rawValue,
@@ -429,7 +431,8 @@ extension ContentView {
         SettingsKeys.kanaGakiSuppressFormalNoun: true,
         SettingsKeys.kanaGakiSuppressDemonstrative: true,
         SettingsKeys.kanaGakiSuppressAdverbKanaFirst: false,
-        SettingsKeys.kakikaePreference: KakikaePreference.bothBeforeFirst.rawValue
+        SettingsKeys.kakikaePreference: KakikaePreference.bothBeforeFirst.rawValue,
+        SettingsKeys.kanaYaBracketStyle: KanaYaBracketOption.doubleCorner.rawValue   // 現代的=『』(保守的と違い、戦略的と同じ。ユーザ指定 3585)
     ]) { _, new in new }
 
     // ──── ジェスチャー ────

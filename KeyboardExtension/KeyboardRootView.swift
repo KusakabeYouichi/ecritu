@@ -35,6 +35,8 @@ struct KeyboardRootView: View {
     let directionProfile: FlickDirectionProfile
     let kanaLayoutMode: KanaLayoutMode
     let kanaModifierPlacementMode: KanaModifierPlacementMode
+    // 『や』キーの左右フリックの括弧(3585)。コンテナーアプリの設定。生成後に代入する(メンバーワイズ初期化の引数を増やさない)
+    var kanaYaBracketMode: KanaYaBracketMode = .doubleCorner
     let numberLayoutMode: NumberLayoutMode
     let latinLayoutMode: LatinLayoutMode
     let accentPaletteRawValue: String
@@ -746,7 +748,7 @@ struct KeyboardRootView: View {
     var rows: [[FlickKanaSet]] {
         switch inputMode {
         case .kana:
-            return FlickKanaLayout.rows(for: activeKanaModifierMode, layoutMode: kanaLayoutMode, profile: directionProfile).map { row in
+            return FlickKanaLayout.rows(for: activeKanaModifierMode, layoutMode: kanaLayoutMode, profile: directionProfile, yaBracket: kanaYaBracketMode).map { row in
                 row.map {
                     displayedKanaForKanaCharacterModeIfNeeded($0.remapped(for: directionProfile))
                 }
