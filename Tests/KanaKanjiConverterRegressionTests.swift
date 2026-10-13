@@ -23820,4 +23820,14 @@ extension KanaKanjiConverterRegressionTests {
         let a = converter.multiClauseCandidates(for: "きろくこうしん", systemCandidateMode: .surface)
         XCTAssertEqual(a.first, "記録更新", "multi=\(a)")
     }
+
+    // 3583: ひいずるところ は 日出ずる処 を先頭(ユーザ指定。一般の ところ は かな優先のまま)
+    func testRegressionRealLMHiIzuruTokoro() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let a = converter.multiClauseCandidates(for: "ひいずるところ", systemCandidateMode: .surface)
+        XCTAssertEqual(a.first, "日出ずる処", "multi=\(a)")
+        let b = converter.multiClauseCandidates(for: "いくところ", systemCandidateMode: .surface)
+        XCTAssertNotEqual(b.first, "行く処", "multi=\(b)")
+    }
 }
