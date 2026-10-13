@@ -402,6 +402,7 @@
 	<dict><key>phrase</key><string>速る</string><key>shortcut</key><string>はやる</string></dict>	<!-- 速る(はやる): 速い(はやい)の形容詞を動詞化した非標準表記。逸る/早る は実在だが 速る は標準では使わない。早る は温存 -->
 
 	<!-- ■ 単漢字・断片が合成を乗っ取るもの(1ノードの安さで正しい分割に勝つ) -->
+	<dict><key>phrase</key><string>道</string><key>shortcut</key><string>どう</string></dict>	<!-- 道(どう): 北海道/柔道の接尾でしか使わず、単独の名詞ではない(Sudachi の収穫)。どうがとってない→道が撮ってない のように 動画/銅 を押しのけていた(ユーザ報告 3580)。接尾の 道 は 北海道/柔道 など語で辞書に在る -->
 	<dict><key>phrase</key><string>泰輝</string><key>shortcut</key><string>たいて</string></dict>
 	<dict><key>phrase</key><string>日圧</string><key>shortcut</key><string>にち</string></dict>	<!-- 日圧: Sudachi core に実在するエントリ(固有名詞・一般、読み=ニチ、wc10000。 日本圧着端子製造の通称の収穫とみられる)。誤合成ではなく辞書由来だが、単独読み にち で立つと にちめ→日圧め/日圧目 等の合成の温床になるため抑制(2430) -->
 	<dict><key>phrase</key><string>本出</string><key>shortcut</key><string>ほんで</string></dict>	<!-- 本出/品田(ほんで、固有名の収穫 wc10000/11000): 本+でした の正しい分割に勝ち いいほんでした→いい本出した を作る。かな ほんで(関西弁)は無傷 -->

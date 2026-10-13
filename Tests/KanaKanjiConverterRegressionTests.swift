@@ -23800,4 +23800,13 @@ extension KanaKanjiConverterRegressionTests {
         let single = converter.candidates(for: "とおす", limit: 10, systemCandidateMode: .surface)
         XCTAssertEqual(Array(single.prefix(3)), ["通す", "透す", "徹す"], "single=\(single)")
     }
+
+    // 3580: どうが は 動画。道(どう)は単独の語でなく 道が撮ってない になっていた(ユーザ報告)
+    func testRegressionRealLMDougaTottenai() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let a = converter.multiClauseCandidates(for: "どうがとってない", systemCandidateMode: .surface)
+        XCTAssertEqual(a.first, "動画撮ってない", "multi=\(a)")
+        XCTAssertFalse(a.contains { $0.hasPrefix("道が") }, "multi=\(a)")
+    }
 }
