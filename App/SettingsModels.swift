@@ -87,6 +87,8 @@ enum SettingsKeys {
     static let kanaPostModifierEmptyTapEmojiCategory = "kanaPostModifierEmptyTapEmojiCategory"
     static let kanaPostModifierEmptyTapSymbolCategory = "kanaPostModifierEmptyTapSymbolCategory"
     static let kanaPostModifierFlickDakutenEnabled = "kanaPostModifierFlickDakutenEnabled"
+    // 『や』キーの左右フリックの括弧(3585): 『』(二重かぎ) / 「」(かぎ)。選ばれなかった方は 2 段階フリックの下へ回る
+    static let kanaYaBracketStyle = "kanaYaBracketStyle"
     static let delimiterAutoCommitCandidate = "delimiterAutoCommitCandidate"
     static let landscapeCandidateSide = "landscapeCandidateSide"
     static let landscapeNumberPaneSide = "landscapeNumberPaneSide"
@@ -269,6 +271,17 @@ enum DirectionOption: String, CaseIterable, Identifiable {
         case .ecritu: return "écritu"
         }
     }
+}
+
+// 『や』キーの左右フリックに置く括弧(3585)。永続値は 括弧そのもの(画面の名前と同じ流儀)。
+// 選ばれなかった方の括弧は、同じ側から下へ 2 段階フリックして出す(二重かぎを選ぶと 『→下=「 / 』→下=」、
+// かぎを選ぶと 「→下=『 / 」→下=』)
+enum KanaYaBracketOption: String, CaseIterable, Identifiable {
+    case doubleCorner = "『』"
+    case corner = "「」"
+
+    var id: String { rawValue }
+    var title: String { rawValue }
 }
 
 // 未確定文字の方式(3209)。画面上の名前をそのまま永続値にする(フリック方向と同じ流儀)。

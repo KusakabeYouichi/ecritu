@@ -48,13 +48,45 @@ enum FlickKanaLayout {
         usesProfileDependentGuideOrder: false
     )
     static let kanaYaSet = FlickKanaSet(label: "や", center: "や", up: "『", right: "ゆ", down: "よ", left: "』")
+    // 括弧を「」にした設定(3585)。1段目が 「 と 」 になり、『』 は 2 段階フリックの下へ回る(secondaryBracketFlickOutput)
+    static let kanaYaSetCorner = FlickKanaSet(label: "や", center: "や", up: "「", right: "ゆ", down: "よ", left: "」")
+
+    // カタカナ面では label が ヤ になる
+    static func isYaKey(_ kana: FlickKanaSet) -> Bool {
+        kana.label == "や" || kana.label == "ヤ"
+    }
+
+    static func yaSet(for yaBracket: KanaYaBracketMode) -> FlickKanaSet {
+        switch yaBracket {
+        case .doubleCorner: return kanaYaSet
+        case .corner: return kanaYaSetCorner
+        }
+    }
 
     // 2段階フリック(横フリック後、指を離さず上下)の出力表。や の括弧に加え、
     // わ の旧仮名 ゐ/ゑ と、案Cで2段へ移した ー/〜 を担う(2026-08-31)。
+    // isYaKey: 『や』キーの括弧を「」にした設定(3585)では、1段目が 「/」 になり、2 段階フリックの下は 『/』。
+    // 数字面など他のキーの 「/」 には 2 段階フリックが無いので、『や』キーのときだけ扱う
     static func secondaryBracketFlickOutput(
         forPrimaryOutput primaryOutput: String,
-        verticalDirection: FlickDirection
+        verticalDirection: FlickDirection,
+        isYaKey: Bool = false
     ) -> String? {
+        if isYaKey {
+            switch (primaryOutput, verticalDirection) {
+            case ("「", .haut):
+                return "("
+            case ("「", .bas):
+                return "『"
+            case ("」", .haut):
+                return ")"
+            case ("」", .bas):
+                return "』"
+            default:
+                break
+            }
+        }
+
         switch (primaryOutput, verticalDirection) {
         case ("を", .bas):
             return "ゐ"
@@ -76,9 +108,9 @@ enum FlickKanaLayout {
     }
 
     // FlickKeyView が2段階フリックを起動してよい1段目出力か(左右フリック限定は呼び出し側)
-    static func hasSecondaryFlickOutput(forPrimaryOutput primaryOutput: String) -> Bool {
-        secondaryBracketFlickOutput(forPrimaryOutput: primaryOutput, verticalDirection: .haut) != nil
-            || secondaryBracketFlickOutput(forPrimaryOutput: primaryOutput, verticalDirection: .bas) != nil
+    static func hasSecondaryFlickOutput(forPrimaryOutput primaryOutput: String, isYaKey: Bool = false) -> Bool {
+        secondaryBracketFlickOutput(forPrimaryOutput: primaryOutput, verticalDirection: .haut, isYaKey: isYaKey) != nil
+            || secondaryBracketFlickOutput(forPrimaryOutput: primaryOutput, verticalDirection: .bas, isYaKey: isYaKey) != nil
     }
 
     static let fiveByTwoRows: [[FlickKanaSet]] = [
@@ -119,7 +151,8 @@ enum FlickKanaLayout {
     static func rows(
         for mode: DiacriticMode,
         layoutMode: KanaLayoutMode = .fiveByTwo,
-        profile: FlickDirectionProfile = .ecritu
+        profile: FlickDirectionProfile = .ecritu,
+        yaBracket: KanaYaBracketMode = .doubleCorner
     ) -> [[FlickKanaSet]] {
         var sourceRows: [[FlickKanaSet]]
 
@@ -130,9 +163,15 @@ enum FlickKanaLayout {
             sourceRows = threeByThreePlusWaRows
         }
 
-        // わ はプロファイル別定義(汎用置換の対象外)なのでここで差し替える
+        // わ はプロファイル別定義(汎用置換の対象外)なのでここで差し替える。や は括弧の設定(3585)で差し替える
         sourceRows = sourceRows.map { row in
-            row.map { $0.label == "わ" ? (waSetBase(for: profile)) : $0 }
+            row.map {
+                switch $0.label {
+                case "わ": return waSetBase(for: profile)
+                case "や": return yaSet(for: yaBracket)
+                default: return $0
+                }
+            }
         }
 
         guard let map = characterMap(for: mode) else {

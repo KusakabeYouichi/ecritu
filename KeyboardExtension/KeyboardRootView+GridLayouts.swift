@@ -153,7 +153,7 @@ extension KeyboardRootView {
     }
 
     var threeByThreeKanaRows: [[FlickKanaSet]] {
-        FlickKanaLayout.rows(for: activeKanaModifierMode, layoutMode: .threeByThreePlusWa, profile: directionProfile).map { row in
+        FlickKanaLayout.rows(for: activeKanaModifierMode, layoutMode: .threeByThreePlusWa, profile: directionProfile, yaBracket: kanaYaBracketMode).map { row in
             row.map {
                 displayedKanaForKanaCharacterModeIfNeeded($0.remapped(for: directionProfile))
             }

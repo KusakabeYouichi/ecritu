@@ -34,6 +34,12 @@ enum DiacriticMode {
     case smallKana
 }
 
+// 『や』キーの左右フリックの括弧(3585)。値はコンテナーアプリの設定値(括弧そのもの)と同じ
+enum KanaYaBracketMode: String {
+    case doubleCorner = "『』"
+    case corner = "「」"
+}
+
 enum KanaModifierPlacementMode: String {
     case prefix
     case postfix
