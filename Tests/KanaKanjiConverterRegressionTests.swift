@@ -23918,4 +23918,16 @@ extension KanaKanjiConverterRegressionTests {
         }
         XCTAssertEqual(boosted("ねんごろ", "1").first, "年ごろ", "boosted=\(boosted("ねんごろ", "1"))")
     }
+
+    // 3591: 大匙/小匙 より かな交じりの 大さじ/小さじ を先に(ユーザ指定)
+    func testRegressionRealLMOosajiKosajiKanaFirst() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.candidates(for: "おおさじ", limit: 8, systemCandidateMode: .surface).prefix(2).map { $0 }, ["大さじ", "大匙"])
+        XCTAssertEqual(converter.candidates(for: "こさじ", limit: 8, systemCandidateMode: .surface).prefix(2).map { $0 }, ["小さじ", "小匙"])
+        let big = converter.multiClauseCandidates(for: "おおさじいっぱい", systemCandidateMode: .surface)
+        XCTAssertTrue(big.first?.hasPrefix("大さじ") ?? false, "multi=\(big)")
+        let small = converter.multiClauseCandidates(for: "こさじをくわえる", systemCandidateMode: .surface)
+        XCTAssertTrue(small.first?.hasPrefix("小さじ") ?? false, "multi=\(small)")
+    }
 }
