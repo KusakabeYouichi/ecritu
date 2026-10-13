@@ -645,11 +645,27 @@ extension KanaKanjiConverter {
     // 助数詞ではないが、数字の直後では先頭に来るべき語(ユーザー指定 3185)。
     // 1かいそう→1階層(既定では 回想 が先頭)。助数詞の表に入れると 第1階層/何階層 の複合生成に
     // 波及するので別表にする
+    // 数量+後(1年後)の直後に付く助詞(1年後に/3日後には)。この組だけ かなのまま足す
+    static let counterAfterParticleTails: Set<String> = [
+        "に", "は", "も", "の", "で", "と", "が", "を", "から", "まで", "より", "には", "でも", "とは", "にも", "では", "には",
+    ]
+
     static let digitContextPreferredSurfacesByReading: [String: [String]] = [
         "かいそう": ["階層"],
         // 2かいから は 階から(ユーザ指定 3537)。seed かいから(回から/会から/貝殻)が助数詞+かな末尾の合成を止めるので
         // 数字文脈ではここで前置する(seed にも 階から を足して候補自体を供給)
-        "かいから": ["階から", "回から"]
+        "かいから": ["階から", "回から"],
+        // 数量+後(1年後/2週間後/3か月後/5日後/2時間後/10分後/30秒後。ユーザ報告 3589)。1ねんご が 年呉、2しゅうかんご が
+        // 周かんご になっていた。助数詞の表に ねんご を足すと 年ごとに(ねんご+とに)のような ごと 系の合成が 年後とに になり、
+        // 序数の語幹の字(後)も増えるので、数字直後の別表にする。か月は表記の設定(か/カ/ヶ/ヵ/箇)の順に合わせる
+        "ねんご": ["年後"],
+        "しゅうかんご": ["週間後"],
+        "かげつご": ["か月後", "カ月後", "ヶ月後", "ヵ月後", "箇月後"],
+        "にちご": ["日後"],
+        "じかんご": ["時間後"],
+        "ふんご": ["分後"],
+        "ぷんご": ["分後"],
+        "びょうご": ["秒後"]
     ]
 
     // 数の単位(十/百/千/万/億/兆)の読み。数字の直後の まんぼん/せんえん/おくえん は 単位+助数詞(3万本/5千円/1億円)として
@@ -760,6 +776,15 @@ extension KanaKanjiConverter {
         // 助数詞ではないが数字の直後なら先頭に来るべき語(定数コメント参照。3185)
         boosted += (Self.digitContextPreferredSurfacesByReading[reading] ?? [])
             .filter { !boosted.contains($0) && !suppressedCandidates.contains($0) }
+        // 数量+後に助詞が付いた形(1年後に/3か月後には。3589)。読み全体が 〜後+助詞 のときだけ、助詞をかなのまま足す
+        for (afterReading, afterSurfaces) in Self.digitContextPreferredSurfacesByReading
+        where afterReading.hasSuffix("ご") && afterReading != "かいから" && reading.count > afterReading.count
+            && reading.hasPrefix(afterReading) {
+            let tail = String(reading.dropFirst(afterReading.count))
+            guard Self.counterAfterParticleTails.contains(tail) else { continue }
+            boosted += afterSurfaces.map { $0 + tail }
+                .filter { !boosted.contains($0) && !suppressedCandidates.contains($0) }
+        }
         if let counterSurfaces = Self.digitBoostCounterSurfaces(for: reading) {
             // 助数詞マップの順(か国,箇国,…)で前置する(候補列の順ではなく人手の優先順を採用)。
             // 候補列に無い助数詞も数字文脈なら供給する(抑制済みは復活させない)。

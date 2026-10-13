@@ -23862,3 +23862,33 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(sentence.first, "フシギダネがいる", "multi=\(sentence)")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 3589: 数量+後(1年後/2週間後/3か月後)。数字を確定してから ねんご 等を打つと 年呉/周かんご になっていた(ユーザ報告)。
+    // 助数詞の表でなく数字直後の別表で供給するので、年ごとに(ねんご+とに)の複合には波及しない
+    func testRegressionRealLMDigitCounterAfter() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func boosted(_ reading: String, _ digit: Character) -> [String] {
+            let bare = converter.candidates(for: reading, limit: 12, systemCandidateMode: .surface)
+            return KanaKanjiConverter.digitContextCounterBoostedCandidates(
+                bare, reading: reading, precedingCharacter: digit, suppressedCandidates: []
+            )
+        }
+        let cases: [(String, Character, String)] = [
+            ("ねんご", "1", "年後"), ("しゅうかんご", "2", "週間後"), ("かげつご", "3", "か月後"), ("にちご", "5", "日後"),
+            ("じかんご", "2", "時間後"), ("ふんご", "0", "分後"), ("ぷんご", "3", "分後"), ("びょうご", "3", "秒後"),
+            ("ねんごに", "1", "年後に"), ("かげつごには", "3", "か月後には"), ("にちごまで", "5", "日後まで"),
+        ]
+        for (reading, digit, expected) in cases {
+            XCTAssertEqual(boosted(reading, digit).first, expected, "\(digit)\(reading) boosted=\(boosted(reading, digit))")
+        }
+        // 数字の直後でなければ変えない。年ごろ/懇ろ(ねんごろ)も従来どおり
+        let bare = converter.candidates(for: "ねんご", limit: 12, systemCandidateMode: .surface)
+        XCTAssertEqual(
+            KanaKanjiConverter.digitContextCounterBoostedCandidates(bare, reading: "ねんご", precedingCharacter: "あ", suppressedCandidates: []),
+            bare
+        )
+        XCTAssertEqual(boosted("ねんごろ", "1").first, "年ごろ", "boosted=\(boosted("ねんごろ", "1"))")
+    }
+}
