@@ -23775,3 +23775,17 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(b.first, "この方がいい", "multi=\(b)")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 3578: 増る/新らしい は誤った送り仮名。ふえた→増た、あたらしくふえた→新らしく/増た が出ていた(ユーザ報告)
+    func testRegressionRealLMFuetaOkurigana() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let single = converter.candidates(for: "ふえた", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "増えた", "single=\(single)")
+        XCTAssertFalse(single.contains("増た"), "single=\(single)")
+        let multi = converter.multiClauseCandidates(for: "あたらしくふえた", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "新しく増えた", "multi=\(multi)")
+        XCTAssertFalse(multi.contains { $0.contains("増た") || $0.contains("新らし") }, "multi=\(multi)")
+    }
+}
