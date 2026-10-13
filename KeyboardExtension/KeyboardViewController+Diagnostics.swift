@@ -1845,6 +1845,9 @@ extension KeyboardViewController {
         launchTimingProcessAgeMs = Self.processAgeMilliseconds() ?? -1
         launchTimingToWillAppearMs = -1
         launchTimingPageEventsAtLoad = taskPageEvents()
+        launchStallMonitor?.stop()
+        launchStallMonitor = LaunchStallMonitor()
+        launchStallMonitor?.start()
         #endif
     }
 
@@ -1858,6 +1861,8 @@ extension KeyboardViewController {
             pageText = " pageins=\(end.pageins - start.pageins) faults=\(end.faults - start.faults)"
         }
         // 新規プロセスは起動から数秒以内に viewDidLoad に着く。長く生きているプロセスの 2 回目以降は前半が無い
+        let stallText = launchStallMonitor?.finish().map { " " + $0 } ?? ""
+        launchStallMonitor = nil
         let isFreshProcess = launchTimingProcessAgeMs >= 0 && launchTimingProcessAgeMs < 10_000
         let preMs = isFreshProcess ? launchTimingProcessAgeMs : 0
         let entry = "\(Self.diagnosticsTimestampFormatter.string(from: Date()))"
@@ -1865,6 +1870,7 @@ extension KeyboardViewController {
             + " processAge=\(launchTimingProcessAgeMs)ms viewDidLoad=\(launchTimingViewDidLoadMs)ms setup=\(launchTimingSetupMs)ms"
             + " toWillAppear=\(launchTimingToWillAppearMs)ms toDidAppear=\(toAppearMs)ms"
             + pageText
+            + stallText
             + " rssMB=\(currentResidentMemoryBytes().map { String(format: "%.0f", Double($0) / 1_048_576) } ?? "?")"
             + " fpMB=\(currentFootprintMB().map { String(format: "%.0f", $0) } ?? "?")"
         func append(key: String) {
@@ -1882,3 +1888,159 @@ extension KeyboardViewController {
         #endif
     }
 }
+
+
+#if DEBUG
+// viewDidLoad から viewDidAppear までのメインスレッド停止を、別スレッドから 50ms ごとの往復で見張る(3574)。
+// 停止が 200ms を超えたら、その時点のメインスレッドの呼び出し元(フレームポインタをたどる)を最大 2 回残す。
+// 「自分の処理で止めたか(自前の関数名が並ぶ)/ホスト待ちか(mach_msg 等のアイドル)」を切り分けるのが目的。
+// メインスレッドを止めている間(suspend 中)は確保・ロックを行わない(確保済みのバッファに書くだけ)
+final class LaunchStallMonitor: @unchecked Sendable {
+    private let lock = NSLock()
+    private var lastPongAt = CFAbsoluteTimeGetCurrent()
+    private var maxStallMs = 0
+    private var captures: [(atMs: Int, text: String)] = []
+    private var capturedLevel = 0
+    private let startedAt = CFAbsoluteTimeGetCurrent()
+    private var timer: DispatchSourceTimer?
+    private let mainThreadPort: mach_port_t
+    private let buffer = UnsafeMutablePointer<UInt>.allocate(capacity: 24)
+    private let monitorQueue = DispatchQueue(label: "ecritu.launchStallMonitor", qos: .userInteractive)
+
+    init() {
+        mainThreadPort = pthread_mach_thread_np(pthread_self())
+    }
+
+    deinit {
+        buffer.deallocate()
+    }
+
+    func start() {
+        let source = DispatchSource.makeTimerSource(queue: monitorQueue)
+        source.schedule(deadline: .now() + .milliseconds(50), repeating: .milliseconds(50))
+        source.setEventHandler { [weak self] in
+            self?.tick()
+        }
+        timer = source
+        source.resume()
+    }
+
+    func stop() {
+        timer?.cancel()
+        timer = nil
+    }
+
+    private func tick() {
+        let now = CFAbsoluteTimeGetCurrent()
+        if now - startedAt > 10 {
+            stop()
+            return
+        }
+        DispatchQueue.main.async { [self] in
+            let pong = CFAbsoluteTimeGetCurrent()
+            lock.lock()
+            let gapMs = Int((pong - lastPongAt) * 1000) - 50
+            if gapMs > maxStallMs {
+                maxStallMs = gapMs
+            }
+            lastPongAt = pong
+            capturedLevel = 0
+            lock.unlock()
+        }
+        lock.lock()
+        let stallMs = Int((now - lastPongAt) * 1000)
+        let level = capturedLevel
+        lock.unlock()
+        // 停止が 200ms と 1000ms を超えた時点で 1 回ずつ
+        let wanted = stallMs >= 1000 ? 2 : (stallMs >= 200 ? 1 : 0)
+        if wanted > level {
+            let count = captureMainThreadStack()
+            let text = symbolicate(count: count)
+            lock.lock()
+            capturedLevel = wanted
+            if captures.count < 4 {
+                captures.append((Int((now - startedAt) * 1000), text))
+            }
+            lock.unlock()
+        }
+    }
+
+    // 戻り値は buffer に入れた個数。suspend 中は確保しない
+    private func captureMainThreadStack() -> Int {
+        #if arch(arm64)
+        var count = 0
+        guard thread_suspend(mainThreadPort) == KERN_SUCCESS else {
+            return 0
+        }
+        var state = arm_thread_state64_t()
+        var stateCount = mach_msg_type_number_t(MemoryLayout<arm_thread_state64_t>.size / MemoryLayout<natural_t>.size)
+        let result = withUnsafeMutablePointer(to: &state) { pointer in
+            pointer.withMemoryRebound(to: natural_t.self, capacity: Int(stateCount)) { rebound in
+                thread_get_state(mainThreadPort, ARM_THREAD_STATE64, rebound, &stateCount)
+            }
+        }
+        if result == KERN_SUCCESS {
+            buffer[count] = UInt(state.__pc)
+            count += 1
+            var fp = UInt(state.__fp)
+            var previous: UInt = 0
+            while count < 24, fp != 0, fp % 16 == 0, fp > previous {
+                var frame: (UInt, UInt) = (0, 0)
+                var outSize: vm_size_t = 0
+                let readResult = withUnsafeMutablePointer(to: &frame) { pointer in
+                    vm_read_overwrite(mach_task_self_, vm_address_t(fp), 16, vm_address_t(UInt(bitPattern: pointer)), &outSize)
+                }
+                guard readResult == KERN_SUCCESS, outSize == 16 else {
+                    break
+                }
+                buffer[count] = frame.1
+                count += 1
+                previous = fp
+                fp = frame.0
+            }
+        }
+        thread_resume(mainThreadPort)
+        return count
+        #else
+        return 0
+        #endif
+    }
+
+    private func symbolicate(count: Int) -> String {
+        var parts: [String] = []
+        for index in 0..<count {
+            let address = buffer[index]
+            var info = Dl_info()
+            if dladdr(UnsafeRawPointer(bitPattern: address), &info) != 0 {
+                let imagePath = info.dli_fname.map { String(cString: $0) } ?? "?"
+                let image = (imagePath as NSString).lastPathComponent
+                let base = UInt(bitPattern: info.dli_fbase)
+                if let name = info.dli_sname {
+                    parts.append(String(cString: name))
+                } else {
+                    parts.append("\(image)+0x\(String(address - base, radix: 16))")
+                }
+            } else {
+                parts.append("0x\(String(address, radix: 16))")
+            }
+        }
+        return parts.prefix(14).joined(separator: " < ")
+    }
+
+    // 履歴の行に足す文字列。停止が 200ms 未満なら何も足さない
+    func finish() -> String? {
+        stop()
+        lock.lock()
+        defer { lock.unlock() }
+        guard maxStallMs >= 200 || !captures.isEmpty else {
+            return nil
+        }
+        var text = "mainStallMaxMs=\(maxStallMs)"
+        for capture in captures {
+            text += " stack@\(capture.atMs)ms=[\(capture.text)]"
+        }
+        return text
+    }
+}
+
+#endif

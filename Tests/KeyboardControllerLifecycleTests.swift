@@ -63,3 +63,36 @@ final class KeyboardControllerLifecycleTests: XCTestCase {
         XCTAssertTrue(isEligible(ageSeconds: ForgottenDetachedControllerGate.minimumAgeSeconds))
     }
 }
+
+#if DEBUG
+final class LaunchStallMonitorTests: XCTestCase {
+    // 3574: メインスレッドを 600ms 止めると、停止時間と停止中の呼び出し元が記録される
+    func testRecordsMainThreadStallWithStack() {
+        let monitor = LaunchStallMonitor()
+        monitor.start()
+        // 先に 1 往復させて基準を作ってから止める
+        let warm = expectation(description: "warm")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { warm.fulfill() }
+        wait(for: [warm], timeout: 2)
+        Thread.sleep(forTimeInterval: 0.6)
+        let spin = expectation(description: "spin")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { spin.fulfill() }
+        wait(for: [spin], timeout: 2)
+        let text = monitor.finish()
+        XCTAssertNotNil(text)
+        XCTAssertTrue(text?.contains("mainStallMaxMs=") ?? false, "text=\(text ?? "nil")")
+        XCTAssertTrue(text?.contains("stack@") ?? false, "text=\(text ?? "nil")")
+        print("STALLTEXT \(text ?? "nil")")
+    }
+
+    func testNoStallReportsNothing() {
+        let monitor = LaunchStallMonitor()
+        monitor.start()
+        let wait1 = expectation(description: "wait")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { wait1.fulfill() }
+        wait(for: [wait1], timeout: 2)
+        XCTAssertNil(monitor.finish())
+    }
+}
+
+#endif
