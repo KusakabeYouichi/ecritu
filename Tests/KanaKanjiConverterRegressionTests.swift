@@ -23753,12 +23753,13 @@ extension KanaKanjiConverterRegressionTests {
 }
 
 extension KanaKanjiConverterRegressionTests {
-    // 3576: ざっと は かな正書。Sudachi の ザット(英語 that)が先頭で ザット目を通す になっていた(ユーザ報告)
+    // 3576/3582: ざっと は かな正書。Sudachi の ザット(英語 that の読み。抑制済み)が先頭で ザット目を通す になっていた(ユーザ報告)
     func testRegressionRealLMZattoKana() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
         let single = converter.candidates(for: "ざっと", limit: 10, systemCandidateMode: .surface)
         XCTAssertEqual(single.first, "ざっと", "single=\(single)")
+        XCTAssertFalse(single.contains("ザット"), "single=\(single)")
         let a = converter.multiClauseCandidates(for: "ざっとめをとおす", systemCandidateMode: .surface)
         XCTAssertEqual(a.first, "ざっと目を通す", "multi=\(a)")
     }

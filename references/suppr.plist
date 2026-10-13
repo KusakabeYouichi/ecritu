@@ -200,6 +200,7 @@
 	<dict><key>phrase</key><string>集</string><key>shortcut</key><string>あつまり</string></dict>	<!-- 集(あつまり): 単漢字の訓読み収穫。同上(ユーザ指定 3506) -->
 
 	<!-- ■ カタカナ収穫・カタカナ強調(かな/漢字の正書を勝たせる) -->
+	<dict><key>phrase</key><string>ザット</string><key>shortcut</key><string>ざっと</string></dict>	<!-- ザット: 英語 that の読み(Sudachi の収穫)。that をカタカナで書く用事は無く、副詞 ざっと の候補を汚す(ざっとめをとおす→ザット目を通す。ユーザ指定 3582) -->
 	<dict><key>phrase</key><string>カッタ</string><key>shortcut</key><string>かった</string></dict>	<!-- カッタ: Sudachi のカタカナ収穫(wc 2344 と極端に安い)。かった の先頭を取り 買った/勝った を押し下げていた(ユーザ報告 3388) -->
 	<dict><key>phrase</key><string>ススメる</string><key>shortcut</key><string>すすめる</string></dict>	<!-- カタカナ強調の収穫。派生(ススメて/ススメていて)が常に3位に並ぶ雑音(ユーザ指定 2741) -->
 	<dict><key>phrase</key><string>ダワ</string><key>shortcut</key><string>だわ</string></dict>	<!-- ダワ: Sudachi のカタカナ収穫(wc 2224 と極端に安い)。終助詞 だわ を食い、おすすめだわ が おすすめダワ になっていた(ユーザ報告 3262) -->
