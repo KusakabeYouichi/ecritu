@@ -4193,6 +4193,23 @@ extension KanaKanjiConverter {
                 }
             }
         }
+        // 先頭の カタカナ語が 助詞 も を呑んだ読み(もでる→モデル、ユーザ報告 3598: もでるようになったよ)は、
+        // も を離した経路(も出る様…)も 第2候補群に残す。カタカナ語が最良でも、読みが も+用言 に割れる入力は日常的にある。
+        // 先頭が も の 1 文字ノードを必須にして再最適化し、delta は 1 文節変種(100 刻み)より後ろの固定値にする
+        var moSplitAlternativeJoined: String? = nil
+        if pathIndices.count >= 2 {
+            let lead = nodes[pathIndices[0]]
+            if lead.start == 0, lead.reading.hasPrefix("も"), lead.reading.count >= 3, Self.isKatakanaString(lead.surface),
+                let moIdx = nodes.firstIndex(where: { $0.start == 0 && $0.end == 1 && $0.surface == "も" }),
+                let alternative = solveViterbi(allowedStartNodeIndex: nil, requiredNodeIndices: [moIdx]),
+                alternative.pathIndices.count >= 2,
+                alternative.bestTotal - bestTotal <= Self.multiClauseMoSplitAlternativeMaxDelta {
+                let altJoined = alternative.pathIndices.map { nodes[$0].surface }.joined()
+                if altJoined != normalized, altJoined != pathIndices.map({ nodes[$0].surface }).joined() {
+                    moSplitAlternativeJoined = altJoined
+                }
+            }
+        }
         // 助詞を呑んだ派生動詞の代替経路(2771): 名詞直後の活用派生ノードの読みが格助詞で始まる
         // (数分+出直してた の でなおしてた、明日+出直します 等)とき、そのノードを外して再最適化した
         // 経路(数分+で+直してた)を第2候補群に加える。数分 は Sudachi では 数+分 に割れ LM に無く
@@ -4843,8 +4860,17 @@ extension KanaKanjiConverter {
                 // いまだ: seed {今だ, いまだ, 未だ} の順に出す。かな識別(いまだ)は変種として
                 // 除外され、変種上限4000も超えるため、この読みだけ両方の制限を外す。
                 // 無条件に許すと などという→等という/にほんビール が復活する
+                // 述語+ように(出るようになった)の 様 は、かな先頭のまま 2 番目に出す(3598、ユーザ指定)。形式名詞の 様 は
+                // かなで書く言葉(X.8)で述語直後だと禁止級に下げられ変種から落ちるが、〜様に は書き言葉の正しい表記。
+                // よう を全般に KanaLead へ入れると ひつよう/りよう 等の語尾で keepKana が誤発火するので、この区間だけ許す
+                let isYouNiAfterPredicate: Bool = {
+                    guard alt.surface == "様", chosen.surface == "よう", pos > 0,
+                        nextNode?.surface.hasPrefix("に") == true else { return false }
+                    let prevNode = nodes[pathIndices[pos - 1]]
+                    return prevNode.isInflectionDerived || prevNode.isDictionaryFormPredicate
+                }()
                 let allowsSeedOrderFromKanaLead =
-                    Self.multiClauseSeedOrderVariantKanaLeadReadings.contains(alt.reading)
+                    Self.multiClauseSeedOrderVariantKanaLeadReadings.contains(alt.reading) || isYouNiAfterPredicate
                 // 単独名詞になれない 1 字漢字(総/想: 定数コメント参照。2841)が名詞の位置(直後が格助詞/の/文末)に
                 // ある変種は seed 順で繰り上げない(seed の そう→層→総→想 は単文節の並び用)。DP の減点をそのまま使う
                 let isWeakStandaloneAltInNounSlot = weakStandaloneKanjiSurfaces.contains(alt.surface)
@@ -4971,6 +4997,9 @@ extension KanaKanjiConverter {
         // こおりがとけて で 凍りが溶けて が 氷が解けて(僅差の末尾変種)より前に出た
         if let leadAlternativeJoined, leadAlternativeJoined != joined {
             variants.append((leadAlternativeDelta, -1, -1, leadAlternativeJoined))
+        }
+        if let moSplitAlternativeJoined {
+            variants.append((Self.multiClauseSeedOrderVariantStep * 3, -2, -1, moSplitAlternativeJoined))
         }
         // 助詞に割った代替経路(2771)もコスト差で同列に並べる
         if let particleSplitAlternativeJoined, particleSplitAlternativeJoined != joined {
