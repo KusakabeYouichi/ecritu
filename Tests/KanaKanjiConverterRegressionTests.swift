@@ -23942,4 +23942,22 @@ extension KanaKanjiConverterRegressionTests {
         let honda = converter.multiClauseCandidates(for: "ほんだみその", systemCandidateMode: .surface)
         XCTAssertEqual(honda.first, "本田味噌の", "multi=\(honda)")
     }
+
+    // 3593: 一段の受身+てた(まちがえられてた→間違えられてた。五段 選る の 選られてた に負けていた)、
+    // サ変名詞+しないの(がいかつみたてしないの→外貨積立しないの。市内の に割れていた)。ユーザ報告
+    func testRegressionRealLMIchidanPassiveAspectAndSuruNainoKana() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let cases: [(String, String)] = [
+            ("まちがえられてた", "間違えられてた"), ("まちがえられている", "間違えられている"), ("まちがえられていた", "間違えられていた"),
+            ("まちがえられた", "間違えられた"), ("まちがえられて", "間違えられて"),
+            ("がいかつみたてしないの", "外貨積立しないの"), ("がいかつみたてしない", "外貨積立しない"),
+        ]
+        for (reading, expected) in cases {
+            // 活用規則で読み全体が作れる語は単文節の候補が先(連文節は空)。無ければ連文節
+            let single = converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual((single + multi).first, expected, "\(reading) single=\(single) multi=\(multi)")
+        }
+    }
 }
