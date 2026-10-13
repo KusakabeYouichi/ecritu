@@ -23831,3 +23831,29 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertNotEqual(b.first, "行く処", "multi=\(b)")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 3587: ポケモンの種族名(references/poké.plist=補助語彙)。種族名は出す(ヒトカゲ/フシギダネ)が、
+    // 日常語と読みが同じ語(ふかまる=深まる/ひとつき=ひと月/かぶと=兜)や LM 実在の一般語(でんりゅう=電流)の先頭は奪わない。
+    // 補助語彙のカタカナは「カタカナ強調」の抑制から外す(同じ読みにかな・漢字の候補があるだけで消えていた)
+    func testRegressionRealLMPokemonSpeciesNames() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func single(_ reading: String) -> [String] {
+            converter.candidates(for: reading, limit: 30, systemCandidateMode: .surface)
+        }
+        XCTAssertTrue(single("ひとかげ").contains("ヒトカゲ"), "single=\(single("ひとかげ"))")
+        XCTAssertTrue(single("ふしぎだね").contains("フシギダネ"), "single=\(single("ふしぎだね"))")
+        XCTAssertEqual(single("ぴかちゅう").first, "ピカチュウ")
+        XCTAssertEqual(single("かぷこけこ").first, "カプ・コケコ", "single=\(single("かぷこけこ"))")
+        XCTAssertEqual(single("でんりゅう").first, "電流", "single=\(single("でんりゅう"))")
+        XCTAssertEqual(single("ごーすと").first, "ゴースト", "single=\(single("ごーすと"))")
+        for (reading, general) in [("ふかまる", "深まる"), ("ひとつき", "ひと月"), ("かぶと", "兜"), ("おたち", "お立ち")] {
+            let list = single(reading)
+            XCTAssertEqual(list.first == "フカマル" || list.first == "ヒトツキ" || list.first == "カブト" || list.first == "オタチ", false, "\(reading) list=\(list)")
+            XCTAssertTrue(list.contains(general), "\(reading) list=\(list)")
+        }
+        let sentence = converter.multiClauseCandidates(for: "ふしぎだねがいる", systemCandidateMode: .surface)
+        XCTAssertEqual(sentence.first, "フシギダネがいる", "multi=\(sentence)")
+    }
+}
