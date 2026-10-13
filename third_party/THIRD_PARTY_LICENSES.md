@@ -111,12 +111,16 @@ Flag names shown on long-press are generated at runtime from Foundation's
 ## pokemon-ime-dic — Pokémon species names
 
 - https://github.com/Umichang/pokemon-ime-dic — MIT License, Copyright (c) 2020 Kai Kuchiki.
-- 893 entries (reading + name, up to Pokédex No. 890) are converted into
+- 888 entries (reading + name, up to Pokédex No. 890) are converted into
   `references/poké.plist` (2026-10-13) and loaded as supplementary vocabulary
   (SecondVocab: does not outrank general words that share a reading).
 - The MIT license text is included in `APP_STORE_OPEN_SOURCE_NOTICES.md`
   (shown in-app). Pokémon and the names of the Pokémon are trademarks of
   Nintendo, Creatures Inc. and GAME FREAK inc.
+- 130 further names (8th-generation No. 893-905 and the 9th generation, up to
+  No. 1025) come from PokéAPI (https://github.com/PokeAPI/pokeapi, BSD 3-Clause,
+  Copyright (c) 2013-2023 Paul Hallett and PokéAPI contributors; species names
+  `ja-Hrkt`). Its license text is also included in `APP_STORE_OPEN_SOURCE_NOTICES.md`.
 
 ## Unicode License text
 

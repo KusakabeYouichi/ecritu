@@ -23853,6 +23853,11 @@ extension KanaKanjiConverterRegressionTests {
             XCTAssertEqual(list.first == "フカマル" || list.first == "ヒトツキ" || list.first == "カブト" || list.first == "オタチ", false, "\(reading) list=\(list)")
             XCTAssertTrue(list.contains(general), "\(reading) list=\(list)")
         }
+        // 第9世代(パルデア)と第8世代の追加分(PokéAPI 由来)
+        for (reading, name) in [("にゃおは", "ニャオハ"), ("ほげーた", "ホゲータ"), ("くわっす", "クワッス"), ("さーふごー", "サーフゴー"),
+                                ("ももわろう", "モモワロウ"), ("ばさぎり", "バサギリ"), ("ざるーど", "ザルード")] {
+            XCTAssertTrue(single(reading).contains(name), "\(reading) list=\(single(reading))")
+        }
         let sentence = converter.multiClauseCandidates(for: "ふしぎだねがいる", systemCandidateMode: .surface)
         XCTAssertEqual(sentence.first, "フシギダネがいる", "multi=\(sentence)")
     }
