@@ -23891,4 +23891,31 @@ extension KanaKanjiConverterRegressionTests {
         )
         XCTAssertEqual(boosted("ねんごろ", "1").first, "年ごろ", "boosted=\(boosted("ねんごろ", "1"))")
     }
+
+    // 3590: 数量+前(1年前/3か月前に)と 数量+ごと(1年ごと/3か月ごとに)。前は助詞が付くと 年まえに、ごとは 年呉とに になっていた(ユーザ報告)。
+    func testRegressionRealLMDigitCounterBeforeAndEach() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func boosted(_ reading: String, _ digit: Character) -> [String] {
+            let bare = converter.candidates(for: reading, limit: 12, systemCandidateMode: .surface)
+            return KanaKanjiConverter.digitContextCounterBoostedCandidates(
+                bare, reading: reading, precedingCharacter: digit, suppressedCandidates: [],
+                tailConversion: { [converter] tail in converter!.counterTailConversion(tail) }
+            )
+        }
+        let cases: [(String, Character, String)] = [
+            ("ねんまえ", "1", "年前"), ("しゅうかんまえ", "2", "週間前"), ("かげつまえ", "3", "か月前"), ("にちまえ", "5", "日前"),
+            ("じかんまえ", "2", "時間前"), ("ふんまえ", "0", "分前"), ("びょうまえ", "3", "秒前"),
+            ("ねんまえに", "1", "年前に"), ("ねんまえの", "1", "年前の"), ("かげつまえから", "3", "か月前から"),
+            ("ねんごと", "1", "年ごと"), ("ねんごとに", "1", "年ごとに"), ("しゅうかんごと", "2", "週間ごと"),
+            ("かげつごとに", "3", "か月ごとに"), ("にちごと", "5", "日ごと"), ("じかんごと", "2", "時間ごと"),
+            ("ふんごと", "0", "分ごと"), ("かいごと", "3", "回ごと"),
+            // 3589 の 後 は従来どおり
+            ("ねんご", "1", "年後"), ("ねんごに", "1", "年後に"),
+        ]
+        for (reading, digit, expected) in cases {
+            XCTAssertEqual(boosted(reading, digit).first, expected, "\(digit)\(reading) boosted=\(boosted(reading, digit))")
+        }
+        XCTAssertEqual(boosted("ねんごろ", "1").first, "年ごろ", "boosted=\(boosted("ねんごろ", "1"))")
+    }
 }
