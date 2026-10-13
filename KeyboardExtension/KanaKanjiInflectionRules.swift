@@ -265,7 +265,18 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "", baseReadingSuffix: "る", allowedClasses: .ichidan)
     ] }
 
-    private static func makeIchidanInflectionRules() -> [InflectionRule] { [
+    // 一段の受身+te-aspect(間違えられている/間違えられてた/間違えられていた 等。3593)。五段は passiveTeForm の te-aspect を
+    // 持つが、一段は られ の単体規則しか無く、まちがえられてた が 街が選られてた(五段 選る の受身)に負けていた
+    private static func makeIchidanInflectionRules() -> [InflectionRule] {
+        let base = makeIchidanBaseInflectionRules()
+        let existing = Set(base.map { $0.readingSuffix })
+        let passiveAspect = KanaKanjiConverter.teAspectInflectionSuffixes(for: "られて")
+            .filter { !existing.contains($0) }
+            .map { InflectionRule(readingSuffix: $0, baseReadingSuffix: "る", allowedClasses: .ichidan) }
+        return base + passiveAspect
+    }
+
+    private static func makeIchidanBaseInflectionRules() -> [InflectionRule] { [
         InflectionRule(readingSuffix: "ない", baseReadingSuffix: "る", allowedClasses: .ichidan),
         // 否定の様態(いなさそう/食べなさそう。ない→なさそう)。無くて つかうひといなさそう が 使う人衣なさそう に割れていた(3238)
         InflectionRule(readingSuffix: "なさそう", baseReadingSuffix: "る", allowedClasses: .ichidan),
@@ -1290,6 +1301,10 @@ extension KanaKanjiConverter {
 
     private static func makeSuruInflectionRules() -> [InflectionRule] { [
         InflectionRule(readingSuffix: "しない", baseReadingSuffix: "する", allowedClasses: .suru),
+        // 否定+終助詞(積立しないの/しないのか/しないのに。3593)。無いと しないの が 市内の に割れて 外貨積みたて市内の になっていた
+        InflectionRule(readingSuffix: "しないの", baseReadingSuffix: "する", allowedClasses: .suru),
+        InflectionRule(readingSuffix: "しないのか", baseReadingSuffix: "する", allowedClasses: .suru),
+        InflectionRule(readingSuffix: "しないのに", baseReadingSuffix: "する", allowedClasses: .suru),
         // 打ち消しの連用 せず/せずに(気にせず/連絡せずに)。規則が無く、きにせず が 木+に+せず の断片に割れていた(ユーザ報告 3259)
         InflectionRule(readingSuffix: "せず", baseReadingSuffix: "する", allowedClasses: .suru),
         InflectionRule(readingSuffix: "せずに", baseReadingSuffix: "する", allowedClasses: .suru),
@@ -1612,6 +1627,9 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "すべきでない", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "すべきではない", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "しない", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
+        InflectionRule(readingSuffix: "しないの", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
+        InflectionRule(readingSuffix: "しないのか", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
+        InflectionRule(readingSuffix: "しないのに", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "しなさそう", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "しなさそうだ", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "しなさそうです", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
