@@ -97,6 +97,12 @@
 	        <dict><key>phrase</key><string>線量</string><key>shortcut</key><string>せんりょう</string></dict>	<!-- Sudachiにもある(基底11位/11、コスト10444の収穫底値で連文節では沈む) -->
 	        <dict><key>phrase</key><string>線量計</string><key>shortcut</key><string>せんりょうけい</string></dict>	<!-- Sudachiにもある(基底1位/1、コスト19360の収穫底値で連文節では沈む) -->
 	        <dict><key>phrase</key><string>短焦点</string><key>shortcut</key><string>たんしょうてん</string></dict>
+	<!-- 味噌 -->
+	        <dict><key>phrase</key><string>カクキュー</string><key>shortcut</key><string>かくきゅー</string></dict>
+	        <dict><key>phrase</key><string>神州一味噌</string><key>shortcut</key><string>しんしゅういちみそ</string></dict>
+	        <dict><key>phrase</key><string>神州一</string><key>shortcut</key><string>しんしゅういち</string></dict>
+	        <dict><key>phrase</key><string>本田味噌</string><key>shortcut</key><string>ほんだみそ</string></dict>
+	        <dict><key>phrase</key><string>玉那覇味噌</string><key>shortcut</key><string>たまなはみそ</string></dict>
 	<!-- 料理・食材 -->
 	<!-- 餃子の複合語: 辞書は読みを ぎょーざ で持っており、ぎょうざ と打つと出ない
 	     (むしぎょうざ→虫餃子/無視餃子)。ぎょうざ の読みでも引けるよう併記する(ユーザ指定 2973) -->
