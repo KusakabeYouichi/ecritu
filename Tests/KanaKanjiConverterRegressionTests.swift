@@ -23735,3 +23735,19 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 3575: 日の出ずる国/日出ずる処(ユーザ報告)。ひのいずる/ひいずる が 火の出流/脾胃ずる になっていた
+    func testRegressionRealLMHiIzuru() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let single1 = converter.candidates(for: "ひのいずる", limit: 10, systemCandidateMode: .surface)
+        XCTAssertTrue(single1.contains("日の出ずる"), "single=\(single1)")
+        let single2 = converter.candidates(for: "ひいずる", limit: 10, systemCandidateMode: .surface)
+        XCTAssertTrue(single2.contains("日出ずる"), "single=\(single2)")
+        let a = converter.multiClauseCandidates(for: "ひのいずるくに", systemCandidateMode: .surface)
+        XCTAssertEqual(a.first, "日の出ずる国", "multi=\(a)")
+        let b = converter.multiClauseCandidates(for: "ひいずるところ", systemCandidateMode: .surface)
+        XCTAssertTrue(b.contains("日出ずる処") || b.contains("日出ずるところ"), "multi=\(b)")
+    }
+}
