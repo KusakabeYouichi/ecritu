@@ -23930,4 +23930,16 @@ extension KanaKanjiConverterRegressionTests {
         let small = converter.multiClauseCandidates(for: "こさじをくわえる", systemCandidateMode: .surface)
         XCTAssertTrue(small.first?.hasPrefix("小さじ") ?? false, "multi=\(small)")
     }
+
+    // 3592: しんしゅう は 信州→真宗→神州→新宗→新秋→深秋→新収→新修→侵襲。しんしゅうみそ は 信州味噌(ユーザ指定)
+    func testRegressionRealLMShinshuuOrder() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let single = converter.candidates(for: "しんしゅう", limit: 12, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(9)), ["信州", "真宗", "神州", "新宗", "新秋", "深秋", "新収", "新修", "侵襲"], "single=\(single)")
+        let miso = converter.multiClauseCandidates(for: "しんしゅうみそ", systemCandidateMode: .surface)
+        XCTAssertEqual(miso.first, "信州味噌", "multi=\(miso)")
+        let honda = converter.multiClauseCandidates(for: "ほんだみその", systemCandidateMode: .surface)
+        XCTAssertEqual(honda.first, "本田味噌の", "multi=\(honda)")
+    }
 }
