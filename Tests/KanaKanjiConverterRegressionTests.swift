@@ -23789,3 +23789,15 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertFalse(multi.contains { $0.contains("増た") || $0.contains("新らし") }, "multi=\(multi)")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 3579: とおす は 通す が先(単文節の 通す/透す/徹す と同じ)。目を徹しました が先頭だった(ユーザ報告)
+    func testRegressionRealLMToosuTooshimashita() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let a = converter.multiClauseCandidates(for: "めをとおしました", systemCandidateMode: .surface)
+        XCTAssertEqual(a.first, "目を通しました", "multi=\(a)")
+        let single = converter.candidates(for: "とおす", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(3)), ["通す", "透す", "徹す"], "single=\(single)")
+    }
+}
