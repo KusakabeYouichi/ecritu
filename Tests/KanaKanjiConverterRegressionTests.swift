@@ -23975,4 +23975,22 @@ extension KanaKanjiConverterRegressionTests {
             XCTAssertEqual(Array(all.prefix(expected.count)), expected, "\(reading) single=\(single) multi=\(multi)")
         }
     }
+
+    // 3598: でるようになったよ の 2 番目は 出る様(用 でなく)。もでるようになったよ は モデル が最良でも も出る… を候補に残す
+    func testRegressionRealLMDeruYouNiNaruAndMoSplit() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("でるようになったよ", ["出るようになったよ", "出る様になったよ", "出る用になったよ"]),
+            ("でるようになった", ["出るようになった", "出る様になった"]),
+        ] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(Array(multi.prefix(expected.count)), expected, "\(reading) multi=\(multi)")
+        }
+        for reading in ["もでるようになったよ", "もでるようになる"] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertTrue(multi.contains(reading.replacingOccurrences(of: "でる", with: "出る")), "\(reading) multi=\(multi)")
+            XCTAssertTrue(multi.first?.hasPrefix("モデル") == true, "\(reading) multi=\(multi)")
+        }
+    }
 }
