@@ -24101,4 +24101,14 @@ extension KanaKanjiConverterRegressionTests {
             XCTAssertEqual(multi.first, expected, "\(reading) multi=\(multi)")
         }
     }
+
+    // 3610: いどうだなんて は 移動だなんて が先頭のまま、以前先頭だった 伊藤田なんて を末尾に温存する
+    func testRegressionRealLMMergedLeadNameKeptAtTail() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let multi = converter.multiClauseCandidates(for: "いどうだなんて", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "移動だなんて", "multi=\(multi)")
+        XCTAssertTrue(multi.contains("伊藤田なんて"), "multi=\(multi)")
+        XCTAssertEqual(multi.last, "伊藤田なんて", "multi=\(multi)")
+    }
 }
