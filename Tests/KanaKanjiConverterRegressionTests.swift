@@ -24133,4 +24133,13 @@ extension KanaKanjiConverterRegressionTests {
         let multi = converter.multiClauseCandidates(for: "ふくまで", systemCandidateMode: .surface)
         XCTAssertTrue(multi.isEmpty || multi.first == "服まで", "\(multi.prefix(4))")
     }
+
+    func testRegressionRealLMGakushuuResetNotOnomatopoeia() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.multiClauseCandidates(for: "がくしゅうりせっと", systemCandidateMode: .surface).first, "学習リセット")
+        // オノマトペ〜っと(助詞/かなの直後)は従来どおりかな
+        XCTAssertEqual(converter.multiClauseCandidates(for: "かおをぱしゃっと", systemCandidateMode: .surface).first, "顔をぱしゃっと")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "そらをふわっと", systemCandidateMode: .surface).first, "空をふわっと")
+    }
 }
