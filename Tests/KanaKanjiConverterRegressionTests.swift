@@ -24089,4 +24089,16 @@ extension KanaKanjiConverterRegressionTests {
             XCTAssertEqual(multi.first, "ご自宅" + particle, "ごじたく\(particle) multi=\(multi)")
         }
     }
+
+    // 3609: よなかのしゅとこう→夜中の首都高(首都+港 に負けていた)、いどうだなんて→移動だなんて(伊藤田 に負けていた)
+    func testRegressionRealLMShutokoIdoudanante() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("よなかのしゅとこう", "夜中の首都高"), ("ひるのしゅとこう", "昼の首都高"), ("いどうだなんて", "移動だなんて"),
+        ] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "\(reading) multi=\(multi)")
+        }
+    }
 }
