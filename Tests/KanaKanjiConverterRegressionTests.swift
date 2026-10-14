@@ -24124,4 +24124,13 @@ extension KanaKanjiConverterRegressionTests {
         converter.setKakikaePreference(.bothAfterFirst)
         XCTAssertEqual(converter.candidates(for: "りょうしょう", limit: 8, systemCandidateMode: .surface).first, "了承")
     }
+
+    func testRegressionRealLMFukumadeOrder() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let single = converter.candidates(for: "ふくまで", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(4)), ["服まで", "拭くまで", "吹くまで", "福まで"], "\(single)")
+        let multi = converter.multiClauseCandidates(for: "ふくまで", systemCandidateMode: .surface)
+        XCTAssertTrue(multi.isEmpty || multi.first == "服まで", "\(multi.prefix(4))")
+    }
 }
