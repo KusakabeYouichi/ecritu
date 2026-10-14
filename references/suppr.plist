@@ -204,6 +204,7 @@
 	<dict><key>phrase</key><string>カッタ</string><key>shortcut</key><string>かった</string></dict>	<!-- カッタ: Sudachi のカタカナ収穫(wc 2344 と極端に安い)。かった の先頭を取り 買った/勝った を押し下げていた(ユーザ報告 3388) -->
 	<dict><key>phrase</key><string>ススメる</string><key>shortcut</key><string>すすめる</string></dict>	<!-- カタカナ強調の収穫。派生(ススメて/ススメていて)が常に3位に並ぶ雑音(ユーザ指定 2741) -->
 	<dict><key>phrase</key><string>ダワ</string><key>shortcut</key><string>だわ</string></dict>	<!-- ダワ: Sudachi のカタカナ収穫(wc 2224 と極端に安い)。終助詞 だわ を食い、おすすめだわ が おすすめダワ になっていた(ユーザ報告 3262) -->
+	<dict><key>phrase</key><string>デタ</string><key>shortcut</key><string>でた</string></dict>	<!-- デタ: Sudachi のカタカナ収穫(wc 2507 と極端に安く、でた の唯一の辞書エントリ)。でたよ/でたの が デタよ/デタの で先頭になり 出た/でた を押し下げていた(ユーザ指定 3606) -->
 	<dict><key>phrase</key><string>カウカ</string><key>shortcut</key><string>かうか</string></dict>	<!-- カウカ(かうか、カタカナ固有名の収穫 wc4576=異常低): 買う+か の合成に1ノードで勝ち しんぴんかうか→新品カウカ を作る -->
 	<dict><key>phrase</key><string>アルノ</string><key>shortcut</key><string>あるの</string></dict>	<!-- アルノ(あるの、伊アルノ川等のカタカナ固有名の収穫 wc4576=異常低): ある+の の合成に1ノードで勝ち あるのになあ→アルノになあ を作る -->
 	<dict><key>phrase</key><string>ニー</string><key>shortcut</key><string>にー</string></dict>	<!-- ニー(にー のカタカナ)。knee等のLM実在でクラス保護されるため個別suppr(なのニー/行ったのニー) -->
