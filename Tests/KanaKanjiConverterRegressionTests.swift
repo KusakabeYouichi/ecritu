@@ -24069,4 +24069,14 @@ extension KanaKanjiConverterRegressionTests {
             XCTAssertEqual(Array(single.prefix(2)), expected, "\(reading)=\(single)")
         }
     }
+
+    // 3607: あかさかごようち は 赤坂御用地(ご幼稚 の合成でなく)。ごようち は 御用地 が先
+    func testRegressionRealLMGoyouchi() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let multi = converter.multiClauseCandidates(for: "あかさかごようち", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "赤坂御用地", "multi=\(multi)")
+        let single = converter.candidates(for: "ごようち", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "御用地", "single=\(single)")
+    }
 }
