@@ -2861,10 +2861,18 @@ extension KanaKanjiConverter {
                 penalty += demotion
             }
             if !isKanaIdentity {
-                for (readingKey, demotions) in Self.multiClauseHomophoneDemotionsByReading
-                where reading == readingKey || (isInflectionDerived && reading.hasPrefix(readingKey)) {
-                    for (demotedSurface, demotion) in demotions
-                    where surface == demotedSurface || (isInflectionDerived && surface.hasPrefix(demotedSurface)) {
+                // 活用派生でない語は読みの完全一致だけなので辞書引き(打鍵あたり全ノード×全キーの走査をやめる。3625)。
+                // 派生は読みの接頭一致が要るので従来どおり走査する
+                if isInflectionDerived {
+                    for (readingKey, demotions) in Self.multiClauseHomophoneDemotionsByReading
+                    where reading == readingKey || reading.hasPrefix(readingKey) {
+                        for (demotedSurface, demotion) in demotions
+                        where surface == demotedSurface || surface.hasPrefix(demotedSurface) {
+                            penalty += demotion
+                        }
+                    }
+                } else if let demotions = Self.multiClauseHomophoneDemotionsByReading[reading] {
+                    for (demotedSurface, demotion) in demotions where surface == demotedSurface {
                         penalty += demotion
                     }
                 }
