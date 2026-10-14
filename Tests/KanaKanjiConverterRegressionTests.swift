@@ -24257,4 +24257,20 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.candidates(for: "してから", limit: 5, systemCandidateMode: .surface).first, "してから")
         XCTAssertEqual(converter.candidates(for: "べんきょうして", limit: 3, systemCandidateMode: .surface).first, "勉強して")
     }
+
+    func testRegressionRealLMBatch3626() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        // NO・ は Sudachi の機械的な表記(誤エントリ)
+        XCTAssertFalse(converter.candidates(for: "なんばー", limit: 10, systemCandidateMode: .surface).contains("NO・"))
+        // 文頭の に+も(断片)
+        XCTAssertEqual(converter.multiClauseCandidates(for: "にもかいてなかった", systemCandidateMode: .surface).first, "にも書いてなかった")
+        // そこ+と
+        XCTAssertEqual(converter.multiClauseCandidates(for: "そことなにかがちがう", systemCandidateMode: .surface).first, "そこと何かが違う")
+        // なのよ はかな先頭
+        XCTAssertEqual(converter.candidates(for: "なのよ", limit: 3, systemCandidateMode: .surface).first, "なのよ")
+        // 高精細(辞書に無かった)
+        XCTAssertEqual(converter.candidates(for: "こうせいさい", limit: 3, systemCandidateMode: .surface).first, "高精細")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "こうせいさいで", systemCandidateMode: .surface).first, "高精細で")
+    }
 }
