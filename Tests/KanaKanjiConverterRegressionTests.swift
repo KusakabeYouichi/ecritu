@@ -24079,4 +24079,14 @@ extension KanaKanjiConverterRegressionTests {
         let single = converter.candidates(for: "ごようち", limit: 8, systemCandidateMode: .surface)
         XCTAssertEqual(single.first, "御用地", "single=\(single)")
     }
+
+    // 3608: ごじたく+助詞 の連文節は 後自宅 でなく ご自宅(実機トレース: 連文節 後自宅には が先頭だった)
+    func testRegressionRealLMGojitakuMultiClause() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for particle in ["には", "で", "にも", "の", "へ", "まで"] {
+            let multi = converter.multiClauseCandidates(for: "ごじたく" + particle, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, "ご自宅" + particle, "ごじたく\(particle) multi=\(multi)")
+        }
+    }
 }
