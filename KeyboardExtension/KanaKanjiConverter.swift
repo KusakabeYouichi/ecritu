@@ -1048,9 +1048,10 @@ final class KanaKanjiConverter {
                 continue
             }
             let top = max(score, original[beforeForm] ?? Int.min, original[afterForm] ?? Int.min)
-            let preferred = preference.prefersBefore ? beforeForm : afterForm
-            let other = preference.prefersBefore ? afterForm : beforeForm
-            switch preference {
+            let effective = preference.demotingEverydayPair(for: candidate)
+            let preferred = effective.prefersBefore ? beforeForm : afterForm
+            let other = effective.prefersBefore ? afterForm : beforeForm
+            switch effective {
             case .beforeOnly, .afterOnly:
                 // 出さない側を落とし、出す側は(無ければ作って)二つのうち高い方の点にする
                 scores.removeValue(forKey: other)
