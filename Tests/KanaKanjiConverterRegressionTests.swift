@@ -24059,4 +24059,14 @@ extension KanaKanjiConverterRegressionTests {
             XCTAssertFalse(all.contains { $0.hasPrefix("スタ場") }, "\(reading)=\(all)")
         }
     }
+
+    // 3606: でたよ は 出たよ、でたよ の順(Sudachi のカタカナ収穫 デタ を抑制)
+    func testRegressionRealLMDetaKatakanaSuppressed() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("でたよ", ["出たよ", "でたよ"]), ("でた", ["出た", "でた"]), ("でたね", ["出たね", "でたね"])] {
+            let single = converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+            XCTAssertEqual(Array(single.prefix(2)), expected, "\(reading)=\(single)")
+        }
+    }
 }
