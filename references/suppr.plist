@@ -95,6 +95,7 @@
 	<dict><key>phrase</key><string>手</string><key>shortcut</key><string>で</string></dict>	<!-- 手 を で と読むのは 苦手/派手 等の連濁の中だけで、単独の読みではない。でない→手ない の合成を作っていた(ユーザ報告 2798) -->
 	<dict><key>phrase</key><string>彼</string><key>shortcut</key><string>か</string></dict>	<!-- 彼 の か 読み(彼の=かの 由来の断片)。とかは→と彼は の分割を作っていた(ユーザ報告 2798) -->
 	<dict><key>phrase</key><string>ムベキ</string><key>shortcut</key><string>むべき</string></dict>	<!-- 「むべき」のカタカナ収穫(単独で成立する語ではない)。ふむべき→府ムベキ の合成を作っていた(ユーザ報告 2798) -->
+	<dict><key>phrase</key><string>僭船</string><key>shortcut</key><string>かいせん</string></dict>	<!-- 僭船 を かいせん と読む語は無い(僭=せん。せんせん の誤エントリ。ユーザ報告 3621) -->
 
 	<!-- ■ 収穫ノイズ: レア人名・レア姓(1ノードで安く、合成や連文節を汚す) -->
 	<dict><key>phrase</key><string>大睦</string><key>shortcut</key><string>たいりく</string></dict>	<!-- 大陸 と字形類似のレア人名収穫。たいりく で出したい場面が無い -->

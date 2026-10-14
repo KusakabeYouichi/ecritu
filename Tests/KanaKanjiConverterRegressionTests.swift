@@ -22004,7 +22004,7 @@ extension KanaKanjiConverterRegressionTests {
             ("こうきょう", ["公共", "交響", "好況", "広狭"], ["口供", "口峡", "口頬"]),
             ("とうぶ", ["東部", "東武", "頭部"], ["踏舞", "島部", "筒部", "藤武"]),
             ("かいほう", ["解放", "開放", "会報", "快方", "介抱", "回報"], ["開邦", "海邦", "回峰", "開法", "海鵬"]),
-            ("かいせん", ["回線", "回旋", "改選", "回船", "開戦", "会戦"], ["僭船", "廻旋"]),
+            ("かいせん", ["回線", "海鮮", "改選", "開戦", "開栓", "海戦"], ["僭船", "廻旋"]),  // 3621 で指定順に
             ("えんか", ["演歌", "塩化", "嚥下"], ["煙霞", "円価", "延河"]),
             ("はつげん", ["発言", "発現", "撥弦"], ["發言"]),
             ("せいてき", ["静的", "性的", "政敵"], ["征狄", "清適", "聖的"]),
@@ -24205,5 +24205,14 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.candidates(for: "るせっと", limit: 3, systemCandidateMode: .surface).first, "ルセット")
         XCTAssertEqual(converter.multiClauseCandidates(for: "るせっと", systemCandidateMode: .surface).first ?? "ルセット", "ルセット")
         XCTAssertEqual(converter.multiClauseCandidates(for: "るせっとどおりに", systemCandidateMode: .surface).first, "ルセット通りに")
+    }
+
+    func testRegressionRealLMKaisenOrder() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let list = converter.candidates(for: "かいせん", limit: 30, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(6)), ["回線", "海鮮", "改選", "開戦", "開栓", "海戦"], "\(list)")
+        XCTAssertEqual(list.last, "かいせん", "\(list)")
+        XCTAssertFalse(list.contains("僭船"), "\(list)")
     }
 }
