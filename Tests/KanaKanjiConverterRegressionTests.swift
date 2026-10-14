@@ -24142,4 +24142,27 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "かおをぱしゃっと", systemCandidateMode: .surface).first, "顔をぱしゃっと")
         XCTAssertEqual(converter.multiClauseCandidates(for: "そらをふわっと", systemCandidateMode: .surface).first, "空をふわっと")
     }
+
+    func testRegressionRealLMNoyoneNaoruIriguchiMakanai() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        // のよね: かな識別が curated になり、表示層でも先頭に立つ
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "のよね"))
+        // なおった: 直 を先(症状の後は 治)
+        XCTAssertEqual(converter.candidates(for: "なおった", limit: 3, systemCandidateMode: .surface).prefix(2), ["直った", "治った"])
+        XCTAssertEqual(converter.multiClauseCandidates(for: "ついでになおった", systemCandidateMode: .surface).prefix(2), ["ついでに直った", "次いでに直った"])
+        XCTAssertEqual(converter.multiClauseCandidates(for: "ついでになおって", systemCandidateMode: .surface).first, "ついでに直って")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "びょうきがなおった", systemCandidateMode: .surface).first, "病気が治った")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "かぜがなおった", systemCandidateMode: .surface).first, "風邪が治った")
+        // いりぐち: 入口 を先(助詞付きでも、初期設定の本則だけでも 入口に が落ちない)
+        converter.setOkuriganaVariantPreference(.default)
+        XCTAssertEqual(converter.candidates(for: "いりぐち", limit: 3, systemCandidateMode: .surface).prefix(2), ["入口", "入り口"])
+        for particle in ["に", "から", "の", "まで"] {
+            let single = converter.candidates(for: "いりぐち" + particle, limit: 3, systemCandidateMode: .surface)
+            XCTAssertEqual(single.first, "入口" + particle, "\(single)")
+            XCTAssertEqual(converter.multiClauseCandidates(for: "いりぐち" + particle, systemCandidateMode: .surface).first, "入口" + particle)
+        }
+        // まかない料理: まかない料理、賄い料理 の順
+        XCTAssertEqual(converter.multiClauseCandidates(for: "まかないりょうり", systemCandidateMode: .surface).prefix(2), ["まかない料理", "賄い料理"])
+    }
 }

@@ -47,6 +47,7 @@ extension KanaKanjiConverter {
         // 慣用の拡張(告示外)
         "入口", "出口", "締切", "振込", "手続", "晴", "曇"
     ]
+    private static let okuriganaNounOnlyFixedShortForms: [String] = ["入口", "出口"]
     private static let okuriganaFixedShortFormsMultiChar: [String] = okuriganaFixedShortForms.filter { $0.count >= 2 }
     private static let okuriganaFixedShortFormSingleChars: Set<Character> = Set(
         okuriganaFixedShortForms.filter { $0.count == 1 }.compactMap(\.first)
@@ -112,6 +113,11 @@ extension KanaKanjiConverter {
         }
         let shortString = String(short)
         let longString = String(long)
+        // 入口/出口 は活用しない名詞なので、助詞が続いても(入口に/出口から)固定表記。下の判定は 全漢字の短い形だけが対象で、
+        // 入口に の に で外れ 入口に が許容形として落ち 入り口に だけになっていた(3617、ユーザ報告: いりぐちに)
+        if okuriganaNounOnlyFixedShortForms.contains(where: { shortString.contains($0) }) {
+            return nil
+        }
         if !short.contains(where: isHiragana), okuriganaFixedShortFormsMultiChar.contains(where: { shortString.contains($0) }) {
             return nil
         }
