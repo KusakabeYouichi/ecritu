@@ -24165,4 +24165,14 @@ extension KanaKanjiConverterRegressionTests {
         // まかない料理: まかない料理、賄い料理 の順
         XCTAssertEqual(converter.multiClauseCandidates(for: "まかないりょうり", systemCandidateMode: .surface).prefix(2), ["まかない料理", "賄い料理"])
     }
+
+    func testRegressionRealLMKinoSei() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.candidates(for: "きのせい", limit: 3, systemCandidateMode: .surface).first, "気のせい")
+        for suffix in ["だ", "か", "で", "だよ", "かな"] {
+            let multi = converter.multiClauseCandidates(for: "きのせい" + suffix, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, "気のせい" + suffix, "\(suffix): \(multi.prefix(3))")
+        }
+    }
 }
