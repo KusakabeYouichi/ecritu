@@ -448,6 +448,8 @@ extension KanaKanjiConverter {
     static let multiClauseExistentialAttaAfterGaBonus = 1500
     // 先頭文節を seed 2番目に固定した再最適化経路を第2候補に採る許容差(最良との合計コスト差。2736)
     static let multiClauseLeadAlternativeMaxDelta = 6000
+    // 先頭 2 ノードを LM 未収録の漢字 1 ノード(収穫の人名)で覆う経路を末尾に温存するときの、最良経路との差の上限(3610)
+    static let multiClauseMergedLeadTailMaxDelta = 8000
     // 先頭カタカナ語(もでる→モデル)の も を離す代替経路の最良経路との差の上限(3598)。実差は 5000〜10000 級(モデル用 vs も出る様)
     static let multiClauseMoSplitAlternativeMaxDelta = 16000
     // 助詞を呑んだ派生動詞(でなおす=出直す / で+直す)の代替経路(2771、適用箇所のコメント参照)。
