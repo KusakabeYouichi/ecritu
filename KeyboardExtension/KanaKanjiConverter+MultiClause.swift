@@ -3927,6 +3927,15 @@ extension KanaKanjiConverter {
                             Self.multiClauseColorTintStemSurfaces.contains(nodes[backPointer[prevIdx]].surface) {
                             cost += Self.multiClauseKanjiAfterColorGaPenalty
                         }
+                        // 〜ないと+いけ(書かないといけなくなった。3619)。否定+と の直後の かな いけ は「しなければならない」の
+                        // いけない/いけなくなる。いけない は かな いけ+ない が安く勝つが、いけなくなった は 行ける の派生 1 ノード
+                        // (行けなくなった)が かな いけ+なくなった(なくなった が高い)に勝っていた。かな いけ の側を安くする
+                        // (派生側を下げると いかないといけなくなった が以下ナイト… に崩れた)
+                        if node.isKanaIdentity, node.reading == "いけ",
+                            prevNode.surfaceID == SID.と, prevNode.readingID == SID.と, backPointer[prevIdx] >= 0,
+                            nodes[backPointer[prevIdx]].reading.hasSuffix("ない") {
+                            cost -= Self.multiClauseKanaIkeAfterNegativeToBonus
+                        }
                         #if DEBUG
                         // 時限トレース(2803): MULTI_TRACE_EDGES=1 で全遷移の累積コストを吐く(最良以外の prev も見える)
                         if traceEdges {

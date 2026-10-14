@@ -24175,4 +24175,27 @@ extension KanaKanjiConverterRegressionTests {
             XCTAssertEqual(multi.first, "気のせい" + suffix, "\(suffix): \(multi.prefix(3))")
         }
     }
+
+    func testRegressionRealLMBatch3619() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ reading: String) -> [String] {
+            converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+        }
+        // ないと+いけなくなった: かな いけ(書かないといけなくなったこと)。いけ が可能の 行け の文は影響しない
+        XCTAssertEqual(Array(multi("かかないといけなくなったこと").prefix(2)), ["書かないといけなくなったこと", "描かないといけなくなったこと"])
+        XCTAssertEqual(multi("いかないといけなくなった").first, "行かないといけなくなった")
+        XCTAssertEqual(multi("ともだちといけなくなった").first, "友達と行けなくなった")
+        XCTAssertEqual(multi("いまはいけなくなった").first, "今は行けなくなった")
+        // を+先 / そんな+変な / ずっと+下
+        XCTAssertEqual(multi("をさきにやるべき").first, "を先にやるべき")
+        XCTAssertEqual(multi("そんなへんな").first, "そんな変な")
+        XCTAssertEqual(multi("ずっとしたのほう").first, "ずっと下の方")
+        XCTAssertEqual(multi("ずっとしたかった").first, "ずっとしたかった")
+        // ズンと は ずっと の読みに出さない
+        XCTAssertFalse(converter.candidates(for: "ずっと", limit: 8, systemCandidateMode: .surface).contains("ズンと"))
+        // 並び(単文節 seed)
+        XCTAssertEqual(converter.candidates(for: "ぜんさい", limit: 3, systemCandidateMode: .surface).prefix(2), ["前菜", "前妻"])
+        XCTAssertEqual(converter.candidates(for: "にんにく", limit: 6, systemCandidateMode: .surface).prefix(5), ["にんにく", "ニンニク", "大蒜", "忍辱", "葫"])
+    }
 }
