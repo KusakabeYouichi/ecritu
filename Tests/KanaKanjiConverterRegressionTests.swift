@@ -24003,4 +24003,32 @@ extension KanaKanjiConverterRegressionTests {
             + converter.multiClauseCandidates(for: "こうへんい", systemCandidateMode: .surface)
         XCTAssertEqual(Array(kou.prefix(2)), ["高偏位", "高変位"], "こうへんい=\(kou)")
     }
+
+    // 3600〜3602: ほどかいふくした(連文節でも ほど が先頭)、ごじたくには(ご自宅 が先)、すたばで(スタバで)
+    func testRegressionRealLMHodoGojitakuSutaba() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let cases: [(String, [String])] = [
+            ("ほどかいふくした", ["ほど回復した", "ほど快復した"]), ("ほどかいふくする", ["ほど回復する"]),
+            ("ごじたくには", ["ご自宅には", "御自宅には"]), ("ごじたくにも", ["ご自宅にも", "御自宅にも"]),
+            ("ごじたくは", ["ご自宅は", "御自宅は"]), ("すたばで", ["スタバで"]), ("すたばに", ["スタバに"]),
+        ]
+        for (reading, expected) in cases {
+            let single = converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(Array((single + multi).prefix(expected.count)), expected, "\(reading) single=\(single) multi=\(multi)")
+        }
+    }
+    // 3603: たいしたことない/たいしたもの は 大した が先(連文節が 対した/大使た を先頭にしていた)
+    func testRegressionRealLMTaishitaKotoNai() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("たいしたことない", "大したことない"), ("たいしたもの", "大したもの"), ("たいしたことなかった", "大したことなかった")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            let single = converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+            // 連文節があるときは連文節の先頭が表示の先頭になるので、どちらの先頭も正解にそろえる
+            XCTAssertEqual(multi.first ?? single.first, expected, "\(reading) single=\(single) multi=\(multi)")
+            XCTAssertEqual(single.first, expected, "\(reading) single=\(single)")
+        }
+    }
 }

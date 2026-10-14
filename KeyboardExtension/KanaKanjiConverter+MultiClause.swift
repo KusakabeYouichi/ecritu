@@ -2870,7 +2870,10 @@ extension KanaKanjiConverter {
             // 形式名詞(事/時/為)は述語の直後(行くとき/食べること)だけ。文頭や名詞の位置(時は金なり/事の起こり)は普通の名詞として残す
             if !isKanaIdentity, !isCurated,
                 let category = KanaGakiTable.categoryByReadingAndSurface[reading]?[surface],
-                category != .formalNoun || prevIsInflectionDerived || prevIsDictionaryFormPredicate {
+                category != .formalNoun || prevIsInflectionDerived || prevIsDictionaryFormPredicate
+                    // 文頭の 程 は直前の数量(50%+ほど回復した)が入力の外にあるだけで、述語の直後と同じ用法(3600、ユーザ報告)。
+                    // 単文節は ほど が先頭なのに連文節だけ 程回復した になっていた。程度の 程 は文頭の名詞用法がほぼ無い
+                    || (prevIsBOS && surface == "程") {
                 if kanaGakiSuppressed.contains(category) {
                     penalty += Self.multiClauseForbiddenPenaltyCost
                 } else if category != .adverbKanaFirst {
