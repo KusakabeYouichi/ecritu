@@ -422,21 +422,87 @@ extension ContentView {
         SettingsKeys.userDictionaryCandidateDisplayMode: UserDictionaryCandidateDisplayModeOption.on.rawValue
     ]
 
-    // 現代的初期設定(contemporary、ユーザ指定 3406)= 保守的初期設定 + かなで書く言葉(X.8)をすべて抑制(ひらがな側に寄せる)
-    // + 同音の漢字による書きかえ(X.9)は 両方(本来の漢字を先に)(3422、3431 で変更)
-    static let contemporaryPresetValues: [String: Any] = conservativePresetValues.merging([
+    // 現代的初期設定(contemporary、ユーザ指定 3406)。戦略的・保守的とは別個の完全な集合として定義する
+    // (他の初期設定を土台にしない。3613 で保守的の値を引き継いでしまう不具合があった)
+    static let contemporaryPresetValues: [String: Any] = [
+        SettingsKeys.kanaLayoutMode: KanaLayoutOption.threeByThreePlusWa.rawValue,
+        SettingsKeys.latinLayoutMode: LatinLayoutOption.azerty.rawValue,   // 現代的=AZERTY(戦略的と同じ。ユーザ指定 3613)
+        SettingsKeys.numberLayoutMode: NumberLayoutOption.calculette.rawValue,
+        SettingsKeys.formattedNumberKeypadLayout: FormattedNumberKeypadOption.calculette.rawValue,
+        SettingsKeys.basicSymbolOrder: BasicSymbolOrderOption.ansi.rawValue,
+        SettingsKeys.kanaModifierPlacement: KanaModifierPlacementOption.postfix.rawValue,
+        SettingsKeys.directionProfile: DirectionOption.littlebear.rawValue,
+        SettingsKeys.keyRepeatInitialDelay: 0.5,
+        SettingsKeys.keyRepeatInterval: 0.1,
+        SettingsKeys.idleCommitEnabled: false,
+        SettingsKeys.idleCommitInterval: 1.2,
+        SettingsKeys.composingTextStyle: ComposingTextStyleOption.ecritu.rawValue,
+        SettingsKeys.kanaModeSwitcherTapAction: KanaModeSwitcherActionOption.symbols.rawValue,
+        SettingsKeys.kanaModeSwitcherRightFlickAction: KanaModeSwitcherActionOption.kaomoji.rawValue,
+        SettingsKeys.kanaModeSwitcherUpFlickAction: KanaModeSwitcherActionOption.emoji.rawValue,
+        SettingsKeys.kanaPostModifierEmptyTapAction: KanaPostModifierEmptyTapActionOption.kaomoji.rawValue,
+        SettingsKeys.kanaPostModifierEmptyTapKaomojiCategory: "shortcut",   // Raccourcis (ショートカット)
+        SettingsKeys.kanaPostModifierEmptyTapEmojiCategory: "0",            // Personnes
+        SettingsKeys.kanaPostModifierEmptyTapSymbolCategory: "0",           // Symboles de base
+        SettingsKeys.kanaPostModifierFlickDakutenEnabled: false,
+        SettingsKeys.kanaYaBracketStyle: KanaYaBracketOption.doubleCorner.rawValue,   // 現代的=『』(ユーザ指定 3585)
+        SettingsKeys.numberThousandsSeparator: ThousandsSeparatorOption.comma.rawValue,
+        SettingsKeys.numberGroupFourDigits: true,
+        SettingsKeys.numberDecimalSeparator: DecimalSeparatorOption.dot.rawValue,
+        SettingsKeys.numberUnitProductSeparator: UnitProductSeparatorOption.dotOperator.rawValue,
+        SettingsKeys.numberLitreSymbol: LitreSymbolOption.small.rawValue,
+        SettingsKeys.degreeSymbol: DegreeSymbolOption.compat.rawValue,   // 保守的=℃(日本語環境の慣用)。標準は °C
+        SettingsKeys.calendarWeekStart: CalendarWeekStartOption.monday.rawValue,
+        SettingsKeys.calendarWeekdayLanguage: CalendarWeekdayLanguageOption.french.rawValue,
+        SettingsKeys.calendarSundayColor: CalendarDayColorOption.dic156.rawValue,
+        SettingsKeys.calendarSaturdayColor: CalendarDayColorOption.off.rawValue,
+        SettingsKeys.calendarFridayColor: CalendarDayColorOption.off.rawValue,
+        SettingsKeys.dateFormatStyle: DateFormatStyleOption.japanese.rawValue,
+        SettingsKeys.latinLexiconFrenchEnabled: true,
+        SettingsKeys.latinLexiconItalianEnabled: true,
+        SettingsKeys.latinLexiconGermanEnabled: true,
+        SettingsKeys.latinLexiconEnglishEnabled: true,
+        SettingsKeys.kanaFlickGuideDisplayMode: FlickGuideDisplayOption.off.rawValue,
+        SettingsKeys.latinFlickGuideDisplayMode: FlickGuideDisplayOption.fourDirections.rawValue,
+        SettingsKeys.numberFlickGuideDisplayMode: FlickGuideDisplayOption.down.rawValue,
+        SettingsKeys.modifierFlickGuideDisplayMode: FlickGuideDisplayOption.off.rawValue,
+        SettingsKeys.landscapeLatinSuggestionMode: LandscapeLatinSuggestionModeOption.sidebar.rawValue,
+        SettingsKeys.landscapeCandidateSide: LandscapeCandidateSideOption.right.rawValue,
+        SettingsKeys.landscapeNumberPaneSide: LandscapeCandidateSideOption.left.rawValue,
+        SettingsKeys.accentPalette: AccentColorOption.emeraude.rawValue,
+        SettingsKeys.keyboardBackgroundTheme: KeyboardBackgroundThemeOption.sakura.rawValue,   // 現代的=sakura(ユーザ指定 3612)
+        SettingsKeys.delimiterAutoCommitCandidate: DelimiterAutoCommitCandidateOption.one.rawValue,
+        SettingsKeys.kanaKanjiCandidateSourceMode: KanaKanjiCandidateSourceModeOption.surface.rawValue,
+        SettingsKeys.historicalKanaCandidatesEnabled: false,
+        SettingsKeys.iterationMarkCandidatesEnabled: false,
+        SettingsKeys.katakanaEmphasisCandidateMode: ScriptVariantModeOption.suppress.rawValue,
+        SettingsKeys.mazegakiCandidateMode: ScriptVariantModeOption.suppress.rawValue,
+        // 旧字体・異体字の抑制は戦略的・保守的とも同じ(人名で生きている異体字だけオフ。ユーザ指定 2991)
+        SettingsKeys.scriptVariantSuppressKyujitai: true,
+        SettingsKeys.scriptVariantSuppressItaiji: true,
+        SettingsKeys.scriptVariantSuppressRyakuji: true,
+        SettingsKeys.scriptVariantSuppressConfusable: true,
+        SettingsKeys.scriptVariantSuppressLookalike: true,
+        SettingsKeys.scriptVariantSuppressPersonNameVariant: false,
+        // かなで書く言葉(X.8): 現代的はすべて抑制(ひらがな側に寄せる。副詞のかな先頭だけオフ。ユーザ指定 3406)
         SettingsKeys.kanaGakiSuppressAdverb: true,
         SettingsKeys.kanaGakiSuppressConjunction: true,
         SettingsKeys.kanaGakiSuppressAuxiliary: true,
         SettingsKeys.kanaGakiSuppressFormalNoun: true,
         SettingsKeys.kanaGakiSuppressDemonstrative: true,
         SettingsKeys.kanaGakiSuppressAdverbKanaFirst: false,
-        SettingsKeys.kakikaePreference: KakikaePreference.bothBeforeFirst.rawValue,
-        SettingsKeys.latinLayoutMode: LatinLayoutOption.azerty.rawValue,         // 現代的=ラテン文字 AZERTY・数字 calculette(戦略的と同じ。保守的の 3x3/téléphone と違う。ユーザ指定 3613)
-        SettingsKeys.numberLayoutMode: NumberLayoutOption.calculette.rawValue,
-        SettingsKeys.keyboardBackgroundTheme: KeyboardBackgroundThemeOption.sakura.rawValue,
-        SettingsKeys.kanaYaBracketStyle: KanaYaBracketOption.doubleCorner.rawValue   // 現代的=『』(保守的と違い、戦略的と同じ。ユーザ指定 3585)
-    ]) { _, new in new }
+        SettingsKeys.emojiCandidateDisplayEnabled: true,
+        SettingsKeys.radicalStrokeCountStyle: "140:4,113:5,184:8",
+        SettingsKeys.ordinalMeKanjiPreferred: false,
+        SettingsKeys.kaCounterVariantPreference: KaCounterVariantPreference.conservative.encoded,  // 保守的=か・箇・ヶ・カ をオン(標準は か のみ)
+        SettingsKeys.okuriganaVariantPreference: OkuriganaVariantPreference.conservative.encoded,  // 保守的=本則を先に許容も出す(標準は本則だけ)
+        SettingsKeys.kakikaePreference: KakikaePreference.bothBeforeFirst.rawValue,  // 現代的=本来の漢字を先に前も出す(3422、3431 で変更)
+        SettingsKeys.adjectiveMeKanjiCandidatesEnabled: true,
+        SettingsKeys.suspendMemorySlimmingEnabled: true,
+        SettingsKeys.kaomojiCandidateDisplayEnabled: true,
+        SettingsKeys.contactCandidateDisplayMode: ContactCandidateDisplayModeOption.namesOnly.rawValue,  // 保守的=作者の実運用値。選択操作起点なので許可要求は 5.1.1 上問題なし
+        SettingsKeys.userDictionaryCandidateDisplayMode: UserDictionaryCandidateDisplayModeOption.on.rawValue
+    ]
 
     // ──── ジェスチャー ────
 
