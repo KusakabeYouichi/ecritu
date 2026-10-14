@@ -2489,7 +2489,10 @@ extension KanaKanjiConverter {
                 !readingsWithScriptedDictWord.contains(reading),
                 !Self.multiClauseSokuonToAdverbTails.contains(where: {
                     reading != $0 && reading.hasSuffix($0)
-                }) {
+                }),
+                // 漢字の直後はオノマトペでなく かな断片の誤爆(学主+うりせっと: 学習+リセット の せっと が
+                // 全かな素通りに 4000 で負けていた。3616)。ぱしゃっと 等は助詞/かなの直後か文頭に来る
+                prevIsBOS || !(prev.last.map(Self.isKanjiCharacter) ?? false) {
                 base = min(base, Self.multiClauseKanaAdverbCost)
             }
             // 文節先頭(直前=BOS)の存在動詞かな過去(あった/いた)はかな正書を優先(あったんで→
