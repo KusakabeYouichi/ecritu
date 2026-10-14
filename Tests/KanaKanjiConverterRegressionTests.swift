@@ -24215,4 +24215,14 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(list.last, "かいせん", "\(list)")
         XCTAssertFalse(list.contains("僭船"), "\(list)")
     }
+
+    func testRegressionRealLMTaipoSuruNoun() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(Array(converter.candidates(for: "たいぽ", limit: 3, systemCandidateMode: .surface).prefix(2)), ["タイポ", "typo"])
+        for suffix in ["する", "した", "を", "してる"] {
+            let multi = converter.multiClauseCandidates(for: "たいぽ" + suffix, systemCandidateMode: .surface)
+            XCTAssertEqual(Array(multi.prefix(2)), ["タイポ" + suffix, "typo" + suffix], "\(suffix): \(multi.prefix(3))")
+        }
+    }
 }
