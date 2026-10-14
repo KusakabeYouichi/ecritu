@@ -239,6 +239,15 @@
 	<dict><key>phrase</key><string>ルセット</string><key>shortcut</key><string>るせっと</string></dict>	<!-- ルセット(辞書の 1 語): 連文節は る+セット(セット の頻度)の 2 ノードが 75 だけ安く、るセット/るセット通りに になっていた(ユーザ報告 3620)。curated 化して 1 語を先頭に -->
 	<dict><key>phrase</key><string>タイポ</string><key>shortcut</key><string>たいぽ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- タイポ(誤字): 辞書に無く、たいぽ→対ぽ/タイぽ、たいぽする→対ぽする になっていた。サ変名詞(タイポする/タイポした)(ユーザ報告 3622) -->
 	<dict><key>phrase</key><string>typo</string><key>shortcut</key><string>たいぽ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- typo(英字): タイポ の次(ユーザ指定 3622) -->
+	<dict><key>phrase</key><string>№</string><key>shortcut</key><string>なんばー</string></dict>	<!-- ヌメロ記号(№/Nº/N°): なんばー/ぬめろ/のんぶる で変換。連文節では弱め(ナンバー を勝たせるため multiClauseHomophoneDemotionsByReading で降格。ユーザ指定 3623) -->
+	<dict><key>phrase</key><string>№</string><key>shortcut</key><string>ぬめろ</string></dict>
+	<dict><key>phrase</key><string>№</string><key>shortcut</key><string>のんぶる</string></dict>
+	<dict><key>phrase</key><string>Nº</string><key>shortcut</key><string>なんばー</string></dict>
+	<dict><key>phrase</key><string>Nº</string><key>shortcut</key><string>ぬめろ</string></dict>
+	<dict><key>phrase</key><string>Nº</string><key>shortcut</key><string>のんぶる</string></dict>
+	<dict><key>phrase</key><string>N°</string><key>shortcut</key><string>なんばー</string></dict>
+	<dict><key>phrase</key><string>N°</string><key>shortcut</key><string>ぬめろ</string></dict>
+	<dict><key>phrase</key><string>N°</string><key>shortcut</key><string>のんぶる</string></dict>
 	<dict><key>phrase</key><string>なのだ</string><key>shortcut</key><string>なのだ</string></dict>
 	<dict><key>phrase</key><string>なのです</string><key>shortcut</key><string>なのです</string></dict>
 	<dict><key>phrase</key><string>なのだろう</string><key>shortcut</key><string>なのだろう</string></dict>

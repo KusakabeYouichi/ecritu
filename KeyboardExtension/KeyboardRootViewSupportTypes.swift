@@ -461,7 +461,7 @@ extension KeyboardRootView {
             case .currency:
                 return Self.currencySymbols + Self.bitcoinSymbols + Self.cryptoAlternativeSymbols
             case .units:
-                return Self.unitSymbols(for: temperatureUnit)
+                return Self.unitSymbols(for: temperatureUnit) + Self.numeroSymbols
             case .math:
                 return Self.mathSymbols
             case .arrows:
@@ -539,6 +539,9 @@ extension KeyboardRootView {
         static let currencySubunitLabels: [String: String] = [
             "¢": "cent", "₰": "Pfennig"
         ]
+
+        // 単位カテゴリーの末尾に区切り線を挟んで置くヌメロ記号(№ / Nº / N°。ユーザ指定 3623)
+        static let numeroSymbols: [String] = ["\u{2116}", "N\u{00BA}", "N\u{00B0}"]
 
         private static let unitSymbolsTail: [String] = [
             "°", "′", "″", "%", "‰", "μ", "Ω", "ℓ", "㎜", "㎝", "㎞", "㎡", "㎢", "㎥", "㎎", "㎏", "㏄", "㎖", "㎗", "㎐", "㎑", "㎒", "㎓"
@@ -917,6 +920,11 @@ extension KeyboardRootView {
                     (bitcoinSymbols, tickers),
                     (cryptoSymbols, tickers)
                 ])
+
+            case .units:
+                let numeroCount = KeyboardRootView.SymbolCategory.numeroSymbols.count
+                let numeroStart = max(0, symbols.count - numeroCount)
+                symbolGridSections([Array(symbols.prefix(numeroStart)), Array(symbols.suffix(numeroCount))])
 
             case .enclosed:
                 let numberStart = symbols.firstIndex(of: "⓪")
