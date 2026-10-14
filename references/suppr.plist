@@ -488,6 +488,7 @@
 	<dict><key>phrase</key><string>拿けど</string><key>shortcut</key><string>だけど</string></dict>
 	<dict><key>phrase</key><string>堺町</string><key>shortcut</key><string>さかえまち</string></dict>
 	<dict><key>phrase</key><string>栄恵町</string><key>shortcut</key><string>さかえまち</string></dict>
+	<dict><key>phrase</key><string>スタ</string><key>shortcut</key><string>すた</string></dict>	<!-- スタ(すた): SudachiDict small の普通名詞(語コスト 3527)だが意味は不明。LM の連接(前: Ks/鳥栖/味/Q/N/E、後: 改修)から、鳥栖スタ(鳥栖スタジアム)や Ks スタ(Ks スタジアム)など スタジアム の略か断片の収穫と推測する(確定ではない)。単独の頻度は 6307 と低いのに辞書コストが安く、すたばで→スタ場で のように スタバ を割る(ユーザ指定 3605) -->
 
 	<!-- ■ 完全一致で再供給する二段構え(抑制しつつ exactReadingOnlySeed で末尾に出す) -->
 	<dict><key>phrase</key><string>イル</string><key>shortcut</key><string>いる</string></dict>	<!-- exactReadingOnlySeed との二段構え(抑制→完全一致時のみ末尾再供給)。クラス抑制(強調/交ぜ書き)からは免除される -->

@@ -24045,4 +24045,18 @@ extension KanaKanjiConverterRegressionTests {
             XCTAssertEqual(boosted.first, expected, "4\(reading) boosted=\(boosted)")
         }
     }
+
+    // 3605: スタ を抑制(SudachiDict の断片的な普通名詞)。すた に出ず、スタバ+助詞 は引き続き先頭
+    func testRegressionRealLMSutaSuppressed() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let suta = converter.candidates(for: "すた", limit: 8, systemCandidateMode: .surface)
+        XCTAssertFalse(suta.contains("スタ"), "すた=\(suta)")
+        for reading in ["すたばで", "すたばに"] {
+            let all = converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+                + converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(all.first, "スタバ" + String(reading.last!), "\(reading)=\(all)")
+            XCTAssertFalse(all.contains { $0.hasPrefix("スタ場") }, "\(reading)=\(all)")
+        }
+    }
 }
