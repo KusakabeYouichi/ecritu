@@ -23993,4 +23993,14 @@ extension KanaKanjiConverterRegressionTests {
             XCTAssertTrue(multi.first?.hasPrefix("モデル") == true, "\(reading) multi=\(multi)")
         }
     }
+
+    func testRegressionRealLMHenniOrder() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let single = converter.candidates(for: "へんい", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(7)), ["変異", "偏位", "変位", "偏移", "変移", "偏倚", "辺夷"], "へんい single=\(single)")
+        let kou = converter.candidates(for: "こうへんい", limit: 8, systemCandidateMode: .surface)
+            + converter.multiClauseCandidates(for: "こうへんい", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(kou.prefix(2)), ["高偏位", "高変位"], "こうへんい=\(kou)")
+    }
 }
