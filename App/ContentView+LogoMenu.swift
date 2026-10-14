@@ -388,7 +388,7 @@ extension ContentView {
         SettingsKeys.landscapeCandidateSide: LandscapeCandidateSideOption.right.rawValue,
         SettingsKeys.landscapeNumberPaneSide: LandscapeCandidateSideOption.left.rawValue,
         SettingsKeys.accentPalette: AccentColorOption.emeraude.rawValue,
-        SettingsKeys.keyboardBackgroundTheme: KeyboardBackgroundThemeOption.sakura.rawValue,
+        SettingsKeys.keyboardBackgroundTheme: KeyboardBackgroundThemeOption.chartreuse.rawValue,   // 保守的=vert chartreuse(ユーザ指定 3612。戦略的=bleu、現代的=sakura)
         SettingsKeys.delimiterAutoCommitCandidate: DelimiterAutoCommitCandidateOption.one.rawValue,
         SettingsKeys.kanaKanjiCandidateSourceMode: KanaKanjiCandidateSourceModeOption.surface.rawValue,
         SettingsKeys.historicalKanaCandidatesEnabled: false,
@@ -432,6 +432,7 @@ extension ContentView {
         SettingsKeys.kanaGakiSuppressDemonstrative: true,
         SettingsKeys.kanaGakiSuppressAdverbKanaFirst: false,
         SettingsKeys.kakikaePreference: KakikaePreference.bothBeforeFirst.rawValue,
+        SettingsKeys.keyboardBackgroundTheme: KeyboardBackgroundThemeOption.sakura.rawValue,
         SettingsKeys.kanaYaBracketStyle: KanaYaBracketOption.doubleCorner.rawValue   // 現代的=『』(保守的と違い、戦略的と同じ。ユーザ指定 3585)
     ]) { _, new in new }
 

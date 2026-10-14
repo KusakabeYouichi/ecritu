@@ -617,6 +617,7 @@ extension KeyboardRootView {
     enum KeyboardBackgroundTheme: String {
         case bleu
         case sakura
+        case chartreuse
 
         func gradientStops(for colorScheme: ColorScheme) -> [Gradient.Stop] {
             switch self {
@@ -647,6 +648,20 @@ extension KeyboardRootView {
                     .init(color: Color(red: 0.89, green: 0.90, blue: 0.92), location: 0.0),
                     .init(color: Color(red: 0.95, green: 0.84, blue: 0.88), location: 0.34),
                     .init(color: Color(red: 1.0, green: 0.94, blue: 0.96), location: 1.0)
+                ]
+            case .chartreuse:
+                if colorScheme == .dark {
+                    return [
+                        .init(color: Color(red: 0.13, green: 0.14, blue: 0.13), location: 0.0),
+                        .init(color: Color(red: 0.19, green: 0.23, blue: 0.13), location: 0.34),
+                        .init(color: Color(red: 0.15, green: 0.18, blue: 0.12), location: 1.0)
+                    ]
+                }
+
+                return [
+                    .init(color: Color(red: 0.89, green: 0.90, blue: 0.91), location: 0.0),
+                    .init(color: Color(red: 0.83, green: 0.92, blue: 0.66), location: 0.34),
+                    .init(color: Color(red: 0.95, green: 0.98, blue: 0.88), location: 1.0)
                 ]
             }
         }

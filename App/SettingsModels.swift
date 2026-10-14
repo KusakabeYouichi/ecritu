@@ -911,6 +911,7 @@ enum AccentColorOption: String, CaseIterable, Identifiable {
 enum KeyboardBackgroundThemeOption: String, CaseIterable, Identifiable {
     case bleu
     case sakura
+    case chartreuse
 
     var id: String { rawValue }
 
@@ -918,6 +919,7 @@ enum KeyboardBackgroundThemeOption: String, CaseIterable, Identifiable {
         switch self {
         case .bleu: return "bleu ciel brumeux"
         case .sakura: return "rose sakura poudré"
+        case .chartreuse: return "vert chartreuse tendre"
         }
     }
 
@@ -925,6 +927,7 @@ enum KeyboardBackgroundThemeOption: String, CaseIterable, Identifiable {
         switch self {
         case .bleu: return "brume douce et lumière du ciel"
         case .sakura: return "rose poudré inspiré des fleurs"
+        case .chartreuse: return "vert tendre de jeune pousse"
         }
     }
 
@@ -939,6 +942,11 @@ enum KeyboardBackgroundThemeOption: String, CaseIterable, Identifiable {
             return [
                 Color(red: 1.0, green: 0.88, blue: 0.93),
                 Color(red: 1.0, green: 0.95, blue: 0.97)
+            ]
+        case .chartreuse:
+            return [
+                Color(red: 0.89, green: 0.95, blue: 0.76),
+                Color(red: 0.96, green: 0.98, blue: 0.90)
             ]
         }
     }
