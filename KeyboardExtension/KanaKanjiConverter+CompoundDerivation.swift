@@ -795,6 +795,17 @@ extension KanaKanjiConverter {
         // 助数詞ではないが数字の直後なら先頭に来るべき語(定数コメント参照。3185)
         boosted += (Self.digitContextPreferredSurfacesByReading[reading] ?? [])
             .filter { !boosted.contains($0) && !suppressedCandidates.contains($0) }
+        // 〜つ(数え)+動詞(4+つかうか→4つ買うか/4つ買うだけで。3604、ユーザ報告)。読みの先頭 つか が助数詞 束(つか)や
+        // 使う/遣う の語として先に立つので、数字直後では つ+末尾の変換形(買うか)を先頭に供給する。末尾は 3 かな以上・
+        // 変換形が漢字で始まるものだけ(つ+くる 等の短い末尾や、つ+かな のままの形は対象外)
+        if reading.hasPrefix("つ"), reading.count >= 4, let tailConversion {
+            let tail = String(reading.dropFirst())
+            if let converted = tailConversion(tail), converted != tail,
+                let first = converted.first, containsKanjiCandidate(String(first)),
+                !suppressedCandidates.contains("つ" + converted) {
+                boosted.append("つ" + converted)
+            }
+        }
         // 数量+後/前/ごと に助詞が付いた形(1年後に/3か月後には/1年前に/1年ごとに。3589/3590)。読み全体が 〜後+助詞 のときだけ、助詞をかなのまま足す
         // 長い読みを先に(ねんごと+に が ねんご+とに より先)
         for (afterReading, afterSurfaces) in Self.digitContextPreferredSurfacesByReading

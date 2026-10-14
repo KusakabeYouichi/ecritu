@@ -24031,4 +24031,18 @@ extension KanaKanjiConverterRegressionTests {
             XCTAssertEqual(single.first, expected, "\(reading) single=\(single)")
         }
     }
+
+    // 3604: 4+つかうか→4つ買うか、4+つかうだけで→4つ買うだけで(助数詞+動詞。か始まりの末尾も語幹化を許す)
+    func testRegressionRealLMDigitCounterThenKauVerb() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("つかうか", "つ買うか"), ("つかうだけで", "つ買うだけで")] {
+            let bare = converter.candidates(for: reading, limit: 12, systemCandidateMode: .surface)
+            let boosted = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+                bare, reading: reading, precedingCharacter: "4", suppressedCandidates: [],
+                tailConversion: { [converter] in converter!.counterTailConversion($0) }
+            )
+            XCTAssertEqual(boosted.first, expected, "4\(reading) boosted=\(boosted)")
+        }
+    }
 }
