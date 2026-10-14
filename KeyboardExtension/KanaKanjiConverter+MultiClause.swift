@@ -273,9 +273,10 @@ extension KanaKanjiConverter {
             }
         }
         for candidate in candidates {
-            let preferred = rewritten(candidate, toBefore: preference.prefersBefore)
+            let effective = preference.demotingEverydayPair(for: candidate)
+            let preferred = rewritten(candidate, toBefore: effective.prefersBefore)
             append(preferred)
-            if preference == .bothBeforeFirst || preference == .bothAfterFirst {
+            if effective == .bothBeforeFirst || effective == .bothAfterFirst {
                 append(candidate)
             }
         }

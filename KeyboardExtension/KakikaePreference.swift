@@ -32,4 +32,13 @@ enum KakikaePreference: String, CaseIterable, Identifiable {
     var showsBefore: Bool { self != .afterOnly }
     var showsAfter: Bool { self != .beforeOnly }
     var prefersBefore: Bool { self == .beforeOnly || self == .bothBeforeFirst }
+
+    // 日常語は両方・本来の漢字を先に でも常用漢字を先にする(了解 が 諒解 の下になる報告 3611)。
+    // 本来の漢字だけ(beforeOnly)は利用者の明示の選択なので変えない
+    static let everydayAfterFirstPairs: Set<String> = ["了解", "了承", "諒解", "諒承"]
+
+    func demotingEverydayPair(for surface: String) -> KakikaePreference {
+        self == .bothBeforeFirst && Self.everydayAfterFirstPairs.contains(where: { surface.contains($0) })
+            ? .bothAfterFirst : self
+    }
 }

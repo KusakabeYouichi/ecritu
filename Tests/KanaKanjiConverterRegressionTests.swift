@@ -24111,4 +24111,17 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(multi.contains("伊藤田なんて"), "multi=\(multi)")
         XCTAssertEqual(multi.last, "伊藤田なんて", "multi=\(multi)")
     }
+
+    func testRegressionRealLMRyoukaiFirstInBothBeforeFirst() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        converter.setKakikaePreference(.bothBeforeFirst)
+        let single = converter.candidates(for: "りょうかい", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "了解", "\(single)")
+        XCTAssertTrue(single.contains("諒解"), "\(single)")
+        let multi = converter.multiClauseCandidates(for: "りょうかいです", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "了解です", "\(multi.prefix(4))")
+        converter.setKakikaePreference(.bothAfterFirst)
+        XCTAssertEqual(converter.candidates(for: "りょうしょう", limit: 8, systemCandidateMode: .surface).first, "了承")
+    }
 }
