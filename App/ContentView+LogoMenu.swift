@@ -432,6 +432,8 @@ extension ContentView {
         SettingsKeys.kanaGakiSuppressDemonstrative: true,
         SettingsKeys.kanaGakiSuppressAdverbKanaFirst: false,
         SettingsKeys.kakikaePreference: KakikaePreference.bothBeforeFirst.rawValue,
+        SettingsKeys.latinLayoutMode: LatinLayoutOption.azerty.rawValue,         // 現代的=ラテン文字 AZERTY・数字 calculette(戦略的と同じ。保守的の 3x3/téléphone と違う。ユーザ指定 3613)
+        SettingsKeys.numberLayoutMode: NumberLayoutOption.calculette.rawValue,
         SettingsKeys.keyboardBackgroundTheme: KeyboardBackgroundThemeOption.sakura.rawValue,
         SettingsKeys.kanaYaBracketStyle: KanaYaBracketOption.doubleCorner.rawValue   // 現代的=『』(保守的と違い、戦略的と同じ。ユーザ指定 3585)
     ]) { _, new in new }
