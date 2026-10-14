@@ -24225,4 +24225,27 @@ extension KanaKanjiConverterRegressionTests {
             XCTAssertEqual(Array(multi.prefix(2)), ["タイポ" + suffix, "typo" + suffix], "\(suffix): \(multi.prefix(3))")
         }
     }
+
+    func testRegressionRealLMNumeroSymbols() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let numero = ["\u{2116}", "N\u{00BA}", "N\u{00B0}"]
+        // 記号入力の 単位 カテゴリー末尾(区切り線の下)
+        let units = KeyboardRootView.SymbolCategory.units.symbols(basicOrder: .ascii, temperatureUnit: .celsius)
+        XCTAssertEqual(Array(units.suffix(3)), numero)
+        XCTAssertEqual(KeyboardRootView.SymbolCategory.numeroSymbols, numero)
+        // なんばー/ぬめろ/のんぶる で 3 つとも変換できる。単文節は ナンバー/ノンブル を先に
+        for reading in ["なんばー", "ぬめろ", "のんぶる"] {
+            let single = converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+            for symbol in numero {
+                XCTAssertTrue(single.contains(symbol), "\(reading): \(single)")
+            }
+        }
+        XCTAssertEqual(converter.candidates(for: "なんばー", limit: 3, systemCandidateMode: .surface).first, "ナンバー")
+        XCTAssertEqual(converter.candidates(for: "のんぶる", limit: 3, systemCandidateMode: .surface).first, "ノンブル")
+        // 連文節は弱め: ナンバー/ノンブル が先頭
+        XCTAssertEqual(converter.multiClauseCandidates(for: "あなたのなんばーは", systemCandidateMode: .surface).first, "あなたのナンバーは")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "なんばーをおしえて", systemCandidateMode: .surface).first, "ナンバーを教えて")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "のんぶるを", systemCandidateMode: .surface).first, "ノンブルを")
+    }
 }
