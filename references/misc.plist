@@ -236,6 +236,7 @@
 	<dict><key>phrase</key><string>なのよね</string><key>shortcut</key><string>なのよね</string></dict>
 	<dict><key>phrase</key><string>のよね</string><key>shortcut</key><string>のよね</string></dict>	<!-- 断片の のよね はかなが正書。乃よね/之よね/野よね に変換されるだけで、かな識別が末尾のチップ扱いだった(ユーザ報告 3617) -->
 	<dict><key>phrase</key><string>気のせい</string><key>shortcut</key><string>きのせい</string></dict>	<!-- 慣用句。連文節は 木+の+せい(気 が 木 より 516 高く、の→せい の連接も無い)で 木のせい/木の製 ばかりになり 気のせい が出なかった(ユーザ報告 3618)。1 ノード化 -->
+	<dict><key>phrase</key><string>ルセット</string><key>shortcut</key><string>るせっと</string></dict>	<!-- ルセット(辞書の 1 語): 連文節は る+セット(セット の頻度)の 2 ノードが 75 だけ安く、るセット/るセット通りに になっていた(ユーザ報告 3620)。curated 化して 1 語を先頭に -->
 	<dict><key>phrase</key><string>なのだ</string><key>shortcut</key><string>なのだ</string></dict>
 	<dict><key>phrase</key><string>なのです</string><key>shortcut</key><string>なのです</string></dict>
 	<dict><key>phrase</key><string>なのだろう</string><key>shortcut</key><string>なのだろう</string></dict>

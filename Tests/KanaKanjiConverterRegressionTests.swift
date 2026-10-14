@@ -24198,4 +24198,12 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.candidates(for: "ぜんさい", limit: 3, systemCandidateMode: .surface).prefix(2), ["前菜", "前妻"])
         XCTAssertEqual(converter.candidates(for: "にんにく", limit: 6, systemCandidateMode: .surface).prefix(5), ["にんにく", "ニンニク", "大蒜", "忍辱", "葫"])
     }
+
+    func testRegressionRealLMRusettoOneWord() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.candidates(for: "るせっと", limit: 3, systemCandidateMode: .surface).first, "ルセット")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "るせっと", systemCandidateMode: .surface).first ?? "ルセット", "ルセット")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "るせっとどおりに", systemCandidateMode: .surface).first, "ルセット通りに")
+    }
 }
