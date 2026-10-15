@@ -24404,4 +24404,12 @@ extension KanaKanjiConverterRegressionTests {
         // ネット無いのか
         XCTAssertEqual(Array(multi("ねっとないのか").prefix(2)), ["ネット無いのか", "ネットないのか"])
     }
+
+    func testRegressionRealLMGosakana() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let list = converter.candidates(for: "ごさかな", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(4)), ["誤差かな", "ご魚", "ご肴", "御魚"], "\(list)")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "けいさんごさかな", systemCandidateMode: .surface).first, "計算誤差かな")
+    }
 }
