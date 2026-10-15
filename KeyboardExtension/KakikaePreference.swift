@@ -35,7 +35,7 @@ enum KakikaePreference: String, CaseIterable, Identifiable {
 
     // 日常語は両方・本来の漢字を先に でも常用漢字を先にする(了解 が 諒解 の下になる報告 3611)。
     // 本来の漢字だけ(beforeOnly)は利用者の明示の選択なので変えない
-    static let everydayAfterFirstPairs: Set<String> = ["了解", "了承", "諒解", "諒承"]
+    static let everydayAfterFirstPairs: Set<String> = ["了解", "了承", "諒解", "諒承", "回復", "恢復"]   // 回復/恢復(3635): 恢復 は 書きかえ前の表外字で日常語は 回復
 
     func demotingEverydayPair(for surface: String) -> KakikaePreference {
         self == .bothBeforeFirst && Self.everydayAfterFirstPairs.contains(where: { surface.contains($0) })
