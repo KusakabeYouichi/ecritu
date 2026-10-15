@@ -370,7 +370,7 @@
 	<dict><key>phrase</key><string>次亜ヨウ素酸</string><key>shortcut</key><string>じあようそさん</string><key>pos</key><string>名詞</string></dict>
 	<dict><key>phrase</key><string>次亜リン酸</string><key>shortcut</key><string>じありんさん</string><key>pos</key><string>名詞</string></dict>
 	<dict><key>phrase</key><string>ヨウ素酸</string><key>shortcut</key><string>ようそさん</string><key>pos</key><string>名詞</string></dict>	<!-- ヨウ素酸: 辞書に無く 要素さん/ヨウ素さん の合成だった(次亜ヨウ素酸 と同じ報告) -->
-	<!-- □ 書き言葉優先の目視判定(2927)で「辞書にその表層が無い」と分かった 7 語。docs/homophone_written_order_review.md -->
+	<!-- □ 書き言葉優先の目視判定(2927)で「辞書にその表層が無い」と分かった 7 語。~/ecritu_en-attente/corpus-notes/homophone_written_order_review_*.md -->
 	<dict><key>phrase</key><string>労使</string><key>shortcut</key><string>ろうし</string><key>pos</key><string>名詞</string></dict>	<!-- BCCWJ 599。辞書は 老子/蝋紙/牢死 だけで 労使 が無い -->
 	<dict><key>phrase</key><string>胃腸</string><key>shortcut</key><string>いちょう</string><key>pos</key><string>名詞</string></dict>	<!-- BCCWJ 539。辞書は 萎凋/銀杏/移庁 だけ -->
 	<dict><key>phrase</key><string>耕地</string><key>shortcut</key><string>こうち</string><key>pos</key><string>名詞</string></dict>	<!-- BCCWJ 501。辞書は 高知/高地/巧緻 だけ -->
