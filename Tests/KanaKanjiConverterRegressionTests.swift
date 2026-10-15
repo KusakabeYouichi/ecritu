@@ -24412,4 +24412,15 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(list.prefix(4)), ["誤差かな", "ご魚", "ご肴", "御魚"], "\(list)")
         XCTAssertEqual(converter.multiClauseCandidates(for: "けいさんごさかな", systemCandidateMode: .surface).first, "計算誤差かな")
     }
+
+    func testRegressionRealLMSonShiteru() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("そんしてる", "損してる"), ("そんした", "損した"), ("そんする", "損する"), ("そんしている", "損している")] {
+            let single = converter.candidates(for: reading, limit: 4, systemCandidateMode: .surface)
+            XCTAssertEqual(Array(single.prefix(2)), [expected, expected.replacingOccurrences(of: "損", with: "存")], "\(reading): \(single)")
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertTrue(multi.first.map { $0 == expected } ?? true, "\(reading): \(multi)")
+        }
+    }
 }
