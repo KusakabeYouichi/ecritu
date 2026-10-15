@@ -77,6 +77,28 @@ Wikipedia (https://ja.wikipedia.org/).
   nevertheless considered an adaptation, the bundled tables are
   likewise provided under CC BY-SA 4.0.
 
+## Sake brand names (Japanese Wikipedia)
+
+This app includes about 1,700 sake (nihonshu) brand names and their
+readings in its supplementary vocabulary, taken from the Japanese
+Wikipedia article "日本酒の銘柄一覧"
+(https://ja.wikipedia.org/wiki/日本酒の銘柄一覧), retrieved 2026-10-15.
+
+- The article text is available under the Creative Commons
+  Attribution-ShareAlike License (CC BY-SA 4.0,
+  https://creativecommons.org/licenses/by-sa/4.0/). Attribution: the
+  authors of the Japanese Wikipedia article (see the article's revision
+  history, https://ja.wikipedia.org/w/index.php?title=日本酒の銘柄一覧&action=history).
+- Only brand names and their readings were taken (references/sake.plist);
+  descriptions and the structure of the article are not included. Readings
+  that the article does not give were either derived mechanically (kana
+  and katakana names) or supplied by the author of this app.
+- Brand names are listed as words only; they are not used as trademarks.
+  The brands are the property of their respective owners.
+- To the extent these entries are considered an adaptation of the
+  article, they are likewise provided under CC BY-SA 4.0 (see "ShareAlike
+  data and this app" below).
+
 ## Emoji readings (Unicode CLDR)
 
 This app includes Japanese readings for emoji candidates, derived from
@@ -96,7 +118,9 @@ Unicode License that governs the Unihan and CLDR derived data above.
 The CC BY-SA 4.0 licensed files bundled in this app are the four Latin
 suggestion lists (LatinSuggestionLexicon_{en,fr,de,it}.txt) and, to the
 extent it is considered an adaptation, the Wikipedia-derived word n-gram
-table inside kana_kanji_dictionary.sqlite. These files are plain data
+table inside kana_kanji_dictionary.sqlite, and the sake brand entries
+(from the Japanese Wikipedia article above) contained in the supplementary
+vocabulary file ÉcrituSecondVocab.eccs. These files are plain data
 files inside the application bundle, are not encrypted or otherwise
 technologically protected by us, and may be freely extracted, copied and
 redistributed under CC BY-SA 4.0 regardless of the terms under which the
