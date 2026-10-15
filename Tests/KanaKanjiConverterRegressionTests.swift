@@ -24446,4 +24446,56 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "のよりは", systemCandidateMode: .surface).first, "のよりは")
         XCTAssertEqual(converter.multiClauseCandidates(for: "ひとのより", systemCandidateMode: .surface).first, "人のより")
     }
+
+    func testRegressionRealLMBatch3644() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        // んだってば(強調の言い切り)。ば が 場 にならない
+        for (reading, expected) in [("よまないんだってば", "読まないんだってば"), ("いかないんだってば", "行かないんだってば")] {
+            XCTAssertEqual(converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).first, expected, reading)
+        }
+        // バックトゥーザフューチャー / Back to the Future
+        let bttf = converter.candidates(for: "ばっくとぅーざふゅーちゃー", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(bttf.prefix(2)), ["バックトゥーザフューチャー", "Back to the Future"], "\(bttf)")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "ばっくとぅーざふゅーちゃーをみた", systemCandidateMode: .surface).first, "バックトゥーザフューチャーを見た")
+        // 書きかえの組は隣り合わせ(聯想、連想、連奏)。例外グループのスイッチをオフにして 設定どおりの並びを見る
+        converter.setKakikaeEverydayException(false)
+        converter.setKakikaePreference(.bothBeforeFirst)
+        let rensou = converter.candidates(for: "れんそう", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(rensou.prefix(3)), ["聯想", "連想", "連奏"], "\(rensou)")
+        converter.setKakikaePreference(.bothAfterFirst)
+        XCTAssertEqual(Array(converter.candidates(for: "れんそう", limit: 6, systemCandidateMode: .surface).prefix(2)), ["連想", "連奏"])
+    }
+
+    // 書きかえの例外グループ(了解/了承/回復/連想 と 諒解/諒承/恢復/聯想)のスイッチ(3644)
+    func testRegressionRealLMKakikaeEverydayExceptionSwitch() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func single(_ reading: String) -> [String] {
+            converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+        }
+        // オン: 設定にかかわらず常用漢字を先に(本来の漢字だけでも両方を出す)
+        converter.setKakikaeEverydayException(true)
+        for preference in [KakikaePreference.beforeOnly, .bothBeforeFirst, .bothAfterFirst] {
+            converter.setKakikaePreference(preference)
+            XCTAssertEqual(single("りょうかい").first, "了解", "\(preference)")
+            XCTAssertEqual(single("かいふく").first, "回復", "\(preference)")
+            XCTAssertEqual(single("れんそう").first, "連想", "\(preference)")
+            XCTAssertTrue(single("りょうかい").contains("諒解"), "\(preference)")
+        }
+        // オフ: 設定どおり(本来の漢字を先に/本来の漢字だけ)
+        converter.setKakikaeEverydayException(false)
+        converter.setKakikaePreference(.bothBeforeFirst)
+        XCTAssertEqual(single("りょうかい").first, "諒解")
+        XCTAssertEqual(single("れんそう").first, "聯想")
+        converter.setKakikaePreference(.beforeOnly)
+        XCTAssertEqual(single("りょうかい").first, "諒解")
+        XCTAssertFalse(single("りょうかい").contains("了解"))
+        converter.setKakikaePreference(.afterOnly)
+        XCTAssertEqual(single("りょうかい").first, "了解")
+        // 例外グループ以外の組(醗酵/発酵)は、スイッチに関わらず設定どおり
+        converter.setKakikaeEverydayException(true)
+        converter.setKakikaePreference(.bothBeforeFirst)
+        XCTAssertEqual(single("はっこう").first(where: { $0 == "醗酵" || $0 == "発酵" }), "醗酵")
+    }
 }

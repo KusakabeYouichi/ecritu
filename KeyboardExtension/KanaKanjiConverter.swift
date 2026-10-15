@@ -73,6 +73,8 @@ final class KanaKanjiConverter {
     // 同音の漢字による書きかえ(臆測⇄憶測。KakikaeTable、3422)。キーボードが設定を読んで入れる。
     // nil(設定を入れる前)は並びに触らない。キーボードは値の無い端末でも 両方(前を先に) を入れる
     var kakikaePreference: KakikaePreference?
+    // 書きかえの例外グループ(KakikaePreference.everydayAfterFirstPairs)を設定にかかわらず常用漢字先にする(3644)
+    var kakikaeEverydayException = true
     // 変換候補に絵文字を出すか。コンテナーの emoji 候補(X.15)に従う(3423)。読みからの絵文字(ねこ→🐱)はキーボード側で
     // 止めているが、国旗(drapeaux の 🇫🇷 等は辞書に入っている)と学習した絵文字はここで止める。
     // 追加語彙(ショートカット)の絵文字はこの設定に関わらず出す
@@ -206,6 +208,16 @@ final class KanaKanjiConverter {
             }
         }
         return false
+    }
+
+    func setKakikaeEverydayException(_ enabled: Bool) {
+        withStateLock {
+            guard kakikaeEverydayException != enabled else {
+                return
+            }
+            kakikaeEverydayException = enabled
+            invalidateCandidateCache()
+        }
     }
 
     func setKakikaePreference(_ preference: KakikaePreference) {
@@ -457,6 +469,14 @@ final class KanaKanjiConverter {
         finalCandidates = potentialVerbBaseCandidatesAlignedToGodan(finalCandidates, reading: normalizedReading)
         // 送り仮名の許容形(終る/届)を設定に従って並べ替え・除去(2820)
         finalCandidates = applyOkuriganaVariantPreference(reading: normalizedReading, to: finalCandidates)
+        // 同音の漢字による書きかえの組(聯想/連想)は、両方を出す設定のとき隣り合わせに並べる(間の語を割り込ませない。3644)
+        if let kakikae = withStateLock({ kakikaePreference }) {
+            finalCandidates = Self.kakikaePairsAdjacent(
+                finalCandidates,
+                preference: kakikae,
+                everydayException: withStateLock { kakikaeEverydayException }
+            )
+        }
 
         if !finalCandidates.isEmpty {
             withStateLock {
@@ -1004,6 +1024,43 @@ final class KanaKanjiConverter {
         }
     }
 
+    // 両方を出す設定で、書きかえの組(好む側→他方)を隣り合わせにする。好む側の直後へ他方を移す(聯想、連想、連奏… の順)。
+    static func kakikaePairsAdjacent(_ candidates: [String], preference basePreference: KakikaePreference, everydayException: Bool = true) -> [String] {
+        guard basePreference != .beforeOnly || everydayException, basePreference != .afterOnly, candidates.count > 2 else {
+            return candidates
+        }
+        func counterpart(of candidate: String) -> (other: String, isPreferred: Bool)? {
+            let preference = basePreference.demotingEverydayPair(for: candidate, enabled: everydayException)
+            guard preference == .bothBeforeFirst || preference == .bothAfterFirst else {
+                return nil
+            }
+            var rest = Substring(candidate)
+            while let head = rest.first {
+                if let pairs = KakikaeTable.switchablePairsByBeforeHead[head],
+                    let pair = pairs.first(where: { rest.hasPrefix($0.before) }) {
+                    return (candidate.replacingOccurrences(of: pair.before, with: pair.after), preference == .bothBeforeFirst)
+                }
+                if let pairs = KakikaeTable.switchablePairsByAfterHead[head],
+                    let pair = pairs.first(where: { rest.hasPrefix($0.after) }) {
+                    return (candidate.replacingOccurrences(of: pair.after, with: pair.before), preference == .bothAfterFirst)
+                }
+                rest = rest.dropFirst()
+            }
+            return nil
+        }
+        var result = candidates
+        var index = 0
+        while index < result.count {
+            if let pair = counterpart(of: result[index]), pair.isPreferred,
+                let otherIndex = result.firstIndex(of: pair.other), otherIndex > index + 1 {
+                let moved = result.remove(at: otherIndex)
+                result.insert(moved, at: index + 1)
+            }
+            index += 1
+        }
+        return result
+    }
+
     // 同音の漢字による書きかえ(KakikaeTable、3422)。候補の中の書きかえ前の語(臆測/醗酵前)は書きかえ後の表記を作り、
     // 書きかえ後の語(憶測/回転寿司)は書きかえ前の表記を作って、設定どおりに片方を落とすか、好む側を上に並べる。
     // 書きかえ後の語は普通の語の一部になりやすい(一丁→一丁目)ので、前の表記を作るのは候補が語そのものか、
@@ -1015,6 +1072,7 @@ final class KanaKanjiConverter {
         guard let preference = withStateLock({ kakikaePreference }) else {
             return
         }
+        let everydayException = withStateLock { kakikaeEverydayException }
         // 対象外は利用者が自分で入れた語(追加語彙=ショートカット、学習語彙)だけ。初期投入の misc/compenser
         // (交叉点/氷酢酸 等の変換対策語)は X.9 に従わせる(ユーザ指定 3427)
         let exempt = Set(context.ajoutVocabulary[context.reading] ?? []).union(context.learnedCandidates)
@@ -1048,7 +1106,7 @@ final class KanaKanjiConverter {
                 continue
             }
             let top = max(score, original[beforeForm] ?? Int.min, original[afterForm] ?? Int.min)
-            let effective = preference.demotingEverydayPair(for: candidate)
+            let effective = preference.demotingEverydayPair(for: candidate, enabled: everydayException)
             let preferred = effective.prefersBefore ? beforeForm : afterForm
             let other = effective.prefersBefore ? afterForm : beforeForm
             switch effective {

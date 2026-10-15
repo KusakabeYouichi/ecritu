@@ -253,6 +253,7 @@ extension ContentView {
         SettingsKeys.ordinalMeKanjiPreferred, SettingsKeys.adjectiveMeKanjiCandidatesEnabled, SettingsKeys.kaCounterVariantPreference,
         SettingsKeys.okuriganaVariantPreference,
         SettingsKeys.kakikaePreference,
+        SettingsKeys.kakikaeEverydayException,
         SettingsKeys.suspendMemorySlimmingEnabled, SettingsKeys.kaomojiCandidateDisplayEnabled,
         SettingsKeys.contactCandidateDisplayMode, SettingsKeys.userDictionaryCandidateDisplayMode
     ]
@@ -336,6 +337,7 @@ extension ContentView {
         SettingsKeys.okuriganaVariantPreference: OkuriganaVariantPreference.default.encoded,
         // 同音の漢字による書きかえは 本来の漢字だけ(ユーザ指定 3422)
         SettingsKeys.kakikaePreference: KakikaePreference.strategicDefault.rawValue,
+        SettingsKeys.kakikaeEverydayException: false,   // 戦略的=オフ(設定どおり。ユーザ指定 3644)
         SettingsKeys.suspendMemorySlimmingEnabled: true,
         SettingsKeys.kaomojiCandidateDisplayEnabled: true,
         SettingsKeys.contactCandidateDisplayMode: ContactCandidateDisplayModeOption.off.rawValue,
@@ -415,6 +417,7 @@ extension ContentView {
         SettingsKeys.kaCounterVariantPreference: KaCounterVariantPreference.conservative.encoded,  // 保守的=か・箇・ヶ・カ をオン(標準は か のみ)
         SettingsKeys.okuriganaVariantPreference: OkuriganaVariantPreference.conservative.encoded,  // 保守的=本則を先に許容も出す(標準は本則だけ)
         SettingsKeys.kakikaePreference: KakikaePreference.bothAfterFirst.rawValue,  // 保守的=常用漢字を先に前も出す(ユーザ指定 3422)
+        SettingsKeys.kakikaeEverydayException: true,   // 保守的=オン(ユーザ指定 3644)
         SettingsKeys.adjectiveMeKanjiCandidatesEnabled: true,
         SettingsKeys.suspendMemorySlimmingEnabled: true,
         SettingsKeys.kaomojiCandidateDisplayEnabled: true,
@@ -497,6 +500,7 @@ extension ContentView {
         SettingsKeys.kaCounterVariantPreference: KaCounterVariantPreference.conservative.encoded,  // 保守的=か・箇・ヶ・カ をオン(標準は か のみ)
         SettingsKeys.okuriganaVariantPreference: OkuriganaVariantPreference.conservative.encoded,  // 保守的=本則を先に許容も出す(標準は本則だけ)
         SettingsKeys.kakikaePreference: KakikaePreference.bothBeforeFirst.rawValue,  // 現代的=本来の漢字を先に前も出す(3422、3431 で変更)
+        SettingsKeys.kakikaeEverydayException: true,   // 現代的=オン(ユーザ指定 3644)
         SettingsKeys.adjectiveMeKanjiCandidatesEnabled: true,
         SettingsKeys.suspendMemorySlimmingEnabled: true,
         SettingsKeys.kaomojiCandidateDisplayEnabled: true,
@@ -854,6 +858,17 @@ extension ContentView {
             return
         }
         defaults.set(KakikaePreference.existingInstallDefault.rawValue, forKey: SettingsKeys.kakikaePreference)
+        SettingsSyncNotification.postSettingsDidChange()
+    }
+
+    // 例外グループのスイッチ(3644)の値がまだ無い端末は オン(3611 以来、了解 等を常用漢字先にしてきた動作を守る)。
+    // 組み込みの標準値(戦略的初期設定)はオフなので、書かないと更新した途端に 諒解 が先頭になる
+    func applyKakikaeEverydayExceptionDefaultForExistingInstallIfNeeded() {
+        guard let defaults = Self.sharedDefaults,
+            defaults.object(forKey: SettingsKeys.kakikaeEverydayException) == nil else {
+            return
+        }
+        defaults.set(true, forKey: SettingsKeys.kakikaeEverydayException)
         SettingsSyncNotification.postSettingsDidChange()
     }
 

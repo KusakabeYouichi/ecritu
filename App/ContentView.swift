@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20261015224023"
+    private static let editionUpdatedAtRaw: String = "20261016000840"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -348,6 +348,10 @@ struct ContentView: View {
     @AppStorage(SettingsKeys.kakikaePreference, store: Self.sharedDefaults)
     private var kakikaePreferenceRawValue: String = KakikaePreference.strategicDefault.rawValue
 
+    // 書きかえの例外グループ(了解/了承/回復/連想 等)を設定にかかわらず常用漢字先にする。戦略的初期設定はオフ(3644)
+    @AppStorage(SettingsKeys.kakikaeEverydayException, store: Self.sharedDefaults)
+    private var kakikaeEverydayException: Bool = false
+
     @AppStorage(
         SettingsKeys.adjectiveMeKanjiCandidatesEnabled,
         store: Self.sharedDefaults
@@ -633,6 +637,7 @@ struct ContentView: View {
             kaCounterVariantPreferenceRawValue,
             okuriganaVariantPreferenceRawValue,
             kakikaePreferenceRawValue,
+            String(kakikaeEverydayException),
             String(adjectiveMeKanjiCandidatesEnabled),
             String(suspendMemorySlimmingEnabled),
             String(kaomojiCandidateDisplayEnabled),
@@ -763,6 +768,7 @@ struct ContentView: View {
         bool(SettingsKeys.kanaGakiSuppressDemonstrative, kanaGakiSuppressDemonstrative, "かなで書く言葉: 指示語・代名詞を抑制")
         bool(SettingsKeys.kanaGakiSuppressAdverbKanaFirst, kanaGakiSuppressAdverbKanaFirst, "かなで書く言葉: 副詞(漢字も残す)を抑制")
         str(SettingsKeys.kakikaePreference, kakikaePreferenceRawValue, "常用漢字による書きかえ: beforeOnly(本来の漢字だけ)/afterOnly(常用漢字だけ)/bothBeforeFirst(両方、前を先に)/bothAfterFirst(両方、後を先に)")
+        bool(SettingsKeys.kakikaeEverydayException, kakikaeEverydayException, "常用漢字による書きかえ: 日常語(了解・回復・連想 等)は常用漢字を先に")
         bool(SettingsKeys.emojiCandidateDisplayEnabled, emojiCandidateDisplayEnabled, "emojis & les émoticônes: emoji 😀")
         str(SettingsKeys.radicalStrokeCountStyle, radicalStrokeCountStyleRawValue, "部首の画数の数え方")
         bool(SettingsKeys.ordinalMeKanjiPreferred, ordinalMeKanjiPreferred, "序数化suffixe – me(première…): 順序の『目』を漢字で先に")
@@ -1337,7 +1343,7 @@ struct ContentView: View {
             adverbKanaFirst: $kanaGakiSuppressAdverbKanaFirst
         )
 
-        KakikaeSettingsSection(rawValue: $kakikaePreferenceRawValue)
+        KakikaeSettingsSection(rawValue: $kakikaePreferenceRawValue, everydayException: $kakikaeEverydayException)
 
         RadicalStrokeCountSettingsSection(
             rawValue: $radicalStrokeCountStyleRawValue

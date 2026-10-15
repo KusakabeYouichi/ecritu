@@ -58,7 +58,7 @@ enum SettingsCardKeys {
                 SettingsKeys.scriptVariantSuppressConfusable, SettingsKeys.scriptVariantSuppressLookalike, SettingsKeys.scriptVariantSuppressPersonNameVariant],
         "X.8": [SettingsKeys.kanaGakiSuppressAdverb, SettingsKeys.kanaGakiSuppressConjunction, SettingsKeys.kanaGakiSuppressAuxiliary,
                 SettingsKeys.kanaGakiSuppressFormalNoun, SettingsKeys.kanaGakiSuppressDemonstrative, SettingsKeys.kanaGakiSuppressAdverbKanaFirst],
-        "X.9": [SettingsKeys.kakikaePreference],
+        "X.9": [SettingsKeys.kakikaePreference, SettingsKeys.kakikaeEverydayException],
         "X.10": [SettingsKeys.radicalStrokeCountStyle],
         "X.11": [SettingsKeys.kaCounterVariantPreference],
         "X.12": [SettingsKeys.okuriganaVariantPreference],

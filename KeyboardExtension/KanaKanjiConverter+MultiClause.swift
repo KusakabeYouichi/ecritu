@@ -236,14 +236,14 @@ extension KanaKanjiConverter {
         guard let preference = withStateLock({ kakikaePreference }), !candidates.isEmpty else {
             return candidates
         }
-        return Self.applyKakikae(preference, toMultiClauseCandidates: candidates)
+        return Self.applyKakikae(preference, toMultiClauseCandidates: candidates, everydayException: withStateLock { kakikaeEverydayException })
     }
 
     // 同音の漢字による書きかえ(KakikaeTable、3422)を連文節の結果に当てる。ラティスでノードを下げると区切りごと
     // 変わる(颱風 は語コストが高く、台風 を禁止すると たいふうのぜんちょう が 大風の全長 になる)ので、区切りは
     // そのままにして表記だけ差し替える。書きかえ前→後(醗酵→発酵)はどこでも、後→前(回転→廻転)は語の終わり
     // (直後が漢字でない)ときだけ(一丁目→一挺目 のような語の中を巻き込まない)。両方を出すときは好む側を先に並べる
-    static func applyKakikae(_ preference: KakikaePreference, toMultiClauseCandidates candidates: [String]) -> [String] {
+    static func applyKakikae(_ preference: KakikaePreference, toMultiClauseCandidates candidates: [String], everydayException: Bool = true) -> [String] {
         func rewritten(_ text: String, toBefore: Bool) -> String {
             let index = toBefore ? KakikaeTable.switchablePairsByAfterHead : KakikaeTable.switchablePairsByBeforeHead
             var result = ""
@@ -273,7 +273,7 @@ extension KanaKanjiConverter {
             }
         }
         for candidate in candidates {
-            let effective = preference.demotingEverydayPair(for: candidate)
+            let effective = preference.demotingEverydayPair(for: candidate, enabled: everydayException)
             let preferred = rewritten(candidate, toBefore: effective.prefersBefore)
             append(preferred)
             if effective == .bothBeforeFirst || effective == .bothAfterFirst {
