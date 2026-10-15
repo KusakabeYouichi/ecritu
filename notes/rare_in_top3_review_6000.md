@@ -2,7 +2,7 @@
 
 作成: 2026-10-11(edition 3426 時点)。**目視で採用/不採用を決めるための作業用一覧。**
 きっかけは けいしょう(継承 の次に 渓床・軽少・軽捷 が並び、敬称・軽傷 がその下だった)。
-[書き言葉(BCCWJ)の検査](homophone_written_order_review_2x.md)は 1 位だけを見たので、
+書き言葉(BCCWJ)の検査(~/ecritu_en-attente/corpus-notes/homophone_written_order_review_2x.md。語彙表の頻度を含むため公開リポジトリには置かない)は 1 位だけを見たので、
 2〜3 位に稀少語が割り込む読みは残っていた。
 
 ## 抽出の条件
