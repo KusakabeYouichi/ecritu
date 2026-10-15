@@ -51,6 +51,13 @@
 - GitHub 上のブランチ運用と PR 手順は `CONTRIBUTING.md` を参照してください。
 - PR 作成時は GitHub Actions の `iOS CI` が自動で走り、署名不要のシミュレータテストを行います。
 
+## ライセンス
+
+作者のソースコード・画像・オリジナル語彙データは、オープンソースではなく、無断利用を禁じています([LICENSE](LICENSE))。
+辞書(SudachiDict)・Wikipedia 由来のデータ・Unicode・Mozc など、第三者の素材は、それぞれ元のライセンスに従います。
+全文と出典は [third_party/APP_STORE_OPEN_SOURCE_NOTICES.md](third_party/APP_STORE_OPEN_SOURCE_NOTICES.md) と
+[references/ReadMe](references/ReadMe) にあります。
+
 ## MVP の制約
 - かな漢字変換は簡易実装(候補選択・学習・ユーザー辞書対応)。高精度辞書は `tools/build_sudachi_index.py` で別途投入。
 - 大規模辞書を実機で扱う場合は、`tools/build_kana_kanji_sqlite.py` でSQLite化して `tmp/kana_kanji_dictionary.sqlite` を生成してください。
