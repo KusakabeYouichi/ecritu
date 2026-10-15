@@ -24456,8 +24456,8 @@ extension KanaKanjiConverterRegressionTests {
         }
         // バックトゥーザフューチャー / Back to the Future
         let bttf = converter.candidates(for: "ばっくとぅーざふゅーちゃー", limit: 4, systemCandidateMode: .surface)
-        XCTAssertEqual(Array(bttf.prefix(2)), ["バックトゥーザフューチャー", "Back to the Future"], "\(bttf)")
-        XCTAssertEqual(converter.multiClauseCandidates(for: "ばっくとぅーざふゅーちゃーをみた", systemCandidateMode: .surface).first, "バックトゥーザフューチャーを見た")
+        XCTAssertEqual(Array(bttf.prefix(2)), ["バック・トゥー・ザ・フューチャー", "Back to the Future"], "\(bttf)")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "ばっくとぅーざふゅーちゃーをみた", systemCandidateMode: .surface).first, "バック・トゥー・ザ・フューチャーを見た")
         // 書きかえの組は隣り合わせ(聯想、連想、連奏)。例外グループのスイッチをオフにして 設定どおりの並びを見る
         converter.setKakikaeEverydayException(false)
         converter.setKakikaePreference(.bothBeforeFirst)
@@ -24497,5 +24497,35 @@ extension KanaKanjiConverterRegressionTests {
         converter.setKakikaeEverydayException(true)
         converter.setKakikaePreference(.bothBeforeFirst)
         XCTAssertEqual(single("はっこう").first(where: { $0 == "醗酵" || $0 == "発酵" }), "醗酵")
+    }
+
+    func testRegressionRealLMBatch3645() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func single(_ reading: String) -> [String] {
+            converter.candidates(for: reading, limit: 12, systemCandidateMode: .surface)
+        }
+        func multi(_ reading: String) -> [String] {
+            converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+        }
+        // しじ: 指示 → 支持 → 師事
+        XCTAssertEqual(Array(single("しじする").prefix(3)), ["指示する", "支持する", "師事する"])
+        XCTAssertEqual(Array(multi("しじする").prefix(3)), ["指示する", "支持する", "師事する"])
+        XCTAssertEqual(Array(multi("しじしたとおり").prefix(2)), ["指示した通り", "指示したとおり"])
+        // 気を利かせて
+        XCTAssertEqual(single("きをきかせて").first, "気を利かせて")
+        XCTAssertFalse(multi("きをきかせて").contains("気を聞かせて"))
+        // 皮を剥く(目を剥く/上を向く は変えない)
+        XCTAssertEqual(multi("かわをむく").first, "皮を剥く")
+        XCTAssertEqual(multi("かわをむいて").first, "皮を剥いて")
+        XCTAssertEqual(multi("うえをむく").first, "上を向く")
+        // 島にんにく
+        XCTAssertEqual(single("しまにんにく").first, "島にんにく")
+        // たまってしまう: 溜/貯/蓄/賜/給/堪。送り仮名が正書でないもの(溜ってしまう 等)は出さない
+        XCTAssertEqual(single("たまってしまう"), ["溜まってしまう", "貯まってしまう", "蓄まってしまう", "賜ってしまう", "給ってしまう", "堪ってしまう", "たまってしまう"])
+        for word in ["溜ってしまう", "貯ってしまう", "堪まってしまう"] {
+            XCTAssertFalse(single("たまってしまう").contains(word))
+        }
+        XCTAssertFalse(single("たまった").contains("溜った"))
     }
 }

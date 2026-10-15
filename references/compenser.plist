@@ -753,5 +753,7 @@
 	        <dict><key>phrase</key><string>露庵</string><key>shortcut</key><string>ろあん</string></dict>
 	        <dict><key>phrase</key><string>L&#x27;OSIER</string><key>shortcut</key><string>ろおじえ</string></dict>
 	        <dict><key>phrase</key><string>和久傳</string><key>shortcut</key><string>わくでん</string></dict>
+	        <dict><key>phrase</key><string>バック・トゥー・ザ・フューチャー</string><key>shortcut</key><string>ばっくとぅーざふゅーちゃー</string></dict>	<!-- 映画。辞書に無く バックトゥー座フューチャー に割れていた(ユーザ報告 3644) -->
+	        <dict><key>phrase</key><string>Back to the Future</string><key>shortcut</key><string>ばっくとぅーざふゅーちゃー</string></dict>
 </array>
 </plist>

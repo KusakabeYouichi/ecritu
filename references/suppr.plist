@@ -96,6 +96,9 @@
 	<dict><key>phrase</key><string>彼</string><key>shortcut</key><string>か</string></dict>	<!-- 彼 の か 読み(彼の=かの 由来の断片)。とかは→と彼は の分割を作っていた(ユーザ報告 2798) -->
 	<dict><key>phrase</key><string>ムベキ</string><key>shortcut</key><string>むべき</string></dict>	<!-- 「むべき」のカタカナ収穫(単独で成立する語ではない)。ふむべき→府ムベキ の合成を作っていた(ユーザ報告 2798) -->
 	<dict><key>phrase</key><string>僭船</string><key>shortcut</key><string>かいせん</string></dict>	<!-- 僭船 を かいせん と読む語は無い(僭=せん。せんせん の誤エントリ。ユーザ報告 3621) -->
+	<dict><key>phrase</key><string>溜る</string><key>shortcut</key><string>たまる</string></dict>	<!-- 溜る: 送り仮名が正書でない(溜まる)。溜ってしまう/溜った の派生を作っていた(ユーザ報告 3645) -->
+	<dict><key>phrase</key><string>貯る</string><key>shortcut</key><string>たまる</string></dict>	<!-- 貯る: 送り仮名が正書でない(貯まる) -->
+	<dict><key>phrase</key><string>堪まる</string><key>shortcut</key><string>たまる</string></dict>	<!-- 堪まる: 送り仮名が正書でない(堪る。堪らない) -->
 	<dict><key>phrase</key><string>NO・</string><key>shortcut</key><string>なんばー</string></dict>	<!-- NO・: SudachiDict(small)small_lex.csv 3327 行の見出し no・(正規形 NO・、読み ナンバー)。No. の ピリオドが 中黒に化けた機械的な表記で、実際に使う表記ではない(誤エントリ。ユーザ指摘 3626) -->
 	<dict><key>phrase</key><string>千戝</string><key>shortcut</key><string>せんざい</string></dict>	<!-- 千戝: 戝 は 財 の異体字で 千財 の異体表記(千財 自体も稀な姓)。人名(person_names)は異体字の抑制の対象外なので個別に抑制(ユーザ報告 3629) -->
 
