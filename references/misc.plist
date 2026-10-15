@@ -237,6 +237,8 @@
 	<dict><key>phrase</key><string>なのよ</string><key>shortcut</key><string>なのよ</string></dict>	<!-- 文末の なのよ(かな識別)。ナノよ/名のよ より かな を先頭に(ユーザ報告 3626。なのよね と同じ) -->
 	<dict><key>phrase</key><string>のよね</string><key>shortcut</key><string>のよね</string></dict>	<!-- 断片の のよね はかなが正書。乃よね/之よね/野よね に変換されるだけで、かな識別が末尾のチップ扱いだった(ユーザ報告 3617) -->
 	<dict><key>phrase</key><string>のが</string><key>shortcut</key><string>のが</string></dict>	<!-- 断片の のが(名詞化の の+が)はかなが正書。乃が/之が/野が になるだけで、かな識別が末尾のチップ扱いだった(ユーザ報告 3630。のよね と同じ) -->
+	<dict><key>phrase</key><string>もいる</string><key>shortcut</key><string>もいる</string></dict>	<!-- 〜もいる の断片はかなが正書。カタカナ収穫の モイル だけが出ていた(ユーザ報告 3631) -->
+	<dict><key>phrase</key><string>だけだってば</string><key>shortcut</key><string>だけだってば</string></dict>	<!-- 口語の言い切り(ってば)。連文節は だけだって+場 に割れて だけだって場 が先頭だった(ユーザ報告 3631) -->
 	<dict><key>phrase</key><string>気のせい</string><key>shortcut</key><string>きのせい</string></dict>	<!-- 慣用句。連文節は 木+の+せい(気 が 木 より 516 高く、の→せい の連接も無い)で 木のせい/木の製 ばかりになり 気のせい が出なかった(ユーザ報告 3618)。1 ノード化 -->
 	<dict><key>phrase</key><string>ルセット</string><key>shortcut</key><string>るせっと</string></dict>	<!-- ルセット(辞書の 1 語): 連文節は る+セット(セット の頻度)の 2 ノードが 75 だけ安く、るセット/るセット通りに になっていた(ユーザ報告 3620)。curated 化して 1 語を先頭に -->
 	<dict><key>phrase</key><string>タイポ</string><key>shortcut</key><string>たいぽ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- タイポ(誤字): 辞書に無く、たいぽ→対ぽ/タイぽ、たいぽする→対ぽする になっていた。サ変名詞(タイポする/タイポした)(ユーザ報告 3622) -->
