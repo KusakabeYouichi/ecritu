@@ -181,6 +181,16 @@
 	<dict><key>phrase</key><string>してみたら</string><key>shortcut</key><string>してみたら</string></dict>
 	<dict><key>phrase</key><string>してみれば</string><key>shortcut</key><string>してみれば</string></dict>
 	<dict><key>phrase</key><string>してみても</string><key>shortcut</key><string>してみても</string></dict>
+	<dict><key>phrase</key><string>してみたい</string><key>shortcut</key><string>してみたい</string></dict>	<!-- してみた系の続き。してみた は curated で 1500 だが してみたい は未登録で 7200 の派生になり、びるどしてみたい→ビル度してみたい だった(ユーザ報告 3642) -->
+	<dict><key>phrase</key><string>してみたく</string><key>shortcut</key><string>してみたく</string></dict>
+	<dict><key>phrase</key><string>してみたくて</string><key>shortcut</key><string>してみたくて</string></dict>
+	<dict><key>phrase</key><string>してみたくない</string><key>shortcut</key><string>してみたくない</string></dict>
+	<dict><key>phrase</key><string>してみたかった</string><key>shortcut</key><string>してみたかった</string></dict>
+	<dict><key>phrase</key><string>してみたければ</string><key>shortcut</key><string>してみたければ</string></dict>
+	<dict><key>phrase</key><string>してみない</string><key>shortcut</key><string>してみない</string></dict>
+	<dict><key>phrase</key><string>してみます</string><key>shortcut</key><string>してみます</string></dict>
+	<dict><key>phrase</key><string>してみました</string><key>shortcut</key><string>してみました</string></dict>
+	<dict><key>phrase</key><string>してみません</string><key>shortcut</key><string>してみません</string></dict>
 	<dict><key>phrase</key><string>やったら</string><key>shortcut</key><string>やったら</string></dict>	<!-- やる クラスタの条件形・許容形(ユーザ指定 2564) -->
 	<dict><key>phrase</key><string>やっても</string><key>shortcut</key><string>やっても</string></dict>
 	<dict><key>phrase</key><string>やったり</string><key>shortcut</key><string>やったり</string></dict>

@@ -24423,4 +24423,17 @@ extension KanaKanjiConverterRegressionTests {
             XCTAssertTrue(multi.first.map { $0 == expected } ?? true, "\(reading): \(multi)")
         }
     }
+
+    func testRegressionRealLMBirudoShiteMitai() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("びるどしてみた", "ビルドしてみた"), ("びるどしてみたい", "ビルドしてみたい"), ("びるどしてみたいな", "ビルドしてみたいな"),
+            ("びるどしてみたくて", "ビルドしてみたくて"), ("びるどしてみたかった", "ビルドしてみたかった"),
+        ] {
+            XCTAssertEqual(converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).first, expected, reading)
+        }
+        // 既存の ためしてみたい(試してみたい)は変わらない
+        XCTAssertEqual(converter.candidates(for: "ためしてみたい", limit: 3, systemCandidateMode: .surface).first, "試してみたい")
+    }
 }
