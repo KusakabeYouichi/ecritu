@@ -1,0 +1,41 @@
+écritu — Copyright (c) 2026 Kusakabe Youichi. All rights reserved.
+écritu — Copyright (c) 2026 Kusakabe Youichi(日下部). 無断転載・無断利用を禁じます。
+
+This repository is published so that its source can be read, reviewed and
+built by people the author has invited to collaborate. It is NOT released
+under an open source license. Unless you have the author's written
+permission, you may not copy, modify, redistribute, sublicense or use this
+source code, the artwork or the author-original data in a product or
+service of your own.
+
+このリポジトリーは、ソースの閲覧・レビューと、作者が招いた共同作業者のビルドの
+ために公開しています。オープンソースライセンスではありません。作者の書面による
+許可なく、ソースコード・画像・作者オリジナルの語彙データを、複製・改変・再配布・
+サブライセンス・自分の製品やサービスへの組み込みをすることはできません。
+
+----------------------------------------------------------------------
+Third-party material / 第三者の素材
+----------------------------------------------------------------------
+
+The statement above does not apply to third-party material. Each item stays
+under its own license, and nothing here restricts the rights those licenses
+give you. 上の記述は第三者の素材には及びません。それぞれ元のライセンスに従います。
+
+- SudachiDict (Works Applications, Apache License 2.0) and the dictionary
+  databases derived from it.
+- Japanese Wikipedia text statistics, the Latin suggestion lists and the sake
+  brand entries taken from Japanese Wikipedia (CC BY-SA 4.0).
+- Unicode data: Unihan and CLDR (Unicode License v3).
+- Mozc emoticon dictionary (BSD license).
+
+The full texts, the sources and which bundled data files are covered by
+CC BY-SA 4.0 are listed in third_party/APP_STORE_OPEN_SOURCE_NOTICES.md and in
+references/ReadMe. Those files may be extracted, copied and redistributed under
+CC BY-SA 4.0 as described there.
+全文・出典・CC BY-SA 4.0 の対象ファイルは third_party/APP_STORE_OPEN_SOURCE_NOTICES.md と
+references/ReadMe にあります。
+
+The Japanese lexicons from the National Institute for Japanese Language and
+Linguistics (BCCWJ, CEJC) are not included in this repository and are not
+redistributed. 国立国語研究所の語彙表(BCCWJ・CEJC)は、このリポジトリーに含まれず、
+再配布もしていません。
