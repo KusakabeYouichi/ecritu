@@ -23021,7 +23021,7 @@ extension KanaKanjiConverterRegressionTests {
             ("じょほう", ["除法", "徐放"], ["叙法"]),
             ("たくす", ["託す"], ["托す"]),
             ("だいけん", ["大検"], ["大倹", "大建"]),
-            ("はくしゅう", ["白秋"], ["白愁", "亳州", "伯州", "白州"]),
+            ("はくしゅう", ["白秋", "白州"], ["白愁", "亳州", "伯州"]),
             ("いるか", ["イルカ", "いるか", "入鹿"], ["海豚"]),
             ("うみぞい", ["海沿い"], ["海沿", "海ぞい"]),
             ("かきて", ["書き手"], ["掻き手", "かき手"]),
@@ -24333,5 +24333,27 @@ extension KanaKanjiConverterRegressionTests {
         // 一般語の並びは変えない
         XCTAssertEqual(converter.candidates(for: "ことぶき", limit: 3, systemCandidateMode: .surface).first, "寿")
         XCTAssertEqual(converter.candidates(for: "つる", limit: 3, systemCandidateMode: .surface).first, "鶴")
+    }
+
+    func testRegressionRealLMBatch3633() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ reading: String) -> [String] {
+            converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+        }
+        // しといて(しておいて の縮約)
+        XCTAssertEqual(converter.candidates(for: "しといて", limit: 3, systemCandidateMode: .surface).first, "しといて")
+        XCTAssertEqual(multi("しといてください").first, "しといてください")
+        // にしかない / でしかない
+        XCTAssertEqual(converter.candidates(for: "にしかない", limit: 3, systemCandidateMode: .surface).first, "にしかない")
+        XCTAssertEqual(multi("ここにしかない").first, "ここにしかない")
+        XCTAssertEqual(multi("でしかない").first, "でしかない")
+        // 漢字名詞+たち(一般則): LM に 名詞→たち の連接が無い語でも
+        XCTAssertEqual(multi("じめんしたち").first, "地面師たち")
+        XCTAssertEqual(multi("ともだちたち").first, "友達たち")
+        XCTAssertEqual(multi("しゃいんたち").first, "社員たち")
+        // 志望動機
+        XCTAssertEqual(converter.candidates(for: "しぼうどうき", limit: 3, systemCandidateMode: .surface).first, "志望動機")
+        XCTAssertEqual(multi("しぼうどうきは").first, "志望動機は")
     }
 }

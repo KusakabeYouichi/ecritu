@@ -2072,6 +2072,13 @@ extension KanaKanjiConverter {
                 prev.last.map({ Self.multiClausePredicateTailCharacters.contains($0) }) ?? false {
                 base = min(base, Self.multiClauseNominalizerAfterPredicateCost)
             }
+            // 漢字名詞(2 字以上)+複数の たち(地面師たち/友達たち)。LM に 名詞→たち の連接が無い語(地面師)は
+            // たち が割高になり し+た+値 に負けていた。直前が述語・かな・1 字でないときだけクランプ(気立ち/手立ち を守る。3633)
+            if isKanaIdentity, !prevIsBOS, !prevIsKanaIdentity, !prevIsInflectionDerived,
+                Self.multiClausePluralSuffixKanaReadingsID.contains(readingID),
+                prev.count >= 2, prev.last.map(Self.isKanjiCharacter) ?? false {
+                base = min(base, Self.multiClausePluralSuffixAfterNounCost)
+            }
             // 連体詞(こういう/そういう 等)直後の準体助詞 の(こういうの+見かけたら)。
             // のみ(飲み)始まりの別分割が bigram で先行するため、の を名詞化節と同じ水準に
             // クランプして正しい区切りを通す(こういうのみかけたら 対策。2535)。
