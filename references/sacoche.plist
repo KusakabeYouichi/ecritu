@@ -28,7 +28,6 @@
 	        <dict><key>phrase</key><string>みやび庵</string><key>shortcut</key><string>みやびあん</string></dict>
 	        <dict><key>phrase</key><string>三番叟</string><key>shortcut</key><string>さんばそう</string></dict>
 	        <dict><key>phrase</key><string>中山七里</string><key>shortcut</key><string>なかやましちり</string></dict>
-	        <dict><key>phrase</key><string>久寿玉</string><key>shortcut</key><string>くすだま</string></dict>
 	        <dict><key>phrase</key><string>春慶塗</string><key>shortcut</key><string>しゅんけいぬり</string><key>pos</key><string>名詞</string></dict>	<!-- 辞書は 春慶 だけで、連文節が 春慶+塗野(姓の収穫)に割れていた(2808) -->
 	        <dict><key>phrase</key><string>春慶塗り</string><key>shortcut</key><string>しゅんけいぬり</string><key>pos</key><string>名詞</string></dict>
 	        <dict><key>phrase</key><string>井之下</string><key>shortcut</key><string>いのした</string></dict>	<!-- Sudachiにもある(姓、コスト10000の収穫底値で基底6位。届かないので登録) -->
@@ -51,11 +50,9 @@
 	        <dict><key>phrase</key><string>碓屋</string><key>shortcut</key><string>うすや</string></dict>
 	        <dict><key>phrase</key><string>伯耆国</string><key>shortcut</key><string>ほうきこく</string></dict>
 	        <dict><key>phrase</key><string>生香園</string><key>shortcut</key><string>せいこうえん</string></dict>
-	        <dict><key>phrase</key><string>美山荘</string><key>shortcut</key><string>みやまそう</string></dict>
 	        <dict><key>phrase</key><string>紀雅</string><key>shortcut</key><string>のりまさ</string></dict>
 	        <dict><key>phrase</key><string>三方六</string><key>shortcut</key><string>さんぽうろく</string></dict>
 	        <dict><key>phrase</key><string>柳月</string><key>shortcut</key><string>りゅうげつ</string></dict>
-	        <dict><key>phrase</key><string>梨泰院</string><key>shortcut</key><string>いてうぉん</string></dict>
 	        <dict><key>phrase</key><string>稚加栄</string><key>shortcut</key><string>ちかえ</string></dict>
 	        <dict><key>phrase</key><string>木川屋</string><key>shortcut</key><string>きがわや</string></dict>
 	<!-- 音楽 -->
