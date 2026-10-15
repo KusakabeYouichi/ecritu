@@ -34,7 +34,67 @@
 	        <dict><key>phrase</key><string>VINOLET</string><key>shortcut</key><string>ゔぃのれっと</string></dict>
 	        <dict><key>phrase</key><string>ヴィノレット</string><key>shortcut</key><string>ゔぃのれっと</string></dict>
 	        <dict><key>phrase</key><string>ブリリアンス</string><key>shortcut</key><string>ぶりりあんす</string></dict>	<!-- ブリリアンス: 辞書・LM とも未収録(ユーザ指定 3528) -->
-
+	<!-- ウィスキー -->
+            <dict><key>phrase</key><string>Ardbeg</string><key>shortcut</key><string>あーどべっぐ</string></dict>
+            <dict><key>phrase</key><string>アードベッグ</string><key>shortcut</key><string>あーどべっぐ</string></dict>
+            <dict><key>phrase</key><string>エライジャ・クレイグ</string><key>shortcut</key><string>えらいじゃくれいぐ</string></dict>
+            <dict><key>phrase</key><string>オールド・クロウ</string><key>shortcut</key><string>おーるどくろう</string></dict>
+            <dict><key>phrase</key><string>オールド・パー</string><key>shortcut</key><string>おーるどぱー</string></dict>
+            <dict><key>phrase</key><string>Octomore</string><key>shortcut</key><string>おくともあ</string></dict>
+            <dict><key>phrase</key><string>オクトモア</string><key>shortcut</key><string>おくともあ</string></dict>
+            <dict><key>phrase</key><string>角瓶</string><key>shortcut</key><string>かくびん</string></dict>
+            <dict><key>phrase</key><string>カナディアン・クラブ</string><key>shortcut</key><string>かなでぃあんくらぶ</string></dict>
+            <dict><key>phrase</key><string>カリラ</string><key>shortcut</key><string>かりら</string></dict>
+            <dict><key>phrase</key><string>Glenfiddich</string><key>shortcut</key><string>ぐれんふぃでぃっく</string></dict>
+            <dict><key>phrase</key><string>グレンフィディック</string><key>shortcut</key><string>ぐれんふぃでぃっく</string></dict>
+            <dict><key>phrase</key><string>Glenmorangie</string><key>shortcut</key><string>ぐれんもーれんじ</string></dict>
+            <dict><key>phrase</key><string>グレンモーレンジ</string><key>shortcut</key><string>ぐれんもーれんじ</string></dict>
+            <dict><key>phrase</key><string>シーヴァス・リーガル</string><key>shortcut</key><string>しーゔぁすりーがる</string></dict>
+            <dict><key>phrase</key><string>シーグラム・セヴン・クラウン</string><key>shortcut</key><string>しーぐらむせゔんくらうん</string></dict>
+            <dict><key>phrase</key><string>Jameson</string><key>shortcut</key><string>じぇいむそん</string></dict>
+            <dict><key>phrase</key><string>ジェムソン</string><key>shortcut</key><string>じぇいむそん</string></dict>
+            <dict><key>phrase</key><string>ジム・ビーム</string><key>shortcut</key><string>じむびーむ</string></dict>
+            <dict><key>phrase</key><string>ジャック・ダニエル</string><key>shortcut</key><string>じゃっくだにえる</string></dict>
+            <dict><key>phrase</key><string>ジョニー・ウォーカー</string><key>shortcut</key><string>じょにーうぉーかー</string></dict>
+            <dict><key>phrase</key><string>竹鶴</string><key>shortcut</key><string>たけつる</string></dict>
+            <dict><key>phrase</key><string>Talisker</string><key>shortcut</key><string>たりすかー</string></dict>
+            <dict><key>phrase</key><string>タリスカー</string><key>shortcut</key><string>たりすかー</string></dict>
+            <dict><key>phrase</key><string>白州</string><key>shortcut</key><string>はくしゅう</string></dict>
+            <dict><key>phrase</key><string>Ballantine's</string><key>shortcut</key><string>ばらんたいん</string></dict>
+            <dict><key>phrase</key><string>バランタイン</string><key>shortcut</key><string>ばらんたいん</string></dict>
+            <dict><key>phrase</key><string>響</string><key>shortcut</key><string>ひびき</string></dict>
+            <dict><key>phrase</key><string>Bushmills</string><key>shortcut</key><string>ぶっしゅみるず</string></dict>
+            <dict><key>phrase</key><string>ブッシュミルズ</string><key>shortcut</key><string>ぶっしゅみるず</string></dict>
+            <dict><key>phrase</key><string>Bruichladdich</string><key>shortcut</key><string>ぶるっくらでぃー</string></dict>
+            <dict><key>phrase</key><string>ブルックラディー</string><key>shortcut</key><string>ぶるっくらでぃー</string></dict>
+            <dict><key>phrase</key><string>Bowmore</string><key>shortcut</key><string>ぼうもあ</string></dict>
+            <dict><key>phrase</key><string>ボウモア</string><key>shortcut</key><string>ぼうもあ</string></dict>
+            <dict><key>phrase</key><string>マッカラン</string><key>shortcut</key><string>まっからん</string></dict>
+            <dict><key>phrase</key><string>メーカーズ・マーク</string><key>shortcut</key><string>めーかーずまーく</string></dict>
+            <dict><key>phrase</key><string>山崎</string><key>shortcut</key><string>やまざき</string></dict>
+            <dict><key>phrase</key><string>余市</string><key>shortcut</key><string>よいち</string></dict>
+            <dict><key>phrase</key><string>Lagavulin</string><key>shortcut</key><string>らがゔーりん</string></dict>
+            <dict><key>phrase</key><string>ラガヴーリン</string><key>shortcut</key><string>らがゔーりん</string></dict>
+            <dict><key>phrase</key><string>Laphroaig</string><key>shortcut</key><string>らふろいぐ</string></dict>
+            <dict><key>phrase</key><string>ラフロイグ</string><key>shortcut</key><string>らふろいぐ</string></dict>
+            <dict><key>phrase</key><string>ロイヤル・ハウスホールド</string><key>shortcut</key><string>ろいやるはうすほーるど</string></dict>
+            <dict><key>phrase</key><string>ワイルド・ターキー</string><key>shortcut</key><string>わいるどたーきー</string></dict>
+            <dict><key>phrase</key><string>ワイルド・ターキー</string><key>shortcut</key><string>わいるどたーきー</string></dict>
+            <dict><key>phrase</key><string>Jim Beam</string><key>shortcut</key><string>じむびーむ</string></dict>
+            <dict><key>phrase</key><string>Canadian Club</string><key>shortcut</key><string>かなでぃあんくらぶ</string></dict>
+            <dict><key>phrase</key><string>Elijah Craig</string><key>shortcut</key><string>えらいじゃくれいぐ</string></dict>
+            <dict><key>phrase</key><string>Old Crow</string><key>shortcut</key><string>おーるどくろう</string></dict>
+            <dict><key>phrase</key><string>Jack Daniel's</string><key>shortcut</key><string>じゃっくだにえる</string></dict>
+            <dict><key>phrase</key><string>Caol Ila</string><key>shortcut</key><string>かりら</string></dict>
+            <dict><key>phrase</key><string>The Macallan</string><key>shortcut</key><string>まっからん</string></dict>
+            <dict><key>phrase</key><string>Maker's Mark</string><key>shortcut</key><string>めーかーずまーく</string></dict>
+            <dict><key>phrase</key><string>Old Parr</string><key>shortcut</key><string>おーるどぱー</string></dict>
+            <dict><key>phrase</key><string>Chivas Regal</string><key>shortcut</key><string>しーゔぁすりーがる</string></dict>
+            <dict><key>phrase</key><string>The Royal Household</string><key>shortcut</key><string>ろいやるはうすほーるど</string></dict>
+            <dict><key>phrase</key><string>Seagram's Seven Crown</string><key>shortcut</key><string>しーぐらむせゔんくらうん</string></dict>
+            <dict><key>phrase</key><string>Wild Turkey</string><key>shortcut</key><string>わいるどたーきー</string></dict>
+            <dict><key>phrase</key><string>Wild Turkey</string><key>shortcut</key><string>わいるどたーきー</string></dict>
+            <dict><key>phrase</key><string>Johnnie Walker</string><key>shortcut</key><string>じょにーうぉーかー</string></dict>
 	<!-- 服飾 -->
 	        <dict><key>phrase</key><string>黄麻</string><key>shortcut</key><string>こうま</string></dict>	<!-- Sudachiにもある(基底3位/24、コスト7404) -->
 	        <dict><key>phrase</key><string>ヴェロア</string><key>shortcut</key><string>ゔぇろあ</string></dict>
