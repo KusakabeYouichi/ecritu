@@ -240,6 +240,8 @@
 	<dict><key>phrase</key><string>ルセット</string><key>shortcut</key><string>るせっと</string></dict>	<!-- ルセット(辞書の 1 語): 連文節は る+セット(セット の頻度)の 2 ノードが 75 だけ安く、るセット/るセット通りに になっていた(ユーザ報告 3620)。curated 化して 1 語を先頭に -->
 	<dict><key>phrase</key><string>タイポ</string><key>shortcut</key><string>たいぽ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- タイポ(誤字): 辞書に無く、たいぽ→対ぽ/タイぽ、たいぽする→対ぽする になっていた。サ変名詞(タイポする/タイポした)(ユーザ報告 3622) -->
 	<dict><key>phrase</key><string>高精細</string><key>shortcut</key><string>こうせいさい</string><key>pos</key><string>形容動詞</string></dict>	<!-- 高精細(辞書に無かった。こうせいさい→構成際。ユーザ報告 3626)。〜な(高精細な画面)/〜に -->
+	<dict><key>phrase</key><string>宣材</string><key>shortcut</key><string>せんざい</string></dict>	<!-- 宣材(宣伝材料。宣材写真): 辞書に無かった(ユーザ報告 3629) -->
+	<dict><key>phrase</key><string>JASRAC</string><key>shortcut</key><string>じゃすらっく</string></dict>	<!-- JASRAC(日本音楽著作権協会): 辞書に ジャスラック だけで JASRAC が無かった(ユーザ報告 3629) -->
 	<dict><key>phrase</key><string>typo</string><key>shortcut</key><string>たいぽ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- typo(英字): タイポ の次(ユーザ指定 3622) -->
 	<dict><key>phrase</key><string>№</string><key>shortcut</key><string>なんばー</string></dict>	<!-- ヌメロ記号(№/Nº/N°): なんばー/ぬめろ/のんぶる で変換。連文節では弱め(ナンバー を勝たせるため multiClauseHomophoneDemotionsByReading で降格。ユーザ指定 3623) -->
 	<dict><key>phrase</key><string>№</string><key>shortcut</key><string>ぬめろ</string></dict>

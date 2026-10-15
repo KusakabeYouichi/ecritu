@@ -24283,4 +24283,24 @@ extension KanaKanjiConverterRegressionTests {
         }
         XCTAssertEqual(converter.multiClauseCandidates(for: "そうならいいのだけど", systemCandidateMode: .surface).first, "そうならいいのだけど")
     }
+
+    func testRegressionRealLMBatch3629() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        converter.setScriptVariantSuppressionCategories(ScriptVariantSuppressionCategory.defaultEnabled)
+        // せんざい: 指定順(宣材 は 4 番め)。千戝(戝=財の異体字)は出さない
+        let senzai = converter.candidates(for: "せんざい", limit: 30, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(senzai.prefix(12)), ["洗剤", "潜在", "千載", "宣材", "線材", "船材", "前栽", "千歳", "浅存", "煎剤", "仙才", "せんざい"], "\(senzai)")
+        XCTAssertFalse(senzai.contains("千戝"), "\(senzai)")
+        // すった: 刷った→吸った→擦った(自分で)。かなは出さない。派生枠を広げ 刷った も立つ
+        for suffix in ["", "の"] {
+            let multi = converter.multiClauseCandidates(for: "じぶんですった" + suffix, systemCandidateMode: .surface)
+            XCTAssertEqual(Array(multi.prefix(3)), ["自分で刷った", "自分で吸った", "自分で擦った"].map { $0 + suffix }, "\(multi.prefix(5))")
+            XCTAssertFalse(multi.contains("自分ですった" + suffix), "\(multi)")
+        }
+        // JASRAC / ジャスラック
+        XCTAssertEqual(Array(converter.candidates(for: "じゃすらっく", limit: 4, systemCandidateMode: .surface).prefix(2)), ["JASRAC", "ジャスラック"])
+        // きず
+        XCTAssertEqual(Array(converter.candidates(for: "きず", limit: 10, systemCandidateMode: .surface).prefix(8)), ["傷", "瑕", "疵", "生酢", "基図", "岐津", "着ず", "きず"])
+    }
 }

@@ -26,7 +26,7 @@ extension KanaKanjiConverter {
     // 同音の動詞が多い読み(かけ-: 掛/欠/書/描/駆/賭)は 3 枠では 欠けてる/描けてる が立たない(ユーザ報告 3086、surface モードで
     // 辞書順 かける/書ける/掛ける/駆ける/欠ける)。読みの接頭が一致する文節だけ枠を広げる
     static let multiClauseInflectionTopKWide = 7
-    static let multiClauseInflectionWideSupplyReadingPrefixes: [String] = ["かけ"]
+    static let multiClauseInflectionWideSupplyReadingPrefixes: [String] = ["かけ", "すっ"]   // すっ: 吸う/擦る/刷る/摺る/掏る(すった。3629、ユーザ報告)
     static let multiClauseSeededInflectionExtraFetch = 14  // 活用形に seed がある読みの取得幅の上乗せ(2799、定義箇所コメント参照)
     // 活用派生ノードが LM 未収録(普通)のときの専用コスト。LM コーパスは Sudachi A単位で
     // 活用形を「買っ+た」に分割するため、正しい活用表層(買った)は unigram に無い。
@@ -544,6 +544,8 @@ extension KanaKanjiConverter {
     static let multiClauseCrossNoCompoundBonus = 1200
     static let multiClauseAcrossNoCollocationBonuses: [String: Int] = [
         "甲州\t果皮": 2500,
+        // 自分で+刷った(すった。3629、ユーザ報告: じぶんですったの→自分ですったの/擦った。自分で刷ったの を先頭に)
+        "自分\t刷": 3000, "自分\t吸": 1000,
         // 感じ/漢字 の連語(3361)。漢字 を連文節で降格したので、漢字 が自然な 書く/読む/覚える を守る(かんじをかく が
         // 漢字を描く だったのも 書く に寄る)。感じのいい/感じの良い は 漢字のいい が先頭だった
         "感じ\tいい": 1500, "感じ\t良": 1500,
@@ -772,7 +774,7 @@ extension KanaKanjiConverter {
     // から/と も同じ理由で足す(北から南へ/北と東。2885)
     // も も橋渡しにする(まだ空きもあるから。3496)
     // へ も橋渡しにする(米国へ送れれば。3530)
-    static let multiClauseCollocationBridgeParticles: Set<String> = ["の", "が", "を", "は", "に", "から", "と", "も", "へ"]
+    static let multiClauseCollocationBridgeParticles: Set<String> = ["の", "が", "を", "は", "に", "から", "と", "も", "へ", "で"]
     // 1字の格助詞(multiClauseCaseParticleSurfaces の1字分)+連体の の
     static let multiClauseSingleTopParticleTails: Set<Character> = ["に", "を", "が", "へ", "と", "で", "は", "も", "の"]
 
@@ -2680,7 +2682,9 @@ extension KanaKanjiConverter {
     // しゃべれる: LM には かな の しゃべれる(7884)しか無く 喋れる は未収録で、しゃべれるやつか の先頭が かな だった
     // (ユーザ指定 3442。単文節は辞書順で 喋れる が先頭)。表示層は keepKana の根拠で かな を 2 位に保つ
     static let multiClauseKanaIdentityDemotionsByReading: [String: Int] = [
-        "しゃべれる": 1500
+        "しゃべれる": 1500,
+        // すった: 自分ですったの のかな(使わない。ユーザ指定 3629)。刷った/吸った/擦った の漢字を先に
+        "すった": 3000, "すって": 3000
     ]
     // Wikipedia 偏りの同音語の降格(読み → [表層: 加算])。連文節でだけ、LM が百科事典寄りで前に出す表層を
     // 日常入力の頻度実感に合わせて後ろへ下げる(マニュアル検査でユーザ指定 2890)。単文節の並びは seed 側で揃える。
