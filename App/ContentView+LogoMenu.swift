@@ -427,7 +427,7 @@ extension ContentView {
     static let contemporaryPresetValues: [String: Any] = [
         SettingsKeys.kanaLayoutMode: KanaLayoutOption.threeByThreePlusWa.rawValue,
         SettingsKeys.latinLayoutMode: LatinLayoutOption.azerty.rawValue,   // 現代的=AZERTY(戦略的と同じ。ユーザ指定 3613)
-        SettingsKeys.numberLayoutMode: NumberLayoutOption.calculette.rawValue,
+        SettingsKeys.numberLayoutMode: NumberLayoutOption.clavier.rawValue,   // 現代的=clavier(ユーザ指定 3627。戦略的=calculette、保守的=téléphone)
         SettingsKeys.formattedNumberKeypadLayout: FormattedNumberKeypadOption.calculette.rawValue,
         SettingsKeys.basicSymbolOrder: BasicSymbolOrderOption.ansi.rawValue,
         SettingsKeys.kanaModifierPlacement: KanaModifierPlacementOption.postfix.rawValue,
