@@ -24436,4 +24436,14 @@ extension KanaKanjiConverterRegressionTests {
         // 既存の ためしてみたい(試してみたい)は変わらない
         XCTAssertEqual(converter.candidates(for: "ためしてみたい", limit: 3, systemCandidateMode: .surface).first, "試してみたい")
     }
+
+    func testRegressionRealLMNoyoriKanaFirst() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "のより"))
+        XCTAssertEqual(converter.candidates(for: "のより", limit: 3, systemCandidateMode: .surface).first, "のより")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "のよりも", systemCandidateMode: .surface).first, "のよりも")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "のよりは", systemCandidateMode: .surface).first, "のよりは")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "ひとのより", systemCandidateMode: .surface).first, "人のより")
+    }
 }

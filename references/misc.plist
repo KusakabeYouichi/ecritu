@@ -247,6 +247,7 @@
 	<dict><key>phrase</key><string>なのよ</string><key>shortcut</key><string>なのよ</string></dict>	<!-- 文末の なのよ(かな識別)。ナノよ/名のよ より かな を先頭に(ユーザ報告 3626。なのよね と同じ) -->
 	<dict><key>phrase</key><string>のよね</string><key>shortcut</key><string>のよね</string></dict>	<!-- 断片の のよね はかなが正書。乃よね/之よね/野よね に変換されるだけで、かな識別が末尾のチップ扱いだった(ユーザ報告 3617) -->
 	<dict><key>phrase</key><string>のが</string><key>shortcut</key><string>のが</string></dict>	<!-- 断片の のが(名詞化の の+が)はかなが正書。乃が/之が/野が になるだけで、かな識別が末尾のチップ扱いだった(ユーザ報告 3630。のよね と同じ) -->
+	<dict><key>phrase</key><string>のより</string><key>shortcut</key><string>のより</string></dict>	<!-- 断片の のより はかなが正書(野依/乃より/之より になるだけだった。ユーザ報告 3643。のが/のよね と同じ) -->
 	<dict><key>phrase</key><string>もいる</string><key>shortcut</key><string>もいる</string></dict>	<!-- 〜もいる の断片はかなが正書。カタカナ収穫の モイル だけが出ていた(ユーザ報告 3631) -->
 	<dict><key>phrase</key><string>しといて</string><key>shortcut</key><string>しといて</string></dict>	<!-- かな。〜しておいて の縮約。連文節は し+解いて/説いて が先頭だった(ユーザ報告 3633。ください は別ノード) -->
 	<dict><key>phrase</key><string>しといた</string><key>shortcut</key><string>しといた</string></dict>
