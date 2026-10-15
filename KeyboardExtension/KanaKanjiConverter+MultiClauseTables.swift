@@ -428,6 +428,9 @@ extension KanaKanjiConverter {
         return set
     }()
     static let multiClauseKanjiAfterColorGaPenalty = 3000
+    // 漢字名詞+複数の たち(地面師たち)のクランプ(3633)
+    static let multiClausePluralSuffixAfterNounCost = 3000
+    static let multiClausePluralSuffixKanaReadings: Set<String> = ["たち"]
     static let multiClauseKanaIkeAfterNegativeToBonus = 8000
     static let multiClauseColorTintStemBeforeGakaruBonus = 2500
     // かなの のか(疑問・説明の終端)の直後に漢字名詞は続かない(講習のか日 の か+日 断片。2736)。述語(食べる 等)や
@@ -3110,6 +3113,7 @@ extension KanaKanjiConverter {
             for s in KanaKanjiConverter.multiClauseClauseInitialKanaExistentialPasts.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseCollocationBridgeParticles.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseColloquialExplanatoryTailReadings.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClausePluralSuffixKanaReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseColorTintStemSurfaces.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseCompoundParticles.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseDemonstrativeSurfaces.sorted() { add(s) }
@@ -3343,6 +3347,7 @@ extension KanaKanjiConverter {
     static let multiClauseClauseInitialKanaExistentialPastsID = MultiClauseIDSet(multiClauseClauseInitialKanaExistentialPasts)
     static let multiClauseCollocationBridgeParticlesID = MultiClauseIDSet(multiClauseCollocationBridgeParticles)
     static let multiClauseColloquialExplanatoryTailReadingsID = MultiClauseIDSet(multiClauseColloquialExplanatoryTailReadings)
+    static let multiClausePluralSuffixKanaReadingsID = MultiClauseIDSet(multiClausePluralSuffixKanaReadings)
     static let multiClauseColorTintStemSurfacesID = MultiClauseIDSet(multiClauseColorTintStemSurfaces)
     static let multiClauseCompoundParticlesID = MultiClauseIDSet(multiClauseCompoundParticles)
     static let multiClauseDemonstrativeSurfacesID = MultiClauseIDSet(multiClauseDemonstrativeSurfaces)
