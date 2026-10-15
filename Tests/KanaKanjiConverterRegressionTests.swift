@@ -24321,4 +24321,17 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.candidates(for: "だけだってば", limit: 3, systemCandidateMode: .surface).first, "だけだってば")
         XCTAssertEqual(converter.multiClauseCandidates(for: "それだけだってば", systemCandidateMode: .surface).first, "それだけだってば")
     }
+
+    func testRegressionRealLMSakeBrands() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        // 清酒の銘柄(references/sake.plist。Wikipedia 日本酒の銘柄一覧由来)
+        for (reading, brand) in [("だっさい", "獺祭"), ("はっかいさん", "八海山"), ("きたのほまれ", "北の誉"), ("きくまさむね", "菊正宗"), ("じょっぱり", "じょっぱり"), ("ぽんえぺれ", "ポンエペレ")] {
+            let single = converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+            XCTAssertTrue(single.contains(brand), "\(reading): \(single)")
+        }
+        // 一般語の並びは変えない
+        XCTAssertEqual(converter.candidates(for: "ことぶき", limit: 3, systemCandidateMode: .surface).first, "寿")
+        XCTAssertEqual(converter.candidates(for: "つる", limit: 3, systemCandidateMode: .surface).first, "鶴")
+    }
 }
