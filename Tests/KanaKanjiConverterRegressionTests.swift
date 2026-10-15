@@ -24273,4 +24273,14 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.candidates(for: "こうせいさい", limit: 3, systemCandidateMode: .surface).first, "高精細")
         XCTAssertEqual(converter.multiClauseCandidates(for: "こうせいさいで", systemCandidateMode: .surface).first, "高精細で")
     }
+
+    func testRegressionRealLMGankoNaraIiNoDakedo() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for reading in ["がんこならいいのだけど", "がんこならいいのだけ", "がんこならいいのだ", "がんこならいい"] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, "頑固ならいい" + reading.dropFirst("がんこならいい".count), "\(reading): \(multi.prefix(3))")
+        }
+        XCTAssertEqual(converter.multiClauseCandidates(for: "そうならいいのだけど", systemCandidateMode: .surface).first, "そうならいいのだけど")
+    }
 }
