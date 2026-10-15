@@ -24382,4 +24382,26 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "たべてよね", systemCandidateMode: .surface).first, "食べてよね")
         XCTAssertEqual(converter.multiClauseCandidates(for: "みせてよ", systemCandidateMode: .surface).first, "見せてよ")
     }
+
+    func testRegressionRealLMBatch3636() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func single(_ reading: String) -> [String] {
+            converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+        }
+        func multi(_ reading: String) -> [String] {
+            converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+        }
+        // につけたい: に付けたい は 3 番め
+        XCTAssertEqual(single("につけたい"), ["煮付けたい", "煮つけたい", "に付けたい", "につけたい"])
+        // とうぜん: かなは末尾。当然する は連文節の先頭
+        XCTAssertEqual(single("とうぜん"), ["当然", "陶然", "東漸", "当前", "蕩然", "東膳", "とうぜん"])
+        XCTAssertEqual(multi("とうぜんするでしょ").first, "当然するでしょ")
+        XCTAssertEqual(multi("とうぜんするよ").first, "当然するよ")
+        // できあがる: かなを先頭(活用形も)
+        XCTAssertEqual(Array(single("できあがる").prefix(2)), ["できあがる", "出来上がる"])
+        XCTAssertEqual(single("できあがった").first, "できあがった")
+        // ネット無いのか
+        XCTAssertEqual(Array(multi("ねっとないのか").prefix(2)), ["ネット無いのか", "ネットないのか"])
+    }
 }
