@@ -142,6 +142,8 @@ enum SettingsKeys {
     static let okuriganaVariantPreference = "okuriganaVariantPreference"
     // 同音の漢字による書きかえ(KakikaePreference の rawValue。3422)
     static let kakikaePreference = "kakikaePreference"
+    // 書きかえ(X.9)の例外グループ(了解/了承/回復/連想 など日常語)は設定にかかわらず常用漢字を先に(3644)
+    static let kakikaeEverydayException = "kakikaeEverydayException"
     static let adjectiveMeKanjiCandidatesEnabled = "adjectiveMeKanjiCandidatesEnabled"
     static let suspendMemorySlimmingEnabled = "suspendMemorySlimmingEnabled"
     static let mazegakiCandidateMode = "mazegakiCandidateMode"

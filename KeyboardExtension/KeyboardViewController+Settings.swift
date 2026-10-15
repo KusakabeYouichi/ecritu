@@ -62,6 +62,14 @@ extension KeyboardViewController {
         kanaKanjiConverter.setKakikaePreference(
             KakikaePreference.decode(sharedDefaults?.string(forKey: SharedDefaultsKeys.kakikaePreference))
         )
+        // 例外グループ(了解/回復/連想 等)。値が無い端末(この設定より前から使っている人)は オン(3611 以来の動作を守る)
+        kanaKanjiConverter.setKakikaeEverydayException(
+            sharedBoolValue(
+                from: sharedDefaults,
+                key: SharedDefaultsKeys.kakikaeEverydayException,
+                fallback: true
+            )
+        )
 
         kanaKanjiConverter.setOrdinalMeKanjiPreferred(
             sharedBoolValue(

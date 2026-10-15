@@ -33,12 +33,16 @@ enum KakikaePreference: String, CaseIterable, Identifiable {
     var showsAfter: Bool { self != .beforeOnly }
     var prefersBefore: Bool { self == .beforeOnly || self == .bothBeforeFirst }
 
-    // 日常語は両方・本来の漢字を先に でも常用漢字を先にする(了解 が 諒解 の下になる報告 3611)。
-    // 本来の漢字だけ(beforeOnly)は利用者の明示の選択なので変えない
-    static let everydayAfterFirstPairs: Set<String> = ["了解", "了承", "諒解", "諒承", "回復", "恢復"]   // 回復/恢復(3635): 恢復 は 書きかえ前の表外字で日常語は 回復
+    // 例外グループ(日常語): 日常ではほぼ常用漢字側だけを使う組。設定(本来の漢字だけ/本来の漢字を先に)にかかわらず
+    // 常用漢字を先にして本来の漢字も後ろに出す(了解 が 諒解 の下になる報告 3611、回復/恢復 3635、連想/聯想 3644)。
+    // スイッチ kakikaeEverydayException がオフなら例外にせず、設定どおり(戦略的初期設定はオフ)
+    static let everydayAfterFirstPairs: Set<String> = ["了解", "了承", "諒解", "諒承", "回復", "恢復", "連想", "聯想"]
 
-    func demotingEverydayPair(for surface: String) -> KakikaePreference {
-        self == .bothBeforeFirst && Self.everydayAfterFirstPairs.contains(where: { surface.contains($0) })
-            ? .bothAfterFirst : self
+    func demotingEverydayPair(for surface: String, enabled: Bool = true) -> KakikaePreference {
+        guard enabled, self == .bothBeforeFirst || self == .beforeOnly,
+            Self.everydayAfterFirstPairs.contains(where: { surface.contains($0) }) else {
+            return self
+        }
+        return .bothAfterFirst
     }
 }

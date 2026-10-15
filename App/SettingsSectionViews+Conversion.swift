@@ -384,6 +384,8 @@ struct KanaGakiSettingsSection: View {
 // 出る語を同じ順に並べて対応が分かるようにする(ユーザ指定 3429)
 struct KakikaeSettingsSection: View {
     @Binding var rawValue: String
+    // 日常語の例外グループ(了解・了承・回復・連想 等)は設定にかかわらず常用漢字を先に(3644)
+    @Binding var everydayException: Bool
 
     // 例に並べる書きかえ前の語(よく見る語を選んだ。表の先頭からだと 愛慾/安佚 のような見慣れない語になる)。
     // 表に無い語は落とす
@@ -472,6 +474,14 @@ struct KakikaeSettingsSection: View {
             }
 
             Text("表外字を同じ音の常用漢字に置き換えた書き方(1956 年 国語審議会報告『同音の漢字による書きかえ』の \(KakikaeTable.switchablePairs.count) 語)の扱いを選びます。『醗酵前』『蒸溜所』のような、その語を含む語にも効きます。1 字単位の書きかえ(廻→回、智→知 など)は人名・地名を巻き込むので対象外です。報告の後に常用漢字に加わった字の組(臆測⇄憶測、肝腎⇄肝心、研磨⇄研摩 など)は、どれを選んでも両方を出します。追加語彙に登録した語と、学習した語は対象外です。初期設定は 本来の漢字だけ で、保守的初期設定では 両方(常用漢字を先に)、現代的初期設定では 両方(本来の漢字を先に) です。この設定ができる前から使っている端末は、以前から本来の漢字を先頭にしていた語(醗酵・日蝕・棲息)を変えないよう 両方(本来の漢字を先に) にしてあります。")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Toggle("日常語は常用漢字を先に(例外)", isOn: $everydayException)
+                .toggleStyle(.switch)
+
+            Text("了解・了承・回復・連想 のように、日常では常用漢字側ばかりを使う語(\(KakikaePreference.everydayAfterFirstPairs.sorted().joined(separator: "・")))は、上の設定が『本来の漢字だけ』や『本来の漢字を先に』でも、常用漢字を先に出し、本来の漢字は後ろに出します。オフにすると、これらの語も上の設定どおりになります。初期設定は、戦略的がオフ、保守的・現代的がオンです。")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
