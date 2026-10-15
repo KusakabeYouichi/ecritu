@@ -24356,4 +24356,30 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.candidates(for: "しぼうどうき", limit: 3, systemCandidateMode: .surface).first, "志望動機")
         XCTAssertEqual(multi("しぼうどうきは").first, "志望動機は")
     }
+
+    func testRegressionRealLMBatch3635() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        converter.setScriptVariantSuppressionCategories(ScriptVariantSuppressionCategory.defaultEnabled)
+        // たって: 指定順(かなは 13 番め)。時間語の後は 経って
+        let tatte = converter.candidates(for: "たって", limit: 14, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(tatte.prefix(13)), ["立って", "経って", "断って", "建って", "勃って", "発って", "絶って", "裁って", "截って", "佇って", "起って", "足って", "たって"], "\(tatte)")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "さんにちたって", systemCandidateMode: .surface).first, "三日経って")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "じかんがたって", systemCandidateMode: .surface).first, "時間が経って")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "いえがたって", systemCandidateMode: .surface).first, "家が立って")
+        // 恢復→回復 は書きかえ(X.9。恢 は表外字)。本来の漢字を先にする設定でも 回復 を先頭(了解 と同じ例外)
+        converter.setKakikaePreference(.bothBeforeFirst)
+        let kaifuku = converter.candidates(for: "かいふくしました", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(kaifuku.first, "回復しました", "\(kaifuku)")
+        XCTAssertTrue(kaifuku.contains("恢復しました"), "\(kaifuku)")
+        converter.setKakikaePreference(.bothAfterFirst)
+        XCTAssertEqual(converter.candidates(for: "かいふくしました", limit: 8, systemCandidateMode: .surface).first, "回復しました")
+        // 名詞+よ/よね を 動詞の連用形・命令形が押しのけない
+        for (reading, expected) in [("うまいさけよ", "うまい酒よ"), ("うまいさけよね", "うまい酒よね"), ("おさけよね", "お酒よね")] {
+            XCTAssertEqual(converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).first, expected)
+        }
+        // 〜てよ(依頼)は影響しない
+        XCTAssertEqual(converter.multiClauseCandidates(for: "たべてよね", systemCandidateMode: .surface).first, "食べてよね")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "みせてよ", systemCandidateMode: .surface).first, "見せてよ")
+    }
 }

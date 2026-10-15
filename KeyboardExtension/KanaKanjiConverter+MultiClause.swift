@@ -2884,6 +2884,24 @@ extension KanaKanjiConverter {
                     }
                 }
             }
+            // 連用形/語幹(派生の え段)+終助詞 よ/よね/よな(さけ+よね)は非文。LM に 裂け→よね が観測され 1200 と安く、
+            // 酒+よね(未観測、8700)に勝って うまい裂けよね になっていた。名詞を押しのけない(3635)
+            if isKanaIdentity, !prevIsBOS, prevIsInflectionDerived,
+                Self.multiClauseSentenceFinalYoReadingsID.contains(readingID),
+                let prevTail = prev.last, Self.multiClauseIchidanImperativeYoStemTails.contains(prevTail) {
+                penalty += Self.multiClauseIchidanImperativeYoPenalty
+            }
+            // 一段動詞の文語命令形 〜けよ/〜べよ(避けよ/裂けよ/食べよ)。口語の断片 さけよ/さけよね の よ は終助詞で、
+            // 名詞(酒)+よ が正しいのに、派生 1 ノードが安く うまい酒よ を うまい避けよ が押しのけていた(3635)。
+            // 派生の命令形だけを降格する(単文節の さけよ は別経路で影響しない)
+            if isInflectionDerived, surface.count >= 3 {
+                // 〜けよ / 〜けよね / 〜けよな(命令形+終助詞の派生)
+                let tail = surface.hasSuffix("よ") ? 1 : ((surface.hasSuffix("よね") || surface.hasSuffix("よな")) ? 2 : 0)
+                if tail > 0, surface.count >= tail + 2,
+                    let stemTail = surface.dropLast(tail).last, Self.multiClauseIchidanImperativeYoStemTails.contains(stemTail) {
+                    penalty += Self.multiClauseIchidanImperativeYoPenalty
+                }
+            }
             // かなで書く言葉(所謂/即ち/下さい/事/此処 等。KanaGakiTable、3404)。抑制する仲間は禁止級の減点で実質落とし、
             // 抑制しない仲間は かな の後ろに回る程度に下げる。追加語彙・学習語彙(curated)は対象外
             // 形式名詞(事/時/為)は述語の直後(行くとき/食べること)だけ。文頭や名詞の位置(時は金なり/事の起こり)は普通の名詞として残す
