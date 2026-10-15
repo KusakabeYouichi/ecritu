@@ -24303,4 +24303,13 @@ extension KanaKanjiConverterRegressionTests {
         // きず
         XCTAssertEqual(Array(converter.candidates(for: "きず", limit: 10, systemCandidateMode: .surface).prefix(8)), ["傷", "瑕", "疵", "生酢", "基図", "岐津", "着ず", "きず"])
     }
+
+    func testRegressionRealLMNogaKanaFirst() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "のが"))
+        XCTAssertEqual(converter.candidates(for: "のが", limit: 3, systemCandidateMode: .surface).first, "のが")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "かくのがすき", systemCandidateMode: .surface).first, "書くのが好き")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "たべるのが", systemCandidateMode: .surface).first, "食べるのが")
+    }
 }
