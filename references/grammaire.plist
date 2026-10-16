@@ -8,5 +8,8 @@
 	     suppr.plist はバンドル直読みで全エントリが抑制されるため、ここに分離している。 -->
 	<!-- ■ サ変可能の過剰付与(〜する は規範的でない) -->
 	<dict><key>phrase</key><string>既存</string><key>shortcut</key><string>きそん</string></dict>	<!-- 既存する は非規範。既存しちゃう 等の派生ゴミの源だった(2639)。サ変は 毀損/棄損 が正 -->
+	<dict><key>phrase</key><string>私用</string><key>shortcut</key><string>しよう</string></dict>	<!-- 私用する とは言わない(私用で/私用の のみ)。しようさせて→私用させて が使用の次に出ていた(ユーザ指摘 3660) -->
+	<dict><key>phrase</key><string>仕様</string><key>shortcut</key><string>しよう</string></dict>	<!-- 仕様する とは言わない。しようさせて→仕様させて が出ていた(ユーザ指摘 3660) -->
+	<dict><key>phrase</key><string>飯</string><key>shortcut</key><string>はん</string></dict>	<!-- 飯(はん)はご飯の意の名詞で 飯する とは言わない。はんする/はんしない に 飯する/飯しない が混じっていた(ユーザ指摘 3660) -->
 </array>
 </plist>

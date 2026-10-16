@@ -1520,6 +1520,9 @@ extension KanaKanjiConverter {
         // ネット+ない(3636、ユーザ報告: ネットないのか→ネット内のか が先頭)。ネット内 は連語として稀(ネット内で 等は別)。
         // 無い(存在しない)を先頭、かな ない を 2 番め、内 を下げる
         "ネット\t無い": 3500, "ネット\t内": -2500,
+        // 仕様/私用 は サ変名詞でない(仕様する/私用する とは言わない)。しようさせて が 使用させて の次に 仕様+さ+せて で
+        // 出て、試用させて より上だった(ユーザ指摘 3660)。さ(させ の頭)への連接だけ減点
+        "仕様\tさ": -12000, "私用\tさ": -12000,
         // 当然+する(3636、ユーザ報告: とうぜんするでしょ→東漸するでしょ)。東漸 はサ変名詞で 東漸する が 1 ノード(派生 7200)に
         // なるが、当然 は形容動詞/副詞でサ変名詞ではないため 当然する の派生ノードが無く、当然→する は LM 未観測で 9304 と割高だった。
         // 口語の 当然する(当然するでしょ/当然するよ)を加点する
@@ -2171,9 +2174,9 @@ extension KanaKanjiConverter {
     static let multiClauseSuruClusterKanaPrefixes: [String] = [
         "して", "した", "する", "しな", "しま", "しよ", "しろ", "しちゃ", "しと"
     ]
-    // 残りの読み列が する/される の付属部で始まるか(切り方に依らない判定。3067)
+    // 残りの読み列が する/される/させる の付属部で始まるか(切り方に依らない判定。3067。させ は 3660 で追加: 仕様させて)
     static func readingStartsWithSuruCluster(_ rest: String) -> Bool {
-        rest.hasPrefix("され") || multiClauseSuruClusterKanaPrefixes.contains(where: { rest.hasPrefix($0) })
+        rest.hasPrefix("され") || rest.hasPrefix("させ") || multiClauseSuruClusterKanaPrefixes.contains(where: { rest.hasPrefix($0) })
     }
     // 形式名詞と同形の実質名詞(時は金なり/事の起こり/事あるごとに)。文頭に立つ とき/こと は
     // 「時間という概念」「事柄」そのものを指す実質名詞なので漢字が正書(ユーザー方針)。
