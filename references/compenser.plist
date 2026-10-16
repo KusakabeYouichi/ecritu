@@ -755,5 +755,7 @@
 	        <dict><key>phrase</key><string>和久傳</string><key>shortcut</key><string>わくでん</string></dict>
 	        <dict><key>phrase</key><string>バック・トゥー・ザ・フューチャー</string><key>shortcut</key><string>ばっくとぅーざふゅーちゃー</string></dict>	<!-- 映画。辞書に無く バックトゥー座フューチャー に割れていた(ユーザ報告 3644) -->
 	        <dict><key>phrase</key><string>Back to the Future</string><key>shortcut</key><string>ばっくとぅーざふゅーちゃー</string></dict>
+	        <dict><key>phrase</key><string>オオタニワタリ</string><key>shortcut</key><string>おおたにわたり</string></dict>	<!-- シダ植物(ユーザ指定 3657) -->
+	        <dict><key>phrase</key><string>大谷渡</string><key>shortcut</key><string>おおたにわたり</string></dict>
 </array>
 </plist>
