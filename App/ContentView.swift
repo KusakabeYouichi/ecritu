@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20261016092903"
+    private static let editionUpdatedAtRaw: String = "20261016093528"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -502,8 +502,8 @@ struct ContentView: View {
     @State var isBootstrappingInitialData = true
     @State var containerBootstrapFailSafeWorkItem: DispatchWorkItem?
     @GestureState private var isEditionNumberPressed = false
-    // ロゴ短押しメニュー(ContentView+LogoMenu.swift)
-    @State var isLogoMenuPresented = false
+    // ロゴのメニュー(ContentView+LogoMenu.swift)。触れた途端に出て、指を離すと消える
+    @GestureState var logoMenuGesture: LogoMenuGestureState = .inactive
     @State var logoMenuFrames: [String: CGRect] = [:]
     @State var pendingLogoMenuAction: LogoMenuAction?
     @State var logoMenuInfo: LogoMenuInfo?
@@ -1558,8 +1558,8 @@ struct ContentView: View {
                                         .frame(width: 92, height: 92)
                                         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
                                         .shadow(color: Color.black.opacity(0.12), radius: 5, y: 2)
-                                        // ロゴをタップ=メニュー(初期設定/YAML コピー/退避・復元/について)。
-                                        // 項目をタップで実行、外側かロゴのタップで閉じる(ContentView+LogoMenu.swift。3647 で長押しから変更)
+                                        // ロゴに触れた途端にメニュー(初期設定/YAML コピー/退避・復元/について)。
+                                        // 指を項目まで滑らせて離すと実行(ContentView+LogoMenu.swift。3648 で長押しから「触れた途端」に変更)
                                         .background(
                                             GeometryReader { proxy in
                                                 Color.clear.preference(
@@ -1568,16 +1568,9 @@ struct ContentView: View {
                                                 )
                                             }
                                         )
-                                        .contentShape(Rectangle())
-                                        .onTapGesture {
-                                            refreshSettingsStashSavedAt()
-                                            withAnimation(.easeOut(duration: 0.15)) {
-                                                isLogoMenuPresented = true
-                                            }
-                                        }
-                                        .accessibilityAddTraits(.isButton)
+                                        .highPriorityGesture(logoPressAndDragGesture)
                                         .accessibilityLabel("アプリロゴ")
-                                        .accessibilityHint("タップで設定メニューを表示します")
+                                        .accessibilityHint("触れると設定メニューを表示します")
 
                                     Text(Self.editionNumberText)
                                         .font(.system(size: 4, weight: .regular, design: .monospaced))
@@ -1641,8 +1634,9 @@ struct ContentView: View {
                         .padding(20)
                     }
                     .disabled(isBootstrappingInitialData)
-                    // ロゴメニューの表示中はスクロールを止める(背後の画面が動かないように)
-                    .scrollDisabled(isLogoMenuPresented)
+                    // ロゴメニューの表示中はスクロールを止める。止めないと指を項目へ下ろした
+                    // 瞬間に ScrollView のパンがドラッグを奪い、メニューは残るが項目が選ばれない(2762)
+                    .scrollDisabled(logoMenuGesture.isActive)
                     .onChange(of: scrollToTopTrigger) { _ in
                         withAnimation(.easeOut(duration: 0.3)) {
                             scrollProxy.scrollTo(Self.scrollTopAnchorID, anchor: .top)

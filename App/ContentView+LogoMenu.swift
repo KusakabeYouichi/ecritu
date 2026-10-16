@@ -4,9 +4,10 @@ import Security
 import UIKit
 #endif
 
-// ロゴのメニュー(2760)。ロゴをタップするとロゴ直下にメニューが出る(3647 で長押し+スライドから変更)。
-// 項目をタップでその項目を実行(メニューは閉じる)。メニューの外かロゴをタップすると何もせず閉じる。
-// 従来の「ロゴ長押し=設定を YAML でコピー」はメニューの1項目に移した(長押しは廃止)。
+// ロゴのメニュー(2760)。ロゴに触れた途端にロゴ直下にメニューを出し、触れている間だけ表示する
+// (3648 で長押し 0.5 秒の待ちをなくした)。指を項目まで滑らせて離すとその項目を実行、
+// 動かさずに離せば何もしない(離した時点でメニューは消える)。
+// 従来の「ロゴ長押し=設定を YAML でコピー」はメニューの1項目に移した。
 
 enum LogoMenuAction: String, CaseIterable, Identifiable {
     case strategicDefaults
@@ -39,7 +40,7 @@ enum LogoMenuAction: String, CaseIterable, Identifiable {
     var subtitle: String {
         switch self {
         case .strategicDefaults: return "組み込みの標準値に戻す"
-        case .conservativeDefaults: return "作者の使用設定にする"
+        case .conservativeDefaults: return "3×3+わ・téléphone など従来型の配列にする"
         case .contemporaryDefaults: return "保守的+かなで書く言葉をすべて抑制"
         case .copyYAML: return "YAML 形式"
         case .stashSettings: return "再インストール後も残る場所に保存"
@@ -90,20 +91,20 @@ struct LogoMenuInfo: Identifiable {
     let message: String
 }
 
-// メニュー項目のボタンの見た目。押している間(isPressed)を中身に渡して強調色を付ける
-struct LogoMenuRowButtonStyle<Row: View>: ButtonStyle {
-    let row: (Bool) -> Row
+// 触れている間の進行状態。GestureState なので指を離すと自動で .inactive に戻り、メニューも消える
+enum LogoMenuGestureState: Equatable {
+    case inactive
+    case touching(CGPoint)
 
-    init(@ViewBuilder row: @escaping (Bool) -> Row) {
-        self.row = row
-    }
+    var isActive: Bool { self != .inactive }
 
-    func makeBody(configuration: Configuration) -> some View {
-        row(configuration.isPressed)
+    var location: CGPoint? {
+        if case .touching(let point) = self { return point }
+        return nil
     }
 }
 
-// ロゴの枠をウィンドウ座標で集める(メニューをロゴの真下に置くため)
+// ロゴとメニュー項目の枠を同じ座標空間で集める(指の位置との当たり判定用)
 struct LogoMenuFramePreferenceKey: PreferenceKey {
     static let defaultValue: [String: CGRect] = [:]
     static func reduce(value: inout [String: CGRect], nextValue: () -> [String: CGRect]) {
@@ -267,7 +268,7 @@ extension ContentView {
         SettingsKeys.contactCandidateDisplayMode, SettingsKeys.userDictionaryCandidateDisplayMode
     ]
 
-    // 保守的初期設定 = 作者の使用設定(2026-09-02 の YAML エクスポートから転記。ユーザ指定 2760)。
+    // 保守的初期設定 = 従来型の配列の組み合わせ(2026-09-02 の YAML エクスポートから転記。ユーザ指定 2760。3647 で「作者の使用設定」という呼称をやめた: 作者の実運用は現代的に近い)。
     // 書いていないキーは標準の初期設定のまま(適用前に全キーを消してから上書きする)
     // 組み込みの初期値(ContentView の @AppStorage の初期値と同じ式。3242)。初期設定の適用は「全キーを消す」方式なので、
     // 「今の設定と同じか」の判定は保存値でなく実効値(未設定=組み込み初期値)で比べる。以前は未設定と保存値を別物と
@@ -430,7 +431,7 @@ extension ContentView {
         SettingsKeys.adjectiveMeKanjiCandidatesEnabled: true,
         SettingsKeys.suspendMemorySlimmingEnabled: true,
         SettingsKeys.kaomojiCandidateDisplayEnabled: true,
-        SettingsKeys.contactCandidateDisplayMode: ContactCandidateDisplayModeOption.namesOnly.rawValue,  // 保守的=作者の実運用値。選択操作起点なので許可要求は 5.1.1 上問題なし
+        SettingsKeys.contactCandidateDisplayMode: ContactCandidateDisplayModeOption.namesOnly.rawValue,  // 保守的=連絡先の名前を使う設定。選択操作起点なので許可要求は 5.1.1 上問題なし
         SettingsKeys.userDictionaryCandidateDisplayMode: UserDictionaryCandidateDisplayModeOption.on.rawValue
     ]
 
@@ -513,15 +514,36 @@ extension ContentView {
         SettingsKeys.adjectiveMeKanjiCandidatesEnabled: true,
         SettingsKeys.suspendMemorySlimmingEnabled: true,
         SettingsKeys.kaomojiCandidateDisplayEnabled: true,
-        SettingsKeys.contactCandidateDisplayMode: ContactCandidateDisplayModeOption.namesOnly.rawValue,  // 保守的=作者の実運用値。選択操作起点なので許可要求は 5.1.1 上問題なし
+        SettingsKeys.contactCandidateDisplayMode: ContactCandidateDisplayModeOption.namesOnly.rawValue,  // 保守的=連絡先の名前を使う設定。選択操作起点なので許可要求は 5.1.1 上問題なし
         SettingsKeys.userDictionaryCandidateDisplayMode: UserDictionaryCandidateDisplayModeOption.on.rawValue
     ]
 
-    // ──── 開閉 ────
+    // ──── ジェスチャー ────
 
-    func closeLogoMenu() {
-        withAnimation(.easeOut(duration: 0.15)) {
-            isLogoMenuPresented = false
+    // 触れた途端にメニューを出し、指を項目まで滑らせて離すと実行(長押しの待ちは無い。3648)。
+    // ロゴ枠・メニュー項目枠・ドラッグ座標はすべて .global(ウィンドウ座標)で測る。
+    // 名前付き座標系(.named)は overlay の ignoresSafeArea とセーフエリアの絡みで計測が一貫せず、
+    // 指より約1項目上(2764)→半項目上(2765)と判定がずれ続けた。ウィンドウ座標なら3者の原点が同じ
+    var logoPressAndDragGesture: some Gesture {
+        DragGesture(minimumDistance: 0, coordinateSpace: .global)
+            .updating($logoMenuGesture) { value, state, _ in
+                state = .touching(value.location)
+            }
+            .onEnded { value in
+                guard let action = logoMenuAction(at: value.location) else {
+                    return
+                }
+                performLogoMenuAction(action)
+            }
+    }
+
+    var logoMenuHighlightedAction: LogoMenuAction? {
+        logoMenuGesture.location.flatMap(logoMenuAction(at:))
+    }
+
+    func logoMenuAction(at point: CGPoint) -> LogoMenuAction? {
+        LogoMenuAction.allCases.first {
+            isLogoMenuActionEnabled($0) && logoMenuFrames[$0.rawValue]?.contains(point) == true
         }
     }
 
@@ -637,46 +659,32 @@ extension ContentView {
 
     @ViewBuilder
     var logoMenuOverlay: some View {
-        if isLogoMenuPresented {
+        if logoMenuGesture.isActive {
             let logoFrame = logoMenuFrames[Self.logoMenuLogoFrameKey] ?? .zero
             ZStack(alignment: .top) {
-                // メニューの外(ロゴの上も)をタップすると閉じる
                 Color.black.opacity(0.18)
-                    .contentShape(Rectangle())
-                    .onTapGesture { closeLogoMenu() }
-                    .accessibilityLabel("メニューを閉じる")
-                    .accessibilityAddTraits(.isButton)
                 VStack(spacing: 0) {
                     ForEach(LogoMenuAction.allCases) { action in
-                        logoMenuRow(action, isEnabled: isLogoMenuActionEnabled(action))
+                        logoMenuRowContent(
+                            action,
+                            isHighlighted: logoMenuHighlightedAction == action,
+                            isEnabled: isLogoMenuActionEnabled(action)
+                        )
                     }
                 }
                 .frame(width: 300)
                 .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
                 .shadow(color: .black.opacity(0.18), radius: 14, y: 6)
-                // ロゴの真下に隙間なく置く。
+                // ロゴの真下に隙間なく置く(指がロゴにある状態からそのまま下へ滑らせる)。
                 // ロゴ枠はウィンドウ座標なので、overlay 全体を ignoresSafeArea にして原点をウィンドウ
                 // 上端に揃える(overlay の中身は既定でセーフエリア内側に置かれる)。未取得なら上端
                 .padding(.top, max(logoFrame.maxY, 0))
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .ignoresSafeArea()
+            .allowsHitTesting(false)   // 指はロゴ上のジェスチャーが追い続ける
             .transition(.opacity)
         }
-    }
-
-    // 項目 1 行。押している間だけ強調色(指が乗っているのが分かるように)
-    private func logoMenuRow(_ action: LogoMenuAction, isEnabled: Bool = true) -> some View {
-        Button {
-            closeLogoMenu()
-            performLogoMenuAction(action)
-        } label: {
-            Color.clear.frame(height: 0)
-        }
-        .buttonStyle(LogoMenuRowButtonStyle { isPressed in
-            logoMenuRowContent(action, isHighlighted: isPressed, isEnabled: isEnabled)
-        })
-        .disabled(!isEnabled)
     }
 
     private func logoMenuRowContent(
@@ -724,7 +732,14 @@ extension ContentView {
         .frame(maxWidth: .infinity, alignment: .leading)
         .foregroundStyle(labelColor)
         .background(isHighlighted && isEnabled ? Color.accentColor : Color.clear)
-        .contentShape(Rectangle())
+        .background(
+            GeometryReader { proxy in
+                Color.clear.preference(
+                    key: LogoMenuFramePreferenceKey.self,
+                    value: [action.rawValue: proxy.frame(in: .global)]
+                )
+            }
+        )
     }
 
     // ──── 実行 ────
@@ -760,7 +775,7 @@ extension ContentView {
         case .strategicDefaults:
             return "すべての設定を組み込みの標準値(戦略的初期設定)に戻します。語彙・学習内容はそのままです。"
         case .conservativeDefaults:
-            return "すべての設定を作者の使用設定(3x3+わ・ラテン文字は 3x3・数字は téléphone・後置修飾・littlebear式のフリック 等)にします。iOS の連絡先の名前も候補に使う設定になり、まだ許可していなければ連絡先へのアクセスの許可を求めます。語彙・学習内容はそのままです。"
+            return "すべての設定を従来型の組み合わせ(3x3+わ・ラテン文字は 3x3・数字は téléphone・後置修飾・littlebear式のフリック 等)にします。iOS の連絡先の名前も候補に使う設定になり、まだ許可していなければ連絡先へのアクセスの許可を求めます。語彙・学習内容はそのままです。"
         case .contemporaryDefaults:
             return "すべての設定を保守的初期設定と同じにし、かなで書く言葉(所謂・即ち・事・此処 など)は 5 つの仲間すべてで漢字を出さないようにします。iOS の連絡先の名前も候補に使う設定になり、まだ許可していなければ連絡先へのアクセスの許可を求めます。語彙・学習内容はそのままです。"
         case .restoreStashedSettings:
