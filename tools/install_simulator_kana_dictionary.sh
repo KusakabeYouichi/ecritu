@@ -15,10 +15,10 @@ if [[ ! -f "$DICT_PATH" ]]; then
   exit 1
 fi
 
-SIM_UDID="$(xcrun simctl list devices available | sed -nE 's/^[[:space:]]*iPhone 17 Pro \(([A-F0-9-]+)\) \((Booted|Shutdown)\).*/\1/p' | head -n 1)"
+SIM_UDID="$(xcrun simctl list devices available | sed -nE 's/^[[:space:]]*iPhone 17 Pro Max \(([A-F0-9-]+)\) \((Booted|Shutdown)\).*/\1/p' | head -n 1)"
 
 if [[ -z "$SIM_UDID" ]]; then
-  echo "iPhone 17 Pro simulator is not available" >&2
+  echo "iPhone 17 Pro Max simulator is not available" >&2
   exit 1
 fi
 

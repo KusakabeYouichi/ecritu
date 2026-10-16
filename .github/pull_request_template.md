@@ -9,7 +9,7 @@
 ## Checklist
 
 - [ ] `Config/Signing.local.xcconfig` の値はコミットしていない
-- [ ] iPhone 17 Pro シミュレータで動作確認した
+- [ ] iPhone 17 Pro Max シミュレータで動作確認した
 - [ ] 影響範囲を README または CONTRIBUTING に反映した (必要時)
 - [ ] GitHub Actions `iOS CI` が通過した
 

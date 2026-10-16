@@ -21,7 +21,7 @@ cp Config/Signing.local.xcconfig.example Config/Signing.local.xcconfig
 - `ECRITU_APP_BUNDLE_IDENTIFIER` を一意な値に変更 (例: `com.yourname.ecritu.dev`)
 - `ECRITU_APP_GROUP_IDENTIFIER` は通常そのままで可
 
-4. VS Code のタスク `Run ecritu on iPhone 17 Pro` を実行し、
+4. VS Code のタスク `Run ecritu on iPhone 17 Pro Max` を実行し、
 シミュレータでビルド・インストール・起動できることを確認します。
 
 5. 第一語彙(Sudachi由来)を使う場合は、初回に次を実行してCSVを準備します。
@@ -46,11 +46,11 @@ bash tools/fetch_sudachi_raw.sh
 Pull Request 前に、少なくとも次を実行してください。
 
 1. `Build ecritu (iOS Simulator)`
-2. `Run ecritu on iPhone 17 Pro`
+2. `Run ecritu on iPhone 17 Pro Max`
 3. 必要に応じてテスト実行
 
 ```bash
-xcodebuild -project "écritu.xcodeproj" -scheme "écritu" -destination "platform=iOS Simulator,name=iPhone 17 Pro" CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO test
+xcodebuild -project "écritu.xcodeproj" -scheme "écritu" -destination "platform=iOS Simulator,name=iPhone 17 Pro Max" CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO test
 ```
 
 ## 4. 無料アカウントでの制約
