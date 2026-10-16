@@ -926,15 +926,28 @@ extension KanaKanjiConverter {
         }
 
         // 追加語彙・学習語彙に読みごと登録された旧仮名の書き方は残す(旧仮名の判定が出たときだけ見る)
+        // 助詞などが続く形(ヱビスを / えびすを)は、読みの先頭側と表層の先頭側が登録語と一致すれば残す(3671)
         func isUserHistoricalSpellingWord(_ candidate: String) -> Bool {
-            [store.ajoutVocabulary(), store.initialAjoutVocabulary(), store.learnedDictionary()].contains {
-                $0[reading]?.contains(candidate) ?? false
+            let dictionaries = [store.ajoutVocabulary(), store.initialAjoutVocabulary(), store.learnedDictionary()]
+            var prefix = reading
+            while !prefix.isEmpty {
+                for dictionary in dictionaries {
+                    if let registered = dictionary[prefix],
+                        registered.contains(where: { candidate.hasPrefix($0) }) {
+                        return true
+                    }
+                }
+                prefix.removeLast()
             }
+            return false
         }
 
         return candidates.filter { candidate in
             // 旧仮名文字(ゐゑヰヱ)を含む表層(ぐらゐ/ゐる/ウヰスキー 等)は旧仮名遣い。
-            if !historicalAllowed, candidate.contains(where: { Self.historicalKanaScalars.contains($0) }) {
+            // 追加語彙・学習語彙に読みごと登録した語(ヱビス/スヰートポーヅ)は残す。以前は追加語彙に登録しても
+            // この規則で落ち、えびす で ヱビス が出なかった(ユーザ報告 3671)
+            if !historicalAllowed, candidate.contains(where: { Self.historicalKanaScalars.contains($0) }),
+                !isUserHistoricalSpellingWord(candidate) {
                 return false
             }
             // かな踊り字(ゝゞヽヾ)を含む表層(いゝ/こゝ 等)。
