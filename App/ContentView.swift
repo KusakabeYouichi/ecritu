@@ -533,7 +533,7 @@ struct ContentView: View {
         "文字を打つ画面で地球儀 🌐 を長押しして「écritu」を選ぶ"
     ]
 
-    // 操作マニュアルとプライバシーポリシー(GitHub Pages)。アイコン長押しメニューから Safari で開く
+    // 操作マニュアルとプライバシーポリシー(GitHub Pages)。アイコンのメニューから Safari で開く
     // (カードは置かない。ユーザ指定 2792)。ただしプライバシーポリシーは審査(5.1.1)のため、設定末尾の
     // 「プライバシーポリシーとライセンス」カードにも置く(3349)
     static let manualURL = URL(string: "https://kusakabeyouichi.github.io/ecritu/manual/")!
