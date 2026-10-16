@@ -271,7 +271,6 @@
 
 	<!-- ■ 字形が似ていて間違えやすいので抑制する旧字体・異体字・紛らわし表記(誤確定防止) -->
 	<!-- 字単位で決まるもの(吞→呑・讚→讃・麴→麹・曵→曳・瘦→痩・繫→繋・黑→黒・鰺→鯵・纍→累・醱→醗)は 3343 で旧字体・異体字の対応表(KanaKanjiConverter+SurfaceFilters.swift の scriptVariantToStandard、区分「見分けにくい字形」)へ移した。ここには語・読み単位で決める必要があるものだけを残す -->
-	<dict><key>phrase</key><string>制禦</string><key>shortcut</key><string>せいぎょ</string></dict>	<!-- 制禦: 制御 の書きかえ前の形のひとつ(もう一つは 制馭)。禦(ふせぐ)と馭(馬をあやつる)は別字で旧字体の関係ではないが、せいぎょ の候補が 制禦/制御/制馭 と並ぶのは紛らわしい。語単位だけ抑制し、防禦 等の字は触らない(ユーザ指定 3668) -->
 	<!-- 舘 は 館 の異体字。一般名詞の読みでは 館 だけ出す(ユーザ指定 3247)。姓(堀舘/角舘 等 172 組)と地名・団体名(飯舘/国士舘 等)は正式表記が 舘 のものがあるので触らない -->
 	<dict><key>phrase</key><string>舘</string><key>shortcut</key><string>たて</string></dict>
 	<dict><key>phrase</key><string>欝金</string><key>shortcut</key><string>うこん</string></dict>	<!-- 欝金: 鬱金 の俗字(ユーザ指定 3560)。鬱金/右近 を先に出す -->
