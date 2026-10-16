@@ -375,7 +375,7 @@ extension ContentView {
         SettingsKeys.kanaPostModifierEmptyTapEmojiCategory: "0",            // Personnes
         SettingsKeys.kanaPostModifierEmptyTapSymbolCategory: "0",           // Symboles de base
         SettingsKeys.kanaPostModifierFlickDakutenEnabled: false,
-        SettingsKeys.kanaYaBracketStyle: KanaYaBracketOption.corner.rawValue,   // 保守的=「」(戦略的・現代的は『』。ユーザ指定 3585)
+        SettingsKeys.kanaYaBracketStyle: KanaYaBracketOption.corner.rawValue,   // 保守的=corner(「」。戦略的・現代的は doubleCorner の『』。ユーザ指定 3585)
         SettingsKeys.numberThousandsSeparator: ThousandsSeparatorOption.comma.rawValue,
         SettingsKeys.numberGroupFourDigits: true,
         SettingsKeys.numberDecimalSeparator: DecimalSeparatorOption.dot.rawValue,
@@ -458,7 +458,7 @@ extension ContentView {
         SettingsKeys.kanaPostModifierEmptyTapEmojiCategory: "0",            // Personnes
         SettingsKeys.kanaPostModifierEmptyTapSymbolCategory: "0",           // Symboles de base
         SettingsKeys.kanaPostModifierFlickDakutenEnabled: false,
-        SettingsKeys.kanaYaBracketStyle: KanaYaBracketOption.doubleCorner.rawValue,   // 現代的=『』(ユーザ指定 3585)
+        SettingsKeys.kanaYaBracketStyle: KanaYaBracketOption.doubleCorner.rawValue,   // 現代的=doubleCorner の『』(ユーザ指定 3585)
         SettingsKeys.numberThousandsSeparator: ThousandsSeparatorOption.comma.rawValue,
         SettingsKeys.numberGroupFourDigits: true,
         SettingsKeys.numberDecimalSeparator: DecimalSeparatorOption.dot.rawValue,
@@ -888,6 +888,20 @@ extension ContentView {
         SettingsSyncNotification.postSettingsDidChange()
     }
 
+    // 『や』キーの括弧の保存値を、括弧そのもの(3656 より前)から名前へ書き換える。
+    // 読むほうは両方を受けるが、初期設定との一致判定(灰色・● の印)は保存値の文字列で比べるため揃えておく。
+    // 起動時と、退避した設定の復元のあとに呼ぶ
+    func normalizeLegacyKanaYaBracketValueIfNeeded() {
+        guard let defaults = Self.sharedDefaults,
+            let stored = defaults.string(forKey: SettingsKeys.kanaYaBracketStyle),
+            let option = KanaYaBracketOption(rawValue: stored),
+            option.rawValue != stored else {
+            return
+        }
+        defaults.set(option.rawValue, forKey: SettingsKeys.kanaYaBracketStyle)
+        SettingsSyncNotification.postSettingsDidChange()
+    }
+
     func applyPreset(_ preset: [String: Any]) {
         guard let defaults = Self.sharedDefaults else { return }
         removeAllUserSettings()
@@ -938,6 +952,7 @@ extension ContentView {
         if let base = stash.basePreset.flatMap(SettingsBasePreset.init(rawValue:)) {
             Self.recordBasePreset(base, contactsStartedOff: stash.basePresetContactsStartedOff ?? false)
         }
+        normalizeLegacyKanaYaBracketValueIfNeeded()   // 3656 より前に退避した設定の括弧の値
         SettingsSyncNotification.postSettingsDidChange()
         return true
     }

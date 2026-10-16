@@ -275,15 +275,32 @@ enum DirectionOption: String, CaseIterable, Identifiable {
     }
 }
 
-// 『や』キーの左右フリックに置く括弧(3585)。永続値は 括弧そのもの(画面の名前と同じ流儀)。
+// 『や』キーの左右フリックに置く括弧(3585)。永続値は名前(corner / doubleCorner。3656 で括弧そのもの
+// から変更: 保存値や YAML に「」を出さない)。画面の見出しは括弧そのもの(記号の説明なので「」『』のまま)。
 // 選ばれなかった方の括弧は、同じ側から下へ 2 段階フリックして出す(二重かぎを選ぶと 『→下=「 / 』→下=」、
 // かぎを選ぶと 「→下=『 / 」→下=』)
 enum KanaYaBracketOption: String, CaseIterable, Identifiable {
-    case doubleCorner = "『』"
-    case corner = "「」"
+    case doubleCorner
+    case corner
+
+    // 3656 より前に保存された値(括弧そのもの)も読む。保存値の書き換えは ContentView の
+    // normalizeLegacyKanaYaBracketValueIfNeeded が起動時に行なう
+    init?(rawValue: String) {
+        switch rawValue {
+        case "doubleCorner", "『』": self = .doubleCorner
+        case "corner", "「」": self = .corner
+        default: return nil
+        }
+    }
 
     var id: String { rawValue }
-    var title: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .doubleCorner: return "『』"
+        case .corner: return "「」"
+        }
+    }
 }
 
 // 未確定文字の方式(3209)。画面上の名前をそのまま永続値にする(フリック方向と同じ流儀)。
