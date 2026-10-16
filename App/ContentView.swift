@@ -528,9 +528,9 @@ struct ContentView: View {
     @Environment(\.scenePhase) private var scenePhase
 
     private let setupSteps: [String] = [
-        "iOS の 設定 › 一般 › キーボード › キーボード › 新しいキーボードを追加 で「écritu」を追加",
-        "一覧の「écritu」をタップし、[フルアクセスを許可] をオン(任意。学習と設定の反映に使います)",
-        "文字を打つ画面で地球儀 🌐 を長押しして「écritu」を選ぶ"
+        "iOS の 設定 › 一般 › キーボード › キーボード › 新しいキーボードを追加 で[écritu]を追加",
+        "一覧の[écritu]をタップし、[フルアクセスを許可] をオン(任意。学習と設定の反映に使います)",
+        "文字を打つ画面で地球儀 🌐 を長押しして[écritu]を選ぶ"
     ]
 
     // 操作マニュアルとプライバシーポリシー(GitHub Pages)。アイコンのメニューから Safari で開く
@@ -569,7 +569,7 @@ struct ContentView: View {
         }
         didShowFullAccessSettingsNotice = true
         showSettingsToast(
-            "フルアクセスがまだ確認できていないので、この変更はキーボードに届かないかもしれません(上の「設定を開く」から確認できます)",
+            "フルアクセスがまだ確認できていないので、この変更はキーボードに届かないかもしれません(上の[設定を開く]から確認できます)",
             duration: 5
         )
     }
