@@ -703,6 +703,20 @@
 	<dict><key>phrase</key><string>温くなっちゃいました</string><key>shortcut</key><string>ぬるくなっちゃいました</string></dict>
 	<dict><key>phrase</key><string>微温くなっちゃいました</string><key>shortcut</key><string>ぬるくなっちゃいました</string></dict>
 	<dict><key>phrase</key><string>緩くなっちゃいました</string><key>shortcut</key><string>ぬるくなっちゃいました</string></dict>
+	<!-- AI生成: えいあいせいせい が AI製成/AI生成 の順だった(ユーザ指定 3674)。製成 は 製成品 等の稀な語 -->
+	<dict><key>phrase</key><string>AI生成</string><key>shortcut</key><string>えいあいせいせい</string></dict>
+	<dict><key>phrase</key><string>AI製成</string><key>shortcut</key><string>えいあいせいせい</string></dict>
+	<dict><key>phrase</key><string>AI精製</string><key>shortcut</key><string>えいあいせいせい</string></dict>
+	<dict><key>phrase</key><string>英愛製成</string><key>shortcut</key><string>えいあいせいせい</string></dict>
+	<dict><key>phrase</key><string>AI生成</string><key>shortcut</key><string>えーあいせいせい</string></dict>
+	<dict><key>phrase</key><string>AI製成</string><key>shortcut</key><string>えーあいせいせい</string></dict>
+	<dict><key>phrase</key><string>AI精製</string><key>shortcut</key><string>えーあいせいせい</string></dict>
+	<dict><key>phrase</key><string>英愛製成</string><key>shortcut</key><string>えーあいせいせい</string></dict>
+	<!-- 週前半: しゅうぜんはんは が 州前半は/集前半は/周前半は/週前半は で 週 が最後だった(ユーザ指定 3675) -->
+	<dict><key>phrase</key><string>週前半</string><key>shortcut</key><string>しゅうぜんはん</string></dict>
+	<dict><key>phrase</key><string>修繕班</string><key>shortcut</key><string>しゅうぜんはん</string></dict>
+	<!-- 週後半: 週前半 と同じ(しゅうこうはん が 州後半/集後半/周後半/週後半 で 週 が最後。週前半 の報告に合わせた予防) -->
+	<dict><key>phrase</key><string>週後半</string><key>shortcut</key><string>しゅうこうはん</string></dict>
 	<!-- 東京府: 辞書に無く とうきょうふ が 等恐怖/塔恐怖… だった(ユーザ指定 3665) -->
 	<dict><key>phrase</key><string>東京府</string><key>shortcut</key><string>とうきょうふ</string></dict>
 
