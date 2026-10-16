@@ -333,14 +333,15 @@ extension KeyboardRootView {
         }
     }
 
-    // 幅狭・縦画面の ☺︎ は文字ラベル基準(13pt)由来で小さすぎた。タップ面・フリック中
-    // 表示とも3段階拡大(15→18 / 20→23。ユーザ指定 2634)
+    // 幅狭・縦画面の ☺︎ は、abc 面の左下キー(leftModeSwitchEmojiButton)と同じ大きさにする。
+    // 以前は文字ラベル基準(13pt)に足して 18/23 としており、abc 面の 28 より小さかった(ユーザ指定 3646)。
+    // 計算は 28 側(絵文字アイコンの定数)に一本化。フリック中も同じ大きさで、押した瞬間に縮まない
     var compactKanaModeSwitcherEmojiMainLabelFontSize: CGFloat {
-        unifiedLeftModeSwitchFontSize + 5
+        kanaModeSwitcherFaceEmojiIconFontSize
     }
 
     var compactKanaModeSwitcherEmojiActiveIconFontSize: CGFloat {
-        compactKanaModeSwitcherPreviewIconFontSize + 5
+        kanaModeSwitcherFaceEmojiIconFontSize
     }
 
     func kanaModeSwitcherPreviewFontSizeForDirection(
