@@ -481,7 +481,7 @@ struct KakikaeSettingsSection: View {
             Toggle("日常語は常用漢字を先に(例外)", isOn: $everydayException)
                 .toggleStyle(.switch)
 
-            Text("了解・了承・回復・連想 のように、日常では常用漢字側ばかりを使う語(\(KakikaePreference.everydayAfterFirstPairs.sorted().joined(separator: "・")))は、上の設定が『本来の漢字だけ』や『本来の漢字を先に』でも、常用漢字を先に出し、本来の漢字は後ろに出します。オフにすると、これらの語も上の設定どおりになります。初期設定は、戦略的がオフ、保守的・現代的がオンです。")
+            Text("了解・了承・回復・連想・制御 のように、日常では常用漢字側ばかりを使う語(\(KakikaePreference.everydayAfterFirstPairs.sorted().joined(separator: "・")))は、上の設定が『本来の漢字だけ』や『本来の漢字を先に』でも、常用漢字を先に出し、本来の漢字は後ろに出します。オフにすると、これらの語も上の設定どおりになります。初期設定は、戦略的がオフ、保守的・現代的がオンです。")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
