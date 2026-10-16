@@ -100,7 +100,7 @@ enum SettingsKeys {
     static let kanaKanjiInitialAjoutVocabularyAppliedSeed = "kanaKanjiInitialUserDictionaryAppliedSeed"
     // 初回インストールの初期設定(現代的初期設定)を当てたかの印(3406)。userSettingsKeys には入れない(戦略的初期設定で消さない)
     static let initialPresetApplied = "initialPresetApplied"
-    // 最後に当てた初期設定(SettingsBasePreset の rawValue。3432)。ロゴ長押しメニューの下線と、各項目の「変更済み」の印の
+    // 最後に当てた初期設定(SettingsBasePreset の rawValue。3432)。ロゴメニューの下線と、各項目の「変更済み」の印の
     // 比べる相手。userSettingsKeys には入れない(初期設定を当てるときに消さない)。退避・復元では一緒に保存・復元する
     static let settingsBasePreset = "settingsBasePreset"
     // 初めてのインストールで連絡先の候補を「使わない」で始めた印(3437)。立っている間は「使わない」を X.16 の基準の値にする。
