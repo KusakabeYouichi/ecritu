@@ -2177,7 +2177,7 @@ extension KanaKanjiConverter {
     ]
 
     static let multiClauseSuruClusterKanaPrefixes: [String] = [
-        "して", "した", "する", "しな", "しま", "しよ", "しろ", "しちゃ", "しと"
+        "して", "した", "する", "しな", "しま", "しよ", "しろ", "しちゃ", "しと", "でき"
     ]
     // 残りの読み列が する/される/させる の付属部で始まるか(切り方に依らない判定。3067。させ は 3660 で追加: 仕様させて)
     static func readingStartsWithSuruCluster(_ rest: String) -> Bool {
