@@ -4,9 +4,9 @@ import Security
 import UIKit
 #endif
 
-// ロゴ長押しメニュー(2760)。長押し(0.5秒)でロゴ直下にメニューを出し、押している間だけ表示する。
-// 指を項目まで滑らせて離すとその項目を実行、動かさずに離せば何もしない(離した時点でメニューは消える)。
-// 従来の「ロゴ長押し=設定を YAML でコピー」はメニューの1項目に移した。
+// ロゴのメニュー(2760)。ロゴをタップするとロゴ直下にメニューが出る(3647 で長押し+スライドから変更)。
+// 項目をタップでその項目を実行(メニューは閉じる)。メニューの外かロゴをタップすると何もせず閉じる。
+// 従来の「ロゴ長押し=設定を YAML でコピー」はメニューの1項目に移した(長押しは廃止)。
 
 enum LogoMenuAction: String, CaseIterable, Identifiable {
     case strategicDefaults
@@ -50,6 +50,16 @@ enum LogoMenuAction: String, CaseIterable, Identifiable {
         }
     }
 
+    // 初期設定の 3 項目は専用アイコン(SVGPathShape.swift。3647)。他は SF Symbols
+    var presetIcon: LogoMenuPresetIcon? {
+        switch self {
+        case .strategicDefaults: return .chessKnight
+        case .conservativeDefaults: return .shield
+        case .contemporaryDefaults: return .sparkles
+        default: return nil
+        }
+    }
+
     var systemImage: String {
         switch self {
         case .strategicDefaults: return "arrow.counterclockwise"
@@ -73,20 +83,6 @@ enum LogoMenuAction: String, CaseIterable, Identifiable {
     }
 }
 
-// 長押し→ドラッグの進行状態。GestureState なので指を離すと自動で .inactive に戻り、メニューも消える
-enum LogoMenuGestureState: Equatable {
-    case inactive
-    case pressing
-    case dragging(CGPoint)
-
-    var isActive: Bool { self != .inactive }
-
-    var location: CGPoint? {
-        if case .dragging(let point) = self { return point }
-        return nil
-    }
-}
-
 // 情報表示用のアラート(確認ではなく OK だけ)
 struct LogoMenuInfo: Identifiable {
     let id = UUID()
@@ -94,7 +90,20 @@ struct LogoMenuInfo: Identifiable {
     let message: String
 }
 
-// ロゴとメニュー項目の枠を同じ座標空間で集める(指の位置との当たり判定用)
+// メニュー項目のボタンの見た目。押している間(isPressed)を中身に渡して強調色を付ける
+struct LogoMenuRowButtonStyle<Row: View>: ButtonStyle {
+    let row: (Bool) -> Row
+
+    init(@ViewBuilder row: @escaping (Bool) -> Row) {
+        self.row = row
+    }
+
+    func makeBody(configuration: Configuration) -> some View {
+        row(configuration.isPressed)
+    }
+}
+
+// ロゴの枠をウィンドウ座標で集める(メニューをロゴの真下に置くため)
 struct LogoMenuFramePreferenceKey: PreferenceKey {
     static let defaultValue: [String: CGRect] = [:]
     static func reduce(value: inout [String: CGRect], nextValue: () -> [String: CGRect]) {
@@ -508,40 +517,11 @@ extension ContentView {
         SettingsKeys.userDictionaryCandidateDisplayMode: UserDictionaryCandidateDisplayModeOption.on.rawValue
     ]
 
-    // ──── ジェスチャー ────
+    // ──── 開閉 ────
 
-    // ロゴ枠・メニュー項目枠・ドラッグ座標はすべて .global(ウィンドウ座標)で測る。
-    // 名前付き座標系(.named)は overlay の ignoresSafeArea とセーフエリアの絡みで計測が一貫せず、
-    // 指より約1項目上(2764)→半項目上(2765)と判定がずれ続けた。ウィンドウ座標なら3者の原点が同じ
-    var logoPressAndDragGesture: some Gesture {
-        LongPressGesture(minimumDuration: 0.5)
-            .sequenced(before: DragGesture(minimumDistance: 0, coordinateSpace: .global))
-            .updating($logoMenuGesture) { value, state, _ in
-                switch value {
-                case .second(true, let drag):
-                    // 長押し成立(0.5秒経過)。ドラッグ値が来るまでは位置なしで表示
-                    state = drag.map { .dragging($0.location) } ?? .pressing
-                default:
-                    // .first(true) は押し始め(まだ長押し未成立)なので出さない
-                    state = .inactive
-                }
-            }
-            .onEnded { value in
-                guard case .second(true, let drag?) = value,
-                    let action = logoMenuAction(at: drag.location) else {
-                    return
-                }
-                performLogoMenuAction(action)
-            }
-    }
-
-    var logoMenuHighlightedAction: LogoMenuAction? {
-        logoMenuGesture.location.flatMap(logoMenuAction(at:))
-    }
-
-    func logoMenuAction(at point: CGPoint) -> LogoMenuAction? {
-        LogoMenuAction.allCases.first {
-            isLogoMenuActionEnabled($0) && logoMenuFrames[$0.rawValue]?.contains(point) == true
+    func closeLogoMenu() {
+        withAnimation(.easeOut(duration: 0.15)) {
+            isLogoMenuPresented = false
         }
     }
 
@@ -657,38 +637,52 @@ extension ContentView {
 
     @ViewBuilder
     var logoMenuOverlay: some View {
-        if logoMenuGesture.isActive {
+        if isLogoMenuPresented {
             let logoFrame = logoMenuFrames[Self.logoMenuLogoFrameKey] ?? .zero
             ZStack(alignment: .top) {
+                // メニューの外(ロゴの上も)をタップすると閉じる
                 Color.black.opacity(0.18)
+                    .contentShape(Rectangle())
+                    .onTapGesture { closeLogoMenu() }
+                    .accessibilityLabel("メニューを閉じる")
+                    .accessibilityAddTraits(.isButton)
                 VStack(spacing: 0) {
                     ForEach(LogoMenuAction.allCases) { action in
-                        logoMenuRow(
-                            action,
-                            isHighlighted: logoMenuHighlightedAction == action,
-                            isEnabled: isLogoMenuActionEnabled(action)
-                        )
+                        logoMenuRow(action, isEnabled: isLogoMenuActionEnabled(action))
                     }
                 }
                 .frame(width: 300)
                 .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
                 .shadow(color: .black.opacity(0.18), radius: 14, y: 6)
-                // ロゴの真下に隙間なく置く(指がロゴにある状態からそのまま下へ滑らせる)。
+                // ロゴの真下に隙間なく置く。
                 // ロゴ枠はウィンドウ座標なので、overlay 全体を ignoresSafeArea にして原点をウィンドウ
                 // 上端に揃える(overlay の中身は既定でセーフエリア内側に置かれる)。未取得なら上端
                 .padding(.top, max(logoFrame.maxY, 0))
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .ignoresSafeArea()
-            .allowsHitTesting(false)   // 指はロゴ上のジェスチャーが追い続ける
             .transition(.opacity)
         }
     }
 
-    private func logoMenuRow(
+    // 項目 1 行。押している間だけ強調色(指が乗っているのが分かるように)
+    private func logoMenuRow(_ action: LogoMenuAction, isEnabled: Bool = true) -> some View {
+        Button {
+            closeLogoMenu()
+            performLogoMenuAction(action)
+        } label: {
+            Color.clear.frame(height: 0)
+        }
+        .buttonStyle(LogoMenuRowButtonStyle { isPressed in
+            logoMenuRowContent(action, isHighlighted: isPressed, isEnabled: isEnabled)
+        })
+        .disabled(!isEnabled)
+    }
+
+    private func logoMenuRowContent(
         _ action: LogoMenuAction,
         isHighlighted: Bool,
-        isEnabled: Bool = true
+        isEnabled: Bool
     ) -> some View {
         // 今の設定と同じ初期設定は灰色(定義箇所のコメント参照。3177)
         let labelColor: Color = isEnabled
@@ -698,9 +692,15 @@ extension ContentView {
             ? (isHighlighted ? Color.white.opacity(0.85) : Color.secondary)
             : Color.secondary.opacity(0.45)
         return HStack(spacing: 12) {
-            Image(systemName: action.systemImage)
-                .font(.system(size: 18, weight: .medium))
-                .frame(width: 26)
+            Group {
+                if let presetIcon = action.presetIcon {
+                    LogoMenuPresetIconView(icon: presetIcon, size: 22)
+                } else {
+                    Image(systemName: action.systemImage)
+                        .font(.system(size: 18, weight: .medium))
+                }
+            }
+            .frame(width: 26)
             VStack(alignment: .leading, spacing: 1) {
                 HStack(alignment: .firstTextBaseline, spacing: 4) {
                     // 最後に当てた初期設定に下線(3432)
@@ -724,14 +724,7 @@ extension ContentView {
         .frame(maxWidth: .infinity, alignment: .leading)
         .foregroundStyle(labelColor)
         .background(isHighlighted && isEnabled ? Color.accentColor : Color.clear)
-        .background(
-            GeometryReader { proxy in
-                Color.clear.preference(
-                    key: LogoMenuFramePreferenceKey.self,
-                    value: [action.rawValue: proxy.frame(in: .global)]
-                )
-            }
-        )
+        .contentShape(Rectangle())
     }
 
     // ──── 実行 ────

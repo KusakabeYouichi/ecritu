@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20261016091526"
+    private static let editionUpdatedAtRaw: String = "20261016092903"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -502,8 +502,8 @@ struct ContentView: View {
     @State var isBootstrappingInitialData = true
     @State var containerBootstrapFailSafeWorkItem: DispatchWorkItem?
     @GestureState private var isEditionNumberPressed = false
-    // ロゴ長押しメニュー(ContentView+LogoMenu.swift)
-    @GestureState var logoMenuGesture: LogoMenuGestureState = .inactive
+    // ロゴ短押しメニュー(ContentView+LogoMenu.swift)
+    @State var isLogoMenuPresented = false
     @State var logoMenuFrames: [String: CGRect] = [:]
     @State var pendingLogoMenuAction: LogoMenuAction?
     @State var logoMenuInfo: LogoMenuInfo?
@@ -665,7 +665,7 @@ struct ContentView: View {
             .joined(separator: "|")
     }
 
-    // 設定内容の YAML エクスポート(ロゴ長押しでクリップボードへ)。項目は設定画面の
+    // 設定内容の YAML エクスポート(ロゴメニューからクリップボードへ)。項目は設定画面の
     // グループ・表示順に合わせ、コメントにアプリ内のタイトルを付ける。
     func settingsYAMLExportText() -> String {
         let formatter = DateFormatter()
@@ -1558,8 +1558,8 @@ struct ContentView: View {
                                         .frame(width: 92, height: 92)
                                         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
                                         .shadow(color: Color.black.opacity(0.12), radius: 5, y: 2)
-                                        // ロゴ長押し=押している間だけメニュー(初期設定/YAML コピー/退避・復元/について)。
-                                        // 指を項目まで滑らせて離すと実行(ContentView+LogoMenu.swift)
+                                        // ロゴをタップ=メニュー(初期設定/YAML コピー/退避・復元/について)。
+                                        // 項目をタップで実行、外側かロゴのタップで閉じる(ContentView+LogoMenu.swift。3647 で長押しから変更)
                                         .background(
                                             GeometryReader { proxy in
                                                 Color.clear.preference(
@@ -1568,9 +1568,16 @@ struct ContentView: View {
                                                 )
                                             }
                                         )
-                                        .highPriorityGesture(logoPressAndDragGesture)
+                                        .contentShape(Rectangle())
+                                        .onTapGesture {
+                                            refreshSettingsStashSavedAt()
+                                            withAnimation(.easeOut(duration: 0.15)) {
+                                                isLogoMenuPresented = true
+                                            }
+                                        }
+                                        .accessibilityAddTraits(.isButton)
                                         .accessibilityLabel("アプリロゴ")
-                                        .accessibilityHint("長押しで設定メニューを表示します")
+                                        .accessibilityHint("タップで設定メニューを表示します")
 
                                     Text(Self.editionNumberText)
                                         .font(.system(size: 4, weight: .regular, design: .monospaced))
@@ -1634,9 +1641,8 @@ struct ContentView: View {
                         .padding(20)
                     }
                     .disabled(isBootstrappingInitialData)
-                    // ロゴ長押しメニューの表示中はスクロールを止める。止めないと指を項目へ下ろした
-                    // 瞬間に ScrollView のパンがドラッグを奪い、メニューは残るが項目が選ばれない(2762)
-                    .scrollDisabled(logoMenuGesture.isActive)
+                    // ロゴメニューの表示中はスクロールを止める(背後の画面が動かないように)
+                    .scrollDisabled(isLogoMenuPresented)
                     .onChange(of: scrollToTopTrigger) { _ in
                         withAnimation(.easeOut(duration: 0.3)) {
                             scrollProxy.scrollTo(Self.scrollTopAnchorID, anchor: .top)
