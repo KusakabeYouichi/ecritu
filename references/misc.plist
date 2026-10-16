@@ -686,6 +686,25 @@
 	<dict><key>phrase</key><string>反しても</string><key>shortcut</key><string>はんしても</string></dict>
 	<dict><key>phrase</key><string>反すれば</string><key>shortcut</key><string>はんすれば</string></dict>
 	<dict><key>phrase</key><string>反しよう</string><key>shortcut</key><string>はんしよう</string></dict>
+	<!-- ぬるくなっちゃう(ユーザ指定 3664): 温く/微温く/緩く より かなを先頭に。なっちゃう 系だけ -->
+	<dict><key>phrase</key><string>ぬるくなっちゃう</string><key>shortcut</key><string>ぬるくなっちゃう</string></dict>
+	<dict><key>phrase</key><string>ぬるくなっちゃった</string><key>shortcut</key><string>ぬるくなっちゃった</string></dict>
+	<dict><key>phrase</key><string>ぬるくなっちゃって</string><key>shortcut</key><string>ぬるくなっちゃって</string></dict>
+	<dict><key>phrase</key><string>ぬるくなっちゃいました</string><key>shortcut</key><string>ぬるくなっちゃいました</string></dict>
+	<dict><key>phrase</key><string>温くなっちゃう</string><key>shortcut</key><string>ぬるくなっちゃう</string></dict>
+	<dict><key>phrase</key><string>微温くなっちゃう</string><key>shortcut</key><string>ぬるくなっちゃう</string></dict>
+	<dict><key>phrase</key><string>緩くなっちゃう</string><key>shortcut</key><string>ぬるくなっちゃう</string></dict>
+	<dict><key>phrase</key><string>温くなっちゃった</string><key>shortcut</key><string>ぬるくなっちゃった</string></dict>
+	<dict><key>phrase</key><string>微温くなっちゃった</string><key>shortcut</key><string>ぬるくなっちゃった</string></dict>
+	<dict><key>phrase</key><string>緩くなっちゃった</string><key>shortcut</key><string>ぬるくなっちゃった</string></dict>
+	<dict><key>phrase</key><string>温くなっちゃって</string><key>shortcut</key><string>ぬるくなっちゃって</string></dict>
+	<dict><key>phrase</key><string>微温くなっちゃって</string><key>shortcut</key><string>ぬるくなっちゃって</string></dict>
+	<dict><key>phrase</key><string>緩くなっちゃって</string><key>shortcut</key><string>ぬるくなっちゃって</string></dict>
+	<dict><key>phrase</key><string>温くなっちゃいました</string><key>shortcut</key><string>ぬるくなっちゃいました</string></dict>
+	<dict><key>phrase</key><string>微温くなっちゃいました</string><key>shortcut</key><string>ぬるくなっちゃいました</string></dict>
+	<dict><key>phrase</key><string>緩くなっちゃいました</string><key>shortcut</key><string>ぬるくなっちゃいました</string></dict>
+	<!-- 東京府: 辞書に無く とうきょうふ が 等恐怖/塔恐怖… だった(ユーザ指定 3665) -->
+	<dict><key>phrase</key><string>東京府</string><key>shortcut</key><string>とうきょうふ</string></dict>
 
 </array>
 </plist>
