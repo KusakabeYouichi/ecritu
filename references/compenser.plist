@@ -760,5 +760,6 @@
 	        <dict><key>phrase</key><string>本がえし</string><key>shortcut</key><string>ほんがえし</string></dict>	<!-- そばつゆのかえし(ユーザ指定 3661) -->
 	        <dict><key>phrase</key><string>半生がえし</string><key>shortcut</key><string>はんなまがえし</string></dict>
 	        <dict><key>phrase</key><string>生がえし</string><key>shortcut</key><string>なまがえし</string></dict>
+	        <dict><key>phrase</key><string>モワティエ</string><key>shortcut</key><string>もわてぃえ</string></dict>	<!-- もわてぃえ(ユーザ指定 3665) -->
 </array>
 </plist>
