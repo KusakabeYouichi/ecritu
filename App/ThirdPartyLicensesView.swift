@@ -103,7 +103,7 @@ struct ThirdPartyLicensesSection: View {
             }
             .buttonStyle(.plain)
 
-            Text("プライバシーポリシーは Safari で開きます。ライセンス表示では、同梱データ(SudachiDict、Wikipedia 由来の言語モデル統計、Unicode CLDR 絵文字読み 等)のライセンス文書を確認できます。")
+            Text("プライバシーポリシーは Safari で開きます。ライセンス表示では、同梱データ(SudachiDict、Wikipedia 由来の言語モデル統計と日本酒の銘柄、Unicode の部首索引と絵文字読み、Mozc 由来の顔文字、欧文の語彙表、ポケモン名、メニューのアイコン 等)の出どころとライセンス文書を確認できます。")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
