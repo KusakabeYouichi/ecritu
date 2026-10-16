@@ -708,6 +708,14 @@ extension ContentView {
                         .font(.system(size: 18, weight: .medium))
                 }
             }
+            // 基準の初期設定(最後に当てたもの)のアイコンは青。選択中で項目が灰色のときも、そこから
+            // 個別に変えて灰色が解けたあとも青のまま ─ どの初期設定を土台にしているかを示す(3649)。
+            // 押して強調色の背景になっている間は白(青地に青で見えなくなるため)
+            .foregroundStyle(
+                action == Self.currentBasePreset.menuAction
+                    ? (isHighlighted && isEnabled ? Color.white : Color.blue)
+                    : labelColor
+            )
             .frame(width: 26)
             VStack(alignment: .leading, spacing: 1) {
                 HStack(alignment: .firstTextBaseline, spacing: 4) {
