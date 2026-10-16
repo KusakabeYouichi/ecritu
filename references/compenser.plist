@@ -95,6 +95,40 @@
             <dict><key>phrase</key><string>Wild Turkey</string><key>shortcut</key><string>わいるどたーきー</string></dict>
             <dict><key>phrase</key><string>Wild Turkey</string><key>shortcut</key><string>わいるどたーきー</string></dict>
             <dict><key>phrase</key><string>Johnnie Walker</string><key>shortcut</key><string>じょにーうぉーかー</string></dict>
+	<!-- ビール -->
+	        <dict><key>phrase</key><string>SINGHA</string><key>shortcut</key><string>しんはー</string></dict>
+	        <dict><key>phrase</key><string>シンハー</string><key>shortcut</key><string>しんはー</string></dict>
+	        <dict><key>phrase</key><string>Chang</string><key>shortcut</key><string>ちゃーん</string></dict>
+	        <dict><key>phrase</key><string>チャーン</string><key>shortcut</key><string>ちゃーん</string></dict>
+	        <dict><key>phrase</key><string>LEO</string><key>shortcut</key><string>りお</string></dict>
+	        <dict><key>phrase</key><string>青島ビール</string><key>shortcut</key><string>ちんたおびーる</string></dict>
+	        <dict><key>phrase</key><string>チンタオ</string><key>shortcut</key><string>ちんたお</string></dict>
+	        <dict><key>phrase</key><string>タイガービール</string><key>shortcut</key><string>たいがーびーる</string></dict>
+	        <dict><key>phrase</key><string>ビンタン</string><key>shortcut</key><string>びんたん</string></dict>
+	        <dict><key>phrase</key><string>Bintang</string><key>shortcut</key><string>びんたん</string></dict>
+	        <dict><key>phrase</key><string>333</string><key>shortcut</key><string>ばーばーばー</string></dict>
+	        <dict><key>phrase</key><string>バーバーバー</string><key>shortcut</key><string>ばーばーばー</string></dict>
+	        <dict><key>phrase</key><string>ハイネケン</string><key>shortcut</key><string>はいねけん</string></dict>
+	        <dict><key>phrase</key><string>Heineken</string><key>shortcut</key><string>はいねけん</string></dict>
+	        <dict><key>phrase</key><string>ピルスナー・ウルケル</string><key>shortcut</key><string>ぴるすなーうるける</string></dict>
+	        <dict><key>phrase</key><string>Pilsner Urquell</string><key>shortcut</key><string>ぴるすなーうるける</string></dict>
+	        <dict><key>phrase</key><string>ウルケル</string><key>shortcut</key><string>うるける</string></dict>
+	        <dict><key>phrase</key><string>Urquell</string><key>shortcut</key><string>うるける</string></dict>
+	        <dict><key>phrase</key><string>ステラ・アルトワ</string><key>shortcut</key><string>すてらあるとわ</string></dict>
+	        <dict><key>phrase</key><string>Stella Artois</string><key>shortcut</key><string>すてらあるとわ</string></dict>
+	        <dict><key>phrase</key><string>ヒューガルテン・ホワイト</string><key>shortcut</key><string>ひゅーがるてんほわいと</string></dict>
+	        <dict><key>phrase</key><string>ヒューガルテン</string><key>shortcut</key><string>ひゅーがるてん</string></dict>
+	        <dict><key>phrase</key><string>Hoegaarden</string><key>shortcut</key><string>ひゅーがるてん</string></dict>
+	        <dict><key>phrase</key><string>レーベンブロイ</string><key>shortcut</key><string>れーゔぇんぶろい</string></dict>
+	        <dict><key>phrase</key><string>Löwenbräu</string><key>shortcut</key><string>れーゔぇんぶろい</string></dict>
+	        <dict><key>phrase</key><string>バドワイザー</string><key>shortcut</key><string>ばどわいざー</string></dict>
+	        <dict><key>phrase</key><string>Budweiser</string><key>shortcut</key><string>ばどわいざー</string></dict>
+	        <dict><key>phrase</key><string>ブルー・ムーン</string><key>shortcut</key><string>ぶるーむーん</string></dict>
+	        <dict><key>phrase</key><string>Blue Moon</string><key>shortcut</key><string>ぶるーむーん</string></dict>
+	        <dict><key>phrase</key><string>コロナ・エキストラ</string><key>shortcut</key><string>ころなえきすとら</string></dict>
+	        <dict><key>phrase</key><string>Corona Extra</string><key>shortcut</key><string>ころなえきすとら</string></dict>
+	        <dict><key>phrase</key><string>コロナ</string><key>shortcut</key><string>ころな</string></dict>
+	        <dict><key>phrase</key><string>Corona</string><key>shortcut</key><string>ころな</string></dict>
 	<!-- 服飾 -->
 	        <dict><key>phrase</key><string>黄麻</string><key>shortcut</key><string>こうま</string></dict>	<!-- Sudachiにもある(基底3位/24、コスト7404) -->
 	        <dict><key>phrase</key><string>ヴェロア</string><key>shortcut</key><string>ゔぇろあ</string></dict>
