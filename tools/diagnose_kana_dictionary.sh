@@ -4,7 +4,7 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 PROJECT_PATH="${ECRITU_PROJECT_PATH:-$ROOT_DIR/écritu.xcodeproj}"
 SCHEME_NAME="${ECRITU_SCHEME_NAME:-écritu}"
-SIM_NAME="${ECRITU_SIM_NAME:-iPhone 17 Pro}"
+SIM_NAME="${ECRITU_SIM_NAME:-iPhone 17 Pro Max}"
 
 WARN_COUNT=0
 
