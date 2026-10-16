@@ -346,7 +346,7 @@ struct FullAccessStatusSection: View {
                 }
                 .buttonStyle(.borderedProminent)
 
-                Text("開いた画面の「キーボード」で[フルアクセスを許可]をオンにしてください。オンにしたあと一度 écritu のキーボードを開くと、ここが「オン」になります。")
+                Text("開いた画面の[キーボード]で[フルアクセスを許可]をオンにしてください。オンにしたあと一度 écritu のキーボードを開くと、ここが[オン]になります。")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
