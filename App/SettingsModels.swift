@@ -769,8 +769,8 @@ enum KaomojiCategoryChoice {
             ("action", "🏃"),
             ("bizarre", "🤪"),
             ("heros", "🧑"),
-            ("special", "✨"),
-            ("lignes", "💬")
+            ("special", "✨")
+            // lignes(区切り線)は 3678 で顔文字を複数サイト掲載分に絞った際に空になり、分類ごと撤去
         ]
 
         entries.append(contentsOf: importedCategories.map {

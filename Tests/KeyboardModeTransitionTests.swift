@@ -670,7 +670,7 @@ final class KeyboardModeTransitionTests: XCTestCase {
         XCTAssertEqual(
             KaomojiCatalog.displayCategoryOrder,
             ["rire", "kawaii", "timide", "panique", "decu", "triste", "colere", "surprise", "dodo",
-             "coucou", "amour", "excite", "action", "bizarre", "heros", "special", "lignes"]
+             "coucou", "amour", "excite", "action", "bizarre", "heros", "special"]
         )
         // 表示順に載っている分類は全て実データに存在すること(誤字で並びから落ちるのを防ぐ)
         let imported = Set(KaomojiCatalog.importedCategoryOrder)
