@@ -75,20 +75,20 @@
 - 追加語彙の初期投入データ `InitialAjoutVocabMigration.json` は `references/void.plist` からビルド時に生成し、更新時はシグネチャ比較で再マージされます。
 - clone直後のビルド失敗を避けるため、拡張バンドルには `KeyboardExtension/DefaultDictionaryResources/` の軽量プレースホルダー辞書を同梱しています。
 - 実運用の高精度辞書を使う場合は、`tools/build_sudachi_index.py` / `tools/build_kana_kanji_sqlite.py` で `tmp/` 配下に生成し、`tools/install_simulator_kana_dictionary.sh` でシミュレータのApp Groupへ反映してください。
-- `こわい→怖がる` のような「形容詞 + がる」派生は、`references/adjective_garu_allowlist.json` の初期シードで許可対象を管理します（候補爆発を避けるため、許可語のみ派生）。
+- `こわい→怖がる` のような「形容詞 + がる」派生は、`references/adjective_garu_allowlist.json` の初期シードで許可対象を管理します(候補爆発を避けるため、許可語のみ派生)。
 - 第1語彙が0件になる環境の切り分けには、`bash tools/diagnose_kana_dictionary.sh` を実行してください。`tmp/`・ビルド済み `.app`・シミュレータ App Group の辞書有無/件数を一括で確認できます。
 - 他環境の調査では、上記スクリプトの出力全文を共有すると原因を特定しやすくなります。
 - Xcodeで `KeyboardExtension` をビルドすると、`tools/refresh_simulator_dictionary_on_build.sh` が毎回実行され、`tmp/sudachi_raw` にCSVが無い場合は `tools/fetch_sudachi_raw.sh` の自動実行を試みます。
 - 自動取得に成功すると、そのまま `tmp/` の辞書再生成まで実行します。自動取得に失敗した場合はビルドを止めず、同梱プレースホルダー辞書で継続します。
-- Sudachi CSV が最終的に見つからない場合は、既定で「フォールバック用 seed 辞書(約108エントリー)のみでビルド継続するか」を確認します（拒否時はビルド中止）。
-- 自動取得を無効化する場合は環境変数 `ECRITU_AUTO_FETCH_SUDACHI_ON_BUILD=0` を設定してください（必要なら `ECRITU_AUTO_FETCH_SUDACHI_INCLUDE_FULL=1` で full 辞書も自動取得対象にできます）。
-- フォールバック確認を無効化する場合は `ECRITU_PROMPT_ON_SUDACHI_FALLBACK=0`、非対話環境の既定動作を中止側に寄せる場合は `ECRITU_SUDACHI_FALLBACK_NONINTERACTIVE_DEFAULT=abort` を設定してください（確認ダイアログを表示できない環境でもこの既定値を使用します）。
+- Sudachi CSV が最終的に見つからない場合は、既定で「フォールバック用 seed 辞書(約108エントリー)のみでビルド継続するか」を確認します(拒否時はビルド中止)。
+- 自動取得を無効化する場合は環境変数 `ECRITU_AUTO_FETCH_SUDACHI_ON_BUILD=0` を設定してください(必要なら `ECRITU_AUTO_FETCH_SUDACHI_INCLUDE_FULL=1` で full 辞書も自動取得対象にできます)。
+- フォールバック確認を無効化する場合は `ECRITU_PROMPT_ON_SUDACHI_FALLBACK=0`、非対話環境の既定動作を中止側に寄せる場合は `ECRITU_SUDACHI_FALLBACK_NONINTERACTIVE_DEFAULT=abort` を設定してください(確認ダイアログを表示できない環境でもこの既定値を使用します)。
 - 同スクリプトは、生成済み `tmp/` 辞書があれば拡張バンドル内リソースを上書きするため、実機ビルドでもシード辞書ではなく生成辞書を同梱できます。
 - App Group への辞書反映(`tools/install_simulator_kana_dictionary.sh`)はシミュレータビルド時のみ自動実行します。
 - Sudachi CSV が無い環境では自動生成をスキップし、同梱プレースホルダー辞書でビルドを継続します。
 - SudachiDict 関連の法的文書は `third_party/sudachidict/LICENSE-2.0.txt` と `third_party/sudachidict/LEGAL` をソース同梱しています。
-- コンテナーアプリには「オープンソースライセンス」セクションを実装し、上記文書をアプリ内で閲覧できます（App Store 配布時の確認導線）。
-- `tools/verify_third_party_license_assets.sh` で、配布前にライセンス文書の同梱漏れ（ソース/アプリバンドル）を検証できます。
+- コンテナーアプリには「オープンソースライセンス」セクションを実装し、上記文書をアプリ内で閲覧できます(App Store 配布時の確認導線)。
+- `tools/verify_third_party_license_assets.sh` で、配布前にライセンス文書の同梱漏れ(ソース/アプリバンドル)を検証できます。
 - 他の開発環境で実機ビルドする場合は、`Config/Signing.local.xcconfig.example` を `Config/Signing.local.xcconfig` としてコピーし、`ECRITU_DEVELOPMENT_TEAM` と `ECRITU_APP_BUNDLE_IDENTIFIER` を各自の値に変更してください。
 - App Group は既定で `group.$(ECRITU_APP_BUNDLE_IDENTIFIER)` を使います。実機署名時はアプリ/拡張の両ターゲットで同じ Team / Bundle ID 系列 / App Group になるよう揃えてください。
 - Sudachi前処理では1文字読みも収録対象としつつ、1文字読み専用の候補数・候補長上限でノイズ増加を抑制します。
