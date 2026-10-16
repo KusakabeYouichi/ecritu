@@ -757,5 +757,8 @@
 	        <dict><key>phrase</key><string>Back to the Future</string><key>shortcut</key><string>ばっくとぅーざふゅーちゃー</string></dict>
 	        <dict><key>phrase</key><string>オオタニワタリ</string><key>shortcut</key><string>おおたにわたり</string></dict>	<!-- シダ植物(ユーザ指定 3657) -->
 	        <dict><key>phrase</key><string>大谷渡</string><key>shortcut</key><string>おおたにわたり</string></dict>
+	        <dict><key>phrase</key><string>本がえし</string><key>shortcut</key><string>ほんがえし</string></dict>	<!-- そばつゆのかえし(ユーザ指定 3661) -->
+	        <dict><key>phrase</key><string>半生がえし</string><key>shortcut</key><string>はんなまがえし</string></dict>
+	        <dict><key>phrase</key><string>生がえし</string><key>shortcut</key><string>なまがえし</string></dict>
 </array>
 </plist>

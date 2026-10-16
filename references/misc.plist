@@ -639,6 +639,53 @@
 	       或いは/或は/或ひは/或るいは は あるいわ、若しくは/若くは は もしくわ の読みでしか無く、あるいは/もしくは と打っても漢字が出なかった。
 	       ここ(misc)に登録すると X.8(かなで書く言葉 接続詞)の抑制の対象外になってしまうので、KanaKanjiSeedDictionary の seed で
 	       あるいは→或いは、もしくは→若しくは を供給している -->
+	<!-- 火にかける(鍋を火にかける)。ひにかけない が 日に欠けない/日に掛けない/火に欠けない… で、単文節は空だった(ユーザ報告 3661)。かな書きを先に -->
+	<dict><key>phrase</key><string>火にかける</string><key>shortcut</key><string>ひにかける</string></dict>
+	<dict><key>phrase</key><string>火に掛ける</string><key>shortcut</key><string>ひにかける</string></dict>
+	<dict><key>phrase</key><string>火にかけない</string><key>shortcut</key><string>ひにかけない</string></dict>
+	<dict><key>phrase</key><string>火に掛けない</string><key>shortcut</key><string>ひにかけない</string></dict>
+	<dict><key>phrase</key><string>火にかけた</string><key>shortcut</key><string>ひにかけた</string></dict>
+	<dict><key>phrase</key><string>火に掛けた</string><key>shortcut</key><string>ひにかけた</string></dict>
+	<dict><key>phrase</key><string>火にかけて</string><key>shortcut</key><string>ひにかけて</string></dict>
+	<dict><key>phrase</key><string>火に掛けて</string><key>shortcut</key><string>ひにかけて</string></dict>
+	<dict><key>phrase</key><string>火にかけます</string><key>shortcut</key><string>ひにかけます</string></dict>
+	<dict><key>phrase</key><string>火に掛けます</string><key>shortcut</key><string>ひにかけます</string></dict>
+	<dict><key>phrase</key><string>火にかけました</string><key>shortcut</key><string>ひにかけました</string></dict>
+	<dict><key>phrase</key><string>火に掛けました</string><key>shortcut</key><string>ひにかけました</string></dict>
+	<dict><key>phrase</key><string>火にかけません</string><key>shortcut</key><string>ひにかけません</string></dict>
+	<dict><key>phrase</key><string>火に掛けません</string><key>shortcut</key><string>ひにかけません</string></dict>
+	<dict><key>phrase</key><string>火にかけなかった</string><key>shortcut</key><string>ひにかけなかった</string></dict>
+	<dict><key>phrase</key><string>火に掛けなかった</string><key>shortcut</key><string>ひにかけなかった</string></dict>
+	<dict><key>phrase</key><string>火にかけよう</string><key>shortcut</key><string>ひにかけよう</string></dict>
+	<dict><key>phrase</key><string>火に掛けよう</string><key>shortcut</key><string>ひにかけよう</string></dict>
+	<dict><key>phrase</key><string>火にかければ</string><key>shortcut</key><string>ひにかければ</string></dict>
+	<dict><key>phrase</key><string>火に掛ければ</string><key>shortcut</key><string>ひにかければ</string></dict>
+	<dict><key>phrase</key><string>火にかけている</string><key>shortcut</key><string>ひにかけている</string></dict>
+	<dict><key>phrase</key><string>火に掛けている</string><key>shortcut</key><string>ひにかけている</string></dict>
+	<dict><key>phrase</key><string>火にかけてる</string><key>shortcut</key><string>ひにかけてる</string></dict>
+	<dict><key>phrase</key><string>火に掛けてる</string><key>shortcut</key><string>ひにかけてる</string></dict>
+	<dict><key>phrase</key><string>火にかけていた</string><key>shortcut</key><string>ひにかけていた</string></dict>
+	<dict><key>phrase</key><string>火に掛けていた</string><key>shortcut</key><string>ひにかけていた</string></dict>
+	<dict><key>phrase</key><string>火にかけてた</string><key>shortcut</key><string>ひにかけてた</string></dict>
+	<dict><key>phrase</key><string>火に掛けてた</string><key>shortcut</key><string>ひにかけてた</string></dict>
+	<!-- の方は(のかた は)。野方は の次に出す(ユーザ指定 3661) -->
+	<dict><key>phrase</key><string>野方は</string><key>shortcut</key><string>のかたは</string></dict>
+	<dict><key>phrase</key><string>の方は</string><key>shortcut</key><string>のかたは</string></dict>
+	<!-- 反する(はんする)。単文節は 反しない が先頭だが、連文節は 反+しない の派生が 10200 で 藩しない/版しない/班しない に負け、反しない が出なかった(ユーザ報告 3661)。1 ノードで curated に -->
+	<dict><key>phrase</key><string>反する</string><key>shortcut</key><string>はんする</string></dict>
+	<dict><key>phrase</key><string>反した</string><key>shortcut</key><string>はんした</string></dict>
+	<dict><key>phrase</key><string>反して</string><key>shortcut</key><string>はんして</string></dict>
+	<dict><key>phrase</key><string>反しない</string><key>shortcut</key><string>はんしない</string></dict>
+	<dict><key>phrase</key><string>反します</string><key>shortcut</key><string>はんします</string></dict>
+	<dict><key>phrase</key><string>反しました</string><key>shortcut</key><string>はんしました</string></dict>
+	<dict><key>phrase</key><string>反しません</string><key>shortcut</key><string>はんしません</string></dict>
+	<dict><key>phrase</key><string>反しなかった</string><key>shortcut</key><string>はんしなかった</string></dict>
+	<dict><key>phrase</key><string>反している</string><key>shortcut</key><string>はんしている</string></dict>
+	<dict><key>phrase</key><string>反していた</string><key>shortcut</key><string>はんしていた</string></dict>
+	<dict><key>phrase</key><string>反しては</string><key>shortcut</key><string>はんしては</string></dict>
+	<dict><key>phrase</key><string>反しても</string><key>shortcut</key><string>はんしても</string></dict>
+	<dict><key>phrase</key><string>反すれば</string><key>shortcut</key><string>はんすれば</string></dict>
+	<dict><key>phrase</key><string>反しよう</string><key>shortcut</key><string>はんしよう</string></dict>
 
 </array>
 </plist>
