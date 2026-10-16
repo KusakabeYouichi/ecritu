@@ -48,7 +48,7 @@ enum OkuriganaVariantMode: String, CaseIterable, Identifiable {
 struct OkuriganaVariantPreference: Equatable {
     var modes: [OkuriganaVariantGroup: OkuriganaVariantMode]
 
-    // 戦略的初期設定(ユーザ指定 2820): 許容形は全グループ出さない。保守的初期設定(作者の実運用)は本則を先に許容も出す
+    // 戦略的初期設定(ユーザ指定 2820): 許容形は全グループ出さない。保守的初期設定は本則を先に許容も出す
     static let `default` = OkuriganaVariantPreference(modes: [
         .stemInternal: .standardOnly, .compoundFront: .standardOnly, .nominalized: .standardOnly
     ])
