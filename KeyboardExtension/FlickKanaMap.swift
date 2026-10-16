@@ -34,10 +34,19 @@ enum DiacriticMode {
     case smallKana
 }
 
-// 『や』キーの左右フリックの括弧(3585)。値はコンテナーアプリの設定値(括弧そのもの)と同じ
+// 『や』キーの左右フリックの括弧(3585)。値はコンテナーアプリの設定値(名前。3656 で括弧そのものから変更)と同じ。
+// 3656 より前に保存された値(括弧そのもの)も読む
 enum KanaYaBracketMode: String {
-    case doubleCorner = "『』"
-    case corner = "「」"
+    case doubleCorner
+    case corner
+
+    init?(rawValue: String) {
+        switch rawValue {
+        case "doubleCorner", "『』": self = .doubleCorner
+        case "corner", "「」": self = .corner
+        default: return nil
+        }
+    }
 }
 
 enum KanaModifierPlacementMode: String {
