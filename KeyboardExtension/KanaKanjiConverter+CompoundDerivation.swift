@@ -100,6 +100,7 @@ extension KanaKanjiConverter {
         "びき": ["匹"],
         "まい": ["枚"],
         "さつ": ["冊"],
+        "そう": ["層"],   // よんそう→4層(ユーザ報告 3694)。艘/槽 は数字文脈限定表のまま
         "ぽん": ["本"],
         "ぴき": ["匹"],
         // 倍 は ばい としか読まない(はい に入っていて 2はいと→2倍と になっていた。ユーザ報告 3398)。杯 は 3杯(さんばい)で ばい にもなる
@@ -240,6 +241,27 @@ extension KanaKanjiConverter {
     ]
     static let kanjiNumerals = ["零", "一", "二", "三", "四", "五", "六", "七", "八", "九", "十"]
 
+    // 1..9999 を漢数字(二十三/百五/三千)に。十/百/千 の 1 は書かない(十枚、百回)
+    static func kanjiNumeralString(_ value: Int) -> String {
+        guard value > 0, value < 10000 else {
+            return String(value)
+        }
+        var text = ""
+        var rest = value
+        for (unit, name) in [(1000, "千"), (100, "百"), (10, "十")] {
+            let digit = rest / unit
+            if digit > 0 {
+                if digit > 1 { text += kanjiNumerals[digit] }
+                text += name
+            }
+            rest %= unit
+        }
+        if rest > 0 {
+            text += kanjiNumerals[rest]
+        }
+        return text
+    }
+
     // 漢数字の読み(いち/にじゅう/ごひゃく/さんぜん…)を算用数字値へ。1..9999。純粋な数の読みで
     // なければ nil(末尾に余りが残る=助数詞等が混じる読みは呼び出し側で分離済みが前提)。
     static func japaneseNumberReadingValue(_ reading: String) -> Int? {
@@ -284,6 +306,46 @@ extension KanaKanjiConverter {
             return nil
         }
         return total
+    }
+
+    // 漢語数詞+助数詞の漢数字表記(にまい→二枚、だいにかい→第二回、にじゅうさんぼん→二十三本。3694)。
+    // 算用(arabicNumericCompoundCandidates)と同じ切り方で、呼び出し側が辞書に無いものだけ漢数字複合の帯に足す
+    // (辞書にある 一枚/三本 は辞書の点数のまま。算用の帯に混ぜると点数が重なって 二百個 が 200個 を抜く)。
+    // し(4)/く(9)の 1 音の数詞は除く(しけん→四軒 が 試験 の数字文脈ブーストを奪う)
+    func kanjiNumeralCompoundCandidates(for reading: String) -> [String] {
+        guard reading.count >= 2 else {
+            return []
+        }
+        var results: [String] = []
+        var seen = Set<String>()
+        let bodies: [(prefix: String, body: String)]
+        if reading.hasPrefix("だい"), reading.count >= 4 {
+            bodies = [("第", String(reading.dropFirst(2))), ("", reading)]
+        } else {
+            bodies = [("", reading)]
+        }
+        for (ordinalPrefix, body) in bodies {
+            let counterReadings = ordinalPrefix.isEmpty
+                ? Self.numericCompoundCounterReadings
+                : Self.numericCompoundCounterReadings.union(Self.ordinalPrefixCounterSurfacesByReading.keys)
+            for counterReading in counterReadings
+            where body.count > counterReading.count && body.hasSuffix(counterReading) {
+                let numberReading = String(body.dropLast(counterReading.count))
+                guard numberReading != "し", numberReading != "く",
+                    let value = Self.japaneseNumberReadingValue(numberReading) else {
+                    continue
+                }
+                let ordinalSurfaces = ordinalPrefix.isEmpty ? [] : Self.ordinalPrefixCounterSurfacesByReading[counterReading] ?? []
+                let baseSurfaces = Self.numericCompoundCounterSurfaces(for: counterReading) ?? []
+                for surface in ordinalSurfaces + baseSurfaces.filter({ !ordinalSurfaces.contains($0) }) {
+                    let text = "\(ordinalPrefix)\(Self.kanjiNumeralString(value))\(surface)"
+                    if seen.insert(text).inserted {
+                        results.append(text)
+                    }
+                }
+            }
+        }
+        return results
     }
 
     // 算用数字+助数詞(2本/3週間/500円玉)と、序数(第1回/第2世代)をロジックで生成する。
