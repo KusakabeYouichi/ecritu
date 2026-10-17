@@ -24620,4 +24620,16 @@ extension KanaKanjiConverterRegressionTests {
         }
         XCTAssertEqual(converter.candidates(for: "みなさん", limit: 2, systemCandidateMode: .surface).first, "皆さん")
     }
+
+    // 3697: 管理人か(問い)が 管理+認可 に負けない。3698: 被害/事故+に+遭(遭った/遭いやすい は活用派生の枠 3 から漏れていた)
+    func testRegressionKanrininKaAndHigaiNiAu() throws {
+        try prepareRealLMDictionary()
+        XCTAssertEqual(converter.multiClauseCandidates(for: "かんりにんか", systemCandidateMode: .surface).first, "管理人か")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "かんりにんかどうか", systemCandidateMode: .surface).first, "管理人かどうか")
+        for (reading, expected) in [("ひがいにあいやすい", "被害に遭いやすい"), ("ひがいにあった", "被害に遭った"), ("じこにあった", "事故に遭った"),
+                                    ("ともだちにあった", "友達に会った"), ("いけんがあわない", "意見が合わない")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "\(reading): \(multi.prefix(3))")
+        }
+    }
 }
