@@ -24719,4 +24719,12 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "こどもらが", systemCandidateMode: .surface).first, "子供らが")
     }
 
+    // 3706: うどん出汁/うどんだし は misc で 1 語(う+ドン+だし/饂飩+だし の合成が先頭だった)。順はユーザ指定
+    func testRegressionUdonDashiLeads() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        XCTAssertEqual(Array(converter.candidates(for: "うどんだし", limit: 4, systemCandidateMode: .surface).prefix(2)), ["うどん出汁", "うどんだし"])
+        XCTAssertEqual(converter.multiClauseCandidates(for: "うどんだしを", systemCandidateMode: .surface).first, "うどん出汁を")
+    }
+
 }

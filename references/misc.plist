@@ -357,6 +357,8 @@
 	<dict><key>phrase</key><string>学習語彙</string><key>shortcut</key><string>がくしゅうごい</string></dict>
 	<dict><key>phrase</key><string>抑制語彙</string><key>shortcut</key><string>よくせいごい</string></dict>
 	<dict><key>phrase</key><string>ショートカット語彙</string><key>shortcut</key><string>しょーとかっとごい</string></dict>
+	<!-- うどん出汁/うどんだし: 辞書に 1 語で無く、う+ドン+だし/饂飩+だし の合成が先頭だった。順はユーザ指定(3706) -->
+	<dict><key>phrase</key><string>うどん出汁</string><key>shortcut</key><string>うどんだし</string></dict>
 	<dict><key>phrase</key><string>うどんだし</string><key>shortcut</key><string>うどんだし</string></dict>
 	<!-- 和語数詞+つ(Sudachi は 一つ と 七つ しか無く、ふたつ→不達、みっつ→候補なし。curated のある読みは数詞の生成が止まるので 2つ も並べて登録。数詞の表記の設定に関わらず辞書語として 二つ が先頭。3704) -->
 	<dict><key>phrase</key><string>二つ</string><key>shortcut</key><string>ふたつ</string></dict>
