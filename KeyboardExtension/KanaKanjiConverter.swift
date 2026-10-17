@@ -382,6 +382,8 @@ final class KanaKanjiConverter {
         let initialAjoutVocabulary: [String: [String]]
         let learningScoresForReading: [String: Int]
         let suppressedCandidatesByReading: [String: Set<String>]
+        // 活用の逆引きに使う抑制集合(名詞だけの抑制を除く。3700)
+        let suppressedCandidatesByReadingForDeinflection: [String: Set<String>]
         let systemCandidates: [String]
         let userCandidates: [String]
         let userCandidateSet: Set<String>
@@ -527,6 +529,7 @@ final class KanaKanjiConverter {
             initialAjoutVocabulary: initialAjoutVocabulary,
             learningScoresForReading: store.learningScores(for: reading),
             suppressedCandidatesByReading: store.suppressedCandidatesByReading(),
+            suppressedCandidatesByReadingForDeinflection: store.suppressedCandidatesByReadingForDeinflection(),
             systemCandidates: systemCandidates,
             userCandidates: userCandidates,
             userCandidateSet: userCandidateSet,
@@ -977,7 +980,7 @@ final class KanaKanjiConverter {
 
         let deinflectionProbes = deinflectionSuppressionProbes(
             reading: context.reading,
-            suppressedByReading: context.suppressedCandidatesByReading
+            suppressedByReading: context.suppressedCandidatesByReadingForDeinflection
         )
         for candidate in Array(scores.keys) where isDeinflectedSuppressed(
             candidate: candidate,
@@ -1585,7 +1588,7 @@ final class KanaKanjiConverter {
         }
 
         let directSuppressed = suppressedByReading[normalizedReading] ?? []
-        let probes = deinflectionSuppressionProbes(reading: normalizedReading, suppressedByReading: suppressedByReading)
+        let probes = deinflectionSuppressionProbes(reading: normalizedReading, suppressedByReading: store.suppressedCandidatesByReadingForDeinflection())
 
         return candidates.filter { candidate in
             if directSuppressed.contains(candidate) {

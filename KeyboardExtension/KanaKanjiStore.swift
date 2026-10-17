@@ -180,6 +180,8 @@ final class KanaKanjiStore {
     private var cachedSuppressedCandidatesByReading: [String: Set<String>]?
     private var cachedShortcutVocabulary: [String]?
     private var cachedBundledHiddenSuppression: [String: [String]]?
+    private var cachedBundledHiddenNounSuppression: [String: [String]]?
+    private var cachedSuppressedCandidatesByReadingForDeinflection: [String: Set<String>]?
     var cachedLearningScores: [String: Int]?
     var cachedLearningScoresByReading: [String: [String: Int]]?
     // 学習の永続化デバウンス(2715): 確定ごとの全量コピー+全量 JSON 化をやめ、数秒まとめて1回書く
@@ -1130,6 +1132,7 @@ final class KanaKanjiStore {
             cachedAjoutVocabulary = nil
             cachedLearnedDictionary = nil
             cachedSuppressedCandidatesByReading = nil
+            cachedSuppressedCandidatesByReadingForDeinflection = nil
             cachedLearningScores = nil
             cachedLearningScoresByReading = nil
             cachedShortcutVocabulary = nil
@@ -1391,6 +1394,40 @@ final class KanaKanjiStore {
         return decoded
     }
 
+    // pos=名詞 の抑制(同梱 JSON + テスト/将来の UserDefaults 経路)。「この語だけ」を抑制し、活用の語幹とは見なさない(3700)
+    private func hiddenNounSuppressionDictionary() -> [String: [String]] {
+        if let cached = withCacheLock({ cachedBundledHiddenNounSuppression }) {
+            return cached
+        }
+        var merged = bundledDictionary(resourceName: KanaKanjiStorageKeys.initialSuppressionHiddenNounResourceName)
+        if let fromDefaults = decodedStringArrayDictionary(forKey: KanaKanjiStorageKeys.suppressionNounVocabulary) {
+            for (reading, candidates) in fromDefaults {
+                merged[reading, default: []].append(contentsOf: candidates)
+            }
+        }
+        withCacheLock { cachedBundledHiddenNounSuppression = merged }
+        return merged
+    }
+
+    // 活用の逆引き(deinflectionSuppressionProbes)に渡す抑制集合。名詞だけの抑制(一る/味そ 等)を除く。
+    // 一る(いちる)を含めると 一(いち)の活用形と見なされて 一 まで消える(3699 で発覚)
+    func suppressedCandidatesByReadingForDeinflection() -> [String: Set<String>] {
+        if let cached = withCacheLock({ cachedSuppressedCandidatesByReadingForDeinflection }) {
+            return cached
+        }
+        var result = suppressedCandidatesByReading()
+        for (reading, candidates) in hiddenNounSuppressionDictionary() {
+            let normalizedReading = KanaTextNormalizer.normalizedReading(reading)
+            guard var set = result[normalizedReading] else { continue }
+            for candidate in candidates {
+                set.remove(candidate.trimmingCharacters(in: .whitespacesAndNewlines))
+            }
+            if set.isEmpty { result.removeValue(forKey: normalizedReading) } else { result[normalizedReading] = set }
+        }
+        withCacheLock { cachedSuppressedCandidatesByReadingForDeinflection = result }
+        return result
+    }
+
     func suppressedCandidatesByReading() -> [String: Set<String>] {
         if let cached = withCacheLock({ cachedSuppressedCandidatesByReading }) {
             return cached
@@ -1405,6 +1442,9 @@ final class KanaKanjiStore {
             forKey: KanaKanjiStorageKeys.suppressionVocabulary
         ) ?? bundledDictionary(resourceName: KanaKanjiStorageKeys.initialSuppressionResourceName)
         for (reading, candidates) in bundledHiddenSuppressionDictionary() {
+            decodedDictionary[reading, default: []].append(contentsOf: candidates)
+        }
+        for (reading, candidates) in hiddenNounSuppressionDictionary() {
             decodedDictionary[reading, default: []].append(contentsOf: candidates)
         }
 

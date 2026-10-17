@@ -79,6 +79,10 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--output", required=True, help="Output JSON path")
     parser.add_argument(
+        "--output-nouns",
+        help="pos=名詞 の項目をこの JSON に分けて書く(抑制の「この語だけ」。指定が無ければ本体に含める)",
+    )
+    parser.add_argument(
         "--output-inflections",
         default=None,
         help="Optional output JSON path for inflection class metadata from plist pos field",
@@ -105,6 +109,7 @@ def load_plist(
     path: Path,
     merged: Dict[str, List[str]],
     inflections: Optional[Dict[str, Dict[str, str]]],
+    nouns: Optional[Dict[str, List[str]]] = None,
 ) -> None:
     issues = validate_plist_structure(path)
     if issues:
@@ -144,6 +149,11 @@ def load_plist(
         if not reading or not phrase:
             continue
 
+        # pos=名詞 の抑制は「この語だけ」(活用の語幹として本体まで抑制しない。3700)。--output-nouns 指定時は別ファイルへ
+        if nouns is not None and isinstance(entry.get("pos"), str) and entry["pos"].strip() == "名詞":
+            merge_pair(nouns, reading, phrase)
+            continue
+
         merge_pair(merged, reading, phrase)
 
         if inflections is None:
@@ -172,11 +182,12 @@ def main() -> int:
     inflections: Optional[Dict[str, Dict[str, str]]] = (
         {} if args.output_inflections else None
     )
+    nouns: Optional[Dict[str, List[str]]] = {} if args.output_nouns else None
 
     for plist_path in args.input_plist:
         path = Path(plist_path)
         if path.exists():
-            load_plist(path, merged, inflections)
+            load_plist(path, merged, inflections, nouns)
 
     cleaned = {k: v for k, v in merged.items() if k and v}
     output_text = json.dumps(cleaned, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
@@ -190,6 +201,18 @@ def main() -> int:
         output_path.write_text(output_text, encoding="utf-8")
         print(f"wrote: {output_path}")
         print(f"readings={len(cleaned)}")
+
+    if nouns is not None and args.output_nouns:
+        cleaned_nouns = {k: v for k, v in nouns.items() if k and v}
+        nouns_text = json.dumps(cleaned_nouns, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+        nouns_path = Path(args.output_nouns)
+        nouns_path.parent.mkdir(parents=True, exist_ok=True)
+        if nouns_path.exists() and nouns_path.read_text(encoding="utf-8") == nouns_text:
+            print(f"up-to-date: {nouns_path}")
+        else:
+            nouns_path.write_text(nouns_text, encoding="utf-8")
+            print(f"wrote: {nouns_path}")
+            print(f"noun readings={len(cleaned_nouns)}")
 
     if inflections is not None and args.output_inflections:
         cleaned_inflections = {k: v for k, v in inflections.items() if k and v}

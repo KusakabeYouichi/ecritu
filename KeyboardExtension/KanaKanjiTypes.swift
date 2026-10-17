@@ -12,6 +12,8 @@ enum KanaKanjiStorageKeys {
     // 予約の仕組みより前に初回移行が済んだ端末でも、最初にキーボードを開いたとき取り込む)
     static let userDictionaryShortcutImportedOnce = "kanaKanjiUserDictionaryShortcutImportedOnce"
     static let suppressionVocabulary = "ÉcrituSuppr_Vocab"
+    // 名詞だけの抑制(テストが同梱 JSON の代わりに書く経路。3700)
+    static let suppressionNounVocabulary = "ÉcrituSupprNoun_Vocab"
     static let learningScores = "kanaKanjiLearningScores"
     static let systemDictionarySQLiteFilename = "kana_kanji_dictionary.sqlite"
     static let systemDictionaryFilename = "ÉcrituPremierVocab.json"
@@ -30,6 +32,8 @@ enum KanaKanjiStorageKeys {
     // 変換対策の抑制(poubelle と対等に効くが、コンテナアプリの「抑制語彙」には表示しない)。
     // アプリ移行(ÉcrituSuppr_Vocab)を経由せず、キーボードがバンドルから直接読む。
     static let initialSuppressionHiddenResourceName = "InitialSupprHiddenVocabMigration"
+    // suppr.plist の pos=名詞 の抑制(「この語だけ」。活用の語幹とみなして本体まで抑制しない。3700)
+    static let initialSuppressionHiddenNounResourceName = "InitialSupprHiddenNounVocabMigration"
     // poubelle.plist 由来の抑制(アプリの「抑制語彙」に初期表示される分)。共有設定に値が無いときの代わり(3300)
     static let initialSuppressionResourceName = "InitialSupprVocabMigration"
 }
