@@ -24672,4 +24672,21 @@ extension KanaKanjiConverterRegressionTests {
             XCTAssertEqual(multi.first, expected, "\(reading): \(multi.prefix(3))")
         }
     }
+
+    // 3703: écritu 自身の語彙の呼称(追加語彙/学習語彙/抑制語彙/ショートカット語彙)は misc で 1 語(追加+後位 の分割に負けていた)
+    func testRegressionEcrituVocabularyTermsLead() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        // 読み全体が curated のときは連文節が単文節に委ねる(空を返す)ので単文節で見る
+        for (reading, expected) in [("ついかごい", "追加語彙"), ("がくしゅうごい", "学習語彙"), ("よくせいごい", "抑制語彙"),
+                                    ("しょーとかっとごい", "ショートカット語彙")] {
+            let list = converter.candidates(for: reading, limit: 3, systemCandidateMode: .surface)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list)")
+        }
+        for (reading, expected) in [("ついかごいに", "追加語彙に"), ("がくしゅうごいを", "学習語彙を")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "\(reading): \(multi.prefix(3))")
+        }
+    }
+
 }
