@@ -970,8 +970,11 @@ final class KeyboardViewController: UIInputViewController {
     var launchTimingSetupMs = 0
     var launchTimingToWillAppearMs = -1
     var launchTimingPageEventsAtLoad: (faults: Int, pageins: Int)?
-    // viewDidLoad から表示までのメインスレッド停止の監視(3574。開発ビルド専用)
+    // viewDidLoad から表示までのメインスレッド停止の監視(3574。開発ビルド専用)。
+    // 型が #if DEBUG の中にしか無く、Release(審査用アーカイブ)で「型が見つからない」になっていた(3681)
+    #if DEBUG
     var launchStallMonitor: LaunchStallMonitor?
+    #endif
 
     // 前回のセッションが未確定(marked)を残したままキーボードが閉じた場合(メモの完了ボタン等。
     // 閉じる時点の確定はホストに届かない回がある)、ホスト側には下線付きの marked 範囲が残る。
