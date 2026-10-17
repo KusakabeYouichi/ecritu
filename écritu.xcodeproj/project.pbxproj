@@ -136,7 +136,9 @@
 		7B1D9A4E6F8C2A0D5B3E1C09 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8C2E0B5F7A9D3B1E6C4F2D10 /* LaunchScreen.storyboard */; };
 		80C53EDAEAB5510D13B9CAFB /* InitialSupprVocabMigration.json in Resources */ = {isa = PBXBuildFile; fileRef = 5C7FFC5AF8872DE4A3040949 /* InitialSupprVocabMigration.json */; };
 		A1B2C3D4E5F600000000BB01 /* InitialSupprHiddenVocabMigration.json in Resources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000BB02 /* InitialSupprHiddenVocabMigration.json */; };
+		A1B2C3D4E5F600000000BB11 /* InitialSupprHiddenNounVocabMigration.json in Resources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000BB12 /* InitialSupprHiddenNounVocabMigration.json */; };
 		A1B2C3D4E5F600000000BB03 /* InitialSupprHiddenVocabMigration.json in Resources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000BB02 /* InitialSupprHiddenVocabMigration.json */; };
+		A1B2C3D4E5F600000000BB13 /* InitialSupprHiddenNounVocabMigration.json in Resources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000BB12 /* InitialSupprHiddenNounVocabMigration.json */; };
 		A1B2C3D4E5F600000000BB05 /* InitialSupprVocabMigration.json in Resources */ = {isa = PBXBuildFile; fileRef = 5C7FFC5AF8872DE4A3040949 /* InitialSupprVocabMigration.json */; };
 		86EE26729B525F6D695B17FB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1791BF31100B74EA2421EB52 /* Assets.xcassets */; };
 		8B889DCACD9F73C8DC3120CD /* APP_STORE_OPEN_SOURCE_NOTICES.md in Resources */ = {isa = PBXBuildFile; fileRef = C1ECA6389592415ABEA9CA17 /* APP_STORE_OPEN_SOURCE_NOTICES.md */; };
@@ -286,6 +288,7 @@
 		5BD446779BCC5D4386967F9A /* Ecritu.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Ecritu.entitlements; sourceTree = "<group>"; };
 		5C7FFC5AF8872DE4A3040949 /* InitialSupprVocabMigration.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = InitialSupprVocabMigration.json; sourceTree = "<group>"; };
 		A1B2C3D4E5F600000000BB02 /* InitialSupprHiddenVocabMigration.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = InitialSupprHiddenVocabMigration.json; sourceTree = "<group>"; };
+		A1B2C3D4E5F600000000BB12 /* InitialSupprHiddenNounVocabMigration.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = InitialSupprHiddenNounVocabMigration.json; sourceTree = "<group>"; };
 		5CC113350DED3CCDEF21E28B /* KeyboardRootViewSupportTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardRootViewSupportTypes.swift; sourceTree = "<group>"; };
 		5DF3F61E6678EA62C2C94678 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		66A8F5EFF71215E8B8F00101 /* SupplementaryCandidateMerger.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SupplementaryCandidateMerger.swift; sourceTree = "<group>"; };
@@ -460,6 +463,7 @@
 				A736682B523FF46CC7E3B566 /* InitialShortcutVocabMigration.json */,
 				5C7FFC5AF8872DE4A3040949 /* InitialSupprVocabMigration.json */,
 				A1B2C3D4E5F600000000BB02 /* InitialSupprHiddenVocabMigration.json */,
+				A1B2C3D4E5F600000000BB12 /* InitialSupprHiddenNounVocabMigration.json */,
 				B40E7E9146201A6F655CCD5D /* KanaKanjiConverter.swift */,
 				2992579AD50D4D629ED7B731 /* KanaKanjiInflectionRules.swift */,
 				B2C3D4E5F6A700000000EE03 /* KanaKanjiStore+LatinSuggestions.swift */,
@@ -664,6 +668,7 @@
 			files = (
 				A1B2C3D4E5F600000000BB05 /* InitialSupprVocabMigration.json in Resources */,
 				A1B2C3D4E5F600000000BB03 /* InitialSupprHiddenVocabMigration.json in Resources */,
+				A1B2C3D4E5F600000000BB13 /* InitialSupprHiddenNounVocabMigration.json in Resources */,
 				A1B2C3D4E5F600000000FA03 /* grammaire.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -685,6 +690,7 @@
 				70F6C445A2D172371280F702 /* InitialShortcutVocabMigration.json in Resources */,
 				80C53EDAEAB5510D13B9CAFB /* InitialSupprVocabMigration.json in Resources */,
 				A1B2C3D4E5F600000000BB01 /* InitialSupprHiddenVocabMigration.json in Resources */,
+				A1B2C3D4E5F600000000BB11 /* InitialSupprHiddenNounVocabMigration.json in Resources */,
 				A77A8D7DFD358F9976420EF3 /* kana_kanji_candidate_sources.json in Resources */,
 				77EA3B3953C08408CF31FE13 /* kana_kanji_dictionary.sqlite in Resources */,
 				04AB9BFCE6B8D05C0BCFBE4F /* kana_kanji_inflection_dictionary.json in Resources */,

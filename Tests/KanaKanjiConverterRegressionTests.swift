@@ -9018,6 +9018,11 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
                 let suppressionData = try JSONEncoder().encode(suppression)
                 defaults.set(suppressionData, forKey: "ÉcrituSuppr_Vocab")
             }
+            // 名詞だけの抑制(pos=名詞。3700)は別の鍵で、活用の逆引きには使われない
+            let nounSuppression = loadJSON("InitialSupprHiddenNounVocabMigration")
+            if !nounSuppression.isEmpty {
+                defaults.set(try JSONEncoder().encode(nounSuppression), forKey: "ÉcrituSupprNoun_Vocab")
+            }
         }
 
         converter.invalidateCandidateCache()

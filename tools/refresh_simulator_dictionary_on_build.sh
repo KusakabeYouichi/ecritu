@@ -29,6 +29,7 @@ TMP_INITIAL_AJOUT="$ROOT_DIR/tmp/InitialAjoutVocabMigration.json"
 TMP_INITIAL_MISC="$ROOT_DIR/tmp/InitialMiscVocabMigration.json"
 TMP_INITIAL_SUPPR="$ROOT_DIR/tmp/InitialSupprVocabMigration.json"
 TMP_INITIAL_SUPPR_HIDDEN="$ROOT_DIR/tmp/InitialSupprHiddenVocabMigration.json"
+TMP_INITIAL_SUPPR_HIDDEN_NOUN="$ROOT_DIR/tmp/InitialSupprHiddenNounVocabMigration.json"
 TMP_SECOND_INFLECTIONS="$ROOT_DIR/tmp/references_second_inflections.json"
 TMP_INITIAL_AJOUT_INFLECTIONS="$ROOT_DIR/tmp/references_sacoche_inflections.json"
 TMP_INITIAL_MISC_INFLECTIONS="$ROOT_DIR/tmp/references_misc_inflections.json"
@@ -228,7 +229,8 @@ python3 tools/build_second_vocab_from_references.py \
 
 python3 tools/build_second_vocab_from_references.py \
   --input-plist "$REF_SUPPR_PLIST" \
-  --output "$TMP_INITIAL_SUPPR_HIDDEN"
+  --output "$TMP_INITIAL_SUPPR_HIDDEN" \
+  --output-nouns "$TMP_INITIAL_SUPPR_HIDDEN_NOUN"
 
 # 補助語彙をビルド時に畳む(3030)。拡張が起動後の初回変換で JSON を 16,226 読みの辞書へ復元して
 # 畳んでいた工程を、ここへ移す(その一瞬の辞書が malloc アリーナを +8MB 広げて返さなかった。実機計測)。
@@ -576,6 +578,7 @@ if [[ -n "${TARGET_BUILD_DIR:-}" && -n "${UNLOCALIZED_RESOURCES_FOLDER_PATH:-}" 
   copy_into_bundle_if_exists "$TMP_INITIAL_MISC" "InitialMiscVocabMigration.json"
   copy_into_bundle_if_exists "$TMP_INITIAL_SUPPR" "InitialSupprVocabMigration.json"
   copy_into_bundle_if_exists "$TMP_INITIAL_SUPPR_HIDDEN" "InitialSupprHiddenVocabMigration.json"
+  copy_into_bundle_if_exists "$TMP_INITIAL_SUPPR_HIDDEN_NOUN" "InitialSupprHiddenNounVocabMigration.json"
   copy_into_bundle_if_exists "$TMP_SQLITE" "kana_kanji_dictionary.sqlite"
   copy_into_bundle_if_exists "$TMP_EMOJI_READING" "EmojiReadingVocab.json"
   copy_into_bundle_if_exists "$TMP_LATIN_SUPPL" "LatinSuggestionSupplemental.txt"
