@@ -15052,7 +15052,8 @@ extension KanaKanjiConverterRegressionTests {
             converter.candidates(for: "と", limit: 8, systemCandidateMode: .surface), reading: "と", precedingCharacter: "3"
         )
         XCTAssertTrue(boosted.contains("斗"), "boosted=\(boosted)")
-        XCTAssertEqual(converter.multiClauseCandidates(for: "せっていふたつ", systemCandidateMode: .surface).first, "設定不達")
+        // 3704 から ふたつ は misc の 二つ(それまでは辞書に無く 不達 だった)
+        XCTAssertEqual(converter.multiClauseCandidates(for: "せっていふたつ", systemCandidateMode: .surface).first, "設定二つ")
     }
 }
 
@@ -24687,6 +24688,35 @@ extension KanaKanjiConverterRegressionTests {
             let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
             XCTAssertEqual(multi.first, expected, "\(reading): \(multi.prefix(3))")
         }
+    }
+
+    // 3704: 数量語(2枚/3本/二つ)の直後の述語。数量語は述語でない(か のクランプ対象外)+述語に加点。二つ〜九つ は misc で供給
+    func testRegressionPredicateAfterNumericCompound() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for (reading, expected) in [("にまいかって", "2枚買って"), ("さんぼんかった", "3本買った"), ("ふたつかって", "二つ買って"),
+                                    ("にまいかった", "2枚買った"), ("みっつください", "三つください")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "\(reading): \(multi.prefix(4))")
+        }
+        // 単文節は 2つ/二つ が 不達/布達 より先(どちらが先かは数詞の生成の加点次第)
+        XCTAssertEqual(Set(converter.candidates(for: "ふたつ", limit: 4, systemCandidateMode: .surface).prefix(2)), ["二つ", "2つ"])
+        XCTAssertEqual(Set(converter.candidates(for: "みっつ", limit: 3, systemCandidateMode: .surface).prefix(2)), ["三つ", "3つ"])
+        // 連用形の名詞(2枚組み)には加点しない(加点すると に舞組み 等の分割と同列になる)
+        let nimaigumi = converter.multiClauseCandidates(for: "にまいぐみ", systemCandidateMode: .surface)
+        XCTAssertTrue(nimaigumi.first?.hasPrefix("2枚組") == true, "\(nimaigumi.prefix(3))")
+        // 本物の述語直後の か のクランプは従来どおり
+        XCTAssertEqual(converter.multiClauseCandidates(for: "これるか", systemCandidateMode: .surface).first, "来れるか")
+    }
+
+    // 3705: 方角 1 字の直後の複数接尾辞 ら は減点(さかえまちきたら→栄町来たら。栄町+北+ら だった)
+    func testRegressionSakaemachiKitaraNotKitaRa() throws {
+        try prepareRealLMDictionary()
+        let multi = converter.multiClauseCandidates(for: "さかえまちきたら", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "栄町来たら", "\(multi.prefix(4))")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "さかえまちにきたら", systemCandidateMode: .surface).first, "栄町に来たら")
+        // 人の複数の ら は従来どおり
+        XCTAssertEqual(converter.multiClauseCandidates(for: "こどもらが", systemCandidateMode: .surface).first, "子供らが")
     }
 
 }

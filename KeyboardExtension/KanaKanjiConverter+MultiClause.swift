@@ -2836,10 +2836,28 @@ extension KanaKanjiConverter {
             // 違い 1字は こんな(来ん+な)退行のため除外していたが、か は 来れる+か / 行ける+か の
             // 述語直後で終助詞以外の解釈がなく、素通り(3565+500)だと これ+ルカ(人名)の分割に
             // 負けていた(これるか→これルカ。ユーザ報告 2700)
+            // 数量語(2枚/3本)は活用派生の印で供給されるが述語ではない(2枚+か+って が 2枚買って に勝っていた。3704)
+            // 生成ノード(2枚/3本)と 和語数詞+つ(二つ、curated)が対象。辞書語全般(五男)まで広げると いつおきたか→五男来たか
+            let prevIsNumericCompound = !prevIsBOS && (prevIsInflectionDerived || prev.hasSuffix("つ"))
+                && Self.isNumericCompoundSurface(prev)
             if readingID == SID.か, surfaceID == SID.か,
                 !prevIsBOS,
-                prevIsInflectionDerived || prevIsDictionaryFormPredicate {
+                (prevIsInflectionDerived && !prevIsNumericCompound) || prevIsDictionaryFormPredicate {
                 base = min(base, Self.multiClauseFinalParticleAfterPredicateCost)
+            }
+            // 数量語の直後の活用派生の述語(定数コメント参照。3704)
+            // 期間(3日/2か月)の直後は 経つ の規則に任せる(3日+立って を持ち上げて 三日経って に勝ってしまう)
+            if prevIsNumericCompound, isInflectionDerived, !isKanaIdentity,
+                !Self.isNumericCompoundSurface(surface), Self.containsKanjiCandidate(surface),
+                Self.multiClausePredicateAfterNumericCompoundSuffixes.contains(where: { surface.hasSuffix($0) }),
+                !Self.multiClauseDurationCounterBareSurfaces.contains(where: { prev.hasSuffix($0) }) {
+                penalty -= Self.multiClausePredicateAfterNumericCompoundBonus
+            }
+            // 方角 1 字の直後の複数接尾辞 ら(定数コメント参照。3705)
+            // 前ノードは 北 単独とは限らず 栄町北(複合地名の 1 ノード)にもなるので末尾の字で見る
+            if readingID == SID.ら, surfaceID == SID.ら, !prevIsBOS, !prevIsKanaIdentity,
+                let last = prev.last, Self.multiClauseDirectionTailCharacters.contains(last) {
+                penalty += Self.multiClausePluralRaAfterDirectionPenalty
             }
             // 動詞て形(活用派生)直後の いって(定数コメント参照。2628)
             if readingID == SID.いって, prevIsInflectionDerived,
