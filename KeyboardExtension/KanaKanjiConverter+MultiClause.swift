@@ -226,6 +226,16 @@ extension KanaKanjiConverter {
         if !withStateLock({ emojiCandidatesEnabled }) {
             candidates.removeAll { Self.containsEmoji($0) }
         }
+        // 読み全体を学習した表記(あいふぉんでゅお→iPhone Duo)は連文節でも先頭に(3692)。読み全体の学習語彙は
+        // 格子に載せない(3240)ため、別の学習語彙を頭にした合成(iPhone(学習)+デュオ)が最良になり、候補欄の先頭
+        // (連文節が先)が iPhoneデュオ になっていた(ユーザ報告)。かな識別(表記==読み)はかなチップに任せる
+        if !candidates.isEmpty {
+            let normalized = KanaTextNormalizer.normalizedReading(reading)
+            let wholeLearned = (store.learnedDictionary()[normalized] ?? []).filter { $0 != normalized && !candidates.prefix(1).contains($0) }
+            if !wholeLearned.isEmpty {
+                candidates = wholeLearned + candidates.filter { !wholeLearned.contains($0) }
+            }
+        }
         // 受け身・尊敬の される が付かない サ変名詞+される(商品が醗酵される 等)を含む候補は後ろへ(3483)。
         // ラティスの減点で最良からは外れるが、差し替えの変種として 2 位以降に残るため
         let hasNonPassivizable = candidates.contains { Self.containsNonPassivizableSuruForm($0) }

@@ -20049,7 +20049,9 @@ extension KanaKanjiConverterRegressionTests {
         converter.learn(reading: "かんじへんかん", candidate: "カンジヘンカン")
         XCTAssertEqual(converter.candidates(for: "かんじへんかん", limit: 3, systemCandidateMode: .surface).first, "カンジヘンカン")
         let multi = converter.multiClauseCandidates(for: "かんじへんかん", systemCandidateMode: .surface)
-        XCTAssertEqual(multi.first, "漢字変換", "list=\(multi)")
+        // 3692: 読み全体の学習語彙は連文節の先頭にも置く(候補欄は連文節が先なので、学習が 2 位に落ちていた)。別解は残る
+        XCTAssertEqual(multi.first, "カンジヘンカン", "list=\(multi)")
+        XCTAssertEqual(Array(multi.prefix(3)), ["カンジヘンカン", "漢字変換", "感じ変換"], "list=\(multi)")
         // 部分一致では学習語彙が格子に載る
         XCTAssertEqual(converter.multiClauseCandidates(for: "かんじへんかんを", systemCandidateMode: .surface).first, "カンジヘンカンを")
     }
@@ -24559,5 +24561,17 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("かいてないのだ").first, "書いてないのだ", "\(multi("かいてないのだ").prefix(4))")
         XCTAssertFalse(multi("かいてないのだ").contains { $0.contains("野田") }, "\(multi("かいてないのだ").prefix(4))")
         XCTAssertEqual(multi("かいてないのに").first, "書いてないのに")
+    }
+
+    // 3692: 読み全体を学習した表記は、別の学習語彙を頭にした合成(iPhone+デュオ)より先頭(あいふぉんでゅお→iPhone Duo)
+    func testRegressionWholeReadingLearnedLeadsMultiClause() throws {
+        try prepareRealLMDictionary()
+        converter.store.addLearnedEntry(reading: "あいふぉん", candidate: "iPhone")
+        converter.store.addLearnedEntry(reading: "あいふぉんでゅお", candidate: "iPhone Duo")
+        converter.invalidateCandidateCache()
+        let multi = converter.multiClauseCandidates(for: "あいふぉんでゅお", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "iPhone Duo", "\(multi.prefix(4))")
+        XCTAssertTrue(multi.contains("iPhoneデュオ"), "合成の別解は残す \(multi.prefix(4))")
+        XCTAssertEqual(converter.candidates(for: "あいふぉんでゅお", limit: 4, systemCandidateMode: .surface).first, "iPhone Duo")
     }
 }
