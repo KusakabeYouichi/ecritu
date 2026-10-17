@@ -20,16 +20,16 @@
   <p>従来の日本語入力では、打った文字がいったん<b>未確定状態</b>(下線が付いた、まだ決まっていない文字)になり、候補から選ぶか確定の操作をするまで入力が終わりません。かなを漢字にするための仕組みなのですが、これがかな以外にも及んでいます。『?』や『!』を打てば『?』と『？』のどちらかを毎回選ばされ、『、』『。』でさえ候補が出て確定を待ち、数字を打ったときさえ『3』『３』『三』が並んで選ばされます。1 つの文を書くあいだに、記号や数字のたびに小さな選択が差し込まれるわけです。</p>
   <div class="shots">
     <figure>
-      <img src="assets/concept-legacy-question.png" alt="従来の日本語入力で ? を打った直後。? が未確定のまま、候補欄に ? と ？ が並ぶ" width="640" height="640">
+      <img src="assets/concept-legacy-question.png" alt="従来の日本語入力で ? を打った直後。? が未確定のまま、候補欄に ? ？ !? ?? ?! ❓ が並ぶ" width="640" height="620">
       <figcaption>『?』を打っただけで未確定になり、『?』『？』から選ぶことになる</figcaption>
     </figure>
     <figure>
-      <img src="assets/concept-legacy-period.png" alt="従来の日本語入力で 。を打った直後。。が未確定で候補が出ている" width="640" height="640">
-      <figcaption>『。』でさえ候補が出て、確定を待つ</figcaption>
+      <img src="assets/concept-legacy-period.png" alt="従来の日本語入力で 。を打った直後。。が未確定のまま、候補欄に 。 … . ・ が並ぶ" width="640" height="609">
+      <figcaption>『。』でさえ『。』『…』『.』『・』の候補が出て、確定を待つ</figcaption>
     </figure>
     <figure>
-      <img src="assets/concept-legacy-digit.png" alt="従来の日本語入力で 3 を打った直後。3 が未確定で、候補欄に 3 ３ 三 が並ぶ" width="640" height="640">
-      <figcaption>数字を打っても『3』『３』『三』から選ばされる</figcaption>
+      <img src="assets/concept-legacy-digit.png" alt="従来の日本語入力で 3 を打った直後。3 が未確定のまま、候補欄に 3 ３ 三 30個 ③ ❸ Ⅲ が並ぶ" width="640" height="626">
+      <figcaption>数字を打っても『3』『３』『三』『③』…から選ばされる</figcaption>
     </figure>
   </div>
   <p>écritu は、<b>かな以外は未確定にしません</b>。記号・数字・アルファベットは、打った瞬間にそのまま確定して入力欄に入ります。『?』は『?』、『3』は『3』として入り、候補を見る必要も確定の操作も要りません。未確定になるのはかなだけで、候補から選ぶのは漢字にしたいときだけです。</p>
