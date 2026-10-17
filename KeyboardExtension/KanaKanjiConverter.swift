@@ -760,6 +760,13 @@ final class KanaKanjiConverter {
             baseScore: CandidateScore.numericCounterCompound,
             to: &scores
         )
+        // 漢語数詞の漢数字表記(二枚/第二回)。辞書にも他の生成にも無いものだけ、漢数字複合の帯に足す(3694)
+        let kanjiNumeralCompound = kanjiNumeralCompoundCandidates(for: reading).filter { scores[$0] == nil }
+        addCandidates(
+            kanjiNumeralCompound,
+            baseScore: CandidateScore.numericCounterCompound,
+            to: &scores
+        )
 
         // 漢数字+ケ/ヶ の辞書語(二ケ所/五ケ所/六ヶ所/三ヶ日 等)は地名の収穫で、数詞複合(2か所)が
         // 作れる読みでは地名断片が rank 0 で先頭を取っていた(ユーザ指摘 2814)。生成した複合(2か所/二か所)
