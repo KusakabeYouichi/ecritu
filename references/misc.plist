@@ -358,6 +358,22 @@
 	<dict><key>phrase</key><string>抑制語彙</string><key>shortcut</key><string>よくせいごい</string></dict>
 	<dict><key>phrase</key><string>ショートカット語彙</string><key>shortcut</key><string>しょーとかっとごい</string></dict>
 	<dict><key>phrase</key><string>うどんだし</string><key>shortcut</key><string>うどんだし</string></dict>
+	<!-- 和語数詞+つ(Sudachi は 一つ と 七つ しか無く、ふたつ→不達、みっつ→候補なし。curated のある読みは数詞の生成が止まるので 2つ も並べて登録。数詞の表記の設定に関わらず辞書語として 二つ が先頭。3704) -->
+	<dict><key>phrase</key><string>二つ</string><key>shortcut</key><string>ふたつ</string></dict>
+	<dict><key>phrase</key><string>2つ</string><key>shortcut</key><string>ふたつ</string></dict>
+	<dict><key>phrase</key><string>三つ</string><key>shortcut</key><string>みっつ</string></dict>
+	<dict><key>phrase</key><string>3つ</string><key>shortcut</key><string>みっつ</string></dict>
+	<dict><key>phrase</key><string>四つ</string><key>shortcut</key><string>よっつ</string></dict>
+	<dict><key>phrase</key><string>4つ</string><key>shortcut</key><string>よっつ</string></dict>
+	<dict><key>phrase</key><string>五つ</string><key>shortcut</key><string>いつつ</string></dict>
+	<dict><key>phrase</key><string>5つ</string><key>shortcut</key><string>いつつ</string></dict>
+	<dict><key>phrase</key><string>六つ</string><key>shortcut</key><string>むっつ</string></dict>
+	<dict><key>phrase</key><string>6つ</string><key>shortcut</key><string>むっつ</string></dict>
+	<dict><key>phrase</key><string>七つ</string><key>shortcut</key><string>ななつ</string></dict>
+	<dict><key>phrase</key><string>7つ</string><key>shortcut</key><string>ななつ</string></dict>
+	<dict><key>phrase</key><string>八つ</string><key>shortcut</key><string>やっつ</string></dict>
+	<dict><key>phrase</key><string>8つ</string><key>shortcut</key><string>やっつ</string></dict>
+	<dict><key>phrase</key><string>九つ</string><key>shortcut</key><string>ここのつ</string></dict>
 	<dict><key>phrase</key><string>9つ</string><key>shortcut</key><string>ここのつ</string></dict>
 	<dict><key>phrase</key><string>お手数掛けます</string><key>shortcut</key><string>おてすうかけます</string></dict>	<!-- お手数掛けます/お手数かけます: お手数+欠けます/書けます/描けます の合成が先頭だった(ユーザ報告 3385) -->
 	<dict><key>phrase</key><string>お手数かけます</string><key>shortcut</key><string>おてすうかけます</string></dict>

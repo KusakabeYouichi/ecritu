@@ -506,6 +506,27 @@ extension KanaKanjiConverter {
         "分", "秒"
     ].sorted { $0.count > $1.count }
     static let multiClauseNumeralCharacters: Set<Character> = Set("0123456789０１２３４５６７８９〇一二三四五六七八九十百千万数何幾")
+    // 数詞+助数詞の生成ノード(2枚/3本/第2回/数か所)か。活用派生の印(isInflectionDerived)で供給されるため、
+    // 述語直後の規則(終助詞 か のクランプ 等)が数量語を述語と取り違えないよう見分ける(3704)
+    static func isNumericCompoundSurface(_ surface: String) -> Bool {
+        var chars = surface[...]
+        if chars.hasPrefix("第") { chars = chars.dropFirst() }
+        guard let first = chars.first, multiClauseNumeralCharacters.contains(first),
+            let last = chars.last, !multiClauseNumeralCharacters.contains(last) else {
+            return false
+        }
+        return true
+    }
+    // 数詞+助数詞の直後の活用派生の述語(2枚買って/3本買った/2つください)への加点(3704)。数量語は固定コスト 7200 で
+    // 供給されるため、同じ読みの固有名(山本 5414/不達 1500)に先頭を取られ、述語の直前でも 山本買った になっていた。
+    // 名詞(2枚組/3本立て)には加点も減点もしない。連用形(組み/立て/入り)は名詞になるので、加点は下の語尾に限る。
+    // たい は 何回+も+見たい が 何回+揉みたい になるので入れない
+    static let multiClausePredicateAfterNumericCompoundBonus = 2000
+    static let multiClausePredicateAfterNumericCompoundSuffixes = ["て", "で", "た", "だ", "ます", "ません", "ない", "う", "れば", "たら"]
+    // 方角 1 字(東西南北)の直後の複数接尾辞 ら への減点(3705)。ら は頻出かなとして床免除で安く、
+    // 栄町+北(住所の連接)+ら が 栄町+来たら に勝っていた(さかえまちきたら→栄町北ら)
+    static let multiClausePluralRaAfterDirectionPenalty = 3000
+    static let multiClauseDirectionTailCharacters: Set<Character> = ["北", "南", "東", "西"]
     // 並列動詞の表記整合(2771、適用箇所のコメント参照): 漢字を揃えた経路が元の混在経路より
     // この差までなら揃えた方を最良にする(かうかかわないか: 揃え 買う…買わない は +100 程度)
     static let multiClauseCoordinatedVerbMaxDelta = 3000
@@ -3145,6 +3166,8 @@ extension KanaKanjiConverter {
             add(KanaKanjiConverter.multiClauseEOSMarker)
             // 名詞+欄/製 の接尾(3123)
             for s in ["らん", "せい", "欄", "製"] { add(s) }
+            // 方角の直後の ら(3705)
+            add("ら")
             // 名詞+行き の接尾、コピュラ・クラスタの頭 です(3214)
             for s in ["いき", "行き", "です"] { add(s) }
             // 1 字漢字+家(か)の分割を抑える(3203)
@@ -3356,6 +3379,7 @@ extension KanaKanjiConverter {
         static let ほしい = MultiClauseSymbols.id("ほしい")
         static let まだ = MultiClauseSymbols.id("まだ")
         static let まち = MultiClauseSymbols.id("まち")
+        static let ら = MultiClauseSymbols.id("ら")
         static let らん = MultiClauseSymbols.id("らん")
         static let せい = MultiClauseSymbols.id("せい")
         static let 欄 = MultiClauseSymbols.id("欄")
