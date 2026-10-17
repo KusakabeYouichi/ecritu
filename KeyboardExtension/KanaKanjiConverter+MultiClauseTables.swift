@@ -1260,7 +1260,7 @@ extension KanaKanjiConverter {
     // おしい: seed は 惜しい→おしい→押井。かな おしい も seed 順に従わせて 押井 より前に出す(3182)
     // みずみずしさ/みずみずしい(3254): かな先頭の seed。変種 瑞々しさが減り を seed 順(100)で並べ、
     // 縁(へり の seed 2 番目、strict で 100)と同点にして文節位置の早い方を先に出す(ユーザ指定)
-    static let multiClauseSeedOrderVariantKanaLeadReadings: Set<String> = ["いまだ", "さすが", "たいして", "いそう", "とか", "えー", "うーむ", "あとあと", "たとえて", "であっても", "すみません", "おしい", "みずみずしさ", "みずみずしい", "おすすめ", "かけないで", "こつ", "なくし"]
+    static let multiClauseSeedOrderVariantKanaLeadReadings: Set<String> = ["いまだ", "さすが", "たいして", "いそう", "とか", "えー", "うーむ", "あとあと", "たとえて", "であっても", "すみません", "おしい", "みずみずしさ", "みずみずしい", "おすすめ", "かけないで", "こつ", "なくし", "にんにく"]
     // seed 順を変種の差分にそのまま使う(min でなく置換)読みの opt-in(2804)。派生同士は OOV 定額で同点になり、
     // min 方式では seed 2 番目のかな(たとえて)を同点 0 の 喩えて より前に出せない
     // おしい も seed 順(惜しい→おしい→押井)をそのまま変種順に使う。かな おしい を
@@ -2068,6 +2068,15 @@ extension KanaKanjiConverter {
     // (通っ 5563)が分割側の語幹(追っ 6057)以下+マージンなら分割側に減点する。駅に会った(会っ≪似合っ)の
     // ように分割側の語幹が優勢な正当分割には発火しない。
     static let multiClauseParticleSwallowedVerbHeadParticles: Set<String> = ["と", "に", "が", "は", "を", "で", "も", "へ"]
+    // 述語(活用派生)の直後に続く「の+助動詞/助詞」「ん+だ」の読み(かいてない+のだ/のに/ので…)。この読みの位置に
+    // 学習語彙・追加語彙の漢字の名詞(のだ→野田)が curated の床で入ると、かいてないのだ→書いてない野田 になる(ユーザ報告 3687)。
+    // 述語の直後では のだ 等の付属語の連なりが本筋なので、curated の漢字名詞を一律に下げる。学習そのものは残る(単文節の のだ では先頭)
+    static let multiClausePredicateFollowingFunctionReadings: Set<String> = [
+        "のだ", "のに", "ので", "のは", "のが", "のを", "のも", "のか", "のよ", "のね", "のです", "のでした", "のだろう", "のでしょう",
+        "んだ", "んで", "んです", "んでした", "んだろう", "んでしょう"
+    ]
+    static let multiClausePredicateFollowingFunctionReadingsID = MultiClauseIDSet(multiClausePredicateFollowingFunctionReadings)
+    static let multiClausePredicateFollowingCuratedNounPenalty = 6000
     static let multiClauseParticleSwallowedVerbHeadStemMargin = 500
     static let multiClauseParticleSwallowedVerbHeadPenalty = 2500
     // 補助動詞 ておく(2798)。さくじょしておきながら が 削除して置きながら になっていた: 補助動詞は
@@ -2760,7 +2769,9 @@ extension KanaKanjiConverter {
         // なおった/なおって/なおる: 単文節は 直 が先(直った/治った)だが、連文節は LM で 治 が先頭になり、ついでになおった→ついでに治った
         // と逆転していた(ユーザ指定 3617。他の語との接続でも 直 を先に)。癒 は稀
         "なおった": ["治った": 1500, "癒った": 3000], "なおって": ["治って": 1500, "癒って": 3000], "なおる": ["治る": 2500, "癒る": 3000],   // 治る 1500→2500: それだけでなおる→それだけで治る が LM(で→治る)で 直る に勝っていた(ユーザ指定 3676)
-        "たいてい": ["大抵": 300, "大帝": 4000],   // かな(seed 先頭)を連文節でも先に: たいていそれだけでなおる(ユーザ指定 3676)
+        "たいてい": ["大抵": 300, "大帝": 4000],
+        // にんにく: 単文節は seed でかなが先頭だが、連文節(にんにくは)は ニンニク が先頭だった(ユーザ指定 3687)
+        "にんにく": ["ニンニク": 2500, "大蒜": 2500, "忍辱": 3000, "葫": 3000],   // かな(seed 先頭)を連文節でも先に: たいていそれだけでなおる(ユーザ指定 3676)
         // 新社(しんしゃ): Wikipedia の社名(河出書房新社 等)で LM 5815 と 新車 7030 より安く、後ろに bigram の無い語が
         // 来ると差がそのまま出て しんしゃかった→新社買った・しんしゃを→新社を が先頭だった(ユーザ報告 3360)。
         // 新社屋/新社長/新社会人 は読みが別なので影響しない
@@ -3138,6 +3149,7 @@ extension KanaKanjiConverter {
             for s in ["気", "き"] { add(s) }
             for s in ["ある", "いう", "いち", "いって", "う", "お", "おそい", "か", "かち", "かん", "かんじ", "が", "きた", "くらい", "ぐらい", "こと", "ご", "ごと", "さ", "さん", "し", "した", "して", "します", "じん", "すぎ", "する", "そい", "そう", "た", "たい", "ため", "だ", "っけ", "であっても", "でも", "と", "な", "ない", "ないで", "なん", "に", "にも", "の", "のか", "は", "ひと", "ほうが", "ほうがいい", "ほしい", "まだ", "まち", "も", "もう", "や", "よう", "を", "ん", "ー", "一", "一手", "人", "位置", "価値", "化", "屋", "待ち", "感", "来た", "漢字", "産", "用", "様", "行って"] { add(s) }
             for s in KanaKanjiConverter.multiClauseAdverbKanjiAfterNounSurfaces.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClausePredicateFollowingFunctionReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseAuVerbReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseAuxiliaryAdjectiveKanaReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseBOSParticleBeforePredicateExemptParticles.sorted() { add(s) }

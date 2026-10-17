@@ -24528,4 +24528,35 @@ extension KanaKanjiConverterRegressionTests {
         }
         XCTAssertFalse(single("たまった").contains("溜った"))
     }
+
+    // 3687: にさそう はかな / にんにくは は連文節でもかな先頭 / かいてない+のだ に学習した 野田 が入らない /
+    // し の並び / ごはんと は ご飯と を先頭 / 和語数詞+助数詞(ひとけた→一桁/1桁)
+    func testRegression3687Batch() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        func single(_ r: String) -> [String] { converter.candidates(for: r, limit: 12, systemCandidateMode: .surface) }
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+
+        XCTAssertEqual(single("にさそう").first, "にさそう")
+        XCTAssertEqual(multi("ともだちにさそう").first, "友達にさそう", "\(multi("ともだちにさそう").prefix(3))")
+        XCTAssertEqual(multi("にんにくは").first, "にんにくは", "\(multi("にんにくは").prefix(3))")
+        XCTAssertEqual(single("にんにくは").first, "にんにくは")
+
+        XCTAssertEqual(Array(single("し").prefix(8)), ["し", "氏", "市", "師", "志", "死", "史", "司"])
+        XCTAssertEqual(Array(single("ごはんと").prefix(3)), ["ご飯と", "御飯と", "午飯と"], "\(single("ごはんと"))")
+        XCTAssertEqual(multi("ごはんとみそしる").first, "ご飯と味噌汁")
+
+        for (reading, expected) in [("ひとけた", ["一桁", "1桁"]), ("ふたけた", ["二桁", "2桁"]), ("みけた", ["三桁", "3桁"]),
+                                    ("ひとくみ", ["一組", "1組"]), ("いつつぶ", ["五粒", "5粒"])] {
+            XCTAssertEqual(Array(single(reading).prefix(2)), expected, reading)
+        }
+
+        // 野田 を学習しても、述語の直後の のだ は付属語のまま(単文節の のだ では学習が先頭)
+        converter.store.addLearnedEntry(reading: "のだ", candidate: "野田")
+        converter.invalidateCandidateCache()
+        XCTAssertEqual(single("のだ").first, "野田")
+        XCTAssertEqual(multi("かいてないのだ").first, "書いてないのだ", "\(multi("かいてないのだ").prefix(4))")
+        XCTAssertFalse(multi("かいてないのだ").contains { $0.contains("野田") }, "\(multi("かいてないのだ").prefix(4))")
+        XCTAssertEqual(multi("かいてないのに").first, "書いてないのに")
+    }
 }
