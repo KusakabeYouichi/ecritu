@@ -3676,6 +3676,17 @@ extension KanaKanjiConverter {
                                 cost += Self.multiClauseCuratedNonSuruBeforeSuruClusterPenalty
                             }
                         }
+                        // 同じ読みにサ変名詞(申請)があるのに、サ変でない漢字名詞(神聖=形容動詞)の直後に する/すると のかなが
+                        // 続く分割は非文(定数コメント参照。3707)。辞書語の名詞が対象(curated は上の規則、派生・かなは対象外)
+                        if node.isKanaIdentity, !prevNode.isKanaIdentity, !prevNode.isInflectionDerived, !prevNode.isCurated,
+                            containsKanji(prevNode.surface),
+                            Self.readingStartsWithSuruCluster(node.reading),
+                            !store.isSuruNoun(reading: prevNode.reading, candidate: prevNode.surface),
+                            store.hasSuruNounCandidate(reading: prevNode.reading),
+                            // 連接を明示して加点している組(当然+する)は口語として認めた形なので対象外
+                            Self.multiClauseBigramPairBonuses[prevNode.surface + "\t" + node.surface] == nil {
+                            cost += Self.multiClauseNonSuruSiblingBeforeSuruClusterPenalty
+                        }
                         // サ変名詞+後(ご): 受諾後/終了後/確認後 は最も生産的な接尾で、語(ご) は 国名+語 以外では立たない。
                         // 後(ご) は床免除後も 語→EOS 2114 < 後→EOS 2716 の文末統計で 46 差負けていた(定数コメント参照。3054)
                         if node.readingID == SID.ご, node.surface == "後",

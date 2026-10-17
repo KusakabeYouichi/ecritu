@@ -24727,4 +24727,17 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "うどんだしを", systemCandidateMode: .surface).first, "うどん出汁を")
     }
 
+    // 3707: サ変でない漢字名詞(神聖)の直後の すると は、同じ読みにサ変(申請)があれば減点(しんせいすると→申請すると)
+    func testRegressionShinseiSurutoPrefersSuruNoun() throws {
+        try prepareRealLMDictionary()
+        // しんせいしたら は派生 1 ノードで連文節が単文節に委ねるので対象外
+        for (reading, expected) in [("しんせいすると", "申請すると"), ("しんせいする", "申請する"), ("しんせいして", "申請して"),
+                                    ("しんせいしたらだめ", "申請したら")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertTrue(multi.first?.hasPrefix(expected) == true, "\(reading): \(multi.prefix(4))")
+        }
+        XCTAssertEqual(converter.candidates(for: "しんせい", limit: 3, systemCandidateMode: .surface).first, "申請")
+        // サ変の兄弟が無い読みは従来どおり(当然する は pair bonus)
+        XCTAssertEqual(converter.multiClauseCandidates(for: "とうぜんするでしょ", systemCandidateMode: .surface).first, "当然するでしょ")
+    }
 }
