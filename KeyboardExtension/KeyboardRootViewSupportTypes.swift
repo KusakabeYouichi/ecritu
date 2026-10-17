@@ -159,17 +159,14 @@ private struct SymbolScrollClipDisabledModifier: ViewModifier {
     static let bubbleAllowance: CGFloat = 56
 
     func body(content: Content) -> some View {
-        if #available(iOS 17.0, *) {
-            content
-                .scrollClipDisabled()
-                .mask(
-                    Rectangle()
-                        .padding(.top, -Self.bubbleAllowance)
-                        .ignoresSafeArea()
-                )
-        } else {
-            content
-        }
+        // 対応は iOS 17 以降(3682)なので #available の分岐は不要
+        content
+            .scrollClipDisabled()
+            .mask(
+                Rectangle()
+                    .padding(.top, -Self.bubbleAllowance)
+                    .ignoresSafeArea()
+            )
     }
 }
 
