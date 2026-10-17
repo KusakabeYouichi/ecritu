@@ -1637,7 +1637,7 @@ struct ContentView: View {
                     // ロゴメニューの表示中はスクロールを止める。止めないと指を項目へ下ろした
                     // 瞬間に ScrollView のパンがドラッグを奪い、メニューは残るが項目が選ばれない(2762)
                     .scrollDisabled(logoMenuGesture.isActive)
-                    .onChange(of: scrollToTopTrigger) { _ in
+                    .onChange(of: scrollToTopTrigger) { _, _ in
                         withAnimation(.easeOut(duration: 0.3)) {
                             scrollProxy.scrollTo(Self.scrollTopAnchorID, anchor: .top)
                         }
@@ -1655,11 +1655,11 @@ struct ContentView: View {
             .onAppear {
                 handleContainerAppAppear()
             }
-            .onChange(of: settingsSyncSignature) { _ in
+            .onChange(of: settingsSyncSignature) { _, _ in
                 SettingsSyncNotification.postSettingsDidChange()
                 showFullAccessSettingsNoticeIfNeeded()
             }
-            .onChange(of: userDictionaryCandidateDisplayModeRawValue) { newValue in
+            .onChange(of: userDictionaryCandidateDisplayModeRawValue) { _, newValue in
                 // 「使う」にしたとき、iOS のユーザ辞書の ☻ 語をショートカットへ取り込む予約(3244)
                 guard UserDictionaryCandidateDisplayModeOption(rawValue: newValue) == .on else {
                     // 「使わない」にしたら、拡張が共有領域に残した iOS ユーザ辞書の表(読み→候補)をその場で消す(3305)。
@@ -1674,7 +1674,7 @@ struct ContentView: View {
                 }
                 Self.sharedDefaults?.set(true, forKey: SettingsKeys.kanaKanjiUserDictionaryShortcutImportPending)
             }
-            .onChange(of: contactCandidateDisplayModeRawValue) { newValue in
+            .onChange(of: contactCandidateDisplayModeRawValue) { _, newValue in
                 let mode = ContactCandidateDisplayModeOption(rawValue: newValue) ?? .off
 
                 guard mode != .off else {
@@ -1685,7 +1685,7 @@ struct ContentView: View {
                 requestContactsAccessIfNeededInBackground()
                 syncContactCandidatesCacheFromContainerApp()
             }
-            .onChange(of: scenePhase) { newPhase in
+            .onChange(of: scenePhase) { _, newPhase in
                 guard newPhase == .active else {
                     return
                 }

@@ -602,7 +602,7 @@ struct FlickKeyView: View {
             }
         }
         .modifier(RawLongPressReceiver(enabled: isRawLongPressDriven, handler: handleRawLongPress))
-        .onChange(of: isGestureInProgress) { inProgress in
+        .onChange(of: isGestureInProgress) { _, inProgress in
             if !inProgress {
                 finalizeTouchInteractionState()
             }

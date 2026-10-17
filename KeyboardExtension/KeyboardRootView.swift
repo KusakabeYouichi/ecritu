@@ -1433,10 +1433,10 @@ struct KeyboardRootView: View {
         // (initialInputMode)への追従もこの1個で担う(4.4.1)。素の .onChange を
         // もう1個足すと Swift 6.3.3 Release(WMO)がopaque type置換の発散でクラッシュ
         // するため、複合値の監視に置き換えてモディファイア数を増やさない
-        .onChange(of: InputModeObservation(inputMode: inputMode, initialInputMode: initialInputMode, emojiInputSubmode: emojiInputSubmode)) { signal in
+        .onChange(of: InputModeObservation(inputMode: inputMode, initialInputMode: initialInputMode, emojiInputSubmode: emojiInputSubmode)) { _, signal in
             handleInputModeObservationChange(signal)
         }
-        .onChange(of: spaceToastTrigger) { _ in
+        .onChange(of: spaceToastTrigger) { _, _ in
             showInitialSpaceToastIfNeeded()
         }
         .onDisappear {
