@@ -66,7 +66,8 @@ enum SettingsCardKeys {
         "X.14": [SettingsKeys.adjectiveMeKanjiCandidatesEnabled],
         "X.15": [SettingsKeys.emojiCandidateDisplayEnabled, SettingsKeys.kaomojiCandidateDisplayEnabled],
         "X.16": [SettingsKeys.contactCandidateDisplayMode],
-        "X.17": [SettingsKeys.userDictionaryCandidateDisplayMode]
+        "X.17": [SettingsKeys.userDictionaryCandidateDisplayMode],
+        "X.18": [SettingsKeys.numeralStylePreference]
     ]
 
     // 見出しの先頭の番号(「X.9 常用漢字による書きかえ」→ X.9)

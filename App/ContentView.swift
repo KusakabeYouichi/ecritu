@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20261017193220"
+    private static let editionUpdatedAtRaw: String = "20261017195142"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -340,6 +340,12 @@ struct ContentView: View {
     private var kaCounterVariantPreferenceRawValue: String = KaCounterVariantPreference.default.encoded
 
     @AppStorage(
+        SettingsKeys.numeralStylePreference,
+        store: Self.sharedDefaults
+    )
+    private var numeralStylePreferenceRawValue: String = NumeralStylePreference.strategicDefault.rawValue
+
+    @AppStorage(
         SettingsKeys.okuriganaVariantPreference,
         store: Self.sharedDefaults
     )
@@ -635,6 +641,7 @@ struct ContentView: View {
             radicalStrokeCountStyleRawValue,
             String(ordinalMeKanjiPreferred),
             kaCounterVariantPreferenceRawValue,
+            numeralStylePreferenceRawValue,
             okuriganaVariantPreferenceRawValue,
             kakikaePreferenceRawValue,
             String(kakikaeEverydayException),
@@ -773,6 +780,7 @@ struct ContentView: View {
         str(SettingsKeys.radicalStrokeCountStyle, radicalStrokeCountStyleRawValue, "部首の画数の数え方")
         bool(SettingsKeys.ordinalMeKanjiPreferred, ordinalMeKanjiPreferred, "序数化suffixe – me(première…): 順序の『目』を漢字で先に")
         str(SettingsKeys.kaCounterVariantPreference, kaCounterVariantPreferenceRawValue, "助数詞型suffixe / 数詞類別suffixe – ka(un endroit…): か の表記(出す表記と順。- は出さない)")
+        str(SettingsKeys.numeralStylePreference, numeralStylePreferenceRawValue, "数詞の表記 – chiffres: arabicFirst(アラビア数字が先)/kanjiFirst(漢数字が先)/arabicOnly(アラビア数字だけ)/kanjiOnly(漢数字だけ)")
         str(SettingsKeys.okuriganaVariantPreference, okuriganaVariantPreferenceRawValue, "送り仮名の許容形 – orthographe: 語幹の中(stem)/複合語の前部要素(compound)/名詞化(noun)ごとに standardOnly(本則だけ)/standardFirst(本則を先に)/permittedFirst(許容を先に)")
         bool(SettingsKeys.adjectiveMeKanjiCandidatesEnabled, adjectiveMeKanjiCandidatesEnabled, "形状名詞化suffixe / 傾向派生suffixe – me(un peu …): 形容詞語幹の『目』候補も出す")
         bool(SettingsKeys.suspendMemorySlimmingEnabled, suspendMemorySlimmingEnabled, "キーボードが閉じたときにメモリを整理")
@@ -849,6 +857,12 @@ struct ContentView: View {
     private var landscapeLatinSuggestionModeSelection: Binding<LandscapeLatinSuggestionModeOption> {
         rawValueSelection(from: landscapeLatinSuggestionModeRawValue, default: .sidebar) {
             landscapeLatinSuggestionModeRawValue = $0
+        }
+    }
+
+    private var numeralStyleSelection: Binding<NumeralStylePreference> {
+        rawValueSelection(from: numeralStylePreferenceRawValue, default: .strategicDefault) {
+            numeralStylePreferenceRawValue = $0
         }
     }
 
@@ -1370,6 +1384,8 @@ struct ContentView: View {
         UserDictionaryCandidateDisplaySettingsSection(
             selection: userDictionaryCandidateDisplayModeSelection
         )
+
+        NumeralStyleSettingsSection(selection: numeralStyleSelection)
     }
 
     @ViewBuilder

@@ -85,6 +85,8 @@ final class KanaKanjiConverter {
     var ordinalMeKanjiPreferred: Bool = true
     // 助数詞「か」の表記(1か所/数か月)の表示順とオン/オフ(コンテナー設定。2816)
     var kaCounterVariantPreference: KaCounterVariantPreference = .default
+    // 数詞+助数詞の表記(アラビア数字/漢数字の順と有無。コンテナー設定 X.18。3702)。テスト(設定なし)は両方・アラビア数字が先
+    var numeralStylePreference: NumeralStylePreference = .arabicFirst
     // 送り仮名の許容形(終る/取扱う/届)の扱い(コンテナー設定。2820)
     var okuriganaVariantPreference: OkuriganaVariantPreference = .default
     var adjectiveMeKanjiCandidatesEnabled: Bool = false
@@ -121,6 +123,16 @@ final class KanaKanjiConverter {
                 return
             }
             ordinalMeKanjiPreferred = enabled
+            invalidateCandidateCache()
+        }
+    }
+
+    func setNumeralStylePreference(_ preference: NumeralStylePreference) {
+        withStateLock {
+            guard numeralStylePreference != preference else {
+                return
+            }
+            numeralStylePreference = preference
             invalidateCandidateCache()
         }
     }
@@ -744,38 +756,34 @@ final class KanaKanjiConverter {
         )
         addCandidates(numericUnitFallback, baseScore: CandidateScore.numericUnitFallback, to: &scores)
 
-        let arabicNumericCompound = arabicNumericCompoundCandidates(for: reading)
-        addCandidates(
-            arabicNumericCompound,
-            baseScore: CandidateScore.numericArabicCompound,
-            to: &scores
-        )
+        // 数詞+助数詞の表記の設定(X.18。3702): アラビア数字/漢数字のどちらを先の帯(400)に置くか、片方だけにするか
+        let numeralStyle = withStateLock { numeralStylePreference }
+        let arabicBand = numeralStyle.kanjiBeforeArabic ? CandidateScore.numericCounterCompound : CandidateScore.numericArabicCompound
+        let kanjiBand = numeralStyle.kanjiBeforeArabic ? CandidateScore.numericArabicCompound : CandidateScore.numericCounterCompound
+        let arabicNumericCompound = numeralStyle.includesArabic ? arabicNumericCompoundCandidates(for: reading) : []
+        addCandidates(arabicNumericCompound, baseScore: arabicBand, to: &scores)
 
-        let numericCounterCompound = numericCounterCompoundCandidates(
-            for: reading,
-            ajoutVocabulary: context.ajoutVocabulary,
-            initialAjoutVocabulary: context.initialAjoutVocabulary,
-            systemCandidateMode: context.mode,
-            limit: limit * 2
-        )
-        addCandidates(
-            numericCounterCompound,
-            baseScore: CandidateScore.numericCounterCompound,
-            to: &scores
-        )
-        // 漢語数詞の漢数字表記(二枚/第二回)。辞書にも他の生成にも無いものだけ、漢数字複合の帯に足す(3694)
-        let kanjiNumeralCompound = kanjiNumeralCompoundCandidates(for: reading).filter { scores[$0] == nil }
-        addCandidates(
-            kanjiNumeralCompound,
-            baseScore: CandidateScore.numericCounterCompound,
-            to: &scores
-        )
+        let numericCounterCompound = numeralStyle.includesKanji
+            ? numericCounterCompoundCandidates(
+                for: reading,
+                ajoutVocabulary: context.ajoutVocabulary,
+                initialAjoutVocabulary: context.initialAjoutVocabulary,
+                systemCandidateMode: context.mode,
+                limit: limit * 2
+            )
+            : []
+        addCandidates(numericCounterCompound, baseScore: kanjiBand, to: &scores)
+        // 漢語・和語数詞の漢数字表記(二枚/第二回/一桁)。辞書にも他の生成にも無いものだけ足す(3694)
+        let kanjiNumeralCompound = numeralStyle.includesKanji
+            ? kanjiNumeralCompoundCandidates(for: reading).filter { scores[$0] == nil }
+            : []
+        addCandidates(kanjiNumeralCompound, baseScore: kanjiBand, to: &scores)
 
         // 漢数字+ケ/ヶ の辞書語(二ケ所/五ケ所/六ヶ所/三ヶ日 等)は地名の収穫で、数詞複合(2か所)が
         // 作れる読みでは地名断片が rank 0 で先頭を取っていた(ユーザ指摘 2814)。生成した複合(2か所/二か所)
         // より後ろへ下げる。六ヶ所村/五ヶ所湾 のような完全な地名は読みが違うので無傷
-        if !arabicNumericCompound.isEmpty {
-            let generated = Set(arabicNumericCompound + numericCounterCompound)
+        if !arabicNumericCompound.isEmpty || !kanjiNumeralCompound.isEmpty {
+            let generated = Set(arabicNumericCompound + numericCounterCompound + kanjiNumeralCompound)
             for candidate in Array(scores.keys)
             where !generated.contains(candidate) && Self.isKanjiNumeralKePlaceNameFragment(candidate) {
                 scores[candidate, default: 0] -= CandidateScore.kanjiNumeralKePlaceNameDemotion

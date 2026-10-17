@@ -139,6 +139,8 @@ enum SettingsKeys {
     static let radicalStrokeCountStyle = "radicalStrokeCountStyle"
     static let ordinalMeKanjiPreferred = "ordinalMeKanjiPreferred"
     static let kaCounterVariantPreference = "kaCounterVariantPreference"
+    // 数詞+助数詞の表記(X.18。3702)
+    static let numeralStylePreference = "numeralStylePreference"
     static let okuriganaVariantPreference = "okuriganaVariantPreference"
     // 同音の漢字による書きかえ(KakikaePreference の rawValue。3422)
     static let kakikaePreference = "kakikaePreference"
