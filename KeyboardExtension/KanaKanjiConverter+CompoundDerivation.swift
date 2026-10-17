@@ -226,6 +226,19 @@ extension KanaKanjiConverter {
         "ひとつ": 1, "ふたつ": 2, "みっつ": 3, "よっつ": 4, "いつつ": 5,
         "むっつ": 6, "ななつ": 7, "やっつ": 8, "ここのつ": 9
     ]
+    // 和語数詞+助数詞(ひとけた→一桁/1桁、ふたくみ→二組/2組。3687)。長い読みを先に(貪欲一致)。
+    // 助数詞は和語数詞で数えるのが普通のものに限る(けた/くみ/つぶ/きれ/ふくろ/はこ/たば/やま/へや/いろ/ばん/かぶ/ふさ/さら/つつみ/つぼ)。
+    // 漢数字(一桁)を先、算用(1桁)を次に出す。いちけた 等の漢語数詞側は従来の算用複合(japaneseNumberReadingValue)が担う
+    static let arabicWagoNumeralReadings: [(reading: String, value: Int)] = [
+        ("ここの", 9), ("なな", 7), ("ひと", 1), ("ふた", 2), ("いつ", 5), ("とお", 10),
+        ("み", 3), ("よ", 4), ("む", 6), ("や", 8)
+    ]
+    static let arabicWagoCounterSurfacesByReading: [String: String] = [
+        "けた": "桁", "くみ": "組", "つぶ": "粒", "きれ": "切れ", "ふくろ": "袋", "はこ": "箱", "たば": "束",
+        "やま": "山", "へや": "部屋", "いろ": "色", "ばん": "晩", "かぶ": "株", "ふさ": "房", "さら": "皿",
+        "つつみ": "包み", "つぼ": "坪"
+    ]
+    static let kanjiNumerals = ["零", "一", "二", "三", "四", "五", "六", "七", "八", "九", "十"]
 
     // 漢数字の読み(いち/にじゅう/ごひゃく/さんぜん…)を算用数字値へ。1..9999。純粋な数の読みで
     // なければ nil(末尾に余りが残る=助数詞等が混じる読みは呼び出し側で分離済みが前提)。
@@ -299,6 +312,17 @@ extension KanaKanjiConverter {
             if ordinalPrefix.isEmpty, let value = Self.arabicWagoTsuReadings[body] {
                 emit("\(value)つ")
                 continue
+            }
+            // 和語数詞+助数詞(ひとけた→一桁/1桁。定義コメント参照。3687)。第 は付かない
+            if ordinalPrefix.isEmpty {
+                for (numeralReading, value) in Self.arabicWagoNumeralReadings where body.hasPrefix(numeralReading) {
+                    let counterReading = String(body.dropFirst(numeralReading.count))
+                    if let counter = Self.arabicWagoCounterSurfacesByReading[counterReading] {
+                        emit("\(Self.kanjiNumerals[value])\(counter)")
+                        emit("\(value)\(counter)")
+                    }
+                    break
+                }
             }
             let counterReadings = ordinalPrefix.isEmpty
                 ? Self.numericCompoundCounterReadings
