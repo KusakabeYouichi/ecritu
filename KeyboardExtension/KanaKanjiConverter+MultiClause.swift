@@ -3619,6 +3619,16 @@ extension KanaKanjiConverter {
                                 || Self.multiClauseSuruClusterKanaPrefixes.contains(where: { node.reading.hasPrefix($0) }) {
                             cost += Self.multiClauseTameSuruClusterPenalty
                         }
+                        // 述語(活用派生)の直後の のだ/のに/ので… の位置に、学習・追加語彙の漢字名詞(野田)が curated の床で
+                        // 入るのを止める(定義コメント参照。3687)。かいてない+のだ の連なりが本筋
+                        // 前が活用派生でなくても、かなで終わる語(ない/た/て 等の付属語かな)の直後なら同じ(買い手+ない+野田 を防ぐ)
+                        if node.isCurated, !node.isKanaIdentity, !node.isInflectionDerived,
+                            Self.multiClausePredicateFollowingFunctionReadingsID.contains(node.readingID),
+                            containsKanji(node.surface),
+                            prevNode.isInflectionDerived
+                                || (prevNode.surface.last?.unicodeScalars.first.map { (0x3041...0x309F).contains($0.value) } ?? false) {
+                            cost += Self.multiClausePredicateFollowingCuratedNounPenalty
+                        }
                         // curated の名詞(香信 等)の直後に助詞なしで する/される の付属部が続くのは、その語がサ変名詞でない限り
                         // 非文(定数コメント参照。3054)。かな識別・派生の curated と、pos サ変で登録された語(有する)は対象外
                         // 直後の切り方(された 1 ノード/さ+れ+た の断片)に依らず、残りの読み列で される/した… を見る
