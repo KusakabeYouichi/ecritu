@@ -692,6 +692,12 @@ extension KanaKanjiConverter {
                         wordCost: costMap[surface],
                         isDictionaryFormPredicate: seedIsDictionaryFormPredicate
                     )
+                    // 補助語彙(vin 等)のカタカナ表層を seed で供給した場合も、(b) の辞書語と同じく「何でもカタカナ化抑止」から
+                    // 免除する(がめい→ガメイ が 8700+1500 で変種の上限を超えて落ちていた。3693)
+                    if Self.isKatakanaString(surface),
+                        supplementalSystemDictionary.contains(reading: segmentReading, surface: surface) {
+                        supplementalKatakanaExemptNodeKeys.insert(spanKeyByStart[start][end] + "-" + surface)
+                    }
                     // 名詞 seed 順の opt-in(にほん→日本 等)は先頭候補ノードにボーナスを与え、
                     // 数量詞複合(2本/二本)や分割に連文節でも勝たせる(値は読み別)。
                     if let bonus = Self.multiClauseSeedOrderNounBonusesByReading[segmentReading],
@@ -700,9 +706,11 @@ extension KanaKanjiConverter {
                     }
                     // 漢字が seed 先頭の読みのカタカナ兄弟(コメ/ネコ)は容認するが推奨しない(ユーザ方針 3537)。bigram だけで
                     // 漢字(米)を抜かないよう定額で下げる(こめかってた→コメ買ってた)。seed 先頭がカタカナの語(コツ)は対象外
+                    // 補助語彙(vin 等)のカタカナ(ガメイ)は外来の固有名で、コメ/ネコ のような和語のカタカナ化ではないので対象外(3693)
                     if Self.isKatakanaString(surface),
                         let seedFirst = KanaKanjiSeedDictionary.seed[segmentReading]?.first,
-                        seedFirst != surface, containsKanji(seedFirst) {
+                        seedFirst != surface, containsKanji(seedFirst),
+                        !supplementalSystemDictionary.contains(reading: segmentReading, surface: surface) {
                         seedOrderNounNodeBonuses[spanKeyByStart[start][end] + "-" + surface, default: 0] -= Self.multiClauseKatakanaSeedSiblingDemotion
                     }
                 }
