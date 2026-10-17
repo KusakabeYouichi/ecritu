@@ -372,6 +372,10 @@ final class KanjiTotalStrokeMarkerGridCell: UICollectionViewCell {
         label.minimumScaleFactor = 0.6
         contentView.addSubview(label)
         isAccessibilityElement = true
+        // 外観(ライト/ダーク)が変わったら輪郭線の色を引き直す。traitCollectionDidChange は iOS 17 で非推奨(3685)
+        registerForTraitChanges([UITraitUserInterfaceStyle.self]) { (cell: KanjiTotalStrokeMarkerGridCell, _) in
+            cell.contentView.layer.borderColor = UIColor.separator.cgColor
+        }
     }
 
     @available(*, unavailable)
@@ -383,11 +387,6 @@ final class KanjiTotalStrokeMarkerGridCell: UICollectionViewCell {
         super.layoutSubviews()
         label.frame = contentView.bounds.insetBy(dx: 2, dy: 0)
         contentView.layer.cornerRadius = contentView.bounds.height / 2
-    }
-
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        contentView.layer.borderColor = UIColor.separator.cgColor
     }
 
     func configure(strokes: Int) {

@@ -319,7 +319,7 @@ struct ActionKeyButton: View {
                 }
         )
         .modifier(RawTouchDownKeyModifier(keyID: repeatsWhileHolding ? rawTouchKeyID : nil, handler: handleRawTouch))
-        .onChange(of: isRepeatTouchActive) { active in
+        .onChange(of: isRepeatTouchActive) { _, active in
             guard !active, repeatsWhileHolding else {
                 return
             }
@@ -626,7 +626,7 @@ struct SpaceFlickActionKeyButton: View {
                     }
                 }
         )
-        .onChange(of: isGestureInProgress) { inProgress in
+        .onChange(of: isGestureInProgress) { _, inProgress in
             if !inProgress {
                 finalizeTouchInteractionState()
             }

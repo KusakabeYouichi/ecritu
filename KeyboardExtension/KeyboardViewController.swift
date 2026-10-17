@@ -633,6 +633,11 @@ final class KeyboardViewController: UIInputViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         MemoryForensics.notePhase("個体の生成(viewDidLoad)")
+        // 外観とサイズクラスの変化の監視(3685)。クロージャーは self を引数で受けるので循環参照にならない
+        registerForTraitChanges([UITraitUserInterfaceStyle.self, UITraitVerticalSizeClass.self]) {
+            (controller: KeyboardViewController, previous: UITraitCollection) in
+            controller.handleTraitChange(previous: previous)
+        }
         // 縦画面は最初から 261(中身+透明な帯 17)を申告する(3264。Gboard と同じ)。判定を待って 244→261 と申告し直すと、
         // その一瞬の 244 でホストが帯を付ける経路に入ることがある(統合ログ 07:42:49)
         if traitCollection.verticalSizeClass != .compact {
@@ -1450,11 +1455,11 @@ final class KeyboardViewController: UIInputViewController {
         }
     }
 
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-
-        let styleDidChange = previousTraitCollection?.userInterfaceStyle != traitCollection.userInterfaceStyle
-        let sizeClassDidChange = previousTraitCollection?.verticalSizeClass != traitCollection.verticalSizeClass
+    // 外観(ライト/ダーク)と縦のサイズクラスの変化。viewDidLoad の registerForTraitChanges から呼ばれる
+    // (traitCollectionDidChange は iOS 17 で非推奨。3685)
+    func handleTraitChange(previous previousTraitCollection: UITraitCollection) {
+        let styleDidChange = previousTraitCollection.userInterfaceStyle != traitCollection.userInterfaceStyle
+        let sizeClassDidChange = previousTraitCollection.verticalSizeClass != traitCollection.verticalSizeClass
 
         guard styleDidChange || sizeClassDidChange else {
             return

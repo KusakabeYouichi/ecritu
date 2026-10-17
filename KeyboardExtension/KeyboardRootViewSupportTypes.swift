@@ -1240,7 +1240,7 @@ extension KeyboardRootView {
                 .frame(maxHeight: .infinity, alignment: .top)
             }
             }
-            .onChange(of: selectedConversionCandidateIndex) { index in
+            .onChange(of: selectedConversionCandidateIndex) { _, index in
                 guard let index else {
                     return
                 }

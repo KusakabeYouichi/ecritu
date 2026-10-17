@@ -526,7 +526,7 @@ struct KeyboardDiagnosticsSection: View {
             VStack(alignment: .leading, spacing: 2) {
                 Toggle("削除キーにメモリの数値を常に表示", isOn: $showsDeleteKeyMemoryBadge)
                     .font(.subheadline)
-                    .onChange(of: showsDeleteKeyMemoryBadge) { _ in
+                    .onChange(of: showsDeleteKeyMemoryBadge) { _, _ in
                         SettingsSyncNotification.postSettingsDidChange()
                     }
                 Text("オフでも、使用量の最大値が 45MB を超えると表示します。")
@@ -790,7 +790,7 @@ struct KanaPostModifierEmptyTapAssignmentSection: View {
                         currentCategoryBinding.wrappedValue = currentCategoryFallback
                     }
                 }
-                .onChange(of: actionSelection) { _ in
+                .onChange(of: actionSelection) { _, _ in
                     let validIDs = Set(currentCategoryDescriptors.map(\.id))
 
                     if !validIDs.contains(currentCategoryBinding.wrappedValue) {

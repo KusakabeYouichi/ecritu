@@ -474,7 +474,7 @@ extension KeyboardRootView {
                     }
                     .padding(.vertical, 0)
                 }
-                .onChange(of: selectedConversionCandidateIndex) { index in
+                .onChange(of: selectedConversionCandidateIndex) { _, index in
                     guard let index else {
                         return
                     }
