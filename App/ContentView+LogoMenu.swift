@@ -394,7 +394,7 @@ extension ContentView {
         SettingsKeys.latinLexiconItalianEnabled: true,
         SettingsKeys.latinLexiconGermanEnabled: true,
         SettingsKeys.latinLexiconEnglishEnabled: true,
-        SettingsKeys.kanaFlickGuideDisplayMode: FlickGuideDisplayOption.off.rawValue,
+        SettingsKeys.kanaFlickGuideDisplayMode: FlickGuideDisplayOption.fourDirections.rawValue,  // 保守的=かなのガイドは 4 方向(ユーザ指定 3709。現代的はオフ)
         SettingsKeys.latinFlickGuideDisplayMode: FlickGuideDisplayOption.fourDirections.rawValue,
         SettingsKeys.numberFlickGuideDisplayMode: FlickGuideDisplayOption.down.rawValue,
         SettingsKeys.modifierFlickGuideDisplayMode: FlickGuideDisplayOption.off.rawValue,
