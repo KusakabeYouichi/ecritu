@@ -476,6 +476,15 @@ final class KanaKanjiStore {
     // サ変名詞(動作名詞。長押し/タップ/操作/削除 = inflection_classes の suru)かどうか。
     // 連文節で「動作名詞+で」(手段の定型)を、助詞を呑んだ外来語1語(長押しデコード)より
     // 優先するために使う(2859)。上と同じ読み単位キャッシュに相乗りする。
+    // 同じ読みにサ変名詞の候補があるか(しんせい: 申請=suru、神聖=無し。3707)
+    func hasSuruNounCandidate(reading: String) -> Bool {
+        if let cached = withCacheLock({ cachedInflectionClassMapsByReading[reading] }) {
+            return cached.values.contains("suru")
+        }
+        _ = isSuruNoun(reading: reading, candidate: "")
+        return withCacheLock({ cachedInflectionClassMapsByReading[reading] })?.values.contains("suru") ?? false
+    }
+
     func isSuruNoun(reading: String, candidate: String) -> Bool {
         if let cached = withCacheLock({ cachedInflectionClassMapsByReading[reading] }) {
             return cached[candidate] == "suru"

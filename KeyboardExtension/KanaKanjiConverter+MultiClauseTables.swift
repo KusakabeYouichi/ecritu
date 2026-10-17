@@ -2086,6 +2086,10 @@ extension KanaKanjiConverter {
     // 合成に負けて こうしんされた→香信された になっていた(ユーザ報告 3054)。有する 等 pos サ変の curated は対象外
     // 3000 では 香信+された が 更新された(7200)の直後の変種に残った(差 300 以内)。変種枠からも外す幅にする
     static let multiClauseCuratedNonSuruBeforeSuruClusterPenalty = 6000
+    // 同じ読みにサ変名詞があるのに、サ変でない漢字名詞の直後に する/すると… のかなが続く分割への減点(3707)。
+    // しんせいすると が 神聖(uni 5913)+すると(接続詞のかな 1500)で 申請する(派生)+と に 94 差で勝っていた(ユーザ報告)。
+    // 神聖 は形容動詞で 神聖する は非文。読みに サ変の兄弟(申請)が無い語(メールする/ゲームする)は対象外
+    static let multiClauseNonSuruSiblingBeforeSuruClusterPenalty = 3000
     // サ変名詞の直後の 後(ご)。受諾後/終了後/確認後 は最も生産的な接尾で、語(ご) は 国名+語 以外では立たない。
     // 後(ご) の床免除(rareReadingFloorExempt)だけでは 語→EOS 2114 < 後→EOS 2716 の文末統計で 46 差負ける(3054)
     static let multiClauseSuruNounGoSuffixBonus = 1000
