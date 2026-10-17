@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-SIM_UDID="${ECRITU_SIM_UDID:-3F938359-9491-4D88-8ED8-178CF3D74F61}"
+SIM_UDID="${ECRITU_SIM_UDID:-$(bash "$(dirname "$0")/simulator_udid.sh")}"
 APP_BUNDLE_ID="${ECRITU_APP_BUNDLE_ID:-jp.or.pleiades.merope.ecritu}"
 APP_GROUP_ID="${ECRITU_APP_GROUP_ID:-group.${APP_BUNDLE_ID}}"
 TAIL_COUNT="${ECRITU_METRICS_TAIL:-20}"
