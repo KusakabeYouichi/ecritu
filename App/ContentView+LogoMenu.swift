@@ -45,7 +45,7 @@ enum LogoMenuAction: String, CaseIterable, Identifiable {
         case .copyYAML: return "YAML 形式"
         case .stashSettings: return "再インストール後も残る場所に保存"
         case .restoreStashedSettings: return "退避していた設定に戻す"
-        case .openManual: return "Safari で開く(全9章)"
+        case .openManual: return "Safari で開く(全10章)"
         case .openPrivacyPolicy: return "Safari で開く"
         case .about: return "version・édition と著作権表示"
         }
