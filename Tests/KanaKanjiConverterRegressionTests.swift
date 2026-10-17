@@ -15052,8 +15052,8 @@ extension KanaKanjiConverterRegressionTests {
             converter.candidates(for: "と", limit: 8, systemCandidateMode: .surface), reading: "と", precedingCharacter: "3"
         )
         XCTAssertTrue(boosted.contains("斗"), "boosted=\(boosted)")
-        // 3704 から ふたつ は misc の 二つ(それまでは辞書に無く 不達 だった)
-        XCTAssertEqual(converter.multiClauseCandidates(for: "せっていふたつ", systemCandidateMode: .surface).first, "設定二つ")
+        // 3704 から ふたつ は misc の 二つ/2つ(それまでは辞書に無く 不達 だった)。順はテスト既定の アラビア数字が先(3708)
+        XCTAssertEqual(converter.multiClauseCandidates(for: "せっていふたつ", systemCandidateMode: .surface).first, "設定2つ")
     }
 }
 
@@ -24694,14 +24694,23 @@ extension KanaKanjiConverterRegressionTests {
     func testRegressionPredicateAfterNumericCompound() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
-        for (reading, expected) in [("にまいかって", "2枚買って"), ("さんぼんかった", "3本買った"), ("ふたつかって", "二つ買って"),
-                                    ("にまいかった", "2枚買った"), ("みっつください", "三つください")] {
+        for (reading, expected) in [("にまいかって", "2枚買って"), ("さんぼんかった", "3本買った"), ("ふたつかって", "2つ買って"),
+                                    ("にまいかった", "2枚買った"), ("みっつください", "3つください")] {
             let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
             XCTAssertEqual(multi.first, expected, "\(reading): \(multi.prefix(4))")
         }
-        // 単文節は 2つ/二つ が 不達/布達 より先(どちらが先かは数詞の生成の加点次第)
-        XCTAssertEqual(Set(converter.candidates(for: "ふたつ", limit: 4, systemCandidateMode: .surface).prefix(2)), ["二つ", "2つ"])
-        XCTAssertEqual(Set(converter.candidates(for: "みっつ", limit: 3, systemCandidateMode: .surface).prefix(2)), ["三つ", "3つ"])
+        // curated の 二つ/2つ も X.18 の順(3708)。単文節・連文節とも
+        defer { converter.setNumeralStylePreference(.arabicFirst) }
+        for (style, single, multi) in [(NumeralStylePreference.arabicFirst, ["2つ", "二つ"], "2つ買って"),
+                                       (.kanjiFirst, ["二つ", "2つ"], "二つ買って")] {
+            converter.setNumeralStylePreference(style)
+            XCTAssertEqual(Array(converter.candidates(for: "ふたつ", limit: 4, systemCandidateMode: .surface).prefix(2)), single, "\(style)")
+            XCTAssertEqual(Array(converter.candidates(for: "みっつ", limit: 4, systemCandidateMode: .surface).prefix(2)),
+                           single.map { $0.replacingOccurrences(of: "2", with: "3").replacingOccurrences(of: "二", with: "三") }, "\(style)")
+            let m = converter.multiClauseCandidates(for: "ふたつかって", systemCandidateMode: .surface)
+            XCTAssertEqual(m.first, multi, "\(style) \(m.prefix(3))")
+        }
+        converter.setNumeralStylePreference(.arabicFirst)
         // 連用形の名詞(2枚組み)には加点しない(加点すると に舞組み 等の分割と同列になる)
         let nimaigumi = converter.multiClauseCandidates(for: "にまいぐみ", systemCandidateMode: .surface)
         XCTAssertTrue(nimaigumi.first?.hasPrefix("2枚組") == true, "\(nimaigumi.prefix(3))")
