@@ -851,6 +851,7 @@ extension ContentView {
             applyInitialPresetIfFreshInstall()
             applyKakikaeDefaultForExistingInstallIfNeeded()
             applyKakikaeEverydayExceptionDefaultForExistingInstallIfNeeded()
+            applyNumeralStyleDefaultForExistingInstallIfNeeded()
             normalizeLegacyKanaYaBracketValueIfNeeded()
             applyBasePresetDefaultIfNeeded()
             refreshSettingsStashSavedAt()

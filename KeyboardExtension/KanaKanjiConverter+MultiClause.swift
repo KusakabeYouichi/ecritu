@@ -1000,7 +1000,7 @@ extension KanaKanjiConverter {
                 //      のような実在の非数量語には基本負ける穏当な強さ。
                 if len >= 2 {
                     // 算用数字+助数詞(2本/第1回)を漢数字より先に供給(ユーザ方針: 算用優先)。
-                    for surface in arabicNumericCompoundCandidates(for: segmentReading)
+                    for surface in numeralCompoundCandidatesForLattice(for: segmentReading)
                     where surface != segmentReading {
                         add(surface, isDictWord: true, isCurated: false, isInflectionDerived: true)
                     }

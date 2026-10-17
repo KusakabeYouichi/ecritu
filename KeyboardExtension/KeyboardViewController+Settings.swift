@@ -81,6 +81,9 @@ extension KeyboardViewController {
         kanaKanjiConverter.setKaCounterVariantPreference(
             KaCounterVariantPreference.decode(sharedDefaults?.string(forKey: SharedDefaultsKeys.kaCounterVariantPreference))
         )
+        kanaKanjiConverter.setNumeralStylePreference(
+            NumeralStylePreference.decode(sharedDefaults?.string(forKey: SharedDefaultsKeys.numeralStylePreference))
+        )
         kanaKanjiConverter.setOkuriganaVariantPreference(
             OkuriganaVariantPreference.decode(sharedDefaults?.string(forKey: SharedDefaultsKeys.okuriganaVariantPreference))
         )

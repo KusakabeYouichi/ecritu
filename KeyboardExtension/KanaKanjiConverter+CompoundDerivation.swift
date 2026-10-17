@@ -325,6 +325,19 @@ extension KanaKanjiConverter {
             bodies = [("", reading)]
         }
         for (ordinalPrefix, body) in bodies {
+            // 和語数詞+助数詞の漢数字(ひとけた→一桁。算用 1桁 は arabicNumericCompoundCandidates)
+            if ordinalPrefix.isEmpty {
+                for (numeralReading, value) in Self.arabicWagoNumeralReadings where body.hasPrefix(numeralReading) {
+                    let counterReading = String(body.dropFirst(numeralReading.count))
+                    if let counter = Self.arabicWagoCounterSurfacesByReading[counterReading] {
+                        let text = "\(Self.kanjiNumerals[value])\(counter)"
+                        if seen.insert(text).inserted {
+                            results.append(text)
+                        }
+                    }
+                    break
+                }
+            }
             let counterReadings = ordinalPrefix.isEmpty
                 ? Self.numericCompoundCounterReadings
                 : Self.numericCompoundCounterReadings.union(Self.ordinalPrefixCounterSurfacesByReading.keys)
@@ -346,6 +359,14 @@ extension KanaKanjiConverter {
             }
         }
         return results
+    }
+
+    // 連文節の格子に載せる数詞+助数詞(設定 X.18 に従い、アラビア数字と漢数字を先の方から。3702)
+    func numeralCompoundCandidatesForLattice(for reading: String) -> [String] {
+        let style = withStateLock { numeralStylePreference }
+        let arabic = style.includesArabic ? arabicNumericCompoundCandidates(for: reading) : []
+        let kanji = style.includesKanji ? kanjiNumeralCompoundCandidates(for: reading) : []
+        return style.kanjiBeforeArabic ? kanji + arabic : arabic + kanji
     }
 
     // 算用数字+助数詞(2本/3週間/500円玉)と、序数(第1回/第2世代)をロジックで生成する。
@@ -380,7 +401,6 @@ extension KanaKanjiConverter {
                 for (numeralReading, value) in Self.arabicWagoNumeralReadings where body.hasPrefix(numeralReading) {
                     let counterReading = String(body.dropFirst(numeralReading.count))
                     if let counter = Self.arabicWagoCounterSurfacesByReading[counterReading] {
-                        emit("\(Self.kanjiNumerals[value])\(counter)")
                         emit("\(value)\(counter)")
                     }
                     break

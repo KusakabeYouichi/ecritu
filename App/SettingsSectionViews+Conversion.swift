@@ -695,3 +695,24 @@ struct OkuriganaVariantSettingsSection: View {
         }
     }
 }
+
+// 数詞+助数詞の表記(X.18。3702): アラビア数字(2枚)と漢数字(二枚)のどちらを先に出すか、片方だけにするか
+struct NumeralStyleSettingsSection: View {
+    @Binding var selection: NumeralStylePreference
+
+    var body: some View {
+        SegmentedSettingsCard(
+            title: "X.18 数詞の表記 – chiffres",
+            subtitle: "2枚 / 二枚",
+            pickerTitle: "数詞の表記",
+            selection: $selection,
+            options: Array(NumeralStylePreference.allCases),
+            optionTitle: { $0.title },
+            footnote: """
+            にまい・ひとけた・だいにかい のように数と助数詞を続けて打ったとき、アラビア数字の表記(2枚・1桁・第2回)と漢数字の表記(二枚・一桁・第二回)をどの順で出すか、片方だけにするかを決めます。辞書に語としてある 一枚・三本 はこの設定に関わらず出ます。
+
+            助数詞の『か』の字(1か所 / 1箇所 / 1ヶ所)は X.11 で選びます。初期設定は アラビア数字だけ で、保守的初期設定では 漢数字が先、現代的初期設定では アラビア数字が先 です。
+            """
+        )
+    }
+}

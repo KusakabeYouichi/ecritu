@@ -261,6 +261,7 @@ extension ContentView {
         SettingsKeys.kanaGakiSuppressFormalNoun, SettingsKeys.kanaGakiSuppressDemonstrative, SettingsKeys.kanaGakiSuppressAdverbKanaFirst,
         SettingsKeys.emojiCandidateDisplayEnabled, SettingsKeys.radicalStrokeCountStyle,
         SettingsKeys.ordinalMeKanjiPreferred, SettingsKeys.adjectiveMeKanjiCandidatesEnabled, SettingsKeys.kaCounterVariantPreference,
+        SettingsKeys.numeralStylePreference,
         SettingsKeys.okuriganaVariantPreference,
         SettingsKeys.kakikaePreference,
         SettingsKeys.kakikaeEverydayException,
@@ -344,6 +345,7 @@ extension ContentView {
         SettingsKeys.ordinalMeKanjiPreferred: true,
         SettingsKeys.adjectiveMeKanjiCandidatesEnabled: false,
         SettingsKeys.kaCounterVariantPreference: KaCounterVariantPreference.default.encoded,
+        SettingsKeys.numeralStylePreference: NumeralStylePreference.strategicDefault.rawValue,   // 戦略的=アラビア数字だけ(3702)
         SettingsKeys.okuriganaVariantPreference: OkuriganaVariantPreference.default.encoded,
         // 同音の漢字による書きかえは 本来の漢字だけ(ユーザ指定 3422)
         SettingsKeys.kakikaePreference: KakikaePreference.strategicDefault.rawValue,
@@ -425,6 +427,7 @@ extension ContentView {
         SettingsKeys.radicalStrokeCountStyle: "140:4,113:5,184:8",
         SettingsKeys.ordinalMeKanjiPreferred: false,
         SettingsKeys.kaCounterVariantPreference: KaCounterVariantPreference.conservative.encoded,  // 保守的=か・箇・ヶ・カ をオン(標準は か のみ)
+        SettingsKeys.numeralStylePreference: NumeralStylePreference.conservativeDefault.rawValue,   // 保守的=漢数字が先(3702)
         SettingsKeys.okuriganaVariantPreference: OkuriganaVariantPreference.conservative.encoded,  // 保守的=本則を先に許容も出す(標準は本則だけ)
         SettingsKeys.kakikaePreference: KakikaePreference.bothAfterFirst.rawValue,  // 保守的=常用漢字を先に前も出す(ユーザ指定 3422)
         SettingsKeys.kakikaeEverydayException: true,   // 保守的=オン(ユーザ指定 3644)
@@ -508,6 +511,7 @@ extension ContentView {
         SettingsKeys.radicalStrokeCountStyle: "140:4,113:5,184:8",
         SettingsKeys.ordinalMeKanjiPreferred: false,
         SettingsKeys.kaCounterVariantPreference: KaCounterVariantPreference.conservative.encoded,  // 保守的=か・箇・ヶ・カ をオン(標準は か のみ)
+        SettingsKeys.numeralStylePreference: NumeralStylePreference.contemporaryDefault.rawValue,   // 現代的=アラビア数字が先(3702)
         SettingsKeys.okuriganaVariantPreference: OkuriganaVariantPreference.conservative.encoded,  // 保守的=本則を先に許容も出す(標準は本則だけ)
         SettingsKeys.kakikaePreference: KakikaePreference.bothBeforeFirst.rawValue,  // 現代的=本来の漢字を先に前も出す(3422、3431 で変更)
         SettingsKeys.kakikaeEverydayException: true,   // 現代的=オン(ユーザ指定 3644)
@@ -868,6 +872,22 @@ extension ContentView {
     // 同音の漢字による書きかえ(3422)の値がまだ無い端末(この設定より前から使っている人)に 1 回だけ 両方(本来の漢字を先に)を書く。
     // 組み込みの標準値(戦略的初期設定)は 本来の漢字だけ なので、書かないとアップデートした途端に 回転→廻転 等になる。
     // 初めてインストールした端末は直前の applyInitialPresetIfFreshInstall が 両方(本来の漢字を先に) を書いているので素通り
+    // 数詞の表記(X.18。3702)の値が無い端末は、基準の初期設定ごとの値を書く(戦略的=アラビア数字だけ、保守的=漢数字が先、現代的=アラビア数字が先)
+    func applyNumeralStyleDefaultForExistingInstallIfNeeded() {
+        guard let defaults = Self.sharedDefaults,
+            defaults.object(forKey: SettingsKeys.numeralStylePreference) == nil else {
+            return
+        }
+        let value: NumeralStylePreference
+        switch Self.currentBasePreset {
+        case .strategic: value = .strategicDefault
+        case .conservative: value = .conservativeDefault
+        case .contemporary: value = .contemporaryDefault
+        }
+        defaults.set(value.rawValue, forKey: SettingsKeys.numeralStylePreference)
+        SettingsSyncNotification.postSettingsDidChange()
+    }
+
     func applyKakikaeDefaultForExistingInstallIfNeeded() {
         guard let defaults = Self.sharedDefaults,
             defaults.object(forKey: SettingsKeys.kakikaePreference) == nil else {

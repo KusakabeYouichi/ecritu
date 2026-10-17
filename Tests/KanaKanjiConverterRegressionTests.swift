@@ -24555,8 +24555,9 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(single("ごはんと").prefix(3)), ["ご飯と", "御飯と", "午飯と"], "\(single("ごはんと"))")
         XCTAssertEqual(multi("ごはんとみそしる").first, "ご飯と味噌汁")
 
-        for (reading, expected) in [("ひとけた", ["一桁", "1桁"]), ("ふたけた", ["二桁", "2桁"]), ("みけた", ["三桁", "3桁"]),
-                                    ("ひとくみ", ["一組", "1組"]), ("いつつぶ", ["五粒", "5粒"])] {
+        // 和語数詞も X.18 の設定(テストの既定は アラビア数字が先)に従う(3702)
+        for (reading, expected) in [("ひとけた", ["1桁", "一桁"]), ("ふたけた", ["2桁", "二桁"]), ("みけた", ["3桁", "三桁"]),
+                                    ("ひとくみ", ["1組", "一組"]), ("いつつぶ", ["5粒", "五粒"])] {
             XCTAssertEqual(Array(single(reading).prefix(2)), expected, reading)
         }
 
@@ -24604,6 +24605,40 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(converter.candidates(for: "いちまい", limit: 3, systemCandidateMode: .surface).prefix(2)), ["一枚", "1枚"])
         XCTAssertEqual(KanaKanjiConverter.kanjiNumeralString(2026), "二千二十六")
         XCTAssertEqual(KanaKanjiConverter.kanjiNumeralString(10), "十")
+    }
+
+    // 3702: 数詞の表記(X.18)。漢語数詞(にまい)も和語数詞(ひとけた)も序数(だいにかい)も、単文節・連文節とも設定どおりの順と有無
+    func testRegressionNumeralStylePreferenceOrdersAndFilters() throws {
+        try prepareRealLMDictionary()
+        defer { converter.setNumeralStylePreference(.arabicFirst) }
+        func single(_ r: String) -> [String] { converter.candidates(for: r, limit: 8, systemCandidateMode: .surface) }
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        let cases: [(NumeralStylePreference, [String], [String], [String])] = [
+            (.arabicFirst, ["2枚", "二枚"], ["1桁", "一桁"], ["第2回", "第二回"]),
+            (.kanjiFirst, ["二枚", "2枚"], ["一桁", "1桁"], ["第二回", "第2回"]),
+            (.arabicOnly, ["2枚"], ["1桁"], ["第2回"]),
+            (.kanjiOnly, ["二枚"], ["一桁"], ["第二回"]),
+        ]
+        for (style, nimai, hitoketa, dainikai) in cases {
+            converter.setNumeralStylePreference(style)
+            XCTAssertEqual(Array(single("にまい").prefix(nimai.count)), nimai, "\(style) \(single("にまい"))")
+            XCTAssertEqual(Array(single("ひとけた").prefix(hitoketa.count)), hitoketa, "\(style) \(single("ひとけた"))")
+            XCTAssertEqual(Array(single("だいにかい").prefix(dainikai.count)), dainikai, "\(style) \(single("だいにかい"))")
+            // 片方だけの設定では、もう片方の表記は候補のどこにも出ない
+            if !style.includesKanji {
+                XCTAssertFalse(single("にまい").contains("二枚"), "\(single("にまい"))")
+            }
+            if !style.includesArabic {
+                XCTAssertFalse(single("にまい").contains("2枚"), "\(single("にまい"))")
+            }
+            // 連文節(にまいかって)も先頭の表記が設定に従う
+            let m = multi("にまいください")
+            XCTAssertTrue(m.first?.hasPrefix(nimai[0]) == true, "\(style) \(m.prefix(4))")
+        }
+        // 辞書にある 一枚/三本 は設定に関わらず残る
+        converter.setNumeralStylePreference(.arabicOnly)
+        XCTAssertTrue(single("いちまい").contains("一枚"), "\(single("いちまい"))")
+        XCTAssertEqual(single("いちまい").first, "一枚")
     }
 
     // 3695: はっそう は 発送 を先頭、交ぜ書き 発そう/發そう は抑制。宅急便+発送 の隣接
