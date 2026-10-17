@@ -24529,7 +24529,7 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertFalse(single("たまった").contains("溜った"))
     }
 
-    // 3687: にさそう はかな / にんにくは は連文節でもかな先頭 / かいてない+のだ に学習した 野田 が入らない /
+    // 3687: にさそう は に誘う を先頭に他を残す(3691) / にんにくは は連文節でもかな先頭 / かいてない+のだ に学習した 野田 が入らない /
     // し の並び / ごはんと は ご飯と を先頭 / 和語数詞+助数詞(ひとけた→一桁/1桁)
     func testRegression3687Batch() throws {
         try prepareRealLMDictionary()
@@ -24537,8 +24537,9 @@ extension KanaKanjiConverterRegressionTests {
         func single(_ r: String) -> [String] { converter.candidates(for: r, limit: 12, systemCandidateMode: .surface) }
         func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
 
-        XCTAssertEqual(single("にさそう").first, "にさそう")
-        XCTAssertEqual(multi("ともだちにさそう").first, "友達にさそう", "\(multi("ともだちにさそう").prefix(3))")
+        XCTAssertEqual(Array(single("にさそう").prefix(5)), ["に誘う", "に指そう", "に刺そう", "に挿そう", "にさそう"], "\(single("にさそう"))")
+        // 文中でも 誘う を先頭に(3691)
+        XCTAssertEqual(multi("ともだちにさそう").first, "友達に誘う", "\(multi("ともだちにさそう").prefix(3))")
         XCTAssertEqual(multi("にんにくは").first, "にんにくは", "\(multi("にんにくは").prefix(3))")
         XCTAssertEqual(single("にんにくは").first, "にんにくは")
 

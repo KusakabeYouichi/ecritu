@@ -717,7 +717,11 @@
 	<dict><key>phrase</key><string>修繕班</string><key>shortcut</key><string>しゅうぜんはん</string></dict>
 	<!-- 週後半: 週前半 と同じ(しゅうこうはん が 州後半/集後半/周後半/週後半 で 週 が最後。週前半 の報告に合わせた予防) -->
 	<dict><key>phrase</key><string>週後半</string><key>shortcut</key><string>しゅうこうはん</string></dict>
-	<!-- にさそう: 連文節が に指そう/に刺そう/に挿そう/に誘う で、かなが出なかった(ユーザ指定 3687)。かなを先頭に -->
+	<!-- にさそう: 連文節が に指そう/に刺そう/に挿そう/に誘う の順だった。に誘う を先頭に、他は後ろに残し、かなは末尾(ユーザ指定 3691。登録は候補集合を置き換えるので全部並べる) -->
+	<dict><key>phrase</key><string>に誘う</string><key>shortcut</key><string>にさそう</string></dict>
+	<dict><key>phrase</key><string>に指そう</string><key>shortcut</key><string>にさそう</string></dict>
+	<dict><key>phrase</key><string>に刺そう</string><key>shortcut</key><string>にさそう</string></dict>
+	<dict><key>phrase</key><string>に挿そう</string><key>shortcut</key><string>にさそう</string></dict>
 	<dict><key>phrase</key><string>にさそう</string><key>shortcut</key><string>にさそう</string></dict>
 	<!-- 東京府: 辞書に無く とうきょうふ が 等恐怖/塔恐怖… だった(ユーザ指定 3665) -->
 	<dict><key>phrase</key><string>東京府</string><key>shortcut</key><string>とうきょうふ</string></dict>
