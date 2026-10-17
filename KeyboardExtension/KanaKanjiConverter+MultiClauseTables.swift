@@ -517,6 +517,24 @@ extension KanaKanjiConverter {
         }
         return true
     }
+    static func startsWithArabicDigit(_ surface: String) -> Bool {
+        surface.first.map { "0123456789０１２３４５６７８９".contains($0) } ?? false
+    }
+    // curated の表記群から、同じ助数詞(つ)でアラビア数字と漢数字の両方がある表記だけを返す(3708)。
+    // 八岐大蛇/八俣遠呂智 のように 数字で始まるだけの語が数量語の組と見なされないよう、数詞を除いた尾で組にする
+    static func curatedNumeralStylePairs(_ surfaces: [String]) -> [String] {
+        var byTail: [String: [String]] = [:]
+        for surface in surfaces where isNumericCompoundSurface(surface) {
+            let tail = String(surface.drop(while: { multiClauseNumeralCharacters.contains($0) || $0 == "第" }))
+            byTail[tail, default: []].append(surface)
+        }
+        return byTail.values.filter { group in
+            group.contains(where: startsWithArabicDigit) && group.contains(where: { !startsWithArabicDigit($0) })
+        }.flatMap { $0 }
+    }
+    // curated の数量語(misc の 二つ/2つ)が同じ読みに両方あるとき、X.18 の順の表記に付ける加点(3708)。
+    // 生成でなく登録語なので帯(400/360)の差が付かず、登録順(二つ が先)のままだった(ふたつかって→二つ買って)
+    static let multiClauseNumeralStyleCuratedBonus = 500
     // 数詞+助数詞の直後の活用派生の述語(2枚買って/3本買った/2つください)への加点(3704)。数量語は固定コスト 7200 で
     // 供給されるため、同じ読みの固有名(山本 5414/不達 1500)に先頭を取られ、述語の直前でも 山本買った になっていた。
     // 名詞(2枚組/3本立て)には加点も減点もしない。連用形(組み/立て/入り)は名詞になるので、加点は下の語尾に限る。

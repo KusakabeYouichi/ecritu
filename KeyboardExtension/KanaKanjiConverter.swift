@@ -777,6 +777,14 @@ final class KanaKanjiConverter {
         let kanjiNumeralCompound = numeralStyle.includesKanji
             ? kanjiNumeralCompoundCandidates(for: reading).filter { scores[$0] == nil }
             : []
+        // curated の数量語(misc の 二つ/2つ)が両方あるときは、生成と同じ帯を足して X.18 の順にする(3708)
+        let curatedNumeric = Self.curatedNumeralStylePairs(context.userCandidates)
+        if !curatedNumeric.isEmpty {
+            let generated = Set(arabicNumericCompound + numericCounterCompound + kanjiNumeralCompound)
+            for surface in curatedNumeric where !generated.contains(surface) {
+                addCandidates([surface], baseScore: Self.startsWithArabicDigit(surface) ? arabicBand : kanjiBand, to: &scores)
+            }
+        }
         addCandidates(kanjiNumeralCompound, baseScore: kanjiBand, to: &scores)
 
         // 漢数字+ケ/ヶ の辞書語(二ケ所/五ケ所/六ヶ所/三ヶ日 等)は地名の収穫で、数詞複合(2か所)が

@@ -335,6 +335,8 @@ extension KanaKanjiConverter {
         let initialAjoutVocabulary = store.initialAjoutVocabulary()
         let learnedDictionary = store.learnedDictionary()
         let manualAjoutVocabulary = store.ajoutVocabulary()
+        // 数詞の表記(X.18)。curated の 二つ/2つ の順に使う(3708)
+        let numeralStyleForLattice = withStateLock { numeralStylePreference }
         // 1 区間の上限(12 字)を超える追加語彙の読みの長さ(3505。定義コメント参照)
         let curatedLongReadingLengths = n > Self.multiClauseMaxSegmentReadingCount ? store.curatedLongReadingLengths() : []
 
@@ -1020,6 +1022,13 @@ extension KanaKanjiConverter {
                     if segmentReading.hasPrefix("すう"),
                         let first = numeric.first(where: { $0.hasPrefix("数") }) {
                         seedOrderNounNodeBonuses[spanKeyByStart[start][end] + "-" + first] = Self.multiClauseSuuCounterCompoundBonus
+                    }
+                    // curated の数量語(二つ/2つ)が両方あるとき、X.18 の順の表記に加点(定数コメント参照。3708)
+                    let curatedNumeric = Self.curatedNumeralStylePairs(surfaces.filter { $0.isCurated }.map { $0.surface })
+                    for surface in curatedNumeric
+                    where Self.startsWithArabicDigit(surface) != numeralStyleForLattice.kanjiBeforeArabic {
+                        seedOrderNounNodeBonuses[spanKeyByStart[start][end] + "-" + surface, default: 0]
+                            += Self.multiClauseNumeralStyleCuratedBonus
                     }
                 }
 
