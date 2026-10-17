@@ -14758,7 +14758,8 @@ extension KanaKanjiConverterRegressionTests {
         try loadDeviceAddedVocabulary()
         defer { converter.setKaCounterVariantPreference(.default) }
         // 戦略的初期設定は か だけ
-        XCTAssertEqual(converter.candidates(for: "いっかしょ", limit: 8, systemCandidateMode: .surface), ["1か所"])
+        // 3694 から漢数字(一か所)も算用の後ろに出る
+        XCTAssertEqual(converter.candidates(for: "いっかしょ", limit: 8, systemCandidateMode: .surface), ["1か所", "一か所"])
         XCTAssertEqual(converter.candidates(for: "すうかげつ", limit: 8, systemCandidateMode: .surface), ["数か月"])
         // 数字の後ろでない かこく は 過酷 が先頭、か国 はその後ろ(3435、ユーザ指定)
         let kakokuAlone = converter.candidates(for: "かこく", limit: 3, systemCandidateMode: .surface)
@@ -14771,12 +14772,12 @@ extension KanaKanjiConverterRegressionTests {
         // 保守的初期設定(か・箇・ヶ・カ)
         converter.setKaCounterVariantPreference(.conservative)
         let conservativeOrder = ["か", "箇", "ヶ", "カ"]
-        XCTAssertEqual(converter.candidates(for: "いっかしょ", limit: 8, systemCandidateMode: .surface), conservativeOrder.map { "1\($0)所" })
+        XCTAssertEqual(converter.candidates(for: "いっかしょ", limit: 8, systemCandidateMode: .surface), conservativeOrder.map { "1\($0)所" } + conservativeOrder.map { "一\($0)所" })
         XCTAssertEqual(converter.multiClauseCandidates(for: "すうかこくたいおう", systemCandidateMode: .surface), conservativeOrder.map { "数\($0)国対応" })
         XCTAssertFalse(converter.candidates(for: "すうかしょ", limit: 8, systemCandidateMode: .surface).contains("数個所"))
         // 設定を変える: 箇 → ヶ だけ出す
         converter.setKaCounterVariantPreference(KaCounterVariantPreference(encoded: "箇,ヶ,-か,-カ,-ヵ,-個,-ケ"))
-        XCTAssertEqual(converter.candidates(for: "いっかしょ", limit: 8, systemCandidateMode: .surface), ["1箇所", "1ヶ所"])
+        XCTAssertEqual(converter.candidates(for: "いっかしょ", limit: 8, systemCandidateMode: .surface), ["1箇所", "1ヶ所", "一箇所", "一ヶ所"])
         XCTAssertEqual(converter.multiClauseCandidates(for: "すうかこくたいおう", systemCandidateMode: .surface), ["数箇国対応", "数ヶ国対応"])
         // 永続形式の往復
         // 旧形式(表記そのもの)も読める。書き出しは ASCII 識別子(3004)
@@ -24573,5 +24574,50 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi.first, "iPhone Duo", "\(multi.prefix(4))")
         XCTAssertTrue(multi.contains("iPhoneデュオ"), "合成の別解は残す \(multi.prefix(4))")
         XCTAssertEqual(converter.candidates(for: "あいふぉんでゅお", limit: 4, systemCandidateMode: .surface).first, "iPhone Duo")
+    }
+
+    // 3693: がめい(葡萄品種 ガメイ=vin)は連文節の変種でも 3 位以内。補助語彙のカタカナは seed 兄弟の降格(コメ/ネコ)の対象外
+    func testRegressionGamayKatakanaWithinTopThree() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        XCTAssertEqual(Array(converter.candidates(for: "がめい", limit: 4, systemCandidateMode: .surface)), ["画名", "雅名", "ガメイ", "Gamay"])
+        let multi = converter.multiClauseCandidates(for: "がめいわすれたら", systemCandidateMode: .surface)
+        XCTAssertTrue(multi.prefix(3).contains("ガメイ忘れたら"), "\(multi.prefix(4))")
+        // 和語のカタカナ化(コメ/ネコ)の降格は従来どおり
+        XCTAssertEqual(converter.multiClauseCandidates(for: "こめかってた", systemCandidateMode: .surface).first, "米買ってた")
+    }
+
+    // 3694: 漢語数詞+助数詞は算用と漢数字の両方(にまい→2枚/二枚、よんそう→4層/四層、だいにかい→第2回/第二回)
+    func testRegressionNumericCompoundEmitsKanjiNumeral() throws {
+        try prepareRealLMDictionary()
+        for (reading, expected) in [("にまい", ["2枚", "二枚"]), ("よんそう", ["4層", "四層"]), ("だいにかい", ["第2回", "第二回"]),
+                                    ("にじゅうさんぼん", ["23本", "二十三本"]), ("ひゃくまい", ["100枚", "百枚"])] {
+            let list = converter.candidates(for: reading, limit: 6, systemCandidateMode: .surface)
+            XCTAssertEqual(Array(list.prefix(2)), expected, "\(reading): \(list)")
+        }
+        // 辞書にある 一枚/三本 は辞書側が残る
+        XCTAssertEqual(Array(converter.candidates(for: "いちまい", limit: 3, systemCandidateMode: .surface).prefix(2)), ["一枚", "1枚"])
+        XCTAssertEqual(KanaKanjiConverter.kanjiNumeralString(2026), "二千二十六")
+        XCTAssertEqual(KanaKanjiConverter.kanjiNumeralString(10), "十")
+    }
+
+    // 3695: はっそう は 発送 を先頭、交ぜ書き 発そう/發そう は抑制。宅急便+発送 の隣接
+    func testRegressionHassouOrderAndMazegaki() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let list = converter.candidates(for: "はっそう", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(2)), ["発送", "発想"], "\(list)")
+        XCTAssertFalse(list.contains { $0.hasSuffix("そう") && $0 != "はっそう" && $0.hasPrefix("発") || $0.hasPrefix("發そ") }, "\(list)")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "たっきゅうびんはっそうよう", systemCandidateMode: .surface).first, "宅急便発送用")
+    }
+
+    // 3696: みんな はかなが先頭(seed)。連文節でも 皆→に の bigram に負けない
+    func testRegressionMinnaKanaLeadsMultiClause() throws {
+        try prepareRealLMDictionary()
+        for (reading, expected) in [("みんなにしれわたり", "みんなに知れ渡り"), ("みんながすきだ", "みんなが好きだ"), ("みんなでいこう", "みんなで行こう")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "\(reading): \(multi.prefix(3))")
+        }
+        XCTAssertEqual(converter.candidates(for: "みなさん", limit: 2, systemCandidateMode: .surface).first, "皆さん")
     }
 }
