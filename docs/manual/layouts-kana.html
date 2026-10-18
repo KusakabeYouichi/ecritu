@@ -63,7 +63,7 @@
       <div class="arrow r">▶</div>
     </div>
     <dl class="legend">
-      <dt>écritu式(初期設定)</dt>
+      <dt>écritu式(戦略的初期設定)</dt>
       <dd>タップ=あ、上=い、右=う、左=え、下=お。時計回りではなく、12時方向から Z 字順に並びます。</dd>
     </dl>
     <div class="cross">
@@ -114,8 +114,8 @@
   <p>フリックガイドを『4方向』で表示しているときは、ガイド文字が各方向の位置にそのまま出るので迷いません。ガイドを『下』(キー下部に1行でまとめて表示)にしているときは、並び順が方式に追従します — écritu式では『上・右・左・下』の順、littlebear式では『左・上・右・下』の順、hanabi式では『右・下・左・上』の順に文字が並びます。かなキーはどの方式でも五十音順(い う え お)に見えるように設計されています。</p>
 
   <!-- ================================================================ -->
-  <h2 id="kana-five-by-two">かな5×2(初期設定)</h2>
-  <p>初期設定のかな配列です。あ〜な行を上の段、は〜わ行を下の段に置いた2段構成で、最上段に数字ストリップ(1〜0を直接入力)、左端にモード切り替え列、最下段にアクション行が付きます。</p>
+  <h2 id="kana-five-by-two">かな5×2(戦略的初期設定)</h2>
+  <p>戦略的初期設定のかな配列です(初期設定は次の3×3+わ)。あ〜な行を上の段、は〜わ行を下の段に置いた2段構成で、最上段に数字ストリップ(1〜0を直接入力)、左端にモード切り替え列、最下段にアクション行が付きます。</p>
 
   <h3 id="kana-five-by-two-board">全体図</h3>
   <div class="pair">
@@ -151,7 +151,7 @@
           <div class="k ret" style="font-size:22px">⏎</div>
         </div>
       </div>
-      <figcaption>かな5×2・ライト(初期設定: écritu式・前置修飾・ガイド4方向)。未入力のため候補バーは空です。</figcaption>
+      <figcaption>かな5×2・ライト(戦略的初期設定: écritu式・前置修飾・ガイド4方向)。未入力のため候補バーは空です。</figcaption>
     </figure>
     <figure>
       <div class="kb dark">
@@ -233,7 +233,7 @@
   </table></div>
   <p>空白キーは、未確定の文字があるときは[変換]、⏎ キーは[確定]という表示に変わります(<a href="basics.html">第4章</a>)。また空白キーを<b>上にフリックするとタブ(⇥)</b>が入ります。地球儀キーがキーボード内に必要な機種(ホームボタンのある iPhone)では、アクション行の ☺︎ の右に 🌐 キーが加わります(3×3+わ では右列最下段に 🌐 が入り、⏎ が1段になります)(画面幅の狭い機種では ☺︎ の役割が 🌐 キーのフリックに統合され、全体が少し詰まった配置になります)。</p>
 
-  <h3 id="kana-refgrid-ecritu">全キー早見 — écritu式(初期設定)</h3>
+  <h3 id="kana-refgrid-ecritu">全キー早見 — écritu式(戦略的初期設定)</h3>
   <div class="refgrid">
     <div class="refkey"><span class="c">あ</span><span class="u">い</span><span class="r">う</span><span class="d">お</span><span class="l">え</span></div>
     <div class="refkey"><span class="c">か</span><span class="u">き</span><span class="r">く</span><span class="d">こ</span><span class="l">け</span></div>
@@ -249,7 +249,7 @@
   </div>
   <p>わ キーには『を』『ん』に加えて長音『ー』と波ダッシュ『〜』、や キーには二重かぎ括弧「『」「』」が割り当てられています。、キーの詳細は<a href="#punctuation-key">後述</a>、『』からの2段階フリックは<a href="#ya-bracket-flick">次項</a>を見てください。</p>
 
-  <h3 id="kana-refgrid-apple">全キー早見 — littlebear式</h3>
+  <h3 id="kana-refgrid-apple">全キー早見 — littlebear式(初期設定)</h3>
   <div class="refgrid">
     <div class="refkey"><span class="c">あ</span><span class="u">う</span><span class="r">え</span><span class="d">お</span><span class="l">い</span></div>
     <div class="refkey"><span class="c">か</span><span class="u">く</span><span class="r">け</span><span class="d">こ</span><span class="l">き</span></div>
@@ -269,7 +269,7 @@
   <p>や キーの『』は、フリックしたあと<b>指を離さずに上下へ動かす</b>と別の括弧に切り替わる『2段階フリック』に対応しています。2段目が使えるのは<b>左右方向のフリックだけ</b>なので、方向プロファイルによって使える組み合わせが変わります。</p>
   <div class="tablewrap"><table class="spec">
     <tr><th>方向プロファイル</th><th>1段目</th><th>そのまま上へ</th><th>そのまま下へ</th></tr>
-    <tr><td>écritu式(初期設定)</td><td>左フリック=』</td><td>)</td><td>」</td></tr>
+    <tr><td>écritu式(戦略的初期設定)</td><td>左フリック=』</td><td>)</td><td>」</td></tr>
     <tr><td rowspan="2">littlebear式</td><td>左フリック=『</td><td>(</td><td>「</td></tr>
     <tr><td>右フリック=』</td><td>)</td><td>」</td></tr>
   </table></div>
@@ -280,7 +280,7 @@
   <p>わ キーも2段階フリックに対応しています。旧仮名の『ゐ』『ゑ』と、方向プロファイルごとに1段目から移した文字がここに入ります。</p>
   <div class="tablewrap"><table class="spec">
     <tr><th>方向プロファイル</th><th>1段目</th><th>そのまま下へ</th></tr>
-    <tr><td rowspan="2">écritu式(初期設定)</td><td>左フリック=ー</td><td>ゑ</td></tr>
+    <tr><td rowspan="2">écritu式(戦略的初期設定)</td><td>左フリック=ー</td><td>ゑ</td></tr>
     <tr><td>右フリック=ん</td><td>〜</td></tr>
     <tr><td rowspan="2">littlebear式</td><td>左フリック=を</td><td>ゐ</td></tr>
     <tr><td>右フリック=ー</td><td>ゑ</td></tr>
@@ -311,7 +311,7 @@
   </div>
 
   <!-- ================================================================ -->
-  <h2 id="kana-three-by-three">かな3×3+わ</h2>
+  <h2 id="kana-three-by-three">かな3×3+わ(初期設定)</h2>
   <p>iOS 標準の12キー配列に近い縦型の配列です(設定は<a href="settings.html#kana-layout">第8章[かな配列]</a>)。かなキーは あかさ/たなは/まやら の3×3に並び、<b>わ キーは最下段の中央</b>、<b>、キーは最下段の右</b>、修飾キー(小)は最下段の左に置かれます。右端の列に ⌫・空白・⏎ が縦に並びます。</p>
 
   <figure>
@@ -358,9 +358,9 @@
 
   <!-- ================================================================ -->
   <h2 id="modifier-key">修飾キー — 濁点・半濁点・小文字</h2>
-  <p>濁点『゛』・半濁点『゜』・小文字(っ ゃ など)は<b>修飾キー</b>で入力します。手順の方式は設定[<a href="settings.html#kana-modifier">かな修飾</a>]で選べます: <b>前置修飾</b>(初期設定)は[修飾キーを押してから、かなを打つ]、<b>後置修飾</b>は iOS 標準と同じ[かなを打ってから修飾キーを押す]方式です。</p>
+  <p>濁点『゛』・半濁点『゜』・小文字(っ ゃ など)は<b>修飾キー</b>で入力します。手順の方式は設定[<a href="settings.html#kana-modifier">かな修飾</a>]で選べます: <b>後置修飾</b>(初期設定)は iOS 標準と同じ[かなを打ってから修飾キーを押す]、<b>前置修飾</b>(戦略的初期設定)は[修飾キーを押してから、かなを打つ]方式です。</p>
 
-  <h3 id="modifier-prefix">前置修飾(初期設定)</h3>
+  <h3 id="modifier-prefix">前置修飾(戦略的初期設定)</h3>
   <div class="pair">
     <figure>
       <span class="kwrap"><span class="k"><span style="font-size:17px;font-weight:700">小</span><span class="h" style="font-size:25px;font-weight:700;transform:translate(calc(-50% + 4px), calc(-50% - 6px))">゛</span><span class="h" style="font-size:25px;font-weight:700;transform:translate(calc(-50% + 25px), calc(-50% + 5px))">゜</span><span class="h d">…</span><span class="h l">カ</span></span></span>
@@ -387,7 +387,7 @@
   </table></div>
   <p>この表にない文字(な行・ま行・ら行など)は修飾モード中でもそのまま入力されます。カタカナモード中はカタカナに対しても同じ変換が働きます(カ→ガ など)。</p>
 
-  <h3 id="modifier-postfix">後置修飾</h3>
+  <h3 id="modifier-postfix">後置修飾(初期設定)</h3>
   <p>[かな修飾]を後置修飾にすると、iOS 標準と同じく<b>文字を打ってから</b>修飾キーをタップして変化させる方式になります。キーの表示は<b>直前に打った文字に合わせて自動で変わり</b>、タップするといちばん自然な変換が1回で行なわれます。</p>
   <div class="tablewrap"><table class="spec">
     <tr><th>直前の文字</th><th>キー表示</th><th>タップの結果</th></tr>
@@ -397,7 +397,7 @@
     <tr><td>ば び ぶ べ ぼ</td><td>゜</td><td>半濁点(ば→ぱ)</td></tr>
     <tr><td>上記以外(な行・ま行・ん など)</td><td>^_^</td><td>変換対象なし。未確定の文字がないときにタップすると、設定[<a href="settings.html#postfix-empty-tap">タップ(後置修飾、未確定なし)</a>]で選んだモード(顔文字/絵文字/記号)に一時切り替えします。</td></tr>
   </table></div>
-  <p>フリック操作は次のとおりです。設定[<a href="settings.html#postfix-flick-dakuten">後置修飾キーのフリックで濁点・半濁点</a>](初期設定: オン)を有効にしていると、キー表示に関係なく<b>上フリック=゛、右フリック=゜</b>を直接かけられます。下フリック=…、左フリック=カ/ひ は前置と共通です。誤って濁点が付かないよう、後置修飾キーはフリックの判定距離が通常のキーより広めに取られています。</p>
+  <p>フリック操作は次のとおりです。設定[<a href="settings.html#postfix-flick-dakuten">後置修飾キーのフリックで濁点・半濁点</a>](初期設定: オフ。戦略的初期設定ではオン)を有効にしていると、キー表示に関係なく<b>上フリック=゛、右フリック=゜</b>を直接かけられます。下フリック=…、左フリック=カ/ひ は前置と共通です。誤って濁点が付かないよう、後置修飾キーはフリックの判定距離が通常のキーより広めに取られています。</p>
 
   <h3 id="modifier-duck">ガイド表示オフのときは『あひる』</h3>
   <p>設定[<a href="settings.html#flick-guide">フリックガイド(修飾)</a>]をオフにすると、修飾キーには文字の代わりに<b>あひるのアイコン</b>が表示され、いまの状態を表情で示します。後置修飾ではキー表示(^_^/小/゛/゜)の代わりに、前置修飾ではモードに入っている間、次の4パターンで表示されます。</p>
@@ -427,7 +427,7 @@
   <div class="pair">
     <figure>
       <span class="kwrap"><span class="k"><span style="font-size:28px;font-weight:700">☺︎</span><span class="h u">⌘</span><span class="h r">^_^</span></span></span>
-      <figcaption>初期設定: タップ=☺︎ 絵文字、右=^_^ 顔文字、上=⌘ 記号</figcaption>
+      <figcaption>戦略的初期設定: タップ=☺︎ 絵文字、右=^_^ 顔文字、上=⌘ 記号(初期設定はタップ=⌘ 記号、上=☺︎ 絵文字で、キーの表示は ⌘)</figcaption>
     </figure>
   </div>
   <p>キーの中央には[タップに割り当てたパネル]のアイコン(☺︎/^_^/⌘)が表示され、上と右のガイドにも割り当てに応じたアイコンが出ます。3操作 × 3パネルで組み合わせは27通りありますが、仕組みはすべて同じ — アイコンのとおりのパネルが開くだけです。どのパネルからも <kbd>あい</kbd> キーでかなモードに戻れます。この ☺︎ キーの割り当ては方向プロファイル(écritu/Apple)の影響を受けません。</p>
