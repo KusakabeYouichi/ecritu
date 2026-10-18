@@ -2868,6 +2868,16 @@ extension KanaKanjiConverter {
                 let last = prev.last, Self.multiClauseDirectionTailCharacters.contains(last) {
                 penalty += Self.multiClausePluralRaAfterDirectionPenalty
             }
+            // い形容詞の直後の 方(かた。定数コメント参照。3711)
+            if surfaceID == SID.方, readingID == SID.かた, !prevIsBOS, !prevIsKanaIdentity,
+                prevIsDictionaryFormPredicate || prevIsInflectionDerived, prev.hasSuffix("い") {
+                penalty -= Self.multiClauseKataAfterAdjectiveBonus
+            }
+            // 時の名詞の直後の 合った/合う(定数コメント参照。3711)
+            if isInflectionDerived, surface.hasPrefix("合"), reading.hasPrefix("あ"),
+                Self.multiClauseTemporalNounSurfacesBeforeAu.contains(prev) {
+                penalty += Self.multiClauseAuAfterTemporalNounPenalty
+            }
             // 動詞て形(活用派生)直後の いって(定数コメント参照。2628)
             if readingID == SID.いって, prevIsInflectionDerived,
                 prev.hasSuffix("て") || prev.hasSuffix("で") {

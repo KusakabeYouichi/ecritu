@@ -24736,6 +24736,44 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "うどんだしを", systemCandidateMode: .surface).first, "うどん出汁を")
     }
 
+    // 3711 のまとめ(ユーザ報告): せんげつあった/ぎが/ようは/ふちょうは/まりこ/おいそがしいかたなのでしょう/しょうが/しょうがいいね/がせいかい
+    func testRegression3711Batch() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        converter.setKakikaePreference(.bothBeforeFirst)
+        converter.setKakikaeEverydayException(true)
+        defer {
+            converter.setKakikaePreference(.beforeOnly)
+            converter.setKakikaeEverydayException(false)
+        }
+        func single(_ r: String) -> [String] { converter.candidates(for: r, limit: 12, systemCandidateMode: .surface) }
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+
+        // 時の名詞の直後の 合った は下げ、繊月 は連文節で下げる
+        let sengetsu = multi("せんげつあった")
+        XCTAssertEqual(Array(sengetsu.prefix(2)), ["先月会った", "先月あった"], "\(sengetsu)")
+        XCTAssertFalse(sengetsu.contains { $0.contains("繊月") || $0.contains("合った") }, "\(sengetsu)")
+        XCTAssertEqual(multi("きょうあった").first, "今日会った")
+        // ギガ は seed 掲載でカタカナ強調の抑制を免れる
+        XCTAssertEqual(single("ぎが").first, "ギガ")
+        XCTAssertEqual(Array(single("ようは").prefix(4)), ["要は", "用は", "ようは", "酔うは"])
+        XCTAssertEqual(single("ふちょうは").first, "不調は")
+        XCTAssertEqual(multi("ふちょうは").first, "不調は", "\(multi("ふちょうは").prefix(3))")
+        XCTAssertEqual(Array(single("まりこ").prefix(4)), ["真理子", "万里子", "万理子", "万利子"])
+        // い形容詞+方(かた)+なのでしょう(curated かな)。送り仮名の誤り 忙がしい/急がしい/多忙がしい は抑制
+        XCTAssertEqual(multi("おいそがしいかたなのでしょう").first, "お忙しい方なのでしょう", "\(multi("おいそがしいかたなのでしょう").prefix(3))")
+        XCTAssertEqual(multi("やさしいかたです").first, "優しい方です")
+        XCTAssertEqual(single("いそがしい"), ["忙しい", "いそがしい"])
+        XCTAssertEqual(multi("おいそがしい").first, "お忙しい")
+        // 生姜/生薑 は書きかえの組+日常語の例外で 生姜 が先。連文節でも 省が/章が に勝つ。しょうがない はかな
+        XCTAssertEqual(Array(single("しょうが").prefix(4)), ["生姜", "生薑", "章が", "ショウガ"], "\(single("しょうが"))")
+        XCTAssertEqual(Array(multi("しょうがいいね").prefix(3)).filter { $0.hasPrefix("生") }, ["生姜いいね", "生薑いいね"], "\(multi("しょうがいいね").prefix(4))")
+        XCTAssertEqual(single("しょうがない").first, "しょうがない")
+        XCTAssertEqual(multi("しょうがないね").first, "しょうがないね")
+        XCTAssertEqual(single("しょうがっこう").first, "小学校")
+        XCTAssertEqual(multi("がせいかい").first, "が正解", "\(multi("がせいかい").prefix(3))")
+    }
+
     // 3710: 文具ブランド(ロディア/RHODIA、モレスキン/Moleskine)は compenser で供給(Sudachi・LM とも無し)
     func testRegressionStationeryBrandsSupplied() throws {
         try prepareRealLMDictionary()

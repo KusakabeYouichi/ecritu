@@ -312,6 +312,7 @@ enum KakikaeTable {
         ("磨滅", "摩滅", true),
         ("妄動", "盲動", true),
         ("理窟", "理屈", true),
+        ("生薑", "生姜", false),
     ]
 
     // 設定どおりに書きかえる組(keepsBoth を除く)

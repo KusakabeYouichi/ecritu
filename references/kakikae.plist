@@ -314,5 +314,8 @@
 	<dict><key>before</key><string>磨滅</string><key>after</key><string>摩滅</string></dict>	<!-- （土） -->
 	<dict><key>before</key><string>妄動</string><key>after</key><string>盲動</string></dict>
 	<dict><key>before</key><string>理窟</string><key>after</key><string>理屈</string></dict>
+
+	<!-- ■ 報告に無いが同じ扱いにする組(本来の字も書きかえの字も常用漢字でない。ユーザ指定 3711) -->
+	<dict><key>before</key><string>生薑</string><key>after</key><string>生姜</string></dict>	<!-- 薑→姜 の書きかえ。日常語の例外(KakikaePreference.everydayAfterFirstPairs)にも入れて 生姜 を先に -->
 </array>
 </plist>

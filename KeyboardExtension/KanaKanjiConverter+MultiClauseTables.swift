@@ -545,6 +545,16 @@ extension KanaKanjiConverter {
     // 栄町+北(住所の連接)+ら が 栄町+来たら に勝っていた(さかえまちきたら→栄町北ら)
     static let multiClausePluralRaAfterDirectionPenalty = 3000
     static let multiClauseDirectionTailCharacters: Set<Character> = ["北", "南", "東", "西"]
+    // 時の名詞(先月/昨日/去年 等)の直後の あった は 会った/あった/逢った/遭った で、合った(合う)は不自然(3711、ユーザ指定:
+    // せんげつあった)。派生の た形は全部同点(7200)で供給順(会った・合った…)のままだったので 合 だけ下げる
+    static let multiClauseTemporalNounSurfacesBeforeAu: Set<String> = [
+        "先月", "今月", "来月", "先週", "今週", "来週", "昨日", "今日", "明日", "去年", "今年", "来年", "一昨日", "一昨年",
+        "先日", "昨年", "昨夜", "今朝", "今晩", "前回", "以前", "最近", "当時", "さっき", "先ほど", "この前", "この間"
+    ]
+    static let multiClauseAuAfterTemporalNounPenalty = 2000
+    // い形容詞(辞書形)の直後の 方(かた、人)への加点(3711、ユーザ報告: おいそがしいかたなのでしょう→お磯が強い方なのでしょう)。
+    // 忙しい→方 は LM 未観測(4950)で、強い→方(強い方=比較の方)の観測 bigram に 磯が強い が勝っていた
+    static let multiClauseKataAfterAdjectiveBonus = 2500
     // 並列動詞の表記整合(2771、適用箇所のコメント参照): 漢字を揃えた経路が元の混在経路より
     // この差までなら揃えた方を最良にする(かうかかわないか: 揃え 買う…買わない は +100 程度)
     static let multiClauseCoordinatedVerbMaxDelta = 3000
@@ -830,6 +840,8 @@ extension KanaKanjiConverter {
 
     static let multiClauseSeedOrderNounBonusesByReading: [String: Int] = [
         "にほん": 800, "ほうだい": 800, "おん": 800, "うち": 800, "そうりょう": 4200,
+        // 生姜(seed 先頭)を連文節でも 省+が/章+が に勝たせる(しょうがいいね→省がいいね。ユーザ指定 3711)。しょうがない は別ノード
+        "しょうが": 2000,
         // つりばし: 送り仮名の本則は 吊り橋(BCCWJ 128 回、吊橋 は 0 回)。word_cost は同値 7863 で、
         // LM の 152 点差(吊橋7120 < 吊り橋7272。Wikipedia の橋名 ◯◯吊橋 由来)だけで連文節が
         // 吊橋 を採っていた。seed 先頭を連文節にも通す(2949)
@@ -2823,6 +2835,10 @@ extension KanaKanjiConverter {
         "にんにく": ["ニンニク": 2500, "大蒜": 2500, "忍辱": 3000, "葫": 3000],
         // みんな: seed はかなが先頭だが、連文節は 皆→に の bigram(374 差)で 皆に知れ渡り が先頭だった(ユーザ指定 3696)
         "みんな": ["皆": 800, "皆んな": 2500, "水納": 2500],   // かな(seed 先頭)を連文節でも先に: たいていそれだけでなおる(ユーザ指定 3676)
+        // 3711(ユーザ指定): 繊月会った/符丁は/画聖会 が 先月/不調/が+正解 に勝っていた。レア語を連文節で下げる
+        "せんげつ": ["繊月": 6000, "仙月": 6000],
+        "ふちょう": ["符丁": 2500, "符牒": 2500],
+        "がせい": ["画聖": 3000, "鵞静": 3000],
         // 新社(しんしゃ): Wikipedia の社名(河出書房新社 等)で LM 5815 と 新車 7030 より安く、後ろに bigram の無い語が
         // 来ると差がそのまま出て しんしゃかった→新社買った・しんしゃを→新社を が先頭だった(ユーザ報告 3360)。
         // 新社屋/新社長/新社会人 は読みが別なので影響しない
@@ -3188,8 +3204,8 @@ extension KanaKanjiConverter {
             add(KanaKanjiConverter.multiClauseEOSMarker)
             // 名詞+欄/製 の接尾(3123)
             for s in ["らん", "せい", "欄", "製"] { add(s) }
-            // 方角の直後の ら(3705)
-            add("ら")
+            // 方角の直後の ら(3705)、形容詞の直後の 方(かた。3711)
+            for s in ["ら", "かた", "方"] { add(s) }
             // 名詞+行き の接尾、コピュラ・クラスタの頭 です(3214)
             for s in ["いき", "行き", "です"] { add(s) }
             // 1 字漢字+家(か)の分割を抑える(3203)
@@ -3402,6 +3418,8 @@ extension KanaKanjiConverter {
         static let まだ = MultiClauseSymbols.id("まだ")
         static let まち = MultiClauseSymbols.id("まち")
         static let ら = MultiClauseSymbols.id("ら")
+        static let かた = MultiClauseSymbols.id("かた")
+        static let 方 = MultiClauseSymbols.id("方")
         static let らん = MultiClauseSymbols.id("らん")
         static let せい = MultiClauseSymbols.id("せい")
         static let 欄 = MultiClauseSymbols.id("欄")
