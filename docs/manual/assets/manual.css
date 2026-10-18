@@ -342,6 +342,8 @@ ol.steps li::before {
   font-size: .85em; font-weight: 700;
   display: flex; align-items: center; justify-content: center;
 }
+/* 初期設定から変えた項目の印(アプリのアクセント色=iOS の青、不透明度 .75) */
+.preset-dot { color: rgba(0, 122, 255, .8); }
 /* 見出しの URL コピー(assets/manual.js が h1 と id 付きの h2/h3 の右端に付ける) */
 .has-anchor-copy { position: relative; padding-right: 2.4em; }
 .anchor-copy {
