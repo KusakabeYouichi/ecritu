@@ -24736,6 +24736,17 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "うどんだしを", systemCandidateMode: .surface).first, "うどん出汁を")
     }
 
+    // 3710: 文具ブランド(ロディア/RHODIA、モレスキン/Moleskine)は compenser で供給(Sudachi・LM とも無し)
+    func testRegressionStationeryBrandsSupplied() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for (reading, expected) in [("ろでぃあ", ["ロディア", "RHODIA"]), ("もれすきん", ["モレスキン", "Moleskine"])] {
+            let list = converter.candidates(for: reading, limit: 4, systemCandidateMode: .surface)
+            XCTAssertEqual(Array(list.prefix(2)), expected, "\(reading): \(list)")
+        }
+        XCTAssertEqual(converter.multiClauseCandidates(for: "ろでぃあのめも", systemCandidateMode: .surface).first, "ロディアのメモ")
+    }
+
     // 3707: サ変でない漢字名詞(神聖)の直後の すると は、同じ読みにサ変(申請)があれば減点(しんせいすると→申請すると)
     func testRegressionShinseiSurutoPrefersSuruNoun() throws {
         try prepareRealLMDictionary()
