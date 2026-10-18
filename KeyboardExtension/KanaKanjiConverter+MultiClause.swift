@@ -2873,6 +2873,11 @@ extension KanaKanjiConverter {
                 prevIsDictionaryFormPredicate || prevIsInflectionDerived, prev.hasSuffix("い") {
                 penalty -= Self.multiClauseKataAfterAdjectiveBonus
             }
+            // 文頭の 事+助詞(ことさえ/ことも)は形式名詞のかなを先に(定数コメント参照。3713)
+            if prevStartsSentence, prevID == SID.事, prevReadingID == SID.こと, isKanaIdentity,
+                Self.multiClauseSentenceInitialKotoParticleSurfacesID.contains(surfaceID) {
+                penalty += Self.multiClauseSentenceInitialKotoKanjiPenalty
+            }
             // 時の名詞の直後の 合った/合う(定数コメント参照。3711)
             if isInflectionDerived, surface.hasPrefix("合"), reading.hasPrefix("あ"),
                 Self.multiClauseTemporalNounSurfacesBeforeAu.contains(prev) {

@@ -24776,6 +24776,20 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("がせいかい").first, "が正解", "\(multi("がせいかい").prefix(3))")
     }
 
+    // 3713: 文頭の 事+助詞(ことさえ/ことも/ことばかり)は形式名詞のかな(ユーザ指定: ことさえわかってない)。事の起こり は漢字のまま
+    func testRegressionSentenceInitialKotoParticleKana() throws {
+        try prepareRealLMDictionary()
+        for (reading, expected) in [("ことさえわかってない", "ことさえ分かってない"), ("ことばかり", "ことばかり"), ("ことをいう", "ことをいう"),
+                                    ("ことがある", "ことがある"), ("ことのおこり", "事の起こり"),
+                                    // もの+の+見方(もの飲み方 だった)
+                                    ("もののみかた", "ものの見方"), ("もののみかたをかえる", "ものの見方を変える"),
+                                    // 履き物・衣類+履(靴下吐く だった)
+                                    ("くつしたはく", "靴下履く"), ("くつしたをはく", "靴下を履く"), ("ずぼんはいて", "ズボン履いて")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "\(reading): \(multi.prefix(3))")
+        }
+    }
+
     // 3710: 文具ブランド(ロディア/RHODIA、モレスキン/Moleskine)は compenser で供給(Sudachi・LM とも無し)
     func testRegressionStationeryBrandsSupplied() throws {
         try prepareRealLMDictionary()
