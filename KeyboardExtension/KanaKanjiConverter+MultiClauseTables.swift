@@ -602,6 +602,24 @@ extension KanaKanjiConverter {
         "甲州\t果皮": 2500,
         // 皮+を+剥く(3645)。を の最良の前ノードが 皮 のときに 剥く を加点(皮を剥く/皮を剥いて)
         "皮\t剥": 3500,
+        // 履き物・衣類+を/が+履(靴下を履く。3713)
+        "靴下\t履": 2500,
+        "靴\t履": 2500,
+        "ズボン\t履": 2500,
+        "パンツ\t履": 2500,
+        "スカート\t履": 2500,
+        "ブーツ\t履": 2500,
+        "サンダル\t履": 2500,
+        "スニーカー\t履": 2500,
+        "ジーンズ\t履": 2500,
+        "タイツ\t履": 2500,
+        "ストッキング\t履": 2500,
+        "スリッパ\t履": 2500,
+        "下駄\t履": 2500,
+        "草履\t履": 2500,
+        "袴\t履": 2500,
+        // もの+の+見方(もののみかた→もの飲み方 だった。ユーザ報告 3713)。もの→飲み方(派生 5000)が の+見方(4872+4643)に 692 差で勝っていた
+        "もの\t見方": 2500,
         // 自分で+刷った(すった。3629、ユーザ報告: じぶんですったの→自分ですったの/擦った。自分で刷ったの を先頭に)
         "自分\t刷": 3000, "自分\t吸": 1000,
         // 感じ/漢字 の連語(3361)。漢字 を連文節で降格したので、漢字 が自然な 書く/読む/覚える を守る(かんじをかく が
@@ -2425,6 +2443,12 @@ extension KanaKanjiConverter {
     static let multiClauseElapsedTimeAfterDurationBonus = 2000
     // 裸の格助詞の直後に立てる文末の終助詞1字(のにな/からな/までね/のにさ)。2873
     static let multiClauseSentenceFinalKanaParticles: Set<String> = ["な", "ね", "よ", "さ", "か"]
+    // 文頭の 事+助詞(ことさえ/ことも/ことは)は形式名詞の用法で、かな こと が正書(3713、ユーザ指定: ことさえわかってない)。
+    // 文頭の 事 は実質名詞(事の起こり)として漢字を残す(2962 の規則)が、文の途中から打った断片では助詞が続けば形式名詞
+    static let multiClauseSentenceInitialKotoParticleSurfaces: Set<String> = [
+        "さえ", "すら", "まで", "だけ", "ばかり", "も", "は", "が", "を", "なんて", "など", "でも", "しか", "こそ"
+    ]
+    static let multiClauseSentenceInitialKotoKanjiPenalty = 1200
     // 接続助詞(かな)の直後の文末「な」は言いさしの正当な言い回し(だけどな/けどな/のにな/しな。3555、ユーザ報告:
     // 300えんだけどな→円だけドナ)。文末 な の 2 つの減点(非述語直後 3000+形容動詞でない名詞直後 3000)が けど の後ろにも
     // 掛かり、だけ+ドナ(人名)の割れ 11951 に だ+けど+な 7491 が 13491 で負けていた
@@ -2748,6 +2772,22 @@ extension KanaKanjiConverter {
         // 宿泊施設+泊(助詞なし: ほてるとまる→ホテル留まる。3285)
         "ホテル\t泊": 2500,
         "旅館\t泊": 2500,
+        // 履き物・衣類(下半身)+履(助詞なし: くつしたはく→靴下吐く。ユーザ報告 3713)。履く/履いて/履いた を接頭で
+        "靴下\t履": 2500,
+        "靴\t履": 2500,
+        "ズボン\t履": 2500,
+        "パンツ\t履": 2500,
+        "スカート\t履": 2500,
+        "ブーツ\t履": 2500,
+        "サンダル\t履": 2500,
+        "スニーカー\t履": 2500,
+        "ジーンズ\t履": 2500,
+        "タイツ\t履": 2500,
+        "ストッキング\t履": 2500,
+        "スリッパ\t履": 2500,
+        "下駄\t履": 2500,
+        "草履\t履": 2500,
+        "袴\t履": 2500,
         // を/が+更新(をこうしんした→を香信した。マニュアル検査 2890)。香信(compenser の curated、床 1500)は Sudachi に無く
         // 単文節では seed で先頭(ユーザ指定)のまま、を/が の後の動作(更新した/更新する)だけ 更新 に寄せる
         "を\t更新": 2500,
@@ -3209,6 +3249,9 @@ extension KanaKanjiConverter {
             for s in ["らん", "せい", "欄", "製"] { add(s) }
             // 方角の直後の ら(3705)、形容詞の直後の 方(かた。3711)
             for s in ["ら", "かた", "方"] { add(s) }
+            // 文頭の 事+助詞(3713)
+            add("事")
+            for s in KanaKanjiConverter.multiClauseSentenceInitialKotoParticleSurfaces.sorted() { add(s) }
             // 名詞+行き の接尾、コピュラ・クラスタの頭 です(3214)
             for s in ["いき", "行き", "です"] { add(s) }
             // 1 字漢字+家(か)の分割を抑える(3203)
@@ -3422,6 +3465,7 @@ extension KanaKanjiConverter {
         static let まち = MultiClauseSymbols.id("まち")
         static let ら = MultiClauseSymbols.id("ら")
         static let かた = MultiClauseSymbols.id("かた")
+        static let 事 = MultiClauseSymbols.id("事")
         static let 方 = MultiClauseSymbols.id("方")
         static let らん = MultiClauseSymbols.id("らん")
         static let せい = MultiClauseSymbols.id("せい")
@@ -3518,6 +3562,7 @@ extension KanaKanjiConverter {
     static let multiClauseSeedFirstLMOverrideReadingsID = MultiClauseIDSet(multiClauseSeedFirstLMOverrideReadings)
     static let multiClauseSentenceFinalAllKanjiPenaltyReadingsID = MultiClauseIDSet(multiClauseSentenceFinalAllKanjiPenaltyReadings)
     static let multiClauseSentenceFinalKanaParticlesID = MultiClauseIDSet(multiClauseSentenceFinalKanaParticles)
+    static let multiClauseSentenceInitialKotoParticleSurfacesID = MultiClauseIDSet(multiClauseSentenceInitialKotoParticleSurfaces)
     static let multiClauseConjunctiveParticlesBeforeFinalNaID = MultiClauseIDSet(multiClauseConjunctiveParticlesBeforeFinalNa)
     static let multiClauseSentenceInitialKanaConjunctionsID = MultiClauseIDSet(multiClauseSentenceInitialKanaConjunctions)
     static let multiClauseSouCopulaFollowerReadingsID = MultiClauseIDSet(multiClauseSouCopulaFollowerReadings)
