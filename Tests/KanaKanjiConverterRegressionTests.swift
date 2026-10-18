@@ -24752,7 +24752,9 @@ extension KanaKanjiConverterRegressionTests {
         // 時の名詞の直後の 合った は下げ、繊月 は連文節で下げる
         let sengetsu = multi("せんげつあった")
         XCTAssertEqual(Array(sengetsu.prefix(2)), ["先月会った", "先月あった"], "\(sengetsu)")
-        XCTAssertFalse(sengetsu.contains { $0.contains("繊月") || $0.contains("合った") }, "\(sengetsu)")
+        // 3712: かな せんげつ の変種(せんげつ会った)も出さない、合った は末尾
+        XCTAssertFalse(sengetsu.prefix(3).contains { $0.contains("繊月") || $0.contains("合った") || $0.hasPrefix("せんげつ") }, "\(sengetsu)")
+        XCTAssertFalse(multi("しょうがいいね").prefix(3).contains("唱歌いいね"), "\(multi("しょうがいいね").prefix(4))")
         XCTAssertEqual(multi("きょうあった").first, "今日会った")
         // ギガ は seed 掲載でカタカナ強調の抑制を免れる
         XCTAssertEqual(single("ぎが").first, "ギガ")
