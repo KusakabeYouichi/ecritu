@@ -147,6 +147,7 @@
 	<!-- 音楽 -->
 	        <dict><key>phrase</key><string>McIntosh</string><key>shortcut</key><string>まっきんとっしゅ</string></dict>
 	        <dict><key>phrase</key><string>Fostex</string><key>shortcut</key><string>ふぉすてっくす</string></dict>
+	        <dict><key>phrase</key><string>フォステックス</string><key>shortcut</key><string>ふぉすてっくす</string></dict>
 	        <dict><key>phrase</key><string>エレヴォイ</string><key>shortcut</key><string>えれゔぉい</string></dict>
 	        <dict><key>phrase</key><string>Electro-Voice</string><key>shortcut</key><string>えれくとろゔぉいす</string></dict>
 	        <dict><key>phrase</key><string>雅楽</string><key>shortcut</key><string>ががく</string></dict>	<!-- Sudachiにもある(基底3位/3、コスト6545) -->
@@ -627,6 +628,8 @@
 	        <dict><key>phrase</key><string>RHODIA</string><key>shortcut</key><string>ろでぃあ</string><key>pos</key><string>名詞</string></dict>
 	        <dict><key>phrase</key><string>モレスキン</string><key>shortcut</key><string>もれすきん</string><key>pos</key><string>名詞</string></dict>	<!-- Moleskine(イタリアのノートのブランド) -->
 	        <dict><key>phrase</key><string>Moleskine</string><key>shortcut</key><string>もれすきん</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>ラミー</string><key>shortcut</key><string>らみー</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>LAMY</string><key>shortcut</key><string>らみー</string><key>pos</key><string>名詞</string></dict>
 
 	<!-- 料理店(ミシュランの星付き。ユーザ提供の資料 2026-10-05、3363)。同じ読みでは日本語表記を欧文より先に置く。一般の変換を乗っ取る読みは compenser の固定の優先度で先頭に出てしまうので、コメントアウトして理由を添えた。資料の読みの誤り(モリエール=カタカナ読み、レフェルヴェソンス=ぞ、なかむら=区切りが /)は直した -->
 	<!-- □ ミシュラン3つ星(日本) -->
