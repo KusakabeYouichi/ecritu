@@ -708,6 +708,25 @@ extension KeyboardViewController {
         activeConversion = conversion
     }
 
+    // 変換キーで送る候補の列(3714)。候補欄に出している列(連文節+単文節の合流、提示層の並べ替え済み)がその読みのものなら
+    // それをそのまま使う。無ければ単文節、それも空なら連文節を同期で引く。以前は単文節だけを見ていたので、
+    // かんじへんかん のように連文節しか候補を返さない読みでは変換を始められず、かなのまま確定して空白が入っていた(ユーザ報告)
+    func conversionKeyCandidates(for reading: String, composingRawText: String, limit: Int) -> [String] {
+        let mode = currentKanaKanjiCandidateSourceModeFromSharedDefaults()
+        if let settled = settledCandidatePresentation, let key = settledCandidatePresentationKey,
+            key.reading == reading, key.composingRawText == composingRawText, !settled.candidates.isEmpty {
+            return settled.candidates
+        }
+        let single = kanaKanjiCandidates(for: reading, limit: limit, systemCandidateMode: mode)
+        if !single.isEmpty {
+            return single
+        }
+        let converter = kanaKanjiConverter
+        return candidateGenerationQueue.sync {
+            converter.multiClauseCandidates(for: reading, systemCandidateMode: mode)
+        }
+    }
+
     func beginConversionFromComposingText() -> Bool {
         guard !composingRawText.isEmpty,
                 !composingReading.isEmpty else {
@@ -718,10 +737,10 @@ extension KeyboardViewController {
         if usesPlainTextComposition, plainCompositionCursorOffset != nil {
             let reading = effectiveComposingReading
             guard !reading.isEmpty,
-                let first = kanaKanjiCandidates(
+                let first = conversionKeyCandidates(
                     for: reading,
-                    limit: 1,
-                    systemCandidateMode: currentKanaKanjiCandidateSourceModeFromSharedDefaults()
+                    composingRawText: effectiveComposingRawText,
+                    limit: 1
                 ).first else {
                 return false
             }
@@ -734,10 +753,10 @@ extension KeyboardViewController {
             return true
         }
 
-        let candidates = kanaKanjiCandidates(
+        let candidates = conversionKeyCandidates(
             for: composingReading,
-            limit: effectiveKanaConversionCandidateLimit(),
-            systemCandidateMode: currentKanaKanjiCandidateSourceModeFromSharedDefaults()
+            composingRawText: composingRawText,
+            limit: effectiveKanaConversionCandidateLimit()
         )
 
         guard let firstCandidate = candidates.first else {
