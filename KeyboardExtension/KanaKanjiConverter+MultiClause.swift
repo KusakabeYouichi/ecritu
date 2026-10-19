@@ -3874,6 +3874,14 @@ extension KanaKanjiConverter {
                                 cost += Self.multiClauseAuPersonMismatchPenalty
                             }
                         }
+                        // 亡くす/亡くなる は人物(父を亡くした)。を/が の前が人物でなければ 無くした/なくした(財布を亡くした 対策。3716)
+                        // 連用形 亡くし は LM トークン(辞書語扱い)なので派生に限らない
+                        if node.surface.hasPrefix("亡く"), node.surface != node.reading,
+                            prevNode.readingID == SID.を || prevNode.readingID == SID.が,
+                            backPointer[prevIdx] >= 0,
+                            !Self.isPersonLikeNounSurface(nodes[backPointer[prevIdx]].surface) {
+                            cost += Self.multiClauseAuPersonMismatchPenalty
+                        }
                         // かな あった の同点割り(3715)は 人物+に/と+あった では返す(友達に会った を保つ)。
                         // 非人物(そこにあった/問題があった)と名詞直後(設定あった)はかなが先
                         if node.isKanaIdentity, Self.multiClauseExistentialAttaReadingsID.contains(node.readingID),
