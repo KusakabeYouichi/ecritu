@@ -5,6 +5,7 @@
 	<!-- 変換抑制の語彙(キーボードが直接読む。アプリの抑制語彙UIには非表示)。『■ 』で始まる行がグループ見出し(直前に空行)。エントリ行の後ろのコメントはその語の個別理由。『※ 』で始まる行は、対応するエントリが今は無い補足メモ。 -->
 
 	<!-- ■ 誤エントリ: 辞書の誤った読み・存在しない表記(学習でも古語でもなく明確な誤り) -->
+	<dict><key>phrase</key><string>不・思・議</string><key>shortcut</key><string>ふしぎ</string></dict>	<!-- Sudachi small_lex の中黒入り装飾表記(不思議)。合成(不・思・議だね)に出ていた(ユーザ報告 3715) -->
 	<dict><key>phrase</key><string>忙がしい</string><key>shortcut</key><string>いそがしい</string><key>pos</key><string>名詞</string></dict>	<!-- 忙しい の非標準送り仮名。急がしい/多忙がしい は誤表記(ユーザ指定 3711)。活用の語幹まで抑制すると お忙しい が消えるので この語だけ(pos=名詞) -->
 	<dict><key>phrase</key><string>急がしい</string><key>shortcut</key><string>いそがしい</string><key>pos</key><string>名詞</string></dict>
 	<dict><key>phrase</key><string>多忙がしい</string><key>shortcut</key><string>いそがしい</string><key>pos</key><string>名詞</string></dict>

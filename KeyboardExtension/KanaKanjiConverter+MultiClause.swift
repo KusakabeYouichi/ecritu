@@ -2873,6 +2873,15 @@ extension KanaKanjiConverter {
                 prevIsDictionaryFormPredicate || prevIsInflectionDerived, prev.hasSuffix("い") {
                 penalty -= Self.multiClauseKataAfterAdjectiveBonus
             }
+            // 比況の みたい(定数コメント参照。3715): 助詞のかなの直後の かな みたい* を床 1500 に
+            if isKanaIdentity, Self.multiClauseMitaiAuxiliaryReadingsID.contains(readingID),
+                prevIsKanaIdentity, Self.multiClauseMitaiPrecedingParticleSurfacesID.contains(prevID) {
+                base = min(base, Self.multiClauseMitaiAuxiliaryCost)
+            }
+            // かな あった(ある の過去)の同点割り(定数コメント参照。3715)
+            if isKanaIdentity, Self.multiClauseExistentialAttaReadingsID.contains(readingID) {
+                penalty -= Self.multiClauseKanaAttaTieBreakBonus
+            }
             // 文頭の 事+助詞(ことさえ/ことも)は形式名詞のかなを先に(定数コメント参照。3713)
             if prevStartsSentence, prevID == SID.事, prevReadingID == SID.こと, isKanaIdentity,
                 Self.multiClauseSentenceInitialKotoParticleSurfacesID.contains(surfaceID) {
@@ -3864,6 +3873,14 @@ extension KanaKanjiConverter {
                             } else if !nounIsPerson, auKanji == "会" {
                                 cost += Self.multiClauseAuPersonMismatchPenalty
                             }
+                        }
+                        // かな あった の同点割り(3715)は 人物+に/と+あった では返す(友達に会った を保つ)。
+                        // 非人物(そこにあった/問題があった)と名詞直後(設定あった)はかなが先
+                        if node.isKanaIdentity, Self.multiClauseExistentialAttaReadingsID.contains(node.readingID),
+                            prevNode.readingID == SID.に || prevNode.readingID == SID.と,
+                            backPointer[prevIdx] >= 0,
+                            Self.isPersonLikeNounSurface(nodes[backPointer[prevIdx]].surface) {
+                            cost += Self.multiClauseKanaAttaTieBreakBonus + 100
                         }
                         // 敬称 さん/さま は数字の後以外では 山/三/桟 等の漢字接尾にならない。
                         // 名前+さん(かな敬称)を優先するため漢字表層に減点(数字直後は免除)。

@@ -560,6 +560,11 @@
 	<dict><key>phrase</key><string>だが</string><key>shortcut</key><string>だが</string></dict>
 	<dict><key>phrase</key><string>なのに</string><key>shortcut</key><string>なのに</string></dict>
 	<dict><key>phrase</key><string>なので</string><key>shortcut</key><string>なので</string></dict>
+	<!-- すべき(する+べき、かな): Sudachi に無く に+すべき が ニス+べき になっていた(ユーザ報告 3715) -->
+	<dict><key>phrase</key><string>すべき</string><key>shortcut</key><string>すべき</string></dict>
+	<dict><key>phrase</key><string>すべきだ</string><key>shortcut</key><string>すべきだ</string></dict>
+	<dict><key>phrase</key><string>すべきで</string><key>shortcut</key><string>すべきで</string></dict>
+	<dict><key>phrase</key><string>すべきか</string><key>shortcut</key><string>すべきか</string></dict>
 	<dict><key>phrase</key><string>しょうがない</string><key>shortcut</key><string>しょうがない</string></dict>	<!-- 仕様がない のかな。seed しょうが(生姜 先頭)との合成 生姜ない を防ぐ(3711) -->
 	<!-- 名詞+なのでしょう/なのです/なのだ(断定+説明)。1 ノードで無いと かた+な+のでしょう が 刀+の+でしょう に負けていた(おいそがしいかたなのでしょう→お忙しい刀のでしょう。ユーザ報告 3711) -->
 	<dict><key>phrase</key><string>なのでしょう</string><key>shortcut</key><string>なのでしょう</string></dict>

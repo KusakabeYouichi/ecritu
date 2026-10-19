@@ -602,6 +602,57 @@ extension KanaKanjiConverter {
         "甲州\t果皮": 2500,
         // 皮+を+剥く(3645)。を の最良の前ノードが 皮 のときに 剥く を加点(皮を剥く/皮を剥いて)
         "皮\t剥": 3500,
+        // 合う の典型の主語・相手(気が合う/目が合う/条件に合う/サイズが合う)。かな あった の同点割り(3715)で 合った が
+        // かなに負けないよう、助詞跨ぎで 合 に加点。会う(人物)は人物判定の規則が受け持つ
+        "気\t合": 1000,
+        "目\t合": 1000,
+        "サイズ\t合": 1000,
+        "条件\t合": 1000,
+        "土地\t合": 1000,
+        "息\t合": 1000,
+        "話\t合": 1000,
+        "計算\t合": 1000,
+        "辻褄\t合": 1000,
+        "つじつま\t合": 1000,
+        "波長\t合": 1000,
+        "性格\t合": 1000,
+        "趣味\t合": 1000,
+        "寸法\t合": 1000,
+        "ピント\t合": 1000,
+        "相性\t合": 1000,
+        "テンポ\t合": 1000,
+        "タイミング\t合": 1000,
+        "答え\t合": 1000,
+        "意見\t合": 1000,
+        "馬\t合": 1000,
+        "口\t合": 1000,
+        "足\t合": 1000,
+        "肌\t合": 1000,
+        "靴\t合": 1000,
+        "服\t合": 1000,
+        "時間\t合": 1000,
+        "予定\t合": 1000,
+        "都合\t合": 1000,
+        "好み\t合": 1000,
+        "リズム\t合": 1000,
+        "体\t合": 1000,
+        "身の丈\t合": 1000,
+        "色\t合": 1000,
+        "味\t合": 1000,
+        "価値観\t合": 1000,
+        "気持ち\t合": 1000,
+        "考え\t合": 1000,
+        "目的\t合": 1000,
+        "用途\t合": 1000,
+        "規格\t合": 1000,
+        "鍵\t合": 1000,
+        "焦点\t合": 1000,
+        "歩調\t合": 1000,
+        "足並み\t合": 1000,
+        "話題\t合": 1000,
+        "帳尻\t合": 1000,
+        "数\t合": 1000,
+        "量\t合": 1000,
         // 履き物・衣類+を/が+履(靴下を履く。3713)
         "靴下\t履": 2500,
         "靴\t履": 2500,
@@ -1240,7 +1291,7 @@ extension KanaKanjiConverter {
     // にしないと全かな best が捨てられ、名前収穫の変種(菜亜 wc10000)が繰り上がる。
     // だけ は副助詞(かなが正書)。非かな変種(抱け/竹/丈/岳)は文中でも不要で、
     // これだけ 等の全かな best のエコー例外にも効かせる。
-    static let multiClauseFinalParticleReadings: Set<String> = ["かな", "かなあ", "かも", "よね", "かしら", "よな", "かー", "ねー", "なー", "よー", "わー", "のー", "かなー", "よねー", "よねえ", "のよね", "のよねー", "し", "な", "ね", "よ", "けど", "けどー", "なあ", "ねえ", "よお", "わあ", "だけ",
+    static let multiClauseFinalParticleReadings: Set<String> = ["かな", "かなあ", "かも", "よね", "かしら", "よな", "かー", "ねー", "なー", "よー", "わー", "のー", "かなー", "よねー", "よねえ", "のよね", "のよねー", "し", "な", "ね", "よ", "や", "けど", "けどー", "なあ", "ねえ", "よお", "わあ", "だけ",
         // 接続助詞の言いさし終止(〜だから。/〜なので。=チャットで頻出)。EOS未観測の から が
         // 空(から=Wikipediaで文末頻出)に負ける じゃない空 対策
         "から", "ので",
@@ -2449,6 +2500,14 @@ extension KanaKanjiConverter {
         "さえ", "すら", "まで", "だけ", "ばかり", "も", "は", "が", "を", "なんて", "など", "でも", "しか", "こそ"
     ]
     static let multiClauseSentenceInitialKotoKanjiPenalty = 1200
+    // 比況の助動詞 みたい(〜までみたいよ/〜のみたいだ)。助詞のかなの直後の かな みたい* は 見たい(見る+たい) より先(3715、ユーザ指定:
+    // までみたいよ→まで見たいよ だった)。を/が/も の後(映画を見たい)は対象外
+    static let multiClauseMitaiAuxiliaryReadings: Set<String> = ["みたい", "みたいよ", "みたいだ", "みたいな", "みたいに", "みたいね", "みたいで", "みたいです", "みたいだね", "みたいだよ"]
+    static let multiClauseMitaiPrecedingParticleSurfaces: Set<String> = ["まで", "で", "の", "と", "か", "や", "だ", "ない", "ん", "た", "て", "さ", "な", "から", "ます", "です"]
+    static let multiClauseMitaiAuxiliaryCost = 1500
+    // かな あった(ある の過去)は 会った/合った/遭った より先(3715、ユーザ指定: せっていあった→設定会った だった。一般則)。
+    // 派生の た形は同点(供給順で 会った が先)なので、かな側に小さく加点して同点を割る。に→会った のような観測 bigram は残る
+    static let multiClauseKanaAttaTieBreakBonus = 300
     // 接続助詞(かな)の直後の文末「な」は言いさしの正当な言い回し(だけどな/けどな/のにな/しな。3555、ユーザ報告:
     // 300えんだけどな→円だけドナ)。文末 な の 2 つの減点(非述語直後 3000+形容動詞でない名詞直後 3000)が けど の後ろにも
     // 掛かり、だけ+ドナ(人名)の割れ 11951 に だ+けど+な 7491 が 13491 で負けていた
@@ -3251,6 +3310,10 @@ extension KanaKanjiConverter {
             for s in ["ら", "かた", "方"] { add(s) }
             // 文頭の 事+助詞(3713)
             add("事")
+            // 比況の みたい(3715)
+            for s in KanaKanjiConverter.multiClauseMitaiAuxiliaryReadings.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseMitaiPrecedingParticleSurfaces.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseExistentialAttaReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseSentenceInitialKotoParticleSurfaces.sorted() { add(s) }
             // 名詞+行き の接尾、コピュラ・クラスタの頭 です(3214)
             for s in ["いき", "行き", "です"] { add(s) }
@@ -3563,6 +3626,8 @@ extension KanaKanjiConverter {
     static let multiClauseSentenceFinalAllKanjiPenaltyReadingsID = MultiClauseIDSet(multiClauseSentenceFinalAllKanjiPenaltyReadings)
     static let multiClauseSentenceFinalKanaParticlesID = MultiClauseIDSet(multiClauseSentenceFinalKanaParticles)
     static let multiClauseSentenceInitialKotoParticleSurfacesID = MultiClauseIDSet(multiClauseSentenceInitialKotoParticleSurfaces)
+    static let multiClauseMitaiAuxiliaryReadingsID = MultiClauseIDSet(multiClauseMitaiAuxiliaryReadings)
+    static let multiClauseMitaiPrecedingParticleSurfacesID = MultiClauseIDSet(multiClauseMitaiPrecedingParticleSurfaces)
     static let multiClauseConjunctiveParticlesBeforeFinalNaID = MultiClauseIDSet(multiClauseConjunctiveParticlesBeforeFinalNa)
     static let multiClauseSentenceInitialKanaConjunctionsID = MultiClauseIDSet(multiClauseSentenceInitialKanaConjunctions)
     static let multiClauseSouCopulaFollowerReadingsID = MultiClauseIDSet(multiClauseSouCopulaFollowerReadings)
