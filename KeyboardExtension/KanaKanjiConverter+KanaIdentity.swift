@@ -634,6 +634,14 @@ extension KanaKanjiConverter {
                 guard KanaKanjiSeedDictionary.seed[suffix]?.first == suffix else {
                     continue
                 }
+                // て/で形+補助動詞(しんで+しまった)は末尾語(しまった)がかな正書でも、全体のかな正書は前半の
+                // 動詞次第(死んでしまった)。前半自体にかなの根拠(やって/して)が無ければ立てない(3718、ユーザ報告:
+                // しんでしまっ までは 死んでしまっ が先頭なのに しんでしまった で かな が先頭になっていた)
+                let prefix = String(normalized.dropLast(suffixLength))
+                if prefix.hasSuffix("て") || prefix.hasSuffix("で"),
+                    !computeShouldKeepKanaIdentityLeading(normalized: prefix) {
+                    continue
+                }
                 return true
             }
         }
