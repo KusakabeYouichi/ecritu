@@ -24820,6 +24820,22 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("ともだちにあった").first, "友達に会った", "\(multi("ともだちにあった").prefix(3))")
     }
 
+    // 3716: もうなくなってる の 3 番めは 亡くなってる(莫い/歿る 等の古い表記を抑制、亡い/失い の抑制を この語だけ に戻して 亡くなる を復活)。
+    // 亡くす/亡くなる は人物の文脈だけ(財布を無くした/父を亡くした)
+    func testRegressionMouNakunatteruAndNakusu() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        XCTAssertEqual(Array(multi("もうなくなってる").prefix(3)), ["もうなくなってる", "もう無くなってる", "もう亡くなってる"], "\(multi("もうなくなってる"))")
+        XCTAssertFalse(multi("もうなくなってる").contains { $0.contains("莫") || $0.contains("歿") || $0.hasPrefix("網") || $0.hasPrefix("蒙") }, "\(multi("もうなくなってる"))")
+        XCTAssertEqual(Array(converter.candidates(for: "なくなった", limit: 4, systemCandidateMode: .surface)), ["なくなった", "無くなった", "亡くなった", "失くなった"])
+        // 失くす は misc に登録済み(3537)なので 財布を失くした が先頭。亡くした は人物でないので後ろ
+        XCTAssertEqual(multi("さいふをなくした").first, "財布を失くした", "\(multi("さいふをなくした").prefix(3))")
+        XCTAssertFalse(multi("さいふをなくした").prefix(2).contains("財布を亡くした"))
+        XCTAssertEqual(multi("ちちをなくした").first, "父を亡くした", "\(multi("ちちをなくした").prefix(3))")
+        XCTAssertEqual(multi("ちちがなくなった").first, "父がなくなった")
+    }
+
     // 3710: 文具ブランド(ロディア/RHODIA、モレスキン/Moleskine)は compenser で供給(Sudachi・LM とも無し)
     func testRegressionStationeryBrandsSupplied() throws {
         try prepareRealLMDictionary()

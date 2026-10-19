@@ -14,8 +14,8 @@
 	<dict><key>phrase</key><string>カッペリーニ</string><key>shortcut</key><string>かっぺりーに</string></dict>	<!-- 伊語 capellini の促音位置の誤り(Sudachi small_lex、wc 2148)。正しくは カペッリーニ(compenser に かぺっりーに で登録。ユーザ指定 3535) -->
 	<dict><key>phrase</key><string>出来得る</string><key>shortcut</key><string>できえる</string></dict>	<!-- 出来得る は できうる と読む(できえる と読むのは聞かない。ユーザ指定 3401)。できえる は で消える にする -->
 	<dict><key>phrase</key><string>能っ</string><key>shortcut</key><string>あたっ</string></dict>	<!-- 能う(あたう)の促音便。能う は 能わず/能う限り でしか使わず、能った/能って/能っちゃった は無い形。活用規則が組み、あたっちゃった の先頭を取っていた(ユーザ指定 3477)。能っ+かなの残り の合成抑制で一括して消す(能わず は残る) -->
-	<dict><key>phrase</key><string>亡い</string><key>shortcut</key><string>ない</string></dict>	<!-- 亡い/失い: Sudachi が 読み ない の形容詞として持つが、そういう語は無い(亡き/失う の誤収穫)。亡かった/失かった のようなあり得ない活用を出していた(ユーザ指定 3475) -->
-	<dict><key>phrase</key><string>失い</string><key>shortcut</key><string>ない</string></dict>
+	<dict><key>phrase</key><string>亡い</string><key>shortcut</key><string>ない</string><key>pos</key><string>名詞</string></dict>	<!-- 亡い/失い: Sudachi が 読み ない の形容詞として持つが、そういう語は無い(亡き/失う の誤収穫)。亡かった/失かった のようなあり得ない活用を出していた(ユーザ指定 3475)。活用ごと抑制すると 亡く+なる=亡くなる/失くなる まで消えるので この語だけ(pos=名詞。3716) -->
+	<dict><key>phrase</key><string>失い</string><key>shortcut</key><string>ない</string><key>pos</key><string>名詞</string></dict>
 	<dict><key>phrase</key><string>継なぐ</string><key>shortcut</key><string>つなぐ</string></dict>	<!-- 継ぐ(つぐ)の非標準送り仮名。継なぎましょ 等の派生を出さない(ユーザ指定 2736) -->
 	<dict><key>phrase</key><string>宣野座</string><key>shortcut</key><string>ぎのざ</string></dict>	<!-- 正しくは 宜野座(沖縄県宜野座村)。宣(せん)と宜(ぎ)の字形類似で辞書収穫にも混入した誤表記 -->
 	<dict><key>phrase</key><string>感ぢ</string><key>shortcut</key><string>かんじ</string></dict>	<!-- 感ぢ: SudachiDict small_lex の 感じ の表記ゆれ収穫。感じ は歴史的仮名遣いでも かんじ で ぢ にならない誤り(ユーザ指定 3337) -->
@@ -348,6 +348,11 @@
 	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>麴塵</string><key>shortcut</key><string>あおいろ</string></dict> -->
 
 	<!-- ■ 現代的に流行っていない言い方(古語・文語・旧仮名・非標準表記) -->
+	<dict><key>phrase</key><string>歿る</string><key>shortcut</key><string>なくなる</string></dict>	<!-- 歿る/歿くなる/没くなる/亡なる: 亡くなる の古い表記(Sudachi)。もうなくなってる の変種に並んでいた(ユーザ報告 3716) -->
+	<dict><key>phrase</key><string>歿くなる</string><key>shortcut</key><string>なくなる</string></dict>
+	<dict><key>phrase</key><string>没くなる</string><key>shortcut</key><string>なくなる</string></dict>
+	<dict><key>phrase</key><string>亡なる</string><key>shortcut</key><string>なくなる</string></dict>
+	<dict><key>phrase</key><string>莫い</string><key>shortcut</key><string>ない</string></dict>	<!-- 莫い(ない の当て字、Sudachi rank 4)。活用ごと抑制(もうなくなってる の 3 番めに 莫くなってる が出ていた。ユーザ報告 3716) -->
 	<dict><key>phrase</key><string>あのォ</string><key>shortcut</key><string>あの</string></dict>	<!-- あのォ: 非標準の小書き表記。あの の 3 位に出て あのォ手帖 のような合成も作っていた(ユーザ報告 3396) -->
 	<dict><key>phrase</key><string>少い</string><key>shortcut</key><string>すくない</string></dict>	<!-- 少ない の旧送り仮名。派生 少く/少かった が 少なく の隣に並び紛らわしい(ユーザ指定 2732) -->
 	<dict><key>phrase</key><string>相する</string><key>shortcut</key><string>そうする</string></dict>	<!-- 文語サ変(人相を見る)。そうしちゃう の候補に 相しちゃう が並び雑音(ユーザ指定 2740) -->
