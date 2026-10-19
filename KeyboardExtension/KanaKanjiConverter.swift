@@ -1019,6 +1019,8 @@ final class KanaKanjiConverter {
         where !context.userCandidateSet.contains(candidate)
             && !supplementalCandidates.contains(candidate)
             && (Self.isDecorativeVariantSurface(candidate, reading: context.reading)
+                // 助詞 まで の読みに ま の単漢字+で(真でみたいよ)の合成(3717)
+                || Self.isMaDeFragmentComposition(candidate, reading: context.reading)
                 // 単独入力の候補列では多字表層の連濁収穫(でま→手間/手ま)も弾く
                 || isRendakuHarvestSurface(
                     candidate,

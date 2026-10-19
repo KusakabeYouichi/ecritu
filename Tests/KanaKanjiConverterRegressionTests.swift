@@ -24801,6 +24801,10 @@ extension KanaKanjiConverterRegressionTests {
         func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
         // 比況の みたい: 助詞のかなの直後はかなが先、を の後は 見たい
         XCTAssertEqual(single("までみたいよ").first, "までみたいよ")
+        // 3717: 提示層でもかな先頭を保ち(keepKana)、真で/馬で の合成は出さない
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "までみたいよ"))
+        XCTAssertFalse(single("までみたいよ").contains { $0.hasPrefix("真で") || $0.hasPrefix("馬で") || $0.hasPrefix("魔で") }, "\(single("までみたいよ"))")
+        XCTAssertTrue(single("までみたいよ").contains("迄みたいよ"))
         XCTAssertEqual(multi("そこまでみたい").first, "そこまでみたい", "\(multi("そこまでみたい").prefix(3))")
         XCTAssertEqual(multi("えいがをみたい").first, "映画を見たい")
         XCTAssertEqual(single("たべてみたい").first, "食べてみたい")
