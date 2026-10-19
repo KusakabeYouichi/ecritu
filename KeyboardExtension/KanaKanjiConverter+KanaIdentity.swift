@@ -127,6 +127,13 @@ extension KanaKanjiConverter {
         where normalized.count > suffix.count && normalized.hasSuffix(suffix) {
             return true
         }
+        // 助詞のかな+比況の みたい*(までみたいよ/のみたいだ)はかなが正書(3717、ユーザ報告: 迄みたいよ が先頭だった)。
+        // 連文節は全かなエコー抑制で空を返すので、提示層が根拠を持つ
+        for particle in ["まで", "で", "の", "と", "か", "だ"] where normalized.count > particle.count && normalized.hasPrefix(particle) {
+            if Self.multiClauseMitaiAuxiliaryReadings.contains(String(normalized.dropFirst(particle.count))) {
+                return true
+            }
+        }
         // 形式名詞「とき」(〜するとき/〜というとき/〜のとき)はかなが正書(2690)。
         // 時刻そのものを指す「時」(3時/その時刻)とは用法が違い、連体修飾を受けた形式名詞は
         // かなで書くのが標準。連文節は 困ったとき/行くとき/食べるときに を既にかな最良に

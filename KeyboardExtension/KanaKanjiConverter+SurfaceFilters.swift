@@ -518,6 +518,14 @@ extension KanaKanjiConverter {
 
     // 装飾表記(〜水増し・中黒散らし・…溜め・っ/ー水増し)の総合判定。候補列挙の各段で共通に使う。
     // 表記としてありえない活用形(於く の活用。下記)も同じ段で落とす(3323)
+    // 助詞 まで で始まる読みに、ま の単漢字(真/馬/魔/磨/麼)+で の合成(真でみたいよ)は使わない(3717、ユーザ指定)。
+    // 間で(あいだで)は実在の句なので残す。迄 は辞書語のまま
+    static let maDeFragmentHeads: Set<String> = ["真で", "眞で", "馬で", "魔で", "磨で", "麼で", "摩で", "麻で", "痲で", "蟆で", "魔出", "真出"]
+    static func isMaDeFragmentComposition(_ surface: String, reading: String) -> Bool {
+        guard reading.hasPrefix("まで"), surface.count >= 2 else { return false }
+        return maDeFragmentHeads.contains(String(surface.prefix(2)))
+    }
+
     static func isDecorativeVariantSurface(_ surface: String, reading: String) -> Bool {
         hasWaveDashElongation(surface, reading: reading)
             || hasNakaguroDecorationSpelling(surface, reading: reading)
