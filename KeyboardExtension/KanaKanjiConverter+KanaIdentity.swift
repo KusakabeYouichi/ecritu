@@ -297,7 +297,9 @@ extension KanaKanjiConverter {
                 let head = stem.first,
                 Self.multiClauseCaseParticleSurfaces.contains(String(head)) || head == "の" {
                 let rest = String(stem.dropFirst())
-                if systemCandidates(for: rest, mode: .lesDeux).contains(rest) {
+                // かな表層が辞書に在るだけ(でる=出る のかな収穫)では根拠にしない。LM でかなが漢字に迫る語(うまい)だけ
+                // (もでるよー で かな もでるよー が 2 番めに残っていた。3722、ユーザ指定: かなは末尾でいい)
+                if systemCandidates(for: rest, mode: .lesDeux).contains(rest), isKanaOrthographyStem(rest) {
                     return true
                 }
             }

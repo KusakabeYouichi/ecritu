@@ -24854,6 +24854,25 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.candidates(for: "しんでしまった", limit: 3, systemCandidateMode: .surface).first, "死んでしまった")
     }
 
+    // 3720: 確定済み数字の直後の文頭の助数詞(1+ぽんうれた→本売れた、1+ぴき、3+ぼん)。連濁形の読みにも助数詞ノードを立てる
+    // 3721: とか+言いそう(都会いそう だった)。とかいう はかなのまま
+    // 3722: もでるよー→も出るよー(モデルよー は減点、かなは keepKana を立てず末尾へ)
+    func testRegression3720To3722() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        func multi(_ r: String, _ d: Character? = nil) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface, precedingCharacter: d) }
+        XCTAssertEqual(multi("ぽんうれた", "1").first, "本売れた", "\(multi("ぽんうれた", "1").prefix(3))")
+        XCTAssertEqual(multi("ぴきいる", "1").first, "匹いる", "\(multi("ぴきいる", "1").prefix(3))")
+        XCTAssertEqual(multi("ぼんかった", "3").first, "本買った", "\(multi("ぼんかった", "3").prefix(3))")
+        XCTAssertNotEqual(multi("ぽんうれた").first, "本売れた", "数字の文脈が無ければ持ち上げない")
+        XCTAssertEqual(multi("とかいいそう").first, "とか言いそう", "\(multi("とかいいそう").prefix(3))")
+        XCTAssertEqual(multi("とかいう").first, "とかいう")
+        XCTAssertEqual(multi("もでるよー").first, "も出るよー", "\(multi("もでるよー").prefix(3))")
+        XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "もでるよー"))
+        XCTAssertEqual(multi("めーるよね").first, "メールよね")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "はうまいなあ"))
+    }
+
     // 3710: 文具ブランド(ロディア/RHODIA、モレスキン/Moleskine)は compenser で供給(Sudachi・LM とも無し)
     func testRegressionStationeryBrandsSupplied() throws {
         try prepareRealLMDictionary()
