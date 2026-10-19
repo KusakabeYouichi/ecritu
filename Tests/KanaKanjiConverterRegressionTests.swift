@@ -24840,6 +24840,20 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("ちちがなくなった").first, "父がなくなった")
     }
 
+    // 3718: て/で形+補助動詞(しんでしまった)は、seed かな先頭の末尾語(しまった)だけを根拠に keepKana を立てない
+    // (前半にかなの根拠がある やって/して/みて は従来どおり立つ)
+    func testRegressionTeFormShimattaKeepKanaNeedsStemEvidence() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for reading in ["しんでしまった", "たべてしまった", "よんでしまった"] {
+            XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: reading), reading)
+        }
+        for reading in ["やってしまった", "してしまった", "みてしまった"] {
+            XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: reading), reading)
+        }
+        XCTAssertEqual(converter.candidates(for: "しんでしまった", limit: 3, systemCandidateMode: .surface).first, "死んでしまった")
+    }
+
     // 3710: 文具ブランド(ロディア/RHODIA、モレスキン/Moleskine)は compenser で供給(Sudachi・LM とも無し)
     func testRegressionStationeryBrandsSupplied() throws {
         try prepareRealLMDictionary()
