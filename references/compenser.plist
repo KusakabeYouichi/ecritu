@@ -33,7 +33,10 @@
 	        <dict><key>phrase</key><string>Vinolet</string><key>shortcut</key><string>ゔぃのれっと</string></dict>	<!-- ユーザ指定 3289 -->
 	        <dict><key>phrase</key><string>VINOLET</string><key>shortcut</key><string>ゔぃのれっと</string></dict>
 	        <dict><key>phrase</key><string>ヴィノレット</string><key>shortcut</key><string>ゔぃのれっと</string></dict>
-	        <dict><key>phrase</key><string>ブリリアンス</string><key>shortcut</key><string>ぶりりあんす</string></dict>	<!-- ブリリアンス: 辞書・LM とも未収録(ユーザ指定 3528) -->
+	        <dict><key>phrase</key><string>アンリ・ジロー</string><key>shortcut</key><string>あんりじろー</string></dict>
+	        <dict><key>phrase</key><string>Henri Giraud</string><key>shortcut</key><string>あんりじろー</string></dict>
+	        <dict><key>phrase</key><string>ポール・ジロー</string><key>shortcut</key><string>ぽーるじろー</string></dict>
+	        <dict><key>phrase</key><string>Paul Giraud</string><key>shortcut</key><string>ぽーるじろー</string></dict>
 	<!-- ウィスキー -->
             <dict><key>phrase</key><string>Ardbeg</string><key>shortcut</key><string>あーどべっぐ</string></dict>
             <dict><key>phrase</key><string>アードベッグ</string><key>shortcut</key><string>あーどべっぐ</string></dict>
@@ -804,5 +807,6 @@
 	        <dict><key>phrase</key><string>半生がえし</string><key>shortcut</key><string>はんなまがえし</string></dict>
 	        <dict><key>phrase</key><string>生がえし</string><key>shortcut</key><string>なまがえし</string></dict>
 	        <dict><key>phrase</key><string>モワティエ</string><key>shortcut</key><string>もわてぃえ</string></dict>	<!-- もわてぃえ(ユーザ指定 3665) -->
+	        <dict><key>phrase</key><string>ブリリアンス</string><key>shortcut</key><string>ぶりりあんす</string></dict>	<!-- ブリリアンス: 辞書・LM とも未収録(ユーザ指定 3528) -->
 </array>
 </plist>

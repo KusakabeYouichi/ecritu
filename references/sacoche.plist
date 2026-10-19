@@ -42,6 +42,7 @@
 	        <dict><key>phrase</key><string>帰雲城</string><key>shortcut</key><string>かえりぐもじょう</string></dict>
 	        <dict><key>phrase</key><string>帰雲城</string><key>shortcut</key><string>きうんじょう</string></dict>
 	<!-- その他の地方 -->
+	        <dict><key>phrase</key><string>能作</string><key>shortcut</key><string>のうさく</string></dict>
 	        <dict><key>phrase</key><string>美々卯</string><key>shortcut</key><string>みみう</string></dict>
 	        <dict><key>phrase</key><string>リアンクール</string><key>shortcut</key><string>りあんくーる</string></dict>
 	        <dict><key>phrase</key><string>福砂屋</string><key>shortcut</key><string>ふくさや</string></dict>
