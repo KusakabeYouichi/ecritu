@@ -277,5 +277,7 @@
 	<dict><key>phrase</key><string>SwitchBot</string><key>shortcut</key><string>すいっちぼっと</string></dict>
 	<dict><key>phrase</key><string>ナノリーフ</string><key>shortcut</key><string>なのりーふ</string></dict>
 	<dict><key>phrase</key><string>Nanoleaf</string><key>shortcut</key><string>なのりーふ</string></dict>
+	<dict><key>phrase</key><string>BenQ</string><key>shortcut</key><string>べんきゅー</string></dict>
+	<dict><key>phrase</key><string>Anker</string><key>shortcut</key><string>あんかー</string></dict>
 </array>
 </plist>
