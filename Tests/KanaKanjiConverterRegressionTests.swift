@@ -23867,8 +23867,10 @@ extension KanaKanjiConverterRegressionTests {
                                 ("ももわろう", "モモワロウ"), ("ばさぎり", "バサギリ"), ("ざるーど", "ザルード")] {
             XCTAssertTrue(single(reading).contains(name), "\(reading) list=\(single(reading))")
         }
+        // 3715 から、ふつうの句(不思議だね)がある読みはそれが先。ポケモンの名前は変種に残る(ユーザ指定)
         let sentence = converter.multiClauseCandidates(for: "ふしぎだねがいる", systemCandidateMode: .surface)
-        XCTAssertEqual(sentence.first, "フシギダネがいる", "multi=\(sentence)")
+        XCTAssertEqual(sentence.first, "不思議だねがいる", "multi=\(sentence)")
+        XCTAssertTrue(sentence.prefix(3).contains("フシギダネがいる"), "multi=\(sentence)")
     }
 }
 
@@ -24751,11 +24753,12 @@ extension KanaKanjiConverterRegressionTests {
 
         // 時の名詞の直後の 合った は下げ、繊月 は連文節で下げる
         let sengetsu = multi("せんげつあった")
-        XCTAssertEqual(Array(sengetsu.prefix(2)), ["先月会った", "先月あった"], "\(sengetsu)")
+        // 3715 から かな あった(ある の過去)が先(一般則。ユーザ指定)
+        XCTAssertEqual(Array(sengetsu.prefix(2)), ["先月あった", "先月会った"], "\(sengetsu)")
         // 3712: かな せんげつ の変種(せんげつ会った)も出さない、合った は末尾
         XCTAssertFalse(sengetsu.prefix(3).contains { $0.contains("繊月") || $0.contains("合った") || $0.hasPrefix("せんげつ") }, "\(sengetsu)")
         XCTAssertFalse(multi("しょうがいいね").prefix(3).contains("唱歌いいね"), "\(multi("しょうがいいね").prefix(4))")
-        XCTAssertEqual(multi("きょうあった").first, "今日会った")
+        XCTAssertEqual(multi("きょうあった").first, "今日あった")
         // ギガ は seed 掲載でカタカナ強調の抑制を免れる
         XCTAssertEqual(single("ぎが").first, "ギガ")
         XCTAssertEqual(Array(single("ようは").prefix(4)), ["要は", "用は", "ようは", "酔うは"])
@@ -24788,6 +24791,33 @@ extension KanaKanjiConverterRegressionTests {
             let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
             XCTAssertEqual(multi.first, expected, "\(reading): \(multi.prefix(3))")
         }
+    }
+
+    // 3715 のまとめ(ユーザ報告): までみたいよ/じゃないや/ふしぎだね/にすべきかなあ/せっていあった
+    func testRegression3715Batch() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func single(_ r: String) -> [String] { converter.candidates(for: r, limit: 12, systemCandidateMode: .surface) }
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        // 比況の みたい: 助詞のかなの直後はかなが先、を の後は 見たい
+        XCTAssertEqual(single("までみたいよ").first, "までみたいよ")
+        XCTAssertEqual(multi("そこまでみたい").first, "そこまでみたい", "\(multi("そこまでみたい").prefix(3))")
+        XCTAssertEqual(multi("えいがをみたい").first, "映画を見たい")
+        XCTAssertEqual(single("たべてみたい").first, "食べてみたい")
+        // ない+や(終助詞)
+        XCTAssertEqual(multi("じゃないや").first, "じゃないや", "\(multi("じゃないや").prefix(3))")
+        // ポケモンの名前はふつうの語・句の後ろ。不・思・議(中黒の装飾表記)は抑制
+        XCTAssertEqual(Array(single("ふしぎだね").prefix(2)), ["不思議だね", "フシギダネ"], "\(single("ふしぎだね"))")
+        XCTAssertFalse(single("ふしぎだね").contains { $0.contains("・") }, "\(single("ふしぎだね"))")
+        XCTAssertEqual(Array(single("ひとかげ").prefix(2)), ["人影", "ヒトカゲ"])
+        // すべき(かな、misc)
+        XCTAssertEqual(multi("にすべきかなあ").first, "にすべきかなあ", "\(multi("にすべきかなあ").prefix(3))")
+        XCTAssertEqual(single("すべき").first, "すべき")
+        // かな あった が先(一般則)。人+に/と+あった は 会った のまま
+        XCTAssertEqual(multi("せっていあった").first, "設定あった", "\(multi("せっていあった").prefix(3))")
+        XCTAssertEqual(multi("もんだいがあった").first, "問題があった")
+        XCTAssertEqual(multi("そこにあった").first, "そこにあった", "\(multi("そこにあった").prefix(3))")
+        XCTAssertEqual(multi("ともだちにあった").first, "友達に会った", "\(multi("ともだちにあった").prefix(3))")
     }
 
     // 3710: 文具ブランド(ロディア/RHODIA、モレスキン/Moleskine)は compenser で供給(Sudachi・LM とも無し)
