@@ -1032,6 +1032,17 @@ extension KanaKanjiConverter {
                     }
                 }
 
+                // 確定済み数字の直後の文頭の助数詞(1+ぽんうれた→本売れた)。ぽん/ぼん/ぴき 等は辞書の読み(ほん/ひき)と違うので
+                // 助数詞のノードが立たず、持ち上げ(2887)の対象が無かった(3720、ユーザ報告)
+                if digitPrefixed, start == 0, let counterSurfaces = Self.digitBoostCounterSurfaces(for: segmentReading) {
+                    // 本(ぽん)は読み跨ぎの unigram 借用が遮断されて割高になるので、派生と同じ定額で立てる
+                    for surface in counterSurfaces where surface != segmentReading {
+                        // 連濁形(本=ぽん)は連濁収穫として弾かれるので exemptDecorative で通す
+                        add(surface, isDictWord: true, isCurated: false, exemptDecorative: true, isInflectionDerived: false,
+                            wordCost: Self.multiClauseInflectionDerivedOOVCost)
+                    }
+                }
+
                 // (b4) 名詞化節(のが/のは 等)と説明の のね/のよ のかな単位ノードを常設する。
                 //      辞書にレア名前(野賀 wc10000 等)だけがあると (c) の素通り補完が走らず、
                 //      述語直後クランプの対象ノード自体が立たない(たくのがすき→宅のが好き)。
@@ -3881,6 +3892,12 @@ extension KanaKanjiConverter {
                             backPointer[prevIdx] >= 0,
                             !Self.isPersonLikeNounSurface(nodes[backPointer[prevIdx]].surface) {
                             cost += Self.multiClauseAuPersonMismatchPenalty
+                        }
+                        // も+動詞 と読めるカタカナ語(モデル=も+出る)の直後の長音の終助詞(よー/ねー/なー)。読みの る で述語扱いの
+                        // クランプが効き、もでるよー が モデルよー になっていた(定数コメント参照。3722)
+                        if Self.multiClauseMoVerbLookalikeKatakanaNouns.contains(prevNode.surface),
+                            node.isKanaIdentity, Self.multiClauseLongFinalParticleReadings.contains(node.reading) {
+                            cost += Self.multiClauseMoVerbLookalikeBeforeLongFinalPenalty
                         }
                         // かな あった の同点割り(3715)は 人物+に/と+あった では返す(友達に会った を保つ)。
                         // 非人物(そこにあった/問題があった)と名詞直後(設定あった)はかなが先
