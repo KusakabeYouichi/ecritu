@@ -403,7 +403,7 @@ extension ContentView {
         SettingsKeys.landscapeNumberPaneSide: LandscapeCandidateSideOption.left.rawValue,
         SettingsKeys.accentPalette: AccentColorOption.emeraude.rawValue,
         SettingsKeys.keyboardBackgroundTheme: KeyboardBackgroundThemeOption.chartreuse.rawValue,   // 保守的=vert chartreuse(ユーザ指定 3612。戦略的=bleu、現代的=sakura)
-        SettingsKeys.delimiterAutoCommitCandidate: DelimiterAutoCommitCandidateOption.one.rawValue,
+        SettingsKeys.delimiterAutoCommitCandidate: DelimiterAutoCommitCandidateOption.zero.rawValue,   // 保守的=句読点での自動確定は未変換かな(ユーザ指定 3718。戦略的・現代的は先頭の変換候補)
         SettingsKeys.kanaKanjiCandidateSourceMode: KanaKanjiCandidateSourceModeOption.surface.rawValue,
         SettingsKeys.historicalKanaCandidatesEnabled: false,
         SettingsKeys.iterationMarkCandidatesEnabled: false,
