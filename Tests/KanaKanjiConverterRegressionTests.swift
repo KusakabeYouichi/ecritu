@@ -24883,6 +24883,9 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(shown("だいきぼ"), "大規模")
         XCTAssertEqual(shown("おざきぎゅう"), "尾崎牛")
         XCTAssertEqual(shown("まつさかうしを"), "松阪牛を")
+        // 3738: 飯盒炊爨(misc)
+        XCTAssertEqual(shown("はんごうすいさん"), "飯盒炊爨")
+        XCTAssertEqual(shown("はんごうすいさんを"), "飯盒炊爨を")
         // 3733: 文頭の助詞読みの学習語彙(デモ)にも床を与えない
         converter.learn(reading: "でも", candidate: "デモ")
         converter.store.waitForPendingLearningPersists()
