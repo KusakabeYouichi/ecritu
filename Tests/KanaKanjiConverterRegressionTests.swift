@@ -24854,6 +24854,31 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.candidates(for: "しんでしまった", limit: 3, systemCandidateMode: .surface).first, "死んでしまった")
     }
 
+    // 3726: 語+助詞 1 字の先頭を単文節の先頭にそろえる(しゅうまつが→週末が)
+    // 3727: て形+よ/ね/な(よんでよ→読んでよ。四でよ だった)
+    // 3728: たったのに→立ったのに,経ったのに(かなは末尾)
+    // 3729: でりぞっとでした→でリゾットでした(〜っと のオノマトペ判定の誤爆)
+    func testRegression3726To3729() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        func single(_ r: String) -> [String] { converter.candidates(for: r, limit: 8, systemCandidateMode: .surface) }
+        XCTAssertEqual(single("しゅうまつ").first, "週末")
+        for p in ["が", "は", "も", "と"] {
+            XCTAssertEqual(multi("しゅうまつ" + p).first, "週末" + p, "\(multi("しゅうまつ" + p).prefix(3))")
+        }
+        XCTAssertEqual(multi("あいしょうが").first, "相性が")
+        XCTAssertEqual(multi("あいかわが").first, "\(single("あいかわ").first ?? "")が")
+        for (r, e) in [("よんでよ", "読んでよ"), ("よんでね", "読んでね"), ("よんでな", "読んでな"), ("のんでよ", "飲んでよ"), ("あそんでよ", "遊んでよ"), ("かってよ", "買ってよ")] {
+            XCTAssertEqual(multi(r).first, e, "\(multi(r).prefix(3))")
+        }
+        XCTAssertEqual(multi("これでよ").first, "これでよ")
+        let tatta = single("たったのに")
+        XCTAssertEqual(Array(tatta.prefix(2)), ["立ったのに", "経ったのに"], "\(tatta)")
+        XCTAssertEqual(multi("でりぞっとでした").first, "でリゾットでした")
+        XCTAssertEqual(single("ぱしゃっと").first, "ぱしゃっと")
+    }
+
     // 3723: ユーザ報告の 12 件(連文節の文法規則・学習語彙の床・seed・語彙登録)
     func testRegression3723Batch() throws {
         try prepareRealLMDictionary()

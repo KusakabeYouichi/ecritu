@@ -3141,6 +3141,8 @@ extension KanaKanjiConverter {
     static let multiClauseFinalParticleAfterPredicateCost = 1200
     // 上のクランプのうち、終止形・た形にしか付かない接続助詞(連用形 〜し の後ろでは掛けない。3723)
     static let multiClauseShuushiConjunctiveParticleReadings: Set<String> = ["から", "ので", "けど", "けれど"]
+    // 〜っと のオノマトペ判定から外す、先頭の助詞 1 字(で+リゾット 等。3729)
+    static let multiClauseOnomatopoeiaExcludedLeadingParticles: Set<Character> = ["で", "に", "を", "が", "は", "も", "と", "の"]
     // 学習語彙が跨ぐと床を外す常用語の unigram 上限(沖縄 5130。3723)
     static let multiClauseLearnedCrossedCommonWordMaxUnigram = 6000
     // 助詞・終助詞クラスタと同じ読み(学習語彙の文中優遇を外す判定。3723)
@@ -3572,6 +3574,8 @@ extension KanaKanjiConverter {
         static let もう = MultiClauseSymbols.id("もう")
         static let や = MultiClauseSymbols.id("や")
         static let よう = MultiClauseSymbols.id("よう")
+        static let よ = MultiClauseSymbols.id("よ")
+        static let ね = MultiClauseSymbols.id("ね")
         static let を = MultiClauseSymbols.id("を")
         static let ん = MultiClauseSymbols.id("ん")
         static let ー = MultiClauseSymbols.id("ー")
