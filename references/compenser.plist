@@ -216,6 +216,10 @@
 	<dict><key>phrase</key><string>焼き餃子</string><key>shortcut</key><string>やきぎょうざ</string></dict>
 	<dict><key>phrase</key><string>焼餃子</string><key>shortcut</key><string>やきぎょうざ</string></dict>
 	<dict><key>phrase</key><string>水餃子</string><key>shortcut</key><string>すいぎょうざ</string></dict>
+	<dict><key>phrase</key><string>ブルグル</string><key>shortcut</key><string>ぶるぐる</string></dict>
+	<dict><key>phrase</key><string>burgur</string><key>shortcut</key><string>ぶるぐる</string></dict>
+	<dict><key>phrase</key><string>ブルグール</string><key>shortcut</key><string>ぶるぐーる</string></dict>
+	<dict><key>phrase</key><string>boulghour</string><key>shortcut</key><string>ぶるぐーる</string></dict>
 	<!-- 〜放題(連用形+放題)。Sudachi は 見放題/し放題 しか持たず、のみほうだい は のみ(副助詞、LM 3929)+放題 で 飲み放題 が出なかった(ユーザ報告 2823) -->
 	        <dict><key>phrase</key><string>飲み放題</string><key>shortcut</key><string>のみほうだい</string><key>pos</key><string>名詞</string></dict>
 	        <dict><key>phrase</key><string>呑み放題</string><key>shortcut</key><string>のみほうだい</string><key>pos</key><string>名詞</string></dict>

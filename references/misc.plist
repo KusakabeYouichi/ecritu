@@ -139,6 +139,15 @@
 	<dict><key>phrase</key><string>もしかして</string><key>shortcut</key><string>もしかして</string></dict>	<!-- もしかして/もしかすると/もしかしたら: 辞書に 1 語で無く もし+か+し+て に割れ、末尾の て→細菌 の連接で もしかしてさいきん→もしかして細菌 になっていた。かな正書の副詞(ユーザ報告 3335) -->
 	<dict><key>phrase</key><string>もしかすると</string><key>shortcut</key><string>もしかすると</string></dict>
 	<dict><key>phrase</key><string>おかか</string><key>shortcut</key><string>おかか</string><key>pos</key><string>名詞</string></dict>	<!-- おかか(鰹節): 辞書にかなはあるが LM 未収録で、御かか/お媽 が先頭だった(ユーザ報告 3723) -->
+	<dict><key>phrase</key><string>だったんで</string><key>shortcut</key><string>だったんで</string></dict>	<!-- だったんで/だったんです/だったんだ: だった+ん(説明)+で。だったん が 韃靼/達陀/脱炭 の 1 語に吸われ、すごい規模韃靼で になっていた(ユーザ報告 3735) -->
+	<dict><key>phrase</key><string>だったんです</string><key>shortcut</key><string>だったんです</string></dict>
+	<dict><key>phrase</key><string>だったんだ</string><key>shortcut</key><string>だったんだ</string></dict>
+	<dict><key>phrase</key><string>だったんだけど</string><key>shortcut</key><string>だったんだけど</string></dict>
+	<dict><key>phrase</key><string>だったんですけど</string><key>shortcut</key><string>だったんですけど</string></dict>
+	<dict><key>phrase</key><string>どうなるか</string><key>shortcut</key><string>どうなるか</string></dict>	<!-- どうなるか/どうなる/どうなった/どうなって: 〜は どうなるか の断片が 波動+なるか(1 語の 波動 が文頭の助詞 は より 1400 安い)になっていた(ユーザ報告 3731) -->
+	<dict><key>phrase</key><string>どうなる</string><key>shortcut</key><string>どうなる</string></dict>
+	<dict><key>phrase</key><string>どうなった</string><key>shortcut</key><string>どうなった</string></dict>
+	<dict><key>phrase</key><string>どうなって</string><key>shortcut</key><string>どうなって</string></dict>
 	<dict><key>phrase</key><string>もしかしたら</string><key>shortcut</key><string>もしかしたら</string></dict>
 	<dict><key>phrase</key><string>ざっと</string><key>shortcut</key><string>ざっと</string></dict>	<!-- ざっと: かな正書の副詞(ざっと目を通す)。辞書の ざっと は Sudachi 由来の英語 that のカタカナ ザット だけで、ざっとめをとおす→ザット目を通す になっていた(ユーザ報告 3576) -->
 	<dict><key>phrase</key><string>そしたら</string><key>shortcut</key><string>そしたら</string></dict>	<!-- そしたら(そうしたら の口語): 辞書に無く 祖+したら(7979)だけが立っていた。かなが正書(ユーザ指定 2910) -->
@@ -359,6 +368,36 @@
 	<dict><key>phrase</key><string>抑制語彙</string><key>shortcut</key><string>よくせいごい</string></dict>
 	<dict><key>phrase</key><string>ショートカット語彙</string><key>shortcut</key><string>しょーとかっとごい</string></dict>
 	<dict><key>phrase</key><string>青菜炒め</string><key>shortcut</key><string>あおないため</string></dict>	<!-- 青菜炒め: 青菜 は辞書にあるが 1 語で無く、青+ない+ため が先頭だった(ユーザ報告 3723) -->
+	<!-- □ 銘柄牛(ユーザ指定 3735: おざきぎゅう が 尾崎ギュウ だった。主な銘柄も合わせて。前沢牛/宮崎牛 は辞書に既存) -->
+	<dict><key>phrase</key><string>尾崎牛</string><key>shortcut</key><string>おざきぎゅう</string></dict>
+	<dict><key>phrase</key><string>松阪牛</string><key>shortcut</key><string>まつさかうし</string></dict>
+	<dict><key>phrase</key><string>松阪牛</string><key>shortcut</key><string>まつさかぎゅう</string></dict>
+	<dict><key>phrase</key><string>神戸牛</string><key>shortcut</key><string>こうべぎゅう</string></dict>
+	<dict><key>phrase</key><string>神戸ビーフ</string><key>shortcut</key><string>こうべびーふ</string></dict>
+	<dict><key>phrase</key><string>近江牛</string><key>shortcut</key><string>おうみうし</string></dict>
+	<dict><key>phrase</key><string>近江牛</string><key>shortcut</key><string>おうみぎゅう</string></dict>
+	<dict><key>phrase</key><string>米沢牛</string><key>shortcut</key><string>よねざわぎゅう</string></dict>
+	<dict><key>phrase</key><string>但馬牛</string><key>shortcut</key><string>たじまうし</string></dict>
+	<dict><key>phrase</key><string>但馬牛</string><key>shortcut</key><string>たじまぎゅう</string></dict>
+	<dict><key>phrase</key><string>飛騨牛</string><key>shortcut</key><string>ひだぎゅう</string></dict>
+	<dict><key>phrase</key><string>佐賀牛</string><key>shortcut</key><string>さがぎゅう</string></dict>
+	<dict><key>phrase</key><string>石垣牛</string><key>shortcut</key><string>いしがきぎゅう</string></dict>
+	<dict><key>phrase</key><string>仙台牛</string><key>shortcut</key><string>せんだいぎゅう</string></dict>
+	<dict><key>phrase</key><string>常陸牛</string><key>shortcut</key><string>ひたちぎゅう</string></dict>
+	<dict><key>phrase</key><string>山形牛</string><key>shortcut</key><string>やまがたぎゅう</string></dict>
+	<dict><key>phrase</key><string>三田牛</string><key>shortcut</key><string>さんだぎゅう</string></dict>
+	<dict><key>phrase</key><string>伊賀牛</string><key>shortcut</key><string>いがうし</string></dict>
+	<dict><key>phrase</key><string>能登牛</string><key>shortcut</key><string>のとうし</string></dict>
+	<dict><key>phrase</key><string>見島牛</string><key>shortcut</key><string>みしまうし</string></dict>
+	<dict><key>phrase</key><string>白老牛</string><key>shortcut</key><string>しらおいぎゅう</string></dict>
+	<dict><key>phrase</key><string>鹿児島黒牛</string><key>shortcut</key><string>かごしまくろうし</string></dict>
+	<dict><key>phrase</key><string>熊野牛</string><key>shortcut</key><string>くまのぎゅう</string></dict>
+	<dict><key>phrase</key><string>土佐あかうし</string><key>shortcut</key><string>とさあかうし</string></dict>
+	<dict><key>phrase</key><string>もとぶ牛</string><key>shortcut</key><string>もとぶぎゅう</string></dict>
+	<dict><key>phrase</key><string>山城牛</string><key>shortcut</key><string>やましろぎゅう</string></dict>
+	<dict><key>phrase</key><string>宮古牛</string><key>shortcut</key><string>みやこぎゅう</string></dict>
+	<dict><key>phrase</key><string>黒毛和牛</string><key>shortcut</key><string>くろげわぎゅう</string></dict>
+	<dict><key>phrase</key><string>大規模</string><key>shortcut</key><string>だいきぼ</string></dict>	<!-- 大規模: 辞書にあるが wc 12577 と重く、台+規模 の合成が先頭だった(ユーザ報告 3735) -->
 	<!-- うどん出汁/うどんだし: 辞書に 1 語で無く、う+ドン+だし/饂飩+だし の合成が先頭だった。順はユーザ指定(3706) -->
 	<dict><key>phrase</key><string>うどん出汁</string><key>shortcut</key><string>うどんだし</string></dict>
 	<dict><key>phrase</key><string>うどんだし</string><key>shortcut</key><string>うどんだし</string></dict>
