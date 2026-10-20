@@ -512,7 +512,7 @@ extension ContentView {
         SettingsKeys.ordinalMeKanjiPreferred: false,
         SettingsKeys.kaCounterVariantPreference: KaCounterVariantPreference.conservative.encoded,  // 保守的=か・箇・ヶ・カ をオン(標準は か のみ)
         SettingsKeys.numeralStylePreference: NumeralStylePreference.contemporaryDefault.rawValue,   // 現代的=アラビア数字が先(3702)
-        SettingsKeys.okuriganaVariantPreference: OkuriganaVariantPreference.conservative.encoded,  // 保守的=本則を先に許容も出す(標準は本則だけ)
+        SettingsKeys.okuriganaVariantPreference: OkuriganaVariantPreference.contemporary.encoded,  // 現代的=語幹の中だけ本則だけ、ほかは本則を先に(ユーザ指定 3737)
         SettingsKeys.kakikaePreference: KakikaePreference.bothBeforeFirst.rawValue,  // 現代的=本来の漢字を先に前も出す(3422、3431 で変更)
         SettingsKeys.kakikaeEverydayException: true,   // 現代的=オン(ユーザ指定 3644)
         SettingsKeys.adjectiveMeKanjiCandidatesEnabled: true,
