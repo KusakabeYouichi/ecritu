@@ -236,6 +236,7 @@ extension KanaKanjiConverter {
                 candidates = wholeLearned + candidates.filter { !wholeLearned.contains($0) }
             }
         }
+        candidates = singleTopLeadBeforeParticle(reading: reading, candidates: candidates, systemCandidateMode: systemCandidateMode)
         // 受け身・尊敬の される が付かない サ変名詞+される(商品が醗酵される 等)を含む候補は後ろへ(3483)。
         // ラティスの減点で最良からは外れるが、差し替えの変種として 2 位以降に残るため
         let hasNonPassivizable = candidates.contains { Self.containsNonPassivizableSuruForm($0) }
@@ -247,6 +248,35 @@ extension KanaKanjiConverter {
             return candidates
         }
         return Self.applyKakikae(preference, toMultiClauseCandidates: candidates, everydayException: withStateLock { kakikaeEverydayException })
+    }
+
+    // 語+助詞 1 字(しゅうまつが)の先頭を、語だけ(しゅうまつ)の単文節の先頭にそろえる(3726、ユーザ報告)。
+    // 単文節=辞書順+補正、連文節=LM で並べるため、週末(BOS 7108)/終末(5419)のように 1 字足しただけで先頭が入れ替わっていた
+    // (調査で 2993 読み中 1087 読み)。加点(2720、700)は 語→助詞 の bigram が観測済みのときだけで、週末→が は未観測。
+    // 連文節の先頭が「語の読みの別表記+助詞」のときだけ差し替える(区切りが違う 秋葉/青砥 は触らない)。
+    // ひらがなを含む表記(青い/会う=述語、彼ら)と、時相名詞(昨日/最近。助詞ごとに手調整済み)は対象外
+    func singleTopLeadBeforeParticle(reading: String, candidates: [String], systemCandidateMode: KanaKanjiCandidateSourceMode) -> [String] {
+        let normalized = KanaTextNormalizer.normalizedReading(reading)
+        guard normalized.count >= 3, let tail = normalized.last,
+            Self.multiClauseSingleTopParticleTails.contains(tail),
+            let first = candidates.first, first.last == tail else {
+            return candidates
+        }
+        let lead = String(normalized.dropLast())
+        let firstLead = String(first.dropLast())
+        let singles = self.candidates(for: lead, limit: 12, systemCandidateMode: systemCandidateMode)
+        guard let singleTop = singles.first, singleTop != firstLead, singleTop != lead,
+            singles.contains(firstLead),
+            // 両方ともひらがなを含まない 1 語に限る。かなを含むと 聞くか+も(きく+かも の区切り)を キク科も に、
+            // 彼ら(連文節が正しい)を単文節の カレラ に、いいの+に を 飯野に に差し替えてしまう
+            !singleTop.unicodeScalars.contains(where: { (0x3041...0x3096).contains($0.value) }),
+            !firstLead.unicodeScalars.contains(where: { (0x3041...0x3096).contains($0.value) }),
+            Self.multiClauseConversationalTemporalNounUnigramCaps[singleTop] == nil,
+            Self.multiClauseConversationalTemporalNounUnigramCaps[firstLead] == nil else {
+            return candidates
+        }
+        let promoted = singleTop + String(tail)
+        return [promoted] + candidates.filter { $0 != promoted }
     }
 
     // 同音の漢字による書きかえ(KakikaeTable、3422)を連文節の結果に当てる。ラティスでノードを下げると区切りごと
@@ -2577,6 +2607,10 @@ extension KanaKanjiConverter {
                 reading.count >= 4, reading.count <= 5,
                 reading.hasSuffix("っと"),
                 !readingsWithScriptedDictWord.contains(reading),
+                // 助詞 1 字+辞書語(で+りぞっと=リゾット)もオノマトペではない。でりぞっとでした が全かな 4000 で
+                // で+リゾット に勝ち、全かなの結果として捨てられて候補が無かった(3729、ユーザ報告)
+                !(reading.first.map { Self.multiClauseOnomatopoeiaExcludedLeadingParticles.contains($0) } ?? false
+                    && readingsWithScriptedDictWord.contains(String(reading.dropFirst()))),
                 !Self.multiClauseSokuonToAdverbTails.contains(where: {
                     reading != $0 && reading.hasSuffix($0)
                 }),
@@ -2899,6 +2933,13 @@ extension KanaKanjiConverter {
                 // 述語扱いでクランプされ、ことしから が 糊塗しから(7200+1200)になって 今年から(6847+3348)を跨いでいた(3723)
                 !(prevIsInflectionDerived && prev.hasSuffix("し")
                     && Self.multiClauseShuushiConjunctiveParticleReadings.contains(reading)) {
+                base = min(base, Self.multiClauseFinalParticleAfterPredicateCost)
+            }
+            // て形(活用派生の 〜て/〜で)+終助詞 1 字 よ/ね/な は依頼・念押し(読んでよ/見てね/待ってな)。上の 2 字以上のクランプから外れ、
+            // 読んで→よ が未観測の 5551 で、四+で+よ(で→よ の bigram が安い)に負けて よんでよ が 四でよ だった(3727、ユーザ報告)
+            if isKanaIdentity, readingID == SID.よ || readingID == SID.ね || readingID == SID.な,
+                prevIsInflectionDerived,
+                let prevLast = prev.last, prevLast == "て" || prevLast == "で" {
                 base = min(base, Self.multiClauseFinalParticleAfterPredicateCost)
             }
             // 述語(活用派生/辞書形)直後の疑問終助詞「か」1字もクランプ(2700)。2字以上のクラスタと
