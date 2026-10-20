@@ -372,6 +372,7 @@ extension KanaKanjiConverter {
         var collocationPreferredVerbNodeKeys = Set<String>()
         // 国旗(drapeaux)の表層が立つ区間=国名(スペイン/フランス)。国名+さん は 産(スペイン産)が主(3537)
         var countryNameSpanKeys = Set<String>()
+        var countryNameSpanEnds = Set<Int>()   // 国名の区間の終わり(国名+の+ジン。3723)
         var collocationDemotedNodeKeys = Set<String>()
         // 連体詞(こういう 等)+準体助詞 の の直後(=活用派生が述語として自然な位置)。
         var prenominalNoInflectionStarts = Set<Int>()
@@ -502,7 +503,35 @@ extension KanaKanjiConverter {
                 // 「単文節に任せる」で空を返す。学習語彙は単文節側が先頭に出すので、格子は別解(漢字変換/感じ変換)を
                 // 担当する。カンジヘンカン を学習した途端 かんじへんかん が {カンジヘンカン, かんじへんかん} だけになっていた
                 // (ユーザ報告)。部分一致(かんじへんかん+を 等)は従来どおり
-                for surface in learnedDictionary[segmentReading] ?? [] where surface != segmentReading && len < n {
+                // 助詞と同じ読み(でも/から/かな 等)の学習語彙は文頭だけ優遇する。デモ を 1 度確定すると床 1500 で
+                // 文中の助詞 でも を毎回押しのけ、お金払ってデモ/そういう意味デモ になっていた(3723、ユーザ報告)。
+                // 文中は辞書語として LM で競わせる(反対デモ 等は bigram で立つ)
+                let learnedIsParticleReading = start > 0 && Self.isParticleLikeReading(segmentReading)
+                // 手前から続く常用語(沖縄=おきなわ)の途中で始まり、その語の終わりを跨ぐ学習語彙(和風=わふう)も床を与えない。
+                // 和風 を 1 度確定すると おきなわふう が 翁+和風(床 1500)になり、沖縄風 が候補から消えていた(3723、ユーザ報告)。
+                // 辞書語としては残し、LM で競わせる
+                let learnedSurfaces = (learnedDictionary[segmentReading] ?? []).filter { $0 != segmentReading && len < n }
+                let learnedCrossesCommonWord: Bool = {
+                    guard !learnedSurfaces.isEmpty, !learnedIsParticleReading, start > 0 else {
+                        return false
+                    }
+                    let crossing = (max(0, start - Self.multiClauseMaxSegmentReadingCount)..<start).flatMap { nodesStartingAt[$0] }
+                        .map { nodes[$0] }
+                        .filter { $0.end > start && $0.end < end && $0.isDictWord && !$0.isCurated && !$0.isInflectionDerived && !$0.isKanaIdentity }
+                        .map(\.surface)
+                    guard !crossing.isEmpty else {
+                        return false
+                    }
+                    return store.wordLMUnigramCosts(for: crossing).values.contains { $0 <= Self.multiClauseLearnedCrossedCommonWordMaxUnigram }
+                }()
+                for surface in learnedSurfaces {
+                    if learnedIsParticleReading {
+                        continue
+                    }
+                    if learnedCrossesCommonWord {
+                        add(surface, isDictWord: true, isCurated: false)
+                        continue
+                    }
                     add(surface, isDictWord: true, isCurated: true)
                 }
 
@@ -1091,8 +1120,23 @@ extension KanaKanjiConverter {
                         initialAjoutVocabulary: initialAjoutVocabulary,
                         systemCandidateMode: systemCandidateMode
                     )
+                    // 同じ読みの名詞(海)が連用形(生み)より十分安く、LM に 連用形→に の実績が無いなら立てない(定数コメント参照。3723)
+                    let competingNounSurfaces: [String] = renyouNi.isEmpty ? [] : nodesStartingAt[start].compactMap {
+                        let node = nodes[$0]
+                        return node.end == end - 1 && node.isDictWord && !node.isInflectionDerived && !node.isKanaIdentity ? node.surface : nil
+                    }
+                    let competingNounUnigrams = competingNounSurfaces.isEmpty ? [:]
+                        : store.wordLMUnigramCosts(for: competingNounSurfaces + renyouNi.prefix(Self.multiClauseInflectionTopK).map { String($0.dropLast()) })
+                    let cheapestCompetingNoun = competingNounSurfaces.compactMap { competingNounUnigrams[$0] }.min()
                     for surface in renyouNi.prefix(Self.multiClauseInflectionTopK)
                     where surface != segmentReading {
+                        if let cheapestCompetingNoun {
+                            let stem = String(surface.dropLast())
+                            if store.wordLMBigramCost(prev: stem, cur: "に") == nil,
+                                cheapestCompetingNoun + Self.multiClauseRenyouNiUnattestedNounMargin <= (competingNounUnigrams[stem] ?? Int.max) {
+                                continue
+                            }
+                        }
                         add(surface, isDictWord: true, isCurated: false, isInflectionDerived: true)
                         renyouNiNodeKeys.insert(spanKeyByStart[start][end] + "-" + surface)
                     }
@@ -1183,6 +1227,7 @@ extension KanaKanjiConverter {
                     }
                     if Self.isFlagEmojiSurface(surface) {
                         countryNameSpanKeys.insert(spanKeyByStart[start][end])
+                        countryNameSpanEnds.insert(end)
                     }
                     let index = nodes.count
                     nodes.append(MultiClauseNode(
@@ -2849,7 +2894,11 @@ extension KanaKanjiConverter {
                 // 読みが た/だ で終わる全漢字の語(円田/遠田/神田)は名詞で、読みの だ はコピュラでない。
                 // 名詞+けど は非文(名詞には だけど)なのに述語扱いでクランプされ、300えんだけどな の変種に
                 // 円田けどな/遠田けどな が並んでいた(3555)
-                !Self.isAllKanjiNounWithTaDaReadingTail(surface: prev, reading: prevReading) {
+                !Self.isAllKanjiNounWithTaDaReadingTail(surface: prev, reading: prevReading),
+                // 接続助詞 から/ので/けど は終止形・た形に付く。連用形の し(サ変の派生 糊塗し)の後ろは非文なのに
+                // 述語扱いでクランプされ、ことしから が 糊塗しから(7200+1200)になって 今年から(6847+3348)を跨いでいた(3723)
+                !(prevIsInflectionDerived && prev.hasSuffix("し")
+                    && Self.multiClauseShuushiConjunctiveParticleReadings.contains(reading)) {
                 base = min(base, Self.multiClauseFinalParticleAfterPredicateCost)
             }
             // 述語(活用派生/辞書形)直後の疑問終助詞「か」1字もクランプ(2700)。2字以上のクラスタと
@@ -3940,6 +3989,13 @@ extension KanaKanjiConverter {
                             let prevLastForJin = prevNode.surface.last,
                             KanaKanjiConverter.regionalSuffixCharactersBeforeSan.contains(prevLastForJin) {
                             cost -= Self.multiClauseRegionalProduceBonus
+                        }
+                        // 国名+の+じん は酒の ジン(フランスのジン/イギリスのジン)。の→陣 4838 が の→ジン 6360 に勝ち
+                        // フランスの陣 が先頭だった(3723、ユーザ報告)。大坂の陣/夏の陣 は国名でないので従来どおり
+                        if node.readingID == SID.じん, node.surface == "ジン",
+                            prevNode.surfaceID == SID.の,
+                            countryNameSpanEnds.contains(prevNode.start) {
+                            cost -= Self.multiClauseCountryNoGinBonus
                         }
                         // 述語(活用派生/辞書形)直後の かち は「〜する価値ない」等の形式名詞的
                         // 用法が主。短span床の僅差(価値7191 vs 勝6795)で 勝/勝ち に負けるため
@@ -5057,6 +5113,19 @@ extension KanaKanjiConverter {
                     return prevNode.isInflectionDerived || prevNode.isDictionaryFormPredicate
                         || prevNode.surface == "の" || prevNode.surface == "な"
                 }()
+                // 厳密 opt-in の読みで seed が漢字の後ろに並べたかな(とった: 取った,撮った,…,獲った,とった)は、変種でもその順位より
+                // 前に出さない。下の seed 順は かな変種を対象外にしていたため、普通にとっただけ が 普通に撮っただけ より前だった
+                // (3723、ユーザ報告)。全読みに掛けると seed 2〜3 番目のかな(ごはん/よろう)の 2 位が崩れる
+                if alt.reading == chosen.reading,
+                    alt.surface == alt.reading, chosen.surface != chosen.reading,
+                    !allowsSeedOrderFromKanaLead,
+                    Self.multiClauseSeedOrderVariantStrictReadings.contains(alt.reading),
+                    let seedList = KanaKanjiSeedDictionary.seed[alt.reading],
+                    let chosenIndex = seedList.firstIndex(of: chosen.surface),
+                    let altIndex = seedList.firstIndex(of: alt.surface),
+                    altIndex > chosenIndex {
+                    delta = max(delta, (altIndex - chosenIndex) * Self.multiClauseSeedOrderVariantStep)
+                }
                 if alt.reading == chosen.reading,
                     !isWeakStandaloneAltInNounSlot,
                     !isUnmodifiableRareReadingAltAfterModifier,

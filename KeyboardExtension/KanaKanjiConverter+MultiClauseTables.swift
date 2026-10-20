@@ -1110,6 +1110,11 @@ extension KanaKanjiConverter {
     // 連用形+に(目的)直後の移動動詞ボーナス。北(名詞)5190+に→北4818 級を、来た(活用OOV
     // 7200)が上回れる水準に。移動動詞は 来/行/帰/戻 始まりの漢字表層で判定する。
     static let multiClauseRenyouNiMotionVerbBonus = 3500
+    // 連用形+に(目的)の 1 ノードを立てない、同じ読みの名詞との unigram 差(3723)。1 ノードは派生 OOV 定額(7200)で、
+    // 連用形+に を LM が一度も見ていない動詞(生み/産み/膿み)でも 海(4571)+に より安く立ち、移動動詞ボーナスで
+    // うみにいく→生みに行く になっていた(ユーザ報告)。LM に 連用形→に の実績が無く、名詞が連用形よりこれだけ
+    // 安いときは名詞+に に任せる(分割の 生み+に は残る)。撮り(6239)/鳥(5228)、寝(6183)/値(4610) は差が小さく対象外
+    static let multiClauseRenyouNiUnattestedNounMargin = 2000
     // 連用形+に(目的)の直後の状態動詞への減点(3503)と、形容詞の直後の派生動詞への減点(3504)
     static let multiClauseRenyouNiStatefulVerbPrefixes: [String] = ["住", "居", "暮ら", "済", "澄"]
     static let multiClauseRenyouNiStatefulVerbPenalty = 2000
@@ -1335,6 +1340,8 @@ extension KanaKanjiConverter {
     static let multiClauseRegionalProduceBonus = 3000
     // 国名(国旗の表層が立つ区間)+さん→産 の上乗せ(3537)。スペイン→さん 3551 vs 産 の backoff 7472 を逆転させる
     static let multiClauseCountryProduceExtraBonus = 1500
+    // 国名+の+ジン(酒)の加点(3723)。の→陣 4838 と の→ジン 6360 の差 1522 に unigram 差を足して越える幅
+    static let multiClauseCountryNoGinBonus = 3000
     // 形容詞語幹+さ の派生名詞直後の格助詞への加点(3537)。辛さ→が 2533 - 差→が 627 の差 1906 を越えつつ控えめに
     static let multiClauseSaNominalBeforeCaseParticleBonus = 1200
     // 漢字が seed 先頭の読みのカタカナ兄弟(コメ/ネコ)の定額減点(3537)。コメ→買ってた の bigram 差 2100 を 米 の 1453 差と合わせて逆転
@@ -1389,7 +1396,8 @@ extension KanaKanjiConverter {
     // 人名 押井 より前に出すため(ユーザー指定 3182)
     // おすすめ(3263): 連文節でも seed 順(お薦め/お勧め/おすすめ/オススメ)にする(ユーザ指定)
     // こつ(3476): seed 順(コツ→こつ→骨)で、ちょっとしたこつ の 2 番目を かな にする(ユーザ指定)
-    static let multiClauseSeedOrderVariantStrictReadings: Set<String> = ["たとえて", "おしい", "みずみずしさ", "みずみずしい", "へり", "おすすめ", "かけないで", "こつ"]
+    // とった(3723): seed で漢字の後ろ(獲った の次)に置いたかな とった を、変種でも 撮った 等より前に出さない(ユーザ報告 普通にとっただけ)
+    static let multiClauseSeedOrderVariantStrictReadings: Set<String> = ["たとえて", "おしい", "みずみずしさ", "みずみずしい", "へり", "おすすめ", "かけないで", "こつ", "とった"]
     // seed 先頭語のコスト救済(2677)を「LM 収録済みでも」適用する読みの opt-in。
     // せいかい: Sudachi は 正解6465<政界7140 なのに Wikipedia LM は 政界6236<正解6479 で
     // 政界では が先頭だった。無条件適用は7件退行(位置から遣り直す/占いしか/東京中 等)
@@ -1727,6 +1735,8 @@ extension KanaKanjiConverter {
         "掛けないで\tよ": 3000,
         // 金+払って(かねはらって): 人名 金原+って が僅差で勝っていた(ユーザ報告 2645)
         "金\t払って": 2500,
+        // 金が は 鐘が より日常的。LM は 鐘→が 1580 < 金→が 1780 で かねがなくて が 鐘がなくて だった(ユーザ報告 3723)
+        "金\tが": 600,
         // 参加+の: Wikipedia の「〜の傘下の子会社」偏りで 傘下→の 469 ≪ 参加→の 2086。unigram の
         // 差(参加 4500 < 傘下 5560)を食い潰して さんかのしかた→傘下の仕方 が 557 差で勝っていた
         // (ユーザ指定 3203)
@@ -3129,6 +3139,16 @@ extension KanaKanjiConverter {
     // かわいい+なあ(6967+14000)が 川+いい+なあ(いい→なあ の観測bigram 3372)に
     // 負けていた(2628)。名詞化節クランプ(のが/のは 1200)と同型の文法クランプ
     static let multiClauseFinalParticleAfterPredicateCost = 1200
+    // 上のクランプのうち、終止形・た形にしか付かない接続助詞(連用形 〜し の後ろでは掛けない。3723)
+    static let multiClauseShuushiConjunctiveParticleReadings: Set<String> = ["から", "ので", "けど", "けれど"]
+    // 学習語彙が跨ぐと床を外す常用語の unigram 上限(沖縄 5130。3723)
+    static let multiClauseLearnedCrossedCommonWordMaxUnigram = 6000
+    // 助詞・終助詞クラスタと同じ読み(学習語彙の文中優遇を外す判定。3723)
+    static func isParticleLikeReading(_ reading: String) -> Bool {
+        multiClauseCaseParticleSurfaces.contains(reading)
+            || multiClauseCompoundParticles.contains(reading)
+            || multiClauseFinalParticleReadings.contains(reading)
+    }
     static let multiClauseTeNounItteAfterTeFormPenalty = 6000
     // 名詞直後の裸のかな「な」。連体の な は形容動詞語幹にしか付かないが、ラティスでは
     // どんな名詞にも な を継げてしまい「しきなそば→式な側」のような分割を作る
