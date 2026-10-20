@@ -24854,6 +24854,38 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.candidates(for: "しんでしまった", limit: 3, systemCandidateMode: .surface).first, "死んでしまった")
     }
 
+    // 3730〜3735: 荒らされまくり/はどうなるか/火が強すぎた/でも日本も/以前とは/すごい規模だったんで/大規模/尾崎牛
+    func testRegression3730To3735() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        func single(_ r: String) -> [String] { converter.candidates(for: r, limit: 8, systemCandidateMode: .surface) }
+        func shown(_ r: String) -> String? { multi(r).first ?? single(r).first }
+        // 3730: 連用形+まくる はかな
+        XCTAssertEqual(shown("あらされまくり"), "荒らされまくり")
+        XCTAssertEqual(shown("たべまくった"), "食べまくった")
+        // 3731: どうなるか(misc のかな正書)
+        XCTAssertEqual(shown("はどうなるか"), "はどうなるか")
+        XCTAssertEqual(shown("これはどうなるか"), "これはどうなるか")
+        // 3732: 火+が+強/弱
+        XCTAssertEqual(shown("ひがつよすぎた"), "火が強すぎた")
+        XCTAssertEqual(shown("ひざしがつよい"), "日差しが強い")
+        // 3734: いぜん はかなを末尾(依然 を X.8 から外す)、いぜんとは は単文節の先頭そろえ(複合助詞)
+        let izen = single("いぜん")
+        XCTAssertEqual(Array(izen.prefix(2)), ["以前", "依然"], "\(izen)")
+        XCTAssertEqual(Array(multi("いぜんとは").prefix(2)), ["以前とは", "依然とは"])
+        XCTAssertEqual(multi("いぜんとは").last, "いぜんとは")
+        // 3735: 語彙(misc)
+        XCTAssertEqual(shown("すごいきぼだったんで"), "すごい規模だったんで")
+        XCTAssertEqual(shown("だいきぼ"), "大規模")
+        XCTAssertEqual(shown("おざきぎゅう"), "尾崎牛")
+        XCTAssertEqual(shown("まつさかうしを"), "松阪牛を")
+        // 3733: 文頭の助詞読みの学習語彙(デモ)にも床を与えない
+        converter.learn(reading: "でも", candidate: "デモ")
+        converter.store.waitForPendingLearningPersists()
+        XCTAssertEqual(shown("でもにほんも"), "でも日本も")
+    }
+
     // 3726: 語+助詞 1 字の先頭を単文節の先頭にそろえる(しゅうまつが→週末が)
     // 3727: て形+よ/ね/な(よんでよ→読んでよ。四でよ だった)
     // 3728: たったのに→立ったのに,経ったのに(かなは末尾)
