@@ -24864,6 +24864,9 @@ extension KanaKanjiConverterRegressionTests {
         // 3730: 連用形+まくる はかな
         XCTAssertEqual(shown("あらされまくり"), "荒らされまくり")
         XCTAssertEqual(shown("たべまくった"), "食べまくった")
+        // 3736: 荒す は許容形の一覧で扱う(初期設定=本則だけ なので出さない)
+        XCTAssertFalse(multi("あらされまくり").contains("荒されまくり"), "\(multi("あらされまくり"))")
+        XCTAssertFalse(single("あらす").contains("荒す"), "\(single("あらす"))")
         // 3731: どうなるか(misc のかな正書)
         XCTAssertEqual(shown("はどうなるか"), "はどうなるか")
         XCTAssertEqual(shown("これはどうなるか"), "これはどうなるか")
