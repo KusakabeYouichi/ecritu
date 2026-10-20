@@ -55,6 +55,10 @@ struct OkuriganaVariantPreference: Equatable {
     static let conservative = OkuriganaVariantPreference(modes: [
         .stemInternal: .standardFirst, .compoundFront: .standardFirst, .nominalized: .standardFirst
     ])
+    // 現代的初期設定: 語幹の中(終る/荒す)だけ本則のみ、ほかは保守的と同じ本則を先に(ユーザ指定 3737)
+    static let contemporary = OkuriganaVariantPreference(modes: [
+        .stemInternal: .standardOnly, .compoundFront: .standardFirst, .nominalized: .standardFirst
+    ])
 
     func mode(for group: OkuriganaVariantGroup) -> OkuriganaVariantMode {
         modes[group] ?? .standardOnly
