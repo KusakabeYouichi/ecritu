@@ -24,6 +24,9 @@
 	        <dict><key>phrase</key><string>二郎系</string><key>shortcut</key><string>じろうけい</string></dict>
 	        <dict><key>phrase</key><string>群林堂</string><key>shortcut</key><string>ぐんりんどう</string></dict>
 	        <dict><key>phrase</key><string>椿山荘</string><key>shortcut</key><string>ちんざんそう</string></dict>
+	        <dict><key>phrase</key><string>ふーみん</string><key>shortcut</key><string>ふーみん</string></dict>
+	        <dict><key>phrase</key><string>だるまや</string><key>shortcut</key><string>だるまや</string></dict>
+	        <dict><key>phrase</key><string>うさぎや</string><key>shortcut</key><string>うさぎや</string></dict>
 	<!-- 高山 / 飛騨 -->
 	        <dict><key>phrase</key><string>なか川</string><key>shortcut</key><string>なかがわ</string></dict>
 	        <dict><key>phrase</key><string>みやび庵</string><key>shortcut</key><string>みやびあん</string></dict>

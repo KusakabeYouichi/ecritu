@@ -158,6 +158,9 @@
 	<!-- アプリ -->
 	<dict><key>phrase</key><string>Finder</string><key>shortcut</key><string>ふぁいんだー</string></dict>
 	<dict><key>phrase</key><string>GarageBand</string><key>shortcut</key><string>がれーじばんど</string></dict>
+	<dict><key>phrase</key><string>Final Cut</string><key>shortcut</key><string>ふぁいなるかっと</string></dict>
+	<dict><key>phrase</key><string>Final Cut Pro</string><key>shortcut</key><string>ふぁいなるかっとぷろ</string></dict>
+	<dict><key>phrase</key><string>Logic Pro</string><key>shortcut</key><string>ろじっくぷろ</string></dict>
 	<dict><key>phrase</key><string>iMovie</string><key>shortcut</key><string>あいむーゔぃー</string></dict>
 	<dict><key>phrase</key><string>Keynote</string><key>shortcut</key><string>きーのーと</string></dict>
 	<dict><key>phrase</key><string>Numbers</string><key>shortcut</key><string>なんばーず</string></dict>
@@ -182,6 +185,7 @@
 	<dict><key>phrase</key><string>ペイスト</string><key>shortcut</key><string>ぺいすと</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>クォーテイション</string><key>shortcut</key><string>くぉーていしょん</string></dict>
 	<dict><key>phrase</key><string>ゲイトウェイ</string><key>shortcut</key><string>げいとうぇい</string></dict>
+	<dict><key>phrase</key><string>セパレイター</string><key>shortcut</key><string>せぱれいたー</string></dict>
 
 	<!-- AI -->
 	<dict><key>phrase</key><string>AI</string><key>shortcut</key><string>えいあい</string></dict>
