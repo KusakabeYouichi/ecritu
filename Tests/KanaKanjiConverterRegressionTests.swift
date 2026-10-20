@@ -24854,6 +24854,50 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.candidates(for: "しんでしまった", limit: 3, systemCandidateMode: .surface).first, "死んでしまった")
     }
 
+    // 3723: ユーザ報告の 12 件(連文節の文法規則・学習語彙の床・seed・語彙登録)
+    func testRegression3723Batch() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        func single(_ r: String) -> [String] { converter.candidates(for: r, limit: 8, systemCandidateMode: .surface) }
+        // 連用形の し(糊塗し)+から は非文。終助詞クラスタのクランプを掛けない
+        XCTAssertEqual(multi("ことしから").first, "今年から", "\(multi("ことしから").prefix(3))")
+        // LM に 連用形→に の実績が無い動詞(生み)は、ずっと安い名詞(海)があれば 連用形+に の 1 ノードを立てない
+        XCTAssertEqual(multi("うみにいくのがいいね").first, "海に行くのがいいね")
+        XCTAssertEqual(multi("かいにいく").first, "買いに行く")
+        XCTAssertEqual(multi("とりにいく").first, "取りに行く")
+        XCTAssertTrue(multi("とりにいく").contains("撮りに行く"))
+        // 国名+の+ジン、刃(じん) は抑制。大阪の陣/夏の陣 は従来どおり
+        let jin = multi("ふらんすのじん")
+        XCTAssertEqual(jin.first, "フランスのジン", "\(jin)")
+        XCTAssertFalse(jin.contains("フランスの刃"))
+        XCTAssertEqual(multi("おおさかのじん").first, "大阪の陣")
+        XCTAssertEqual(multi("なつのじん").first, "夏の陣")
+        // seed が漢字の後ろに並べたかな(とった)は変種でも 撮った より前に出さない
+        XCTAssertEqual(Array(multi("ふつうにとっただけ").prefix(2)), ["普通に取っただけ", "普通に撮っただけ"])
+        // 金が は 鐘が より先
+        XCTAssertEqual(Array(multi("かねがなくて").prefix(2)), ["金がなくて", "金が無くて"])
+        // 語彙登録(misc): 青菜炒め/おかか
+        XCTAssertEqual(single("あおないため").first, "青菜炒め")
+        XCTAssertEqual(multi("おかかのおにぎり").first, "おかかのおにぎり")
+        // seed: こうがくけい→光学系, 工学系
+        XCTAssertEqual(Array(single("こうがくけい").prefix(2)), ["光学系", "工学系"])
+        // 30+てんぽ→店舗(助数詞の表へ)。手+んぽ の合成を前置しない
+        let tenpo = KanaKanjiConverter.digitContextCounterBoostedCandidates(single("てんぽ"), reading: "てんぽ", precedingCharacter: "0",
+                                                                             tailConversion: { self.converter.counterTailConversion($0) })
+        XCTAssertEqual(tenpo.first, "店舗", "\(tenpo.prefix(4))")
+        // 学習語彙の床: 常用語(沖縄)を跨ぐ 和風、文中の助詞読みの デモ には与えない
+        XCTAssertEqual(multi("おきなわふう").first, "沖縄風")
+        converter.learn(reading: "わふう", candidate: "和風")
+        converter.learn(reading: "でも", candidate: "デモ")
+        converter.store.waitForPendingLearningPersists()
+        XCTAssertEqual(multi("おきなわふう").first, "沖縄風", "\(multi("おきなわふう").prefix(3))")
+        XCTAssertTrue(multi("おきなわふう").contains("おきなわ風"))
+        XCTAssertEqual(multi("おかねはらってでも").first, "お金払ってでも", "\(multi("おかねはらってでも").prefix(3))")
+        XCTAssertEqual(multi("そういういみでも").first, "そういう意味でも")
+        XCTAssertEqual(multi("にほんわふう").first, "日本和風", "跨がない学習語彙は従来どおり")
+    }
+
     // 3720: 確定済み数字の直後の文頭の助数詞(1+ぽんうれた→本売れた、1+ぴき、3+ぼん)。連濁形の読みにも助数詞ノードを立てる
     // 3721: とか+言いそう(都会いそう だった)。とかいう はかなのまま
     // 3722: もでるよー→も出るよー(モデルよー は減点、かなは keepKana を立てず末尾へ)
