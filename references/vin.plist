@@ -7500,7 +7500,6 @@
 	<dict><key>phrase</key><string>日本酒ワイン振興室</string><key>shortcut</key><string>にほんしゅわいんしんこうしつ</string></dict>
 	<dict><key>phrase</key><string>行政・教育・研究機関</string><key>shortcut</key><string>ぎょうせいきょういくけんきゅうきかん</string></dict>
 	<dict><key>phrase</key><string>酒類業組合</string><key>shortcut</key><string>しゅるいぎょうくみあい</string></dict>
-	<dict><key>phrase</key><string>アカデミー・デュ・ヴァン</string><key>shortcut</key><string>あかでみーでゅゔぁん</string></dict>
 	<dict><key>phrase</key><string>アデレード大学</string><key>shortcut</key><string>あでれーどだいがく</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>イリノイ大学</string><key>shortcut</key><string>いりのいだいがく</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>エコセール</string><key>shortcut</key><string>えこせーる</string></dict>
