@@ -257,13 +257,21 @@ extension KanaKanjiConverter {
     // ひらがなを含む表記(青い/会う=述語、彼ら)と、時相名詞(昨日/最近。助詞ごとに手調整済み)は対象外
     func singleTopLeadBeforeParticle(reading: String, candidates: [String], systemCandidateMode: KanaKanjiCandidateSourceMode) -> [String] {
         let normalized = KanaTextNormalizer.normalizedReading(reading)
-        guard normalized.count >= 3, let tail = normalized.last,
-            Self.multiClauseSingleTopParticleTails.contains(tail),
-            let first = candidates.first, first.last == tail else {
+        // 複合助詞 2 字(とは/には/でも 等)も同じ(いぜんとは→以前とは。3734)
+        let tail: String
+        if normalized.count >= 4, Self.multiClauseCompoundParticles.contains(String(normalized.suffix(2))) {
+            tail = String(normalized.suffix(2))
+        } else if let last = normalized.last, Self.multiClauseSingleTopParticleTails.contains(last) {
+            tail = String(last)
+        } else {
             return candidates
         }
-        let lead = String(normalized.dropLast())
-        let firstLead = String(first.dropLast())
+        guard normalized.count >= tail.count + 2,
+            let first = candidates.first, first.hasSuffix(tail) else {
+            return candidates
+        }
+        let lead = String(normalized.dropLast(tail.count))
+        let firstLead = String(first.dropLast(tail.count))
         let singles = self.candidates(for: lead, limit: 12, systemCandidateMode: systemCandidateMode)
         guard let singleTop = singles.first, singleTop != firstLead, singleTop != lead,
             singles.contains(firstLead),
@@ -275,7 +283,7 @@ extension KanaKanjiConverter {
             Self.multiClauseConversationalTemporalNounUnigramCaps[firstLead] == nil else {
             return candidates
         }
-        let promoted = singleTop + String(tail)
+        let promoted = singleTop + tail
         return [promoted] + candidates.filter { $0 != promoted }
     }
 
@@ -533,10 +541,10 @@ extension KanaKanjiConverter {
                 // 「単文節に任せる」で空を返す。学習語彙は単文節側が先頭に出すので、格子は別解(漢字変換/感じ変換)を
                 // 担当する。カンジヘンカン を学習した途端 かんじへんかん が {カンジヘンカン, かんじへんかん} だけになっていた
                 // (ユーザ報告)。部分一致(かんじへんかん+を 等)は従来どおり
-                // 助詞と同じ読み(でも/から/かな 等)の学習語彙は文頭だけ優遇する。デモ を 1 度確定すると床 1500 で
-                // 文中の助詞 でも を毎回押しのけ、お金払ってデモ/そういう意味デモ になっていた(3723、ユーザ報告)。
-                // 文中は辞書語として LM で競わせる(反対デモ 等は bigram で立つ)
-                let learnedIsParticleReading = start > 0 && Self.isParticleLikeReading(segmentReading)
+                // 助詞と同じ読み(でも/から/かな 等)の学習語彙は、読みの一部では優遇しない。デモ を 1 度確定すると床 1500 で
+                // 文中の助詞 でも を毎回押しのけ、お金払ってデモ/そういう意味デモ になっていた(3723)。文頭でも でもにほんも が デモ日本も(3733)。
+                // 辞書語として LM で競わせる(反対デモ 等は bigram で立つ)
+                let learnedIsParticleReading = Self.isParticleLikeReading(segmentReading)
                 // 手前から続く常用語(沖縄=おきなわ)の途中で始まり、その語の終わりを跨ぐ学習語彙(和風=わふう)も床を与えない。
                 // 和風 を 1 度確定すると おきなわふう が 翁+和風(床 1500)になり、沖縄風 が候補から消えていた(3723、ユーザ報告)。
                 // 辞書語としては残し、LM で競わせる
@@ -2940,6 +2948,12 @@ extension KanaKanjiConverter {
             if isKanaIdentity, readingID == SID.よ || readingID == SID.ね || readingID == SID.な,
                 prevIsInflectionDerived,
                 let prevLast = prev.last, prevLast == "て" || prevLast == "で" {
+                base = min(base, Self.multiClauseFinalParticleAfterPredicateCost)
+            }
+            // 連用形+まくる(荒らされまくり/食べまくった)の まくる は補助動詞でかなが正書。捲り(7540)/海人草 が
+            // 荒らされ の後ろに付いていた(3730、ユーザ報告)
+            if isKanaIdentity, prevIsInflectionDerived,
+                Self.multiClauseMakuruAuxiliaryReadings.contains(reading) {
                 base = min(base, Self.multiClauseFinalParticleAfterPredicateCost)
             }
             // 述語(活用派生/辞書形)直後の疑問終助詞「か」1字もクランプ(2700)。2字以上のクラスタと
