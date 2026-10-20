@@ -397,6 +397,7 @@
 	<dict><key>phrase</key><string>山城牛</string><key>shortcut</key><string>やましろぎゅう</string></dict>
 	<dict><key>phrase</key><string>宮古牛</string><key>shortcut</key><string>みやこぎゅう</string></dict>
 	<dict><key>phrase</key><string>黒毛和牛</string><key>shortcut</key><string>くろげわぎゅう</string></dict>
+	<dict><key>phrase</key><string>飯盒炊爨</string><key>shortcut</key><string>はんごうすいさん</string></dict>	<!-- 飯盒炊爨: 部品(飯盒/炊爨)は辞書にあるが 1 語で無く、LM にも無いので組めなかった(ユーザ報告 3738) -->
 	<dict><key>phrase</key><string>大規模</string><key>shortcut</key><string>だいきぼ</string></dict>	<!-- 大規模: 辞書にあるが wc 12577 と重く、台+規模 の合成が先頭だった(ユーザ報告 3735) -->
 	<!-- うどん出汁/うどんだし: 辞書に 1 語で無く、う+ドン+だし/饂飩+だし の合成が先頭だった。順はユーザ指定(3706) -->
 	<dict><key>phrase</key><string>うどん出汁</string><key>shortcut</key><string>うどんだし</string></dict>
