@@ -24887,15 +24887,22 @@ extension KanaKanjiConverterRegressionTests {
                                                                              tailConversion: { self.converter.counterTailConversion($0) })
         XCTAssertEqual(tenpo.first, "店舗", "\(tenpo.prefix(4))")
         // 学習語彙の床: 常用語(沖縄)を跨ぐ 和風、文中の助詞読みの デモ には与えない
-        XCTAssertEqual(multi("おきなわふう").first, "沖縄風")
+        XCTAssertEqual(multi("おきなわふうの").first, "沖縄風の")
         converter.learn(reading: "わふう", candidate: "和風")
         converter.learn(reading: "でも", candidate: "デモ")
         converter.store.waitForPendingLearningPersists()
-        XCTAssertEqual(multi("おきなわふう").first, "沖縄風", "\(multi("おきなわふう").prefix(3))")
-        XCTAssertTrue(multi("おきなわふう").contains("おきなわ風"))
+        XCTAssertEqual(multi("おきなわふうの").first, "沖縄風の", "\(multi("おきなわふうの").prefix(3))")
+        XCTAssertTrue(multi("おきなわふうの").contains("おきなわ風の"))
         XCTAssertEqual(multi("おかねはらってでも").first, "お金払ってでも", "\(multi("おかねはらってでも").prefix(3))")
         XCTAssertEqual(multi("そういういみでも").first, "そういう意味でも")
         XCTAssertEqual(multi("にほんわふう").first, "日本和風", "跨がない学習語彙は従来どおり")
+        // 3724: おきなわふう は seed で 沖縄風, おきなわ風(沖縄ふう/沖縄封 は出さない)。学習済み 和風 があっても同じ
+        let okinawa = single("おきなわふう")
+        XCTAssertEqual(Array(okinawa.prefix(2)), ["沖縄風", "おきなわ風"], "\(okinawa)")
+        XCTAssertFalse(okinawa.contains("沖縄ふう") || okinawa.contains("沖縄封"), "\(okinawa)")
+        XCTAssertTrue(multi("おきなわふう").isEmpty, "句の seed がある読みは単文節に任せる")
+        // 3725: のだから は 野田から, のだから
+        XCTAssertEqual(Array(single("のだから").prefix(2)), ["野田から", "のだから"], "\(single("のだから"))")
     }
 
     // 3720: 確定済み数字の直後の文頭の助数詞(1+ぽんうれた→本売れた、1+ぴき、3+ぼん)。連濁形の読みにも助数詞ノードを立てる
