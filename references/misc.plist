@@ -138,6 +138,7 @@
 	<dict><key>phrase</key><string>のなのか</string><key>shortcut</key><string>のなのか</string></dict>	<!-- のなのか: 所有の の+なのか(アジアのなのか/誰のなのか)。の→名(な)の連接が安く アジアの名のか になっていた(ユーザ報告 3366)。なのか 単独で登録すると 七日(なのか)を押しのけるので の ごと 1 語にする -->
 	<dict><key>phrase</key><string>もしかして</string><key>shortcut</key><string>もしかして</string></dict>	<!-- もしかして/もしかすると/もしかしたら: 辞書に 1 語で無く もし+か+し+て に割れ、末尾の て→細菌 の連接で もしかしてさいきん→もしかして細菌 になっていた。かな正書の副詞(ユーザ報告 3335) -->
 	<dict><key>phrase</key><string>もしかすると</string><key>shortcut</key><string>もしかすると</string></dict>
+	<dict><key>phrase</key><string>おかか</string><key>shortcut</key><string>おかか</string><key>pos</key><string>名詞</string></dict>	<!-- おかか(鰹節): 辞書にかなはあるが LM 未収録で、御かか/お媽 が先頭だった(ユーザ報告 3723) -->
 	<dict><key>phrase</key><string>もしかしたら</string><key>shortcut</key><string>もしかしたら</string></dict>
 	<dict><key>phrase</key><string>ざっと</string><key>shortcut</key><string>ざっと</string></dict>	<!-- ざっと: かな正書の副詞(ざっと目を通す)。辞書の ざっと は Sudachi 由来の英語 that のカタカナ ザット だけで、ざっとめをとおす→ザット目を通す になっていた(ユーザ報告 3576) -->
 	<dict><key>phrase</key><string>そしたら</string><key>shortcut</key><string>そしたら</string></dict>	<!-- そしたら(そうしたら の口語): 辞書に無く 祖+したら(7979)だけが立っていた。かなが正書(ユーザ指定 2910) -->
@@ -357,6 +358,7 @@
 	<dict><key>phrase</key><string>学習語彙</string><key>shortcut</key><string>がくしゅうごい</string></dict>
 	<dict><key>phrase</key><string>抑制語彙</string><key>shortcut</key><string>よくせいごい</string></dict>
 	<dict><key>phrase</key><string>ショートカット語彙</string><key>shortcut</key><string>しょーとかっとごい</string></dict>
+	<dict><key>phrase</key><string>青菜炒め</string><key>shortcut</key><string>あおないため</string></dict>	<!-- 青菜炒め: 青菜 は辞書にあるが 1 語で無く、青+ない+ため が先頭だった(ユーザ報告 3723) -->
 	<!-- うどん出汁/うどんだし: 辞書に 1 語で無く、う+ドン+だし/饂飩+だし の合成が先頭だった。順はユーザ指定(3706) -->
 	<dict><key>phrase</key><string>うどん出汁</string><key>shortcut</key><string>うどんだし</string></dict>
 	<dict><key>phrase</key><string>うどんだし</string><key>shortcut</key><string>うどんだし</string></dict>
