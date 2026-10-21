@@ -275,6 +275,8 @@
 	<dict><key>phrase</key><string>値い</string><key>shortcut</key><string>あたい</string></dict>
 
 	<!-- ■ 非文法・実用ゼロの合成(学習しても出さない) -->
+	<dict><key>phrase</key><string>男か</string><key>shortcut</key><string>なんか</string><key>pos</key><string>名詞</string></dict>	<!-- 男/柔(なん)+か: 男・柔 は なん の音読みで単独の名詞にならない。なんか の候補に並んでいた(ユーザ指定 3744) -->
+	<dict><key>phrase</key><string>柔か</string><key>shortcut</key><string>なんか</string><key>pos</key><string>名詞</string></dict>
 	<dict><key>phrase</key><string>塗れたて</string><key>shortcut</key><string>ぬれたて</string></dict>	<!-- 塗れる(ぬれる=塗る の可能形)の連用形+たて。塗りたて はあっても 塗れたて は無い(ユーザ指定 3537)。ぬれたてで の変種に出ていた -->
 	<dict><key>phrase</key><string>連れて言って</string><key>shortcut</key><string>つれていって</string></dict>	<!-- 連れて行って が正書。誤選択で学習しても復活させない(抑制は学習より強い) -->
 
@@ -513,6 +515,7 @@
 	<dict><key>phrase</key><string>スタ</string><key>shortcut</key><string>すた</string></dict>	<!-- スタ(すた): SudachiDict small の普通名詞(語コスト 3527)だが意味は不明。LM の連接(前: Ks/鳥栖/味/Q/N/E、後: 改修)から、鳥栖スタ(鳥栖スタジアム)や Ks スタ(Ks スタジアム)など スタジアム の略か断片の収穫と推測する(確定ではない)。単独の頻度は 6307 と低いのに辞書コストが安く、すたばで→スタ場で のように スタバ を割る(ユーザ指定 3605) -->
 
 	<!-- ■ 完全一致で再供給する二段構え(抑制しつつ exactReadingOnlySeed で末尾に出す) -->
+	<dict><key>phrase</key><string>樫琥良</string><key>shortcut</key><string>かっこいい</string></dict>	<!-- 樫琥良(泡盛の銘柄、ryukyu): もっとかっこいい が もっと樫琥良 になっていた。かっこいい 単独のときだけ末尾に再供給(ユーザ指定 3743) -->
 	<dict><key>phrase</key><string>イル</string><key>shortcut</key><string>いる</string></dict>	<!-- exactReadingOnlySeed との二段構え(抑制→完全一致時のみ末尾再供給)。クラス抑制(強調/交ぜ書き)からは免除される -->
 	<dict><key>phrase</key><string>サンガ</string><key>shortcut</key><string>さんが</string></dict>
 	<dict><key>phrase</key><string>冠者</string><key>shortcut</key><string>かじゃ</string></dict>	<!-- 冠者(かじゃ、狂言用語wc5886)が と+冠者 分割で とかじゃ〜 を乗っ取る。カジャ(wc2148)も冠者suppr後は同穴で浮上。冠者 は完全一致時のみ再供給(かんじゃ 読みは無傷) -->
