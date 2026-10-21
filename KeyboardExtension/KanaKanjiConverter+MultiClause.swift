@@ -3464,9 +3464,12 @@ extension KanaKanjiConverter {
                         }
                         // 終端の単独母音読みの漢字ノードは、直前ノード読み末尾と同母音なら
                         // 引き伸ばし表記の乗っ取り(いいねえ→いいね画。定数コメント参照)。
+                        // 読みが母音そのもの(え/お)のときだけ。段だけで見ると とるこ+ご(お段どうし)の 語 まで減点し、
+                        // とるこご が トルコご になっていた(3742、ユーザ報告)
                         if node.end == n, !node.isKanaIdentity,
                             node.reading.count == 1,
-                            let nodeVowel = node.reading.first.flatMap({ Self.multiClauseVowelByKana[$0] }),
+                            let nodeHead = node.reading.first, Self.multiClauseDanglingVowelKana.contains(String(nodeHead)),
+                            let nodeVowel = Self.multiClauseVowelByKana[nodeHead],
                             let prevLastKana = prevNode.reading.last,
                             Self.multiClauseVowelByKana[prevLastKana] == nodeVowel {
                             cost += Self.multiClauseProlongedVowelKanjiPenalty
