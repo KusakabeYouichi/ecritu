@@ -2885,10 +2885,14 @@ extension KanaKanjiConverter {
             }
             // 単独名詞になれない 1 字漢字(総/想 等)の直後に格助詞/の/文末は立たない(定数コメント参照。2841)
             // 終助詞クラスタ(かな/かも/よね…)の前も名詞の位置(同かな は文節として成り立たない。3068)
+            // コピュラ(だっけ/だよ/です…)の前も同じ(どうだっけ→同だっけ。3739)。ただし その字→だ が LM にある字
+            // (嫌だ/駄目だ の 嫌)は形容動詞の語幹なので減点しない(いやだけどな→嫌だけどな を守る)
             if weakStandaloneKanjiSurfaces.contains(prev),
                 surfaceID == SID.EOS || surfaceID == SID.の
                     || Self.multiClauseCaseParticleSurfacesID.contains(surfaceID)
-                    || (isKanaIdentity && Self.multiClauseFinalParticleReadingsID.contains(readingID)) {
+                    || (isKanaIdentity && Self.multiClauseFinalParticleReadingsID.contains(readingID))
+                    || (isKanaIdentity && (reading.hasPrefix("だ") || reading.hasPrefix("です"))
+                        && bigramCostByIDPair[MultiClauseSymbols.pairKey(prevID, SID.だ)] == nil) {
                 penalty += Self.multiClauseWeakStandaloneKanjiBeforeParticlePenalty
             }
             // 連体修飾を受けない稀読み(他人=ひと: 定数コメント参照。2842)。直前が述語(活用派生/辞書形)か の/な なら減点
