@@ -316,6 +316,12 @@ extension KanaKanjiConverter {
         }
         let lead = String(normalized.dropLast(tail.count))
         let firstLead = String(first.dropLast(tail.count))
+        // 語の読みに seed(人手で決めた並び)があり、連文節の先頭がその seed の表記+助詞なら、ひらがなを含んでも seed の順に
+        // 語+助詞 を並べる(よもぎを が 蓬生を 先頭だった。3753、ユーザ指定)。区切りが違う候補はその後ろに残す
+        if Self.multiClauseSeedOrderParticleLeadReadings.contains(lead), let seedList = KanaKanjiSeedDictionary.seed[lead], seedList.contains(firstLead) {
+            let ordered = seedList.map { $0 + tail }
+            return ordered + candidates.filter { !ordered.contains($0) }
+        }
         let singles = self.candidates(for: lead, limit: 12, systemCandidateMode: systemCandidateMode)
         guard let singleTop = singles.first, singleTop != firstLead, singleTop != lead,
             singles.contains(firstLead),
@@ -5246,6 +5252,9 @@ extension KanaKanjiConverter {
                 if alt.reading == chosen.reading,
                     !isWeakStandaloneAltInNounSlot,
                     !isUnmodifiableRareReadingAltAfterModifier,
+                    // いない の seed 順(定数コメント参照)は、文頭か直前がかな(助詞 等)のときだけ。名詞・数量の直後(5分+いない)は
+                    // 以内 が正しく、5分居ないに/5分いないに が変種に混じった(3752)
+                    !Self.multiClauseSeedOrderNeedsKanaPrevReadings.contains(alt.reading) || pos == 0 || nodes[pathIndices[pos - 1]].isKanaIdentity,
                     alt.surface != alt.reading || allowsSeedOrderFromKanaLead,
                     chosen.surface != chosen.reading || allowsSeedOrderFromKanaLead,
                     delta <= Self.multiClauseVariantMaxDelta || allowsSeedOrderFromKanaLead,
