@@ -24923,6 +24923,19 @@ extension KanaKanjiConverterRegressionTests {
         }
         XCTAssertEqual(digit("まで", "0").first, "まで", "\(digit("まで", "0"))")
         XCTAssertEqual(digit("かいで", "3").first, "回で", "\(digit("かいで", "3"))")
+        // 3748/3749: しゅちょう→主張,首長 / すんだ→済んだ…(かなは末尾)/ 簡単に済んだ
+        XCTAssertEqual(Array(single("しゅちょう").prefix(2)), ["主張", "首長"])
+        let sunda = single("すんだ")
+        XCTAssertEqual(Array(sunda.prefix(2)), ["済んだ", "住んだ"], "\(sunda)")
+        XCTAssertLessThan(sunda.firstIndex(of: "スンダ") ?? 99, sunda.firstIndex(of: "すんだ") ?? 0, "\(sunda)")
+        XCTAssertEqual(shown("かんたんにすんだ"), "簡単に済んだ")
+        // 3750: 序数の め(X.13 ひらがなが先)を連文節にも、目/め+の+今日
+        converter.setOrdinalMeKanjiPreferred(false)
+        let nichime = converter.multiClauseCandidates(for: "にちめのきょう", systemCandidateMode: .surface, precedingCharacter: "0")
+        XCTAssertEqual(Array(nichime.prefix(2)), ["日めの今日", "日目の今日"], "\(nichime)")
+        XCTAssertEqual(multi("ひとめにつく").first.map { $0.hasPrefix("人目") }, true, "数字が無ければ 人目 は触らない")
+        converter.setOrdinalMeKanjiPreferred(true)
+        XCTAssertEqual(converter.multiClauseCandidates(for: "にちめのきょう", systemCandidateMode: .surface, precedingCharacter: "0").first, "日目の今日")
         // 3738: 飯盒炊爨(misc)
         XCTAssertEqual(shown("はんごうすいさん"), "飯盒炊爨")
         XCTAssertEqual(shown("はんごうすいさんを"), "飯盒炊爨を")

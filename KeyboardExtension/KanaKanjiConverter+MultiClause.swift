@@ -237,6 +237,9 @@ extension KanaKanjiConverter {
             }
         }
         candidates = singleTopLeadBeforeParticle(reading: reading, candidates: candidates, systemCandidateMode: systemCandidateMode)
+        if !withStateLock({ ordinalMeKanjiPreferred }) {
+            candidates = Self.applyOrdinalMeKanaFirst(to: candidates, digitPrefixed: precedingCharacter.map(Self.isCounterBoostDigit) ?? false)
+        }
         // 受け身・尊敬の される が付かない サ変名詞+される(商品が醗酵される 等)を含む候補は後ろへ(3483)。
         // ラティスの減点で最良からは外れるが、差し替えの変種として 2 位以降に残るため
         let hasNonPassivizable = candidates.contains { Self.containsNonPassivizableSuruForm($0) }
@@ -248,6 +251,47 @@ extension KanaKanjiConverter {
             return candidates
         }
         return Self.applyKakikae(preference, toMultiClauseCandidates: candidates, everydayException: withStateLock { kakikaeEverydayException })
+    }
+
+    // X.13(序数の め)が『ひらがなが先』のとき、連文節の 助数詞+目(10日目の)を 日め に差し替え、目 の形をその後ろに並べる(3750)。
+    // 単文節は applyMeSuffixPreferences が並べるが、連文節の結果には効いておらず 10+にちめのきょう が 日目の… だった(ユーザ報告)。
+    // 人目/役目 のような語を巻き込まないよう、数字の直後(文頭)か、候補の中で数字の後ろにある 助数詞+目 だけ。
+    // 序数として定着した語(番目/代目/丁目 等。ordinalMeEstablishedStemTailCharacters)は触らない
+    static let ordinalMeCounterSurfaces: Set<String> = Set(numericCounterSuffixCandidatesByReading.values.joined())
+        .filter { surface in surface.last.map { !ordinalMeEstablishedStemTailCharacters.contains($0) } ?? false }
+    static func applyOrdinalMeKanaFirst(to candidates: [String], digitPrefixed: Bool) -> [String] {
+        func rewritten(_ text: String) -> String {
+            let chars = Array(text)
+            var result = ""
+            var index = 0
+            while index < chars.count {
+                if chars[index] == "目", index > 0 {
+                    // 目 の直前の助数詞(1〜3 字)と、その手前が数字か文頭(数字の直後の入力)か
+                    var matched = false
+                    for length in 1...min(3, index) {
+                        let counter = String(chars[(index - length)..<index])
+                        guard ordinalMeCounterSurfaces.contains(counter) else { continue }
+                        let before = index - length
+                        let afterNumber = before == 0 ? digitPrefixed
+                            : (chars[before - 1].isNumber || "一二三四五六七八九十百千何".contains(chars[before - 1]))
+                        if afterNumber { matched = true; break }
+                    }
+                    result.append(matched ? "め" : "目")
+                } else {
+                    result.append(chars[index])
+                }
+                index += 1
+            }
+            return result
+        }
+        var output: [String] = []
+        var seen = Set<String>()
+        for candidate in candidates {
+            for text in [rewritten(candidate), candidate] where seen.insert(text).inserted {
+                output.append(text)
+            }
+        }
+        return output
     }
 
     // 語+助詞 1 字(しゅうまつが)の先頭を、語だけ(しゅうまつ)の単文節の先頭にそろえる(3726、ユーザ報告)。
