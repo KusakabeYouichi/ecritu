@@ -24936,6 +24936,11 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("ひとめにつく").first.map { $0.hasPrefix("人目") }, true, "数字が無ければ 人目 は触らない")
         converter.setOrdinalMeKanjiPreferred(true)
         XCTAssertEqual(converter.multiClauseCandidates(for: "にちめのきょう", systemCandidateMode: .surface, precedingCharacter: "0").first, "日目の今日")
+        // 3751: て形+漢字の述語(切って茹でる/買って帰る)。勝手にする/切手を買う は従来どおり
+        XCTAssertEqual(shown("きってゆでる"), "切って茹でる")
+        XCTAssertEqual(shown("かってかえる"), "買って帰る")
+        XCTAssertEqual(shown("かってにする"), "勝手にする")
+        XCTAssertEqual(shown("きってをかう"), "切手を買う")
         // 3738: 飯盒炊爨(misc)
         XCTAssertEqual(shown("はんごうすいさん"), "飯盒炊爨")
         XCTAssertEqual(shown("はんごうすいさんを"), "飯盒炊爨を")

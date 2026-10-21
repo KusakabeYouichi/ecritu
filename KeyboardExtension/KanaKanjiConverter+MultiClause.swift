@@ -2998,6 +2998,17 @@ extension KanaKanjiConverter {
                 let prevLast = prev.last, prevLast == "て" || prevLast == "で" {
                 base = min(base, Self.multiClauseFinalParticleAfterPredicateCost)
             }
+            // て形(活用派生の 〜て/〜で)+漢字の述語(切って茹でる/買って帰る)は動作の連続で、て形の典型の続き方。
+            // 同じ読みの名詞(切手/勝手)+述語 は助詞なしの連接で、どちらも bigram が無く単語コストの差(切手 6717 < 派生 7200)で
+            // 名詞が勝っていた(きってゆでる→切手茹でる、かってかえる→勝手変える。3751、ユーザ報告)
+            if !isKanaIdentity, isInflectionDerived || isDictionaryFormPredicate,
+                prevIsInflectionDerived,
+                let prevLast = prev.last, prevLast == "て" || prevLast == "で",
+                containsKanji(surface),
+                // 補助動詞(〜てほしい/〜ている/〜てみる/〜てしまう/〜てくれる/〜ていかれる→てかれる 等)はかなが正書なので対象外
+                !Self.multiClauseTeFormAuxiliaryReadingPrefixes.contains(where: { reading.hasPrefix($0) }) {
+                penalty -= Self.multiClauseTeFormBeforePredicateBonus
+            }
             // 連用形+まくる(荒らされまくり/食べまくった)の まくる は補助動詞でかなが正書。捲り(7540)/海人草 が
             // 荒らされ の後ろに付いていた(3730、ユーザ報告)
             if isKanaIdentity, prevIsInflectionDerived,

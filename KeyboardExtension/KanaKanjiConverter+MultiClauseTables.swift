@@ -3071,6 +3071,10 @@ extension KanaKanjiConverter {
     // 文頭助詞の減点を、直後が活用派生の述語のときに打ち消す助詞(2818)。がでないのだけど(が+出ない)のように
     // 文の途中から打ち始めた入力では格助詞+述語が自然。か/かね/て(接続助詞・終助詞)は対象外
     static let multiClauseBOSParticleBeforePredicateExemptParticles: Set<String> = ["は", "が", "を", "も", "に"]
+    // て形+漢字の述語の加点(3751)。切手(6717)と派生の 切って(7200)の差 483 を越える幅
+    static let multiClauseTeFormBeforePredicateBonus = 800
+    // 上の加点から外す補助動詞の読みの頭(ほしい/いる・いく/みる/しまう/あげる/くれる/もらう/いただく/おく/かれる(いかれる の縮約)/来る)
+    static let multiClauseTeFormAuxiliaryReadingPrefixes: [String] = ["ほし", "い", "み", "しま", "ちゃ", "あげ", "くれ", "もら", "お", "かれ", "き", "く", "こ", "や"]
     // 連用形の後ろで かなのまま安くする補助動詞 まくる の形(3730)
     static let multiClauseMakuruAuxiliaryReadings: Set<String> = ["まくり", "まくる", "まくって", "まくった", "まくってる", "まくってた", "まくれ"]
     // 文頭の裸の助詞を跨いで LM 収録の辞書語が立つとき(もうまく=網膜、はなにみず=花に水)の追加減点(2819)。
