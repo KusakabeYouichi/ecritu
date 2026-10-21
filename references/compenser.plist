@@ -824,5 +824,9 @@
 	        <dict><key>phrase</key><string>玉のれん</string><key>shortcut</key><string>たまのれん</string></dict>
 	        <dict><key>phrase</key><string>珠のれん</string><key>shortcut</key><string>たまのれん</string></dict>
 	        <dict><key>phrase</key><string>珠暖簾</string><key>shortcut</key><string>たまのれん</string></dict>
+	        <dict><key>phrase</key><string>竈門炭治郎</string><key>shortcut</key><string>かまどたんじろう</string></dict>
+	        <dict><key>phrase</key><string>竈門禰󠄀豆子</string><key>shortcut</key><string>かまどねずこ</string></dict>
+	        <dict><key>phrase</key><string>炭治郎</string><key>shortcut</key><string>たんじろう</string></dict>
+	        <dict><key>phrase</key><string>禰󠄀豆子</string><key>shortcut</key><string>ねずこ</string></dict>
 </array>
 </plist>
