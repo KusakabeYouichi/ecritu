@@ -24893,6 +24893,11 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(shown("しゃしんとりにいく"), "写真撮りに行く")
         XCTAssertEqual(shown("しゃしんをとると"), "写真を撮ると")
         XCTAssertEqual(shown("しかくをとると"), "資格を取ると")
+        // 3741: くえる は 食える が先頭、誤エントリ 喰る/食る は出さない
+        let kueru = single("くえる")
+        XCTAssertEqual(Array(kueru.prefix(2)), ["食える", "喰える"], "\(kueru)")
+        XCTAssertFalse(kueru.contains("喰る") || kueru.contains("食る"), "\(kueru)")
+        XCTAssertEqual(shown("これはくえる"), "これは食える")
         // 3738: 飯盒炊爨(misc)
         XCTAssertEqual(shown("はんごうすいさん"), "飯盒炊爨")
         XCTAssertEqual(shown("はんごうすいさんを"), "飯盒炊爨を")
