@@ -1397,7 +1397,7 @@ extension KanaKanjiConverter {
     // おしい: seed は 惜しい→おしい→押井。かな おしい も seed 順に従わせて 押井 より前に出す(3182)
     // みずみずしさ/みずみずしい(3254): かな先頭の seed。変種 瑞々しさが減り を seed 順(100)で並べ、
     // 縁(へり の seed 2 番目、strict で 100)と同点にして文節位置の早い方を先に出す(ユーザ指定)
-    static let multiClauseSeedOrderVariantKanaLeadReadings: Set<String> = ["いまだ", "さすが", "たいして", "いそう", "とか", "えー", "うーむ", "あとあと", "たとえて", "であっても", "すみません", "おしい", "みずみずしさ", "みずみずしい", "おすすめ", "かけないで", "こつ", "なくし", "にんにく"]
+    static let multiClauseSeedOrderVariantKanaLeadReadings: Set<String> = ["いない", "いまだ", "さすが", "たいして", "いそう", "とか", "えー", "うーむ", "あとあと", "たとえて", "であっても", "すみません", "おしい", "みずみずしさ", "みずみずしい", "おすすめ", "かけないで", "こつ", "なくし", "にんにく"]
     // seed 順を変種の差分にそのまま使う(min でなく置換)読みの opt-in(2804)。派生同士は OOV 定額で同点になり、
     // min 方式では seed 2 番目のかな(たとえて)を同点 0 の 喩えて より前に出せない
     // おしい も seed 順(惜しい→おしい→押井)をそのまま変種順に使う。かな おしい を
@@ -1405,7 +1405,7 @@ extension KanaKanjiConverter {
     // おすすめ(3263): 連文節でも seed 順(お薦め/お勧め/おすすめ/オススメ)にする(ユーザ指定)
     // こつ(3476): seed 順(コツ→こつ→骨)で、ちょっとしたこつ の 2 番目を かな にする(ユーザ指定)
     // とった(3723): seed で漢字の後ろ(獲った の次)に置いたかな とった を、変種でも 撮った 等より前に出さない(ユーザ報告 普通にとっただけ)
-    static let multiClauseSeedOrderVariantStrictReadings: Set<String> = ["たとえて", "おしい", "みずみずしさ", "みずみずしい", "へり", "おすすめ", "かけないで", "こつ", "とった"]
+    static let multiClauseSeedOrderVariantStrictReadings: Set<String> = ["いない", "たとえて", "おしい", "みずみずしさ", "みずみずしい", "へり", "おすすめ", "かけないで", "こつ", "とった"]
     // seed 先頭語のコスト救済(2677)を「LM 収録済みでも」適用する読みの opt-in。
     // せいかい: Sudachi は 正解6465<政界7140 なのに Wikipedia LM は 政界6236<正解6479 で
     // 政界では が先頭だった。無条件適用は7件退行(位置から遣り直す/占いしか/東京中 等)
@@ -1471,7 +1471,8 @@ extension KanaKanjiConverter {
     ]
     // 文節先頭(直前=BOS)でのみ かな を優先する存在動詞の過去(あった=ある過去、いた=いる過去)。
     // あったんで→かな先頭にしつつ、気が/目が/サイズが+あった(prev≠BOS)は漢字 合った を守る。
-    static let multiClauseClauseInitialKanaExistentialPasts: Set<String> = ["あった", "いた"]
+    // いない/いなかった(存在の否定)も同じ(いないのかな が 以内のかな だった。3752、ユーザ報告)
+    static let multiClauseClauseInitialKanaExistentialPasts: Set<String> = ["あった", "いた", "いない", "いなかった"]
     // 直後に特定動詞が続く連語でだけ特定表層を優先する(同音語の文脈限定是正)。
     // ひび: 直後(助詞任意)が はいる 活用のとき ひび(罅)を 日々 より優先(ひびが入る)。
     // さいど: 直後が あげる/さげる 系のとき 彩度 を サイド/再度 より優先(彩度上げる。写真編集)。
@@ -3071,6 +3072,12 @@ extension KanaKanjiConverter {
     // 文頭助詞の減点を、直後が活用派生の述語のときに打ち消す助詞(2818)。がでないのだけど(が+出ない)のように
     // 文の途中から打ち始めた入力では格助詞+述語が自然。か/かね/て(接続助詞・終助詞)は対象外
     static let multiClauseBOSParticleBeforePredicateExemptParticles: Set<String> = ["は", "が", "を", "も", "に"]
+    // 語+助詞 の連文節を、語の seed の順に並べる opt-in(よもぎを。3753)。全 seed に掛けると あったが/きのうは/さいきんが の
+    // 文脈での並び(助詞ごとに手調整済み)を崩す(全網 9 件)
+    static let multiClauseSeedOrderParticleLeadReadings: Set<String> = ["よもぎ"]
+    // かな先頭の seed 順の変種繰り上げを、文頭か直前がかなのときだけにする読み(5分以内に に いない/居ない を混ぜない。3752)。
+    // なくし/よう 等は名詞・述語の直後でも seed 順が正しい(入る気なくした/出るようになった)ので対象外
+    static let multiClauseSeedOrderNeedsKanaPrevReadings: Set<String> = ["いない"]
     // て形+漢字の述語の加点(3751)。切手(6717)と派生の 切って(7200)の差 483 を越える幅
     static let multiClauseTeFormBeforePredicateBonus = 800
     // 上の加点から外す補助動詞の読みの頭(ほしい/いる・いく/みる/しまう/あげる/くれる/もらう/いただく/おく/かれる(いかれる の縮約)/来る)
