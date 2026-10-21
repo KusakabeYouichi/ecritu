@@ -24916,6 +24916,13 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(shown("はんいしんの"), "反維新の")
         XCTAssertEqual(shown("にほんいしんのかい"), "日本維新の会")
         XCTAssertEqual(shown("おおさかいしんのかい"), "大阪維新の会")
+        // 3746: 数字の直後でも、読み全体が助詞なら 助数詞+助詞 を合成しない(23:00+まで が 間で だった)
+        func digit(_ r: String, _ d: Character) -> [String] {
+            KanaKanjiConverter.digitContextCounterBoostedCandidates(single(r), reading: r, precedingCharacter: d,
+                                                                   tailConversion: { self.converter.counterTailConversion($0) })
+        }
+        XCTAssertEqual(digit("まで", "0").first, "まで", "\(digit("まで", "0"))")
+        XCTAssertEqual(digit("かいで", "3").first, "回で", "\(digit("かいで", "3"))")
         // 3738: 飯盒炊爨(misc)
         XCTAssertEqual(shown("はんごうすいさん"), "飯盒炊爨")
         XCTAssertEqual(shown("はんごうすいさんを"), "飯盒炊爨を")

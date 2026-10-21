@@ -942,6 +942,8 @@ extension KanaKanjiConverter {
             // 読みでは出番がない
             // 単位+助数詞(万本)が組めた読みでは、助数詞+かな末尾の合成(間んぼん)は要らない(3492)
             let hasUnitComposition = !unitCompositions.isEmpty
+            // 読み全体が助詞(まで/から/など)なら、助数詞+助詞の合成(間+で)は作らない。23:00+まで が 間で 先頭だった(3746、ユーザ報告)
+            let readingIsParticle = Self.isParticleLikeReading(reading)
             let readingHasSeedWord = KanaKanjiSeedDictionary.seed[reading] != nil
             // 末尾に助詞 1 字が付いた形(いがい+に)も同じ。ただし助数詞の読みが seed 語の途中で切るとき
             // (い|がいに → 位がいに)だけ止める。助数詞の読みが seed 語そのもの(かい+に → 回に)は残す(ユーザ報告 3455)
@@ -960,7 +962,7 @@ extension KanaKanjiConverter {
             for counterReading in Set(numericCounterSuffixCandidatesByReading.keys)
                 .union(digitContextAdditionalCounterSurfacesByReading.keys)
                 .sorted(by: { $0.count != $1.count ? $0.count > $1.count : $0 < $1 })
-            where !readingHasSeedWord && !isOrdinalMeReading && !hasUnitComposition
+            where !readingHasSeedWord && !isOrdinalMeReading && !hasUnitComposition && !readingIsParticle
                 && reading.count > counterReading.count && reading.hasPrefix(counterReading)
                 && !(seedStemBeforeParticle.map { counterReading.count < $0.count } ?? false) {
                 let surfaces = Self.digitBoostCounterSurfaces(for: counterReading) ?? []
