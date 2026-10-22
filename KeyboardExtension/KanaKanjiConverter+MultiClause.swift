@@ -3004,6 +3004,11 @@ extension KanaKanjiConverter {
                 let prevLast = prev.last, prevLast == "て" || prevLast == "で" {
                 base = min(base, Self.multiClauseFinalParticleAfterPredicateCost)
             }
+            // 見て+補助動詞 みる(見てみたい/見てみる/見てみよう)の 1 ノード。派生の定額 7200 で、て形の後ろの かな み(補助 みる)+て+みたい
+            // に割った経路(計 6042)に負け、あらためてみてみたい が あらためて+み+て+みたい(見て が 1 つも無い)になっていた(3758、ユーザ報告)
+            if isInflectionDerived, reading.hasPrefix("みてみ"), surface.hasPrefix("見てみ") {
+                penalty -= Self.multiClauseMiteMiruBonus
+            }
             // て形(活用派生の 〜て/〜で)+漢字の述語(切って茹でる/買って帰る)は動作の連続で、て形の典型の続き方。
             // 同じ読みの名詞(切手/勝手)+述語 は助詞なしの連接で、どちらも bigram が無く単語コストの差(切手 6717 < 派生 7200)で
             // 名詞が勝っていた(きってゆでる→切手茹でる、かってかえる→勝手変える。3751、ユーザ報告)

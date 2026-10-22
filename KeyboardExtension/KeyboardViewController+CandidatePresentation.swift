@@ -322,8 +322,14 @@ extension KeyboardViewController {
                     // 先頭は常に連文節の大域最適)。以前は先頭に前置していたが、基底列挙順の悪い
                     // 単文節#1(はってある→這ってある 等)が連文節の正解(貼ってある)を潰していた。
                     // かな正書ケース(ところもあるが)もこの一般形に包含される。
+                    // ただし単文節#1 が読みそのままの全かなで、かな正書の根拠(keepKana)も無いなら差し込まない。
+                    // あらためてみてみたい で 連文節 あらためて見てみたい の直後に 全かな が入っていた(3758、ユーザ報告)。
+                    // 全かなは後ろの単文節の並びと末尾のかなチップに残る
+                    let singleBestIsBareKanaEcho = converterCandidates.first == reading
+                        && !converter.shouldKeepKanaIdentityLeading(for: reading)
                     if let first = converterCandidates.first,
-                        !multiSet.contains(first) {
+                        !multiSet.contains(first),
+                        !singleBestIsBareKanaEcho {
                         // 例外: 〜しゃ/〜車 の全読み接辞複合(フランス車)は連文節の
                         // LM合成(フランス社)より先頭に置く(2522)。
                         let insertionIndex = converter.shouldPromoteSingleBestAboveMultiClause(
