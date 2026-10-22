@@ -24959,6 +24959,9 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertFalse(multi("あらためてみてみたい").prefix(3).contains(where: { $0.contains("みてみたい") }))
         // 3759: 小説+書く
         XCTAssertEqual(shown("しょうせつかいて"), "小説書いて")
+        // 3767: しょうせつかいて は seed で 小説書いて,小説家居て、続けて打つ形では 描いて/掻いて/買い手 を変種に出さない
+        XCTAssertEqual(Array(single("しょうせつかいて").prefix(2)), ["小説書いて", "小説家居て"], "\(single("しょうせつかいて"))")
+        XCTAssertFalse(multi("しょうせつかいてる").contains(where: { $0.contains("描") || $0.contains("掻") || $0.contains("買") }), "\(multi("しょうせつかいてる"))")
         XCTAssertEqual(shown("しょうせつかがいて"), "小説家がいて")
         // 3760〜3762: 上野かどこかで / 大英博物館(misc)/ おみやげ(かな先、を でも)
         XCTAssertEqual(shown("うえのかどこかで"), "上野かどこかで")
@@ -24980,6 +24983,13 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(shown("どういうとき"), "どういうとき")
         // 3757: どうぎ→同義,動議,道義,道着,道議,胴木
         XCTAssertEqual(Array(single("どうぎ").prefix(6)), ["同義", "動議", "道義", "道着", "道議", "胴木"], "\(single("どうぎ"))")
+        // 3766: 逐次入力(語幹キャッシュあり)でも 名詞+なきゃ を組み立てない
+        for prefix in ["つ", "つく", "つくら", "つくらな", "つくらなき"] {
+            _ = converter.candidates(for: prefix, limit: 40, systemCandidateMode: .surface)
+        }
+        let tsukuranakya = converter.candidates(for: "つくらなきゃ", limit: 40, systemCandidateMode: .surface)
+        XCTAssertEqual(tsukuranakya.first, "作らなきゃ", "\(tsukuranakya.prefix(5))")
+        XCTAssertFalse(tsukuranakya.contains("津倉なきゃ"))
         // 3756: のみたい→飲みたい,呑みたい
         XCTAssertEqual(Array(single("のみたい").prefix(2)), ["飲みたい", "呑みたい"], "\(single("のみたい"))")
         // 3753: よもぎ/よもぎを は seed の順(よもぎ,ヨモギ,蓬,艾,蒿,四方木,蓬生)
