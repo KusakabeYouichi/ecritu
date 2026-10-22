@@ -386,7 +386,10 @@ extension KanaKanjiConverter {
         // 関西弁の否定縮約は、この読みでは稀な動詞(word_cost が収穫底値 10000 以上:
         // える→選る 10096 / 彫る 11052。知る 7155 / 分かる 6927 は常用)には組まない(2721)
         let isKansaiNegativeContraction = Self.kansaiNegativeContractionSuffixes.contains(rule.readingSuffix)
-        let baseWordCostsForKansaiGate = isKansaiNegativeContraction ? store.wordCosts(for: baseReading) : [:]
+        // 一段の命令形+引用 って(見ろって/食べろって)も、この読みで稀な動詞(word_cost 9500 以上: 干る 9957/簸る 9897/乾る 9957。
+        // 着る 9378/似る 9261 は常用)には組まない。ひろって が 干ろって/簸ろって/乾ろって で 拾って より前だった(3771、ユーザ報告)
+        let isIchidanImperativeQuote = rule.readingSuffix == "ろって" && rule.baseReadingSuffix == "る"
+        let baseWordCostsForKansaiGate = isKansaiNegativeContraction || isIchidanImperativeQuote ? store.wordCosts(for: baseReading) : [:]
         var baseCandidates = candidatesForReading(
             baseReading,
             ajoutVocabulary: ajoutVocabulary,
@@ -400,6 +403,9 @@ extension KanaKanjiConverter {
                 // 稀な読みの動詞には関西弁縮約を組まない(上の定義コメント参照。2721)
                 && !(isKansaiNegativeContraction
                     && (baseWordCostsForKansaiGate[$0] ?? 0) >= CandidateScore.harvestTierWordCostFloor)
+                // 稀な一段動詞には 命令形+って を組まない(上の定義コメント参照。3771)
+                && !(isIchidanImperativeQuote
+                    && (baseWordCostsForKansaiGate[$0] ?? 0) >= Self.ichidanImperativeQuoteMaxBaseWordCost)
                 // 関西弁縮約(せん/せんで 等)は文語調の漢語一字サ変(有する/科する/幽する)とは
                 // 組まない — ゆうせんで→有せんで が 優先で を乗っ取っていた(2614)。
                 // 勉強する 等の語幹2字以上はそのまま(掃除せんで は自然な口語)

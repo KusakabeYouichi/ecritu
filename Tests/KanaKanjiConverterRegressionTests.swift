@@ -24987,6 +24987,15 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(shown("うれしいよねー"), "嬉しいよねー")
         XCTAssertEqual(shown("かってほしい"), "買ってほしい")
         XCTAssertEqual(single("ほしい").first, "欲しい")
+        // 3771: ひろって→拾って 先頭。稀な一段(干る/簸る/乾る)の 命令形+って を組まない。見ろって は従来どおり
+        XCTAssertEqual(single("ひろって").first, "拾って", "\(single("ひろって"))")
+        XCTAssertFalse(single("ひろって").contains(where: { $0.hasSuffix("ろって") && $0 != "ひろって" }))
+        XCTAssertTrue(single("みろって").contains("見ろって"), "\(single("みろって"))")
+        // 3770: じにん の活用形は単文節・連文節とも 辞任,自認,自任
+        for r in ["じにん", "じにんする", "じにんしてる", "じにんした"] {
+            let list = multi(r).isEmpty ? single(r) : multi(r)
+            XCTAssertEqual(Array(list.prefix(3)).map { String($0.prefix(2)) }, ["辞任", "自認", "自任"], "\(r): \(list)")
+        }
         // 3769: しないと危険 / 安定器 / ル・クルーゼ / クリストフル / で置いてる / 出店料(両 は数の後ろだけ)
         XCTAssertEqual(shown("わすれないようにしないときけん"), "忘れないようにしないと危険")
         XCTAssertEqual(shown("そのときけんが")?.hasPrefix("その時"), true)
