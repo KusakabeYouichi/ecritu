@@ -3082,6 +3082,17 @@ extension KanaKanjiConverter {
     // かな先頭の seed 順の変種繰り上げを、文頭か直前がかなのときだけにする読み(5分以内に に いない/居ない を混ぜない。3752)。
     // なくし/よう 等は名詞・述語の直後でも seed 順が正しい(入る気なくした/出るようになった)ので対象外
     static let multiClauseSeedOrderNeedsKanaPrevReadings: Set<String> = ["いない"]
+    // 句の登録語が跨ぐと床を外す常用語の unigram 上限(時期 4556 は対象、た+き の 滝 5874 は対象外=起きた気がする を守る。3765)
+    static let multiClausePhraseCrossedCommonWordMaxUnigram = 5000
+    // 漢字 1 字+格助詞(が/を/に)で始まる 3 字以上の句(気がある/気を遣う/目が覚める。3765)
+    static func isKanjiHeadParticlePhrase(_ surface: String) -> Bool {
+        let chars = Array(surface)
+        guard chars.count >= 3, let head = chars.first?.unicodeScalars.first,
+            (0x4E00...0x9FFF).contains(head.value) else {
+            return false
+        }
+        return chars[1] == "が" || chars[1] == "を" || chars[1] == "に"
+    }
     // の+かどこか の減点(3760)。上+の と 上野 の差 870 を越える幅
     static let multiClauseKadokokaAfterNoPenalty = 3000
     // 見てみ〜(見てみたい/見てみる)1 ノードの加点(3758)。み+て+みたい の割れ(6042)と 派生 7200 の差 1158 を越える幅
