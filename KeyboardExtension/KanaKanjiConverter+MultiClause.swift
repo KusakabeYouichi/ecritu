@@ -1195,7 +1195,10 @@ extension KanaKanjiConverter {
                     || Self.multiClausePpoiFamilySurfaces.contains(segmentReading)
                     // 補助動詞 おる(〜ており/〜ております)も常設 — かな おり は辞書に無く、
                     // 折り/檻/オリ しかノードが立たないので減点しても受け皿がない(2877)
-                    || Self.isOruAuxiliaryReading(segmentReading) {
+                    || Self.isOruAuxiliaryReading(segmentReading)
+                    // 長音で終わる終助詞クラスタ(よねー/ねー/なー)も常設 — 辞書にカタカナ(ヨネー)だけがあると素通り補完が走らず、
+                    // 嬉しい+よね+ー(長音 1 字は高額)になって 宇連+強いよ+ねー に負けていた(うれしいよねー/ほしいよねー。3768、ユーザ報告)
+                    || (segmentReading.hasSuffix("ー") && Self.multiClauseFinalParticleReadings.contains(segmentReading)) {
                     add(segmentReading, isDictWord: false, isCurated: false)
                 }
 
@@ -2287,6 +2290,11 @@ extension KanaKanjiConverter {
                 !prevIsDictionaryFormPredicate,
                 !(prev.last.map { Self.multiClausePredicateTailCharacters.contains($0) } ?? false) {
                 penaltyForNounHoshii = Self.multiClauseNounHoshiiPenalty
+            }
+            // て形の後ろの ほしい は補助動詞でかな(買ってほしい)。文頭の 欲しい への seed 加点(3768、300)をここで打ち消す
+            if readingID == SID.ほしい, surface == "欲しい",
+                prev.hasSuffix("て") || prev.hasSuffix("で") {
+                penaltyForNounHoshii += Self.multiClauseSeedOrderNounBonusesByReading["ほしい"] ?? 0
             }
             // て形直後の授受補助動詞(使ってくれない/してくれてる 等)はかなが正書。紅(名詞
             // くれない)や 暮れてる が繰り上がるのを、かな識別を安価にして防ぐ。prev が て/で

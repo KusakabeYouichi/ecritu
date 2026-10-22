@@ -24981,6 +24981,12 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(shown("でんりゅうりょう"), "電流量")
         XCTAssertEqual(single("じゅうでんき").first, "充電器")
         XCTAssertEqual(shown("どういうとき"), "どういうとき")
+        // 3768: ほしいよね/ほしいよねー は 欲しい 先頭(〜てほしい はかなのまま)、〜しい+よねー が 強い に割れない
+        XCTAssertEqual(Array(multi("ほしいよね").prefix(2)), ["欲しいよね", "ほしいよね"])
+        XCTAssertEqual(Array(multi("ほしいよねー").prefix(2)), ["欲しいよねー", "ほしいよねー"], "\(multi("ほしいよねー"))")
+        XCTAssertEqual(shown("うれしいよねー"), "嬉しいよねー")
+        XCTAssertEqual(shown("かってほしい"), "買ってほしい")
+        XCTAssertEqual(single("ほしい").first, "欲しい")
         // 3757: どうぎ→同義,動議,道義,道着,道議,胴木
         XCTAssertEqual(Array(single("どうぎ").prefix(6)), ["同義", "動議", "道義", "道着", "道議", "胴木"], "\(single("どうぎ"))")
         // 3766: 逐次入力(語幹キャッシュあり)でも 名詞+なきゃ を組み立てない
