@@ -24987,6 +24987,16 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(shown("うれしいよねー"), "嬉しいよねー")
         XCTAssertEqual(shown("かってほしい"), "買ってほしい")
         XCTAssertEqual(single("ほしい").first, "欲しい")
+        // 3769: しないと危険 / 安定器 / ル・クルーゼ / クリストフル / で置いてる / 出店料(両 は数の後ろだけ)
+        XCTAssertEqual(shown("わすれないようにしないときけん"), "忘れないようにしないと危険")
+        XCTAssertEqual(shown("そのときけんが")?.hasPrefix("その時"), true)
+        XCTAssertEqual(single("あんていき").first, "安定器")
+        XCTAssertEqual(Array(single("るくるーぜ").prefix(2)), ["ル・クルーゼ", "Le Creuset"])
+        XCTAssertEqual(shown("くりすとふる"), "クリストフル")
+        XCTAssertEqual(Array(single("くりすとふる").prefix(2)), ["クリストフル", "Christofle"])
+        XCTAssertEqual(Array(single("おいてる").prefix(3)), ["置いてる", "老いてる", "擱いてる"])
+        XCTAssertEqual(shown("でおいてる"), "で置いてる")
+        XCTAssertEqual(Array(single("しゅってんりょう").prefix(2)), ["出店料", "出展料"])
         // 3757: どうぎ→同義,動議,道義,道着,道議,胴木
         XCTAssertEqual(Array(single("どうぎ").prefix(6)), ["同義", "動議", "道義", "道着", "道議", "胴木"], "\(single("どうぎ"))")
         // 3766: 逐次入力(語幹キャッシュあり)でも 名詞+なきゃ を組み立てない

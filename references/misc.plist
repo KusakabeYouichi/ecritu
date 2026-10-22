@@ -398,6 +398,8 @@
 	<dict><key>phrase</key><string>山城牛</string><key>shortcut</key><string>やましろぎゅう</string></dict>
 	<dict><key>phrase</key><string>宮古牛</string><key>shortcut</key><string>みやこぎゅう</string></dict>
 	<dict><key>phrase</key><string>黒毛和牛</string><key>shortcut</key><string>くろげわぎゅう</string></dict>
+	<dict><key>phrase</key><string>出店料</string><key>shortcut</key><string>しゅってんりょう</string></dict>	<!-- 出店料/出展料: 辞書・LM に無く 出典両 が先頭だった(ユーザ報告 3769) -->
+	<dict><key>phrase</key><string>出展料</string><key>shortcut</key><string>しゅってんりょう</string></dict>
 	<dict><key>phrase</key><string>POSレジ</string><key>shortcut</key><string>ぽすれじ</string></dict>	<!-- POSレジ: 辞書に無く ぽすレジ/ポスレジ だった(ユーザ報告 3765) -->
 	<dict><key>phrase</key><string>電流量</string><key>shortcut</key><string>でんりゅうりょう</string></dict>	<!-- 電流量: 辞書・LM に無く 電流両 が先頭だった(ユーザ報告 3765) -->
 	<dict><key>phrase</key><string>中華麺</string><key>shortcut</key><string>ちゅうかめん</string></dict>	<!-- 中華麺/中華めん: 辞書にあるが wc 15323 と重く LM にも無く、ちゅうかめんが が 中仮面が だった(ユーザ報告 3763) -->

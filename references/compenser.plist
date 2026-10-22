@@ -836,5 +836,9 @@
 	        <dict><key>phrase</key><string>竈門禰󠄀豆子</string><key>shortcut</key><string>かまどねずこ</string></dict>
 	        <dict><key>phrase</key><string>炭治郎</string><key>shortcut</key><string>たんじろう</string></dict>
 	        <dict><key>phrase</key><string>禰󠄀豆子</string><key>shortcut</key><string>ねずこ</string></dict>
+	        <dict><key>phrase</key><string>ル・クルーゼ</string><key>shortcut</key><string>るくるーぜ</string></dict>	<!-- 鋳物ほうろう鍋のブランド(ユーザ指定 3769) -->
+	        <dict><key>phrase</key><string>Le Creuset</string><key>shortcut</key><string>るくるーぜ</string></dict>
+	        <dict><key>phrase</key><string>クリストフル</string><key>shortcut</key><string>くりすとふる</string></dict>	<!-- 銀器のブランド。辞書にあるが LM に無く、連文節で クリストフ+る に割れていた(ユーザ報告 3769) -->
+	        <dict><key>phrase</key><string>Christofle</string><key>shortcut</key><string>くりすとふる</string></dict>
 </array>
 </plist>
