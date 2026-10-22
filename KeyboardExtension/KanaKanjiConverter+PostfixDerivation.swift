@@ -131,9 +131,15 @@ extension KanaKanjiConverter {
                 stemReading: stem,
                 nextSuffix: passthrough
             )
-            let filteredStemCandidates = filterGodanEDanStemsForCaseParticle(
-                filterNonVerbalCandidatesForVerbalPostfix(
-                    nEndingFiltered,
+            // 否定の ない 系(なきゃ 等)の語幹の絞り込みも BFS と同じにする。逐次入力でキャッシュに載った語幹(つくら→津倉)が
+            // ここを素通りし、実機だけ 津倉なきゃ が先頭だった(3766、ユーザ報告。テストは読みを一度に渡すので BFS 側しか通らなかった)
+            let filteredStemCandidates = filterConjugableStemsForNegativeAuxiliaryPostfix(
+                filterGodanEDanStemsForCaseParticle(
+                    filterNonVerbalCandidatesForVerbalPostfix(
+                        nEndingFiltered,
+                        stemReading: stem,
+                        nextSuffix: passthrough
+                    ),
                     stemReading: stem,
                     nextSuffix: passthrough
                 ),
