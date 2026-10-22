@@ -31,6 +31,14 @@
 	        <dict><key>phrase</key><string>Henri Giraud</string><key>shortcut</key><string>あんりじろー</string></dict>
 	        <dict><key>phrase</key><string>ポール・ジロー</string><key>shortcut</key><string>ぽーるじろー</string></dict>
 	        <dict><key>phrase</key><string>Paul Giraud</string><key>shortcut</key><string>ぽーるじろー</string></dict>
+
+	        <dict><key>phrase</key><string>ジョルジュ・ドゥブッフ</string><key>shortcut</key><string>じょるじゅどぅぶっふ</string></dict>
+	        <dict><key>phrase</key><string>Georges Dubœuf</string><key>shortcut</key><string>じょるじゅどぅぶっふ</string></dict>
+	        <dict><key>phrase</key><string>ミシェル・シャプティエ</string><key>shortcut</key><string>みしぇるしゃぷてぃえ</string></dict>
+	        <dict><key>phrase</key><string>Michel Chapoutier</string><key>shortcut</key><string>みしぇるしゃぷてぃえ</string></dict>
+	        <dict><key>phrase</key><string>シャプティエ</string><key>shortcut</key><string>しゃぷてぃえ</string></dict>
+	        <dict><key>phrase</key><string>Chapoutier</string><key>shortcut</key><string>しゃぷてぃえ</string></dict>
+
 	        <dict><key>phrase</key><string>Vinoteras</string><key>shortcut</key><string>ゔぃのてらす</string></dict>	<!-- ユーザ指定 3289 -->
 	        <dict><key>phrase</key><string>VINOTERAS</string><key>shortcut</key><string>ゔぃのてらす</string></dict>
 	        <dict><key>phrase</key><string>ヴィノテラス</string><key>shortcut</key><string>ゔぃのてらす</string></dict>
