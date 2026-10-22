@@ -255,6 +255,8 @@ extension KanaKanjiConverter {
     // 一段命令形(ろ/よ)を供給しない基底読み。居ろ が 色 を、射ろ が 意呂 を跨ぐ等、
     // 命令形として使う頻度より同音語の実害が大きいもの(2026-08-27)
     static let ichidanImperativeDeniedBaseReadings: Set<String> = ["いる", "える", "うる", "おる"]
+    // 命令形+引用 って を組む一段動詞の word_cost 上限(3771。定義箇所のコメント参照)
+    static let ichidanImperativeQuoteMaxBaseWordCost = 9500
     // 意志を持てない動詞(原因・根拠を表す よる 族、要る)。意志形(因ろう/要ろう)は文法上は組めても意味的にありえないので、
     // 活用派生で作らない(ユーザ指摘 3255)。選る/寄る/撚る/縒る 等の意志動詞は対象外
     static let nonVolitionalVerbSurfaces: Set<String> = ["因る", "由る", "縁る", "依る", "拠る", "據る", "要る"]
