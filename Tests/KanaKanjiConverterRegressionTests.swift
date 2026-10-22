@@ -24954,6 +24954,12 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertFalse(single("つくらなきゃ").contains("津倉なきゃ"))
         XCTAssertEqual(single("たべなきゃ").first, "食べなきゃ")
         XCTAssertEqual(single("しかたなく").first, "仕方なく")
+        // 3758: 見てみ〜 の 1 ノードを み+て+みたい の割れより優先
+        XCTAssertEqual(Array(multi("あらためてみてみたい").prefix(2)), ["あらためて見てみたい", "改めて見てみたい"], "\(multi("あらためてみてみたい"))")
+        XCTAssertFalse(multi("あらためてみてみたい").prefix(3).contains(where: { $0.contains("みてみたい") }))
+        // 3759: 小説+書く
+        XCTAssertEqual(shown("しょうせつかいて"), "小説書いて")
+        XCTAssertEqual(shown("しょうせつかがいて"), "小説家がいて")
         // 3757: どうぎ→同義,動議,道義,道着,道議,胴木
         XCTAssertEqual(Array(single("どうぎ").prefix(6)), ["同義", "動議", "道義", "道着", "道議", "胴木"], "\(single("どうぎ"))")
         // 3756: のみたい→飲みたい,呑みたい
