@@ -838,6 +838,15 @@
 	        <dict><key>phrase</key><string>禰󠄀豆子</string><key>shortcut</key><string>ねずこ</string></dict>
 	        <dict><key>phrase</key><string>ル・クルーゼ</string><key>shortcut</key><string>るくるーぜ</string></dict>	<!-- 鋳物ほうろう鍋のブランド(ユーザ指定 3769) -->
 	        <dict><key>phrase</key><string>Le Creuset</string><key>shortcut</key><string>るくるーぜ</string></dict>
+	        <dict><key>phrase</key><string>ストウブ</string><key>shortcut</key><string>すとうぶ</string></dict>
+	        <dict><key>phrase</key><string>STAUB</string><key>shortcut</key><string>すとうぶ</string></dict>
+	        <dict><key>phrase</key><string>staub</string><key>shortcut</key><string>すとうぶ</string></dict>
+	        <dict><key>phrase</key><string>シャスール</string><key>shortcut</key><string>しゃすーる</string></dict>
+	        <dict><key>phrase</key><string>CHASSEUR</string><key>shortcut</key><string>しゃすーる</string></dict>
+	        <dict><key>phrase</key><string>バーミキュラ</string><key>shortcut</key><string>ばーみきゅら</string></dict>
+	        <dict><key>phrase</key><string>Vermicular</string><key>shortcut</key><string>ばーみきゅら</string></dict>
+	        <dict><key>phrase</key><string>ヴァーミキュラ</string><key>shortcut</key><string>ゔぁーみきゅら</string></dict>
+	        <dict><key>phrase</key><string>Vermicular</string><key>shortcut</key><string>ゔぁーみきゅら</string></dict>
 	        <dict><key>phrase</key><string>クリストフル</string><key>shortcut</key><string>くりすとふる</string></dict>	<!-- 銀器のブランド。辞書にあるが LM に無く、連文節で クリストフ+る に割れていた(ユーザ報告 3769) -->
 	        <dict><key>phrase</key><string>Christofle</string><key>shortcut</key><string>くりすとふる</string></dict>
 </array>
