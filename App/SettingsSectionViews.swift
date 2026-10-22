@@ -371,6 +371,9 @@ struct FullAccessStatusSection: View {
 struct ConversionCacheSettingsSection: View {
     @Binding var suspendMemorySlimmingEnabled: Bool
     @State private var isClearedBadgeVisible = false
+    // 表示を消す予約は最後のタップのものだけ有効にする。前のタップの予約が残って、続けてタップしたときの表示を
+    // すぐ消していた(数回続けてタップすると「クリアしました」が出ない回があった。ユーザ報告)
+    @State private var clearedBadgeGeneration = 0
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -394,8 +397,12 @@ struct ConversionCacheSettingsSection: View {
                 Button("変換キャッシュをクリア") {
                     SettingsSyncNotification.postSettingsDidChange()
                     isClearedBadgeVisible = true
+                    clearedBadgeGeneration += 1
+                    let generation = clearedBadgeGeneration
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1.6) {
-                        isClearedBadgeVisible = false
+                        if generation == clearedBadgeGeneration {
+                            isClearedBadgeVisible = false
+                        }
                     }
                 }
                 .buttonStyle(.bordered)
