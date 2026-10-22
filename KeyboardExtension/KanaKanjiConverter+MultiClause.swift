@@ -491,6 +491,32 @@ extension KanaKanjiConverter {
 
                 var surfaces: [(surface: String, isDictWord: Bool, isCurated: Bool, isInflectionDerived: Bool, wordCost: Int?, isDictionaryFormPredicate: Bool)] = []
                 var seenSurfaces = Set<String>()
+                // 手前から続く常用語(時期=じき)の途中で始まり、その語の終わりを跨ぐ登録語(気がある=きがある)には床を与えない
+                // (学習語彙の 3723 と同じ。じきがあるとは が 時+気がある(床 1500)の 時気があるとは になっていた。3765、ユーザ報告)
+                // 手前から跨がれる常用語の unigram の最小値(無ければ nil)。使う側で基準(学習語彙 6000/句の登録語 5000)と比べる
+                func computeCrossedCommonWordMinUnigram() -> Int? {
+                    guard start > 0 else {
+                        return nil
+                    }
+                    let crossing = (max(0, start - Self.multiClauseMaxSegmentReadingCount)..<start).flatMap { nodesStartingAt[$0] }
+                        .map { nodes[$0] }
+                        .filter { $0.end > start && $0.end < end && $0.isDictWord && !$0.isCurated && !$0.isInflectionDerived && !$0.isKanaIdentity }
+                        .map(\.surface)
+                    guard !crossing.isEmpty else {
+                        return nil
+                    }
+                    return store.wordLMUnigramCosts(for: crossing).values.min()
+                }
+                var crossedCommonWordMinUnigramCache: Int??
+                func crossesCommonWordFromLeft(maxUnigram: Int = Self.multiClauseLearnedCrossedCommonWordMaxUnigram) -> Bool {
+                    if crossedCommonWordMinUnigramCache == nil {
+                        crossedCommonWordMinUnigramCache = .some(computeCrossedCommonWordMinUnigram())
+                    }
+                    guard let minUnigram = crossedCommonWordMinUnigramCache ?? nil else {
+                        return false
+                    }
+                    return minUnigram <= maxUnigram
+                }
                 func add(
                     _ surface: String,
                     isDictWord: Bool,
@@ -530,6 +556,9 @@ extension KanaKanjiConverter {
                         Self.multiClauseKanaPredicateIdentities.contains(segmentReading) {
                         resolvedDFP = true
                     }
+                    // 漢字 1 字+助詞で始まる句の登録語(気がある/気を配る)は、手前の常用語を跨ぐなら床を与えない(定義コメント参照。3765)。
+                    // 登録語全体に掛けると 来た/ほうが/断線 のように床で守っている語まで崩れた(全網 15 件)
+                    let isCurated = isCurated && !(Self.isKanjiHeadParticlePhrase(surface) && crossesCommonWordFromLeft(maxUnigram: Self.multiClausePhraseCrossedCommonWordMaxUnigram))
                     if seenSurfaces.insert(surface).inserted {
                         surfaces.append((surface, isDictWord, isCurated, isInflectionDerived, wordCost, resolvedDFP))
                     } else if resolvedDFP,
@@ -599,19 +628,7 @@ extension KanaKanjiConverter {
                 // 和風 を 1 度確定すると おきなわふう が 翁+和風(床 1500)になり、沖縄風 が候補から消えていた(3723、ユーザ報告)。
                 // 辞書語としては残し、LM で競わせる
                 let learnedSurfaces = (learnedDictionary[segmentReading] ?? []).filter { $0 != segmentReading && len < n }
-                let learnedCrossesCommonWord: Bool = {
-                    guard !learnedSurfaces.isEmpty, !learnedIsParticleReading, start > 0 else {
-                        return false
-                    }
-                    let crossing = (max(0, start - Self.multiClauseMaxSegmentReadingCount)..<start).flatMap { nodesStartingAt[$0] }
-                        .map { nodes[$0] }
-                        .filter { $0.end > start && $0.end < end && $0.isDictWord && !$0.isCurated && !$0.isInflectionDerived && !$0.isKanaIdentity }
-                        .map(\.surface)
-                    guard !crossing.isEmpty else {
-                        return false
-                    }
-                    return store.wordLMUnigramCosts(for: crossing).values.contains { $0 <= Self.multiClauseLearnedCrossedCommonWordMaxUnigram }
-                }()
+                let learnedCrossesCommonWord = !learnedSurfaces.isEmpty && !learnedIsParticleReading && crossesCommonWordFromLeft()
                 for surface in learnedSurfaces {
                     if learnedIsParticleReading {
                         continue

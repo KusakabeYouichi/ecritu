@@ -138,6 +138,7 @@
 	<dict><key>phrase</key><string>のなのか</string><key>shortcut</key><string>のなのか</string></dict>	<!-- のなのか: 所有の の+なのか(アジアのなのか/誰のなのか)。の→名(な)の連接が安く アジアの名のか になっていた(ユーザ報告 3366)。なのか 単独で登録すると 七日(なのか)を押しのけるので の ごと 1 語にする -->
 	<dict><key>phrase</key><string>もしかして</string><key>shortcut</key><string>もしかして</string></dict>	<!-- もしかして/もしかすると/もしかしたら: 辞書に 1 語で無く もし+か+し+て に割れ、末尾の て→細菌 の連接で もしかしてさいきん→もしかして細菌 になっていた。かな正書の副詞(ユーザ報告 3335) -->
 	<dict><key>phrase</key><string>もしかすると</string><key>shortcut</key><string>もしかすると</string></dict>
+	<dict><key>phrase</key><string>どういう</string><key>shortcut</key><string>どういう</string></dict>	<!-- どういう(連体詞、かなが正書): どういうとき が どう+言う+とき だった(ユーザ報告 3765) -->
 	<dict><key>phrase</key><string>おかか</string><key>shortcut</key><string>おかか</string><key>pos</key><string>名詞</string></dict>	<!-- おかか(鰹節): 辞書にかなはあるが LM 未収録で、御かか/お媽 が先頭だった(ユーザ報告 3723) -->
 	<dict><key>phrase</key><string>だったんで</string><key>shortcut</key><string>だったんで</string></dict>	<!-- だったんで/だったんです/だったんだ: だった+ん(説明)+で。だったん が 韃靼/達陀/脱炭 の 1 語に吸われ、すごい規模韃靼で になっていた(ユーザ報告 3735) -->
 	<dict><key>phrase</key><string>だったんです</string><key>shortcut</key><string>だったんです</string></dict>
@@ -397,6 +398,8 @@
 	<dict><key>phrase</key><string>山城牛</string><key>shortcut</key><string>やましろぎゅう</string></dict>
 	<dict><key>phrase</key><string>宮古牛</string><key>shortcut</key><string>みやこぎゅう</string></dict>
 	<dict><key>phrase</key><string>黒毛和牛</string><key>shortcut</key><string>くろげわぎゅう</string></dict>
+	<dict><key>phrase</key><string>POSレジ</string><key>shortcut</key><string>ぽすれじ</string></dict>	<!-- POSレジ: 辞書に無く ぽすレジ/ポスレジ だった(ユーザ報告 3765) -->
+	<dict><key>phrase</key><string>電流量</string><key>shortcut</key><string>でんりゅうりょう</string></dict>	<!-- 電流量: 辞書・LM に無く 電流両 が先頭だった(ユーザ報告 3765) -->
 	<dict><key>phrase</key><string>中華麺</string><key>shortcut</key><string>ちゅうかめん</string></dict>	<!-- 中華麺/中華めん: 辞書にあるが wc 15323 と重く LM にも無く、ちゅうかめんが が 中仮面が だった(ユーザ報告 3763) -->
 	<dict><key>phrase</key><string>中華めん</string><key>shortcut</key><string>ちゅうかめん</string></dict>
 	<dict><key>phrase</key><string>大英博物館</string><key>shortcut</key><string>だいえいはくぶつかん</string></dict>	<!-- 大英博物館: 1 語で無く、大英(wc 8652)が 大映/大栄 に負けていた(大英→博物館 の bigram 381 はある。ユーザ報告 3761) -->

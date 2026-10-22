@@ -24969,6 +24969,15 @@ extension KanaKanjiConverterRegressionTests {
         // 3763: 中華麺(misc)
         XCTAssertEqual(shown("ちゅうかめんが"), "中華麺が")
         XCTAssertEqual(single("ちゅうかめん").first, "中華麺")
+        // 3765: なんで/じき/じゅうでんき の seed、POSレジ/電流量/どういう(misc)、常用語を跨ぐ登録語(気がある)に床を与えない
+        XCTAssertEqual(Array(single("なんで").prefix(2)), ["なんで", "何で"])
+        XCTAssertEqual(Array(single("じき").prefix(4)), ["時期", "磁器", "磁気", "次期"])
+        XCTAssertEqual(shown("じきがあるとは"), "時期があるとは")
+        XCTAssertEqual(shown("やるきがある"), "やる気がある")
+        XCTAssertEqual(shown("ぽすれじ"), "POSレジ")
+        XCTAssertEqual(shown("でんりゅうりょう"), "電流量")
+        XCTAssertEqual(single("じゅうでんき").first, "充電器")
+        XCTAssertEqual(shown("どういうとき"), "どういうとき")
         // 3757: どうぎ→同義,動議,道義,道着,道議,胴木
         XCTAssertEqual(Array(single("どうぎ").prefix(6)), ["同義", "動議", "道義", "道着", "道議", "胴木"], "\(single("どうぎ"))")
         // 3756: のみたい→飲みたい,呑みたい
