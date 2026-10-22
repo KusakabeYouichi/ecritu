@@ -401,6 +401,15 @@ extension KanaKanjiConverter {
         guard Self.isNegativeAuxiliaryPostfixSuffix(nextSuffix) else {
             return candidates
         }
+        // なきゃ/なくちゃ(なければ/なくては の縮約)は動詞の未然形にだけ付き、名詞には付かない(津倉なきゃ/以下なきゃ/氏なきゃ が
+        // つくらなきゃ/いかなきゃ/しなきゃ の候補に並んでいた。3755、ユーザ報告)。かな識別と、漢字+かな語尾 の用言の語幹(食べ)は
+        // 残し、末尾が漢字・カタカナの名詞(津倉/以下/イカ)を外す
+        if nextSuffix.hasPrefix("なきゃ") || nextSuffix.hasPrefix("なくちゃ") {
+            return candidates.filter { candidate in
+                candidate == stemReading
+                    || (containsKanji(candidate) && candidate.unicodeScalars.last.map { (0x3041...0x3096).contains($0.value) } ?? false)
+            }
+        }
         let metadata = inflectionMetadata(for: stemReading)
         guard metadata.hasMetadata else {
             return candidates
