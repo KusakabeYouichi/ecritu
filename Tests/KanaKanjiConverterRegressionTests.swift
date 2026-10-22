@@ -24949,6 +24949,13 @@ extension KanaKanjiConverterRegressionTests {
         let gofun = multi("ごふんいないに")
         XCTAssertEqual(gofun.first, "5分以内に", "\(gofun)")
         XCTAssertFalse(gofun.contains(where: { $0.contains("いない") || $0.contains("居ない") }), "\(gofun)")
+        // 3755: 名詞+なきゃ/なくちゃ を組み立てない(津倉なきゃ)。動詞の語幹(食べ)は残す
+        XCTAssertEqual(single("つくらなきゃ").first, "作らなきゃ")
+        XCTAssertFalse(single("つくらなきゃ").contains("津倉なきゃ"))
+        XCTAssertEqual(single("たべなきゃ").first, "食べなきゃ")
+        XCTAssertEqual(single("しかたなく").first, "仕方なく")
+        // 3756: のみたい→飲みたい,呑みたい
+        XCTAssertEqual(Array(single("のみたい").prefix(2)), ["飲みたい", "呑みたい"], "\(single("のみたい"))")
         // 3753: よもぎ/よもぎを は seed の順(よもぎ,ヨモギ,蓬,艾,蒿,四方木,蓬生)
         XCTAssertEqual(Array(single("よもぎ").prefix(3)), ["よもぎ", "ヨモギ", "蓬"])
         XCTAssertEqual(Array(multi("よもぎを").prefix(4)), ["よもぎを", "ヨモギを", "蓬を", "艾を"], "\(multi("よもぎを"))")
