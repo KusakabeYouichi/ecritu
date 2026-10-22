@@ -3004,6 +3004,11 @@ extension KanaKanjiConverter {
                 let prevLast = prev.last, prevLast == "て" || prevLast == "で" {
                 base = min(base, Self.multiClauseFinalParticleAfterPredicateCost)
             }
+            // 〜かどこか(上野かどこかで)の前は場所の名詞で、準体助詞 の の直後には来ない。上+の+かどこか(上のかどこかで)が
+            // 上野+かどこか より安く、上野 が 1 つも出なかった(3760、ユーザ報告)
+            if reading.hasPrefix("かどこ"), (prevID == SID.の && prevIsKanaIdentity) || prev.hasSuffix("の") {
+                penalty += Self.multiClauseKadokokaAfterNoPenalty
+            }
             // 見て+補助動詞 みる(見てみたい/見てみる/見てみよう)の 1 ノード。派生の定額 7200 で、て形の後ろの かな み(補助 みる)+て+みたい
             // に割った経路(計 6042)に負け、あらためてみてみたい が あらためて+み+て+みたい(見て が 1 つも無い)になっていた(3758、ユーザ報告)
             if isInflectionDerived, reading.hasPrefix("みてみ"), surface.hasPrefix("見てみ") {

@@ -3078,10 +3078,12 @@ extension KanaKanjiConverter {
     static let multiClauseBOSParticleBeforePredicateExemptParticles: Set<String> = ["は", "が", "を", "も", "に"]
     // 語+助詞 の連文節を、語の seed の順に並べる opt-in(よもぎを。3753)。全 seed に掛けると あったが/きのうは/さいきんが の
     // 文脈での並び(助詞ごとに手調整済み)を崩す(全網 9 件)
-    static let multiClauseSeedOrderParticleLeadReadings: Set<String> = ["よもぎ"]
+    static let multiClauseSeedOrderParticleLeadReadings: Set<String> = ["よもぎ", "おみやげ"]  // おみやげ(3762)
     // かな先頭の seed 順の変種繰り上げを、文頭か直前がかなのときだけにする読み(5分以内に に いない/居ない を混ぜない。3752)。
     // なくし/よう 等は名詞・述語の直後でも seed 順が正しい(入る気なくした/出るようになった)ので対象外
     static let multiClauseSeedOrderNeedsKanaPrevReadings: Set<String> = ["いない"]
+    // の+かどこか の減点(3760)。上+の と 上野 の差 870 を越える幅
+    static let multiClauseKadokokaAfterNoPenalty = 3000
     // 見てみ〜(見てみたい/見てみる)1 ノードの加点(3758)。み+て+みたい の割れ(6042)と 派生 7200 の差 1158 を越える幅
     static let multiClauseMiteMiruBonus = 2000
     // て形+漢字の述語の加点(3751)。切手(6717)と派生の 切って(7200)の差 483 を越える幅

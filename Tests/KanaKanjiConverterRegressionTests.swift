@@ -13328,8 +13328,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(converter.shouldPromoteSingleBestAboveMultiClause(reading: "おちかく", singleBest: "お地殻"))
         // 全読みが辞書語(お母さん)なら派生ではないので対象外
         XCTAssertFalse(converter.shouldPromoteSingleBestAboveMultiClause(reading: "おかあさん", singleBest: "お母さん"))
-        // 派生でも語幹が最良(土産)なら昇格対象(おみやげ は辞書に全読みが無い)
-        XCTAssertTrue(converter.shouldPromoteSingleBestAboveMultiClause(reading: "おみやげ", singleBest: "お土産"))
+        // おみやげ は seed でかなを先に(ユーザ指定 3762)。お土産 を連文節より上に出さない
+        XCTAssertFalse(converter.shouldPromoteSingleBestAboveMultiClause(reading: "おみやげ", singleBest: "お土産"))
         XCTAssertFalse(converter.shouldPromoteSingleBestAboveMultiClause(reading: "おそいから", singleBest: "遅いから"))
     }
 
@@ -24960,6 +24960,15 @@ extension KanaKanjiConverterRegressionTests {
         // 3759: 小説+書く
         XCTAssertEqual(shown("しょうせつかいて"), "小説書いて")
         XCTAssertEqual(shown("しょうせつかがいて"), "小説家がいて")
+        // 3760〜3762: 上野かどこかで / 大英博物館(misc)/ おみやげ(かな先、を でも)
+        XCTAssertEqual(shown("うえのかどこかで"), "上野かどこかで")
+        XCTAssertEqual(shown("しぶやかどこかで"), "渋谷かどこかで")
+        XCTAssertEqual(shown("だいえいはくぶつかん"), "大英博物館")
+        XCTAssertEqual(Array(single("おみやげ").prefix(2)), ["おみやげ", "お土産"])
+        XCTAssertEqual(multi("おみやげを").first, "おみやげを")
+        // 3763: 中華麺(misc)
+        XCTAssertEqual(shown("ちゅうかめんが"), "中華麺が")
+        XCTAssertEqual(single("ちゅうかめん").first, "中華麺")
         // 3757: どうぎ→同義,動議,道義,道着,道議,胴木
         XCTAssertEqual(Array(single("どうぎ").prefix(6)), ["同義", "動議", "道義", "道着", "道議", "胴木"], "\(single("どうぎ"))")
         // 3756: のみたい→飲みたい,呑みたい
