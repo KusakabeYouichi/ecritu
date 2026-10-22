@@ -3029,6 +3029,11 @@ extension KanaKanjiConverter {
                 let prevLast = prev.last, prevLast == "て" || prevLast == "で" {
                 base = min(base, Self.multiClauseFinalParticleAfterPredicateCost)
             }
+            // 両(車両の助数詞)は数(3両/何両)の後ろにだけ付く。名詞+両(出典両)は作らない(3769、ユーザ報告)
+            if surface == "両", reading == "りょう", !prevIsBOS,
+                let prevLast = prev.last, !prevLast.isNumber, !"一二三四五六七八九十百千何数".contains(prevLast) {
+                penalty += Self.multiClauseRyouCounterAfterNounPenalty
+            }
             // 〜かどこか(上野かどこかで)の前は場所の名詞で、準体助詞 の の直後には来ない。上+の+かどこか(上のかどこかで)が
             // 上野+かどこか より安く、上野 が 1 つも出なかった(3760、ユーザ報告)
             if reading.hasPrefix("かどこ"), (prevID == SID.の && prevIsKanaIdentity) || prev.hasSuffix("の") {
