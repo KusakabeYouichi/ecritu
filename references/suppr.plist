@@ -276,6 +276,82 @@
 	<dict><key>phrase</key><string>値い</string><key>shortcut</key><string>あたい</string></dict>
 
 	<!-- ■ 非文法・実用ゼロの合成(学習しても出さない) -->
+	<!-- □ 活用形でだけ出さない合成(ユーザ判定 3772: サ変動詞化しない名詞・読み違い・送り仮名のカタカナ・お+動詞 等) -->
+	<dict><key>phrase</key><string>開明しない</string><key>shortcut</key><string>かいめいしない</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>各藩しない</string><key>shortcut</key><string>かくはんしない</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>幾何しない</string><key>shortcut</key><string>きかしない</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>兼学する</string><key>shortcut</key><string>けんがくする</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>兼学した</string><key>shortcut</key><string>けんがくした</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>兼学して</string><key>shortcut</key><string>けんがくして</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>兼学してる</string><key>shortcut</key><string>けんがくしてる</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>兼学しない</string><key>shortcut</key><string>けんがくしない</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>好感する</string><key>shortcut</key><string>こうかんする</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>好感した</string><key>shortcut</key><string>こうかんした</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>好感して</string><key>shortcut</key><string>こうかんして</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>好感してる</string><key>shortcut</key><string>こうかんしてる</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>好感しない</string><key>shortcut</key><string>こうかんしない</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>広義しない</string><key>shortcut</key><string>こうぎしない</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>荒天しない</string><key>shortcut</key><string>こうてんしない</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>功有する</string><key>shortcut</key><string>こうゆうする</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>甲有する</string><key>shortcut</key><string>こうゆうする</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>亨有する</string><key>shortcut</key><string>こうゆうする</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>亨有した</string><key>shortcut</key><string>こうゆうした</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>亨有して</string><key>shortcut</key><string>こうゆうして</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>亨有してる</string><key>shortcut</key><string>こうゆうしてる</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>亨有しない</string><key>shortcut</key><string>こうゆうしない</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>国字しない</string><key>shortcut</key><string>こくじしない</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>勝計する</string><key>shortcut</key><string>しょうけいする</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>勝計した</string><key>shortcut</key><string>しょうけいした</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>勝計して</string><key>shortcut</key><string>しょうけいして</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>勝計してる</string><key>shortcut</key><string>しょうけいしてる</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>勝計しない</string><key>shortcut</key><string>しょうけいしない</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>尚質しない</string><key>shortcut</key><string>しょうしつしない</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>章名しない</string><key>shortcut</key><string>しょうめいしない</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>政策しない</string><key>shortcut</key><string>せいさくしない</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>伝播する</string><key>shortcut</key><string>でんぱんする</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>伝播した</string><key>shortcut</key><string>でんぱんした</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>伝播して</string><key>shortcut</key><string>でんぱんして</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>伝播してる</string><key>shortcut</key><string>でんぱんしてる</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>伝播しない</string><key>shortcut</key><string>でんぱんしない</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>取リ引キする</string><key>shortcut</key><string>とりひきする</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>取リ引キした</string><key>shortcut</key><string>とりひきした</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>取リ引キして</string><key>shortcut</key><string>とりひきして</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>取リ引キしてる</string><key>shortcut</key><string>とりひきしてる</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>取リ引キしない</string><key>shortcut</key><string>とりひきしない</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>乳腺しない</string><key>shortcut</key><string>にゅうせんしない</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>追おう</string><key>shortcut</key><string>おおう</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>負おう</string><key>shortcut</key><string>おおう</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>趁おう</string><key>shortcut</key><string>おおう</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>逐おう</string><key>shortcut</key><string>おおう</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>炊くさない</string><key>shortcut</key><string>たくさない</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>打さない</string><key>shortcut</key><string>ださない</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>弥る</string><key>shortcut</key><string>ねる</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>弥った</string><key>shortcut</key><string>ねった</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>弥って</string><key>shortcut</key><string>ねって</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>弥ってる</string><key>shortcut</key><string>ねってる</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>弥らない</string><key>shortcut</key><string>ねらない</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>發す</string><key>shortcut</key><string>はっす</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>發した</string><key>shortcut</key><string>はっした</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>發して</string><key>shortcut</key><string>はっして</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>發してる</string><key>shortcut</key><string>はっしてる</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>發さない</string><key>shortcut</key><string>はっさない</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>歿す</string><key>shortcut</key><string>ぼっす</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>歿した</string><key>shortcut</key><string>ぼっした</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>歿して</string><key>shortcut</key><string>ぼっして</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>歿してる</string><key>shortcut</key><string>ぼっしてる</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>歿さない</string><key>shortcut</key><string>ぼっさない</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>三て</string><key>shortcut</key><string>みって</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>3て</string><key>shortcut</key><string>みって</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>八て</string><key>shortcut</key><string>やって</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>8て</string><key>shortcut</key><string>やって</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>行った</string><key>shortcut</key><string>ゆった</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>行って</string><key>shortcut</key><string>ゆって</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>行ってる</string><key>shortcut</key><string>ゆってる</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>四て</string><key>shortcut</key><string>よって</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>4て</string><key>shortcut</key><string>よって</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>別った</string><key>shortcut</key><string>わかった</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>別って</string><key>shortcut</key><string>わかって</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>別ってる</string><key>shortcut</key><string>わかってる</string><key>pos</key><string>名詞</string></dict>
 	<dict><key>phrase</key><string>男か</string><key>shortcut</key><string>なんか</string><key>pos</key><string>名詞</string></dict>	<!-- 男/柔(なん)+か: 男・柔 は なん の音読みで単独の名詞にならない。なんか の候補に並んでいた(ユーザ指定 3744) -->
 	<dict><key>phrase</key><string>柔か</string><key>shortcut</key><string>なんか</string><key>pos</key><string>名詞</string></dict>
 	<dict><key>phrase</key><string>塗れたて</string><key>shortcut</key><string>ぬれたて</string></dict>	<!-- 塗れる(ぬれる=塗る の可能形)の連用形+たて。塗りたて はあっても 塗れたて は無い(ユーザ指定 3537)。ぬれたてで の変種に出ていた -->
