@@ -24999,6 +24999,13 @@ extension KanaKanjiConverterRegressionTests {
         }
         // 3772: いたんで→痛んで,悼んで,傷んで(異端で が先頭だった)
         XCTAssertEqual(Array(single("いたんで").prefix(3)), ["痛んで", "悼んで", "傷んで"], "\(single("いたんで"))")
+        // 3772: 表示中の候補に無かった字も seed で並べる(単語登録は不要)
+        XCTAssertEqual(Array(single("ちゅうす").prefix(3)), ["誅す", "注す", "沖す"], "\(single("ちゅうす"))")
+        XCTAssertEqual(Array(single("しいた").prefix(2)), ["敷いた", "強いた"], "\(single("しいた"))")
+        XCTAssertEqual(Array(single("しかない").prefix(2)), ["しかない", "しか無い"], "\(single("しかない"))")
+        XCTAssertEqual(Array(single("こかしない").prefix(4)), ["固化しない", "糊化しない", "転かしない", "倒かしない"])
+        XCTAssertEqual(Array(single("がいしない").prefix(3)), ["害しない", "買いしない", "飼しない"])
+        XCTAssertEqual(single("こく").first, "濃く", "\(single("こく"))")
         // 3769: しないと危険 / 安定器 / ル・クルーゼ / クリストフル / で置いてる / 出店料(両 は数の後ろだけ)
         XCTAssertEqual(shown("わすれないようにしないときけん"), "忘れないようにしないと危険")
         XCTAssertEqual(shown("そのときけんが")?.hasPrefix("その時"), true)
