@@ -2228,9 +2228,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         )
         XCTAssertTrue(fun.contains("分ぐらいかな"), "\(fun)")
 
-        // かさない: 断片合成(科さない 等)より正規活用 貸さない を先頭に
+        // かさない: かしてる と同じ 課→貸→科(ユーザ判定 3772。2643 の 貸さない 先頭から変更)
         let kasanai = converter.candidates(for: "かさない", limit: 8, systemCandidateMode: .surface)
-        XCTAssertEqual(Array(kasanai.prefix(3)), ["貸さない", "課さない", "科さない"], "list=\(kasanai)")
+        XCTAssertEqual(Array(kasanai.prefix(3)), ["課さない", "貸さない", "科さない"], "list=\(kasanai)")
 
         // かげ: {影, 陰, 蔭} 先頭(嗅げ/かな が上位に居た)
         let kage = converter.candidates(for: "かげ", limit: 8, systemCandidateMode: .surface)
@@ -3002,7 +3002,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         try prepareRealLMDictionary()
 
         let sasu = converter.candidates(for: "さす", limit: 10, systemCandidateMode: .surface)
-        XCTAssertEqual(Array(sasu.prefix(7)), ["指す", "刺す", "挿す", "差す", "サス", "砂州", "鎖す"], "list=\(sasu)")
+        XCTAssertEqual(Array(sasu.prefix(4)), ["指す", "挿す", "刺す", "差す"], "list=\(sasu)")
         let naosu = converter.candidates(for: "さしなおす", limit: 8, systemCandidateMode: .surface)
         XCTAssertEqual(Array(naosu.prefix(4)), ["指し直す", "挿し直す", "差し直す", "刺し直す"], "list=\(naosu)")
     }
@@ -13615,18 +13615,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
-    // あやまっている/てる: 誤→謝→過 の順(過つ はレア動詞)。基底 あやまる/あやまった は 謝 先頭のまま(2731)
+    // あやまっている/てる: 基底と同じ 謝 先頭、誤 はその後(ユーザ判定 3772。2731 の 誤 先頭から変更)。過つ はレア動詞で後ろ
     func testRegressionRealLMAyamatteiruPrefersError() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
         for reading in ["あやまっている", "あやまってる"] {
             let single = converter.candidates(for: reading, limit: 5, systemCandidateMode: .surface)
             let tail = String(reading.dropFirst(4))
-            XCTAssertEqual(Array(single.prefix(2)), ["誤っ" + tail, "謝っ" + tail], "\(reading): \(single)")
+            XCTAssertEqual(single.first, "謝っ" + tail, "\(reading): \(single)")
+            XCTAssertTrue(single.prefix(3).contains("誤っ" + tail), "\(reading): \(single)")
             // 過つ(収穫底値のレア動詞)の派生は常用族の後ろ(かな識別の後でもよい)
             XCTAssertTrue((single.firstIndex(of: "過っ" + tail) ?? 99) >= 2, "\(reading): \(single)")
             let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
-            XCTAssertTrue(multi.isEmpty || multi.first == "誤っ" + tail, "\(reading): multi=\(multi)")
+            XCTAssertTrue(multi.isEmpty || multi.first == "謝っ" + tail, "\(reading): multi=\(multi)")
         }
         XCTAssertEqual(converter.candidates(for: "あやまる", limit: 3, systemCandidateMode: .surface).first, "謝る")
         XCTAssertEqual(converter.candidates(for: "あやまった", limit: 3, systemCandidateMode: .surface).first, "謝った")
@@ -19756,7 +19757,7 @@ extension KanaKanjiConverterRegressionTests {
             converter.multiClauseCandidates(for: "そうなったな", systemCandidateMode: .surface).first,
             "そうなったな"
         )
-        // 単文節は 3081 のまま(かな先頭・ナッタ は 5 番目)
+        // 単文節は 3081 のまま(かな先頭・ナッタ は 5 番目。漢字の並びはユーザ判定 3772 で 鳴→成→為)
         let single = converter.candidates(for: "なった", limit: 8, systemCandidateMode: .surface)
         XCTAssertEqual(single.first, "なった", "single=\(single)")
         XCTAssertEqual(single.firstIndex(of: "ナッタ"), 4, "single=\(single)")
@@ -22901,7 +22902,7 @@ extension KanaKanjiConverterRegressionTests {
             ("におい", ["匂い", "臭い", "臭"], ["匂", "荷負"]),
             ("はいじ", ["廃寺"], ["拝辞", "俳事", "配字"]),
             ("へいたん", ["平坦", "兵站"], ["平淡"]),
-            ("みがく", ["磨く", "磨", "琢"], ["研く", "磋く"]),
+            ("みがく", ["磨く", "磨", "研く"], ["琢"]),  // 活用形と同じ 磨→研→磋(ユーザ判定 3772)
             ("きょせい", ["去勢", "巨星", "去声", "居正"], ["虚勢", "挙世", "許靖"]),
             ("きらい", ["嫌い", "機雷"], ["帰来", "季萊"]),
             ("こうきょ", ["皇居", "公許", "薨去", "溝渠"], ["抗拒", "公挙", "後拠", "貢挙"]),
@@ -23088,7 +23089,7 @@ extension KanaKanjiConverterRegressionTests {
             ("りっこう", ["力行", "立后", "立項"], ["陸行", "陸工", "力攻", "陸攻", "陸閘"]),
             ("れいしょ", ["隷書"], ["冷所", "令書", "黎鉏"]),
             ("れいなん", ["嶺南"], ["霊南"]),
-            ("わかす", ["沸かす", "若杉", "若洲", "若州"], ["涌かす", "湧かす"]),
+            ("わかす", ["沸かす", "涌かす", "湧かす", "若杉"], []),  // 若杉 は 4 番め(ユーザ判定 3772)
             ("うしとら", ["艮"], ["丑寅", "丑虎"]),
             ("おおあま", ["大海人"], ["大甘"]),
             ("かわぶち", ["川淵"], ["川縁"]),
