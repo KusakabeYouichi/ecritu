@@ -24997,6 +24997,8 @@ extension KanaKanjiConverterRegressionTests {
             let list = multi(r).isEmpty ? single(r) : multi(r)
             XCTAssertEqual(Array(list.prefix(3)).map { String($0.prefix(2)) }, ["辞任", "自認", "自任"], "\(r): \(list)")
         }
+        // 3772: いたんで→痛んで,悼んで,傷んで(異端で が先頭だった)
+        XCTAssertEqual(Array(single("いたんで").prefix(3)), ["痛んで", "悼んで", "傷んで"], "\(single("いたんで"))")
         // 3769: しないと危険 / 安定器 / ル・クルーゼ / クリストフル / で置いてる / 出店料(両 は数の後ろだけ)
         XCTAssertEqual(shown("わすれないようにしないときけん"), "忘れないようにしないと危険")
         XCTAssertEqual(shown("そのときけんが")?.hasPrefix("その時"), true)
