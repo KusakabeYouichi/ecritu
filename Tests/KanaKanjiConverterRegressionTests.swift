@@ -25239,15 +25239,16 @@ extension KanaKanjiConverterRegressionTests {
             ("このみちとおってて", "この道通ってて"), ("かくれためいてん", "隠れた名店"), ("あじにぶれが", "味にブレが"),
             ("つくるさいと", "作るサイト"), ("すこしこうかいちゅう", "すこし後悔中"), ("とてもこうかいちゅう", "とても後悔中"),
             ("そんなとき", "そんなとき"), ("できればじょうとう", "できれば上等"), ("2ばいはいって", "倍入って"),
-            ("ちゃんととげないよ", "ちゃんと砥げないよ")   // 3779: 砥げない を 研げない より前(ユーザ指定)
+            ("ちゃんととげないよ", "ちゃんと砥げないよ"),   // 3779: 砥げない を 研げない より前(ユーザ指定)
+            ("しんせつよねー", "親切よねー")   // 3781: 連文節でも 親切 を先に
         ] {
             XCTAssertEqual(multi(reading).first, expected, "\(reading): \(multi(reading))")
         }
         XCTAssertEqual(multi("いなかほど").dropFirst().first, "田舎程", "\(multi("いなかほど"))")
         XCTAssertEqual(multi("をはやくしても").dropFirst().first, "を早くしても", "\(multi("をはやくしても"))")
-        XCTAssertEqual(multi("じかんはかって").dropFirst().first, "時間測って", "\(multi("じかんはかって"))")
         // 3781: 変種の枠を古い表記 捷くしても が取って 破約しても が消えていた(捷い を抑制)
         XCTAssertTrue(multi("をはやくしても").contains("を破約しても"), "\(multi("をはやくしても"))")
+        XCTAssertEqual(multi("じかんはかって").dropFirst().first, "時間測って", "\(multi("じかんはかって"))")
         XCTAssertFalse(multi("きのうのおひるは").contains { $0.contains("お蛭") }, "\(multi("きのうのおひるは"))")
         // 単文節の並び(seed)
         XCTAssertEqual(Array(single("こうよう").prefix(5)), ["紅葉", "効用", "公用", "高揚", "昂揚"])
