@@ -25,6 +25,64 @@
 	<dict><key>phrase</key><string>中分する</string><key>shortcut</key><string>ちゅうぶんする</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 中分する: Sudachi の inflection_classes に ちゅうぶん のサ変が無い。名詞 中分 で登録すると ちゅうぶん の単文節で 中文(seed 先頭)の前に出るため辞書形で登録(ユーザ指定 2887) -->
 	<dict><key>phrase</key><string>心配する</string><key>shortcut</key><string>しんぱいする</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>発明する</string><key>shortcut</key><string>はつめいする</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 発明する: Sudachi の品詞が サ変形状詞可能 で suru に入らず(build_sudachi_index は サ変可能 だけを見る)、はつめいされてて→発明されて手 だった(ユーザ報告 3778)。心配する と同じメタデータ穴 -->	<!-- 心配する: Sudachi収穫の inflection_classes が しんぱい に 親拝/進拝 だけを suru 登録し 心配 が未登録(メタデータ穴)。エンジンの推論防御により 心配しなくて 等が導出されず 親拝しなくて が先頭化する。句登録で活用供給 -->
+	<!-- サ変形状詞可能(Sudachi の品詞)の語の サ変(3780、ユーザ判定)。build_sudachi_index は サ変可能 だけを suru にするので、安心する/邪魔する 等の活用が作られなかった。する で使わない語(膨大/妥当/適当 等)は除く -->
+	<dict><key>phrase</key><string>安心する</string><key>shortcut</key><string>あんしんする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>安定する</string><key>shortcut</key><string>あんていする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>苦労する</string><key>shortcut</key><string>くろうする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>邪魔する</string><key>shortcut</key><string>じゃまする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>退屈する</string><key>shortcut</key><string>たいくつする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>満足する</string><key>shortcut</key><string>まんぞくする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>迷惑する</string><key>shortcut</key><string>めいわくする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>反対する</string><key>shortcut</key><string>はんたいする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>不足する</string><key>shortcut</key><string>ふそくする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>浮気する</string><key>shortcut</key><string>うわきする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>不倫する</string><key>shortcut</key><string>ふりんする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>贅沢する</string><key>shortcut</key><string>ぜいたくする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>乱暴する</string><key>shortcut</key><string>らんぼうする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>失礼する</string><key>shortcut</key><string>しつれいする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>失敬する</string><key>shortcut</key><string>しっけいする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>謙遜する</string><key>shortcut</key><string>けんそんする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>横着する</string><key>shortcut</key><string>おうちゃくする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>難儀する</string><key>shortcut</key><string>なんぎする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>重宝する</string><key>shortcut</key><string>ちょうほうする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>孝行する</string><key>shortcut</key><string>こうこうする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>親孝行する</string><key>shortcut</key><string>おやこうこうする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>親不孝する</string><key>shortcut</key><string>おやふこうする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>悪戯する</string><key>shortcut</key><string>いたずらする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>おしゃれする</string><key>shortcut</key><string>おしゃれする</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachi の見出しは 御洒落。御洒落して が先頭になるので かな/お洒落 で登録 -->
+	<dict><key>phrase</key><string>お洒落する</string><key>shortcut</key><string>おしゃれする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>無沙汰する</string><key>shortcut</key><string>ぶさたする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>ご無沙汰する</string><key>shortcut</key><string>ごぶさたする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>不自由する</string><key>shortcut</key><string>ふじゆうする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>下手する</string><key>shortcut</key><string>へたする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>幸いする</string><key>shortcut</key><string>さいわいする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>独立する</string><key>shortcut</key><string>どくりつする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>連続する</string><key>shortcut</key><string>れんぞくする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>類似する</string><key>shortcut</key><string>るいじする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>共通する</string><key>shortcut</key><string>きょうつうする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>並行する</string><key>shortcut</key><string>へいこうする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>平行する</string><key>shortcut</key><string>へいこうする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>併行する</string><key>shortcut</key><string>へいこうする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>一定する</string><key>shortcut</key><string>いっていする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>相応する</string><key>shortcut</key><string>そうおうする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>沈静する</string><key>shortcut</key><string>ちんせいする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>簡約する</string><key>shortcut</key><string>かんやくする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>難渋する</string><key>shortcut</key><string>なんじゅうする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>上滑りする</string><key>shortcut</key><string>うわすべりする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>殺生する</string><key>shortcut</key><string>せっしょうする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>軽快する</string><key>shortcut</key><string>けいかいする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>オーバーする</string><key>shortcut</key><string>おーばーする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>オープンする</string><key>shortcut</key><string>おーぷんする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>クリアする</string><key>shortcut</key><string>くりあする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>コンプリートする</string><key>shortcut</key><string>こんぷりーとする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>いんちきする</string><key>shortcut</key><string>いんちきする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>エッチする</string><key>shortcut</key><string>えっちする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>案定する</string><key>shortcut</key><string>あんていする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>押領する</string><key>shortcut</key><string>おうりょうする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>強記する</string><key>shortcut</key><string>きょうきする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>軽賤する</string><key>shortcut</key><string>けいせんする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>推参する</string><key>shortcut</key><string>すいさんする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>精勤する</string><key>shortcut</key><string>せいきんする</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>少ない</string><key>shortcut</key><string>すくない</string><key>pos</key><string>形容詞</string></dict>	<!-- 少ない: ランキング一般則(suffix一致+500)だけでは実機の すくないなあ で 酸くない 語幹合成が残るため、curatedで全経路先頭を保証 -->	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>あり得る</string><key>shortcut</key><string>ありえる</string><key>pos</key><string>一段</string></dict>	<!-- あり得る: Sudachi に無く(ありえる はアリエルのみ)、ありえない が 有江ない 等の名前合成に落ちる。一段登録で あり得ない/あり得なかった 等の活用を供給 -->
 	<dict><key>phrase</key><string>耐えきれる</string><key>shortcut</key><string>たえきれる</string><key>pos</key><string>一段</string></dict>	<!-- 耐えきれる/堪えきれる: Sudachi に無く、たえきれなくなって が 栲切れ/多恵きれ 等の名前合成に落ちる。一段登録で活用を供給 -->

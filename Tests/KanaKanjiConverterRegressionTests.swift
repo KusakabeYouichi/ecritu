@@ -25212,6 +25212,20 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(multi("なをあげた").contains("名を挙げた"), "\(multi("なをあげた"))")
     }
 
+    // 3780: Sudachi の品詞が サ変形状詞可能 の語(安心/邪魔/苦労 等)は suru に入らず、する の活用が作られなかった。
+    // ユーザが選んだ 55 語を misc に サ変名詞 で登録した(膨大/妥当 のように する で使わない語は除く)
+    func testRegression3780SahenKeiyoushiNouns() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("あんしんして", "安心して"), ("じゃまされてて", "邪魔されてて"), ("ごぶさたしてます", "ご無沙汰してます"),
+                                    ("おしゃれして", "お洒落して"), ("へたすると", "下手すると"), ("さいわいした", "幸いした"),
+                                    ("まんぞくしてる", "満足してる"), ("くりあした", "クリアした"), ("せいきんする", "精勤する")] {
+            XCTAssertEqual(converter.candidates(for: reading, limit: 5, systemCandidateMode: .surface).first, expected, reading)
+        }
+        XCTAssertEqual(converter.multiClauseCandidates(for: "ちょっとじゃましてもいい", systemCandidateMode: .surface).first, "ちょっと邪魔してもいい")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "それはへたするとまずい", systemCandidateMode: .surface).first, "それは下手するとまずい")
+    }
+
     // 3778: ユーザ報告の一覧(連文節の並び・合成の抑制・活用の穴・数字の後の助数詞の連濁・学習後の 昨日)
     func testRegression3778UserReportBatch() throws {
         try prepareRealLMDictionary()
