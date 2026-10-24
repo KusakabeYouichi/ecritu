@@ -21,12 +21,23 @@ struct AjoutVocabularySettingsSection: View {
     @State private var isDeleteAllConfirmationPresented = false
     @State private var isReimportConfirmationPresented = false
     @State private var editingEntry: VocabularyEntry?
+    @State private var didCopyUserRegistered = false
+    // 自分で登録したものだけを出す(3778。初期設定はオフ)
+    @AppStorage(SettingsKeys.ajoutVocabularyShowsUserRegisteredOnly) private var showsUserRegisteredOnly = false
+
+    private var displayedEntries: [VocabularyEntry] {
+        showsUserRegisteredOnly ? entries.filter(\.isUserRegistered) : entries
+    }
+
+    private var userRegisteredEntries: [VocabularyEntry] {
+        entries.filter(\.isUserRegistered)
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             DictionaryRegistrationHeaderView(
                 title: "追加語彙",
-                count: entries.count,
+                count: displayedEntries.count,
                 isRegistrationVisible: isRegistrationVisible,
                 showAccessibilityLabel: "追加単語の登録欄を表示",
                 hideAccessibilityLabel: "追加単語の登録欄を閉じる",
@@ -89,13 +100,19 @@ struct AjoutVocabularySettingsSection: View {
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
 
-            if entries.isEmpty {
-                Text("登録済みの追加単語はありません。")
+            Toggle(isOn: $showsUserRegisteredOnly) {
+                Text("自分の登録だけ")
+                    .font(.footnote)
+            }
+            .controlSize(.small)
+
+            if displayedEntries.isEmpty {
+                Text(showsUserRegisteredOnly ? "自分で登録した追加単語はありません。" : "登録済みの追加単語はありません。")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             } else {
                 IndexedVocabularyList(
-                    entries: entries,
+                    entries: displayedEntries,
                     listHeight: listHeight,
                     selectedEntryID: editingEntry?.id,
                     onDelete: { entry in
@@ -150,6 +167,23 @@ struct AjoutVocabularySettingsSection: View {
                         Text("現在の追加語彙を残したまま、初期追加語彙を再投入します。")
                     }
 
+                    // 自分で登録したものだけを 読み<TAB>語 の行でコピーする(スイッチの状態にかかわらず。3778)
+                    Button {
+                        UIPasteboard.general.string = userRegisteredEntries
+                            .map { $0.reading + "\t" + $0.candidate }
+                            .joined(separator: "\n")
+                        didCopyUserRegistered = true
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                            didCopyUserRegistered = false
+                        }
+                    } label: {
+                        Text(didCopyUserRegistered ? "コピーしました" : "コピー")
+                            .font(.footnote)
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+                    .disabled(userRegisteredEntries.isEmpty)
+
                     if !entries.isEmpty {
                         Button(role: .destructive) {
                             isDeleteAllConfirmationPresented = true
@@ -174,6 +208,11 @@ struct AjoutVocabularySettingsSection: View {
                     }
                 }
             }
+
+            Text("[コピー]は、自分で登録した単語だけを、[よみ]と[候補]をタブで区切った行にしてクリップボードにコピーします。")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
 
             Text("追加単語はキーボード拡張と共有され、候補の優先順位に反映されます。")
                 .font(.footnote)

@@ -94,6 +94,13 @@ enum SettingsKeys {
     static let landscapeNumberPaneSide = "landscapeNumberPaneSide"
     static let landscapeLatinSuggestionMode = "landscapeLatinSuggestionMode"
     static let kanaKanjiAjoutVocabulary = "ÉcrituAjoutVocab"
+    // 追加語彙のうち自分で登録したもの(読み→語)の記録(3778)。初期語彙の播種と区別するため、コンテナーアプリの
+    // 登録・編集・削除のたびに更新する。App Group に置くのでアプリの更新では消えない
+    static let kanaKanjiUserRegisteredAjoutVocabulary = "ÉcrituAjoutVocabUserRegistered"
+    // 記録を始める前から入っていた語の振り分け(初期語彙に無いもの=自分で登録したもの)を済ませた印
+    static let kanaKanjiUserRegisteredAjoutVocabularyBackfilled = "kanaKanjiUserRegisteredAjoutVocabularyBackfilled"
+    // 追加語彙の一覧で自分で登録したものだけを出すか(初期設定はオフ)
+    static let ajoutVocabularyShowsUserRegisteredOnly = "ajoutVocabularyShowsUserRegisteredOnly"
     static let kanaKanjiInitialAjoutVocabularyMigrated = "kanaKanjiInitialUserDictionaryMigrated"
     static let kanaKanjiInitialAjoutVocabularyAppliedSignature = "kanaKanjiInitialUserDictionaryAppliedSignature"
     // 追加語彙播種の記録(削除同期用)。抑制側 AppliedSeed と同機構
@@ -976,6 +983,8 @@ enum KeyboardBackgroundThemeOption: String, CaseIterable, Identifiable {
 struct VocabularyEntry: Identifiable, Equatable {
     let reading: String
     let candidate: String
+    // 追加語彙のうちコンテナーアプリで自分で登録したもの(初期語彙と区別する。3778)。他の一覧では常に false
+    var isUserRegistered = false
 
     var id: String { reading + "\t" + candidate }
 }
