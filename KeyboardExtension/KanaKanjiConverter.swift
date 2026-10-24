@@ -10,6 +10,8 @@ final class KanaKanjiConverter {
         // ブースト(下の digitContextCounterBoostedCandidates)に到達しない。
         // 呼び出し順に依存して助数詞が出る/出ないが変わる状態だった(2596)。
         let hasDigitPrefix: Bool
+        // 数字接頭の 1 の位(2ばい と 3ばい は助数詞の連濁で 杯 の出方が違う。3778)。有無だけだと 2ばい の結果を 3ばい が引き当てていた
+        var digitPrefixTail: Character? = nil
     }
 
     let store: KanaKanjiStore
@@ -418,11 +420,14 @@ final class KanaKanjiConverter {
         let hasDigitPrefix = reading.first.map {
             ("0"..."9").contains(String($0)) || ("０"..."９").contains(String($0))
         } ?? false
+        // 数字の並びの最後の桁(13ばい なら 3)。助数詞の連濁は 1 の位で決まる
+        let digitPrefixTail = hasDigitPrefix ? reading.prefix(while: { Self.isCounterBoostDigit($0) }).last : nil
         let cacheKey = CandidateCacheKey(
             reading: normalizedReading,
             limit: limit,
             modeRawValue: systemCandidateMode.rawValue,
-            hasDigitPrefix: hasDigitPrefix
+            hasDigitPrefix: hasDigitPrefix,
+            digitPrefixTail: digitPrefixTail
         )
 
         if let cachedCandidates = withStateLock({ candidateCache[cacheKey] }) {
@@ -469,7 +474,7 @@ final class KanaKanjiConverter {
         finalCandidates = Self.counterKanaTailPromotedCandidates(finalCandidates, reading: normalizedReading)
         // 合成中の読みが数字接頭(4まんえん 等。normalizedReading は数字を落とすため元の reading で
         // 判定)なら、確定済み数字直後と同じ助数詞ブーストを適用して 万円/本 等を先頭へ。
-        if hasDigitPrefix, let digit = reading.first {
+        if hasDigitPrefix, let digit = digitPrefixTail {
             finalCandidates = Self.digitContextCounterBoostedCandidates(
                 finalCandidates,
                 reading: normalizedReading,

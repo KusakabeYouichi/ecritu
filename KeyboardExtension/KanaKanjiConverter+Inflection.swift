@@ -382,6 +382,11 @@ extension KanaKanjiConverter {
             Self.ichidanImperativeDeniedBaseReadings.contains(baseReading) {
             return ([], Int.max)
         }
+        // 形容詞の 連用+する(くして/くしても。3778)は ない(無い)には組まない。かな なくして が 失くす/亡くす の活用
+        // (財布をなくして)を塞ぐ
+        if baseReading == "ない", rule.readingSuffix.hasPrefix("くし") {
+            return ([], Int.max)
+        }
 
         // 関西弁の否定縮約は、この読みでは稀な動詞(word_cost が収穫底値 10000 以上:
         // える→選る 10096 / 彫る 11052。知る 7155 / 分かる 6927 は常用)には組まない(2721)

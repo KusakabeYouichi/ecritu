@@ -3223,7 +3223,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             ("かつひろ", "克洋"), ("かとう", "加藤"), ("かぶ", "下部"), ("かみすぎ", "上杉"), ("きい", "紀伊"),
             ("きっす", "キッス"), ("きっと", "キット"), ("きない", "畿内"), ("きょうだ", "強打"), ("くだ", "管"),
             ("くどく", "功徳"), ("くにお", "邦男"), ("くるめ", "久留米"), ("けいこ", "恵子"), ("こうが", "黄河"),
-            ("こうき", "後期"), ("こうず", "構図"), ("こうない", "構内"), ("こうやま", "神山"), ("こうよう", "高揚"),
+            ("こうき", "後期"), ("こうず", "構図"), ("こうない", "構内"), ("こうやま", "神山"), ("こうよう", "紅葉"),
             ("こうり", "公理"), ("こし", "腰"), ("こた", "古田"), ("こな", "粉"), ("こもだ", "米田"), ("さい", "再"),
             ("さけ", "酒"), ("さし", "指し"), ("さつ", "冊"), ("さとこ", "敏子"), ("さへん", "左辺"), ("さわだ", "沢田"),
             ("しこう", "施行"), ("しだ", "志田"), ("しゅういち", "修一"), ("しゅん", "駿"), ("しるべ", "導"),
@@ -10458,15 +10458,16 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         )
         XCTAssertEqual(boosted.first, "片", "boosted=\(boosted)")
         // 同じ構造で落ちていた他の助数詞(本/匹/分/発/杯)も数字文脈で供給する(2471)
-        for (reading, expected) in [
-            ("ぽん", "本"), ("ぼん", "本"), ("ぴき", "匹"),
-            ("びき", "匹"), ("ぷん", "分"), ("ぱつ", "発"), ("ぱい", "杯")
-        ] {
+        // 数字は連濁と合うもの(6ぽん/3ぼん/6ぴき/3びき/6ぷん/6ぱつ/6ぱい)。3778 から 6+ぼん のような合わない濁音の読みでは出さない
+        for (reading, expected, digit) in [
+            ("ぽん", "本", "6"), ("ぼん", "本", "3"), ("ぴき", "匹", "6"),
+            ("びき", "匹", "3"), ("ぷん", "分", "6"), ("ぱつ", "発", "6"), ("ぱい", "杯", "6")
+        ] as [(String, String, Character)] {
             let candidates = converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
             let boostedCounter = KanaKanjiConverter.digitContextCounterBoostedCandidates(
                 candidates,
                 reading: reading,
-                precedingCharacter: "6"
+                precedingCharacter: digit
             )
             XCTAssertEqual(boostedCounter.first, expected, "\(reading)=\(boostedCounter)")
         }
@@ -17611,7 +17612,7 @@ extension KanaKanjiConverterRegressionTests {
                 ("たいきじょうたい", "待機状態"),
                 ("たいひしたせってい", "退避した設定"),
                 ("かっこ", "括弧"),
-                ("しゅどうでとうろくした", "主導で登録した")
+                ("しゅどうでとうろくした", "手動で登録した")  // 3778: 手動 を連文節でも先に(ユーザ指定。2890 の 主導 現状維持を改めた)
             ] {
                 let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: mode)
                 let top = multi.first ?? converter.candidates(for: reading, limit: 3, systemCandidateMode: mode).first
@@ -22039,7 +22040,7 @@ extension KanaKanjiConverterRegressionTests {
             ("やとう", ["雇う", "野党"], ["傭う", "夜灯", "夜盗", "野盗"]),
             ("じょういん", ["乗員", "上院"], ["冗員", "常飲", "剰員", "畳韻", "上員"]),
             ("しょき", ["初期", "書記", "書紀", "所期"], ["庶幾", "所記", "所規", "暑気"]),
-            ("どうし", ["同士", "同志", "同市", "同紙", "同誌", "同氏", "導師"], ["同視"]),
+            ("どうし", ["同士", "同志", "動詞", "同市", "同氏", "同紙", "導師", "同誌"], ["同視"]),  // 3778 で指定の並びを改めた
             ("わかい", ["若い", "和解", "若井", "和海"], ["少い", "和諧"]),
             ("しゃだん", ["社団", "遮断"], ["射弾"]),
             ("かんしょう", ["干渉", "鑑賞", "観賞"], ["官生", "癇症", "奸商", "癇性", "観勝"]),
@@ -25209,6 +25210,49 @@ extension KanaKanjiConverterRegressionTests {
         // 2 番め以降の候補は消さない(備考: 1 を 書く、2 を 描く に)
         XCTAssertEqual(multi("せいきにかく").dropFirst().first, "世紀に描く", "\(multi("せいきにかく"))")
         XCTAssertTrue(multi("なをあげた").contains("名を挙げた"), "\(multi("なをあげた"))")
+    }
+
+    // 3778: ユーザ報告の一覧(連文節の並び・合成の抑制・活用の穴・数字の後の助数詞の連濁・学習後の 昨日)
+    func testRegression3778UserReportBatch() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        func single(_ r: String, _ limit: Int = 10) -> [String] { converter.candidates(for: r, limit: limit, systemCandidateMode: .surface) }
+        for (reading, expected) in [
+            ("しゅどうのやつ", "手動のやつ"), ("いなかほど", "田舎ほど"), ("のときだったら", "のときだったら"),   // 野登木(姓)は抑制
+            ("をはやくしても", "を速くしても"), ("といしじゃないと", "砥石じゃないと"), ("きのうのおひるは", "昨日のお昼は"),
+            ("じかんはかって", "時間計って"), ("じかんはかってなかったぞ", "時間計ってなかったぞ"), ("ふらんすごにすべし", "フランス語にすべし"),
+            ("このみちとおってて", "この道通ってて"), ("かくれためいてん", "隠れた名店"), ("あじにぶれが", "味にブレが"),
+            ("つくるさいと", "作るサイト"), ("すこしこうかいちゅう", "すこし後悔中"), ("とてもこうかいちゅう", "とても後悔中"),
+            ("そんなとき", "そんなとき"), ("できればじょうとう", "できれば上等"), ("2ばいはいって", "倍入って")
+        ] {
+            XCTAssertEqual(multi(reading).first, expected, "\(reading): \(multi(reading))")
+        }
+        XCTAssertEqual(multi("いなかほど").dropFirst().first, "田舎程", "\(multi("いなかほど"))")
+        XCTAssertEqual(multi("をはやくしても").dropFirst().first, "を早くしても", "\(multi("をはやくしても"))")
+        XCTAssertEqual(multi("じかんはかって").dropFirst().first, "時間測って", "\(multi("じかんはかって"))")
+        XCTAssertFalse(multi("きのうのおひるは").contains { $0.contains("お蛭") }, "\(multi("きのうのおひるは"))")
+        // 単文節の並び(seed)
+        XCTAssertEqual(Array(single("こうよう").prefix(5)), ["紅葉", "効用", "公用", "高揚", "昂揚"])
+        XCTAssertEqual(Array(single("しんせつ").prefix(8)), ["親切", "新設", "新雪", "新説", "真説", "深雪", "深切", "臣節"])
+        XCTAssertEqual(Array(single("どうし").prefix(8)), ["同士", "同志", "動詞", "同市", "同氏", "同紙", "導師", "同誌"])
+        XCTAssertEqual(single("めいてん").first, "名店")
+        XCTAssertEqual(Array(single("こうかいちゅう").prefix(3)), ["公開中", "後悔中", "航海中"])
+        XCTAssertFalse(single("こうかいちゅう").contains("後悔注"))
+        XCTAssertFalse(single("みじかい").contains("短かい"), "\(single("みじかい"))")
+        for (reading, expected) in [("ぐらでいしょん", "グラデイション"), ("ぶれいき", "ブレイキ"), ("さいどぶれいき", "サイドブレイキ"),
+                                    ("だんせんしかけてる", "断線しかけてる"), ("はつめいされてて", "発明されてて"), ("しようされてて", "使用されてて")] {
+            XCTAssertEqual(single(reading).first, expected, "\(reading): \(single(reading))")
+        }
+        // 数字の後の助数詞の連濁: 2杯=にはい、3杯=さんばい。2+ばい に 杯 は出さない(キャッシュも数字の 1 の位で分ける)
+        XCTAssertFalse(single("2ばい").contains("杯"), "\(single("2ばい"))")
+        XCTAssertTrue(single("3ばい").contains("杯"), "\(single("3ばい"))")
+        XCTAssertTrue(single("2はい").contains("杯"), "\(single("2はい"))")
+        XCTAssertTrue(single("13ばい").contains("杯"), "\(single("13ばい"))")
+        // 機能 を学習しても 昨日+の+お昼 を保つ
+        converter.store.addLearnedEntry(reading: "きのう", candidate: "機能")
+        converter.clearAllCaches()
+        XCTAssertEqual(multi("きのうのおひるは").first, "昨日のお昼は", "\(multi("きのうのおひるは"))")
     }
 
     // 3777: 名詞+助詞跨ぎの加点表から動詞の組を連語表(manual.json)へ移した。名詞の取り違えは連語表の nounBonus が防ぐ

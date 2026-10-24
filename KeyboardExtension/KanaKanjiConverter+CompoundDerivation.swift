@@ -1043,7 +1043,7 @@ extension KanaKanjiConverter {
             }
         }
         guard !boosted.isEmpty else {
-            return candidates
+            return counterRendakuFiltered(candidates, reading: reading, digit: precedingCharacter)
         }
         // 供給元が複数(助数詞表・追加表・合成)なので同じ表層が二度入り得る(3185)。先勝ちで畳む
         var seenBoost = Set<String>()
@@ -1056,7 +1056,37 @@ extension KanaKanjiConverter {
             rest.remove(at: echoIndex)
             rest.append(reading)
         }
-        return boosted + rest
+        return counterRendakuFiltered(boosted + rest, reading: reading, digit: precedingCharacter)
+    }
+
+    // 数字の直後の助数詞の連濁(1杯=いっぱい/2杯=にはい/3杯=さんばい。3778、ユーザ指定: 2+ばいはいって に 杯 が出ていた)。
+    // 直前の数字の 1 の位で決まる読みの頭(は行/ぱ行/ば行)と合わない濁音・半濁音の読みで、その助数詞から始まる候補を外す。
+    // 清音(3ほん/3はく)は基の読みをそのまま打つ人が多いので常に通す。0 は 10/100/1000(じゅっ/ひゃっ/せん)で変わるので見ない。
+    // 8 は はっ/はち の両方がある
+    private static let counterRendakuRowsByDigit: [String: [Int: Set<Character>]] = {
+        let honLike: [Int: Set<Character>] = [1: ["p"], 2: ["h"], 3: ["b"], 4: ["h"], 5: ["h"], 6: ["p"], 7: ["h"], 8: ["p", "h"], 9: ["h"]]
+        let hatsuLike: [Int: Set<Character>] = [1: ["p"], 2: ["h"], 3: ["p"], 4: ["h", "p"], 5: ["h"], 6: ["p"], 7: ["h"], 8: ["p", "h"], 9: ["h"]]
+        let fun: [Int: Set<Character>] = [1: ["p"], 2: ["h"], 3: ["p"], 4: ["p"], 5: ["h"], 6: ["p"], 7: ["h"], 8: ["p", "h"], 9: ["h"]]
+        return ["杯": honLike, "本": honLike, "匹": honLike, "発": hatsuLike, "泊": hatsuLike, "分": fun]
+    }()
+
+    static func counterRendakuFiltered(_ candidates: [String], reading: String, digit: Character?) -> [String] {
+        guard let value = digit?.wholeNumberValue, value != 0, let head = reading.first else {
+            return candidates
+        }
+        let row: Character
+        switch head {
+        case "は", "ひ", "ふ", "へ", "ほ": row = "h"
+        case "ぱ", "ぴ", "ぷ", "ぺ", "ぽ": row = "p"
+        case "ば", "び", "ぶ", "べ", "ぼ": row = "b"
+        default: return candidates
+        }
+        return candidates.filter { candidate in
+            guard let first = candidate.first, let rows = counterRendakuRowsByDigit[String(first)]?[value] else {
+                return true
+            }
+            return row == "h" || rows.contains(row)
+        }
     }
 
     // 順序の『目』が付く語幹の末尾文字(助数詞表層の末字+番/代/丁/つ/行 等)。

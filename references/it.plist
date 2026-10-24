@@ -184,6 +184,7 @@
 	<dict><key>phrase</key><string>プレヴュー</string><key>shortcut</key><string>ぷれゔゅー</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>ペイスト</string><key>shortcut</key><string>ぺいすと</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>クォーテイション</string><key>shortcut</key><string>くぉーていしょん</string></dict>
+	<dict><key>phrase</key><string>グラデイション</string><key>shortcut</key><string>ぐらでいしょん</string></dict>	<!-- ぐらデイション/ぐら出居ション だった(ユーザ指定 3778) -->
 	<dict><key>phrase</key><string>ゲイトウェイ</string><key>shortcut</key><string>げいとうぇい</string></dict>
 	<dict><key>phrase</key><string>セパレイター</string><key>shortcut</key><string>せぱれいたー</string></dict>
 
