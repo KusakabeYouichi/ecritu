@@ -1607,6 +1607,12 @@ extension KanaKanjiConverter {
     // 連語の demotedSurfaces に課すペナルティ。自身(4428)を 地震(4803)の後ろへ送るのに
     // 十分で、候補から消すほどではない中庸値。
     static let multiClauseCollocationDemotionPenalty = 800
+    // 目的語+助詞+同音動詞の表(3774)で、名詞の読みが長い辞書語の末尾に埋まっていないかを見る遡り幅(文字)。
+    // げんさく の さく、もじ の じ を名詞と取り違えて 原作を詠んだ/文字を以った になっていた
+    static let multiClauseObjectVerbNounEmbedLookback = 4
+    // 同じ表の動詞位置で、優先表記に当たらないノードへの減点。を→挙げる(3528)対 上げる の選好クランプ(4000)、
+    // 得(2716)対 解く(4000)の差を越え、候補から消すほどではない値
+    static let multiClauseObjectVerbRivalPenalty = 2500
     // 特定ペアの bigram を信用しない(prev\tcur)。表層/読み単位の遮断リストでは巻き添えが
     // 大きい、コーパス分割由来のピンポイント異常値に使う。
     // 飼う→か(896): Wikipedia の疑問形分割由来で、しんぴんかうか→新品飼うか が

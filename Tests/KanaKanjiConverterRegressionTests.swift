@@ -10835,7 +10835,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
         // 連文節の文脈でも組める
         let multi = converter.multiClauseCandidates(for: "おんがくをききながら", systemCandidateMode: .surface)
-        XCTAssertEqual(multi.first, "音楽を聞きながら", "multi=\(multi.prefix(3))")
+        // 音楽を は 聴く(連語スキャンのユーザ判定 3775)。ここで見たいのは ながら の活用が組めること
+        XCTAssertEqual(multi.first, "音楽を聴きながら", "multi=\(multi.prefix(3))")
         let terebi = converter.multiClauseCandidates(for: "てれびをみながらたべる", systemCandidateMode: .surface)
         XCTAssertEqual(terebi.first, "テレビを見ながら食べる", "terebi=\(terebi.prefix(3))")
     }
@@ -22349,7 +22350,8 @@ extension KanaKanjiConverterRegressionTests {
         // カタカナ兄弟は変種の 2 番目(ユーザ指定 3554)
         XCTAssertEqual(Array(kome.prefix(2)), ["米買ってた", "コメ買ってた"], "multi=\(kome)")
         let neko = converter.multiClauseCandidates(for: "ねこをかってた", systemCandidateMode: .surface)
-        XCTAssertEqual(neko.first, "猫を買ってた", "multi=\(neko)")
+        // 猫を は 飼う(連語スキャンのユーザ判定 3775)。ここで見たいのは 猫 がカタカナに負けないこと
+        XCTAssertEqual(neko.first, "猫を飼ってた", "multi=\(neko)")
         // seed 先頭がカタカナの語(コツ)は対象外
         let kotsu = converter.candidates(for: "こつ", limit: 3, systemCandidateMode: .surface)
         XCTAssertEqual(kotsu.first, "コツ", "single=\(kotsu)")
@@ -25171,6 +25173,41 @@ extension KanaKanjiConverterRegressionTests {
 
 extension KanaKanjiConverterRegressionTests {
     // 目的語+助詞+同音動詞の連語スキャン(3774)。tmp/colloc_sweep.tsv(コーパス由来)を変換して先頭を記録する
+    // 3775: 目的語+助詞+同音動詞の表(連語スキャン 3774 のユーザ判定)。代表例と、表の当たりすぎの防ぎ(別の動詞・長い名詞の末尾・複合動詞)
+    func testRegression3775ObjectVerbCollocations() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        let tops: [(String, String)] = [
+            ("そくどをあげる", "速度を上げる"),     // を→挙げる の bigram が安い
+            ("じゅうしょうをおう", "重傷を負う"),   // 負う が TopK 外で立たなかった
+            ("もんだいをとく", "問題を解く"),       // 得(とく)が先頭だった
+            ("なまえをつける", "名前を付ける"),
+            ("せいきにかく", "世紀に書く"),
+            ("とくてんをあげた", "得点を挙げた"),
+            ("なをあげた", "名を上げた"),           // 備考: 名を は 上→挙 の順
+            ("うしろについた", "後ろに付いた"),     // つい+た も対抗
+            ("めいをかんした", "名を冠した"),       // サ変は し の後ろまで照合
+            ("みかどにつかえる", "帝に仕える"),     // 名詞の別の読み(帝=てい/みかど)
+            ("とうかくをあらわす", "頭角を現す"),
+            ("じかんをようした", "時間を要した"),
+            // 当たりすぎの防ぎ
+            ("したにかくした", "下に隠した"),       // 書く の対抗にしない(長い別の動詞)
+            ("やくめをおえた", "役目を終えた"),     // 負う の e 段(負えた)は照合しない
+            ("げんさくをよんだ", "原作を読んだ"),   // さく(作)を名詞と取り違えない
+            ("せかいをつくりあげる", "世界を作り上げる"), // 創る の連用+複合動詞は照合しない
+            ("はんぶんにきった", "半分に切った"),   // 頭の後ろはかなだけ(切田)
+            ("やまにのぼる", "山に登る"),           // 頭だけの 1 字語(登)は動詞でない
+            ("そうだんをもちかける", "相談を持ちかける") // 頭は活用で変わらない部分まで(持ち掛ける にしない)
+        ]
+        for (reading, expected) in tops {
+            XCTAssertEqual(multi(reading).first, expected, "\(reading): \(multi(reading))")
+        }
+        // 2 番め以降の候補は消さない(備考: 1 を 書く、2 を 描く に)
+        XCTAssertEqual(multi("せいきにかく").dropFirst().first, "世紀に描く", "\(multi("せいきにかく"))")
+        XCTAssertTrue(multi("なをあげた").contains("名を挙げた"), "\(multi("なをあげた"))")
+    }
+
     func testDiagnosticCollocationSweep() throws {
         guard ProcessInfo.processInfo.environment["SWEEP_COLLOC"] != nil else {
             throw XCTSkip("TEST_RUNNER_SWEEP_COLLOC=1 のときだけ実行")

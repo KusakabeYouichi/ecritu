@@ -467,6 +467,21 @@ extension KanaKanjiConverter {
         // 連語の動詞側表層選好(虫がないてる→鳴いてる 等)。連語検出時に動詞区間の開始位置と
         // 優先表層プレフィクスを記録し、その位置から始まる合致表層に連語クランプを与える。
         var collocationPreferredVerbSurfacePrefixesByStart = [Int: [String]]()
+        // 目的語+助詞+同音動詞の表(3774)で記録した動詞位置。ここでは頭の後ろがかなだけの表層に限る(切った 対 切田)
+        var objectVerbCollocationVerbStarts = Set<Int>()
+        var objectVerbCollocationRivalNodeKeys = Set<String>()
+        var objectVerbCollocationRivalMaxEndByStart = [Int: Int]()
+        func surfaceMatchesCollocationVerb(_ surface: String, start: Int, prefixes: [String]) -> Bool {
+            guard let head = prefixes.first(where: { surface.hasPrefix($0) }) else {
+                return false
+            }
+            guard objectVerbCollocationVerbStarts.contains(start) else {
+                return true
+            }
+            // 表記の頭だけの 1 字語(登=のぼる)は動詞でないので外す(山に登 が先頭になった)
+            let okurigana = surface.dropFirst(head.count)
+            return !okurigana.isEmpty && okurigana.allSatisfy { ("ぁ"..."ゖ").contains($0) }
+        }
         // 連語の名詞スパン("start-end")。変種列挙で名詞表記の変種(めど/メド)の
         // delta 上限を緩和するのに使う(2559)
         var collocationNounSpans = Set<String>()
@@ -716,6 +731,37 @@ extension KanaKanjiConverter {
                     }
                 }
 
+                // 目的語+助詞+同音動詞の連語(責任を取る/頭角を現す 等。表と方針は +ObjectVerbCollocations.swift。3774)。
+                // 名詞の表記は縛らず、動詞側の表記選好だけを記録する。同じ動詞位置に複数の名詞区間が掛かるときは
+                // 先に処理される長い名詞(年間に 対 間に)と、上の個別指定の連語を優先する(既に記録があれば触らない)。
+                // 名詞の読みが長い辞書語の末尾に埋まっているとき(げんさく の さく、もじ の じ)は発火しない
+                if end + 1 < n, let objectEntries = Self.multiClauseObjectVerbCollocations[segmentReading] {
+                    let particle = chars[end]
+                    let verbStart = end + 1
+                    if collocationPreferredVerbSurfacePrefixesByStart[verbStart] == nil,
+                        objectEntries.contains(where: { $0.particle == particle }) {
+                        let rest = Self.spanString(chars, verbStart..<n)
+                        var objectHit: (heads: [String], matchedPrefix: String)?
+                        for entry in objectEntries where entry.particle == particle {
+                            if let prefix = entry.prefixes.first(where: { rest.hasPrefix($0) }) {
+                                objectHit = (entry.heads, prefix)
+                                break
+                            }
+                        }
+                        if let hit = objectHit {
+                            let embeddedInLongerWord = (max(0, start - Self.multiClauseObjectVerbNounEmbedLookback)..<start)
+                                .contains(where: { longerStart in
+                                    !store.wordCosts(for: Self.spanString(chars, longerStart..<end)).isEmpty
+                                })
+                            if !embeddedInLongerWord {
+                                collocationPreferredVerbSurfacePrefixesByStart[verbStart] = hit.heads
+                                objectVerbCollocationVerbStarts.insert(verbStart)
+                                objectVerbCollocationRivalMaxEndByStart[verbStart] = verbStart + hit.matchedPrefix.count
+                            }
+                        }
+                    }
+                }
+
                 // 連体詞+の の直後を記録(こういうのみかけたら)。の のクランプだけでは、
                 // 丸ごと活用(飲み掛けたら=のみかけたら)との OOV 同点で の のノード代分だけ
                 // 構造的に負けるため、直後の活用派生も連語選好(prevひらがな限定クランプ)にする。
@@ -934,6 +980,25 @@ extension KanaKanjiConverter {
                             }
                         }
                     }
+                    // 目的語+助詞+同音動詞の表(3774)の動詞位置では、優先する表記の辞書形も TopK から漏れても供給する
+                    // (重傷を+おう: 負う が TopK 外で 追う/桜/王 しか立たなかった)
+                    if objectVerbCollocationVerbStarts.contains(start),
+                        let heads = collocationPreferredVerbSurfacePrefixesByStart[start] {
+                        for (surface, cost) in costMap
+                        where surfaceMatchesCollocationVerb(surface, start: start, prefixes: heads)
+                            && !suppressedByReading[segmentReading, default: []].contains(surface) {
+                            add(
+                                surface,
+                                isDictWord: true,
+                                isCurated: false,
+                                wordCost: cost,
+                                isDictionaryFormPredicate: store.isShortReadingDictionaryFormPredicate(
+                                    reading: segmentReading,
+                                    candidate: surface
+                                )
+                            )
+                        }
+                    }
                     // 星座の標準和名(さそり座 wc 18554)も TopK(蠍座/サソリ座 3703、かな 8734)から漏れるので供給する(2895)
                     if let standard = Self.multiClauseConstellationStandardSurfacesByReading[segmentReading],
                         let cost = costMap[standard],
@@ -1045,7 +1110,7 @@ extension KanaKanjiConverter {
                     // 選好以前にノードが立たない(消息を立った/経った/建った/足った だけが並ぶ)。このスパンだけ
                     // 広く取得して 1 件を明示供給する(3773)
                     if let preferredVerbPrefixes = collocationPreferredVerbSurfacePrefixesByStart[start],
-                        !suppliedInflectionSurfaces.contains(where: { surface in preferredVerbPrefixes.contains(where: { surface.hasPrefix($0) }) }) {
+                        !suppliedInflectionSurfaces.contains(where: { surfaceMatchesCollocationVerb($0, start: start, prefixes: preferredVerbPrefixes) }) {
                         let wide = inflectionCandidates(
                             for: segmentReading,
                             ajoutVocabulary: manualAjoutVocabulary,
@@ -1054,7 +1119,7 @@ extension KanaKanjiConverter {
                             limit: inflectionTopK * 2 + Self.multiClauseSeededInflectionExtraFetch
                         )
                         if let preferred = wide.first(where: { surface in
-                            surface != segmentReading && preferredVerbPrefixes.contains(where: { surface.hasPrefix($0) })
+                            surface != segmentReading && surfaceMatchesCollocationVerb(surface, start: start, prefixes: preferredVerbPrefixes)
                         }) {
                             add(preferred, isDictWord: true, isCurated: false, isInflectionDerived: true)
                             suppliedInflectionSurfaces.insert(preferred)
@@ -1342,12 +1407,19 @@ extension KanaKanjiConverter {
                     add(passthrough, isDictWord: false, isCurated: false)
                 }
 
+                // 表(3774)の動詞位置で対抗として下げる区間か。当たった読みの接頭(かく/ついた)の長さまでに終わる区間に限る
+                // (つい+た は 付いた の対抗。長い別の動詞 隠した(かくした)は 書く の対抗にしない)
+                let objectVerbSpanIsRival = objectVerbCollocationRivalMaxEndByStart[start].map { end <= $0 } ?? false
                 for (surface, isDictWord, isCurated, isInflectionDerived, wordCost, isDictionaryFormPredicate) in surfaces {
                     // 連語の動詞側表層選好(虫がないてる→鳴いてる)。外側ループは start 昇順なので、
                     // 名詞区間の検出(連語キー登録)は動詞区間のノード生成より必ず先に済んでいる。
                     if let preferredVerbPrefixes = collocationPreferredVerbSurfacePrefixesByStart[start],
-                        preferredVerbPrefixes.contains(where: { surface.hasPrefix($0) }) {
+                        surfaceMatchesCollocationVerb(surface, start: start, prefixes: preferredVerbPrefixes) {
                         collocationPreferredVerbNodeKeys.insert(spanKeyByStart[start][end] + "-" + surface)
+                    } else if objectVerbSpanIsRival {
+                        // 表(3774)の動詞位置で優先表記に当たらない同じ区間のノード(挙げる 対 上げる、得 対 解く)は下げる。
+                        // 選好のクランプ(4000)だけでは bigram の安い対抗(を→挙げる 3528)に届かなかった
+                        objectVerbCollocationRivalNodeKeys.insert(spanKeyByStart[start][end] + "-" + surface)
                     }
                     if isInflectionDerived, prenominalNoInflectionStarts.contains(start) {
                         collocationPreferredVerbNodeKeys.insert(spanKeyByStart[start][end] + "-" + surface)
@@ -3348,6 +3420,9 @@ extension KanaKanjiConverter {
                         + (collocationDemotedNodeKeys.contains(nodeKeySV)
                             ? Self.multiClauseCollocationDemotionPenalty
                             : 0)
+                        + (objectVerbCollocationRivalNodeKeys.contains(nodeKeySV)
+                            ? Self.multiClauseObjectVerbRivalPenalty
+                            : 0)
                     let nodeIsSupplementalKatakanaExempt = supplementalKatakanaExemptNodeKeys.contains(nodeKeySV)
                     // 〜ったん の丸ごと語 vs コピュラ過去+準体助詞(定数コメント参照)
                     let nodeTanContractionPenalty: Int = {
@@ -5033,6 +5108,7 @@ extension KanaKanjiConverter {
                     (scriptVariantSuppressedNodeKeys.contains(node.key) ? 100000
                         : (scriptVariantDemotedNodeKeys.contains(node.key) ? 6000 : 0))
                         + (collocationDemotedNodeKeys.contains(node.key) ? Self.multiClauseCollocationDemotionPenalty : 0)
+                    // 表(3774)の対抗の減点は最良経路の選択だけに使い、2 番め以降の変種(世紀に書く の次の 描く)は消さない
                 )
             }
             func pairCost(_ node: MultiClauseNode, asCurated: Bool = true) -> Int {
@@ -5211,8 +5287,10 @@ extension KanaKanjiConverter {
                 // 連語クランプ区間(めどが立つ 等)では、非選好の漢字動詞変種
                 // (経った/建った/足った)は使いものにならないので出さない。
                 // かな変種(たったら)は残す(2559)。
+                // 目的語+助詞+同音動詞の表(3774)の位置は対象外(世紀に書く の次に 描く を並べる。ユーザ指定)
                 if collocationPreferredVerbNodeKeys.contains(chosen.key),
                     !collocationPreferredVerbNodeKeys.contains(alt.key),
+                    !objectVerbCollocationVerbStarts.contains(chosen.start),
                     containsKanji(alt.surface) {
                     variantSkipTrace("連語クランプ外の漢字動詞")
                     continue
