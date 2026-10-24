@@ -20948,8 +20948,9 @@ extension KanaKanjiConverterRegressionTests {
         multi = converter.multiClauseCandidates(for: "かいてんがはやい", systemCandidateMode: .surface)
         XCTAssertFalse(multi.contains { $0.contains("回転") }, "multi=\(multi.prefix(4))")
         // 連文節は区切りを保ったまま表記だけ差し替える(ノードを下げると 大風の全長 になっていた)
+        // 台風/颱風 は 3778 で日常語の例外に入れたので、本来の漢字だけ でも 台風 が先(区切りも保つ)
         multi = converter.multiClauseCandidates(for: "たいふうのぜんちょう", systemCandidateMode: .surface)
-        XCTAssertEqual(multi.first, "颱風の前兆", "multi=\(multi.prefix(4))")
+        XCTAssertEqual(multi.first, "台風の前兆", "multi=\(multi.prefix(4))")
         // 書きかえ後の語の中(一丁目)は書きかえ前にしない
         XCTAssertFalse(KanaKanjiConverter.applyKakikae(.beforeOnly, toMultiClauseCandidates: ["三一丁目"]).contains("三一挺目"))
 
