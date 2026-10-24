@@ -15,3 +15,9 @@
 照会:
   前回の質問と回答を並べる  decisions.py show <items.json> <decisions.json> [fix|ok|pending|note]
   前回やっていない組        decisions.py undone <new_items.json> references/colloc_sweep/*/decisions.json
+
+適用(3775〜):
+7. .venv/bin/python -I tools/colloc_sweep/gen_table.py references/colloc_sweep/<id> KeyboardExtension/KanaKanjiConverter+ObjectVerbCollocations.swift
+   (mark=fix の組を 名詞の読み→助詞→動詞の読みの接頭→優先表記の頭 の表にする。備考による上書きは gen_table.py の OVERRIDES_<id>)
+   変換器は連文節でこの表を引き、動詞位置の優先表記を選好・供給し、同じ読みの範囲の対抗を減点する(KanaKanjiConverter+MultiClause.swift)
+8. 3 を再実行し、直った件数と、以前は正しかった組の崩れを比べる
