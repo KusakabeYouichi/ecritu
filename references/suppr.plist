@@ -436,6 +436,9 @@
 	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>麴塵</string><key>shortcut</key><string>あおいろ</string></dict> -->
 
 	<!-- ■ 現代的に流行っていない言い方(古語・文語・旧仮名・非標準表記) -->
+	<dict><key>phrase</key><string>捷い</string><key>shortcut</key><string>はやい</string></dict>	<!-- 捷い/迅い/疾い(はやい): Sudachi の古い表記(LM に出現なし)。活用 捷くしても/迅くしても が連文節の変種の枠を取り、をはやくしても の 破約しても が出なくなっていた(ユーザ報告 3781) -->
+	<dict><key>phrase</key><string>迅い</string><key>shortcut</key><string>はやい</string></dict>
+	<dict><key>phrase</key><string>疾い</string><key>shortcut</key><string>はやい</string></dict>
 	<dict><key>phrase</key><string>歿る</string><key>shortcut</key><string>なくなる</string></dict>	<!-- 歿る/歿くなる/没くなる/亡なる: 亡くなる の古い表記(Sudachi)。もうなくなってる の変種に並んでいた(ユーザ報告 3716) -->
 	<dict><key>phrase</key><string>歿くなる</string><key>shortcut</key><string>なくなる</string></dict>
 	<dict><key>phrase</key><string>没くなる</string><key>shortcut</key><string>なくなる</string></dict>
