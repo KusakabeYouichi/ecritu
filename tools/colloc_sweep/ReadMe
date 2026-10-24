@@ -21,3 +21,11 @@
    (mark=fix の組を 名詞の読み→助詞→動詞の読みの接頭→優先表記の頭 の表にする。備考による上書きは gen_table.py の OVERRIDES_<id>)
    変換器は連文節でこの表を引き、動詞位置の優先表記を選好・供給し、同じ読みの範囲の対抗を減点する(KanaKanjiConverter+MultiClause.swift)
 8. 3 を再実行し、直った件数と、以前は正しかった組の崩れを比べる
+
+手で足す組(3777〜): references/colloc_sweep/manual.json
+- 報告などで見つけた「名詞+助詞+動詞」の組はここに足し、7 で再生成する(個別の加点表には足さない)
+- groups の各要素: note(理由と報告番号)、bonus(名詞の表記の直後の動詞の頭への加点。名詞の取り違えも防ぐ。省略時 3000)、
+  nouns(名詞の表記)、particles(助詞。"" は助詞なし=時間計って/靴下履いて。3779)、verbs([表記, 読み])
+- readings: 名詞の読みが Sudachi の 1 つで足りないもの(数=かず/すう 等)
+- 判定(decisions.json)に同じ 名詞の読み・助詞・動詞の読み の組があれば判定が優先(名詞の表記と加点だけ合わせる)
+- 助詞ありの組は multiClauseObjectVerbCollocations、助詞なしの組は multiClauseObjectVerbAdjacentBonuses に出る
