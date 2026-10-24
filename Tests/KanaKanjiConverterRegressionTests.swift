@@ -25210,6 +25210,27 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(multi("なをあげた").contains("名を挙げた"), "\(multi("なをあげた"))")
     }
 
+    // 3777: 名詞+助詞跨ぎの加点表から動詞の組を連語表(manual.json)へ移した。名詞の取り違えは連語表の nounBonus が防ぐ
+    func testRegression3777ObjectVerbManualEntries() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        for (reading, expected) in [
+            ("あじをかえられます", "味を変えられます"),   // 味を帰られます が先頭だった(ユーザ報告)
+            ("あじをかえる", "味を変える"),
+            ("ひがいにあいやすい", "被害に遭いやすい"),   // 連用+やすい も照合する
+            ("はしをわたる", "橋を渡る"),                 // 名詞側(端)も寄せる
+            ("ひがとおる", "火が通る")
+        ] {
+            XCTAssertEqual(multi(reading).first, expected, "\(reading): \(multi(reading))")
+        }
+        // 一段の受身・可能の過去/丁寧(られます/られた)。一段だけ規則が無く たべられます は候補が空だった
+        for (reading, expected) in [("たべられます", "食べられます"), ("かえられた", "変えられた"), ("みられれば", "見られれば")] {
+            let list = converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+            XCTAssertTrue(list.contains(expected), "\(reading): \(list)")
+        }
+    }
+
     // 3776: 確認待ちだった組の指定。1 位かな・2 位漢字(掛ける系・気が付く・気に掛ける)、橋 は 架、名前を は 名を と同じ 上→挙
     func testRegression3776ObjectVerbCollocationFollowUps() throws {
         try prepareRealLMDictionary()

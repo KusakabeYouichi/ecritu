@@ -48,10 +48,9 @@ extension KanaKanjiConverter {
     static let multiClauseTraceEdgesEnabled = ProcessInfo.processInfo.environment["MULTI_TRACE_EDGES"] != nil
     static let singleTraceEnabled = ProcessInfo.processInfo.environment["SINGLE_TRACE"] != nil
     #endif
-    // 連語ボーナス表の頭(紙\t印刷 → 紙)。変換ごとに split で組み直していた(3096)
-    static let multiClauseAcrossNoCollocationHeads: Set<String> = Set(
-        multiClauseAcrossNoCollocationBonuses.keys.compactMap { $0.split(separator: "\t").first.map(String.init) }
-    )
+    // 連語ボーナス表の頭(紙\t印刷 → 紙)。変換ごとに split で組み直していた(3096)。
+    // 目的語で決まる動詞の表から合流した頭(旗→振 等)も含める(3777。助詞の複製ノードはこの集合の頭にだけ作られる)
+    static let multiClauseAcrossNoCollocationHeads: Set<String> = Set(multiClauseAcrossNoCollocationBonusesByPrevPrev.keys)
 
     // chars[range] から String を作る。String.init<S: Sequence>(S) は ArraySlice<Character> に特殊化されず、
     // 要素ごとにプロトコル証人経由で確保していた(打鍵あたり約 900 回。3096)。Character の append は直呼び
