@@ -50,6 +50,9 @@ extension KanaKanjiConverter {
         "入口", "出口", "締切", "振込", "手続", "晴", "曇"
     ]
     private static let okuriganaNounOnlyFixedShortForms: [String] = ["入口", "出口"]
+    private static let okuriganaSuruConjugationHeads: [String] = [
+        "する", "した", "して", "しな", "しま", "しよ", "しろ", "しそ", "しち", "しと", "すれ", "され", "させ", "せず"
+    ]
     private static let okuriganaFixedShortFormsMultiChar: [String] = okuriganaFixedShortForms.filter { $0.count >= 2 }
     private static let okuriganaFixedShortFormSingleChars: Set<Character> = Set(
         okuriganaFixedShortForms.filter { $0.count == 1 }.compactMap(\.first)
@@ -123,6 +126,15 @@ extension KanaKanjiConverter {
         if !short.contains(where: isHiragana), okuriganaFixedShortFormsMultiChar.contains(where: { shortString.contains($0) }) {
             return nil
         }
+        // 慣用で送らない名詞+サ変(受付する/取引しない)も名詞の固定表記。受け付けする の許容形とみなして
+        // 本則だけ で消していた(3772、ユーザ判定で 受付する を並べても出なかった)。取扱う のような動詞は対象のまま
+        if okuriganaFixedShortFormsMultiChar.contains(where: { form in
+            guard let range = shortString.range(of: form) else { return false }
+            let rest = shortString[range.upperBound...]
+            return okuriganaSuruConjugationHeads.contains(where: { rest.hasPrefix($0) })
+        }) {
+            return nil
+        }
         // 通則1 の 6 語(表わす 等)は長い方が許容形
         if removed.count == 1, removed[0] > 0,
             okuriganaTsusoku1LongVariantPairs.contains(String(long[(removed[0] - 1)...removed[0]])) {
@@ -176,8 +188,13 @@ extension KanaKanjiConverter {
                 continue
             }
             guard ajoutReading.count >= 3, normalizedReading.contains(ajoutReading.dropLast()) else { continue }
-            for surface in surfaces where surface.count >= 2 && surface.contains(where: Self.isKanji) {
-                protectedStems.append(String(surface.dropLast()))
+            // 語幹に漢字が残るものだけ。しな乃(しなの)の語幹 しな が 〜しない の全候補を守り、取引きしない 等の
+            // 許容形が 本則だけ でも残っていた(3772)
+            for surface in surfaces where surface.count >= 2 {
+                let stem = String(surface.dropLast())
+                if stem.contains(where: Self.isKanji) {
+                    protectedStems.append(stem)
+                }
             }
         }
         func isProtected(_ candidate: String) -> Bool {
