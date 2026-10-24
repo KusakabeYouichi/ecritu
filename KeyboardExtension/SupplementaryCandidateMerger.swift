@@ -245,6 +245,16 @@ enum SupplementaryCandidateMerger {
         return candidates.filter { !tailSet.contains($0) } + tail.filter { demoted.contains($0) }
     }
 
+    // 読みが完全一致するときだけ、KanaKanjiSeedDictionary.presentationOrderSeed の表層をこの順で先頭に並べる
+    // (そう→そう,添う,沿う,総。候補に無ければ供給する。3772)
+    static func promotingPresentationOrderSeed(_ candidates: [String], reading: String) -> [String] {
+        guard let order = KanaKanjiSeedDictionary.presentationOrderSeed[reading] else {
+            return candidates
+        }
+        let orderSet = Set(order)
+        return order + candidates.filter { !orderSet.contains($0) }
+    }
+
     // ユーザ方針: 「出来る」系は候補に出してよいが、必ず「できる」系より後ろ。
     // 「出来」の直後がひらがな(できる活用の頭 る/た/て/ま/な/ち/れ)で、同一リストに
     // 「でき」へ置換した版が存在する場合のみ、漢字版をかな版の直後へ回す。
