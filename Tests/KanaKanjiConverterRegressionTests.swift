@@ -25006,6 +25006,11 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(single("こかしない").prefix(4)), ["固化しない", "糊化しない", "転かしない", "倒かしない"])
         XCTAssertEqual(Array(single("がいしない").prefix(3)), ["害しない", "買いしない", "飼しない"])
         XCTAssertEqual(single("こく").first, "濃く", "\(single("こく"))")
+        // 3772: 慣用で送らない名詞+サ変(受付する/取引しない)は 本則だけ でも消さない
+        XCTAssertEqual(Array(single("うけつけする").prefix(3)), ["受附する", "受付する", "受け付けする"], "\(single("うけつけする"))")
+        XCTAssertEqual(Array(single("とりひきしない").prefix(2)), ["取引しない", "取り引きしない"], "\(single("とりひきしない"))")
+        XCTAssertFalse(single("とりひきしない").contains("取引きしない"), "\(single("とりひきしない"))")
+        XCTAssertFalse(single("うけつけしない").contains("受付けしない"), "\(single("うけつけしない"))")
         // 3769: しないと危険 / 安定器 / ル・クルーゼ / クリストフル / で置いてる / 出店料(両 は数の後ろだけ)
         XCTAssertEqual(shown("わすれないようにしないときけん"), "忘れないようにしないと危険")
         XCTAssertEqual(shown("そのときけんが")?.hasPrefix("その時"), true)
