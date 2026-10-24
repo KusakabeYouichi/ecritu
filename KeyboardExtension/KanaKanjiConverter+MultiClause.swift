@@ -1108,9 +1108,10 @@ extension KanaKanjiConverter {
                     }
                     // 連語の動詞側の優先表層(消息を+たった→絶った)が取得幅(辞書 rank 順の topK×2)から漏れると、
                     // 選好以前にノードが立たない(消息を立った/経った/建った/足った だけが並ぶ)。このスパンだけ
-                    // 広く取得して 1 件を明示供給する(3773)
+                    // 広く取得して 1 件を明示供給する(3773)。かなを優先する組(時間が+かかった、3776)は読みそのものが優先表層
                     if let preferredVerbPrefixes = collocationPreferredVerbSurfacePrefixesByStart[start],
                         !suppliedInflectionSurfaces.contains(where: { surfaceMatchesCollocationVerb($0, start: start, prefixes: preferredVerbPrefixes) }) {
+                        let prefersKana = preferredVerbPrefixes.contains { segmentReading.hasPrefix($0) }
                         let wide = inflectionCandidates(
                             for: segmentReading,
                             ajoutVocabulary: manualAjoutVocabulary,
@@ -1119,7 +1120,8 @@ extension KanaKanjiConverter {
                             limit: inflectionTopK * 2 + Self.multiClauseSeededInflectionExtraFetch
                         )
                         if let preferred = wide.first(where: { surface in
-                            surface != segmentReading && surfaceMatchesCollocationVerb(surface, start: start, prefixes: preferredVerbPrefixes)
+                            (surface != segmentReading || prefersKana)
+                                && surfaceMatchesCollocationVerb(surface, start: start, prefixes: preferredVerbPrefixes)
                         }) {
                             add(preferred, isDictWord: true, isCurated: false, isInflectionDerived: true)
                             suppliedInflectionSurfaces.insert(preferred)

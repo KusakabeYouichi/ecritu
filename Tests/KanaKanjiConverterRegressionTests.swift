@@ -18527,11 +18527,13 @@ extension KanaKanjiConverterRegressionTests {
             let kaketemo = converter.multiClauseCandidates(for: "かけてもいない", systemCandidateMode: mode)
             XCTAssertEqual(kaketemo.first, "欠けてもいない", "\(label) multi=\(kaketemo)")
             XCTAssertFalse(kaketemo.prefix(4).contains { $0.hasPrefix("かけ") }, "\(label) multi=\(kaketemo)")
-            // 目的語つきの かける はかなが正書のまま(を 直後は減点しない)。眼鏡/橋 は 掛 に寄せる(across ボーナス)
+            // 目的語つきの かける はかなが正書のまま(を 直後は減点しない)。眼鏡 は 掛 に寄せる(across ボーナス)。橋 は 架(3776 で改め)
             for (reading, expected) in [
                 ("でんわをかける", "電話をかける"), ("こえをかけて", "声をかけて"), ("じかんをかけて", "時間をかけて"),
                 ("しおをかけて", "塩をかけて"), ("でんわかけて", "電話かけて"),
-                ("めがねをかけてる", "眼鏡を掛けてる"), ("はしをかけてる", "橋を掛けてる"), ("はがかけてる", "歯が欠けてる")
+                // normalisé は活用形を正規の字に寄せる(架けてる は供給されない)ので 掛
+                ("めがねをかけてる", "眼鏡を掛けてる"), ("はしをかけてる", mode == .surface ? "橋を架けてる" : "橋を掛けてる"),
+                ("はがかけてる", "歯が欠けてる")
             ] {
                 XCTAssertEqual(converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first, expected, label)
             }
@@ -25206,6 +25208,36 @@ extension KanaKanjiConverterRegressionTests {
         // 2 番め以降の候補は消さない(備考: 1 を 書く、2 を 描く に)
         XCTAssertEqual(multi("せいきにかく").dropFirst().first, "世紀に描く", "\(multi("せいきにかく"))")
         XCTAssertTrue(multi("なをあげた").contains("名を挙げた"), "\(multi("なをあげた"))")
+    }
+
+    // 3776: 確認待ちだった組の指定。1 位かな・2 位漢字(掛ける系・気が付く・気に掛ける)、橋 は 架、名前を は 名を と同じ 上→挙
+    func testRegression3776ObjectVerbCollocationFollowUps() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        let firstTwo: [(String, [String])] = [
+            ("でんわをかける", ["電話をかける", "電話を掛ける"]),
+            ("こえをかけた", ["声をかけた", "声を掛けた"]),
+            ("じかんをかける", ["時間をかける", "時間を掛ける"]),
+            ("じかんがかかる", ["時間がかかる", "時間が掛かる"]),
+            ("じかんがかかった", ["時間がかかった", "時間が掛かった"]),  // 時間が掛かった が先頭だった
+            ("なまえをあげる", ["名前を上げる", "名前を挙げる"]),        // 名前を挙げる が先頭だった
+            ("なまえをあげた", ["名前を上げた", "名前を挙げた"])
+        ]
+        for (reading, expected) in firstTwo {
+            XCTAssertEqual(Array(multi(reading).prefix(2)), expected, "\(reading): \(multi(reading))")
+        }
+        XCTAssertEqual(multi("はしをかける").first, "橋を架ける", "\(multi("はしをかける"))")
+        XCTAssertEqual(multi("はしをかけた").first, "橋を架けた", "\(multi("はしをかけた"))")
+        XCTAssertEqual(multi("なまえがあがった").first, "名前が挙がった", "\(multi("なまえがあがった"))")
+        // 気が付く/気に掛ける は単文節の並び(seed/misc)。文の中でもかなが先頭
+        for (reading, kana, kanji) in [("きがついた", "気がついた", "気が付いた"), ("きにかけた", "気にかけた", "気に掛けた"),
+                                       ("かれをきにかける", "彼を気にかける", "彼を気に掛ける"), ("すぐにきがついた", "すぐに気がついた", "すぐに気が付いた")] {
+            let list = multi(reading).isEmpty
+                ? converter.candidates(for: reading, limit: 6, systemCandidateMode: .surface) : multi(reading)
+            XCTAssertEqual(list.first, kana, "\(reading): \(list)")
+            XCTAssertTrue(list.contains(kanji), "\(reading): \(list)")
+        }
     }
 
     func testDiagnosticCollocationSweep() throws {
