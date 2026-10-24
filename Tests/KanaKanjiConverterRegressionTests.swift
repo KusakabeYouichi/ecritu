@@ -25246,6 +25246,8 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("いなかほど").dropFirst().first, "田舎程", "\(multi("いなかほど"))")
         XCTAssertEqual(multi("をはやくしても").dropFirst().first, "を早くしても", "\(multi("をはやくしても"))")
         XCTAssertEqual(multi("じかんはかって").dropFirst().first, "時間測って", "\(multi("じかんはかって"))")
+        // 3781: 変種の枠を古い表記 捷くしても が取って 破約しても が消えていた(捷い を抑制)
+        XCTAssertTrue(multi("をはやくしても").contains("を破約しても"), "\(multi("をはやくしても"))")
         XCTAssertFalse(multi("きのうのおひるは").contains { $0.contains("お蛭") }, "\(multi("きのうのおひるは"))")
         // 単文節の並び(seed)
         XCTAssertEqual(Array(single("こうよう").prefix(5)), ["紅葉", "効用", "公用", "高揚", "昂揚"])
