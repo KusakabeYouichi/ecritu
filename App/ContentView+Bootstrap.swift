@@ -268,6 +268,7 @@ extension ContentView {
         await withCheckedContinuation { continuation in
             DispatchQueue.global(qos: .utility).async {
                 migrateInitialAjoutVocabularyIfNeeded()
+                backfillUserRegisteredAjoutVocabularyIfNeeded()
                 migrateInitialShortcutVocabularyIfNeeded()
                 migrateInitialSuppressionDictionaryIfNeeded()
                 migrateLearningVocabularySeparationIfNeeded()

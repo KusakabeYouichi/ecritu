@@ -386,15 +386,61 @@ extension ContentView {
         let dictionary = normalizedDictionaryEntries(
             loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiAjoutVocabulary)
         )
+        let userRegistered = userRegisteredAjoutVocabulary()
 
         return dictionary
             .keys
             .sorted()
             .flatMap { reading in
                 (dictionary[reading] ?? []).map { candidate in
-                    VocabularyEntry(reading: reading, candidate: candidate)
+                    VocabularyEntry(
+                        reading: reading,
+                        candidate: candidate,
+                        isUserRegistered: userRegistered[reading]?.contains(candidate) == true
+                    )
                 }
             }
+    }
+
+    // 自分で登録した追加語彙の記録(3778。キーの説明は SettingsKeys 参照)
+    func userRegisteredAjoutVocabulary() -> [String: [String]] {
+        normalizedDictionaryEntries(loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiUserRegisteredAjoutVocabulary))
+    }
+
+    func updateUserRegisteredAjoutVocabulary(adding added: VocabularyEntry?, removing removed: VocabularyEntry?) {
+        var dictionary = userRegisteredAjoutVocabulary()
+        if let removed {
+            let kept = (dictionary[removed.reading] ?? []).filter { $0 != removed.candidate }
+            dictionary[removed.reading] = kept.isEmpty ? nil : kept
+        }
+        if let added, dictionary[added.reading]?.contains(added.candidate) != true {
+            dictionary[added.reading, default: []].append(added.candidate)
+        }
+        saveDictionaryEntries(dictionary, forKey: SettingsKeys.kanaKanjiUserRegisteredAjoutVocabulary)
+    }
+
+    // 記録を始める前(3778 より前)から入っていた語の振り分けを 1 回だけ行う。初期語彙(同梱の一覧)に無いものを
+    // 自分で登録したものとみなす。初期語彙と同じ語を自分でも登録していた場合は区別できず、初期語彙の側になる
+    func backfillUserRegisteredAjoutVocabularyIfNeeded() {
+        guard let defaults = Self.sharedDefaults,
+            !defaults.bool(forKey: SettingsKeys.kanaKanjiUserRegisteredAjoutVocabularyBackfilled) else {
+            return
+        }
+        let initial = loadBundledInitialAjoutVocabularyEntries()
+        guard !initial.isEmpty else {
+            return
+        }
+        var dictionary = userRegisteredAjoutVocabulary()
+        let current = normalizedDictionaryEntries(loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiAjoutVocabulary))
+        for (reading, candidates) in current {
+            let initialCandidates = Set(initial[reading] ?? [])
+            for candidate in candidates where !initialCandidates.contains(candidate)
+                && dictionary[reading]?.contains(candidate) != true {
+                dictionary[reading, default: []].append(candidate)
+            }
+        }
+        saveDictionaryEntries(dictionary, forKey: SettingsKeys.kanaKanjiUserRegisteredAjoutVocabulary)
+        defaults.set(true, forKey: SettingsKeys.kanaKanjiUserRegisteredAjoutVocabularyBackfilled)
     }
 
     func learnedDictionaryEntriesSnapshot() -> [VocabularyEntry] {
@@ -467,6 +513,7 @@ extension ContentView {
         candidates.insert(candidate, at: 0)
         dictionary[reading] = Array(candidates.prefix(32))
         saveAjoutVocabulary(dictionary)
+        updateUserRegisteredAjoutVocabulary(adding: VocabularyEntry(reading: reading, candidate: candidate), removing: nil)
 
         ajoutVocabularyReadingInput = ""
         ajoutVocabularyCandidateInput = ""
@@ -503,6 +550,8 @@ extension ContentView {
         dictionary[reading] = Array(targetCandidates.prefix(32))
 
         saveAjoutVocabulary(dictionary)
+        // 編集した語は初期語彙だったものでも自分で登録したものとして扱う
+        updateUserRegisteredAjoutVocabulary(adding: VocabularyEntry(reading: reading, candidate: candidate), removing: originalEntry)
         ajoutVocabularyReadingInput = ""
         ajoutVocabularyCandidateInput = ""
         loadAjoutVocabularyEntries()
@@ -521,11 +570,13 @@ extension ContentView {
         }
 
         saveAjoutVocabulary(dictionary)
+        updateUserRegisteredAjoutVocabulary(adding: nil, removing: entry)
         loadAjoutVocabularyEntries()
     }
 
     func removeAllAjoutVocabularyEntries() {
         saveAjoutVocabulary([:])
+        saveDictionaryEntries([:], forKey: SettingsKeys.kanaKanjiUserRegisteredAjoutVocabulary)
         loadAjoutVocabularyEntries()
     }
 
