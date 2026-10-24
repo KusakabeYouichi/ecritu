@@ -205,6 +205,18 @@
 	<dict><key>phrase</key><string>Fable 5</string><key>shortcut</key><string>ふぇいぶる</string></dict>
 	<dict><key>phrase</key><string>Fable 5</string><key>shortcut</key><string>ふぇいぶるふぁいゔ</string></dict>
 
+	<!-- SNS -->
+	<dict><key>phrase</key><string>Threads</string><key>shortcut</key><string>すれっず</string></dict>
+	<dict><key>phrase</key><string>YouTube</string><key>shortcut</key><string>ゆーちゅーぶ</string></dict>
+	<dict><key>phrase</key><string>Facebook</string><key>shortcut</key><string>ふぇいすぶっく</string></dict>
+	<dict><key>phrase</key><string>Instagram</string><key>shortcut</key><string>いんすたぐらむ</string></dict>
+	<dict><key>phrase</key><string>mixi</string><key>shortcut</key><string>みくしー</string></dict>
+	<dict><key>phrase</key><string>Slack</string><key>shortcut</key><string>すらっく</string></dict>
+	<dict><key>phrase</key><string>Discord</string><key>shortcut</key><string>でぃすこーど</string></dict>
+	<dict><key>phrase</key><string>LinkedIn</string><key>shortcut</key><string>りんくどいん</string></dict>
+	<dict><key>phrase</key><string>Bluesky</string><key>shortcut</key><string>ぶるーすかい</string></dict>
+	<dict><key>phrase</key><string>TikTok</string><key>shortcut</key><string>てぃっくとっく</string></dict>
+
 	<!-- misc. -->
 	<dict><key>phrase</key><string>Amazon</string><key>shortcut</key><string>あまぞん</string></dict>
 	<dict><key>phrase</key><string>au</string><key>shortcut</key><string>えいゆー</string></dict>
@@ -216,9 +228,8 @@
 	<dict><key>phrase</key><string>Intel</string><key>shortcut</key><string>いんてる</string></dict>
 	<dict><key>phrase</key><string>Microsoft</string><key>shortcut</key><string>まいくろそふと</string></dict>
 	<dict><key>phrase</key><string>Netflix</string><key>shortcut</key><string>ねっとふりっくす</string></dict>
-	<dict><key>phrase</key><string>YouTube</string><key>shortcut</key><string>ゆーちゅーぶ</string></dict>
+	<dict><key>phrase</key><string>Hulu</string><key>shortcut</key><string>ふーるー</string></dict>
 	<dict><key>phrase</key><string>SoftBank</string><key>shortcut</key><string>そふとばんく</string></dict>
-	<dict><key>phrase</key><string>Threads</string><key>shortcut</key><string>すれっず</string></dict>
 	<dict><key>phrase</key><string>Type-A</string><key>shortcut</key><string>たいぷえい</string></dict>
 	<dict><key>phrase</key><string>Type-A</string><key>shortcut</key><string>たいぷえー</string></dict>
 	<dict><key>phrase</key><string>Type-C</string><key>shortcut</key><string>たいぷしー</string></dict>
@@ -260,8 +271,8 @@
 	<dict><key>phrase</key><string>ロッシー</string><key>shortcut</key><string>ろっしー</string></dict>
 	<dict><key>phrase</key><string>Android</string><key>shortcut</key><string>あんどろいど</string></dict>
 	<dict><key>phrase</key><string>écritu</string><key>shortcut</key><string>えくりちゅ</string></dict>
-	<dict><key>phrase</key><string>Facebook</string><key>shortcut</key><string>ふぇいすぶっく</string></dict>
 	<dict><key>phrase</key><string>Linksys</string><key>shortcut</key><string>りんくしす</string></dict>
+	<dict><key>phrase</key><string>Gmail</string><key>shortcut</key><string>じーめいる</string></dict>
 	<dict><key>phrase</key><string>Windows</string><key>shortcut</key><string>うぃんどうず</string></dict>
 	<dict><key>phrase</key><string>Windows</string><key>shortcut</key><string>ういんどうず</string></dict>
 	<dict><key>phrase</key><string>Raspberry Pi</string><key>shortcut</key><string>らずべりーぱい</string></dict>
