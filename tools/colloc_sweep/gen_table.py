@@ -109,6 +109,7 @@ def main():
     table = collections.OrderedDict()   # noun_r -> [[particle, prefixes, heads, nouns, bonus, comment]]
     skipped = []
     decided = {}   # (名詞の読み, 助詞, 動詞の読み) -> 表の行
+    adjacent = collections.OrderedDict()   # (名詞の表記, 動詞の頭) -> (加点, 注記)。助詞なしの組
     for it in sorted(items, key=lambda x: (x["noun_r"], x["p"], x["vr"])):
         key = it["noun"] + it["p"] + it["verb"]
         d = dec.get(key, {})
@@ -158,6 +159,11 @@ def main():
                         continue
                     heads = [head_of(verb, ctype)]
                     bonus = g.get("bonus", DEFAULT_NOUN_BONUS)
+                    # 助詞なし(particles に "")は 名詞の表記の直後の動詞の頭への加点だけ(靴下履いて/時間計って。3779)
+                    if p == "":
+                        if (noun, heads[0]) not in adjacent:
+                            adjacent[(noun, heads[0])] = (bonus, key + "(手)")
+                        continue
                     for nr in manual["readings"].get(noun) or [noun_reading(noun)]:
                         row = decided.get((nr, p, vr))
                         if row:
@@ -189,6 +195,15 @@ def main():
         for p, prefixes, heads, nouns, bonus, key in entries:
             lines.append(f'            ("{p}", {swift_str_list(prefixes)}, {swift_str_list(heads)}, {swift_str_list(nouns)}, {bonus}),  // {key}')
         lines.append("        ],")
+    lines.append("    ]")
+    lines += [
+        "",
+        "    // 目的語で決まる動詞の表の 助詞なしの組 - (名詞の表記の直後の動詞の頭へ加点。時間計って/靴下履いて/この道通ってて。",
+        "    // multiClauseBigramPrefixPairBonusesByPrev に合流する。3779)",
+        "    static let multiClauseObjectVerbAdjacentBonuses: [(noun: String, head: String, bonus: Int)] = [",
+    ]
+    for (noun, head), (bonus, key) in adjacent.items():
+        lines.append(f'        ("{noun}", "{head}", {bonus}),  // {key}')
     lines.append("    ]")
     lines.append("}")
     lines.append("")
