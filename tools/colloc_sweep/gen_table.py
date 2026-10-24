@@ -40,10 +40,15 @@ GODAN_ROWS = {
 GODAN_ONBIN = {"う": "っ", "つ": "っ", "る": "っ", "く": "い", "ぐ": "い", "ぬ": "ん", "ぶ": "ん", "む": "ん", "す": "し"}
 # 接頭の直後に続いてよい文字。複合動詞(創り+上げる/取り+入れる)や別の動詞(終える の おえ)に当たらないよう、
 # 未然・連用・音便・一段の語幹は直後の助動詞の頭まで含めて照合する。終止形(う段)は直後を問わない。e 段(仮定・命令・可能)は採らない
+# 連用の や はやすい(遭いやすい)、一段の ら は られる(変えられます)。3777
 MIZEN_FOLLOWERS = "なせれずぬ"
-RENYOU_FOLLOWERS = "まただなそにつ"
+RENYOU_FOLLOWERS = "まただなそにつや"
 ONBIN_FOLLOWERS = "たてだでちじ"
-ICHIDAN_FOLLOWERS = "るれろよたてなまずさそち"
+ICHIDAN_FOLLOWERS = "るれろよたてなまずさそちやら"
+# 名詞の表記の直後の動詞の頭への加点。判定由来の組は 0(加点は接頭の絞り込みを素通りし、下に書くした/役目を負えた が出た。3777)。
+# manual.json は group ごとに bonus で指定(古い multiClauseAcrossNoCollocationBonuses の値を引き継ぐ。標準 3000)
+DECISION_NOUN_BONUS = 0
+DEFAULT_NOUN_BONUS = 3000
 # サ変は し/す/さ/せ の後ろの 1 字まで含める(かんし だけだと 関した(かんした)が対抗の区間から外れる)
 SURU_FORMS = ["した", "して", "しな", "しま", "しよ", "しろ", "しそ", "しち", "する", "すれ", "すべ", "させ", "され", "さな", "せず", "せよ"]
 
@@ -80,6 +85,12 @@ def verb_prefixes(vr, ctype):
     return None
 
 
+def noun_reading(noun):
+    """名詞の読み(ひらがな)。複数の読みがある語は manual.json の readings で指定する"""
+    reading = "".join(m.reading_form() for m in tok.tokenize(noun, SplitMode.C))
+    return "".join(chr(ord(c) - 0x60) if "ァ" <= c <= "ヶ" else c for c in reading)
+
+
 def head_of(verb, ctype):
     """活用で変わらない表記の頭(手がける→手がけ、取る→取、冠する→冠)"""
     if ctype.startswith("サ行変格") and verb.endswith("する"):
@@ -95,8 +106,9 @@ def main():
     src, out_path = sys.argv[1], sys.argv[2]
     items = json.load(open(os.path.join(src, "items.json"), encoding="utf-8"))
     dec = {d["key"]: d for d in json.load(open(os.path.join(src, "decisions.json"), encoding="utf-8"))}
-    table = collections.OrderedDict()   # noun_r -> [(particle, prefixes, heads, comment)]
+    table = collections.OrderedDict()   # noun_r -> [[particle, prefixes, heads, nouns, bonus, comment]]
     skipped = []
+    decided = {}   # (名詞の読み, 助詞, 動詞の読み) -> 表の行
     for it in sorted(items, key=lambda x: (x["noun_r"], x["p"], x["vr"])):
         key = it["noun"] + it["p"] + it["verb"]
         d = dec.get(key, {})
@@ -125,30 +137,64 @@ def main():
                 if nr and nr not in noun_readings:
                     noun_readings.append(nr)
         for nr in noun_readings:
-            table.setdefault(nr, []).append((it["p"], prefixes, heads, key))
+            row = [it["p"], prefixes, heads, [it["noun"]], DECISION_NOUN_BONUS, key]
+            table.setdefault(nr, []).append(row)
+            decided[(nr, it["p"], it["vr"])] = row
+    # 手で足す組(references/colloc_sweep/manual.json)。判定で載せた組(同じ名詞の読み・助詞・動詞の読み)と備考で外した組が優先
+    manual_path = os.path.join(os.path.dirname(os.path.normpath(src)), "manual.json")
+    manual = json.load(open(manual_path, encoding="utf-8")) if os.path.exists(manual_path) else {"readings": {}, "groups": []}
+    manual_count = 0
+    for g in manual["groups"]:
+        for noun in g["nouns"]:
+            for p in g["particles"]:
+                for verb, vr in g["verbs"]:
+                    key = noun + p + verb
+                    if "skip" in OVERRIDES_3774.get(key, {}):
+                        continue
+                    ctype = conj_type(verb)
+                    prefixes = verb_prefixes(vr, ctype)
+                    if not prefixes:
+                        skipped.append((key + "(手)", "活用型を扱えない: " + ctype))
+                        continue
+                    heads = [head_of(verb, ctype)]
+                    bonus = g.get("bonus", DEFAULT_NOUN_BONUS)
+                    for nr in manual["readings"].get(noun) or [noun_reading(noun)]:
+                        row = decided.get((nr, p, vr))
+                        if row:
+                            # 同じ読みの組が既にあれば、表記の頭は先の行のまま、名詞の表記と加点だけ合わせる(くぎ/釘、めがね/眼鏡)
+                            if noun not in row[3]:
+                                row[3].append(noun)
+                            row[4] = max(row[4], bonus)
+                            continue
+                        row = [p, prefixes, heads, [noun], bonus, key + "(手)"]
+                        decided[(nr, p, vr)] = row
+                        table.setdefault(nr, []).append(row)
+                        manual_count += 1
     lines = [
         "// このファイルは tools/colloc_sweep/gen_table.py が生成する。手で直さず、判定(references/colloc_sweep/<id>/decisions.json)",
-        "// か生成スクリプトの上書き表を直して再生成すること。",
+        "// か生成スクリプトの上書き表、手で足す組(references/colloc_sweep/manual.json、行末の注記が (手))を直して再生成すること。",
         "",
         "extension KanaKanjiConverter {",
+        "    // 目的語で決まる動詞の表 - (名詞+助詞の後ろの同音動詞の字を決める。味を変える/靴を履く。判定と manual.json から生成)",
         "    // 目的語+助詞+同音動詞の連語(3774、コーパス由来の 1058 組をユーザ判定)。名詞の読みの区間の直後が",
         "    // 助詞 particle、その直後が動詞の読みの接頭 prefixes のとき、その位置から始まる動詞ノードのうち表記が",
-        "    // heads で始まり残りがかなだけのものを連語選好にする(席を立つ/消息を絶つ と同じ仕組み。名詞の表記は縛らない)",
+        "    // heads で始まり残りがかなだけのものを連語選好にする(席を立つ/消息を絶つ と同じ仕組み)。",
+        "    // 名詞の表記 nouns の直後(助詞を挟む)の heads には nounBonus を加点し、名詞の取り違え(端を渡る/日が通る)も防ぐ",
+        "    // (multiClauseAcrossNoCollocationBonusesByPrevPrev に合流する。3777)",
         "    static let multiClauseObjectVerbCollocations:",
-        "        [String: [(particle: Character, prefixes: [String], heads: [String])]] = [",
+        "        [String: [(particle: Character, prefixes: [String], heads: [String], nouns: [String], nounBonus: Int)]] = [",
     ]
     for nr, entries in sorted(table.items()):
         lines.append(f'        "{nr}": [')
-        for p, prefixes, heads, key in entries:
-            lines.append(f'            ("{p}", {swift_str_list(prefixes)}, {swift_str_list(heads)}),  // {key}')
-        lines[-1] = lines[-1]
+        for p, prefixes, heads, nouns, bonus, key in entries:
+            lines.append(f'            ("{p}", {swift_str_list(prefixes)}, {swift_str_list(heads)}, {swift_str_list(nouns)}, {bonus}),  // {key}')
         lines.append("        ],")
     lines.append("    ]")
     lines.append("}")
     lines.append("")
     open(out_path, "w", encoding="utf-8").write("\n".join(lines))
     n = sum(len(v) for v in table.values())
-    print(f"entries {n} nouns {len(table)} skipped {len(skipped)}", file=sys.stderr)
+    print(f"entries {n} (manual {manual_count}) nouns {len(table)} skipped {len(skipped)}", file=sys.stderr)
     for k, why in skipped:
         print("  skip", k, why, file=sys.stderr)
 

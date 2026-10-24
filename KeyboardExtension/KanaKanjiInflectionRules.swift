@@ -563,6 +563,18 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "られない", baseReadingSuffix: "る", allowedClasses: .ichidan),
         // 受身+ん(口語の否定縮約: 食べられん/見られん)
         InflectionRule(readingSuffix: "られん", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        // 受身・可能の過去/丁寧/仮定(変えられます/食べられた/見られれば)。五段(帰られます)と使役受身(させられます)には
+        // あるのに一段だけ無く、あじをかえられます が 変えられ+ます の 2 ノードに割れて 味を帰られます に負けていた(3777、ユーザ報告)。
+        // たべられます は候補が空だった
+        InflectionRule(readingSuffix: "られた", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "られて", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "られたら", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "られれば", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "られなかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "られます", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "られました", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "られません", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "られませんでした", baseReadingSuffix: "る", allowedClasses: .ichidan),
         // 受身+てくる アスペクト連鎖(見られてくる/食べられてきます 等)。
         InflectionRule(readingSuffix: "られてくる", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "られてきた", baseReadingSuffix: "る", allowedClasses: .ichidan),
