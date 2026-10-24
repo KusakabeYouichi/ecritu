@@ -170,6 +170,16 @@ extension KeyboardCandidateMergingTests {
         XCTAssertEqual(SupplementaryCandidateMerger.demotingPresentationTailSeed(input, reading: "ほんとだ"), input)
     }
 
+    // 3772: そう は表示だけ そう,添う,沿う,総 の順(無い表層は供給)。読みが違えば触らない
+    func testPresentationOrderSeedPromotesSou() {
+        let input = ["そう", "層", "総", "想", "沿う"]
+        XCTAssertEqual(
+            SupplementaryCandidateMerger.promotingPresentationOrderSeed(input, reading: "そう"),
+            ["そう", "添う", "沿う", "総", "層", "想"]
+        )
+        XCTAssertEqual(SupplementaryCandidateMerger.promotingPresentationOrderSeed(input, reading: "そうだ"), input)
+    }
+
     // あさって 等の相対の日付語を実際の日付へ(カレンダーの日付書式に合わせる。3445)
     private func relativeDateTestNow() -> Date {
         Calendar(identifier: .gregorian).date(from: DateComponents(year: 2026, month: 10, day: 8, hour: 12))!

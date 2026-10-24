@@ -565,6 +565,8 @@ extension KeyboardViewController {
         // 読みが完全一致するときだけ、指定表層を表示リストの最後尾(絵文字・顔文字より後ろ)へ回す
         // (ほんと→本当。抑制すると ほんとだ 等の合成から消えるので、順位だけ落とす。2810)
         candidates = SupplementaryCandidateMerger.demotingPresentationTailSeed(candidates, reading: composingReading)
+        // 読みが完全一致するときだけ、指定表層をこの順で先頭に並べる(そう→添う,沿う。seed だと連文節が崩れる。3772)
+        candidates = SupplementaryCandidateMerger.promotingPresentationOrderSeed(candidates, reading: composingReading)
 
         guard !composingText.isEmpty else {
             return candidates
