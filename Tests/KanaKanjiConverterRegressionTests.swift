@@ -25224,7 +25224,8 @@ extension KanaKanjiConverterRegressionTests {
             ("じかんはかって", "時間計って"), ("じかんはかってなかったぞ", "時間計ってなかったぞ"), ("ふらんすごにすべし", "フランス語にすべし"),
             ("このみちとおってて", "この道通ってて"), ("かくれためいてん", "隠れた名店"), ("あじにぶれが", "味にブレが"),
             ("つくるさいと", "作るサイト"), ("すこしこうかいちゅう", "すこし後悔中"), ("とてもこうかいちゅう", "とても後悔中"),
-            ("そんなとき", "そんなとき"), ("できればじょうとう", "できれば上等"), ("2ばいはいって", "倍入って")
+            ("そんなとき", "そんなとき"), ("できればじょうとう", "できれば上等"), ("2ばいはいって", "倍入って"),
+            ("ちゃんととげないよ", "ちゃんと砥げないよ")   // 3779: 砥げない を 研げない より前(ユーザ指定)
         ] {
             XCTAssertEqual(multi(reading).first, expected, "\(reading): \(multi(reading))")
         }
@@ -25237,6 +25238,7 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(single("しんせつ").prefix(8)), ["親切", "新設", "新雪", "新説", "真説", "深雪", "深切", "臣節"])
         XCTAssertEqual(Array(single("どうし").prefix(8)), ["同士", "同志", "動詞", "同市", "同氏", "同紙", "導師", "同誌"])
         XCTAssertEqual(single("めいてん").first, "名店")
+        XCTAssertEqual(Array(single("とげない").prefix(3)), ["砥げない", "研げない", "遂げない"])
         XCTAssertEqual(Array(single("こうかいちゅう").prefix(3)), ["公開中", "後悔中", "航海中"])
         XCTAssertFalse(single("こうかいちゅう").contains("後悔注"))
         XCTAssertFalse(single("みじかい").contains("短かい"), "\(single("みじかい"))")
