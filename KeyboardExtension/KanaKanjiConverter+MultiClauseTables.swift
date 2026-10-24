@@ -1594,6 +1594,14 @@ extension KanaKanjiConverter {
             verbPrefixes: ["たつ", "たち", "たっ", "たた", "たて", "たと"],
             preferredVerbSurfacePrefixes: ["立"],
             demotedSurfaces: []
+        ),
+        // 消息を絶つ(ユーザ指定 3773): 席を立つ のペア を→立つ と seed たって(立 先頭)で 消息を立っている が先頭だった。
+        // 消息 に たつ活用が続く連語は 絶 が主
+        "しょうそく": (
+            surface: "消息",
+            verbPrefixes: ["たつ", "たち", "たっ", "たた", "たて", "たと"],
+            preferredVerbSurfacePrefixes: ["絶"],
+            demotedSurfaces: []
         )
     ]
     // 連語の demotedSurfaces に課すペナルティ。自身(4428)を 地震(4803)の後ろへ送るのに

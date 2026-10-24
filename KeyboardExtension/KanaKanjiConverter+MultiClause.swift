@@ -1041,6 +1041,25 @@ extension KanaKanjiConverter {
                             break
                         }
                     }
+                    // 連語の動詞側の優先表層(消息を+たった→絶った)が取得幅(辞書 rank 順の topK×2)から漏れると、
+                    // 選好以前にノードが立たない(消息を立った/経った/建った/足った だけが並ぶ)。このスパンだけ
+                    // 広く取得して 1 件を明示供給する(3773)
+                    if let preferredVerbPrefixes = collocationPreferredVerbSurfacePrefixesByStart[start],
+                        !suppliedInflectionSurfaces.contains(where: { surface in preferredVerbPrefixes.contains(where: { surface.hasPrefix($0) }) }) {
+                        let wide = inflectionCandidates(
+                            for: segmentReading,
+                            ajoutVocabulary: manualAjoutVocabulary,
+                            initialAjoutVocabulary: initialAjoutVocabulary,
+                            systemCandidateMode: systemCandidateMode,
+                            limit: inflectionTopK * 2 + Self.multiClauseSeededInflectionExtraFetch
+                        )
+                        if let preferred = wide.first(where: { surface in
+                            surface != segmentReading && preferredVerbPrefixes.contains(where: { surface.hasPrefix($0) })
+                        }) {
+                            add(preferred, isDictWord: true, isCurated: false, isInflectionDerived: true)
+                            suppliedInflectionSurfaces.insert(preferred)
+                        }
+                    }
                     // (b2b) 未代表族の追加供給: 同じ活用形が複数の基底読みから導出できるとき
                     // (はったら=はう系/はる系 等)、先行族が topK を占有すると後続族
                     // (貼ったら/張ったら)はノード自体が立たず LM 競争にすら参加できない

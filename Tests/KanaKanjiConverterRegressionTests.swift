@@ -24997,6 +24997,10 @@ extension KanaKanjiConverterRegressionTests {
             let list = multi(r).isEmpty ? single(r) : multi(r)
             XCTAssertEqual(Array(list.prefix(3)).map { String($0.prefix(2)) }, ["辞任", "自認", "自任"], "\(r): \(list)")
         }
+        // 3773: 消息を絶っている(を→立つ のペアと seed たって で 立っている が先頭だった)。席を立つ は維持
+        XCTAssertEqual(shown("しょうそくをたっている"), "消息を絶っている", "\(multi("しょうそくをたっている"))")
+        XCTAssertEqual(shown("しょうそくをたった"), "消息を絶った", "\(multi("しょうそくをたった"))")
+        XCTAssertEqual(shown("せきをたった"), "席を立った")
         // 3772: いたんで→痛んで,悼んで,傷んで(異端で が先頭だった)
         XCTAssertEqual(Array(single("いたんで").prefix(3)), ["痛んで", "悼んで", "傷んで"], "\(single("いたんで"))")
         // 3772: 表示中の候補に無かった字も seed で並べる(単語登録は不要)
