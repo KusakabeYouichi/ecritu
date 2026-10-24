@@ -1,0 +1,15 @@
+    func testDiagnosticDumpShownLists() throws {
+        guard let path = ProcessInfo.processInfo.environment["DUMP_READINGS"] else { return }
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for r in try String(contentsOfFile: path, encoding: .utf8).split(separator: "\n").map(String.init) {
+            let m = converter.multiClauseCandidates(for: r, systemCandidateMode: .surface)
+            let s = converter.candidates(for: r, limit: 12, systemCandidateMode: .surface)
+            var shown = m
+            if let first = s.first, !shown.contains(first) { shown.insert(first, at: min(1, shown.count)) }
+            for c in s where !shown.contains(c) { shown.append(c) }
+            let data = try JSONSerialization.data(withJSONObject: Array(shown.prefix(12)))
+            print("SHOWN\t\(r)\t\(String(data: data, encoding: .utf8)!)")
+        }
+    }
+

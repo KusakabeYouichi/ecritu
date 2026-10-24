@@ -1,0 +1,13 @@
+活用で入れ替わる並び(3772〜)の質問と回答の保存場所。基本形と活用形(た/て/ている/ない、サ変は する/した/して/してる/しない)で
+候補の先頭 2 つが入れ替わる読みを洗い出し、ユーザ判定で並びを決めた。手順は tools/conjugation_order/ReadMe。
+
+<id>/ (3772 など、着手した edition 番号)
+  suru_readings.txt   走査した サ変語幹の読み
+  godan_readings.txt  走査した 五段動詞の読み
+  survey.txt          走査の出力(CONJFLIP 行。読みごとに 5 形の先頭 3 つ)
+  conj.json           確認表に出した質問(survey.txt を items.py で整形したもの)
+  decisions.json      回答。id(確認表の doc id kind-NNN)、reading、mark(fix/ok)、order(並びの指示の本文)
+  fixlist.tsv         直す と判定された読みの一覧(id、読み、指示、当時の 5 形の並び)
+  conj_spec.py        指示を機械適用できる規則に写したもの(gen.py の入力)
+  shown.txt           直す対象の 5 形の読みを変換した当時の候補一覧(SHOWN 行、適用前)
+  shown_after.txt     同じく seed 適用後

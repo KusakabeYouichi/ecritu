@@ -1,0 +1,17 @@
+活用で入れ替わる並び(3772)。データは references/conjugation_order/<id>/ に保存する。
+
+1. 走査: survey_test.swift.txt を Tests/KanaKanjiConverterRegressionTests.swift に一時的に貼り、
+   TEST_RUNNER_SURVEY_SURU=<suru_readings.txt> TEST_RUNNER_SURVEY_GODAN=<godan_readings.txt> で実行 → CONJFLIP 行を survey.txt に
+   (読みの一覧は references/conjugation_order/<id>/ の suru_readings.txt / godan_readings.txt)
+2. 質問: python3 -I tools/conjugation_order/items.py survey.txt conj.json
+3. 確認表: python3 -I tools/conjugation_order/build_html.py conj.json out.html を Artifact として公開
+   (capabilities {db: {}}、collection "decisions"、doc id は kind-NNN で conj.json の並び順)
+4. 回答の保存: ArtifactData list を out_dir に落としてから
+   python3 -I tools/conjugation_order/decisions.py export <out_dir>/decisions conj.json decisions.json
+5. 適用: 指示を conj_spec.py に写し、dump_shown_test.swift.txt を貼って TEST_RUNNER_DUMP_READINGS=<読み一覧> で
+   当時の候補一覧 shown.txt を取り、python3 -I tools/conjugation_order/gen.py <conj.json/conj_spec.py/shown.txt のあるディレクトリー>
+   → conj_out.json(seeds と suppr)。seed は KanaKanjiSeedDictionary の 3772 ブロックへ
+
+照会:
+  前回の質問と回答を並べる  decisions.py show conj.json decisions.json [fix|ok|pending]
+  前回やっていない読み      decisions.py undone <new_conj.json> references/conjugation_order/*/decisions.json
