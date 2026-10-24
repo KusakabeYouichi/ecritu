@@ -25168,3 +25168,32 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "とうぜんするでしょ", systemCandidateMode: .surface).first, "当然するでしょ")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 目的語+助詞+同音動詞の連語スキャン(3774)。tmp/colloc_sweep.tsv(コーパス由来)を変換して先頭を記録する
+    func testDiagnosticCollocationSweep() throws {
+        guard ProcessInfo.processInfo.environment["SWEEP_COLLOC"] != nil else {
+            throw XCTSkip("TEST_RUNNER_SWEEP_COLLOC=1 のときだけ実行")
+        }
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let tsv = try String(contentsOf: URL(fileURLWithPath: "\(ecrituRepositoryRoot)/tmp/colloc_sweep.tsv"), encoding: .utf8)
+        var out: [String] = []
+        for line in tsv.split(separator: "\n") {
+            let cols = line.split(separator: "\t", omittingEmptySubsequences: false)
+            guard cols.count >= 2 else { continue }
+            let reading = String(cols[0])
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            let single = converter.candidates(for: reading, limit: 4, systemCandidateMode: .surface)
+            var shown = multi
+            if let top = single.first {
+                shown.insert(top, at: min(1, shown.count))
+            }
+            shown += single.dropFirst()
+            out.append(line + "\t" + shown.prefix(4).joined(separator: "|"))
+        }
+        try out.joined(separator: "\n").write(
+            toFile: "\(ecrituRepositoryRoot)/tmp/colloc_sweep_result.tsv", atomically: true, encoding: .utf8)
+        print("SWEEP_COLLOC done \(out.count)")
+    }
+}
