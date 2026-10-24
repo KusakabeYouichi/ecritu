@@ -1,0 +1,1864 @@
+[
+ {
+  "id": "suru-000",
+  "kind": "suru",
+  "reading": "いしょく",
+  "mark": "fix",
+  "order": "5つとも[移植][依嘱][依属]の順で"
+ },
+ {
+  "id": "suru-001",
+  "kind": "suru",
+  "reading": "いんか",
+  "mark": "fix",
+  "order": "[いんかする]も他の4つに合わせてください。"
+ },
+ {
+  "id": "suru-002",
+  "kind": "suru",
+  "reading": "うけつけ",
+  "mark": "fix",
+  "order": "5つとも[受附][受付][受]"
+ },
+ {
+  "id": "suru-003",
+  "kind": "suru",
+  "reading": "うちじに",
+  "mark": "fix",
+  "order": "[うちじにしてる]と[うちじにする]も[うちじにした]に合わせて。"
+ },
+ {
+  "id": "suru-004",
+  "kind": "suru",
+  "reading": "うんこう",
+  "mark": "fix",
+  "order": "[うんこうしない]も他の4つに合わせて。"
+ },
+ {
+  "id": "suru-005",
+  "kind": "suru",
+  "reading": "かいげん",
+  "mark": "fix",
+  "order": "[かいげんした]も他の4つに合わせて。"
+ },
+ {
+  "id": "suru-006",
+  "kind": "suru",
+  "reading": "かいこ",
+  "mark": "fix",
+  "order": "5つとも[解雇][回顧][懐古]の順で。"
+ },
+ {
+  "id": "suru-007",
+  "kind": "suru",
+  "reading": "かいこう",
+  "mark": "fix",
+  "order": "5つとも[開講][開校][開港][開口][回航]で。"
+ },
+ {
+  "id": "suru-008",
+  "kind": "suru",
+  "reading": "かいしゃく",
+  "mark": "fix",
+  "order": "5つとも[解釈][介錯]の2つで。"
+ },
+ {
+  "id": "suru-009",
+  "kind": "suru",
+  "reading": "かいしゅう",
+  "mark": "fix",
+  "order": "5つとも[回収][改修][改宗]の順で"
+ },
+ {
+  "id": "suru-010",
+  "kind": "suru",
+  "reading": "かいしょう",
+  "mark": "fix",
+  "order": "5つとも[解消][改称][快勝]の順で。"
+ },
+ {
+  "id": "suru-011",
+  "kind": "suru",
+  "reading": "かいせい",
+  "mark": "fix",
+  "order": "5つとも[改正][改制][回生][改姓]の順で、"
+ },
+ {
+  "id": "suru-012",
+  "kind": "suru",
+  "reading": "かいせつ",
+  "mark": "fix",
+  "order": "5つとも[解説][開設[]回折]で。"
+ },
+ {
+  "id": "suru-013",
+  "kind": "suru",
+  "reading": "かいとう",
+  "mark": "fix",
+  "order": "5つとも[回答][解答][解凍]で。"
+ },
+ {
+  "id": "suru-014",
+  "kind": "suru",
+  "reading": "かいはん",
+  "mark": "fix",
+  "order": "[かいはんする]も他の4つに合わせて。"
+ },
+ {
+  "id": "suru-015",
+  "kind": "suru",
+  "reading": "かいへん",
+  "mark": "fix",
+  "order": "[かいへんした]も他の4つに合わせて。"
+ },
+ {
+  "id": "suru-016",
+  "kind": "suru",
+  "reading": "かいめい",
+  "mark": "fix",
+  "order": "5つとも[解明][改名]の順で。[開明]はサ変動詞化しません。"
+ },
+ {
+  "id": "suru-017",
+  "kind": "suru",
+  "reading": "かくしん",
+  "mark": "fix",
+  "order": "5つとも[確信][革新][確診]"
+ },
+ {
+  "id": "suru-018",
+  "kind": "suru",
+  "reading": "かくはん",
+  "mark": "fix",
+  "order": "5つとも[攪拌][撹拌][各反]の順で。[各藩]サ変動詞化しない。"
+ },
+ {
+  "id": "suru-019",
+  "kind": "suru",
+  "reading": "かんき",
+  "mark": "fix",
+  "order": "5つとも[換気][歓喜][喚起]で。"
+ },
+ {
+  "id": "suru-020",
+  "kind": "suru",
+  "reading": "かんこう",
+  "mark": "fix",
+  "order": "5つとも[観光][刊行][完工]の順で。"
+ },
+ {
+  "id": "suru-021",
+  "kind": "suru",
+  "reading": "かんしょう",
+  "mark": "fix",
+  "order": "5つとも[鑑賞][干渉][観賞]です。"
+ },
+ {
+  "id": "suru-022",
+  "kind": "suru",
+  "reading": "がい",
+  "mark": "fix",
+  "order": "[がいしてる][がいしない]は[害][買][飼]"
+ },
+ {
+  "id": "suru-023",
+  "kind": "suru",
+  "reading": "きか",
+  "mark": "fix",
+  "order": "[きかする][きかしない]は[帰化][気化]。[きかした][きかして][きかしてる]は[聞][帰化][利][気化][効]。[幾何]はサ変動詞化しないと思います。"
+ },
+ {
+  "id": "suru-024",
+  "kind": "suru",
+  "reading": "きこう",
+  "mark": "fix",
+  "order": "[きこうした]も他の4つに合わせてください。"
+ },
+ {
+  "id": "suru-025",
+  "kind": "suru",
+  "reading": "きねん",
+  "mark": "fix",
+  "order": "5つとも[記念][祈念][紀念]で。"
+ },
+ {
+  "id": "suru-026",
+  "kind": "suru",
+  "reading": "きふ",
+  "mark": "fix",
+  "order": "5つとも[寄附][寄付][記譜][帰府]にしてください。"
+ },
+ {
+  "id": "suru-027",
+  "kind": "suru",
+  "reading": "きゅうこう",
+  "mark": "fix",
+  "order": "5つとも[急行][休校][休耕]にしてください。"
+ },
+ {
+  "id": "suru-028",
+  "kind": "suru",
+  "reading": "きゅうぞう",
+  "mark": "fix",
+  "order": "5つとも[急増][急造][吸蔵]にしてください。"
+ },
+ {
+  "id": "suru-029",
+  "kind": "suru",
+  "reading": "きょうえん",
+  "mark": "fix",
+  "order": "5つとも[共演][競演][協演]にしてください、"
+ },
+ {
+  "id": "suru-030",
+  "kind": "suru",
+  "reading": "きょうぎ",
+  "mark": "fix",
+  "order": "[きょうぎしてる]の1、2を入れ替えてください。"
+ },
+ {
+  "id": "suru-031",
+  "kind": "suru",
+  "reading": "きょうじゅ",
+  "mark": "fix",
+  "order": "[きょうじゅする]に合わせてください。他の4つを。"
+ },
+ {
+  "id": "suru-032",
+  "kind": "suru",
+  "reading": "きょうそう",
+  "mark": "fix",
+  "order": "[きょうそうしてる]も他の4つに合わせてください。"
+ },
+ {
+  "id": "suru-033",
+  "kind": "suru",
+  "reading": "きょうゆう",
+  "mark": "fix",
+  "order": "5つとも[共有][享有][教有]の順にしてください。"
+ },
+ {
+  "id": "suru-034",
+  "kind": "suru",
+  "reading": "きょうよう",
+  "mark": "fix",
+  "order": "5つとも[共用][強要][供用]にしてください。"
+ },
+ {
+  "id": "suru-035",
+  "kind": "suru",
+  "reading": "けんがく",
+  "mark": "fix",
+  "order": "[兼学]はサ変動詞化しないので、5つとも[見学][研学]にしてください。"
+ },
+ {
+  "id": "suru-036",
+  "kind": "suru",
+  "reading": "げんいん",
+  "mark": "fix",
+  "order": "5つとも[原因][減員]にしてください。"
+ },
+ {
+  "id": "suru-037",
+  "kind": "suru",
+  "reading": "こうえん",
+  "mark": "fix",
+  "order": "[こうえんしてる]も他の4つに合わせてください。"
+ },
+ {
+  "id": "suru-038",
+  "kind": "suru",
+  "reading": "こうかん",
+  "mark": "fix",
+  "order": "[好感]はサ変動詞化しません。5つとも[交換][公刊][交歓]にしてください"
+ },
+ {
+  "id": "suru-039",
+  "kind": "suru",
+  "reading": "こうぎ",
+  "mark": "fix",
+  "order": "5つとも[講義][抗議]にしてください[広義]"
+ },
+ {
+  "id": "suru-040",
+  "kind": "suru",
+  "reading": "こうさ",
+  "mark": "fix",
+  "order": "5つとも[交叉][交差][考査]にしてください。"
+ },
+ {
+  "id": "suru-041",
+  "kind": "suru",
+  "reading": "こうさく",
+  "mark": "fix",
+  "order": "[こうさくする]を他の4つに合わせてください。"
+ },
+ {
+  "id": "suru-042",
+  "kind": "suru",
+  "reading": "こうしょう",
+  "mark": "fix",
+  "order": "5つとも[交渉][考証][公称]にしてください。"
+ },
+ {
+  "id": "suru-043",
+  "kind": "suru",
+  "reading": "こうせい",
+  "mark": "fix",
+  "order": "5つとも[構成][校正][甦生][更生]にしてください。"
+ },
+ {
+  "id": "suru-044",
+  "kind": "suru",
+  "reading": "こうせん",
+  "mark": "fix",
+  "order": "5つとも[交戦][抗戦][公選][公撰][考選]にしてください。"
+ },
+ {
+  "id": "suru-045",
+  "kind": "suru",
+  "reading": "こうそく",
+  "mark": "fix",
+  "order": "5つとも[拘束][梗塞][硬塞]にしてください。"
+ },
+ {
+  "id": "suru-046",
+  "kind": "suru",
+  "reading": "こうてい",
+  "mark": "fix",
+  "order": "5つとも[肯定][更訂][校訂][拘提]にしてください。"
+ },
+ {
+  "id": "suru-047",
+  "kind": "suru",
+  "reading": "こうてん",
+  "mark": "fix",
+  "order": "[荒天]はサ変動詞化しないので取り除いてください。5つとも[好転][公転]にしてください。"
+ },
+ {
+  "id": "suru-048",
+  "kind": "suru",
+  "reading": "こうはい",
+  "mark": "fix",
+  "order": "[こうはいした]も他の4つに合わせてください。"
+ },
+ {
+  "id": "suru-049",
+  "kind": "suru",
+  "reading": "こうゆう",
+  "mark": "fix",
+  "order": "5つとも[交遊][公有][交友]。[亨有]は『こうゆう』とは読まないはずです。[功有]や[甲有]についても同じ。"
+ },
+ {
+  "id": "suru-050",
+  "kind": "suru",
+  "reading": "こか",
+  "mark": "fix",
+  "order": "[こかする]は[固化][糊化]。残りの4つとも[固化][糊化][転][倒]"
+ },
+ {
+  "id": "suru-051",
+  "kind": "suru",
+  "reading": "こくじ",
+  "mark": "fix",
+  "order": "[こくじした]も他の4つに合わせてください。[国字]はサ変動詞化しないので取り除いてください。"
+ },
+ {
+  "id": "suru-052",
+  "kind": "suru",
+  "reading": "こじ",
+  "mark": "fix",
+  "order": "[こじする]も他の4つに合わせてください。"
+ },
+ {
+  "id": "suru-053",
+  "kind": "suru",
+  "reading": "さいかい",
+  "mark": "fix",
+  "order": "[さいかいしない]も[さいかいする]に合わせてください。"
+ },
+ {
+  "id": "suru-054",
+  "kind": "suru",
+  "reading": "さしず",
+  "mark": "fix",
+  "order": "[さしずしない]も他の4件に合わせてください。"
+ },
+ {
+  "id": "suru-055",
+  "kind": "suru",
+  "reading": "さんしゅつ",
+  "mark": "fix",
+  "order": "5つとも[算出][産出]で。"
+ },
+ {
+  "id": "suru-056",
+  "kind": "suru",
+  "reading": "さんせい",
+  "mark": "fix",
+  "order": "5つとも[賛成][産生][三省]の順で。"
+ },
+ {
+  "id": "suru-057",
+  "kind": "suru",
+  "reading": "さんらん",
+  "mark": "fix",
+  "order": "[さんらんする]も[さんらんした]に合わせてください。"
+ },
+ {
+  "id": "suru-058",
+  "kind": "suru",
+  "reading": "しこう",
+  "mark": "fix",
+  "order": "5つとも[思考][志向][施行][嗜好]の順で。"
+ },
+ {
+  "id": "suru-059",
+  "kind": "suru",
+  "reading": "しちょう",
+  "mark": "fix",
+  "order": "5つとも[視聴][試聴][弛張]の順にできます。"
+ },
+ {
+  "id": "suru-060",
+  "kind": "suru",
+  "reading": "しっこう",
+  "mark": "fix",
+  "order": "5つとも[失効][執行][膝行]の順で。"
+ },
+ {
+  "id": "suru-061",
+  "kind": "suru",
+  "reading": "しゅうかい",
+  "mark": "fix",
+  "order": "5つとも[集会][周回][聚会]で。"
+ },
+ {
+  "id": "suru-062",
+  "kind": "suru",
+  "reading": "しゅうとく",
+  "mark": "fix",
+  "order": "5つとも[習得][修得][拾得]の順で。"
+ },
+ {
+  "id": "suru-063",
+  "kind": "suru",
+  "reading": "しょうか",
+  "mark": "fix",
+  "order": "5つとも[消化][消火][昇華]の順で。"
+ },
+ {
+  "id": "suru-064",
+  "kind": "suru",
+  "reading": "しょうかい",
+  "mark": "fix",
+  "order": "5つとも[照会][紹介][哨戒]にしてください。"
+ },
+ {
+  "id": "suru-065",
+  "kind": "suru",
+  "reading": "しょうけい",
+  "mark": "fix",
+  "order": "[勝計]は基本的にはサ変動詞化しません。5つとも[承継][憧憬][少憩]にしてください。"
+ },
+ {
+  "id": "suru-066",
+  "kind": "suru",
+  "reading": "しょうさん",
+  "mark": "fix",
+  "order": "[しょうさんした]は他の4つに合わせてください。"
+ },
+ {
+  "id": "suru-067",
+  "kind": "suru",
+  "reading": "しょうしつ",
+  "mark": "fix",
+  "order": "5つとも[消失][焼失]にしてください。[尚質]は人名だから[尚質しない]にはならないので出さないでください。"
+ },
+ {
+  "id": "suru-068",
+  "kind": "suru",
+  "reading": "しょうしん",
+  "mark": "fix",
+  "order": "5つとも[昇進][傷心][陞進][焼身]の順にしてください。"
+ },
+ {
+  "id": "suru-069",
+  "kind": "suru",
+  "reading": "しょうめい",
+  "mark": "fix",
+  "order": "5つとも[証明][照明]にしてください。[章名する]という言い方はないので出さないようにしてください。"
+ },
+ {
+  "id": "suru-070",
+  "kind": "suru",
+  "reading": "しんこう",
+  "mark": "fix",
+  "order": "5つとも[進行][信仰][振興][侵攻]にしてください。"
+ },
+ {
+  "id": "suru-071",
+  "kind": "suru",
+  "reading": "しんちょう",
+  "mark": "fix",
+  "order": "5つとも[伸長][伸張][伸暢][新調]にしてください。"
+ },
+ {
+  "id": "suru-072",
+  "kind": "suru",
+  "reading": "しんどう",
+  "mark": "fix",
+  "order": "5つとも[振動][震動][進動]にしてください。"
+ },
+ {
+  "id": "suru-073",
+  "kind": "suru",
+  "reading": "じりつ",
+  "mark": "fix",
+  "order": "5つとも[自立][自律][侍立]にしてください。"
+ },
+ {
+  "id": "suru-074",
+  "kind": "suru",
+  "reading": "すいせん",
+  "mark": "fix",
+  "order": "5つとも[推薦][推選][水洗]にしてください。"
+ },
+ {
+  "id": "suru-075",
+  "kind": "suru",
+  "reading": "せいこう",
+  "mark": "fix",
+  "order": "5つとも[成功][性交][製鋼][盛行]にしてください。"
+ },
+ {
+  "id": "suru-076",
+  "kind": "suru",
+  "reading": "せいさく",
+  "mark": "fix",
+  "order": "5つとも[制作][製作]にしてください。[政策する]という言い方はないので出さないでくていいです。"
+ },
+ {
+  "id": "suru-077",
+  "kind": "suru",
+  "reading": "せいさん",
+  "mark": "fix",
+  "order": "5つとも[生産][精算][清算]の順にしてください。"
+ },
+ {
+  "id": "suru-078",
+  "kind": "suru",
+  "reading": "せいそく",
+  "mark": "fix",
+  "order": "5つとも1、2は[棲息][生息]の順にしてください。"
+ },
+ {
+  "id": "suru-079",
+  "kind": "suru",
+  "reading": "せっけん",
+  "mark": "fix",
+  "order": "[せっけん]も他の4つの順序に合わせてください。"
+ },
+ {
+  "id": "suru-080",
+  "kind": "suru",
+  "reading": "せっしゅ",
+  "mark": "fix",
+  "order": "[せっしゅする]も他の4つに合わせてください。"
+ },
+ {
+  "id": "suru-081",
+  "kind": "suru",
+  "reading": "せんきょ",
+  "mark": "fix",
+  "order": "[せんきょした]に残りの4つを合わせてください。"
+ },
+ {
+  "id": "suru-082",
+  "kind": "suru",
+  "reading": "せんこう",
+  "mark": "fix",
+  "order": "5つ[選考][先行][専攻][潜航]"
+ },
+ {
+  "id": "suru-083",
+  "kind": "suru",
+  "reading": "せんじゅつ",
+  "mark": "ok",
+  "order": ""
+ },
+ {
+  "id": "suru-084",
+  "kind": "suru",
+  "reading": "せんゆう",
+  "mark": "fix",
+  "order": "5つとも[占有][専有]にしてください。"
+ },
+ {
+  "id": "suru-085",
+  "kind": "suru",
+  "reading": "そうかん",
+  "mark": "fix",
+  "order": "5つとも[相関][送還][創刊]にしてください。"
+ },
+ {
+  "id": "suru-086",
+  "kind": "suru",
+  "reading": "そうさ",
+  "mark": "fix",
+  "order": "5つとも[操作][捜査][走査]の順にしてください。"
+ },
+ {
+  "id": "suru-087",
+  "kind": "suru",
+  "reading": "そうさく",
+  "mark": "fix",
+  "order": "[そうさくした]を他の4つに合わせてみてください。"
+ },
+ {
+  "id": "suru-088",
+  "kind": "suru",
+  "reading": "そうぞう",
+  "mark": "fix",
+  "order": "[そうぞうする][そうぞうした]を他の3つに合わせてください。"
+ },
+ {
+  "id": "suru-089",
+  "kind": "suru",
+  "reading": "そうは",
+  "mark": "fix",
+  "order": "[そうはする]も他の4つに合わせてください。"
+ },
+ {
+  "id": "suru-090",
+  "kind": "suru",
+  "reading": "たいしゃ",
+  "mark": "fix",
+  "order": "5つとも[退社][代謝][大赦]にしてください。"
+ },
+ {
+  "id": "suru-091",
+  "kind": "suru",
+  "reading": "たいじ",
+  "mark": "fix",
+  "order": "[たいじする][たいじした]を他の3つに合わせてください。"
+ },
+ {
+  "id": "suru-092",
+  "kind": "suru",
+  "reading": "たいだん",
+  "mark": "fix",
+  "order": "[たいだんした][たいだんして]を他の3つに合わせてください。"
+ },
+ {
+  "id": "suru-093",
+  "kind": "suru",
+  "reading": "たいはい",
+  "mark": "fix",
+  "order": "[たいはいした]を他の4つに合わせてください。"
+ },
+ {
+  "id": "suru-094",
+  "kind": "suru",
+  "reading": "たんけん",
+  "mark": "fix",
+  "order": "5つとも[探検][探険][探見]の順で。"
+ },
+ {
+  "id": "suru-095",
+  "kind": "suru",
+  "reading": "ちょぞう",
+  "mark": "fix",
+  "order": "[ちょぞうする]を他の4つに合わせてください。"
+ },
+ {
+  "id": "suru-096",
+  "kind": "suru",
+  "reading": "ちょっこう",
+  "mark": "fix",
+  "order": "[ちょっこうする]も他の4つに合わせてください。"
+ },
+ {
+  "id": "suru-097",
+  "kind": "suru",
+  "reading": "ていげん",
+  "mark": "fix",
+  "order": "[ていげんした]に5つとも合わせてください。"
+ },
+ {
+  "id": "suru-098",
+  "kind": "suru",
+  "reading": "てんか",
+  "mark": "fix",
+  "order": "[てんかした]を他の4つに合わせてください。"
+ },
+ {
+  "id": "suru-099",
+  "kind": "suru",
+  "reading": "てんこう",
+  "mark": "fix",
+  "order": "5つとも[転向][転校][転航]にしてください。"
+ },
+ {
+  "id": "suru-100",
+  "kind": "suru",
+  "reading": "てんとう",
+  "mark": "fix",
+  "order": "5つとも[点灯][転倒][顚倒]にしてください。"
+ },
+ {
+  "id": "suru-101",
+  "kind": "suru",
+  "reading": "でんそう",
+  "mark": "fix",
+  "order": "5つとも[伝送][電送][伝奏]にしてください。"
+ },
+ {
+  "id": "suru-102",
+  "kind": "suru",
+  "reading": "でんぱん",
+  "mark": "fix",
+  "order": "[伝播]の正しい読みは『でんぱ』なので出ないようにしてください。"
+ },
+ {
+  "id": "suru-103",
+  "kind": "suru",
+  "reading": "とうか",
+  "mark": "fix",
+  "order": "[とうかした]を他の4つに合わせてください。"
+ },
+ {
+  "id": "suru-104",
+  "kind": "suru",
+  "reading": "とうこう",
+  "mark": "fix",
+  "order": "5つとも[とうこうする]に合わせてください。"
+ },
+ {
+  "id": "suru-105",
+  "kind": "suru",
+  "reading": "とうじ",
+  "mark": "fix",
+  "order": "[とうじした]は他の4つに合わせてください。"
+ },
+ {
+  "id": "suru-106",
+  "kind": "suru",
+  "reading": "とうせん",
+  "mark": "fix",
+  "order": "[東遷]は4番めに、あとは5つともに[とうせんしてる]に合わせてください。"
+ },
+ {
+  "id": "suru-107",
+  "kind": "suru",
+  "reading": "とりひき",
+  "mark": "fix",
+  "order": "カタカナの送り仮名は抑制してください。5つとも[取引][取]の順。"
+ },
+ {
+  "id": "suru-108",
+  "kind": "suru",
+  "reading": "にゅうじょう",
+  "mark": "fix",
+  "order": "[にゅうじょうした]を他の4つに合わせてください。"
+ },
+ {
+  "id": "suru-109",
+  "kind": "suru",
+  "reading": "にゅうせん",
+  "mark": "fix",
+  "order": "5つとも[入選][入線]の順にしてください。[乳腺しない]という言い方は存在しないのでこれは出ないようにしてください。"
+ },
+ {
+  "id": "suru-110",
+  "kind": "suru",
+  "reading": "はいき",
+  "mark": "fix",
+  "order": "5つとも1、2は[廃棄][排気]にしてください。"
+ },
+ {
+  "id": "suru-111",
+  "kind": "suru",
+  "reading": "はいしゅつ",
+  "mark": "fix",
+  "order": "5つとも[はいしゅつする]に合わせてください。"
+ },
+ {
+  "id": "suru-112",
+  "kind": "suru",
+  "reading": "はいする",
+  "mark": "ok",
+  "order": ""
+ },
+ {
+  "id": "suru-113",
+  "kind": "suru",
+  "reading": "はいせん",
+  "mark": "fix",
+  "order": "[はいせんした]も[はいせんする]に合わせてください。"
+ },
+ {
+  "id": "suru-114",
+  "kind": "suru",
+  "reading": "はっしょう",
+  "mark": "fix",
+  "order": "5つとも[はっしょうする]に合わせてください。"
+ },
+ {
+  "id": "suru-115",
+  "kind": "suru",
+  "reading": "はつげん",
+  "mark": "fix",
+  "order": "[はつげんする]は[はつげんした]に合わせてください。"
+ },
+ {
+  "id": "suru-116",
+  "kind": "suru",
+  "reading": "ひなん",
+  "mark": "fix",
+  "order": "5つとも[ひなんしてる]の順に合わせてください。"
+ },
+ {
+  "id": "suru-117",
+  "kind": "suru",
+  "reading": "ひるね",
+  "mark": "fix",
+  "order": "[ひるねしない]も他の4つに合わせてください。"
+ },
+ {
+  "id": "suru-118",
+  "kind": "suru",
+  "reading": "ふか",
+  "mark": "fix",
+  "order": "5つとも[附加][付加][孵化]"
+ },
+ {
+  "id": "suru-119",
+  "kind": "suru",
+  "reading": "ふくしゅう",
+  "mark": "fix",
+  "order": "5つとも[復習][復讐]"
+ },
+ {
+  "id": "suru-120",
+  "kind": "suru",
+  "reading": "ふぞく",
+  "mark": "fix",
+  "order": "5つとも[附属][付属][付嘱]"
+ },
+ {
+  "id": "suru-121",
+  "kind": "suru",
+  "reading": "ぶんかい",
+  "mark": "fix",
+  "order": "5つとも[分解][分界][分塊]の順に。"
+ },
+ {
+  "id": "suru-122",
+  "kind": "suru",
+  "reading": "へいこう",
+  "mark": "fix",
+  "order": "5つとも[並行][閉口][閉校]"
+ },
+ {
+  "id": "suru-123",
+  "kind": "suru",
+  "reading": "へんしゅう",
+  "mark": "fix",
+  "order": "5つとも[へんしゅうしない]に合わせてください。"
+ },
+ {
+  "id": "suru-124",
+  "kind": "suru",
+  "reading": "へんしん",
+  "mark": "fix",
+  "order": "5つとも[へんしんしてる]に合わせください。"
+ },
+ {
+  "id": "suru-125",
+  "kind": "suru",
+  "reading": "へんせい",
+  "mark": "fix",
+  "order": "[へんせいして][へんせいしない]も残りに3つに合わせてください。"
+ },
+ {
+  "id": "suru-126",
+  "kind": "suru",
+  "reading": "ほかん",
+  "mark": "fix",
+  "order": "[ほかんする]も他の4つに合わせてください。"
+ },
+ {
+  "id": "suru-127",
+  "kind": "suru",
+  "reading": "ほそく",
+  "mark": "ok",
+  "order": ""
+ },
+ {
+  "id": "suru-128",
+  "kind": "suru",
+  "reading": "ぼうけん",
+  "mark": "fix",
+  "order": "5つとも[ぼうけんした]に合わせる。"
+ },
+ {
+  "id": "suru-129",
+  "kind": "suru",
+  "reading": "ようご",
+  "mark": "fix",
+  "order": "5つとも[ようごする]に合わせる。"
+ },
+ {
+  "id": "suru-130",
+  "kind": "suru",
+  "reading": "ようせい",
+  "mark": "fix",
+  "order": "[ようせいしてる][ようせいしない]も[ようせいして]に合わせてください"
+ },
+ {
+  "id": "suru-131",
+  "kind": "suru",
+  "reading": "わざわい",
+  "mark": "fix",
+  "order": "[わざわいした]も他の4つに合わせてください。"
+ },
+ {
+  "id": "godan-132",
+  "kind": "godan",
+  "reading": "あく",
+  "mark": "fix",
+  "order": "[あいた][あいてる][あかない]は[開][空][明]の順で。[あいて]の3番めは[開]、4番目は[空]"
+ },
+ {
+  "id": "godan-133",
+  "kind": "godan",
+  "reading": "あたる",
+  "mark": "ok",
+  "order": ""
+ },
+ {
+  "id": "godan-134",
+  "kind": "godan",
+  "reading": "あやまる",
+  "mark": "fix",
+  "order": "[あやまってる]も他の4つに合わせる"
+ },
+ {
+  "id": "godan-135",
+  "kind": "godan",
+  "reading": "あらわす",
+  "mark": "fix",
+  "order": "[あらわさない]は[表][現][顕]"
+ },
+ {
+  "id": "godan-136",
+  "kind": "godan",
+  "reading": "ある",
+  "mark": "ok",
+  "order": ""
+ },
+ {
+  "id": "godan-137",
+  "kind": "godan",
+  "reading": "あるく",
+  "mark": "ok",
+  "order": ""
+ },
+ {
+  "id": "godan-138",
+  "kind": "godan",
+  "reading": "いう",
+  "mark": "fix",
+  "order": "[岩内]は2番めに。"
+ },
+ {
+  "id": "godan-139",
+  "kind": "godan",
+  "reading": "いたむ",
+  "mark": "fix",
+  "order": "[いたんで]の1は[痛]、2は[痛]"
+ },
+ {
+  "id": "godan-140",
+  "kind": "godan",
+  "reading": "いなむ",
+  "mark": "fix",
+  "order": "[いなんで]の3つめに[否]"
+ },
+ {
+  "id": "godan-141",
+  "kind": "godan",
+  "reading": "います",
+  "mark": "fix",
+  "order": "[いまして]は[いました]に合わせてください。"
+ },
+ {
+  "id": "godan-142",
+  "kind": "godan",
+  "reading": "いる",
+  "mark": "ok",
+  "order": ""
+ },
+ {
+  "id": "godan-143",
+  "kind": "godan",
+  "reading": "いわす",
+  "mark": "ok",
+  "order": ""
+ },
+ {
+  "id": "godan-144",
+  "kind": "godan",
+  "reading": "うたす",
+  "mark": "fix",
+  "order": "[うたしてる]も他の4つに合わせてください。"
+ },
+ {
+  "id": "godan-145",
+  "kind": "godan",
+  "reading": "うつ",
+  "mark": "ok",
+  "order": ""
+ },
+ {
+  "id": "godan-146",
+  "kind": "godan",
+  "reading": "うらむ",
+  "mark": "fix",
+  "order": "[うらんで]は[恨][売][ウラン]で。"
+ },
+ {
+  "id": "godan-147",
+  "kind": "godan",
+  "reading": "えらぶ",
+  "mark": "fix",
+  "order": "[えらんで]の1は[選]に。"
+ },
+ {
+  "id": "godan-148",
+  "kind": "godan",
+  "reading": "える",
+  "mark": "ok",
+  "order": ""
+ },
+ {
+  "id": "godan-149",
+  "kind": "godan",
+  "reading": "おう",
+  "mark": "fix",
+  "order": "[奥武]は3番めに"
+ },
+ {
+  "id": "godan-150",
+  "kind": "godan",
+  "reading": "おおう",
+  "mark": "fix",
+  "order": "[おおう]で[追]と[負]が出るのは変ですね。もしかして、前に[お]をつける? それは変なのでその合成はしないようにしてください。"
+ },
+ {
+  "id": "godan-151",
+  "kind": "godan",
+  "reading": "おく",
+  "mark": "ok",
+  "order": ""
+ },
+ {
+  "id": "godan-152",
+  "kind": "godan",
+  "reading": "おさまる",
+  "mark": "fix",
+  "order": "[オサマ]を4番めに"
+ },
+ {
+  "id": "godan-153",
+  "kind": "godan",
+  "reading": "おしはかる",
+  "mark": "fix",
+  "order": "[おしはからない]は[おしはかる]に合わせてください。"
+ },
+ {
+  "id": "godan-154",
+  "kind": "godan",
+  "reading": "おす",
+  "mark": "fix",
+  "order": "[おしてる]は[おして]に合わせてください。"
+ },
+ {
+  "id": "godan-155",
+  "kind": "godan",
+  "reading": "おとす",
+  "mark": "fix",
+  "order": "[おとしてる]は[落][墜][音]"
+ },
+ {
+  "id": "godan-156",
+  "kind": "godan",
+  "reading": "おる",
+  "mark": "fix",
+  "order": "[おる][おらない]は[折][居][織]、[おった][おって][おってる]は[折][追][負[織]"
+ },
+ {
+  "id": "godan-157",
+  "kind": "godan",
+  "reading": "おろす",
+  "mark": "fix",
+  "order": "5つとも[下][降][卸]の順で。"
+ },
+ {
+  "id": "godan-158",
+  "kind": "godan",
+  "reading": "かいす",
+  "mark": "fix",
+  "order": "5つとも[会][介][解]"
+ },
+ {
+  "id": "godan-159",
+  "kind": "godan",
+  "reading": "かう",
+  "mark": "fix",
+  "order": "[カウ]を4番めに"
+ },
+ {
+  "id": "godan-160",
+  "kind": "godan",
+  "reading": "かえる",
+  "mark": "fix",
+  "order": "[かえって]も[帰][返][買]の順に。"
+ },
+ {
+  "id": "godan-161",
+  "kind": "godan",
+  "reading": "かおる",
+  "mark": "fix",
+  "order": "[かおる]も[かおった]に合わせてください。"
+ },
+ {
+  "id": "godan-162",
+  "kind": "godan",
+  "reading": "かく",
+  "mark": "fix",
+  "order": "[カイテル]を4番めに。"
+ },
+ {
+  "id": "godan-163",
+  "kind": "godan",
+  "reading": "かくす",
+  "mark": "fix",
+  "order": "[かくさない]は[かくしてる]に合わせてください。"
+ },
+ {
+  "id": "godan-164",
+  "kind": "godan",
+  "reading": "かける",
+  "mark": "ok",
+  "order": ""
+ },
+ {
+  "id": "godan-165",
+  "kind": "godan",
+  "reading": "かげる",
+  "mark": "fix",
+  "order": "[かげって]の1、2を入れ替えてください。"
+ },
+ {
+  "id": "godan-166",
+  "kind": "godan",
+  "reading": "かす",
+  "mark": "fix",
+  "order": "[かさない]を[かしてる]に合わせてください。"
+ },
+ {
+  "id": "godan-167",
+  "kind": "godan",
+  "reading": "かたす",
+  "mark": "fix",
+  "order": "[かたさない][かたしてる]は[かたして]に合わせてください。"
+ },
+ {
+  "id": "godan-168",
+  "kind": "godan",
+  "reading": "かつ",
+  "mark": "ok",
+  "order": ""
+ },
+ {
+  "id": "godan-169",
+  "kind": "godan",
+  "reading": "かます",
+  "mark": "ok",
+  "order": ""
+ },
+ {
+  "id": "godan-170",
+  "kind": "godan",
+  "reading": "かる",
+  "mark": "fix",
+  "order": "[からない]は[かる]に合わせてください。"
+ },
+ {
+  "id": "godan-171",
+  "kind": "godan",
+  "reading": "かわす",
+  "mark": "fix",
+  "order": "[かわしてる][かわさない]に合わせる。"
+ },
+ {
+  "id": "godan-172",
+  "kind": "godan",
+  "reading": "かんす",
+  "mark": "fix",
+  "order": "[缶子]は3番めに"
+ },
+ {
+  "id": "godan-173",
+  "kind": "godan",
+  "reading": "きく",
+  "mark": "fix",
+  "order": "[木板]は4番めに"
+ },
+ {
+  "id": "godan-174",
+  "kind": "godan",
+  "reading": "きす",
+  "mark": "fix",
+  "order": "[きしてる]と[きさない]は[きして]に合わせる。"
+ },
+ {
+  "id": "godan-175",
+  "kind": "godan",
+  "reading": "きまる",
+  "mark": "fix",
+  "order": "[黄丸]を3番めに。"
+ },
+ {
+  "id": "godan-176",
+  "kind": "godan",
+  "reading": "きる",
+  "mark": "ok",
+  "order": ""
+ },
+ {
+  "id": "godan-177",
+  "kind": "godan",
+  "reading": "ぎす",
+  "mark": "fix",
+  "order": "[ぎす]は[議][擬][義須][ギス]の順。"
+ },
+ {
+  "id": "godan-178",
+  "kind": "godan",
+  "reading": "くう",
+  "mark": "fix",
+  "order": ""
+ },
+ {
+  "id": "godan-179",
+  "kind": "godan",
+  "reading": "けいす",
+  "mark": "fix",
+  "order": "[けいした][けいしてる]は[けいさない]に合わせる"
+ },
+ {
+  "id": "godan-180",
+  "kind": "godan",
+  "reading": "こう",
+  "mark": "fix",
+  "order": "[こう]の3番は[請]。[こった]は3番めに。"
+ },
+ {
+  "id": "godan-181",
+  "kind": "godan",
+  "reading": "こく",
+  "mark": "fix",
+  "order": "[こく]は[濃く][石][放]"
+ },
+ {
+  "id": "godan-182",
+  "kind": "godan",
+  "reading": "こむ",
+  "mark": "fix",
+  "order": "[コンデ]は3番めに。[こまない]は[こんでる]に合わせる。"
+ },
+ {
+  "id": "godan-183",
+  "kind": "godan",
+  "reading": "こる",
+  "mark": "fix",
+  "order": "[乞田]を3番めに"
+ },
+ {
+  "id": "godan-184",
+  "kind": "godan",
+  "reading": "さく",
+  "mark": "ok",
+  "order": ""
+ },
+ {
+  "id": "godan-185",
+  "kind": "godan",
+  "reading": "ささる",
+  "mark": "fix",
+  "order": "5つともトップを[挿]に"
+ },
+ {
+  "id": "godan-186",
+  "kind": "godan",
+  "reading": "さす",
+  "mark": "fix",
+  "order": "5つとも[指][挿][刺]"
+ },
+ {
+  "id": "godan-187",
+  "kind": "godan",
+  "reading": "さとる",
+  "mark": "ok",
+  "order": ""
+ },
+ {
+  "id": "godan-188",
+  "kind": "godan",
+  "reading": "さばく",
+  "mark": "fix",
+  "order": "[さばく]は[沙漠][裁][捌][砂漠]の順で。"
+ },
+ {
+  "id": "godan-189",
+  "kind": "godan",
+  "reading": "さる",
+  "mark": "ok",
+  "order": ""
+ },
+ {
+  "id": "godan-190",
+  "kind": "godan",
+  "reading": "ざす",
+  "mark": "fix",
+  "order": "[ざさない]は1が[坐]"
+ },
+ {
+  "id": "godan-191",
+  "kind": "godan",
+  "reading": "しく",
+  "mark": "fix",
+  "order": "[しいた][しいて][しいてる]は1が『敷』、2が『強』。[しかない]は[敷][施][布]の順。[しく]の2は[施]、3が[布]"
+ },
+ {
+  "id": "godan-192",
+  "kind": "godan",
+  "reading": "しまう",
+  "mark": "fix",
+  "order": "[しまってる]も[しまって]に合わせる。"
+ },
+ {
+  "id": "godan-193",
+  "kind": "godan",
+  "reading": "しまる",
+  "mark": "fix",
+  "order": "5つとも1、2は[閉][締]の順で、[しまってる]の3つめは[仕舞]"
+ },
+ {
+  "id": "godan-194",
+  "kind": "godan",
+  "reading": "しる",
+  "mark": "ok",
+  "order": ""
+ },
+ {
+  "id": "godan-195",
+  "kind": "godan",
+  "reading": "しるす",
+  "mark": "fix",
+  "order": "5つとも[記][印][徴]の順に。"
+ },
+ {
+  "id": "godan-196",
+  "kind": "godan",
+  "reading": "すく",
+  "mark": "fix",
+  "order": "[すく]で『スク』は3番めに"
+ },
+ {
+  "id": "godan-197",
+  "kind": "godan",
+  "reading": "すすぐ",
+  "mark": "fix",
+  "order": "[すすぐ]に残りの4つを合わせる。"
+ },
+ {
+  "id": "godan-198",
+  "kind": "godan",
+  "reading": "すます",
+  "mark": "fix",
+  "order": "[すます]も他の4つに合わせる。"
+ },
+ {
+  "id": "godan-199",
+  "kind": "godan",
+  "reading": "すむ",
+  "mark": "fix",
+  "order": "[すむ]も[済][住]の順。[すんで]は[済][住][澄][スンデ]の順に"
+ },
+ {
+  "id": "godan-200",
+  "kind": "godan",
+  "reading": "する",
+  "mark": "ok",
+  "order": ""
+ },
+ {
+  "id": "godan-201",
+  "kind": "godan",
+  "reading": "そう",
+  "mark": "fix",
+  "order": "[そう]の2つめに[添]、3つめに[沿]、4つめに[総]"
+ },
+ {
+  "id": "godan-202",
+  "kind": "godan",
+  "reading": "そくす",
+  "mark": "fix",
+  "order": "[側鎖]は3番めに。[そくさない]の1、2は他に合わせてください。"
+ },
+ {
+  "id": "godan-203",
+  "kind": "godan",
+  "reading": "そそぐ",
+  "mark": "fix",
+  "order": "[そそぐ]も他に合わせてください。"
+ },
+ {
+  "id": "godan-204",
+  "kind": "godan",
+  "reading": "たくす",
+  "mark": "fix",
+  "order": "[たくさない]を他の4つと1、2を合わせてください。[炊]はいらない。"
+ },
+ {
+  "id": "godan-205",
+  "kind": "godan",
+  "reading": "たくむ",
+  "mark": "fix",
+  "order": "[たくまない]も1、2を他に合わせてください。"
+ },
+ {
+  "id": "godan-206",
+  "kind": "godan",
+  "reading": "ただす",
+  "mark": "fix",
+  "order": "[ただした][ただしている]も他の3つに合わせてください。"
+ },
+ {
+  "id": "godan-207",
+  "kind": "godan",
+  "reading": "だす",
+  "mark": "fix",
+  "order": "[ださない]も[だした]に合わせてください。1 ,2とも。[打]はいらない。"
+ },
+ {
+  "id": "godan-208",
+  "kind": "godan",
+  "reading": "ちゅうす",
+  "mark": "fix",
+  "order": "5つとも[誅][注][沖]の順に。"
+ },
+ {
+  "id": "godan-209",
+  "kind": "godan",
+  "reading": "つく",
+  "mark": "fix",
+  "order": "[ついて]も他の4つに合わせてください。4番めに[就]"
+ },
+ {
+  "id": "godan-210",
+  "kind": "godan",
+  "reading": "つぐ",
+  "mark": "ok",
+  "order": ""
+ },
+ {
+  "id": "godan-211",
+  "kind": "godan",
+  "reading": "つむ",
+  "mark": "fix",
+  "order": "[つむ]も他の4つに合わせてください。"
+ },
+ {
+  "id": "godan-212",
+  "kind": "godan",
+  "reading": "つる",
+  "mark": "ok",
+  "order": ""
+ },
+ {
+  "id": "godan-213",
+  "kind": "godan",
+  "reading": "つるす",
+  "mark": "ok",
+  "order": ""
+ },
+ {
+  "id": "godan-214",
+  "kind": "godan",
+  "reading": "てきす",
+  "mark": "fix",
+  "order": "5つとも[適]が1つめ、[敵]が2番め。"
+ },
+ {
+  "id": "godan-215",
+  "kind": "godan",
+  "reading": "てる",
+  "mark": "fix",
+  "order": "[テル]を3番めに"
+ },
+ {
+  "id": "godan-216",
+  "kind": "godan",
+  "reading": "とう",
+  "mark": "ok",
+  "order": ""
+ },
+ {
+  "id": "godan-217",
+  "kind": "godan",
+  "reading": "とおる",
+  "mark": "fix",
+  "order": ""
+ },
+ {
+  "id": "godan-218",
+  "kind": "godan",
+  "reading": "とく",
+  "mark": "fix",
+  "order": "[とかない]は1、2を[といてる]に合わせてください。"
+ },
+ {
+  "id": "godan-219",
+  "kind": "godan",
+  "reading": "とぐ",
+  "mark": "fix",
+  "order": "[樋田]を3番めに"
+ },
+ {
+  "id": "godan-220",
+  "kind": "godan",
+  "reading": "とぶ",
+  "mark": "fix",
+  "order": "[頓田]は3番目に"
+ },
+ {
+  "id": "godan-221",
+  "kind": "godan",
+  "reading": "とらす",
+  "mark": "fix",
+  "order": "[トラス]は3番めに"
+ },
+ {
+  "id": "godan-222",
+  "kind": "godan",
+  "reading": "どる",
+  "mark": "ok",
+  "order": ""
+ },
+ {
+  "id": "godan-223",
+  "kind": "godan",
+  "reading": "なかす",
+  "mark": "ok",
+  "order": ""
+ },
+ {
+  "id": "godan-224",
+  "kind": "godan",
+  "reading": "なく",
+  "mark": "ok",
+  "order": ""
+ },
+ {
+  "id": "godan-225",
+  "kind": "godan",
+  "reading": "なす",
+  "mark": "fix",
+  "order": "[なしてる]も[なして]と同じにしてください。"
+ },
+ {
+  "id": "godan-226",
+  "kind": "godan",
+  "reading": "なる",
+  "mark": "fix",
+  "order": "5つとも[鳴][成][為]の順で。"
+ },
+ {
+  "id": "godan-227",
+  "kind": "godan",
+  "reading": "ねる",
+  "mark": "fix",
+  "order": "[弥る]に[ねる]の読みはないはず。"
+ },
+ {
+  "id": "godan-228",
+  "kind": "godan",
+  "reading": "のろう",
+  "mark": "ok",
+  "order": ""
+ },
+ {
+  "id": "godan-229",
+  "kind": "godan",
+  "reading": "はいす",
+  "mark": "fix",
+  "order": "5つとも[拝][配][廃][排]"
+ },
+ {
+  "id": "godan-230",
+  "kind": "godan",
+  "reading": "はく",
+  "mark": "ok",
+  "order": ""
+ },
+ {
+  "id": "godan-231",
+  "kind": "godan",
+  "reading": "はっす",
+  "mark": "fix",
+  "order": "[發]は[発]の旧字体/異体字のはず。[はっす]も[はっした]に合わせてください。"
+ },
+ {
+  "id": "godan-232",
+  "kind": "godan",
+  "reading": "はなす",
+  "mark": "fix",
+  "order": "[はなしてる]は[話][離][放]"
+ },
+ {
+  "id": "godan-233",
+  "kind": "godan",
+  "reading": "はむ",
+  "mark": "ok",
+  "order": ""
+ },
+ {
+  "id": "godan-234",
+  "kind": "godan",
+  "reading": "はらす",
+  "mark": "fix",
+  "order": "5つとも[貼][張][晴]の順で。"
+ },
+ {
+  "id": "godan-235",
+  "kind": "godan",
+  "reading": "はる",
+  "mark": "fix",
+  "order": "[はった]は[貼][張][八田]"
+ },
+ {
+  "id": "godan-236",
+  "kind": "godan",
+  "reading": "ばる",
+  "mark": "ok",
+  "order": ""
+ },
+ {
+  "id": "godan-237",
+  "kind": "godan",
+  "reading": "ひょうす",
+  "mark": "fix",
+  "order": "[ひょうしてる][ひょうさない]も1、2を[評][表]に。"
+ },
+ {
+  "id": "godan-238",
+  "kind": "godan",
+  "reading": "ふかす",
+  "mark": "fix",
+  "order": "[ふかした][ふかして][ふかしてる]は[附加][付加][孵化]で。[ふかさない]は[吹]をトップに"
+ },
+ {
+  "id": "godan-239",
+  "kind": "godan",
+  "reading": "ふく",
+  "mark": "fix",
+  "order": "[ふかない]を[ふいた]に合わせてください。"
+ },
+ {
+  "id": "godan-240",
+  "kind": "godan",
+  "reading": "ふさぐ",
+  "mark": "ok",
+  "order": ""
+ },
+ {
+  "id": "godan-241",
+  "kind": "godan",
+  "reading": "ふす",
+  "mark": "fix",
+  "order": "[ふす][ふしてる]も1、2、3ともに他の3つに合わせてください。"
+ },
+ {
+  "id": "godan-242",
+  "kind": "godan",
+  "reading": "ふる",
+  "mark": "fix",
+  "order": "[ふる][ふった]でも1を[振]、2を[降]にしてください。"
+ },
+ {
+  "id": "godan-243",
+  "kind": "godan",
+  "reading": "へる",
+  "mark": "ok",
+  "order": ""
+ },
+ {
+  "id": "godan-244",
+  "kind": "godan",
+  "reading": "ほる",
+  "mark": "fix",
+  "order": "[洞内]は3番めに"
+ },
+ {
+  "id": "godan-245",
+  "kind": "godan",
+  "reading": "ぼっす",
+  "mark": "fix",
+  "order": "[歿]は[没]の旧字体/異体字であり、常用漢字による書き換えではなさそうなので、[ぼっす]も[ぼっした]の順に合わせてください。"
+ },
+ {
+  "id": "godan-246",
+  "kind": "godan",
+  "reading": "まいる",
+  "mark": "fix",
+  "order": "[マイ]はもう1つ後ろに下げてください。"
+ },
+ {
+  "id": "godan-247",
+  "kind": "godan",
+  "reading": "まかす",
+  "mark": "fix",
+  "order": "残り4つも[まかす]に合わせてください。"
+ },
+ {
+  "id": "godan-248",
+  "kind": "godan",
+  "reading": "まく",
+  "mark": "fix",
+  "order": "[まいた]を[まいて]に合わせてください。"
+ },
+ {
+  "id": "godan-249",
+  "kind": "godan",
+  "reading": "まとう",
+  "mark": "ok",
+  "order": ""
+ },
+ {
+  "id": "godan-250",
+  "kind": "godan",
+  "reading": "まなぶ",
+  "mark": "ok",
+  "order": ""
+ },
+ {
+  "id": "godan-251",
+  "kind": "godan",
+  "reading": "みがく",
+  "mark": "fix",
+  "order": "[みがく]も他の4つに合わせてください。"
+ },
+ {
+  "id": "godan-252",
+  "kind": "godan",
+  "reading": "みつ",
+  "mark": "fix",
+  "order": "[三つ][3つ]を[みっつ]とは読みますが、[三][3]を[みって]とは読む活用はありません。"
+ },
+ {
+  "id": "godan-253",
+  "kind": "godan",
+  "reading": "もうす",
+  "mark": "fix",
+  "order": "[もうしてる]も他のと1、2を合わせてください。"
+ },
+ {
+  "id": "godan-254",
+  "kind": "godan",
+  "reading": "もくす",
+  "mark": "fix",
+  "order": "5つとも1は[目]、2は[黙]にしてください。"
+ },
+ {
+  "id": "godan-255",
+  "kind": "godan",
+  "reading": "もる",
+  "mark": "fix",
+  "order": "[モル]は3番めに。[もった]は[持][盛][漏][保]、[もって]は[持][以][盛][漏]、[もってる]は[持][盛][漏]、[もらない]は[盛][漏]"
+ },
+ {
+  "id": "godan-256",
+  "kind": "godan",
+  "reading": "やくす",
+  "mark": "fix",
+  "order": "[やくさない]も[やくしてる]に合わせてください。"
+ },
+ {
+  "id": "godan-257",
+  "kind": "godan",
+  "reading": "やる",
+  "mark": "fix",
+  "order": "[八][8]では[八って][8って]で『やって』とは読まないので、[やって]も他の4つに合わせてください。[八つ][8つ]を『やっつ』となら読みます。"
+ },
+ {
+  "id": "godan-258",
+  "kind": "godan",
+  "reading": "ゆう",
+  "mark": "fix",
+  "order": "[言]で[ゆった][ゆって][ゆってると読むことはあっても、[行]は[ゆく]以外ではそうならないので、[ゆった][ゆって][ゆってる]は1は[言]、2は[結]で、[行]は取り除いてください。"
+ },
+ {
+  "id": "godan-259",
+  "kind": "godan",
+  "reading": "よぶ",
+  "mark": "ok",
+  "order": ""
+ },
+ {
+  "id": "godan-260",
+  "kind": "godan",
+  "reading": "よむ",
+  "mark": "ok",
+  "order": ""
+ },
+ {
+  "id": "godan-261",
+  "kind": "godan",
+  "reading": "よる",
+  "mark": "fix",
+  "order": "[四って][4って]は[よって]とは読まないので、[よって]は[よった]に合わせてください。[よらない]も[よった]に合わせてください。"
+ },
+ {
+  "id": "godan-262",
+  "kind": "godan",
+  "reading": "わかす",
+  "mark": "fix",
+  "order": "[若杉]はレア地名なので、4番め以降にし、2、3は[わかした]に合わせてください。"
+ },
+ {
+  "id": "godan-263",
+  "kind": "godan",
+  "reading": "わかる",
+  "mark": "fix",
+  "order": "古語で[別つ]はあっても、[別かる]は使わないと思うので[わかった][わかった][わかってる]も[わかる]に合わせてください。"
+ },
+ {
+  "id": "godan-264",
+  "kind": "godan",
+  "reading": "わく",
+  "mark": "ok",
+  "order": ""
+ },
+ {
+  "id": "godan-265",
+  "kind": "godan",
+  "reading": "わる",
+  "mark": "ok",
+  "order": ""
+ }
+]

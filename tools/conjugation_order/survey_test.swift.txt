@@ -1,0 +1,39 @@
+    func testDiagnosticConjugationOrderSurvey() throws {
+        guard let suruPath = ProcessInfo.processInfo.environment["SURVEY_SURU"],
+            let godanPath = ProcessInfo.processInfo.environment["SURVEY_GODAN"] else { return }
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        func shown(_ r: String) -> [String] {
+            let m = converter.multiClauseCandidates(for: r, systemCandidateMode: .surface)
+            return m.isEmpty ? converter.candidates(for: r, limit: 8, systemCandidateMode: .surface) : m
+        }
+        func heads(_ list: [String]) -> [String] {
+            var out: [String] = []
+            for c in list.prefix(6) {
+                let head = String(c.prefix(while: { ch in ch.unicodeScalars.allSatisfy { !(0x3041...0x3096).contains($0.value) } }))
+                if !head.isEmpty, !out.contains(head) { out.append(head) }
+            }
+            return Array(out.prefix(3))
+        }
+        func report(_ kind: String, _ reading: String, _ forms: [(String, String)]) {
+            let rows = forms.map { (label, r) in (label, r, heads(shown(r))) }
+            guard let base = rows.first, base.2.count >= 2 else { return }
+            let differs = rows.dropFirst().filter { $0.2.count >= 2 && Array($0.2.prefix(2)) != Array(base.2.prefix(2)) }
+            if !differs.isEmpty {
+                print("CONJFLIP\t\(kind)\t\(reading)\t" + rows.map { "\($0.0)=\($0.1)=\($0.2.joined(separator: "/"))" }.joined(separator: "\t"))
+            }
+        }
+        for r in try String(contentsOfFile: suruPath, encoding: .utf8).split(separator: "\n").map(String.init) {
+            report("suru", r, [("する", r + "する"), ("した", r + "した"), ("して", r + "して"), ("してる", r + "してる"), ("しない", r + "しない")])
+        }
+        let godanForms: [Character: (String, String, String)] = [
+            "う": ("った", "って", "わない"), "く": ("いた", "いて", "かない"), "ぐ": ("いだ", "いで", "がない"), "す": ("した", "して", "さない"),
+            "つ": ("った", "って", "たない"), "ぬ": ("んだ", "んで", "なない"), "ぶ": ("んだ", "んで", "ばない"), "む": ("んだ", "んで", "まない"), "る": ("った", "って", "らない")
+        ]
+        for r in try String(contentsOfFile: godanPath, encoding: .utf8).split(separator: "\n").map(String.init) {
+            guard let last = r.last, let f = godanForms[last] else { continue }
+            let stem = String(r.dropLast())
+            report("godan", r, [("基本", r), ("た", stem + f.0), ("て", stem + f.1), ("ている", stem + f.1 + "る"), ("ない", stem + f.2)])
+        }
+    }
+
