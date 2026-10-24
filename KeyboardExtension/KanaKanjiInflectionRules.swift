@@ -191,6 +191,13 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "そーです", baseReadingSuffix: "", allowedClasses: .adjectiveI),
         InflectionRule(readingSuffix: "く", baseReadingSuffix: "い", allowedClasses: .adjectiveI),
         InflectionRule(readingSuffix: "くする", baseReadingSuffix: "い", allowedClasses: .adjectiveI),
+        // 連用+する の活用(速くしても/早くして。3778、ユーザ報告: をはやくしても→を破約しても)。くする だけで
+        // 活用形が無く、しても がかな素通りになって 破約+して に負けていた。misc に しても を登録すると
+        // 同+しても(どうしても)/打つ+しても に化けたので、形容詞の活用として作る。くした は 財布をなくした を
+        // かなの なくし+た に倒したので入れない
+        InflectionRule(readingSuffix: "くして", baseReadingSuffix: "い", allowedClasses: .adjectiveI),
+        InflectionRule(readingSuffix: "くしても", baseReadingSuffix: "い", allowedClasses: .adjectiveI),
+        InflectionRule(readingSuffix: "くしない", baseReadingSuffix: "い", allowedClasses: .adjectiveI),
         InflectionRule(readingSuffix: "くなり", baseReadingSuffix: "い", allowedClasses: .adjectiveI),
         InflectionRule(readingSuffix: "くなる", baseReadingSuffix: "い", allowedClasses: .adjectiveI),
         InflectionRule(readingSuffix: "くなります", baseReadingSuffix: "い", allowedClasses: .adjectiveI),
@@ -276,6 +283,30 @@ extension KanaKanjiConverter {
             .filter { !existing.contains($0) }
             .map { InflectionRule(readingSuffix: $0, baseReadingSuffix: "る", allowedClasses: .ichidan) }
         return base + passiveAspect
+    }
+
+    // サ変の受身+te-aspect(発明されてて/されてたら/されてれば 等。3778、ユーザ報告: はつめいされてて→発明されて手)。
+    // されて/されてる/されてた は個別にあったが、されていて の縮約 されてて 等が無かった。一段の受身(上)と同じく
+    // されて の te-aspect 一式を足す(既にある読みは足さない)
+    private static func addingSuruPassiveTeAspect(_ base: [InflectionRule], sahenNoun: Bool) -> [InflectionRule] {
+        let existing = Set(base.map { $0.readingSuffix })
+        let added = KanaKanjiConverter.teAspectInflectionSuffixes(for: "されて")
+            .filter { !existing.contains($0) }
+            .map { suffix in
+                sahenNoun
+                    ? InflectionRule(readingSuffix: suffix, baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru)
+                    : InflectionRule(readingSuffix: suffix, baseReadingSuffix: "する", allowedClasses: .suru)
+            }
+        return base + added
+    }
+
+    // サ変名詞+しかける(断線しかけてる/忘却しかけた。もう少しでそうなる の かける。3778、ユーザ報告:
+    // だんせんしかけてる→断線仕掛けてる)。し+かけ の かな正書を 1 ノードで作り、辞書語 仕掛ける に勝たせる。
+    // 動詞 する 自体(しかける)には付けない(仕掛ける と同形になる)
+    private static func sahenNounKakeruAspectRules() -> [InflectionRule] {
+        (["しかける", "しかけた", "しかけます", "しかけました", "しかけない", "しかけなかった"]
+            + KanaKanjiConverter.teAspectInflectionSuffixes(for: "しかけて"))
+            .map { InflectionRule(readingSuffix: $0, baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru) }
     }
 
     private static func makeIchidanBaseInflectionRules() -> [InflectionRule] { [
@@ -2113,9 +2144,9 @@ extension KanaKanjiConverter {
         rules.append(contentsOf: makeIchidanInflectionRules())
         rules.append(contentsOf: makeIchidanRenyouNounRules())
         rules.append(contentsOf: makeGodanInflectionRules())
-        rules.append(contentsOf: makeSahenNounSuruInflectionRules())
+        rules.append(contentsOf: addingSuruPassiveTeAspect(makeSahenNounSuruInflectionRules(), sahenNoun: true) + sahenNounKakeruAspectRules())
         let suruStart = rules.count
-        rules.append(contentsOf: makeSuruInflectionRules())
+        rules.append(contentsOf: addingSuruPassiveTeAspect(makeSuruInflectionRules(), sahenNoun: false))
         let suruRange = suruStart..<rules.count
         rules.append(contentsOf: makeKuruInflectionRules())
         // 追加で育てた配列は入れ物が倍々に広がり、7,927 本(64B×7,927=約 500KB)に対して約 900KB を占めていた

@@ -2897,10 +2897,12 @@ extension KanaKanjiConverter {
             // カタカナ化ペナルティ(何でもカタカナ化の抑止)。ただし LM unigram を持つ表層は
             // コーパス実在の外来語(サイズ/ゲスト 等、長音なしで readingLooksLikeLoanword に
             // 引っかからない語)なので対象外 — LM が既に価格付けしており二重減点は不当。
+            // 手で登録した語(curated: misc/追加語彙)も対象外。意図して入れたカタカナ語(ブレ。3778)まで消していた
             if Self.isKatakanaString(surface),
                 !readingLooksLikeLoanword(reading),
                 unigramCostByID[surfaceID] == nil,
-                !isSupplementalKatakanaExempt {
+                !isSupplementalKatakanaExempt,
+                !isCurated {
                 penalty += Self.multiClauseKatakanaNativeCost
             }
             // 1 モーラのカタカナ識別ノード(リ/ム/テ 等)は単独の語として立たない(2807)。Wikipedia LM に
@@ -3289,6 +3291,8 @@ extension KanaKanjiConverter {
             if !isKanaIdentity, !isCurated,
                 let category = KanaGakiTable.categoryByReadingAndSurface[reading]?[surface],
                 category != .formalNoun || prevIsInflectionDerived || prevIsDictionaryFormPredicate
+                    // 連体の な(そんな/こんな/静かな)の直後も述語の直後と同じ形式名詞の用法(そんなとき/静かなところ。3778、ユーザ指定)
+                    || prev.hasSuffix("な")
                     // 文頭の 程 は直前の数量(50%+ほど回復した)が入力の外にあるだけで、述語の直後と同じ用法(3600、ユーザ報告)。
                     // 単文節は ほど が先頭なのに連文節だけ 程回復した になっていた。程度の 程 は文頭の名詞用法がほぼ無い
                     || (prevIsBOS && surface == "程") {

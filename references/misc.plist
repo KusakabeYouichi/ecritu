@@ -23,7 +23,8 @@
 	<dict><key>phrase</key><string>ビン詰めする</string><key>shortcut</key><string>びんづめする</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>有する</string><key>shortcut</key><string>ゆうする</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 有する: Sudachi の ゆう は 言う/結う(五段)だけでサ変が無く、土壌を有しています が かな のままだった。名詞 有(ゆう) で登録すると ゆう 全域(言う/結う/夕/優)に波及するので、辞書形の 有する を登録して活用だけ供給する(2878、ユーザ指定) -->
 	<dict><key>phrase</key><string>中分する</string><key>shortcut</key><string>ちゅうぶんする</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 中分する: Sudachi の inflection_classes に ちゅうぶん のサ変が無い。名詞 中分 で登録すると ちゅうぶん の単文節で 中文(seed 先頭)の前に出るため辞書形で登録(ユーザ指定 2887) -->
-	<dict><key>phrase</key><string>心配する</string><key>shortcut</key><string>しんぱいする</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 心配する: Sudachi収穫の inflection_classes が しんぱい に 親拝/進拝 だけを suru 登録し 心配 が未登録(メタデータ穴)。エンジンの推論防御により 心配しなくて 等が導出されず 親拝しなくて が先頭化する。句登録で活用供給 -->
+	<dict><key>phrase</key><string>心配する</string><key>shortcut</key><string>しんぱいする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>発明する</string><key>shortcut</key><string>はつめいする</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 発明する: Sudachi の品詞が サ変形状詞可能 で suru に入らず(build_sudachi_index は サ変可能 だけを見る)、はつめいされてて→発明されて手 だった(ユーザ報告 3778)。心配する と同じメタデータ穴 -->	<!-- 心配する: Sudachi収穫の inflection_classes が しんぱい に 親拝/進拝 だけを suru 登録し 心配 が未登録(メタデータ穴)。エンジンの推論防御により 心配しなくて 等が導出されず 親拝しなくて が先頭化する。句登録で活用供給 -->
 	<dict><key>phrase</key><string>少ない</string><key>shortcut</key><string>すくない</string><key>pos</key><string>形容詞</string></dict>	<!-- 少ない: ランキング一般則(suffix一致+500)だけでは実機の すくないなあ で 酸くない 語幹合成が残るため、curatedで全経路先頭を保証 -->	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>あり得る</string><key>shortcut</key><string>ありえる</string><key>pos</key><string>一段</string></dict>	<!-- あり得る: Sudachi に無く(ありえる はアリエルのみ)、ありえない が 有江ない 等の名前合成に落ちる。一段登録で あり得ない/あり得なかった 等の活用を供給 -->
 	<dict><key>phrase</key><string>耐えきれる</string><key>shortcut</key><string>たえきれる</string><key>pos</key><string>一段</string></dict>	<!-- 耐えきれる/堪えきれる: Sudachi に無く、たえきれなくなって が 栲切れ/多恵きれ 等の名前合成に落ちる。一段登録で活用を供給 -->
@@ -179,6 +180,7 @@
 	<dict><key>phrase</key><string>にしたり</string><key>shortcut</key><string>にしたり</string></dict>
 	<dict><key>phrase</key><string>したら</string><key>shortcut</key><string>したら</string></dict>
 	<dict><key>phrase</key><string>したり</string><key>shortcut</key><string>したり</string></dict>
+	<dict><key>phrase</key><string>すべし</string><key>shortcut</key><string>すべし</string></dict>	<!-- する+べし(〜にすべし)。かな すべし が語として立たず(かな素通り 21000)、ふらんすごにすべし→フランス語に素べし だった(ユーザ報告 3778) -->
 	<dict><key>phrase</key><string>しなかったり</string><key>shortcut</key><string>しなかったり</string></dict>	<!-- 否定の並列 しなかったり(する/した/して)。かな表層は活用供給から除外されるため素通り(7000/字)になり、再現したり+しなかったりする が 再現したりしなかった+利する に負けていた(ユーザ報告 2757) -->
 	<dict><key>phrase</key><string>しなかったりする</string><key>shortcut</key><string>しなかったりする</string></dict>
 	<dict><key>phrase</key><string>しなかったりした</string><key>shortcut</key><string>しなかったりした</string></dict>
@@ -363,6 +365,9 @@
 	<dict><key>phrase</key><string>ほんとだ</string><key>shortcut</key><string>ほんとだ</string></dict>	<!-- ほんとだ(本当だ の口語): かな ほんと(wc4550)は 本当(2581)より重く、連文節・単文節とも 本当だ が先頭になる。口語の相づちはかな表記が普通(ユーザー指定)なので、かな識別を curated で供給して先頭化する(うまく/さっき/いいね と同じ処方) -->
 
 	<!-- ■ 供給欠落の補充(Sudachi 未収録の複合語・固有名。そもそも候補が作れない) -->
+	<dict><key>phrase</key><string>ブレ</string><key>shortcut</key><string>ぶれ</string><key>pos</key><string>名詞</string></dict>	<!-- 味にブレが/手ブレ の ブレ。LM に無くカタカナ化の減点(+100000)で消え、あじにぶれが→味に触れが/味鈍れが だった(ユーザ報告 3778) -->
+	<dict><key>phrase</key><string>サイドブレイキ</string><key>shortcut</key><string>さいどぶれいき</string><key>pos</key><string>名詞</string></dict>	<!-- サイド+ブレイキ の合成は 再度ブレイキ が先頭だった(ユーザ指定 3778) -->
+	<dict><key>phrase</key><string>ブレイキ</string><key>shortcut</key><string>ぶれいき</string><key>pos</key><string>名詞</string></dict>	<!-- ブレーキ の -エイ- 表記(グラデイション/アップデイト と同じ書き方)。部励起/部冷気 だった(ユーザ指定 3778) -->
 	<!-- écritu 自身の語彙の呼称(LM 未収録で 追加+後位 の分割が先頭だった。ユーザ報告 3703) -->
 	<dict><key>phrase</key><string>追加語彙</string><key>shortcut</key><string>ついかごい</string></dict>
 	<dict><key>phrase</key><string>学習語彙</string><key>shortcut</key><string>がくしゅうごい</string></dict>
