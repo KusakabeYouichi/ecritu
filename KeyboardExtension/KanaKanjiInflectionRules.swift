@@ -2109,10 +2109,10 @@ extension KanaKanjiConverter {
         // 追加で育てた配列は入れ物が倍々に広がり、7,927 本(64B×7,927=約 500KB)に対して約 900KB を占めていた
         // (実機のメモリグラフ 2026-10-10)。本数ぴったりの入れ物に写し直す(3491)。Array(スライス) は全体を指す
         // スライスだと元の入れ物をそのまま使い回すので縮まない
+        // 未初期化の入れ物への添字代入(buffer[index] = rule)は「前の値」を解放しようとするので、そこにゴミが
+        // 残っているとここで落ちる(連語スキャン 3774 で TSV 読み込み後の最初の変換が毎回 SIGSEGV)。initialize で写す
         let compactRules = Array(unsafeUninitializedCapacity: rules.count) { buffer, initializedCount in
-            for (index, rule) in rules.enumerated() {
-                buffer[index] = rule
-            }
+            _ = buffer.initialize(from: rules)
             initializedCount = rules.count
         }
         return (compactRules, suruRange)
