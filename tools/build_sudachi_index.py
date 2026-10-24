@@ -32,6 +32,7 @@ from collections import defaultdict
 from typing import Dict, Iterable, List, Optional, Set, Tuple
 
 
+GETA_MARK = "〓"
 SUDACHI_READING_INDEX = 11
 SUDACHI_NORMALIZED_INDEX = 12
 SUDACHI_SURFACE_FALLBACK_INDEX = 4
@@ -520,6 +521,12 @@ def build_index(
 
         for candidate, sources in candidates_with_sources.items():
             if len(candidate) > max_candidate_len:
+                continue
+
+            # 下駄記号『〓』(U+3013、表記できない字の代用)を含む語は収穫しない(3777、ユーザ報告: たかはし→高〓)。
+            # 由来は SudachiDict の small_lex.csv(core にも同梱)758806 行め「高〓,…,名詞,固有名詞,人名,姓,…,タカハシ」の 1 件だけ。
+            # 本来の字(髙 等)が落ちた外字の跡で、語として出す意味が無い。人名表・語コスト・候補の出どころ表もこの収穫から作られる
+            if GETA_MARK in candidate:
                 continue
 
             if should_exclude_candidate_for_reading(reading, candidate, row):
