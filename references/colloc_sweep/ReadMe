@@ -1,0 +1,10 @@
+目的語+助詞+同音動詞の連語スキャン(3774〜)の質問と回答の保存場所。
+再現と照会は tools/colloc_sweep/ のスクリプトで行なう(手順は tools/colloc_sweep/ReadMe)。
+
+<id>/ (3774 など、着手した edition 番号)
+  items.json         確認表に出した質問。組ごとの期待表記・当時の先頭候補・対抗馬・出現数
+  decisions.json     回答。id(確認表の doc id)、key(名詞+助詞+動詞)、mark(fix/ok/空=未入力)、note(備考)
+                     備考に別の表記があるときは期待表記より備考を優先する
+  counts.json.gz     コーパス(jawiki)の3語組の出現数(scan.py の出力)。閾値を変えて再選別するときに使う
+  sweep.tsv.gz       変換器に掛けた読みの一覧(select.py の出力)
+  sweep_result.tsv.gz 変換結果(testDiagnosticCollocationSweep の出力、当時の先頭4候補)

@@ -1,0 +1,17 @@
+目的語+助詞+同音動詞の連語スキャン(3774)。データは references/colloc_sweep/<id>/ に保存する。
+
+1. 走査: .venv/bin/python -I tools/colloc_sweep/scan.py tmp/corpus/jawiki_p1.txt tmp/colloc_counts.json
+   (sudachipy で 名詞+を/が/に/は/も/の+動詞 の3語組を数える。6並列で約2分)
+2. 選別: .venv/bin/python -I tools/colloc_sweep/select.py tmp/colloc_counts.json tmp/colloc_sweep.tsv
+   (同音動詞あり・合計4回以上・優勢7割以上。送り仮名違いは対抗馬に数えない。辞書形+た形)
+3. 変換: TEST_RUNNER_SWEEP_COLLOC=1 で testDiagnosticCollocationSweep → tmp/colloc_sweep_result.tsv(約6.5分)
+4. 質問: python3 -I tools/colloc_sweep/items.py tmp/colloc_sweep_result.tsv references/colloc_sweep/<id>/items.json
+   (動詞部分が期待と違う組だけ。うる=得る は除外)
+5. 確認表: python3 -I tools/colloc_sweep/html.py <items.json> <out.html> を Artifact として公開
+   (capabilities db+user、collection "colloc"、doc id c-NNNN は items の並び順)
+6. 回答の保存: ArtifactData list を out_dir に落としてから
+   python3 -I tools/colloc_sweep/decisions.py export <out_dir>/colloc <items.json> <decisions.json>
+
+照会:
+  前回の質問と回答を並べる  decisions.py show <items.json> <decisions.json> [fix|ok|pending|note]
+  前回やっていない組        decisions.py undone <new_items.json> references/colloc_sweep/*/decisions.json
