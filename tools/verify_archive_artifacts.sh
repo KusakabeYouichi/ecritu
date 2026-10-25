@@ -12,6 +12,7 @@
 # 検査項目: バンドルID / debug.dylib等の混入 / ITSAppUsesNonExemptEncryption /
 #           アイコンのアルファ / appexサイズ / 辞書sqliteがtmpと同一(=テスト済みの辞書) /
 #           プロビジョニング(失効日・配布用か) / get-task-allow / 出荷前診断フラグ(バイナリで判定) /
+#           entitlements(App Group・想定外の権限) / PrivacyInfo.xcprivacy の有無 /
 #           DEBUG 専用・撮影用の文字列の残留 / APP_STORE_BLOCKER の印 / 必要な理由 API の申告 / dSYM / gitツリーの汚れ
 # xcarchive と エクスポート後(.app/.ipa)の違い: xcarchive の中身は開発用プロファイル+get-task-allow=true で
 # 署名されており、エクスポート時に配布用で署名し直される。署名系の検査(get-task-allow・配布プロファイル)は
@@ -183,6 +184,39 @@ check_get_task_allow() {
 check_get_task_allow "$APP" "App"
 check_get_task_allow "$APPEX" "KeyboardExtension"
 
+# 7c) entitlements の中身(セキュリティー検査 2026-10-25)。App Group は両方とも設定の値と一致、Keychain はアプリだけ、
+#     それ以外の権限(通知・iCloud・関連ドメイン等)が増えていないか。署名で付く識別子系と get-task-allow は除く
+EXPECTED_GROUP=$(resolve_xcconfig_value ECRITU_APP_GROUP_IDENTIFIER)
+EXPECTED_GROUP="${EXPECTED_GROUP//\$(ECRITU_APP_BUNDLE_IDENTIFIER)/$EXPECTED_APP_ID}"
+check_entitlements() {
+  local bundle="$1" label="$2" allow_keychain="$3"
+  [[ -d "$bundle" ]] || return
+  local plist group extra keys
+  plist=$(codesign -d --entitlements :- "$bundle" 2>/dev/null)
+  # キー名に「.」を含むので plutil -extract のキーパスでは引けない。JSON にして読む
+  group=$(echo "$plist" | plutil -convert json -o - - 2>/dev/null \
+    | python3 -c 'import json,sys; print(",".join(json.load(sys.stdin).get("com.apple.security.application-groups", [])))' 2>/dev/null)
+  [[ "$group" == "$EXPECTED_GROUP" ]] && ok "$label: App Group $group" || bad "$label: App Group が設定と不一致: '$group'(期待 $EXPECTED_GROUP)"
+  keys=$(echo "$plist" | plutil -convert json -o - - 2>/dev/null | python3 -c 'import json,sys; print("\n".join(json.load(sys.stdin).keys()))' 2>/dev/null)
+  extra=""
+  while IFS= read -r k; do
+    case "$k" in
+      ""|application-identifier|com.apple.developer.team-identifier|get-task-allow|beta-reports-active|com.apple.security.application-groups) ;;
+      keychain-access-groups) [[ "$allow_keychain" == 1 ]] || extra="$extra $k" ;;
+      *) extra="$extra $k" ;;
+    esac
+  done <<< "$keys"
+  [[ -z "$extra" ]] && ok "$label: 想定外の entitlements なし" || bad "$label: 想定外の entitlements:$extra"
+}
+check_entitlements "$APP" "App" 1
+check_entitlements "$APPEX" "KeyboardExtension" 0
+
+# 7d) プライバシー マニフェストが両方の bundle にあるか(必要な理由 API の申告が無いと ITMS-91053)
+for pair in "$APP:App" "$APPEX:KeyboardExtension"; do
+  b="${pair%:*}"; l="${pair##*:}"
+  [[ -f "$b/PrivacyInfo.xcprivacy" ]] && ok "$l: PrivacyInfo.xcprivacy あり" || bad "$l: PrivacyInfo.xcprivacy が無い"
+done
+
 # 9) 出荷前診断の組み込み(ECRITU_PRERELEASE_DIAGNOSTICS)。提出ビルドは 0 でなければならない。
 #    1 のままだと診断カウンターがバイナリに入る(削除キーの黄/橙と数値バッジは 3321 から DEBUG 専用)。
 #    判定は**バイナリの文字列**で行なう(3307。以前は Config/Edition.xcconfig の文字列を見ていたため、
@@ -305,7 +339,16 @@ if [[ $FAIL -eq 0 && $DO_TAG -eq 1 ]]; then
   TAG="submitted-$VER-$BUILD"
   [[ $TESTFLIGHT -eq 1 ]] && TAG="testflight-$VER-$BUILD"
   [[ $DEBUG_BUILD -eq 1 ]] && TAG="testflight-debug-$VER-$BUILD"
-  git tag -f "$TAG" && echo "  🏷  git tag $TAG を作成(追跡性の記録)"
+  # 既にあるタグは動かさない(-f で黙って付け替えると、提出したビルドとコミットの対応が失われる。2026-10-25)
+  if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
+    if [[ "$(git rev-parse "$TAG^{commit}")" == "$(git rev-parse HEAD)" ]]; then
+      echo "  🏷  git tag $TAG は既にこのコミットにある"
+    else
+      bad "git tag $TAG は別のコミット($(git rev-parse --short "$TAG^{commit}"))に付いている。edition を上げて作り直すか、付け替えるなら手で git tag -f"
+    fi
+  else
+    git tag "$TAG" && echo "  🏷  git tag $TAG を作成(追跡性の記録)"
+  fi
 fi
 
 if [[ $FAIL -eq 0 ]]; then echo "== 検証OK =="; else echo "== 検証NG(上の❌を解消してください) =="; exit 1; fi
