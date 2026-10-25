@@ -958,21 +958,34 @@ extension KeyboardViewController {
     // secure でないことが多いワンタイムコード・クレジットカード番号・パスワード種別の
     // textContentType も対象(2785)
     var allowsLearningInCurrentField: Bool {
-        guard textDocumentProxy.isSecureTextEntry != true else {
+        // textContentType は UITextContentType?? (プロトコル要件 optional の optional)
+        Self.allowsLearning(
+            isSecureTextEntry: textDocumentProxy.isSecureTextEntry,
+            keyboardType: textDocumentProxy.keyboardType,
+            textContentType: textDocumentProxy.textContentType ?? nil
+        )
+    }
+
+    // 判定の本体(テストから直接呼ぶ。privacy.html で約束している挙動なので回帰テストで守る。2026-10-25)
+    static func allowsLearning(
+        isSecureTextEntry: Bool?,
+        keyboardType: UIKeyboardType?,
+        textContentType: UITextContentType?
+    ) -> Bool {
+        guard isSecureTextEntry != true else {
             return false
         }
         // 数字入力用のキーボード種別(電話番号・暗証番号・金額)の欄でも学習しない(3309)。ホストが
         // numberPad 等を指定していても écritu は出てくるので、かな→数字の変換(さんぜん→3000)が
         // 読みと対で覚えられるのを防ぐ
-        if let keyboardType = textDocumentProxy.keyboardType,
-            Self.learningDeniedKeyboardTypes.contains(keyboardType) {
+        if let keyboardType,
+            learningDeniedKeyboardTypes.contains(keyboardType) {
             return false
         }
-        // textContentType は UITextContentType?? (プロトコル要件 optional の optional)
-        guard let contentType = textDocumentProxy.textContentType ?? nil else {
+        guard let textContentType else {
             return true
         }
-        return !Self.learningDeniedTextContentTypes.contains(contentType)
+        return !learningDeniedTextContentTypes.contains(textContentType)
     }
 
     // ユーザー名・メールアドレス・電話番号は 3309 で追加(セキュリティー検査 2026-10-02)。

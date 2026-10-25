@@ -21705,6 +21705,25 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(store.shortcutVocabulary(), ["自分で足した", "(^^)"])
         XCTAssertEqual(store.removeImportedUserDictionaryShortcutCandidates(), 0)
     }
+
+    // セキュリティー検査 2026-10-25: 学習しない欄の判定(privacy.html の『パスワード欄では学習しません』)。
+    // 条件が 1 つ落ちても気づけるよう、拒否側を全部並べる
+    func testLearningIsDeniedInSensitiveFields() {
+        func allows(secure: Bool? = nil, keyboard: UIKeyboardType? = nil, content: UITextContentType? = nil) -> Bool {
+            KeyboardViewController.allowsLearning(isSecureTextEntry: secure, keyboardType: keyboard, textContentType: content)
+        }
+        XCTAssertTrue(allows())
+        XCTAssertTrue(allows(secure: false, keyboard: .default, content: .name))
+        XCTAssertFalse(allows(secure: true))
+        XCTAssertFalse(allows(secure: true, keyboard: .default))
+        for keyboard in [UIKeyboardType.numberPad, .phonePad, .asciiCapableNumberPad, .decimalPad] {
+            XCTAssertFalse(allows(keyboard: keyboard), "\(keyboard.rawValue)")
+        }
+        for content in [UITextContentType.password, .newPassword, .oneTimeCode, .creditCardNumber,
+                        .username, .emailAddress, .telephoneNumber] {
+            XCTAssertFalse(allows(content: content), content.rawValue)
+        }
+    }
 }
 
 extension KanaKanjiConverterRegressionTests {
