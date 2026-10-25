@@ -23,7 +23,8 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        # タグは動かせるのでコミットで固定する(v4.4.0。セキュリティー検査 2026-10-25)
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
 
       # 手元と同じ 27.0 に固定する(イメージには 27.1 / 27.2 beta も入っている)
       - name: Select Xcode 27.0
