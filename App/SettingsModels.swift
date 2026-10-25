@@ -872,6 +872,8 @@ enum SymbolCategoryChoice {
         CategoryChoiceDescriptor(id: "3", title: "単位", icon: "℃"),
         CategoryChoiceDescriptor(id: "4", title: "数学", icon: "∑"),
         CategoryChoiceDescriptor(id: "5", title: "矢印", icon: "↗"),
+        // 音楽記号は id 7(既存の保存値をずらさないため)。並びはキーボードと同じく 囲み文字 の前(3779)
+        CategoryChoiceDescriptor(id: "7", title: "音楽記号", icon: "♪"),
         CategoryChoiceDescriptor(id: "6", title: "囲み文字", icon: "⓪")
     ]
 
@@ -885,6 +887,7 @@ enum SymbolCategoryChoice {
         case "4": return "Mathématiques"
         case "5": return "Flèches"
         case "6": return "Caractères entourés"
+        case "7": return "Symboles musicaux"
         default: return id
         }
     }

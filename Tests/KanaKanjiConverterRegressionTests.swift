@@ -18826,6 +18826,44 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertLessThan(elapsedMs, 50, "1000 字の読みで \(elapsedMs)ms。長さの判定が前処理の後ろに戻っていないか")
     }
 
+    // 3779: 音楽記号を compenser に読みとともに登録。compenser は読みの先頭に出るので、同じ読みの言葉
+    // (音符/フラット 等)を先に置いて先頭を変えない。記号パネルのカテゴリーは 丸付文字 の前で、保存値(rawValue)は
+    // 既存をずらさず 7
+    func testMusicSymbolsConvertibleWithoutTakingOverReadings() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for (reading, top, symbols) in [
+            ("おんぷ", "音符", ["♪", "♫", "♬", "♩"]),
+            ("しぶおんぷ", "四分音符", ["♩"]),
+            ("はちぶおんぷ", "八分音符", ["♪", "♫"]),
+            ("じゅうろくぶおんぷ", "十六分音符", ["♬"]),
+            ("ふらっと", "フラット", ["♭"]),
+            ("なちゅらる", "ナチュラル", ["♮"]),
+            ("しゃーぷ", "シャープ", ["♯"]),
+            ("とおんきごう", "ト音記号", ["\u{1D11E}"]),
+            ("へおんきごう", "ヘ音記号", ["\u{1D122}"]),
+            ("だぶるしゃーぷ", "ダブルシャープ", ["\u{1D12A}"]),
+            ("だぶるふらっと", "ダブルフラット", ["\u{1D12B}"]),
+        ] {
+            let candidates = converter.candidates(for: reading, limit: 12, systemCandidateMode: .surface)
+            XCTAssertEqual(candidates.first, top, reading)
+            for symbol in symbols {
+                XCTAssertTrue(candidates.contains(symbol), "\(reading) \(symbol) \(candidates)")
+            }
+        }
+        // 文の中では記号を選ばない
+        let symbolSet = Set("♩♪♫♬♭♮♯\u{1D11E}\u{1D122}\u{1D12A}\u{1D12B}")
+        for reading in ["ふらっとよった", "しゃーぷなかんじ", "おんぷをかく", "なちゅらるなあじ", "とおんきごうをかく"] {
+            let top = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).first ?? ""
+            XCTAssertFalse(top.contains { symbolSet.contains($0) }, "\(reading) → \(top)")
+        }
+        typealias Category = KeyboardRootView.SymbolCategory
+        XCTAssertEqual(Category.allCases.suffix(2), [.music, .enclosed])
+        XCTAssertEqual(Category.enclosed.rawValue, 6)
+        XCTAssertEqual(Category.music.rawValue, 7)
+        XCTAssertEqual(Category.music.symbols(basicOrder: .ascii, temperatureUnit: .celsius).count, 11)
+    }
+
     // 3041: しめちゃうらしいぞ に 閉めちゃう が無い(ユーザ報告)。基底 しめる の seed 順を 閉める 先頭にし
     // (活用派生と連文節 topK=3 の供給に継がれる)、占める は 3 番目に残して 半分を占めています の供給を守る。
     // 目的語による書き分けは を を挟む連語表(ドア→閉/ネクタイ→締/首→絞)

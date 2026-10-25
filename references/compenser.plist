@@ -172,6 +172,34 @@
 	        <dict><key>phrase</key><string>ト音記号</string><key>shortcut</key><string>とおんきごう</string></dict>
 	        <dict><key>phrase</key><string>ヘ音記号</string><key>shortcut</key><string>へおんきごう</string></dict>
 	        <dict><key>phrase</key><string>ハ音記号</string><key>shortcut</key><string>はおんきごう</string></dict>
+	<!-- □ 音楽記号(記号パネルの[♪]と同じもの。ユーザ指定 3779)。compenser は読みの先頭に出るので、同じ読みの言葉を
+	     先に置いてから記号を並べる(おんぷ→音符 などの先頭を変えない)。𝄞𝄢𝄪𝄫 はフォントによっては □ になる。
+     読みは正しいものだけ(しぶおんぷ。分 を ぶん と読む しぶんおんぷ 等は入れない。ユーザ指定 3779) -->
+	        <dict><key>phrase</key><string>音符</string><key>shortcut</key><string>おんぷ</string></dict>
+	        <dict><key>phrase</key><string>音譜</string><key>shortcut</key><string>おんぷ</string></dict>
+	        <dict><key>phrase</key><string>♪</string><key>shortcut</key><string>おんぷ</string></dict>
+	        <dict><key>phrase</key><string>♫</string><key>shortcut</key><string>おんぷ</string></dict>
+	        <dict><key>phrase</key><string>♬</string><key>shortcut</key><string>おんぷ</string></dict>
+	        <dict><key>phrase</key><string>♩</string><key>shortcut</key><string>おんぷ</string></dict>
+	        <dict><key>phrase</key><string>四分音符</string><key>shortcut</key><string>しぶおんぷ</string></dict>
+	        <dict><key>phrase</key><string>♩</string><key>shortcut</key><string>しぶおんぷ</string></dict>
+	        <dict><key>phrase</key><string>八分音符</string><key>shortcut</key><string>はちぶおんぷ</string></dict>
+	        <dict><key>phrase</key><string>♪</string><key>shortcut</key><string>はちぶおんぷ</string></dict>
+	        <dict><key>phrase</key><string>♫</string><key>shortcut</key><string>はちぶおんぷ</string></dict>
+	        <dict><key>phrase</key><string>十六分音符</string><key>shortcut</key><string>じゅうろくぶおんぷ</string></dict>
+	        <dict><key>phrase</key><string>♬</string><key>shortcut</key><string>じゅうろくぶおんぷ</string></dict>
+	        <dict><key>phrase</key><string>フラット</string><key>shortcut</key><string>ふらっと</string></dict>
+	        <dict><key>phrase</key><string>♭</string><key>shortcut</key><string>ふらっと</string></dict>
+	        <dict><key>phrase</key><string>ナチュラル</string><key>shortcut</key><string>なちゅらる</string></dict>
+	        <dict><key>phrase</key><string>♮</string><key>shortcut</key><string>なちゅらる</string></dict>
+	        <dict><key>phrase</key><string>シャープ</string><key>shortcut</key><string>しゃーぷ</string></dict>
+	        <dict><key>phrase</key><string>♯</string><key>shortcut</key><string>しゃーぷ</string></dict>
+	        <dict><key>phrase</key><string>𝄞</string><key>shortcut</key><string>とおんきごう</string></dict>
+	        <dict><key>phrase</key><string>𝄢</string><key>shortcut</key><string>へおんきごう</string></dict>
+	        <dict><key>phrase</key><string>ダブルシャープ</string><key>shortcut</key><string>だぶるしゃーぷ</string></dict>
+	        <dict><key>phrase</key><string>𝄪</string><key>shortcut</key><string>だぶるしゃーぷ</string></dict>
+	        <dict><key>phrase</key><string>ダブルフラット</string><key>shortcut</key><string>だぶるふらっと</string></dict>
+	        <dict><key>phrase</key><string>𝄫</string><key>shortcut</key><string>だぶるふらっと</string></dict>
 	<!-- 照明 -->
 	        <dict><key>phrase</key><string>演色</string><key>shortcut</key><string>えんしょく</string></dict>	<!-- Sudachiにもある(基底2位/4、コスト7404) -->
 	        <dict><key>phrase</key><string>演色性能</string><key>shortcut</key><string>えんしょくせいのう</string></dict>

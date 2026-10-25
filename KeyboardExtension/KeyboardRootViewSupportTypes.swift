@@ -390,7 +390,10 @@ extension KeyboardRootView {
         case units
         case math
         case arrows
-        case enclosed
+        // 音楽記号(3779)は 丸付文字 の前に並べるが、rawValue は設定(切替時に開くカテゴリー)に保存されるので
+        // 既存の値をずらさず末尾の 7 を使う。並びは宣言順(allCases)
+        case music = 7
+        case enclosed = 6
 
         var id: Int { rawValue }
 
@@ -402,6 +405,7 @@ extension KeyboardRootView {
             case .units: return temperatureUnit.primarySymbol
             case .math: return "∑"
             case .arrows: return "↗"
+            case .music: return "♪"
             case .enclosed: return "⓪"
             }
         }
@@ -414,6 +418,7 @@ extension KeyboardRootView {
             case .units: return "Unités"
             case .math: return "Mathématiques"
             case .arrows: return "Flèches"
+            case .music: return "Symboles musicaux"
             case .enclosed: return "Caractères entourés"
             }
         }
@@ -432,6 +437,8 @@ extension KeyboardRootView {
                 return Color(red: 0.77, green: 0.30, blue: 0.23)
             case .arrows:
                 return Color(red: 0.48, green: 0.36, blue: 0.87)
+            case .music:
+                return Color(red: 0.72, green: 0.52, blue: 0.08)
             case .enclosed:
                 return Color(red: 0.88, green: 0.26, blue: 0.57)
             }
@@ -463,6 +470,8 @@ extension KeyboardRootView {
                 return Self.mathSymbols
             case .arrows:
                 return Self.arrowSymbols
+            case .music:
+                return Self.musicNoteSymbols + Self.musicAccidentalSymbols + Self.musicStaffSymbols
             case .enclosed:
                 return Self.enclosedSymbols
             }
@@ -564,6 +573,13 @@ extension KeyboardRootView {
             "⇐", "⇑", "⇒", "⇓", "⇔", "⇕", "↩", "↪",
             "➔", "➜", "➝", "➞", "➟", "➠"
         ]
+
+        // 音楽記号(3779)。音符 → 変化記号 → 譜表の記号 の 3 グループ。最初の 2 グループ(U+2669〜266F)は
+        // ほぼどのフォントにもあり、♪♭♯ は JIS X 0208 にもある。譜表の記号(Musical Symbols ブロック U+1D100〜)は
+        // iOS では出るが、和文フォントには無いことが多く、送り先の環境によっては □ になる
+        static let musicNoteSymbols: [String] = ["♩", "♪", "♫", "♬"]
+        static let musicAccidentalSymbols: [String] = ["♭", "♮", "♯"]
+        static let musicStaffSymbols: [String] = ["\u{1D11E}", "\u{1D122}", "\u{1D12A}", "\u{1D12B}"]
 
         private static let enclosedSymbols: [String] = [
             "©", "®", "⓪", "①", "②", "③", "④", "⑤", "⑥", "⑦", "⑧", "⑨", "⑩", "⑪", "⑫", "⑬", "⑭", "⑮", "⑯", "⑰", "⑱", "⑲", "⑳",
@@ -851,17 +867,9 @@ extension KeyboardRootView {
                     .frame(height: mainFlickKeyHeight)
                     PanelAdvanceKeyboardKey(action: onAdvanceKeyboard, height: mainFlickKeyHeight)
 
-                    ForEach(KeyboardRootView.SymbolCategory.allCases, id: \.self) { category in
-                        SymbolCategoryKeyButton(
-                            icon: category.icon(temperatureUnit: temperatureUnit),
-                            tintColor: category.tintColor,
-                            isSelected: selectedSymbolCategory == category,
-                            accessibilityLabel: category.frenchName,
-                            action: { selectedSymbolCategory = category }
-                        )
+                    symbolCategoryTabs
                         .frame(maxWidth: .infinity)
                         .frame(height: mainFlickKeyHeight)
-                    }
 
                     ActionKeyButton(
                         title: "⌫",
@@ -878,6 +886,43 @@ extension KeyboardRootView {
                 .frame(height: mainFlickKeyHeight)
             }
             .frame(height: fourRowAlignedClusterHeight, alignment: .top)
+        }
+
+        // カテゴリーのタブ(3779)。タブの幅は 7 つで割っていたときのまま変えず、音楽記号を足して増えた分は
+        // 横スクロールで出す。末尾の 丸付文字 はスクロールしないと見えない(ユーザ指定)。選んだカテゴリーが
+        // 見えていなければ(切替時に 丸付文字 を開く設定など)見える所まで動かす
+        static let symbolCategoryVisibleTabCount = 7
+
+        private var symbolCategoryTabs: some View {
+            GeometryReader { proxy in
+                let visibleCount = CGFloat(Self.symbolCategoryVisibleTabCount)
+                let tabWidth = max(0, (proxy.size.width - keyboardRowSpacing * (visibleCount - 1)) / visibleCount)
+                ScrollViewReader { scroller in
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: keyboardRowSpacing) {
+                            ForEach(KeyboardRootView.SymbolCategory.allCases, id: \.self) { category in
+                                SymbolCategoryKeyButton(
+                                    icon: category.icon(temperatureUnit: temperatureUnit),
+                                    tintColor: category.tintColor,
+                                    isSelected: selectedSymbolCategory == category,
+                                    accessibilityLabel: category.frenchName,
+                                    action: { selectedSymbolCategory = category }
+                                )
+                                .frame(width: tabWidth, height: mainFlickKeyHeight)
+                                .id(category)
+                            }
+                        }
+                    }
+                    .onAppear {
+                        scroller.scrollTo(selectedSymbolCategory)
+                    }
+                    .onChange(of: selectedSymbolCategory) { _, category in
+                        withAnimation(.easeOut(duration: 0.2)) {
+                            scroller.scrollTo(category)
+                        }
+                    }
+                }
+            }
         }
 
         @ViewBuilder
@@ -922,6 +967,24 @@ extension KeyboardRootView {
                 let numeroCount = KeyboardRootView.SymbolCategory.numeroSymbols.count
                 let numeroStart = max(0, symbols.count - numeroCount)
                 symbolGridSections([Array(symbols.prefix(numeroStart)), Array(symbols.suffix(numeroCount))])
+
+            case .music:
+                let noteCount = KeyboardRootView.SymbolCategory.musicNoteSymbols.count
+                let accidentalCount = KeyboardRootView.SymbolCategory.musicAccidentalSymbols.count
+                let accidentalEnd = min(symbols.count, noteCount + accidentalCount)
+                VStack(alignment: .leading, spacing: keyboardRowSpacing) {
+                    symbolGridSections([
+                        Array(symbols.prefix(noteCount)),
+                        Array(symbols[min(symbols.count, noteCount)..<accidentalEnd]),
+                        Array(symbols.dropFirst(accidentalEnd))
+                    ])
+                    // 譜表の記号は送り先のフォントに無いことがある旨を書き添える(ユーザ指定 3779)
+                    Text("最後の行の記号は、フォントによっては表示されません(□ などになります)。")
+                        .font(.system(size: 11))
+                        .foregroundStyle(KeyboardThemePalette.keyLabel.opacity(0.6))
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.horizontal, 4)
+                }
 
             case .enclosed:
                 let numberStart = symbols.firstIndex(of: "⓪")
