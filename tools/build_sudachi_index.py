@@ -276,6 +276,20 @@ def is_nonbase_inflected_row(row: List[str]) -> bool:
     return form not in BASE_INFLECTION_FORMS
 
 
+def is_suffix_stem_row(row: List[str]) -> bool:
+    """形容詞的な接尾辞(〜難い・〜易い・〜臭い 等)の語幹の行を判定する。
+
+    語幹(難(にく)・易(やす)・臭(くさ))は単独で語にならず、助詞が直接付くことも無い
+    (にくが→難が は誤り)。形容詞の語幹は is_nonbase_inflected_row で除外済みだが、
+    品詞が接尾辞の行はそこをすり抜けていた。活用は辞書形(難い 等)から活用エンジンが作る。"""
+    pos = row[SUDACHI_POS_INDEX].strip() if len(row) > SUDACHI_POS_INDEX else ""
+    if not pos.startswith("接尾辞"):
+        return False
+
+    form = row[SUDACHI_INFLECTION_FORM_INDEX].strip() if len(row) > SUDACHI_INFLECTION_FORM_INDEX else ""
+    return form.startswith("語幹")
+
+
 def is_valid_single_reading_candidate(
     reading: str,
     candidate: str,
@@ -477,6 +491,10 @@ def build_index(
         # 活用語は辞書形のみ収穫。活用形(撥音便等)は断片かつ誤読みバケツを
         # 汚染するため除外し、活用は活用エンジンに生成させる。
         if is_nonbase_inflected_row(row):
+            continue
+
+        # 接尾辞の語幹(難(にく) 等)も同じく単独の語にしない。
+        if is_suffix_stem_row(row):
             continue
 
         reading = extract_reading(row)
