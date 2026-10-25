@@ -32,6 +32,12 @@ for a in "$@"; do
   [[ "$a" == "--testflight-debug" ]] && { TESTFLIGHT=1; DEBUG_BUILD=1; }
 done
 [[ "$TARGET" == --* ]] && TARGET=""
+# 以降の相対パス(App/・tmp/・KeyboardExtension/ と git)はリポジトリ直下を基準にする。別の場所から
+# 実行すると、見るものが無いのに ✅ になる検査があった(セキュリティー検査 2026-10-25)。
+# 引数の相対パスは移動の前に絶対パスへ直す
+ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+[[ -n "$TARGET" && "$TARGET" != /* ]] && TARGET="$PWD/$TARGET"
+cd "$ROOT_DIR" || { echo "リポジトリ直下へ移れません: $ROOT_DIR"; exit 1; }
 if [[ $DEBUG_BUILD -eq 1 ]]; then MODE_LABEL="TestFlight(Debug 構成)"
 elif [[ $TESTFLIGHT -eq 1 ]]; then MODE_LABEL="TestFlight(Release 構成)"
 else MODE_LABEL="App Store 審査用"; fi
@@ -66,7 +72,6 @@ APPEX_BIN=""
 # 1) バンドルID。期待値はリテラルでなく xcconfig から解決する(Config/Signing.local.xcconfig の
 #    上書きを尊重。2026-09-11 に既定の com.kusakabe.ecritu が取得不能になり jp.or.pleiades.merope.ecritu
 #    へ切り替えたため。notes/identifiers.md §8)
-ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 resolve_xcconfig_value() {
   local key="$1" value=""
   for f in "$ROOT_DIR/Config/Edition.xcconfig" "$ROOT_DIR/Config/Signing.local.xcconfig"; do
@@ -95,11 +100,18 @@ ITS=$(/usr/libexec/PlistBuddy -c "Print ITSAppUsesNonExemptEncryption" "$APP/Inf
 
 # 4) アイコンのアルファ(ソース資産側で検査)
 ALPHA_BAD=0
+ICON_COUNT=0
 for f in App/Assets.xcassets/AppIcon.appiconset/icon-*.png; do
+  [[ -f "$f" ]] || continue
+  ICON_COUNT=$((ICON_COUNT + 1))
   has=$(sips -g hasAlpha "$f" 2>/dev/null | awk '/hasAlpha/{print $2}')
   [[ "$has" == "yes" ]] && { ALPHA_BAD=1; bad "アイコンにアルファ: $f"; }
 done
-[[ $ALPHA_BAD -eq 0 ]] && ok "アイコン9枚ともアルファなし"
+if (( ICON_COUNT == 0 )); then
+  bad "アイコンの画像が見つからない(App/Assets.xcassets/AppIcon.appiconset)"
+elif [[ $ALPHA_BAD -eq 0 ]]; then
+  ok "アイコン${ICON_COUNT}枚ともアルファなし"
+fi
 
 # 5) appexサイズ
 if [[ -d "$APPEX" ]]; then
@@ -109,11 +121,19 @@ if [[ -d "$APPEX" ]]; then
   if (( SZ < 130 )); then ok "appexサイズ ${SZ}MB (<130MB)"; else warn "appexサイズ ${SZ}MB — 想定(約103MB)より大きい"; fi
 fi
 
-# 6) 辞書がテスト済みのtmpと同一か
-if [[ -f "$APPEX/kana_kanji_dictionary.sqlite" && -f tmp/kana_kanji_dictionary.sqlite ]]; then
-  H1=$(shasum -a 256 "$APPEX/kana_kanji_dictionary.sqlite" | cut -d' ' -f1)
-  H2=$(shasum -a 256 tmp/kana_kanji_dictionary.sqlite | cut -d' ' -f1)
-  [[ "$H1" == "$H2" ]] && ok "辞書sqliteがtmpと同一(テスト済み辞書がそのまま入っている)" || bad "辞書sqliteがtmpと不一致 — テスト後に辞書が変わっている"
+# 6) 同梱辞書の行数と病名の混入は、tmp/ の有無に関係なく必ず見る。以前は tmp/ に辞書が無いと検査ごと
+#    飛ばしていて、tmp/ が無いときに同梱される 1 行だけの仮辞書でも「検証OK」になった(セキュリティー検査 2026-10-25)。
+#    tmp と同一かどうか(テスト済みの辞書か)は tmp/ があるときだけ比べる
+if [[ ! -f "$APPEX/kana_kanji_dictionary.sqlite" ]]; then
+  bad "辞書sqliteが拡張に入っていない"
+else
+  if [[ -f tmp/kana_kanji_dictionary.sqlite ]]; then
+    H1=$(shasum -a 256 "$APPEX/kana_kanji_dictionary.sqlite" | cut -d' ' -f1)
+    H2=$(shasum -a 256 tmp/kana_kanji_dictionary.sqlite | cut -d' ' -f1)
+    [[ "$H1" == "$H2" ]] && ok "辞書sqliteがtmpと同一(テスト済み辞書がそのまま入っている)" || bad "辞書sqliteがtmpと不一致 — テスト後に辞書が変わっている"
+  else
+    warn "tmp/kana_kanji_dictionary.sqlite が無いので、テスト済みの辞書と同一かは確かめられない"
+  fi
   ROWS=$(sqlite3 "file:$APPEX/kana_kanji_dictionary.sqlite?mode=ro&immutable=1" "SELECT count(*) FROM dictionary_entries" 2>/dev/null || echo 0)
   (( ROWS > 100000 )) && ok "辞書行数 $ROWS" || bad "辞書行数が異常: $ROWS"
   # 病名(references/médicaux.plist)は配布の許諾が無いうちは配らない(references/ReadMe 参照)。病名にしか無い語を目印に見る
