@@ -218,6 +218,9 @@ extension KeyboardViewController {
             return
         }
         let sequencer = candidateGenerationSequencer
+        // 直前の確定済み文字は main で読んでから渡す(textDocumentProxy は UIKit の main 専用で、
+        // 候補生成キューから読むと main の編集と順序が不定になる。セキュリティー検査 2026-10-25)
+        let precedingCharacter = textDocumentProxy.documentContextBeforeInput?.last
 
         candidateGenerationQueue.async { [weak self] in
             // 旧世代ジョブの早期スキップ: 直列キューで自分の番が来た時点で新しい打鍵が
@@ -250,8 +253,7 @@ extension KeyboardViewController {
             // 合流。既存の単文節候補は必ず残し、重複は除外する(退行防止)。
             if Self.isMultiClauseConversionEnabled {
                 // 直前の確定済み文字が数字なら文頭の助数詞を持ち上げる(2 確定→じしけんが→次試験が。2887)。
-                // 単文節側の digitContextCounterBoostedCandidates と同じ文脈判定
-                let precedingCharacter = self?.textDocumentProxy.documentContextBeforeInput?.last
+                // 単文節側の digitContextCounterBoostedCandidates と同じ文脈判定(値は kickoff 時に main で読んだもの)
                 var multiClause = autoreleasepool {
                     converter.multiClauseCandidates(
                         for: reading,
