@@ -1,6 +1,6 @@
 # App Store 提出用メタデータ(écritu)
 
-作成: 2026-09-01、検証 2026-10-04(審査ノート・輸出コンプライアンス・キーワードの字数を更新。審査ノートとスクリーンショットは ASC にも反映済み)。文字数制限を検証済み。ASCの入力欄にそのまま貼り付け可。
+作成: 2026-09-01、検証 2026-10-04(審査ノート・輸出コンプライアンス・キーワードの字数を更新。審査ノートとスクリーンショットは ASC にも反映済み)、2026-10-25(説明文を全10章・音楽記号に、審査ノートの連絡先の項目を実装に合わせて更新。ASC へは未反映)。文字数制限を検証済み。ASCの入力欄にそのまま貼り付け可。
 
 ## アプリ名(30字以内)
 
@@ -32,7 +32,7 @@
 文節をまたいだ連文節変換に対応。確定した候補は端末内で学習され、使うほどあなたの言葉に馴染みます。単語の手動登録(追加語彙)、出したくない候補を隠す抑制語彙、定型文のショートカット語彙、iOS の連絡先やユーザ辞書との連携も。
 
 ■ 絵文字・顔文字・記号のパネル
-カテゴリー分けされた絵文字(国旗は長押しで国名をフランス語表示)、読みから探せる顔文字検索、通貨・単位・数学記号・矢印・囲み文字。漢字1字を部首や画数から探せる単漢字入力も備えています。
+カテゴリー分けされた絵文字(国旗は長押しで国名をフランス語表示)、読みから探せる顔文字検索、通貨・単位・数学記号・矢印・音楽記号・囲み文字。漢字1字を部首や画数から探せる単漢字入力も備えています。
 
 ■ 数字・単位・日付の入力補助
 数字モードでは 3,000 のような桁区切り、km や ℃ などの単位、金額、日付や曜日(カレンダー表示つき)まで、書式化された数値をそのまま入力できます。
@@ -43,7 +43,7 @@
 ■ 細かな設定
 かな配列(5×2 / 3×3+わ)、フリック方向(hanabi / littlebear / écritu)、英字配列(QWERTY / AZERTY / 3×3)、テーマとアクセントカラー、フリックガイドの表示方法など、細部まで好みに合わせられます。
 
-操作方法の詳しい説明は、操作マニュアル(全9章。アプリのアイコンに触れると出るメニューから Safari で開けます)をご覧ください。
+操作方法の詳しい説明は、操作マニュアル(全10章。アプリのアイコンに触れると出るメニューから Safari で開けます)をご覧ください。
 
 ## カテゴリー
 
@@ -72,10 +72,10 @@
 
 ## 審査ノート(Notes for Review 欄)
 
-App Group を用いて本体アプリとキーボード拡張の間で設定・学習語彙を共有するためにフルアクセスを使用します。フルアクセスは任意で、オフでもほとんどの入力・変換機能が動作します(学習と設定の反映だけが行なわれません)。ネットワーク通信を行なうコードは含まれておらず、入力内容が端末外へ送信されることはありません。連絡先名の変換候補機能は初期設定でオフで、ユーザーが設定でオンにしたときだけ許可を求め、本体アプリのみが連絡先を読み取り、氏名と読みの対応表を iOS のファイル保護(Data Protection)を掛けて端末内に保存します(バックアップ対象外)。また、設定により iOS のユーザ辞書に登録された単語を変換候補に使うことができます。その単語と読みの対応表も同じく端末内に保存し、端末外へは送信しません。パスワード・ワンタイムコード・カード番号等のフィールドでは学習を行いません。アプリは iPhone 専用ですが、iPad の互換モードでもキーボードは一覧に出て使えます(フローティングからフル表示へ切り替えた直後に面が出ないときは、キーボードを閉じて開き直してください。iOS 側の挙動です)。キーボード拡張は約 80MB の変換辞書を同梱し、完全オフラインで動作します。
+App Group を用いて本体アプリとキーボード拡張の間で設定・学習語彙を共有するためにフルアクセスを使用します。フルアクセスは任意で、オフでもほとんどの入力・変換機能が動作します(学習と設定の反映だけが行なわれません)。ネットワーク通信を行なうコードは含まれておらず、入力内容が端末外へ送信されることはありません。連絡先名の変換候補機能は初期設定でオフで、ユーザーが設定でオンにしたときだけ許可を求め、本体アプリのみが連絡先を読み取り、氏名(姓・名・ミドルネーム)・ニックネーム・会社名と読みの対応表を iOS のファイル保護(Data Protection)を掛けて端末内に保存します(バックアップ対象外)。また、設定により iOS のユーザ辞書に登録された単語を変換候補に使うことができます。その単語と読みの対応表も同じく端末内に保存し、端末外へは送信しません。パスワード・ワンタイムコード・カード番号等のフィールドでは学習を行いません。アプリは iPhone 専用ですが、iPad の互換モードでもキーボードは一覧に出て使えます(フローティングからフル表示へ切り替えた直後に面が出ないときは、キーボードを閉じて開き直してください。iOS 側の挙動です)。キーボード拡張は約 80MB の変換辞書を同梱し、完全オフラインで動作します。
 
 (英語で求められた場合)
-Full Access is used solely to share settings and the learned vocabulary between the container app and the keyboard extension via an App Group. Full Access is optional: most input and conversion features work without it (only learning persistence and settings sync are skipped). The app contains no networking code; nothing typed ever leaves the device. The app is iPhone-only; in iPad compatibility mode the keyboard still appears in the keyboard list and works (if the keyboard does not appear right after switching from floating to full-width, close and reopen it — this is iOS behavior). The optional contact-name feature is off by default, asks for permission only when the user turns it on in Settings, reads contacts only in the container app, and stores the name-to-reading mapping on device protected by iOS Data Protection and excluded from backups. Depending on a setting, the keyboard can also use the words registered in the iOS user dictionary as conversion candidates; that word-to-reading mapping is likewise stored only on the device and never sent off it. No learning occurs in password, one-time-code or credit-card fields. The keyboard extension bundles an ~80 MB conversion dictionary and works fully offline.
+Full Access is used solely to share settings and the learned vocabulary between the container app and the keyboard extension via an App Group. Full Access is optional: most input and conversion features work without it (only learning persistence and settings sync are skipped). The app contains no networking code; nothing typed ever leaves the device. The app is iPhone-only; in iPad compatibility mode the keyboard still appears in the keyboard list and works (if the keyboard does not appear right after switching from floating to full-width, close and reopen it — this is iOS behavior). The optional contact-name feature is off by default, asks for permission only when the user turns it on in Settings, reads contacts only in the container app, and stores a mapping of contact names (given, family and middle names), nicknames and company names to their readings on device protected by iOS Data Protection and excluded from backups. Depending on a setting, the keyboard can also use the words registered in the iOS user dictionary as conversion candidates; that word-to-reading mapping is likewise stored only on the device and never sent off it. No learning occurs in password, one-time-code or credit-card fields. The keyboard extension bundles an ~80 MB conversion dictionary and works fully offline.
 
 ## 輸出コンプライアンス(暗号化)
 
