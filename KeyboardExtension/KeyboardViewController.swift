@@ -284,7 +284,9 @@ final class KeyboardViewController: UIInputViewController {
     var cachedContextAfterInput: String?
     var kanaKanjiStore: KanaKanjiStore { Self.sharedKanaKanjiStore }
     var kanaKanjiConverter: KanaKanjiConverter { Self.sharedKanaKanjiConverter }
-    lazy var sharedDefaults = UserDefaults(suiteName: SharedDefaultsKeys.appGroupID)
+    // 候補生成キュー・utility キューからも読むので lazy にしない(lazy var は初期化がスレッド安全でない。
+    // セキュリティー検査 2026-10-25)
+    let sharedDefaults = UserDefaults(suiteName: SharedDefaultsKeys.appGroupID)
     #if DEBUG
     #endif
     let diagnosticsState = DiagnosticsState()
