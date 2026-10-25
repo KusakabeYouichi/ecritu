@@ -1582,8 +1582,6 @@ bobards	bobards	13164
 bobines	bobines	13914
 bobo	bobo	14152
 bocal	bocal	11378
-boche	boche	10664
-boches	boches	6427
 bodhi	bodhi	12896
 boeuf	boeuf	5078
 boeufs	boeufs	14518
@@ -7717,7 +7715,6 @@ jambon	jambon	5111
 janvier	janvier	5355
 japonais	japonais	2897
 japonaise	japonaise	7480
-japs	japs	13523
 jardin	jardin	1233
 jardinier	jardinier	6179
 jardins	jardins	6655

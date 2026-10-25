@@ -5345,7 +5345,6 @@ famosi	famosi	2915
 famoso	famoso	1738
 fan	fan	1781
 fanciulla	fanciulla	13230
-fanculo	fanculo	4615
 fango	fango	6211
 fanno	fanno	225
 fans	fans	14224
@@ -9969,7 +9968,6 @@ pompa	pompa	7707
 pompe	pompe	12696
 pompei	pompei	11326
 pompieri	pompieri	13574
-pompino	pompino	14982
 pone	pone	2941
 ponendo	ponendo	9553
 pongono	pongono	12697
@@ -14959,7 +14957,6 @@ zen	zen	12951
 zero	zero	1408
 zhang	zhang	13162
 zia	zia	3902
-zingari	zingari	12770
 zio	zio	2356
 zitta	zitta	10828
 zitti	zitti	10829

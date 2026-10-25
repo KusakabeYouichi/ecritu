@@ -10865,7 +10865,6 @@ culpa	culpa	44110
 cultural	cultural	22925
 culture	culture	15168
 cumberland	Cumberland	58599
-cumshot	Cumshot	37106
 cup	cup	3284
 cupcake	cupcake	57851
 cupcakes	Cupcakes	35023
@@ -17536,10 +17535,6 @@ ficht	ficht	57152
 fichte	Fichte	17376
 fichtelgebirge	Fichtelgebirge	31193
 fichten	Fichten	26010
-ficke	ficke	26416
-ficker	Ficker	25248
-fickst	fickst	39992
-fickte	fickte	46766
 fiction	fiction	10795
 fide	fide	45452
 fidel	fidel	24843
@@ -27059,7 +27054,6 @@ janssen	Janssen	19576
 januar	Januar	727
 january	January	49498
 janus	Janus	31736
-jap	jap	7069
 japan	Japan	2048
 japaner	Japaner	7213
 japanerin	Japanerin	40714
@@ -27667,7 +27661,6 @@ kampften	kämpften	11642
 kamps	Kamps	55777
 kamst	kamst	35713
 kan	kan	14214
-kanacken	Kanacken	59574
 kanada	Kanada	3594
 kanadas	Kanadas	29907
 kanadier	Kanadier	14485
@@ -30157,7 +30150,6 @@ krummen	krummen	35198
 krummen	krümmen	57340
 krummung	Krümmung	36752
 krupp	Krupp	17711
-kruppel	Krüppel	35736
 kruse	Kruse	13531
 kruste	Kruste	26502
 kruzifix	Kruzifix	36751
@@ -34794,7 +34786,6 @@ monet	Monet	33707
 monetare	monetäre	43106
 monetaren	monetären	45672
 money	money	8109
-mongo	Mongo	50202
 mongolei	Mongolei	26126
 mongolen	Mongolen	33217
 mongolischen	mongolischen	46326
@@ -38749,7 +38740,6 @@ pilsen	Pilsen	31821
 pilz	Pilz	9589
 pilze	Pilze	9769
 pilzen	Pilzen	20585
-pimmel	pimmel	20921
 pimp	pimp	58209
 pin	pin	11482
 pinakothek	Pinakothek	48313
@@ -43439,7 +43429,6 @@ scheinwerfern	Scheinwerfern	43805
 scheissdreck	Scheißdreck	23110
 scheissegal	scheißegal	11071
 scheissen	scheißen	14287
-scheisser	Scheißer	47018
 scheisshaufen	Scheißhaufen	55989
 scheisshaus	Scheißhaus	52376
 scheisskerl	Scheißkerl	59757
@@ -50323,8 +50312,6 @@ transaktion	Transaktion	17826
 transaktionen	Transaktionen	15834
 transatlantische	transatlantische	53199
 transatlantischen	transatlantischen	45164
-transe	Transe	29648
-transen	Transen	34835
 transfer	Transfer	7987
 transferieren	transferieren	43883
 transferiert	transferiert	34836
@@ -56167,7 +56154,6 @@ vote	vote	24687
 voten	voten	30548
 voting	voting	21357
 votum	votum	17548
-votze	Votze	54717
 vous	vous	21358
 vox	vox	16949
 voyage	voyage	38049
@@ -57517,9 +57503,6 @@ wich	wich	18495
 wichen	wichen	46561
 wichita	Wichita	59196
 wichs	wichs	56162
-wichse	wichse	41524
-wichsen	wichsen	14364
-wichst	wichst	41525
 wicht	Wicht	39196
 wichtig	wichtig	403
 wichtige	wichtige	1093

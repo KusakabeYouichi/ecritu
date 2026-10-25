@@ -6,6 +6,7 @@
 !dick@de
 !retard@fr
 !fick@fr
+!transe@fr
 
 # ── English ──
 nigger
@@ -76,6 +77,8 @@ dildo
 dildos
 porn
 porno
+cumshot
+cumshots
 
 # ── Deutsch ──
 neger
@@ -119,6 +122,27 @@ muschis
 titten
 pisser
 bastard
+kanacken
+krüppel
+krüppeln
+mongo
+mongos
+transe
+transen
+votze
+votzen
+ficke
+fickst
+fickte
+ficker
+scheißer
+scheisser
+wichsen
+wichst
+wichse
+pimmel
+jap
+japs
 
 # ── Français ──
 nègre
@@ -155,6 +179,8 @@ niquer
 niqué
 salaud
 salauds
+boche
+boches
 
 # ── Italiano ──
 negro
@@ -196,3 +222,10 @@ scopare
 fottere
 fottuto
 fottuti
+fanculo
+pompino
+pompini
+zingaro
+zingara
+zingari
+zingare
