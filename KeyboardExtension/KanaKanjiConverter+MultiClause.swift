@@ -397,15 +397,17 @@ extension KanaKanjiConverter {
         let normalized = KanaTextNormalizer.normalizedReading(reading)
         let chars = Array(normalized)
         let n = chars.count
+        // 長さの判定は O(n²) の前処理より先に(長いかなを未変換のまま打ち続けると、打鍵ごとに
+        // 捨てる文字列を数十万本作っていた。セキュリティー検査 2026-10-25)
+        guard n >= (minReadingCountOverride ?? Self.multiClauseMinReadingCount),
+            n <= Self.multiClauseMaxReadingCount else {
+            return []
+        }
         // 文頭からの読み(chars[0..<k])は遷移ごとに String(chars[0..<start]) で作られていた(打鍵あたり約 400 回。3096)。
         // 一度だけ n+1 本作って使い回す
         let prefixReadingByStart: [String] = (0...n).map { Self.spanString(chars, 0..<$0) }
         // 区間キー "start-end" も一度だけ(ノード生成と集合の鍵で打鍵あたり数百回補間していた。3096)
         let spanKeyByStart: [[String]] = (0...n).map { start in (0...n).map { end in "\(start)-\(end)" } }
-        guard n >= (minReadingCountOverride ?? Self.multiClauseMinReadingCount),
-            n <= Self.multiClauseMaxReadingCount else {
-            return []
-        }
         // 読み全体に seed(人手宣言の完全な並び)があれば連文節は単文節に委ねる(2657)。
         // かくした は 隠し+た(名詞+た の免除で正当)の2ノード経路が最良になり、その変種
         // (かな識別 等)が単文節の seed 順(格下/隠した)の前に割り込んでいた。単文節で

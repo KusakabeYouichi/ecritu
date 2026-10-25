@@ -18777,6 +18777,20 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertLessThan(bestMs, 100, "1 打鍵あたりの変換が予算(100ms)を超えた。perf テスト(TEST_RUNNER_PERF_PROFILE=1)で内訳を見る")
     }
 
+    // セキュリティー検査 2026-10-25: 連文節の上限(40 字)を超える読みは O(n²) の前処理をせず即座に空を返す。
+    // 以前は長さの判定より先に区間キー (n+1)² 本を作っており、かなを未変換のまま 1000 字打つと
+    // 打鍵ごとに約 100 万本の文字列を作ってメモリを跳ね上げた
+    func testMultiClauseSkipsOverlongReadingBeforeQuadraticWork() throws {
+        // 単語 LM が無いと連文節は入口で空を返し、長さの判定まで届かない
+        try prepareRealLMDictionary()
+        let overlong = String(repeating: "あいうえお", count: 200)
+        let started = CFAbsoluteTimeGetCurrent()
+        let result = converter.multiClauseCandidates(for: overlong, systemCandidateMode: .surface)
+        let elapsedMs = (CFAbsoluteTimeGetCurrent() - started) * 1000
+        XCTAssertTrue(result.isEmpty)
+        XCTAssertLessThan(elapsedMs, 50, "1000 字の読みで \(elapsedMs)ms。長さの判定が前処理の後ろに戻っていないか")
+    }
+
     // 3041: しめちゃうらしいぞ に 閉めちゃう が無い(ユーザ報告)。基底 しめる の seed 順を 閉める 先頭にし
     // (活用派生と連文節 topK=3 の供給に継がれる)、占める は 3 番目に残して 半分を占めています の供給を守る。
     // 目的語による書き分けは を を挟む連語表(ドア→閉/ネクタイ→締/首→絞)
