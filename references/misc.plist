@@ -579,6 +579,7 @@
 	<dict><key>phrase</key><string>日の出ずる</string><key>shortcut</key><string>ひのいずる</string><key>pos</key><string>名詞</string></dict>	<!-- 日の出ずる国/日出ずる処: 文語の連体形。辞書の いずる は 出/出流/居鶴 だけで、ひのいずる が 火の出流/日の泉琉 になっていた(ユーザ報告 3575)。日出ずる は ひいずる(脾胃ずる/緋衣ずる に負ける)用 -->
 	<dict><key>phrase</key><string>日出ずる</string><key>shortcut</key><string>ひいずる</string><key>pos</key><string>名詞</string></dict>
 	<dict><key>phrase</key><string>日出ずる</string><key>shortcut</key><string>ひのいずる</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>口座維持</string><key>shortcut</key><string>こうざいじ</string><key>pos</key><string>名詞</string></dict>	<!-- 口座維持: こうざいじ が 鋼材+時/香西+時/功罪+時 になり 口座維持 が出なかった(維持 は いじ の上位に無く、こうざい が 1 語で勝つ)。口座維持手数料 の部品として語で登録(ユーザ報告) -->
 
 	<!-- ■ 分割・断片に負ける語の救済(連文節の区切りを勝たせる固定句) -->
 	<dict><key>phrase</key><string>身に覚え</string><key>shortcut</key><string>みにおぼえ</string></dict>	<!-- 慣用句 身に覚え(がない/がある)。LM に 身に覚え が無く、文頭の 身 6730 と ミニ 6155 の差を に→覚え の bigram で埋めきれず(111 差)みにおぼえがない→ミニ覚えがない だった(ユーザ報告 3556) -->
