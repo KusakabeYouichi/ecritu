@@ -1,7 +1,8 @@
 """辞書の交ぜ書き候補の洗い出し(3699)。同じ読みに「全部漢字」の表記があり、かな+漢字の表記がその一部をかなに
 置き換えた形になっているものを列挙する。出力: tmp/mazegaki_audit.tsv"""
-import sqlite3, json, re, sys, collections
-ROOT = '/Users/kusakabe/Git/ecritu'
+import sqlite3, json, re, sys, collections, os
+# リポジトリ直下(このファイルの 1 つ上)。作者の手元のパスをコードに残さない(セキュリティー検査 2026-10-25)
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 joyo = set()
 for line in open(f'{ROOT}/tmp/unihan_raw/Unihan_OtherMappings.txt', encoding='utf8'):
     if '\tkJoyoKanji\t' in line:
