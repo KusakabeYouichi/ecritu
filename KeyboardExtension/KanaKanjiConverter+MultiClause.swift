@@ -3125,6 +3125,13 @@ extension KanaKanjiConverter {
                 let prevLast = prev.last, prevLast == "て" || prevLast == "で" {
                 base = min(base, Self.multiClauseFinalParticleAfterPredicateCost)
             }
+            // て形+よかった(作らなくてよかった/来てよかった)は かな。単文節の seed(よかった→かな先頭)と同じ向きにそろえる。
+            // 活用派生の 良かった(定額)が かな識別より 800 安く、つくらなくてよかった が 作らなくて良かった だった(ユーザ指定)
+            if isKanaIdentity, reading.hasPrefix("よかっ"),
+                prevIsInflectionDerived || prevIsKanaIdentity,
+                let prevLast = prev.last, prevLast == "て" || prevLast == "で" {
+                penalty -= Self.multiClauseKanaYokattaAfterTeBonus
+            }
             // 両(車両の助数詞)は数(3両/何両)の後ろにだけ付く。名詞+両(出典両)は作らない(3769、ユーザ報告)
             if surface == "両", reading == "りょう", !prevIsBOS,
                 let prevLast = prev.last, !prevLast.isNumber, !"一二三四五六七八九十百千何数".contains(prevLast) {

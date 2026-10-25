@@ -25471,4 +25471,37 @@ extension KanaKanjiConverterRegressionTests {
             toFile: "\(ecrituRepositoryRoot)/tmp/colloc_sweep_result.tsv", atomically: true, encoding: .utf8)
         print("SWEEP_COLLOC done \(out.count)")
     }
+
+    // 2026-10-25 のユーザ報告(edition 3569)
+    // にくが: 接尾辞の語幹 難(にく、〜難い)が単独の語として入り 難が が出ていた → 辞書ツールで除外。肉が を先頭、かなは末尾(seed)
+    // くり/くりも: 久里 が先頭 → 栗 を先頭、クリ は末尾寄り(seed)。あかって: 名詞+って を単文節で組む(赤って)
+    // こうざいじ: 口座維持 を misc で供給。のはしらなかった: のは→知らなかった の加点(の柱なかった/の走らなかった)
+    // もうすこし: かなで書く言葉の副詞から 少し を外す。て形+よかった は かな(作らなくてよかった)
+    func testRegressionUserReports3569() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        func single(_ r: String) -> [String] { converter.candidates(for: r, limit: 12, systemCandidateMode: .surface) }
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        let nikuga = single("にくが")
+        XCTAssertEqual(nikuga.first, "肉が", "\(nikuga)")
+        XCTAssertEqual(nikuga.last, "にくが", "\(nikuga)")
+        XCTAssertFalse(nikuga.contains("難が"), "\(nikuga)")
+        XCTAssertFalse(single("にく").contains("難"))
+        XCTAssertFalse(single("やす").contains("易"), "〜易い の語幹")
+        XCTAssertEqual(single("くり").first, "栗")
+        let kurimo = single("くりも")
+        XCTAssertEqual(kurimo.first, "栗も", "\(kurimo)")
+        if let katakana = kurimo.firstIndex(of: "クリも") {
+            XCTAssertGreaterThanOrEqual(katakana, 4, "\(kurimo)")
+        }
+        XCTAssertTrue(single("あかって").contains("赤って"), "\(single("あかって"))")
+        XCTAssertEqual(single("あおって").first, "煽って", "かなの語幹には って を付けない")
+        XCTAssertEqual(single("こうざいじ").first, "口座維持")
+        XCTAssertEqual(multi("はいにえいきょうでるのはしらなかった").first, "肺に影響出るのは知らなかった")
+        XCTAssertEqual(multi("もうすこし").first, "もう少し")
+        XCTAssertEqual(single("すこし").first, "少し")
+        let tsukuranakute = multi("つくらなくてよかった")
+        XCTAssertEqual(tsukuranakute.first, "作らなくてよかった", "\(tsukuranakute)")
+        XCTAssertEqual(multi("かかなくてよかった").first, "書かなくてよかった")
+    }
 }

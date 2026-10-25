@@ -3032,6 +3032,8 @@ extension KanaKanjiConverter {
     // かわいい+なあ(6967+14000)が 川+いい+なあ(いい→なあ の観測bigram 3372)に
     // 負けていた(2628)。名詞化節クランプ(のが/のは 1200)と同型の文法クランプ
     static let multiClauseFinalParticleAfterPredicateCost = 1200
+    // て形+よかった の かな識別への加点(良かった 定額との差 800 を越える)
+    static let multiClauseKanaYokattaAfterTeBonus = 1200
     // 上のクランプのうち、終止形・た形にしか付かない接続助詞(連用形 〜し の後ろでは掛けない。3723)
     static let multiClauseShuushiConjunctiveParticleReadings: Set<String> = ["から", "ので", "けど", "けれど"]
     // 〜っと のオノマトペ判定から外す、先頭の助詞 1 字(で+リゾット 等。3729)
