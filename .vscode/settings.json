@@ -1,8 +1,0 @@
-{
-  "task.allowAutomaticTasks": "on",
-  "chat.tools.terminal.autoApprove": {
-    "setopt": true,
-    "xcrun": true,
-    "exit": true
-  }
-}
