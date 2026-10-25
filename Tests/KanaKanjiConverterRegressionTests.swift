@@ -1617,6 +1617,41 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertLessThan(elapsedMs, 2000)
     }
 
+    // 点数表の上限(セキュリティー検査 2026-10-25、安全弁)。32 枠から押し出された表記の点数は学習語彙から
+    // 消えても残るが、点数表が学習語彙の上限の 2 倍を超えたら、学習語彙に無い組の点数を低い順に上限まで捨てる。
+    // 学習語彙にある組の点数は残す
+    func testOrphanLearningScoresEvictedOverLimit() {
+        let store = converter.store
+        let digits = Array("あいうえおかきくけこ")
+        func kana(_ n: Int) -> String {
+            var value = n
+            var text = ""
+            repeat {
+                text.insert(digits[value % 10], at: text.startIndex)
+                value /= 10
+            } while value > 0
+            return text
+        }
+        store.addLearnedEntry(reading: "のこる", candidate: "残る")
+        store.incrementLearning(reading: "のこる", candidate: "残る")
+        // 学習語彙に無い組の点数を、上限+10 になるまで足す(高い点数の孤児 1 組を含む)
+        for _ in 0..<3 {
+            store.incrementLearning(reading: "たかい", candidate: "高い")
+        }
+        let limit = KanaKanjiStore.learningScoresLimit
+        let existing = store.learningScores().count
+        for n in 0..<(limit + 10 - existing) {
+            store.incrementLearning(reading: "こじ" + kana(n), candidate: "孤児\(n)")
+        }
+        store.addLearnedEntry(reading: "あたらしい", candidate: "新しい")   // 保存で学習語彙も読み込ませる
+        store.waitForPendingLearningPersists()
+
+        let scores = store.learningScores()
+        XCTAssertEqual(scores.count, limit)
+        XCTAssertEqual(scores["のこる\t残る"], 1, "学習語彙にある組の点数は残す")
+        XCTAssertEqual(scores["たかい\t高い"], 3, "点数の高い孤児は残す")
+    }
+
     // 実物の畳んだ補助語彙(ビルドが tmp に書き出す。実機ではバンドルから mmap で開く)が、強めた
     // オフセット表の検証(3306)を通ること。検証が厳しすぎて実物を nil にしても、呼び出し側は黙って
     // JSON 経路へ落ちる(常駐が約 6.8MB 増えるだけ)ので、ここで明示的に確かめる

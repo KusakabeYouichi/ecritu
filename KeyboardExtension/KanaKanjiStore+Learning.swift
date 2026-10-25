@@ -65,6 +65,9 @@ extension KanaKanjiStore {
             if learningPersistDirtyLearned {
                 _ = evictLearnedPairsOverLimitLocked()
             }
+            if learningPersistDirtyScores {
+                _ = evictOrphanLearningScoresOverLimitLocked()
+            }
             let l = learningPersistDirtyLearned ? cachedLearnedDictionary : nil
             let s = learningPersistDirtyScores ? cachedLearningScores : nil
             learningPersistDirtyLearned = false
@@ -140,6 +143,43 @@ extension KanaKanjiStore {
         }
         cachedLearningScoresByReading = nil
         learningPersistDirtyLearned = true
+        learningPersistDirtyScores = true
+        return removeCount
+    }
+
+    // 点数表の上限(セキュリティー検査 2026-10-25)。読みごとの 32 枠から押し出された表記は、学習語彙からは
+    // 消えても点数だけが残る(並びに効き続けるので、普段は消さない)。点数表が学習語彙の上限の 2 倍を超えたら、
+    // 学習語彙に無い組の点数だけを、点数の低い順に上限まで捨てる。安全弁なので普通の使い方では発動しない
+    static let learningScoresLimit = learnedPairsLimit * 2
+
+    // cacheLock の中で呼ぶ。戻り値は捨てた点数の数
+    func evictOrphanLearningScoresOverLimitLocked() -> Int {
+        guard let scores = cachedLearningScores,
+            scores.count > Self.learningScoresLimit,
+            // 学習語彙を読み込んでいないときは判定できない(全部が孤児に見える)ので何もしない
+            let learned = cachedLearnedDictionary else {
+            return 0
+        }
+        var orphans: [(key: String, score: Int)] = []
+        for (key, score) in scores {
+            let parts = key.split(separator: "\t", maxSplits: 1, omittingEmptySubsequences: false)
+            let isLearned = parts.count == 2
+                && learned[String(parts[0])]?.contains(String(parts[1])) == true
+            if !isLearned {
+                orphans.append((key, score))
+            }
+        }
+        let removeCount = min(scores.count - Self.learningScoresLimit, orphans.count)
+        guard removeCount > 0 else {
+            return 0
+        }
+        orphans.sort { lhs, rhs in
+            lhs.score != rhs.score ? lhs.score < rhs.score : lhs.key < rhs.key
+        }
+        for orphan in orphans.prefix(removeCount) {
+            cachedLearningScores?[orphan.key] = nil
+        }
+        cachedLearningScoresByReading = nil
         learningPersistDirtyScores = true
         return removeCount
     }
