@@ -54,10 +54,28 @@ information. Keep the two in sync.
   80,591 pages: 79,122 articles and 1,469 project/category/template pages
   (no talk or user pages)
 
+## Japanese Wikipedia — sake brand names
+
+- Article "日本酒の銘柄一覧" (https://ja.wikipedia.org/wiki/日本酒の銘柄一覧),
+  retrieved 2026-10-15 — CC BY-SA 4.0. About 1,700 brand names and their
+  readings only (`references/sake.plist`, bundled in ÉcrituSecondVocab.eccs);
+  no descriptions or article structure. Readings the article does not give
+  were derived mechanically (kana/katakana names) or supplied by the author.
+  Credited in-app under "Sake brand names (Japanese Wikipedia)".
+
 ## Unicode CLDR (emoji readings)
 
 - https://cldr.unicode.org/ — Unicode License. Japanese emoji annotations,
   reading-normalized (provenance verified against CLDR ja, 2026-08-31)
+
+## Menu icons (Tabler Icons, Lucide)
+
+- Path data for the three initial-settings icons in the container app's
+  logo menu is embedded in `App/SVGPathShape.swift`:
+  chess-knight from Tabler Icons (https://github.com/tabler/tabler-icons,
+  MIT, Copyright (c) 2020-2024 Paweł Kuna); sparkles and shield from Lucide
+  (https://lucide.dev/, ISC, Copyright (c) Cole Bemis 2013-2022 / Lucide
+  Contributors 2022). Full license texts are in the in-app notices.
 
 ## Derived word lists (ShareAlike)
 
@@ -79,7 +97,8 @@ small set of words from the *suggestion* lists only (2026-09-04).
 
 Vocabulary plists under `references/` (vin / vin-acronyme / ryukyu / it /
 personnalités / drapeaux / monnaies / sacoche / misc / suppr / poubelle)
-are the author's original compilations, not imports from external
+are the author's original compilations (sake.plist is the one exception;
+see the sake section above), not imports from external
 dictionaries (confirmed 2026-08-31; drapeaux readings re-confirmed
 2026-09-04). `LatinSuggestionSupplemental.txt` is generated from those
 files (tools/build_latin_suggestion_supplemental.swift).
@@ -100,13 +119,17 @@ Flag names shown on long-press are generated at runtime from Foundation's
 
 - https://github.com/google/mozc — BSD 3-Clause, Copyright 2010-2018 Google Inc.
 - About 440 emoticons with readings (categories SMILE/SADNESS/SWEAT/DISPLEASURE/
-  OTHER mapped to this app's 17 categories) are taken from Mozc's emoticon
+  OTHER mapped to this app's 16 categories) are taken from Mozc's emoticon
   dictionary; `third_party/mozc/MOZC-LICENSE` is bundled and shown in-app.
-- The remaining ~1,320 emoticons: strings are widely circulated character
-  sequences; readings and category assignments were authored for this app
-  (2026-09-04, tools/build_kaomoji_catalog.py from tmp/kaomoji_merged.json).
-  An earlier build had used readings/categories scraped from a third-party
-  keyboard's website; those were removed and re-authored.
+- The panel holds about 750 emoticons in total (748 as of 3678, 2026-10-17):
+  only those that also appear in public kaomoji collection sites
+  (kaomojis.jp, kaomoji.tokyo) or in Mozc are kept. The strings are widely
+  circulated character sequences; readings and category assignments were
+  authored for this app (2026-09-04, tools/build_kaomoji_catalog.py from
+  tmp/kaomoji_merged.json). An earlier build had used readings/categories
+  scraped from a third-party keyboard's website; those were removed and
+  re-authored, and the emoticons found only in that keyboard's list were
+  removed in 3678.
 
 ## pokemon-ime-dic — Pokémon species names
 
