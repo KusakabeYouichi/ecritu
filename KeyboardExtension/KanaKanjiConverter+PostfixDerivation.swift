@@ -226,6 +226,11 @@ extension KanaKanjiConverter {
             }
 
             for passthrough in Self.postfixPassthroughSuffixes where current.stem.hasSuffix(passthrough) {
+                // 話題の って は語の末尾にだけ(赤って)。後ろに語尾が続く って(たまってしまう→玉ってしまう)は て形なので組まない。
+                // 前にも連鎖させない(おい+や+って→甥やって/老いやって)
+                if (passthrough == "って" && !current.suffix.isEmpty) || current.suffix == "って" {
+                    continue
+                }
                 let nextStem = String(current.stem.dropLast(passthrough.count))
 
                 guard !nextStem.isEmpty else {
@@ -291,6 +296,19 @@ extension KanaKanjiConverter {
 
                     if kaNaiChainKanaOnly {
                         stemCandidates = stemCandidates.filter { $0 == nextStem }
+                    }
+                    // 話題の って は漢字を含む語幹にだけ付ける。かなの語幹(あお+って)まで組むと、て形の読み全体(あおって)の
+                    // かな識別が合成側から先頭に上がり 煽って を押しのけていた
+                    // 活用形(干ろ=干る の命令形 等)にも付けない(命令形+って は 3771 で外した組)
+                    // 辞書に直接ある語(語コストあり)で、収穫底値のレア語(追矢/小祖谷 等の名前)でないものだけ。合成の 甥や/老いや
+                    // まで組むと候補が増えた分だけ かな識別が前に寄り、おいやって の かな が 2 番めに上がっていた
+                    if nextSuffix == "って" {
+                        let inflectedSurfaces = Set(inflectedStemCandidates)
+                        let stemCosts = store.wordCosts(for: nextStem)
+                        stemCandidates.removeAll {
+                            !containsKanji($0) || inflectedSurfaces.contains($0)
+                                || (stemCosts[$0] ?? Int.max) >= KanaKanjiConverter.CandidateScore.harvestTierWordCostFloor
+                        }
                     }
                     // 1かなの語幹に対する1字カタカナ(で→デ、か→カ 等)は語幹にしない(2736)。辞書に で|デ rank1 があり、
                     // でも で デも/デで のような合成が出ていた。カタカナ1字は名詞として助詞に付かない
