@@ -361,15 +361,21 @@ extension ContentView {
             decodeStringArray(forKey: SettingsKeys.keyboardDiagnosticsRegistrationHistory, defaults: $0)
         } ?? []
         sections.append("登録状態の履歴(変化時のみ): \(registrationHistory.isEmpty ? "(記録なし)" : registrationHistory.joined(separator: ", "))")
+        // 最後に打った読みと候補を含むので、詳細コピーのときだけ出す(テスターが普段のコピーで
+        // 打った内容まで送ってしまわないように。セキュリティー検査 2026-10-25)
         sections.append("--- 最終変換トレース(デバッグ) ---")
-        sections.append(keyboardConversionLastTrace.isEmpty ? "(記録なし)" : keyboardConversionLastTrace)
+        if detail {
+            sections.append(keyboardConversionLastTrace.isEmpty ? "(記録なし)" : keyboardConversionLastTrace)
+        } else {
+            sections.append("(詳細コピーにだけ含めます)")
+        }
         sections.append("--- critical events (ローテ保護) ---")
         if keyboardDiagnosticsCriticalLogLines.isEmpty {
             sections.append("(記録なし)")
         } else {
             sections.append(contentsOf: keyboardDiagnosticsCriticalLogLines)
         }
-        sections.append("--- 追加語彙のseed外エントリ(手動追加+過去播種の残骸) ---")
+        sections.append("--- 追加語彙のseed外エントリ(件数のみ) ---")
         sections.append(contentsOf: ajoutVocabularyNonSeedDiagnosticsLines())
         sections.append("--- logs ---")
         if detail {
@@ -400,8 +406,10 @@ extension ContentView {
     }
 
     // 追加語彙のうち現行 seed(appex バンドルの InitialAjoutVocabMigration.json)に無い
-    // (読み, 候補) ペアを列挙する。手動追加分と、播種の削除同期(2338)導入以前に
+    // (読み, 候補) ペアを数える。手動追加分と、播種の削除同期(2338)導入以前に
     // plist から撤回されて実機に残った残骸の切り分け用。
+    // 中身(読み → 候補)は本人の登録語なので出さない。一覧は [追加語彙] の [コピー] で本人が選んで送る
+    // (セキュリティー検査 2026-10-25)
     func ajoutVocabularyNonSeedDiagnosticsLines() -> [String] {
         let current = loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiAjoutVocabulary)
         guard let bundle = keyboardExtensionBundleForDiagnostics(),
@@ -414,19 +422,17 @@ extension ContentView {
         for (reading, candidates) in decodedSeed {
             seed[reading] = Set(candidates)
         }
-        var nonSeedLines: [String] = []
+        var nonSeedCount = 0
         var totalCount = 0
-        for reading in current.keys.sorted() {
-            for candidate in current[reading] ?? [] {
+        for (reading, candidates) in current {
+            for candidate in candidates {
                 totalCount += 1
                 if !(seed[reading]?.contains(candidate) ?? false) {
-                    nonSeedLines.append("\(reading) → \(candidate)")
+                    nonSeedCount += 1
                 }
             }
         }
-        var lines = ["総数 \(totalCount) 件 / seed \(totalCount - nonSeedLines.count) 件 / seed外 \(nonSeedLines.count) 件"]
-        lines.append(contentsOf: nonSeedLines.isEmpty ? ["(seed外なし)"] : nonSeedLines)
-        return lines
+        return ["総数 \(totalCount) 件 / seed \(totalCount - nonSeedCount) 件 / seed外 \(nonSeedCount) 件"]
     }
 
     func copyKeyboardDiagnosticsToPasteboard(detail: Bool = false) {
