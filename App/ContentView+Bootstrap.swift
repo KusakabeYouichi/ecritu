@@ -271,6 +271,7 @@ extension ContentView {
                 backfillUserRegisteredAjoutVocabularyIfNeeded()
                 migrateInitialShortcutVocabularyIfNeeded()
                 migrateInitialSuppressionDictionaryIfNeeded()
+                backfillUserRegisteredSuppressionVocabularyIfNeeded()
                 migrateLearningVocabularySeparationIfNeeded()
                 continuation.resume()
             }

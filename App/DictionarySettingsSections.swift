@@ -337,12 +337,23 @@ struct SuppressionDictionarySettingsSection: View {
     let onDeleteEntry: (VocabularyEntry) -> Void
 
     @State private var editingEntry: VocabularyEntry?
+    @State private var didCopyUserRegistered = false
+    // 自分で登録したものだけを出す(追加語彙と同じ。初期設定はオフ)
+    @AppStorage(SettingsKeys.suppressionVocabularyShowsUserRegisteredOnly) private var showsUserRegisteredOnly = false
+
+    private var displayedEntries: [VocabularyEntry] {
+        showsUserRegisteredOnly ? entries.filter(\.isUserRegistered) : entries
+    }
+
+    private var userRegisteredEntries: [VocabularyEntry] {
+        entries.filter(\.isUserRegistered)
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             DictionaryRegistrationHeaderView(
                 title: "抑制語彙",
-                count: entries.count,
+                count: displayedEntries.count,
                 isRegistrationVisible: isRegistrationVisible,
                 showAccessibilityLabel: "抑制単語の登録欄を表示",
                 hideAccessibilityLabel: "抑制単語の登録欄を閉じる",
@@ -400,13 +411,19 @@ struct SuppressionDictionarySettingsSection: View {
                 isVisible: isScrollIndexVisible
             )
 
-            if entries.isEmpty {
-                Text("登録済みの抑制単語はありません。")
+            Toggle(isOn: $showsUserRegisteredOnly) {
+                Text("自分の登録だけ")
+                    .font(.footnote)
+            }
+            .controlSize(.small)
+
+            if displayedEntries.isEmpty {
+                Text(showsUserRegisteredOnly ? "自分で登録した抑制単語はありません。" : "登録済みの抑制単語はありません。")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             } else {
                 IndexedVocabularyList(
-                    entries: entries,
+                    entries: displayedEntries,
                     listHeight: listHeight,
                     selectedEntryID: editingEntry?.id,
                     onDelete: { entry in
@@ -437,6 +454,28 @@ struct SuppressionDictionarySettingsSection: View {
                 )
                 .frame(height: listHeight)
             }
+
+            // 自分で登録したものだけを 読み<TAB>語 の行でコピーする(スイッチの状態にかかわらず。追加語彙と同じ)
+            Button {
+                UIPasteboard.general.string = userRegisteredEntries
+                    .map { $0.reading + "\t" + $0.candidate }
+                    .joined(separator: "\n")
+                didCopyUserRegistered = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                    didCopyUserRegistered = false
+                }
+            } label: {
+                Text(didCopyUserRegistered ? "コピーしました" : "コピー")
+                    .font(.footnote)
+            }
+            .buttonStyle(.bordered)
+            .controlSize(.small)
+            .disabled(userRegisteredEntries.isEmpty)
+
+            Text("[コピー]は、自分で登録した単語だけを、[よみ]と[単語]をタブで区切った行にしてクリップボードにコピーします。")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
 
             Text("抑制は『読み+単語』の組み合わせで適用され、同じ単語でも別の読み候補には影響しません。")
                 .font(.footnote)

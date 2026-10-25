@@ -124,6 +124,11 @@ enum SettingsKeys {
     static let kanaKanjiInitialSuppressionDictionaryAppliedSignature = "kanaKanjiInitialSuppressionDictionaryAppliedSignature"
     static let kanaKanjiInitialSuppressionDictionaryAppliedSeed = "kanaKanjiInitialSuppressionDictionaryAppliedSeed"
     static let kanaKanjiSuppressionVocabulary = "ÉcrituSuppr_Vocab"
+    // 抑制語彙のうち自分で登録したもの(読み→語)の記録と、記録前の語の振り分け済みの印、一覧の絞り込み
+    // (追加語彙の 3778 と同じ仕組み。初期設定はオフ)
+    static let kanaKanjiUserRegisteredSuppressionVocabulary = "ÉcrituSupprVocabUserRegistered"
+    static let kanaKanjiUserRegisteredSuppressionVocabularyBackfilled = "kanaKanjiUserRegisteredSuppressionVocabularyBackfilled"
+    static let suppressionVocabularyShowsUserRegisteredOnly = "suppressionVocabularyShowsUserRegisteredOnly"
     static let kanaKanjiCandidateSourceMode = "kanaKanjiCandidateSourceMode"
     static let historicalKanaCandidatesEnabled = "historicalKanaCandidatesEnabled"
     // カタカナ強調表記/交ぜ書きの扱い(suppress/demote/normal)。KeyboardExtension 側と同一キー

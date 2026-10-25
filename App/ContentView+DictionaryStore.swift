@@ -402,13 +402,13 @@ extension ContentView {
             }
     }
 
-    // 自分で登録した追加語彙の記録(3778。キーの説明は SettingsKeys 参照)
-    func userRegisteredAjoutVocabulary() -> [String: [String]] {
-        normalizedDictionaryEntries(loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiUserRegisteredAjoutVocabulary))
+    // 自分で登録した語の記録(追加語彙 3778・抑制語彙 3563。キーの説明は SettingsKeys 参照)
+    func userRegisteredEntries(forKey key: String) -> [String: [String]] {
+        normalizedDictionaryEntries(loadDictionaryEntries(forKey: key))
     }
 
-    func updateUserRegisteredAjoutVocabulary(adding added: VocabularyEntry?, removing removed: VocabularyEntry?) {
-        var dictionary = userRegisteredAjoutVocabulary()
+    func updateUserRegisteredEntries(forKey key: String, adding added: VocabularyEntry?, removing removed: VocabularyEntry?) {
+        var dictionary = userRegisteredEntries(forKey: key)
         if let removed {
             let kept = (dictionary[removed.reading] ?? []).filter { $0 != removed.candidate }
             dictionary[removed.reading] = kept.isEmpty ? nil : kept
@@ -416,22 +416,26 @@ extension ContentView {
         if let added, dictionary[added.reading]?.contains(added.candidate) != true {
             dictionary[added.reading, default: []].append(added.candidate)
         }
-        saveDictionaryEntries(dictionary, forKey: SettingsKeys.kanaKanjiUserRegisteredAjoutVocabulary)
+        saveDictionaryEntries(dictionary, forKey: key)
     }
 
-    // 記録を始める前(3778 より前)から入っていた語の振り分けを 1 回だけ行う。初期語彙(同梱の一覧)に無いものを
+    // 記録を始める前から入っていた語の振り分けを 1 回だけ行う。初期語彙(同梱の一覧)に無いものを
     // 自分で登録したものとみなす。初期語彙と同じ語を自分でも登録していた場合は区別できず、初期語彙の側になる
-    func backfillUserRegisteredAjoutVocabularyIfNeeded() {
+    func backfillUserRegisteredEntriesIfNeeded(
+        vocabularyKey: String,
+        registeredKey: String,
+        backfilledKey: String,
+        initial: [String: [String]]
+    ) {
         guard let defaults = Self.sharedDefaults,
-            !defaults.bool(forKey: SettingsKeys.kanaKanjiUserRegisteredAjoutVocabularyBackfilled) else {
+            !defaults.bool(forKey: backfilledKey) else {
             return
         }
-        let initial = loadBundledInitialAjoutVocabularyEntries()
         guard !initial.isEmpty else {
             return
         }
-        var dictionary = userRegisteredAjoutVocabulary()
-        let current = normalizedDictionaryEntries(loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiAjoutVocabulary))
+        var dictionary = userRegisteredEntries(forKey: registeredKey)
+        let current = normalizedDictionaryEntries(loadDictionaryEntries(forKey: vocabularyKey))
         for (reading, candidates) in current {
             let initialCandidates = Set(initial[reading] ?? [])
             for candidate in candidates where !initialCandidates.contains(candidate)
@@ -439,8 +443,38 @@ extension ContentView {
                 dictionary[reading, default: []].append(candidate)
             }
         }
-        saveDictionaryEntries(dictionary, forKey: SettingsKeys.kanaKanjiUserRegisteredAjoutVocabulary)
-        defaults.set(true, forKey: SettingsKeys.kanaKanjiUserRegisteredAjoutVocabularyBackfilled)
+        saveDictionaryEntries(dictionary, forKey: registeredKey)
+        defaults.set(true, forKey: backfilledKey)
+    }
+
+    func userRegisteredAjoutVocabulary() -> [String: [String]] {
+        userRegisteredEntries(forKey: SettingsKeys.kanaKanjiUserRegisteredAjoutVocabulary)
+    }
+
+    func updateUserRegisteredAjoutVocabulary(adding added: VocabularyEntry?, removing removed: VocabularyEntry?) {
+        updateUserRegisteredEntries(forKey: SettingsKeys.kanaKanjiUserRegisteredAjoutVocabulary, adding: added, removing: removed)
+    }
+
+    func backfillUserRegisteredAjoutVocabularyIfNeeded() {
+        backfillUserRegisteredEntriesIfNeeded(
+            vocabularyKey: SettingsKeys.kanaKanjiAjoutVocabulary,
+            registeredKey: SettingsKeys.kanaKanjiUserRegisteredAjoutVocabulary,
+            backfilledKey: SettingsKeys.kanaKanjiUserRegisteredAjoutVocabularyBackfilled,
+            initial: loadBundledInitialAjoutVocabularyEntries()
+        )
+    }
+
+    func updateUserRegisteredSuppressionVocabulary(adding added: VocabularyEntry?, removing removed: VocabularyEntry?) {
+        updateUserRegisteredEntries(forKey: SettingsKeys.kanaKanjiUserRegisteredSuppressionVocabulary, adding: added, removing: removed)
+    }
+
+    func backfillUserRegisteredSuppressionVocabularyIfNeeded() {
+        backfillUserRegisteredEntriesIfNeeded(
+            vocabularyKey: SettingsKeys.kanaKanjiSuppressionVocabulary,
+            registeredKey: SettingsKeys.kanaKanjiUserRegisteredSuppressionVocabulary,
+            backfilledKey: SettingsKeys.kanaKanjiUserRegisteredSuppressionVocabularyBackfilled,
+            initial: loadBundledInitialSuppressionDictionaryEntries()
+        )
     }
 
     func learnedDictionaryEntriesSnapshot() -> [VocabularyEntry] {
@@ -460,13 +494,19 @@ extension ContentView {
 
     func suppressionDictionaryEntriesSnapshot() -> [VocabularyEntry] {
         let dictionary = loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiSuppressionVocabulary)
+        let userRegistered = userRegisteredEntries(forKey: SettingsKeys.kanaKanjiUserRegisteredSuppressionVocabulary)
 
         return dictionary
             .keys
             .sorted()
             .flatMap { reading in
-                (dictionary[reading] ?? []).map { candidate in
-                    VocabularyEntry(reading: reading, candidate: candidate)
+                let registered = userRegistered[normalizedKanaReading(from: reading)] ?? []
+                return (dictionary[reading] ?? []).map { candidate in
+                    VocabularyEntry(
+                        reading: reading,
+                        candidate: candidate,
+                        isUserRegistered: registered.contains(candidate)
+                    )
                 }
             }
     }
@@ -654,6 +694,7 @@ extension ContentView {
         candidates.insert(candidate, at: 0)
         dictionary[reading] = Array(candidates.prefix(128))
         saveSuppressionDictionary(dictionary)
+        updateUserRegisteredSuppressionVocabulary(adding: VocabularyEntry(reading: reading, candidate: candidate), removing: nil)
 
         suppressionDictionaryReadingInput = ""
         suppressionDictionaryCandidateInput = ""
@@ -690,6 +731,8 @@ extension ContentView {
         dictionary[reading] = Array(targetCandidates.prefix(128))
 
         saveSuppressionDictionary(dictionary)
+        // 編集した語は初期語彙だったものでも自分で登録したものとして扱う(追加語彙と同じ)
+        updateUserRegisteredSuppressionVocabulary(adding: VocabularyEntry(reading: reading, candidate: candidate), removing: originalEntry)
         suppressionDictionaryReadingInput = ""
         suppressionDictionaryCandidateInput = ""
         loadSuppressionDictionaryEntries()
@@ -707,6 +750,7 @@ extension ContentView {
         }
 
         saveSuppressionDictionary(dictionary)
+        updateUserRegisteredSuppressionVocabulary(adding: nil, removing: entry)
         loadSuppressionDictionaryEntries()
     }
 
