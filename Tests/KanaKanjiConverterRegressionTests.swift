@@ -21691,6 +21691,20 @@ extension KanaKanjiConverterRegressionTests {
         store.prependShortcutCandidate(" ・ ")
         XCTAssertEqual(store.shortcutVocabulary().first, " ・ ")
     }
+
+    // セキュリティー検査 2026-10-25: 「iOS のユーザ辞書の単語」を「使わない」にしたら、取り込んだ ☻ 語を外す。
+    // 自分で足した語と、取り込む前からあった語は残す。記録は消えるので 2 回目は何もしない
+    func testUserDictionaryShortcutImportRemovedWhenSettingTurnedOff() {
+        let store = converter.store
+        store.prependShortcutCandidate("(^^)")
+        XCTAssertEqual(store.prependNewShortcutCandidates(["住所", "(^^)", "mail@example.com"]), 2)
+        store.prependShortcutCandidate("自分で足した")
+        XCTAssertEqual(store.shortcutVocabulary(), ["自分で足した", "住所", "mail@example.com", "(^^)"])
+
+        XCTAssertEqual(store.removeImportedUserDictionaryShortcutCandidates(), 2)
+        XCTAssertEqual(store.shortcutVocabulary(), ["自分で足した", "(^^)"])
+        XCTAssertEqual(store.removeImportedUserDictionaryShortcutCandidates(), 0)
+    }
 }
 
 extension KanaKanjiConverterRegressionTests {

@@ -807,6 +807,26 @@ extension ContentView {
         loadShortcutDictionaryEntries()
     }
 
+    // iOS のユーザ辞書から取り込んだ ☻ 語を外して記録を消す(拡張の KanaKanjiStore と同じ処理)
+    func removeImportedUserDictionaryShortcutCandidates() {
+        guard let defaults = Self.sharedDefaults,
+            let data = defaults.data(forKey: SettingsKeys.kanaKanjiUserDictionaryShortcutImportedCandidates) else {
+            return
+        }
+        defaults.removeObject(forKey: SettingsKeys.kanaKanjiUserDictionaryShortcutImportedCandidates)
+        let imported = Set((try? JSONDecoder().decode([String].self, from: data)) ?? [])
+        guard !imported.isEmpty else {
+            return
+        }
+        let current = loadShortcutVocabularyCandidates()
+        let kept = current.filter { !imported.contains($0) }
+        guard kept.count != current.count else {
+            return
+        }
+        saveShortcutVocabularyCandidates(kept)
+        loadShortcutDictionaryEntries()
+    }
+
     func removeShortcutDictionaryEntry(_ entry: VocabularyEntry) {
         var candidates = loadShortcutVocabularyCandidates()
         candidates.removeAll { $0 == entry.candidate }

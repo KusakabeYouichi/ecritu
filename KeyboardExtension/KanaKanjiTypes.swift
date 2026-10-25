@@ -11,6 +11,10 @@ enum KanaKanjiStorageKeys {
     // 一度でも取り込んだ印。無ければ予約と同じ扱い(アプリを開かずに使い始めた端末や、
     // 予約の仕組みより前に初回移行が済んだ端末でも、最初にキーボードを開いたとき取り込む)
     static let userDictionaryShortcutImportedOnce = "kanaKanjiUserDictionaryShortcutImportedOnce"
+    // iOS のユーザ辞書から取り込んで足した ☻ 語の記録。「使わない」にしたとき、まだ一覧に残っているものを
+    // ショートカット語彙から外す(セキュリティー検査 2026-10-25。住所やメールを ☻ で登録している人がいる)。
+    // 取り込み後に編集した語は文字列が変わるので記録と一致せず、残る
+    static let userDictionaryShortcutImportedCandidates = "ÉcrituShortcutVocabFromUserDictionary"
     static let suppressionVocabulary = "ÉcrituSuppr_Vocab"
     // 名詞だけの抑制(テストが同梱 JSON の代わりに書く経路。3700)
     static let suppressionNounVocabulary = "ÉcrituSupprNoun_Vocab"

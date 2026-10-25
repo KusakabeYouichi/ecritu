@@ -1316,8 +1316,38 @@ final class KanaKanjiStore {
             return 0
         }
         defaults.set(encoded, forKey: KanaKanjiStorageKeys.shortcutVocabulary)
+        let imported = decodedStringArray(forKey: KanaKanjiStorageKeys.userDictionaryShortcutImportedCandidates) ?? []
+        let importedSet = Set(imported)
+        let recorded = imported + additions.filter { !importedSet.contains($0) }
+        if let encodedRecord = try? JSONEncoder().encode(recorded) {
+            defaults.set(encodedRecord, forKey: KanaKanjiStorageKeys.userDictionaryShortcutImportedCandidates)
+        }
         withCacheLock { cachedShortcutVocabulary = nil }
         return additions.count
+    }
+
+    /// iOS のユーザ辞書から取り込んだ ☻ 語のうち、まだ一覧に残っているものを外して記録を消す。
+    /// 「iOS のユーザ辞書の単語」を「使わない」にしたときに呼ぶ(記録が空なら何もしない)。外した件数を返す
+    @discardableResult
+    func removeImportedUserDictionaryShortcutCandidates() -> Int {
+        guard let defaults,
+            let imported = decodedStringArray(forKey: KanaKanjiStorageKeys.userDictionaryShortcutImportedCandidates) else {
+            return 0
+        }
+        defaults.removeObject(forKey: KanaKanjiStorageKeys.userDictionaryShortcutImportedCandidates)
+        let importedSet = Set(imported)
+        guard !importedSet.isEmpty,
+            let current = decodedStringArray(forKey: KanaKanjiStorageKeys.shortcutVocabulary) else {
+            return 0
+        }
+        let kept = current.filter { !importedSet.contains($0) }
+        guard kept.count != current.count,
+            let encoded = try? JSONEncoder().encode(kept) else {
+            return 0
+        }
+        defaults.set(encoded, forKey: KanaKanjiStorageKeys.shortcutVocabulary)
+        withCacheLock { cachedShortcutVocabulary = nil }
+        return current.count - kept.count
     }
 
     /// レキシコン(iOS のユーザ辞書)の項目から、読みが ☻ の単語だけを取り出す(3244)。

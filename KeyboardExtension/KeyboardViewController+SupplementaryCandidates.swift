@@ -20,6 +20,9 @@ extension KeyboardViewController {
             supplementaryLexiconCandidatesByReading = .empty
             supplementaryMergedCandidatesCacheByKey = [:]
             removePersistedSupplementaryLexiconIndex()
+            // 取り込んだ ☻ 語も外す(アプリ側も「使わない」にした時点で外す。こちらはアプリを経ずに
+            // 設定が変わった場合の受け皿。記録が空なら何もしない)
+            kanaKanjiStore.removeImportedUserDictionaryShortcutCandidates()
             return
         }
 

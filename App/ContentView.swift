@@ -1686,6 +1686,9 @@ struct ContentView: View {
                         fileName: ContactCacheCipher.userLexiconCompactFileName
                     )
                     Self.sharedDefaults?.removeObject(forKey: SettingsKeys.supplementaryLexiconIndexSignature)
+                    // 取り込んだ ☻ 語のうち一覧に残っているものも外す(編集したものは文字列が変わるので残る。
+                    // セキュリティー検査 2026-10-25)
+                    removeImportedUserDictionaryShortcutCandidates()
                     return
                 }
                 Self.sharedDefaults?.set(true, forKey: SettingsKeys.kanaKanjiUserDictionaryShortcutImportPending)
