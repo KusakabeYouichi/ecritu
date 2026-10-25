@@ -972,18 +972,19 @@ extension KeyboardRootView {
                 let noteCount = KeyboardRootView.SymbolCategory.musicNoteSymbols.count
                 let accidentalCount = KeyboardRootView.SymbolCategory.musicAccidentalSymbols.count
                 let accidentalEnd = min(symbols.count, noteCount + accidentalCount)
-                VStack(alignment: .leading, spacing: keyboardRowSpacing) {
+                LazyVStack(alignment: .leading, spacing: keyboardRowSpacing) {
                     symbolGridSections([
                         Array(symbols.prefix(noteCount)),
-                        Array(symbols[min(symbols.count, noteCount)..<accidentalEnd]),
-                        Array(symbols.dropFirst(accidentalEnd))
+                        Array(symbols[min(symbols.count, noteCount)..<accidentalEnd])
                     ])
-                    // 譜表の記号は送り先のフォントに無いことがある旨を書き添える(ユーザ指定 3779)
-                    Text("最後の行の記号は、フォントによっては表示されません(□ などになります)。")
+                    symbolSectionDivider
+                    // 譜表の記号は送り先のフォントに無いことがある旨を、区切り線の下・記号の前に書き添える(ユーザ指定 3779)
+                    Text("以下の記号は、フォントによっては表示されません(□ などになります)。")
                         .font(.system(size: 11))
                         .foregroundStyle(KeyboardThemePalette.keyLabel.opacity(0.6))
                         .fixedSize(horizontal: false, vertical: true)
                         .padding(.horizontal, 4)
+                    symbolGridSection(Array(symbols.dropFirst(accidentalEnd)))
                 }
 
             case .enclosed:
