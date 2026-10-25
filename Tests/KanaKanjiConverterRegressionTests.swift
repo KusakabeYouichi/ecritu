@@ -18889,7 +18889,7 @@ extension KanaKanjiConverterRegressionTests {
             XCTAssertEqual(
                 converter.candidates(for: "こんきよく", limit: 2, systemCandidateMode: mode).first,
                 "根気よく", label)
-            // 単独の こんき は BCCWJ も 今季 > 根気 なので触らない
+            // 単独の こんき は BCCWJ でも 今季 > 根気 なので触らない
             XCTAssertEqual(
                 converter.candidates(for: "こんき", limit: 2, systemCandidateMode: mode).first,
                 "今季", label)
