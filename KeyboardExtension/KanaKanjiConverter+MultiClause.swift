@@ -1990,8 +1990,12 @@ extension KanaKanjiConverter {
             let prevIsKanaIdentity = prevReadingID == prevID
             let prevIsBOS = prevID == SID.BOS
             // かな正書の読みの漢字/カタカナ表層か(2884)。DP からはノードごとの事前計算値が渡る(3038)
-            let surfaceIsKanaOrthodoxDemoted = isKanaOrthodoxDemoted
-                ?? (!isCurated && Self.isKanaOrthodoxDemotedSurface(surface: surface, reading: reading))
+            // ただし漢字の語の直後の 性 は接尾(保存性/安全性)なので下げない。せい の枠は理由の せい(所為。〜のせい)のためで、
+            // 保存→性(1832)の観測を捨てて ほぞんせいがいい→保存清華いい になっていた(3570、ユーザ報告)
+            let isSuffixSeiAfterKanji = surfaceID == SID.性 && readingID == SID.せい
+                && !prevIsBOS && !prevIsKanaIdentity && Self.isAllKanjiSurface(prev)
+            let surfaceIsKanaOrthodoxDemoted = !isSuffixSeiAfterKanji && (isKanaOrthodoxDemoted
+                ?? (!isCurated && Self.isKanaOrthodoxDemotedSurface(surface: surface, reading: reading)))
             // 読み跨ぎ bigram 借用の遮断(定数コメント参照。人(にん/じん)/頭(ず) 等)。
             // 一般則(2423): bigram は表層単位の統計なので、この読みの word_cost が
             // 収穫底値(>=10000)または表層の最安読みから大きく乖離(>=2500)している場合は

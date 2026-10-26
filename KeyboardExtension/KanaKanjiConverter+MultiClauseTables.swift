@@ -3244,8 +3244,8 @@ extension KanaKanjiConverter {
             add("")
             add(KanaKanjiConverter.multiClauseBOSMarker)
             add(KanaKanjiConverter.multiClauseEOSMarker)
-            // 名詞+欄/製 の接尾(3123)
-            for s in ["らん", "せい", "欄", "製"] { add(s) }
+            // 名詞+欄/製/性 の接尾(3123、性 は 3570)
+            for s in ["らん", "せい", "欄", "製", "性"] { add(s) }
             // 方角の直後の ら(3705)、形容詞の直後の 方(かた。3711)
             for s in ["ら", "かた", "方"] { add(s) }
             // 文頭の 事+助詞(3713)
@@ -3444,6 +3444,7 @@ extension KanaKanjiConverter {
         static let た = MultiClauseSymbols.id("た")
         static let たい = MultiClauseSymbols.id("たい")
         static let ため = MultiClauseSymbols.id("ため")
+        static let 性 = MultiClauseSymbols.id("性")
         static let だ = MultiClauseSymbols.id("だ")
         static let っけ = MultiClauseSymbols.id("っけ")
         static let であっても = MultiClauseSymbols.id("であっても")

@@ -25524,6 +25524,17 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.candidates(for: "あいもり", limit: 6, systemCandidateMode: .surface).first, "合い盛り")
         XCTAssertEqual(converter.multiClauseCandidates(for: "あいもりで", systemCandidateMode: .surface).first, "合い盛りで")
     }
+
+    // 保存性: せい の かな正書の枠(理由の せい)が接尾の 性 まで下げ、ほぞんせいがいい→保存清華いい だった(3570)
+    func testRegression3570SuffixSei() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        XCTAssertEqual(multi("ほぞんせいがいい").first, "保存性がいい", "\(multi("ほぞんせいがいい"))")
+        XCTAssertEqual(multi("あんぜんせいがたかい").first, "安全性が高い", "\(multi("あんぜんせいがたかい"))")
+        // 理由の せい はかなのまま(2873)
+        XCTAssertEqual(multi("にほんせいふのせい").first, "日本政府のせい", "\(multi("にほんせいふのせい"))")
+    }
     // 土星の輪: LM は 和(5199<輪 5449)と の→和(3964<4620)が強く 土星の和 が先頭だった。misc で句を登録(3570)
     func testRegression3570DoseiNoWa() throws {
         try prepareRealLMDictionary()
