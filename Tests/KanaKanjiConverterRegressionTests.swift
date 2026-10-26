@@ -25636,6 +25636,15 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi.first, "コツがいるのは", "\(multi)")
         XCTAssertTrue(multi.contains("骨がいるのは"), "\(multi)")
     }
+
+    // つけはじめ: 漬け始め が無かった(3572)
+    func testRegression3572TsukeHajime() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let list = converter.candidates(for: "つけはじめ", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(3)), ["漬け始め", "付け始め", "つけ始め"], "\(list)")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "つけはじめのひ", systemCandidateMode: .surface).first, "漬け始めの日")
+    }
     // とも+でしょう(3570): みっつともでしょう→3つとも出章 だった
     func testRegression3570TomoDeshou() throws {
         try prepareRealLMDictionary()
