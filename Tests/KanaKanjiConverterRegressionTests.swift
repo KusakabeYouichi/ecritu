@@ -25709,6 +25709,15 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("ばかみたいなはなし").first, "馬鹿みたいな話", "\(multi("ばかみたいなはなし"))")
         XCTAssertEqual(multi("はがぬける").first, "歯が抜ける", "\(multi("はがぬける"))")
     }
+
+    // ひとのしんり: 人の真理 が先頭だった(3573)。宇宙の真理 は 真理 のまま
+    func testRegression3573HitoNoShinri() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        XCTAssertEqual(multi("ひとのしんり").first, "人の心理", "\(multi("ひとのしんり"))")
+        XCTAssertEqual(multi("うちゅうのしんり").first, "宇宙の真理", "\(multi("うちゅうのしんり"))")
+    }
     // 何人+いるか: いるか 1 語の中で イルカ が かな に勝ち 何人イルカを が先頭だった(3573)
     func testRegression3573NanninIruka() throws {
         try prepareRealLMDictionary()
