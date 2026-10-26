@@ -5577,6 +5577,34 @@ extension KanaKanjiConverter {
             }) {
             results.insert(wholeName, at: 0)
         }
+        // 漢字の語を 2 つ並べただけの区間で、その並びを LM が一度も見ていない(bigram なし)とき、2 語の読みに一致する
+        // 辞書の 1 語があればそれに差し替えた候補を先頭にする(3570、ユーザ指定)。ちゅうせいせんざい(で): 中世(5120)+宣材
+        // (追加語彙の床 1500)が、辞書の 中性洗剤(語コスト 15524。LM 未収録)に勝っていた。並びの実績が無い 2 語より、
+        // 辞書が 1 語として持つ複合語を採る。最初に当たった 1 か所だけ差し替える
+        if results.first == joined, segments.count == pathIndices.count {
+            for position in 0..<max(0, pathIndices.count - 1) {
+                let lhs = nodes[pathIndices[position]]
+                let rhs = nodes[pathIndices[position + 1]]
+                guard lhs.isDictWord, rhs.isDictWord,
+                    segments[position] == lhs.surface, segments[position + 1] == rhs.surface,
+                    Self.isAllKanjiSurface(lhs.surface), Self.isAllKanjiSurface(rhs.surface),
+                    bigramCostByIDPair[MultiClauseSymbols.pairKey(symbolID(lhs.surface), symbolID(rhs.surface))] == nil
+                else { continue }
+                let compoundReading = lhs.reading + rhs.reading
+                guard let compound = store.systemCandidates(for: compoundReading, mode: systemCandidateMode).first(where: {
+                    $0 != lhs.surface + rhs.surface && Self.isAllKanjiSurface($0)
+                        && !(suppressedByReading[compoundReading]?.contains($0) ?? false)
+                }) else { continue }
+                var replaced = segments
+                replaced[position] = compound
+                replaced.remove(at: position + 1)
+                let replacedJoined = replaced.joined()
+                if !results.contains(replacedJoined) {
+                    results.insert(replacedJoined, at: 0)
+                }
+                break
+            }
+        }
         // 変種枠は文節位置で散らす(定数コメント参照。2939)。1 巡目は「まだ使っていない文節」かつ
         // コスト差が上限以内の変種を 1 つずつ採り、2 巡目で残りをコスト差順に詰める。
         // 代替経路(position -1)は位置を占有しない

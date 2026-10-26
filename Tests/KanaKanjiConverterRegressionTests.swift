@@ -25468,6 +25468,15 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(list.prefix(3)), ["中性", "忠誠", "中世"], "\(list)")
     }
 
+    // ちゅうせいせんざい: 中世(5120)+宣材(追加語彙の床 1500)が 中性洗剤(辞書の 1 語、LM 未収録)に勝っていた。
+    // 並びの実績(bigram)が無い漢字 2 語より、2 語の読みに一致する辞書の 1 語を先頭にする(3570)
+    func testRegression3570CompoundOverUnattestedPair() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        XCTAssertEqual(multi("ちゅうせいせんざい").first, "中性洗剤", "\(multi("ちゅうせいせんざい"))")
+        XCTAssertEqual(multi("ちゅうせいせんざいで").first, "中性洗剤で", "\(multi("ちゅうせいせんざいで"))")
+    }
     // 土星の輪: LM は 和(5199<輪 5449)と の→和(3964<4620)が強く 土星の和 が先頭だった。misc で句を登録(3570)
     func testRegression3570DoseiNoWa() throws {
         try prepareRealLMDictionary()
