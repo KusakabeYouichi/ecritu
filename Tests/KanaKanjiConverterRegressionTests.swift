@@ -25719,6 +25719,19 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("うちゅうのしんり").first, "宇宙の真理", "\(multi("うちゅうのしんり"))")
     }
 
+    // わかどり: 若採り が無く、わか鳥/若どり の交ぜ書きが出ていた(3573)。若鶏→若鳥→若採り の順、若採りする はサ変
+    func testRegression3573Wakadori() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        func single(_ r: String) -> [String] { converter.candidates(for: r, limit: 8, systemCandidateMode: .surface) }
+        XCTAssertEqual(Array(single("わかどり").prefix(3)), ["若鶏", "若鳥", "若採り"], "\(single("わかどり"))")
+        XCTAssertFalse(single("わかどり").contains("わか鳥") || single("わかどり").contains("若どり"), "\(single("わかどり"))")
+        XCTAssertEqual(Array(multi("わかどりの").prefix(3)), ["若鶏の", "若鳥の", "若採りの"], "\(multi("わかどりの"))")
+        XCTAssertEqual(single("わかどりした").first, "若採りした", "\(single("わかどりした"))")
+        XCTAssertEqual(multi("なすをわかどりする").first, "茄子を若採りする", "\(multi("なすをわかどりする"))")
+    }
+
     // ちゅうもんやのうひん: 中+もん+や に割られ 中もんや納品 だった(3573)
     func testRegression3573ChuumonYa() throws {
         try prepareRealLMDictionary()
@@ -25726,6 +25739,7 @@ extension KanaKanjiConverterRegressionTests {
         func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
         XCTAssertEqual(Array(multi("ちゅうもんやのうひん").prefix(2)), ["注文や納品", "註文や納品"], "\(multi("ちゅうもんやのうひん"))")
     }
+
     // 何人+いるか: いるか 1 語の中で イルカ が かな に勝ち 何人イルカを が先頭だった(3573)
     func testRegression3573NanninIruka() throws {
         try prepareRealLMDictionary()

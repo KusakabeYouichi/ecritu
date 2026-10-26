@@ -3299,7 +3299,8 @@ extension KanaKanjiConverter {
                 // 派生は読みの接頭一致が要るので従来どおり走査する
                 if isInflectionDerived {
                     for (readingKey, demotions) in Self.multiClauseHomophoneDemotionsByReading
-                    where reading == readingKey || reading.hasPrefix(readingKey) {
+                    where (reading == readingKey || reading.hasPrefix(readingKey))
+                        && !Self.multiClauseHomophoneDemotionUnderivedOnlyReadings.contains(readingKey) {
                         for (demotedSurface, demotion) in demotions
                         where surface == demotedSurface || surface.hasPrefix(demotedSurface) {
                             penalty += demotion

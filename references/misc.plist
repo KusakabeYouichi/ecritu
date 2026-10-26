@@ -433,6 +433,7 @@
 	<dict><key>phrase</key><string>抑制語彙</string><key>shortcut</key><string>よくせいごい</string></dict>
 	<dict><key>phrase</key><string>ショートカット語彙</string><key>shortcut</key><string>しょーとかっとごい</string></dict>
 	<dict><key>phrase</key><string>合い盛り</string><key>shortcut</key><string>あいもり</string><key>pos</key><string>名詞</string></dict>	<!-- 合い盛り(そばの盛り合わせ 等): 辞書は 東盛/相守/相森/藍森 の人名だけだった(ユーザ報告 3570) -->
+	<dict><key>phrase</key><string>若採り</string><key>shortcut</key><string>わかどり</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 若採り(野菜を若いうちに採る。若採りする): 辞書に無かった(ユーザ指定 3573) -->
 	<dict><key>phrase</key><string>漬け始め</string><key>shortcut</key><string>つけはじめ</string><key>pos</key><string>名詞</string></dict>	<!-- 漬け始め(漬物): 付け始め/つけ始め しか作られなかった(ユーザ報告 3572) -->
 	<dict><key>phrase</key><string>青菜炒め</string><key>shortcut</key><string>あおないため</string></dict>	<!-- 青菜炒め: 青菜 は辞書にあるが 1 語で無く、青+ない+ため が先頭だった(ユーザ報告 3723) -->
 	<!-- □ 銘柄牛(ユーザ指定 3735: おざきぎゅう が 尾崎ギュウ だった。主な銘柄も合わせて。前沢牛/宮崎牛 は辞書に既存) -->
