@@ -25516,6 +25516,14 @@ extension KanaKanjiConverterRegressionTests {
         let multi = converter.multiClauseCandidates(for: "にんにくや", systemCandidateMode: .surface)
         XCTAssertEqual(Array(multi.prefix(2)), ["にんにくや", "ニンニクや"], "\(multi)")
     }
+
+    // 合い盛り: 辞書は 東盛/相守 等の人名だけだった(3570。misc で供給)
+    func testRegression3570AiMori() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.candidates(for: "あいもり", limit: 6, systemCandidateMode: .surface).first, "合い盛り")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "あいもりで", systemCandidateMode: .surface).first, "合い盛りで")
+    }
     // 土星の輪: LM は 和(5199<輪 5449)と の→和(3964<4620)が強く 土星の和 が先頭だった。misc で句を登録(3570)
     func testRegression3570DoseiNoWa() throws {
         try prepareRealLMDictionary()
