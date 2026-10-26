@@ -25718,6 +25718,14 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("ひとのしんり").first, "人の心理", "\(multi("ひとのしんり"))")
         XCTAssertEqual(multi("うちゅうのしんり").first, "宇宙の真理", "\(multi("うちゅうのしんり"))")
     }
+
+    // ちゅうもんやのうひん: 中+もん+や に割られ 中もんや納品 だった(3573)
+    func testRegression3573ChuumonYa() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        XCTAssertEqual(Array(multi("ちゅうもんやのうひん").prefix(2)), ["注文や納品", "註文や納品"], "\(multi("ちゅうもんやのうひん"))")
+    }
     // 何人+いるか: いるか 1 語の中で イルカ が かな に勝ち 何人イルカを が先頭だった(3573)
     func testRegression3573NanninIruka() throws {
         try prepareRealLMDictionary()
