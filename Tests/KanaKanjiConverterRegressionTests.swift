@@ -25645,6 +25645,13 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(list.prefix(3)), ["漬け始め", "付け始め", "つけ始め"], "\(list)")
         XCTAssertEqual(converter.multiClauseCandidates(for: "つけはじめのひ", systemCandidateMode: .surface).first, "漬け始めの日")
     }
+
+    // かもね: 返事や断片で使う かもね を先頭に(3572)
+    func testRegression3572Kamone() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.candidates(for: "かもね", limit: 4, systemCandidateMode: .surface).first, "かもね")
+    }
     // とも+でしょう(3570): みっつともでしょう→3つとも出章 だった
     func testRegression3570TomoDeshou() throws {
         try prepareRealLMDictionary()
