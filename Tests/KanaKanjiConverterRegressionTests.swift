@@ -25732,6 +25732,21 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("なすをわかどりする").first, "茄子を若採りする", "\(multi("なすをわかどりする"))")
     }
 
+    // 注文/註文 を書きかえの日常語の例外に(3573)。オンで 本来を先に でも 注文 が先、オフは 註文 が先
+    func testRegression3573ChuumonEverydayException() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        func single(_ r: String) -> [String] { converter.candidates(for: r, limit: 6, systemCandidateMode: .surface) }
+        converter.setKakikaePreference(.bothBeforeFirst)
+        converter.setKakikaeEverydayException(true)
+        XCTAssertEqual(Array(single("ちゅうもん").prefix(2)), ["注文", "註文"], "\(single("ちゅうもん"))")
+        XCTAssertEqual(Array(multi("ちゅうもんやのうひん").prefix(2)), ["注文や納品", "註文や納品"], "\(multi("ちゅうもんやのうひん"))")
+        converter.setKakikaeEverydayException(false)
+        XCTAssertEqual(Array(single("ちゅうもん").prefix(2)), ["註文", "注文"], "\(single("ちゅうもん"))")
+        XCTAssertEqual(Array(multi("ちゅうもんやのうひん").prefix(2)), ["註文や納品", "注文や納品"], "\(multi("ちゅうもんやのうひん"))")
+    }
+
     // ちゅうもんやのうひん: 中+もん+や に割られ 中もんや納品 だった(3573)
     func testRegression3573ChuumonYa() throws {
         try prepareRealLMDictionary()
