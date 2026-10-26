@@ -25652,6 +25652,17 @@ extension KanaKanjiConverterRegressionTests {
         try loadDeviceAddedVocabulary(includeSuppression: true)
         XCTAssertEqual(converter.candidates(for: "かもね", limit: 4, systemCandidateMode: .surface).first, "かもね")
     }
+
+    // 〜てあった: 入れて+会った/合った が同点で文字コード順に勝っていた(3572)
+    func testRegression3572TeAtta() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        XCTAssertEqual(multi("ちょうどいれてあったのに").first, "ちょうど入れてあったのに", "\(multi("ちょうどいれてあったのに"))")
+        XCTAssertEqual(multi("ほんにかいてあった").first, "本に書いてあった", "\(multi("ほんにかいてあった"))")
+        XCTAssertEqual(multi("ともだちにあった").first, "友達に会った", "\(multi("ともだちにあった"))")
+    }
+
     // とも+でしょう(3570): みっつともでしょう→3つとも出章 だった
     func testRegression3570TomoDeshou() throws {
         try prepareRealLMDictionary()

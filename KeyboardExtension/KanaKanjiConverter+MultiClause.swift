@@ -2426,8 +2426,9 @@ extension KanaKanjiConverter {
             // て形直後の授受補助動詞(使ってくれない/してくれてる 等)はかなが正書。紅(名詞
             // くれない)や 暮れてる が繰り上がるのを、かな識別を安価にして防ぐ。prev が て/で
             // 終わり(て形)限定。
+            // 〜てある(入れてあった)の ある も同じ(3572。会った/合った と同点で文字コード順に負けていた)
             if isKanaIdentity,
-                Self.isTeBenefactiveAuxiliaryReading(reading),
+                Self.isTeBenefactiveAuxiliaryReading(reading) || Self.multiClauseTeAruAuxiliaryReadings.contains(reading),
                 !prevIsBOS,
                 (prev.hasSuffix("て") || prev.hasSuffix("で")) {
                 base = min(base, Self.multiClauseKanaAdverbCost)

@@ -1836,6 +1836,10 @@ extension KanaKanjiConverter {
     // 活用列挙リストは くれてる(ている縮約)等の漏れが続いたため廃止し、
     // 「くれ/あげ 始まりの全ひらがな連鎖(≤8字)」の述語で一般判定する
     // (くれてた/くれてます/あげちゃう 等も自動で入る)。て/で 直後限定は各適用箇所が課す。
+    // て形直後の補助動詞 ある(〜てある)の形。かなが正書(入れてあった。3572)。て/で 直後限定は適用箇所が課す
+    static let multiClauseTeAruAuxiliaryReadings: Set<String> = [
+        "ある", "あった", "あって", "あります", "ありました", "ありません", "あれば", "あり", "あるの", "あったの", "あるから", "あったから"
+    ]
     static func isTeBenefactiveAuxiliaryReading(_ reading: String) -> Bool {
         guard reading.count >= 2, reading.count <= 8,
             reading.hasPrefix("くれ") || reading.hasPrefix("あげ") else {
