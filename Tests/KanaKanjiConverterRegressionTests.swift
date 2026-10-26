@@ -24335,7 +24335,7 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertFalse(converter.candidates(for: "ずっと", limit: 8, systemCandidateMode: .surface).contains("ズンと"))
         // 並び(単文節 seed)
         XCTAssertEqual(converter.candidates(for: "ぜんさい", limit: 3, systemCandidateMode: .surface).prefix(2), ["前菜", "前妻"])
-        XCTAssertEqual(converter.candidates(for: "にんにく", limit: 6, systemCandidateMode: .surface).prefix(5), ["にんにく", "ニンニク", "大蒜", "忍辱", "葫"])
+        XCTAssertEqual(converter.candidates(for: "にんにく", limit: 6, systemCandidateMode: .surface).prefix(5), ["にんにく", "ニンニク", "大蒜", "葫", "忍辱"])  // 3570 で 葫 を 忍辱 の前へ
     }
 
     func testRegressionRealLMRusettoOneWord() throws {
@@ -25505,6 +25505,16 @@ extension KanaKanjiConverterRegressionTests {
         try loadDeviceAddedVocabulary(includeSuppression: true)
         XCTAssertEqual(Array(converter.candidates(for: "ごくよわび", limit: 6, systemCandidateMode: .surface).prefix(2)), ["ごく弱火", "極弱火"])
         XCTAssertEqual(converter.multiClauseCandidates(for: "ごくよわびで", systemCandidateMode: .surface).first, "ごく弱火で")
+    }
+
+    // にんにく: にんにく→ニンニク→大蒜→葫→忍辱(3570)。にんにくや は ニンニク→や(1498)の LM で ニンニクや が先頭だった
+    func testRegression3570Ninniku() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(Array(converter.candidates(for: "にんにく", limit: 6, systemCandidateMode: .surface).prefix(5)),
+                       ["にんにく", "ニンニク", "大蒜", "葫", "忍辱"])
+        let multi = converter.multiClauseCandidates(for: "にんにくや", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(multi.prefix(2)), ["にんにくや", "ニンニクや"], "\(multi)")
     }
     // 土星の輪: LM は 和(5199<輪 5449)と の→和(3964<4620)が強く 土星の和 が先頭だった。misc で句を登録(3570)
     func testRegression3570DoseiNoWa() throws {
