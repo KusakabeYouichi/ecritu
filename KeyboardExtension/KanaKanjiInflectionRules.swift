@@ -1449,6 +1449,8 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "しにくく", baseReadingSuffix: "する", allowedClasses: .suru),
         InflectionRule(readingSuffix: "しにくくない", baseReadingSuffix: "する", allowedClasses: .suru),
         InflectionRule(readingSuffix: "しにくかった", baseReadingSuffix: "する", allowedClasses: .suru),
+        InflectionRule(readingSuffix: "しにくさ", baseReadingSuffix: "する", allowedClasses: .suru),  // サ変の さ名詞化(参加しにくさ。3572)
+        InflectionRule(readingSuffix: "しやすさ", baseReadingSuffix: "する", allowedClasses: .suru),
         InflectionRule(readingSuffix: "しやすい", baseReadingSuffix: "する", allowedClasses: .suru),
         InflectionRule(readingSuffix: "しやすく", baseReadingSuffix: "する", allowedClasses: .suru),
         InflectionRule(readingSuffix: "しやすくない", baseReadingSuffix: "する", allowedClasses: .suru),
@@ -1722,6 +1724,8 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "しにくく", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "しにくくない", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "しにくかった", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
+        InflectionRule(readingSuffix: "しにくさ", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),  // 参加しにくさ(3572)
+        InflectionRule(readingSuffix: "しやすさ", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "しやすい", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "しやすく", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "しやすくない", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),

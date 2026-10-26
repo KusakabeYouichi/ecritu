@@ -25593,6 +25593,15 @@ extension KanaKanjiConverterRegressionTests {
                        ["1回", "一回", "1階", "一階", "一介", "一塊"])
         XCTAssertEqual(Array(converter.candidates(for: "もういっかい", limit: 6, systemCandidateMode: .surface).prefix(2)), ["もう1回", "もう一回"])
     }
+
+    // さんかしにくさ: サ変+しにくさ の活用が無く さん+課しにくさ になっていた(3572)
+    func testRegression3572SankaShinikusa() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let list = converter.candidates(for: "さんかしにくさ", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(2)), ["参加しにくさ", "酸化しにくさ"], "\(list)")
+        XCTAssertEqual(converter.candidates(for: "りようしやすさ", limit: 3, systemCandidateMode: .surface).first, "利用しやすさ")
+    }
     // とも+でしょう(3570): みっつともでしょう→3つとも出章 だった
     func testRegression3570TomoDeshou() throws {
         try prepareRealLMDictionary()
