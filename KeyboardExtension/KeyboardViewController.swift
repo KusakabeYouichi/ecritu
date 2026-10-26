@@ -189,6 +189,8 @@ final class KeyboardViewController: UIInputViewController {
     // 非nilの間は「サイズ遷移が進行中」を意味し、高さ算出は生のウィンドウ・ビューの
     // ジオメトリでなくこの確定値を根拠にする(preferredKeyboardHeight 参照)。
     var pendingSizeTransitionTargetSize: CGSize?
+    // 大きな画面の iPhone を縦で使うとき、ホストが申告より高く渡した窓のぶん(preferredKeyboardHeight で更新。3570)
+    var largePortraitExtraHeight: CGFloat = 0
     var isObservingSettingsDidChange = false
     var keyboardHeightLockValue: CGFloat?
     // 高さ要求の診断ログ用(変化時だけ1行残す。logPreferredKeyboardHeightIfChanged 参照)
@@ -1395,6 +1397,12 @@ final class KeyboardViewController: UIInputViewController {
         }
 
         applyKeyboardBaseBackground()
+
+        // 下の安全領域は描画の後に届く(Duo の外画面の横向きで 0→66。3570)。代わりの余白が変わったら作り直す
+        if abs(configuration.replacedLandscapeBottomInset - replacedLandscapeBottomInset()) > 0.5 {
+            refreshKeyboardState(trigger: "bottomInset")
+            return
+        }
 
         // 実幅が描画時の見積もりと違えば作り直す(初回は幅 0 で描き、レイアウト後に確定。
         // iPad 互換モードの箱幅や回転で変わる。2786)

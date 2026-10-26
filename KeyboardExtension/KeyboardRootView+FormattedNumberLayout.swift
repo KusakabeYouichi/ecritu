@@ -638,7 +638,11 @@ extension KeyboardRootView {
     // テンキー4行の合計高さをカレンダー上部エリア(約183pt)以内に収める行高さ。上位 Group が
     // フィルするので、上部エリアが利用可能高さ以内であれば下段バーは常に最下部に落ちる。
     private var formattedNumberTenkeyRowHeight: CGFloat {
-        41
+        // 縦で面が設計より高いとき(Duo)は上部エリアも高いので 4 段で埋める(3570。41 のままだと下段バーとの間が空く)
+        if !isLandscapeLayout, isLargePhonePortrait || portraitPanelSlack > 0 {
+            return max(41, floor((formattedNumberTopContentHeight - keyboardRowSpacing * 3) / 4))
+        }
+        return 41
     }
 
     // 桁数は当面8桁で足りるため、数字は8桁で頭打ちにする(符号/小数点は別カウント)。

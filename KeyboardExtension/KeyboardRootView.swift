@@ -158,6 +158,18 @@ struct KeyboardRootView: View {
     var layoutMetrics: KeyboardLayoutMetrics = .phone
     // 広い横画面(iPhone Duo の内画面。3570)。生成後に代入する。普通の iPhone・iPad は常に false
     var usesWideLandscapeLayout = false
+    // 大きな画面の iPhone(Duo の内画面)を縦で使うとき、申告に足した高さ。段と間隔に配る(3570)
+    var largePortraitExtraHeight: CGFloat = 0
+    var isLargePhonePortrait: Bool { largePortraitExtraHeight > 0 && !isLandscapeLayout }
+    // 横向きでカメラのぶん膨らんだ下の安全領域の代わりに空ける量(Duo の外画面。VC 側で安全領域を切る。3570)
+    var replacedLandscapeBottomInset: CGFloat = 0
+    // 面の高さ(VC の hostContentHeight)。縦では containerFrame がホスト枠の補正の帯(17pt)を含むので、枠から
+    // 逆算するときはこちらを使う(3570)
+    var faceHeight: CGFloat = 0
+    // 折りたたみの iPhone(Duo)か(VC の isFoldablePhone)。普通の iPhone では Duo 向けの調整を一切効かせない(3570)
+    var isFoldablePhone = false
+    // 足した 28pt は全部段に配る(+7×4)。純正は段 71・間隔 8 で、間隔は広げない
+    static let largePortraitKeyHeightBoost: CGFloat = 7
 
     let shiftDoubleTapThreshold: TimeInterval = 0.32
     let latinModeSwitchDoubleTapThreshold: TimeInterval = 0.28
@@ -220,6 +232,9 @@ struct KeyboardRootView: View {
     private var keyboardBottomPadding: CGFloat {
         if usesWideLandscapeSidebar {
             return Self.wideLandscapeVerticalPadding
+        }
+        if replacedLandscapeBottomInset > 0 {
+            return replacedLandscapeBottomInset + frameMetrics.bottomPadding
         }
         return bottomSafeAreaOutsideFrame > 0
             ? Self.portraitBottomGapOverHomeIndicator
@@ -952,7 +967,7 @@ struct KeyboardRootView: View {
         }
         // 帯のぶんの詰め(定義コメント参照)。3166 で 45pt、3169 で候補欄を 4pt 詰めて 46pt へ戻し、
         // 3216 で純正のかなキーボード(実測 47pt)に揃えた
-        return 47
+        return 47 + (isLargePhonePortrait ? Self.largePortraitKeyHeightBoost : 0)
     }
 
     // 記号・絵文字・顔文字・部首・書式化の面の「4 段ぶん」の高さ。横画面では枠が足りず、
@@ -960,7 +975,12 @@ struct KeyboardRootView: View {
     // 枠から逆算した値に収めて、下段バーがかな面の最下段と同じ位置に来るようにする(3189)
     var fourRowAlignedClusterHeight: CGFloat {
         let designed = mainFlickKeyHeight * 4 + keyboardRowSpacing * 3
-        guard isLandscapeLayout, containerFrame.height > 0 else {
+        if !isLandscapeLayout {
+            // 縦で窓が設計より高いとき(Duo は内画面・外画面ともホームバーの帯が無い)、決め打ちだと最下段の下が
+            // 空いた(内画面でかな 20pt に対し 47pt、外画面で 25pt 余り。3570)。余りを上のまとまりに回して枠を埋める
+            return designed + portraitPanelSlack
+        }
+        guard containerFrame.height > 0 else {
             return designed
         }
         let available = containerFrame.height
@@ -972,6 +992,20 @@ struct KeyboardRootView: View {
             return designed
         }
         return min(designed, available)
+    }
+
+    // 縦で、面が「4 段ぶん」の設計より高いぶん。Duo だけ(普通の iPhone は常に 0 で従来どおり)
+    var portraitPanelSlack: CGFloat {
+        guard isFoldablePhone, !isLandscapeLayout, faceHeight > 0 else {
+            return 0
+        }
+        let designed = mainFlickKeyHeight * 4 + keyboardRowSpacing * 3
+        let available = faceHeight
+            - keyboardTopPaddingForCluster
+            - keyboardBottomPaddingForCluster
+            - candidateHeaderHeight
+            - keyboardRowSpacing
+        return max(0, floor(available - designed))
     }
 
     var fourRowAlignedTopContentHeight: CGFloat {
@@ -1185,10 +1219,30 @@ struct KeyboardRootView: View {
     }
 
     var leftModeSwitchButtonWidth: CGFloat {
-        usesWideLeftModeSwitchButtons ? wideModeSwitchKeyWidth : compactModeSwitchKeyWidth
+        // 大きな画面の縦は [幅狭] でもアルファベットのキーと同じ幅(11 等分。ユーザー指定 3570)
+        if isLargePhonePortrait, !usesWideLeftModeSwitchButtons, keyboardContainerWidth > 0 {
+            let available = keyboardContainerWidth - keyboardHorizontalPadding * 2 - keyboardRowSpacing * 10
+            return max(compactModeSwitchKeyWidth, floor(available / 11))
+        }
+        if let largePortraitWideColumnWidth {
+            return largePortraitWideColumnWidth
+        }
+        return usesWideLeftModeSwitchButtons ? wideModeSwitchKeyWidth : compactModeSwitchKeyWidth
+    }
+
+    // 大きな画面の縦の [幅広] は、左右の端の列も真ん中の 3 列と同じ幅(5 等分。純正と同じ。ユーザー指定 3570)
+    private var largePortraitWideColumnWidth: CGFloat? {
+        guard isLargePhonePortrait, usesWideLeftModeSwitchButtons, keyboardContainerWidth > 0 else {
+            return nil
+        }
+        let available = keyboardContainerWidth - keyboardHorizontalPadding * 2 - keyboardRowSpacing * 4
+        return max(wideModeSwitchKeyWidth, floor(available / 5))
     }
 
     var rightEdgeUtilityColumnWidth: CGFloat {
+        if let largePortraitWideColumnWidth {
+            return largePortraitWideColumnWidth
+        }
         let mirroredUtilityColumnWidth = wideModeSwitchKeyWidth * 2 - leftModeSwitchButtonWidth
         return max(wideModeSwitchKeyWidth, mirroredUtilityColumnWidth)
     }

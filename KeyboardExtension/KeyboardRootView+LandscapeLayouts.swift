@@ -69,8 +69,8 @@ extension KeyboardRootView {
         }
     }
 
-    // 広い横画面の数字の面は 13 列(面切替・数字 3・機能・記号 8)。58pt では窓(801pt)を超えるので収める(3570)
-    static let wideLandscapeNumberColumnCount: CGFloat = 13
+    // 横画面の数字の面の、面切替の列を除いた固定の列(数字 3・機能 1)。記号の列(6、広い横画面は 8)はこの後ろに並ぶ
+    static let landscapeNumberFixedKeyColumnCount = 4
 
     func isLandscapeLatinRightShiftKey(_ kana: FlickKanaSet) -> Bool {
         kana.label == "__latin_shift_right__"
@@ -132,11 +132,15 @@ extension KeyboardRootView {
         let rowHeight = mainFlickKeyHeight
         let rowSpacing: CGFloat = keyboardRowSpacing
         // Keep number-mode keys the same width as mode-switch keys.
+        // ただし窓に収まらないときは縮める。Duo の内画面(13 列を 801pt)と外画面の横(11 列を約 530pt。左端の
+        // 面切替の列が窓の外に出て切り替えられなかった)で起きた(3570)。面切替の列は 58pt のまま
+        // 縮めるのは Duo だけ(普通の iPhone は従来どおり 58pt)
         var keyWidth = leftModeSwitchButtonWidth
-        if usesWideLandscapeSidebar, keyboardContainerWidth > 0 {
-            let columns = Self.wideLandscapeNumberColumnCount
-            let available = keyboardContainerWidth - keyboardHorizontalPadding * 2 - rowSpacing * (columns - 1)
-            keyWidth = min(keyWidth, floor(available / columns))
+        if usesWideLandscapeSidebar || isFoldablePhone, keyboardContainerWidth > 0 {
+            let keyColumns = CGFloat(Self.landscapeNumberFixedKeyColumnCount + (landscapeNumberSymbolPanelRows.first?.count ?? 0))
+            let available = keyboardContainerWidth - keyboardHorizontalPadding * 2
+                - leftModeSwitchButtonWidth - rowSpacing * keyColumns
+            keyWidth = min(keyWidth, floor(available / keyColumns))
         }
         let numberClusterOnLeft = landscapeNumberPaneSide == .left
 

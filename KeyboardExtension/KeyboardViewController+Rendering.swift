@@ -50,6 +50,14 @@ extension KeyboardViewController {
         let bottomSafeAreaOutsideFrame: CGFloat
         // 広い横画面(iPhone Duo の内画面。3570)。開閉・回転で変わったら差分検出で面を作り直す
         var usesWideLandscapeLayout: Bool = false
+        // 大きな画面の iPhone(Duo の内画面)を縦で使うとき、ホストが申告より高い窓を渡してくるぶん(3570)
+        var largePortraitExtraHeight: CGFloat = 0
+        // 横向きでカメラのぶん膨らんだ下の安全領域の代わりに、面の下に空ける量(Duo の外画面。3570)
+        var replacedLandscapeBottomInset: CGFloat = 0
+        // 面の高さ(ホスト枠の補正の帯を除く。3265)。containerFrame は帯を含む
+        var faceHeight: CGFloat = 0
+        // 折りたたみの iPhone(Duo)か。Duo 向けの面の調整はこの旗の内側だけで行なう(3570)
+        var isFoldablePhone: Bool = false
         let shortcutVocabulary: [String]
         var composingText: String
         // tokushima(3211): 候補欄に下線付きで出す未確定(他の方式では空)
@@ -349,6 +357,11 @@ extension KeyboardViewController {
             containerFrame: containerFrame,
             bottomSafeAreaOutsideFrame: bottomSafeAreaOutsideKeyboardFrame(),
             usesWideLandscapeLayout: isWideLandscapePhone(),
+            largePortraitExtraHeight: largePortraitExtraHeight,
+            replacedLandscapeBottomInset: replacedLandscapeBottomInset(),
+            // 普通の iPhone は 0 に固定(高さが変わるたびに設定の差分で作り直さないように)
+            faceHeight: isFoldablePhone ? hostContentHeight : 0,
+            isFoldablePhone: isFoldablePhone,
             shortcutVocabulary: effectiveShortcutVocabularyForRender(),
             composingText: candidatePresentation.composingText,
             internalCompositionPreviewText: internalCompositionPreviewTextForRender,
@@ -573,6 +586,10 @@ extension KeyboardViewController {
         rootView.layoutMetrics = layoutMetrics
         rootView.kanaYaBracketMode = rootViewYaBracketMode
         rootView.usesWideLandscapeLayout = configuration.usesWideLandscapeLayout
+        rootView.largePortraitExtraHeight = configuration.largePortraitExtraHeight
+        rootView.replacedLandscapeBottomInset = configuration.replacedLandscapeBottomInset
+        rootView.faceHeight = configuration.faceHeight
+        rootView.isFoldablePhone = configuration.isFoldablePhone
         // 絵文字/顔文字の確定をショートカット語彙の先頭へ(3243)。保存は共有領域、表示側はキャッシュ破棄で次の描画から反映
         rootView.onShortcutCandidateCommitted = { [weak self] text in
             self?.kanaKanjiStore.prependShortcutCandidate(text)

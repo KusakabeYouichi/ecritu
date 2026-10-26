@@ -187,6 +187,14 @@ extension KeyboardViewController {
             return 34
         }
 
+        // Duo の外画面の縦は安全領域を 0〜2pt と伝えてくるのに、iOS は窓の下に帯(約 41pt)を取る。0 のままだと
+        // 普通の iPhone より 34pt 高く申告し、純正より窓が高く最下段も上がっていた(3570)。普通の iPhone と同じ 34 で組む。
+        // 内画面(幅 600 以上)は別に高さを足している(largePortraitExtraHeight)のでここでは扱わない
+        if isFoldablePhone,
+            (pendingSizeTransitionTargetSize?.width ?? view.bounds.width) < Self.largePhoneShorterScreenEdge {
+            return 34
+        }
+
         return 0
     }
 
@@ -211,11 +219,42 @@ extension KeyboardViewController {
         // 左右の灰色の余白は安全領域ではない。iOS がキーボードの窓を 951pt の画面の中央 801pt に絞っている
         // (3570 の実測: 窓=801x203、左右の safeAreaInsets=0)。拡張からは広げられない(純正も同じ余白)。
         // 下の安全領域(18pt)は窓がホームバーより上で終わるので要らない。面の上下の余白は面の側で持つ
-        let safeAreaRegions: SafeAreaRegions = needsOverride ? [] : .all
+        // カメラで下の安全領域が膨らむとき(下記)も切り、下の余白は面の側で持つ
+        let safeAreaRegions: SafeAreaRegions = needsOverride || replacedLandscapeBottomInset() > 0 ? [] : .all
         if host.safeAreaRegions != safeAreaRegions {
             host.safeAreaRegions = safeAreaRegions
         }
     }
+
+    // Duo の外画面を横にすると右下のカメラのぶん下の安全領域が 66pt になり、面が押し上げられて最上段が切れた(3570)。
+    // 純正はカメラを右の余白に任せ、下はホームバーのぶんしか空けない。普通の iPhone の横(21pt)を超えるときだけ
+    // 安全領域を使わず、代わりに 21pt を返す(面の下の余白に足す)。負の additionalSafeAreaInsets は効かなかった
+    func replacedLandscapeBottomInset() -> CGFloat {
+        let windowBottomInset = view.window?.safeAreaInsets.bottom ?? 0
+        let isLandscape = view.window?.windowScene?.interfaceOrientation.isLandscape ?? false
+        guard isFoldablePhone,
+            isLandscape,
+            windowBottomInset > Self.landscapeHomeIndicatorInset + 0.5 else {
+            return 0
+        }
+        return Self.landscapeHomeIndicatorInset
+    }
+    // 普通の iPhone の横向きの下の安全領域(ホームバー)
+    static let landscapeHomeIndicatorInset: CGFloat = 21
+
+    // 折りたたみの iPhone(Duo)か。Duo 向けの調整はすべてこの判定の内側に置き、普通の iPhone の表示を変えない(3570)。
+    // シーンの画面は内画面を使っていても外画面(466x678)で報告されるので、どの姿勢でも短辺 466 以上になる。
+    // iPad の互換モード(iPhone 専用の écritu は iPad ではこれで動く)は idiom が .phone で、画面は iPad の全幅
+    // (短辺 744 以上)を返す(2786)。寸法だけだと Duo と間違えるので、実ハードウェアが iPad なら除く
+    var isFoldablePhone: Bool {
+        guard traitCollection.userInterfaceIdiom == .phone, !Self.isRunningOnIPadHardware else {
+            return false
+        }
+        let bounds = view.window?.windowScene?.screen.fixedCoordinateSpace.bounds ?? UIScreen.main.bounds
+        return min(bounds.width, bounds.height) >= Self.foldablePhoneShorterScreenEdge
+    }
+    // 普通の iPhone の短辺は 440 まで(17 Pro Max)。Duo の外画面は 466
+    static let foldablePhoneShorterScreenEdge: CGFloat = 450
 
     // 広い横画面(iPhone Duo の内画面)か(3570)。面の縦サイズクラスの上書き・候補欄の半々と 2 列の
     // 唯一の判定。縦サイズクラスはこの VC の値(上書きはホスト側だけなので本来の値のまま)。向きは遷移先 →
@@ -312,20 +351,35 @@ extension KeyboardViewController {
         )
         // ホスト枠の補正(3227)は縦画面だけ
         let compensated = height + (isLandscapeOrientation ? 0 : hostTopInsetCompensation)
+        // 大きな画面の iPhone(Duo の内画面 669x951)を縦で使うと、キーが純正(段 71・間隔 8)より小さく、
+        // 下が空いて見えた(3570)。申告を増やし、増やしたぶんを面の側で段に配る(+7×4 で 28)。
+        // 窓はホストが 321pt で頭打ちにする(355 を申告しても 321)ので、中身(290+28)がそこに収まる量にとどめる。
+        // 判定は窓の幅で行う。半開きで内画面を縦にしても、シーンの画面は外画面(466x678)のまま報告される(3570 の実測)。
+        // 回転の最中は窓がまだ前の幅(外画面の横 678)なので、遷移先があればその幅で判定する(閉じた縦で誤って足していた)
+        let referenceWidth = pendingSizeTransitionTargetSize?.width ?? view.bounds.width
+        // 普通の iPhone も回転の途中は窓が横の幅(600 超)のまま残るので、Duo に限る
+        let extra: CGFloat = !isLandscapeOrientation
+            && isFoldablePhone
+            && referenceWidth >= Self.largePhoneShorterScreenEdge
+            ? Self.largePortraitExtraHeight
+            : 0
+        largePortraitExtraHeight = extra
+        let contentHeight = height + extra
         // 面の高さ(補正を除く中身)を記録し、下端固定の高さ制約へ反映する(3265)
-        if abs(hostContentHeight - height) > 0.5 {
-            hostContentHeight = height
-            hostContentHeightConstraint?.constant = height
+        if abs(hostContentHeight - contentHeight) > 0.5 {
+            hostContentHeight = contentHeight
+            hostContentHeightConstraint?.constant = contentHeight
             hostContentHeightConstraint?.isActive = true
         }
+        let requested = compensated + extra
         logPreferredKeyboardHeightIfChanged(
-            height: compensated,
+            height: requested,
             profile: profile,
             isLandscapeOrientation: isLandscapeOrientation,
             screenBounds: screenBounds,
             shorterScreenEdge: shorterScreenEdge
         )
-        return compensated
+        return requested
     }
 
     // ホストがサードパーティーの枠に足す 17pt(統合ログ 3218: _UIKBCompatInputView が y=17、非表示の入力アシスタント領域)を
@@ -337,6 +391,10 @@ extension KeyboardViewController {
     // なので「最初の縦画面レイアウトで窓の高さが自分の申告値と違っていたら 17 を補う」で 3 経路とも揃う。
     // 補った回は透明な 17pt の帯を上に置き(ホストの地が透ける)、高さも +17 申告する
     static let hostPlaceholderTopInset: CGFloat = 17
+    // 大きな画面の iPhone(Duo の内画面、短辺 669)。普通の iPhone は 440 まで(3570)
+    static let largePhoneShorterScreenEdge: CGFloat = 600
+    // その縦画面で申告に足す高さ(段 +7pt×4)
+    static let largePortraitExtraHeight: CGFloat = 28
 
     // 前の個体の消え方(3234)。開き直し(キーボードが引っ込む)は viewWillDisappear(animated: true)、切り替え(出たまま
     // 差し替え)は animated: false で来る(実機ログ 3233)。切り替えの後の再表示ではホストが 17 を足すので、窓が前の
