@@ -190,6 +190,38 @@ extension KeyboardViewController {
         return 0
     }
 
+    // iPhone Duo の内画面(951x669)は横向きでも縦のサイズクラスが .regular のまま。並びの判定(verticalSizeClass)は
+    // 縦組み、高さの判定(interfaceOrientation)は横組みになり、縦の並びを横の低い枠に押し込んで最下段が切れた(3570)。
+    // 横向きの iPhone のときだけ面の縦サイズクラスを .compact に上書きし、純正と同じく横画面用の並びにそろえる。
+    // 普通の iPhone は横向きなら元から .compact なので上書きは起きない。iPad は metrics 側で常に縦組み(2609)
+    func syncHostVerticalSizeClassOverride(transitionTargetSize: CGSize? = nil) {
+        guard let host = hostingController else {
+            return
+        }
+        let isLandscape: Bool = {
+            if let target = transitionTargetSize ?? pendingSizeTransitionTargetSize {
+                let fixedBounds = view.window?.windowScene?.screen.fixedCoordinateSpace.bounds ?? UIScreen.main.bounds
+                return KeyboardLayoutMetrics.isLandscapeTransitionTarget(
+                    targetWidth: target.width,
+                    shorterScreenEdge: min(fixedBounds.width, fixedBounds.height)
+                )
+            }
+            return view.window?.windowScene?.interfaceOrientation.isLandscape ?? false
+        }()
+        let needsOverride = traitCollection.userInterfaceIdiom == .phone
+            && isLandscape
+            && traitCollection.verticalSizeClass == .regular
+        // 未設定の上書きを読むと UIKit が例外を投げる(読む前に contains で確かめる)
+        let hasOverride = host.traitOverrides.contains(UITraitVerticalSizeClass.self)
+        if needsOverride {
+            if !hasOverride {
+                host.traitOverrides.verticalSizeClass = .compact
+            }
+        } else if hasOverride {
+            host.traitOverrides.remove(UITraitVerticalSizeClass.self)
+        }
+    }
+
     // 枠の外にある下端セーフエリア(ホームインジケーターの帯)。縦向きだけ、高さの表がこのぶんを
     // 引いて要求している(preferredHeight 参照)。面を組む側はこれを知らずに下の余白を足していたので、
     // 中身が枠より高くなり上へはみ出していた(3164)

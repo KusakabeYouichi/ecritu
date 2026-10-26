@@ -1385,6 +1385,7 @@ final class KeyboardViewController: UIInputViewController {
         installKeyboardHeightConstraintIfNeeded()
         resolveHostTopInsetCompensationFromLayoutIfNeeded()
         updateKeyboardHeightIfNeeded()
+        syncHostVerticalSizeClassOverride()
 
         updateKeyboardVisualVisibility(using: configuration)
         logKeyboardHeightMismatchIfChanged()
@@ -1425,6 +1426,7 @@ final class KeyboardViewController: UIInputViewController {
         with coordinator: any UIViewControllerTransitionCoordinator
     ) {
         pendingSizeTransitionTargetSize = size
+        syncHostVerticalSizeClassOverride(transitionTargetSize: size)
         // 向きが変わると枠の高さはホストが取り直すので、その向きの最大の高さも通し直す(3160)
         didPrimeMaximumKeyboardHeight = false
         // 遷移先の高さを、他の処理より先に publish する(2865)。ホストは遷移を始めてから
