@@ -24427,9 +24427,9 @@ extension KanaKanjiConverterRegressionTests {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
         converter.setScriptVariantSuppressionCategories(ScriptVariantSuppressionCategory.defaultEnabled)
-        // せんざい: 指定順(宣材 は 4 番め)。千戝(戝=財の異体字)は出さない
+        // せんざい: 指定順(宣材 は 3570 で 3 番めへ)。千戝(戝=財の異体字)は出さない
         let senzai = converter.candidates(for: "せんざい", limit: 30, systemCandidateMode: .surface)
-        XCTAssertEqual(Array(senzai.prefix(12)), ["洗剤", "潜在", "千載", "宣材", "線材", "船材", "前栽", "千歳", "浅存", "煎剤", "仙才", "せんざい"], "\(senzai)")
+        XCTAssertEqual(Array(senzai.prefix(12)), ["洗剤", "潜在", "宣材", "千載", "線材", "船材", "前栽", "千歳", "浅存", "煎剤", "仙才", "せんざい"], "\(senzai)")
         XCTAssertFalse(senzai.contains("千戝"), "\(senzai)")
         // すった: 刷った→吸った→擦った(自分で)。かなは出さない。派生枠を広げ 刷った も立つ
         for suffix in ["", "の"] {
@@ -25460,6 +25460,13 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("きどうにのる").first, "軌道に乗る", "\(multi("きどうにのる"))")
     }
 
+    // ちゅうせい: 中世 が先頭だった。中性→忠誠→中世 の順(ユーザ指定 3570)
+    func testRegression3570ChuuseiOrder() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let list = converter.candidates(for: "ちゅうせい", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(3)), ["中性", "忠誠", "中世"], "\(list)")
+    }
 
     // 土星の輪: LM は 和(5199<輪 5449)と の→和(3964<4620)が強く 土星の和 が先頭だった。misc で句を登録(3570)
     func testRegression3570DoseiNoWa() throws {
