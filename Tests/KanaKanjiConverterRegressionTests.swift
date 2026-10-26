@@ -25663,6 +25663,20 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("ともだちにあった").first, "友達に会った", "\(multi("ともだちにあった"))")
     }
 
+    // なくて 単独: かな識別の根拠が無く、表示層で かな が末尾チップへ回され 無くて が先頭だった。
+    // なく/ない/なくね/なかった と同じく かな先頭(3573)
+    func testRegression3573Nakute() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for r in ["なく", "なくて", "ない", "なくね", "なかった"] {
+            XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: r), r)
+            XCTAssertEqual(converter.candidates(for: r, limit: 4, systemCandidateMode: .surface).first, r)
+        }
+        // 未然形+なくて の活用形は 漢字先頭のまま
+        XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "しらなくて"))
+        let shira = converter.candidates(for: "しらなくて", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(shira.first, "知らなくて", "\(shira)")
+    }
     // とも+でしょう(3570): みっつともでしょう→3つとも出章 だった
     func testRegression3570TomoDeshou() throws {
         try prepareRealLMDictionary()
