@@ -246,13 +246,20 @@ extension KanaKanjiConverter {
             candidates = candidates.filter { !Self.containsNonPassivizableSuruForm($0) }
                 + candidates.filter { Self.containsNonPassivizableSuruForm($0) }
         }
-        guard let preference = withStateLock({ kakikaePreference }), !candidates.isEmpty else {
+        // X.10 の組(臆測/憶測)はその設定で(3570)
+        let (preference, lateStandardized) = withStateLock { (kakikaePreference, lateStandardizedRewritePreference) }
+        guard preference != nil || lateStandardized != nil, !candidates.isEmpty else {
             return candidates
         }
-        return Self.applyKakikae(preference, toMultiClauseCandidates: candidates, everydayException: withStateLock { kakikaeEverydayException })
+        return Self.applyKakikae(
+            preference,
+            lateStandardized: lateStandardized,
+            toMultiClauseCandidates: candidates,
+            everydayException: withStateLock { kakikaeEverydayException }
+        )
     }
 
-    // X.13(序数の め)が『ひらがなが先』のとき、連文節の 助数詞+目(10日目の)を 日め に差し替え、目 の形をその後ろに並べる(3750)。
+    // X.14(序数の め)が『ひらがなが先』のとき、連文節の 助数詞+目(10日目の)を 日め に差し替え、目 の形をその後ろに並べる(3750)。
     // 単文節は applyMeSuffixPreferences が並べるが、連文節の結果には効いておらず 10+にちめのきょう が 日目の… だった(ユーザ報告)。
     // 人目/役目 のような語を巻き込まないよう、数字の直後(文頭)か、候補の中で数字の後ろにある 助数詞+目 だけ。
     // 序数として定着した語(番目/代目/丁目 等。ordinalMeEstablishedStemTailCharacters)は触らない
@@ -339,10 +346,19 @@ extension KanaKanjiConverter {
     // 同音の漢字による書きかえ(KakikaeTable、3422)を連文節の結果に当てる。ラティスでノードを下げると区切りごと
     // 変わる(颱風 は語コストが高く、台風 を禁止すると たいふうのぜんちょう が 大風の全長 になる)ので、区切りは
     // そのままにして表記だけ差し替える。書きかえ前→後(醗酵→発酵)はどこでも、後→前(回転→廻転)は語の終わり
-    // (直後が漢字でない)ときだけ(一丁目→一挺目 のような語の中を巻き込まない)。両方を出すときは好む側を先に並べる
-    static func applyKakikae(_ preference: KakikaePreference, toMultiClauseCandidates candidates: [String], everydayException: Bool = true) -> [String] {
-        func rewritten(_ text: String, toBefore: Bool) -> String {
-            let index = toBefore ? KakikaeTable.switchablePairsByAfterHead : KakikaeTable.switchablePairsByBeforeHead
+    // (直後が漢字でない)ときだけ(一丁目→一挺目 のような語の中を巻き込まない)。両方を出すときは好む側を先に並べる。
+    // X.9 の組は preference、X.10 の組(臆測/憶測)は lateStandardized で選ぶ(nil のグループは触らない。3570)。
+    // 先に『だけ』のグループを全部書きかえ、その結果を基準に『両方』のグループの好む形→他方を並べる(出さない表記を漏らさない)
+    static func applyKakikae(
+        _ preference: KakikaePreference?,
+        lateStandardized: KakikaePreference? = nil,
+        toMultiClauseCandidates candidates: [String],
+        everydayException: Bool = true
+    ) -> [String] {
+        func rewritten(_ text: String, toBefore: Bool, late: Bool) -> String {
+            let index = late
+                ? (toBefore ? KakikaeTable.lateStandardizedPairsByAfterHead : KakikaeTable.lateStandardizedPairsByBeforeHead)
+                : (toBefore ? KakikaeTable.switchablePairsByAfterHead : KakikaeTable.switchablePairsByBeforeHead)
             var result = ""
             var rest = Substring(text)
             while let head = rest.first {
@@ -351,7 +367,8 @@ extension KanaKanjiConverter {
                     let from = toBefore ? pair.after : pair.before
                     let to = toBefore ? pair.before : pair.after
                     let following = rest.dropFirst(from.count).first
-                    if !toBefore || following.map({ !isKanjiCharacter($0) }) ?? true {
+                    // X.10 の組は前→後も語の終わりだけ(肝腎症候群→肝心症候群 にしない。3570)
+                    if (!toBefore && !late) || following.map({ !isKanjiCharacter($0) }) ?? true {
                         result += to
                         rest = rest.dropFirst(from.count)
                         continue
@@ -370,11 +387,23 @@ extension KanaKanjiConverter {
             }
         }
         for candidate in candidates {
-            let effective = preference.demotingEverydayPair(for: candidate, enabled: everydayException)
-            let preferred = rewritten(candidate, toBefore: effective.prefersBefore)
+            // 日常語の例外(了解/回復)は X.9 の組だけ
+            let groups = [
+                (preference: preference?.demotingEverydayPair(for: candidate, enabled: everydayException), late: false),
+                (preference: lateStandardized, late: true),
+            ].compactMap { group in group.preference.map { (preference: $0, late: group.late) } }
+            let showsBoth: (KakikaePreference) -> Bool = { $0 == .bothBeforeFirst || $0 == .bothAfterFirst }
+            var base = candidate
+            for group in groups where !showsBoth(group.preference) {
+                base = rewritten(base, toBefore: group.preference.prefersBefore, late: group.late)
+            }
+            var preferred = base
+            for group in groups where showsBoth(group.preference) {
+                preferred = rewritten(preferred, toBefore: group.preference.prefersBefore, late: group.late)
+            }
             append(preferred)
-            if effective == .bothBeforeFirst || effective == .bothAfterFirst {
-                append(candidate)
+            if groups.contains(where: { showsBoth($0.preference) }) {
+                append(base)
             }
         }
         return output
@@ -424,7 +453,7 @@ extension KanaKanjiConverter {
         let initialAjoutVocabulary = store.initialAjoutVocabulary()
         let learnedDictionary = store.learnedDictionary()
         let manualAjoutVocabulary = store.ajoutVocabulary()
-        // 数詞の表記(X.18)。curated の 二つ/2つ の順に使う(3708)
+        // 数詞の表記(X.19)。curated の 二つ/2つ の順に使う(3708)
         let numeralStyleForLattice = withStateLock { numeralStylePreference }
         // 1 区間の上限(12 字)を超える追加語彙の読みの長さ(3505。定義コメント参照)
         let curatedLongReadingLengths = n > Self.multiClauseMaxSegmentReadingCount ? store.curatedLongReadingLengths() : []
@@ -1244,7 +1273,7 @@ extension KanaKanjiConverter {
                         let first = numeric.first(where: { $0.hasPrefix("数") }) {
                         seedOrderNounNodeBonuses[spanKeyByStart[start][end] + "-" + first] = Self.multiClauseSuuCounterCompoundBonus
                     }
-                    // curated の数量語(二つ/2つ)が両方あるとき、X.18 の順の表記に加点(定数コメント参照。3708)
+                    // curated の数量語(二つ/2つ)が両方あるとき、X.19 の順の表記に加点(定数コメント参照。3708)
                     let curatedNumeric = Self.curatedNumeralStylePairs(surfaces.filter { $0.isCurated }.map { $0.surface })
                     for surface in curatedNumeric
                     where Self.startsWithArabicDigit(surface) != numeralStyleForLattice.kanjiBeforeArabic {

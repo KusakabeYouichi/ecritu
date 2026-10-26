@@ -853,6 +853,7 @@ extension ContentView {
             applyInitialPresetIfFreshInstall()
             applyKakikaeDefaultForExistingInstallIfNeeded()
             applyKakikaeEverydayExceptionDefaultForExistingInstallIfNeeded()
+            applyLateStandardizedRewriteDefaultForExistingInstallIfNeeded()
             applyNumeralStyleDefaultForExistingInstallIfNeeded()
             normalizeLegacyKanaYaBracketValueIfNeeded()
             applyBasePresetDefaultIfNeeded()

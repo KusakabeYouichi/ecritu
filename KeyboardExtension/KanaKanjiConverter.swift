@@ -75,9 +75,12 @@ final class KanaKanjiConverter {
     // 同音の漢字による書きかえ(臆測⇄憶測。KakikaeTable、3422)。キーボードが設定を読んで入れる。
     // nil(設定を入れる前)は並びに触らない。キーボードは値の無い端末でも 両方(前を先に) を入れる
     var kakikaePreference: KakikaePreference?
+    // 報告の後に常用漢字に加わった字の組(臆測⇄憶測、肝腎⇄肝心。KakikaeTable.lateStandardizedPairs、X.10。3570)。
+    // kakikaePreference とは別に選ぶ。nil は並びに触らない(テストの既定)
+    var lateStandardizedRewritePreference: KakikaePreference?
     // 書きかえの例外グループ(KakikaePreference.everydayAfterFirstPairs)を設定にかかわらず常用漢字先にする(3644)
     var kakikaeEverydayException = true
-    // 変換候補に絵文字を出すか。コンテナーの emoji 候補(X.15)に従う(3423)。読みからの絵文字(ねこ→🐱)はキーボード側で
+    // 変換候補に絵文字を出すか。コンテナーの emoji 候補(X.16)に従う(3423)。読みからの絵文字(ねこ→🐱)はキーボード側で
     // 止めているが、国旗(drapeaux の 🇫🇷 等は辞書に入っている)と学習した絵文字はここで止める。
     // 追加語彙(ショートカット)の絵文字はこの設定に関わらず出す
     var emojiCandidatesEnabled = true
@@ -87,7 +90,7 @@ final class KanaKanjiConverter {
     var ordinalMeKanjiPreferred: Bool = true
     // 助数詞「か」の表記(1か所/数か月)の表示順とオン/オフ(コンテナー設定。2816)
     var kaCounterVariantPreference: KaCounterVariantPreference = .default
-    // 数詞+助数詞の表記(アラビア数字/漢数字の順と有無。コンテナー設定 X.18。3702)。テスト(設定なし)は両方・アラビア数字が先
+    // 数詞+助数詞の表記(アラビア数字/漢数字の順と有無。コンテナー設定 X.19。3702)。テスト(設定なし)は両方・アラビア数字が先
     var numeralStylePreference: NumeralStylePreference = .arabicFirst
     // 送り仮名の許容形(終る/取扱う/届)の扱い(コンテナー設定。2820)
     var okuriganaVariantPreference: OkuriganaVariantPreference = .default
@@ -240,6 +243,16 @@ final class KanaKanjiConverter {
                 return
             }
             kakikaePreference = preference
+            invalidateCandidateCache()
+        }
+    }
+
+    func setLateStandardizedRewritePreference(_ preference: KakikaePreference) {
+        withStateLock {
+            guard lateStandardizedRewritePreference != preference else {
+                return
+            }
+            lateStandardizedRewritePreference = preference
             invalidateCandidateCache()
         }
     }
@@ -489,10 +502,13 @@ final class KanaKanjiConverter {
         // 送り仮名の許容形(終る/届)を設定に従って並べ替え・除去(2820)
         finalCandidates = applyOkuriganaVariantPreference(reading: normalizedReading, to: finalCandidates)
         // 同音の漢字による書きかえの組(聯想/連想)は、両方を出す設定のとき隣り合わせに並べる(間の語を割り込ませない。3644)
-        if let kakikae = withStateLock({ kakikaePreference }) {
+        // X.10 の組(臆測/憶測)はその設定で(3570)
+        let (kakikae, lateStandardized) = withStateLock { (kakikaePreference, lateStandardizedRewritePreference) }
+        if kakikae != nil || lateStandardized != nil {
             finalCandidates = Self.kakikaePairsAdjacent(
                 finalCandidates,
                 preference: kakikae,
+                lateStandardized: lateStandardized,
                 everydayException: withStateLock { kakikaeEverydayException }
             )
         }
@@ -761,7 +777,7 @@ final class KanaKanjiConverter {
         )
         addCandidates(numericUnitFallback, baseScore: CandidateScore.numericUnitFallback, to: &scores)
 
-        // 数詞+助数詞の表記の設定(X.18。3702): アラビア数字/漢数字のどちらを先の帯(400)に置くか、片方だけにするか
+        // 数詞+助数詞の表記の設定(X.19。3702): アラビア数字/漢数字のどちらを先の帯(400)に置くか、片方だけにするか
         let numeralStyle = withStateLock { numeralStylePreference }
         let arabicBand = numeralStyle.kanjiBeforeArabic ? CandidateScore.numericCounterCompound : CandidateScore.numericArabicCompound
         let kanjiBand = numeralStyle.kanjiBeforeArabic ? CandidateScore.numericArabicCompound : CandidateScore.numericCounterCompound
@@ -782,7 +798,7 @@ final class KanaKanjiConverter {
         let kanjiNumeralCompound = numeralStyle.includesKanji
             ? kanjiNumeralCompoundCandidates(for: reading).filter { scores[$0] == nil }
             : []
-        // curated の数量語(misc の 二つ/2つ)が両方あるときは、生成と同じ帯を足して X.18 の順にする(3708)
+        // curated の数量語(misc の 二つ/2つ)が両方あるときは、生成と同じ帯を足して X.19 の順にする(3708)
         let curatedNumeric = Self.curatedNumeralStylePairs(context.userCandidates)
         if !curatedNumeric.isEmpty {
             let generated = Set(arabicNumericCompound + numericCounterCompound + kanjiNumeralCompound)
@@ -1058,24 +1074,35 @@ final class KanaKanjiConverter {
     }
 
     // 両方を出す設定で、書きかえの組(好む側→他方)を隣り合わせにする。好む側の直後へ他方を移す(聯想、連想、連奏… の順)。
-    static func kakikaePairsAdjacent(_ candidates: [String], preference basePreference: KakikaePreference, everydayException: Bool = true) -> [String] {
-        guard basePreference != .beforeOnly || everydayException, basePreference != .afterOnly, candidates.count > 2 else {
+    // X.9 の組は preference、X.10 の組(臆測/憶測。3570)は lateStandardized で判定する。nil のグループの組は触らない
+    static func kakikaePairsAdjacent(
+        _ candidates: [String],
+        preference basePreference: KakikaePreference?,
+        lateStandardized: KakikaePreference? = nil,
+        everydayException: Bool = true
+    ) -> [String] {
+        let switchableMayShowBoth = basePreference.map { ($0 != .beforeOnly || everydayException) && $0 != .afterOnly } ?? false
+        let lateShowsBoth = lateStandardized.map { $0 == .bothBeforeFirst || $0 == .bothAfterFirst } ?? false
+        guard switchableMayShowBoth || lateShowsBoth, candidates.count > 2 else {
             return candidates
         }
         func counterpart(of candidate: String) -> (other: String, isPreferred: Bool)? {
-            let preference = basePreference.demotingEverydayPair(for: candidate, enabled: everydayException)
-            guard preference == .bothBeforeFirst || preference == .bothAfterFirst else {
-                return nil
-            }
             var rest = Substring(candidate)
-            while let head = rest.first {
-                if let pairs = KakikaeTable.switchablePairsByBeforeHead[head],
-                    let pair = pairs.first(where: { rest.hasPrefix($0.before) }) {
-                    return (candidate.replacingOccurrences(of: pair.before, with: pair.after), preference == .bothBeforeFirst)
-                }
-                if let pairs = KakikaeTable.switchablePairsByAfterHead[head],
-                    let pair = pairs.first(where: { rest.hasPrefix($0.after) }) {
-                    return (candidate.replacingOccurrences(of: pair.after, with: pair.before), preference == .bothAfterFirst)
+            while !rest.isEmpty {
+                for matchingBefore in [true, false] {
+                    guard let pair = kakikaePair(at: rest, matchingBefore: matchingBefore,
+                        switchable: switchableMayShowBoth, lateStandardized: lateShowsBoth) else {
+                        continue
+                    }
+                    let preference = pair.isLateStandardized
+                        ? lateStandardized
+                        : basePreference?.demotingEverydayPair(for: candidate, enabled: everydayException)
+                    guard preference == .bothBeforeFirst || preference == .bothAfterFirst else {
+                        return nil
+                    }
+                    return matchingBefore
+                        ? (candidate.replacingOccurrences(of: pair.before, with: pair.after), preference == .bothBeforeFirst)
+                        : (candidate.replacingOccurrences(of: pair.after, with: pair.before), preference == .bothAfterFirst)
                 }
                 rest = rest.dropFirst()
             }
@@ -1098,11 +1125,37 @@ final class KanaKanjiConverter {
     // 書きかえ後の語(憶測/回転寿司)は書きかえ前の表記を作って、設定どおりに片方を落とすか、好む側を上に並べる。
     // 書きかえ後の語は普通の語の一部になりやすい(一丁→一丁目)ので、前の表記を作るのは候補が語そのものか、
     // 作った表記が同じ読みの候補に既にあるときだけ。追加語彙・学習語彙の語は対象外
+    // 候補の rest の先頭から始まる書きかえの組。switchable=X.9 の組、lateStandardized=X.10 の組(3570)を探すか
+    static func kakikaePair(
+        at rest: Substring,
+        matchingBefore: Bool,
+        switchable: Bool,
+        lateStandardized: Bool
+    ) -> (before: String, after: String, isLateStandardized: Bool)? {
+        guard let head = rest.first else {
+            return nil
+        }
+        func find(in index: [Character: [(before: String, after: String)]]) -> (before: String, after: String)? {
+            index[head]?.first(where: { rest.hasPrefix(matchingBefore ? $0.before : $0.after) })
+        }
+        if switchable,
+            let pair = find(in: matchingBefore ? KakikaeTable.switchablePairsByBeforeHead : KakikaeTable.switchablePairsByAfterHead) {
+            return (pair.before, pair.after, false)
+        }
+        if lateStandardized,
+            let pair = find(in: matchingBefore ? KakikaeTable.lateStandardizedPairsByBeforeHead : KakikaeTable.lateStandardizedPairsByAfterHead) {
+            return (pair.before, pair.after, true)
+        }
+        return nil
+    }
+
     private func applyKakikaePreference(
         _ context: CandidateGenerationContext,
         to scores: inout [String: Int]
     ) {
-        guard let preference = withStateLock({ kakikaePreference }) else {
+        // X.9 の組は kakikaePreference、X.10 の組は lateStandardizedRewritePreference で判定する。nil のグループの組は触らない(3570)
+        let (switchablePreference, latePreference) = withStateLock { (kakikaePreference, lateStandardizedRewritePreference) }
+        guard switchablePreference != nil || latePreference != nil else {
             return
         }
         let everydayException = withStateLock { kakikaeEverydayException }
@@ -1110,12 +1163,11 @@ final class KanaKanjiConverter {
         // (交叉点/氷酢酸 等の変換対策語)は X.9 に従わせる(ユーザ指定 3427)
         let exempt = Set(context.ajoutVocabulary[context.reading] ?? []).union(context.learnedCandidates)
         let original = scores
-        func occurrence(in candidate: String, matchingBefore: Bool) -> (before: String, after: String)? {
-            let index = matchingBefore ? KakikaeTable.switchablePairsByBeforeHead : KakikaeTable.switchablePairsByAfterHead
+        func occurrence(in candidate: String, matchingBefore: Bool) -> (before: String, after: String, isLateStandardized: Bool)? {
             var rest = Substring(candidate)
-            while let head = rest.first {
-                if let pairs = index[head],
-                    let pair = pairs.first(where: { rest.hasPrefix(matchingBefore ? $0.before : $0.after) }) {
+            while !rest.isEmpty {
+                if let pair = Self.kakikaePair(at: rest, matchingBefore: matchingBefore,
+                    switchable: switchablePreference != nil, lateStandardized: latePreference != nil) {
                     return pair
                 }
                 rest = rest.dropFirst()
@@ -1125,9 +1177,17 @@ final class KanaKanjiConverter {
         for (candidate, score) in original where !exempt.contains(candidate) {
             let beforeForm: String
             let afterForm: String
+            let isLateStandardized: Bool
             if let pair = occurrence(in: candidate, matchingBefore: true) {
+                let made = candidate.replacingOccurrences(of: pair.before, with: pair.after)
+                // X.10 の組の字(腎・潰・磨)は今は常用漢字で、その字で書く複合語が多い(肝腎症候群)。
+                // 語そのものか、作った表記が同じ読みの候補に既にあるときだけ(3570)
+                guard !pair.isLateStandardized || candidate == pair.before || original[made] != nil else {
+                    continue
+                }
                 beforeForm = candidate
-                afterForm = candidate.replacingOccurrences(of: pair.before, with: pair.after)
+                afterForm = made
+                isLateStandardized = pair.isLateStandardized
             } else if let pair = occurrence(in: candidate, matchingBefore: false) {
                 let made = candidate.replacingOccurrences(of: pair.after, with: pair.before)
                 guard candidate == pair.after || original[made] != nil else {
@@ -1135,11 +1195,17 @@ final class KanaKanjiConverter {
                 }
                 beforeForm = made
                 afterForm = candidate
+                isLateStandardized = pair.isLateStandardized
             } else {
                 continue
             }
             let top = max(score, original[beforeForm] ?? Int.min, original[afterForm] ?? Int.min)
-            let effective = preference.demotingEverydayPair(for: candidate, enabled: everydayException)
+            // 日常語の例外(了解/回復)は X.9 の組だけ。X.10 の組とは語が重ならない
+            guard let effective = isLateStandardized
+                ? latePreference
+                : switchablePreference?.demotingEverydayPair(for: candidate, enabled: everydayException) else {
+                continue
+            }
             let preferred = effective.prefersBefore ? beforeForm : afterForm
             let other = effective.prefersBefore ? afterForm : beforeForm
             switch effective {

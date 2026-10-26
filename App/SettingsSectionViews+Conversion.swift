@@ -56,7 +56,7 @@ struct ContactCandidateDisplaySettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SettingsCardHeadline("X.16 iOSの連絡先の姓、名、会社名")
+            SettingsCardHeadline("X.17 iOSの連絡先の姓、名、会社名")
 
             VStack(spacing: 8) {
                 ForEach(ContactCandidateDisplayModeOption.allCases) { option in
@@ -126,7 +126,7 @@ struct UserDictionaryCandidateDisplaySettingsSection: View {
 
     var body: some View {
         SegmentedSettingsCard(
-            title: "X.17 iOSのユーザ辞書の単語",
+            title: "X.18 iOSのユーザ辞書の単語",
             pickerTitle: "iOSのユーザ辞書の単語",
             selection: $selection,
             options: Array(UserDictionaryCandidateDisplayModeOption.allCases),
@@ -142,7 +142,7 @@ struct RadicalStrokeCountSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            SettingsCardHeadline("X.10 部首の画数の数え方")
+            SettingsCardHeadline("X.11 部首の画数の数え方")
 
             Text("単漢字入力(モード切替キーの下フリック)の部首一覧を並べる画数です。流儀が分かれる部首だけ個別に選べます(艸/辵/食 は単独では6画/7画/9画で、ここの数字はその部首として数えるときの画数です)。")
                 .font(.footnote)
@@ -214,7 +214,7 @@ struct MeSuffixCandidateSettingsSection: View {
 
     var body: some View {
         SegmentedSettingsCard(
-            title: "X.13 序数化suffixe – me",
+            title: "X.14 序数化suffixe – me",
             subtitle: "première、deuxième、troisième、…",
             pickerTitle: "順序の『め/目』",
             selection: ordinalSelection,
@@ -224,7 +224,7 @@ struct MeSuffixCandidateSettingsSection: View {
         )
 
         VStack(alignment: .leading, spacing: 10) {
-            SettingsCardTitle(title: "X.14 形状名詞化suffixe / 傾向派生suffixe – me", subtitle: "un peu …")
+            SettingsCardTitle(title: "X.15 形状名詞化suffixe / 傾向派生suffixe – me", subtitle: "un peu …")
 
             Toggle("程度の『め』に漢字『目』の候補も出す", isOn: $adjectiveKanjiEnabled)
                 .toggleStyle(.switch)
@@ -243,7 +243,7 @@ struct EmojiKaomojiCandidateSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SettingsCardHeadline("X.15 emojis & les émoticônes")
+            SettingsCardHeadline("X.16 emojis & les émoticônes")
 
             VStack(spacing: 10) {
                 Toggle("emoji 😀", isOn: $enablesEmojiCandidates)
@@ -402,10 +402,6 @@ struct KakikaeSettingsSection: View {
         exampleBefores.compactMap { KakikaeTable.afterByBefore[$0] }.joined(separator: "、") + " など"
     }
 
-    private var preference: KakikaePreference {
-        KakikaePreference(rawValue: rawValue) ?? .strategicDefault
-    }
-
     private func subtitle(for option: KakikaePreference) -> String {
         switch option {
         case .beforeOnly: return Self.beforeExamples
@@ -419,61 +415,9 @@ struct KakikaeSettingsSection: View {
         VStack(alignment: .leading, spacing: 10) {
             SettingsCardHeadline("X.9 常用漢字による書きかえ")
 
-            VStack(spacing: 8) {
-                ForEach(KakikaePreference.allCases) { option in
-                    let isSelected = preference == option
+            KanjiRewriteOptionList(rawValue: $rawValue, subtitle: subtitle(for:))
 
-                    Button {
-                        rawValue = option.rawValue
-                    } label: {
-                        HStack(alignment: .top, spacing: 9) {
-                            VStack(alignment: .leading, spacing: 3) {
-                                Text(option.title)
-                                    .font(.subheadline.weight(.semibold))
-                                    .foregroundStyle(.primary)
-                                    .fixedSize(horizontal: false, vertical: true)
-
-                                Text(subtitle(for: option))
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                                    .fixedSize(horizontal: false, vertical: true)
-                            }
-                            .frame(maxWidth: .infinity, alignment: .leading)
-
-                            Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                                .font(.system(size: 16, weight: .semibold))
-                                .foregroundStyle(
-                                    isSelected
-                                        ? Color.accentColor
-                                        : AppTheme.subduedIcon
-                                )
-                        }
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 9)
-                        .background(
-                            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                .fill(
-                                    isSelected
-                                        ? AppTheme.selectedControlBackground
-                                        : AppTheme.controlBackground
-                                )
-                        )
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                .stroke(
-                                    isSelected
-                                        ? AppTheme.emphasisBorder
-                                        : AppTheme.subtleBorder,
-                                    lineWidth: isSelected ? 1.2 : 1
-                                )
-                        )
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel(option.title)
-                }
-            }
-
-            Text("表外字を同じ音の常用漢字に置き換えた書き方(1956 年 国語審議会報告『同音の漢字による書きかえ』の \(KakikaeTable.switchablePairs.count) 語)の扱いを選びます。『醗酵前』『蒸溜所』のような、その語を含む語にも効きます。1 字単位の書きかえ(廻→回、智→知 など)は人名・地名を巻き込むので対象外です。報告の後に常用漢字に加わった字の組(臆測⇄憶測、肝腎⇄肝心、研磨⇄研摩 など)は、どれを選んでも両方を出します。追加語彙に登録した語と、学習した語は対象外です。初期設定は 本来の漢字だけ で、保守的初期設定では 両方(常用漢字を先に)、現代的初期設定では 両方(本来の漢字を先に) です。この設定ができる前から使っている端末は、以前から本来の漢字を先頭にしていた語(醗酵・日蝕・棲息)を変えないよう 両方(本来の漢字を先に) にしてあります。")
+            Text("表外字を同じ音の常用漢字に置き換えた書き方(1956年 国語審議会報告『同音の漢字による書きかえ』の\(KakikaeTable.switchablePairs.count)語)の扱いを選びます。『醗酵前』『蒸溜所』のような、その語を含む語にも効きます。1字単位の書きかえ(廻→回、智→知 など)は人名・地名を巻き込むので対象外です。報告の後に常用漢字に加わった字の組(臆測⇄憶測、肝腎⇄肝心、研磨⇄研摩 など)は X.10 で選びます。追加語彙に登録した語と、学習した語は対象外です。初期設定は[本来の漢字だけ]で、保守的初期設定では[両方(常用漢字を先に)]、現代的初期設定では[両方(本来の漢字を先に)]です。この設定ができる前から使っている端末は、以前から本来の漢字を先頭にしていた語(醗酵・日蝕・棲息)を変えないよう[両方(本来の漢字を先に)]にしてあります。")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -487,6 +431,115 @@ struct KakikaeSettingsSection: View {
                 .fixedSize(horizontal: false, vertical: true)
         }
         .settingsCardStyle()
+    }
+}
+
+// 報告の後に書きかえ前の字が常用漢字に加わった組(臆測⇄憶測、肝腎⇄肝心。KakikaeTable.lateStandardizedPairs)の書きかえ(3570)。
+// 選択肢は X.9 と同じ 4 択
+struct LateStandardizedRewriteSettingsSection: View {
+    @Binding var rawValue: String
+
+    // 例に並べる書きかえ前の語(ユーザ指定 3570)。表に無い語は落とす
+    static let exampleBefores = ["臆測", "肝腎", "研磨"].filter { before in
+        KakikaeTable.lateStandardizedPairs.contains { $0.before == before }
+    }
+
+    static var beforeExamples: String {
+        exampleBefores.joined(separator: "、") + " など"
+    }
+
+    static var afterExamples: String {
+        exampleBefores.compactMap { before in KakikaeTable.lateStandardizedPairs.first { $0.before == before }?.after }
+            .joined(separator: "、") + " など"
+    }
+
+    private func subtitle(for option: KakikaePreference) -> String {
+        switch option {
+        case .beforeOnly: return Self.beforeExamples
+        case .afterOnly: return Self.afterExamples
+        case .bothBeforeFirst: return "両方を出し、本来の漢字を先に(臆測 → 憶測)"
+        case .bothAfterFirst: return "両方を出し、常用漢字を先に(憶測 → 臆測)"
+        }
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            SettingsCardHeadline("X.10 常用漢字による書きかえ(後に追加)")
+
+            KanjiRewriteOptionList(rawValue: $rawValue, subtitle: subtitle(for:))
+
+            Text("1956年の報告『同音の漢字による書きかえ』の語のうち、報告の後に本来の漢字が常用漢字表に加わった組(甚・磨・妄は1981年、闇・臆・潰・毀・窟・腎・汎は2010年。\(KakikaeTable.lateStandardizedPairs.count)組)の扱いを選びます。臆測⇄憶測、肝腎⇄肝心、研磨⇄研摩 のような組です。今はどちらの字も常用漢字なので、その字を含む別の語(肝腎症候群、研磨材 など)は書きかえません。追加語彙に登録した語と、学習した語は対象外です。初期設定は[本来の漢字だけ]で、保守的初期設定では[両方(常用漢字を先に)]、現代的初期設定では[両方(本来の漢字を先に)]です。この設定ができる前から使っている端末は、以前と同じく両方を出すよう[両方(本来の漢字を先に)]にしてあります。")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .settingsCardStyle()
+    }
+}
+
+// 書きかえの 4 択(X.9 と X.10 で共通。3570 で KakikaeSettingsSection から切り出し)。選択肢はラジオボタン式で全部見せる
+struct KanjiRewriteOptionList: View {
+    @Binding var rawValue: String
+    let subtitle: (KakikaePreference) -> String
+
+    private var preference: KakikaePreference {
+        KakikaePreference(rawValue: rawValue) ?? .strategicDefault
+    }
+
+    var body: some View {
+        VStack(spacing: 8) {
+            ForEach(KakikaePreference.allCases) { option in
+                let isSelected = preference == option
+
+                Button {
+                    rawValue = option.rawValue
+                } label: {
+                    HStack(alignment: .top, spacing: 9) {
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(option.title)
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(.primary)
+                                .fixedSize(horizontal: false, vertical: true)
+
+                            Text(subtitle(option))
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                        Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundStyle(
+                                isSelected
+                                    ? Color.accentColor
+                                    : AppTheme.subduedIcon
+                            )
+                    }
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 9)
+                    .background(
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .fill(
+                                isSelected
+                                    ? AppTheme.selectedControlBackground
+                                    : AppTheme.controlBackground
+                            )
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .stroke(
+                                isSelected
+                                    ? AppTheme.emphasisBorder
+                                    : AppTheme.subtleBorder,
+                                lineWidth: isSelected ? 1.2 : 1
+                            )
+                    )
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(option.title)
+            }
+        }
     }
 }
 
@@ -570,7 +623,7 @@ struct KaCounterVariantSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SettingsCardTitle(title: "X.11 助数詞型suffixe / 数詞類別suffixe – ka", subtitle: "un endroit, deux endroits, …")
+            SettingsCardTitle(title: "X.12 助数詞型suffixe / 数詞類別suffixe – ka", subtitle: "un endroit, deux endroits, …")
 
             VStack(spacing: 8) {
                 ForEach(preference.order) { variant in
@@ -655,7 +708,7 @@ struct OkuriganaVariantSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SettingsCardTitle(title: "X.12 送り仮名の許容形 – orthographe", subtitle: "送り仮名の付け方(1973 年内閣告示)の許容")
+            SettingsCardTitle(title: "X.13 送り仮名の許容形 – orthographe", subtitle: "送り仮名の付け方(1973 年内閣告示)の許容")
 
             VStack(alignment: .leading, spacing: 12) {
                 ForEach(OkuriganaVariantGroup.allCases) { group in
@@ -696,13 +749,13 @@ struct OkuriganaVariantSettingsSection: View {
     }
 }
 
-// 数詞+助数詞の表記(X.18。3702): アラビア数字(2枚)と漢数字(二枚)のどちらを先に出すか、片方だけにするか
+// 数詞+助数詞の表記(X.19。3702): アラビア数字(2枚)と漢数字(二枚)のどちらを先に出すか、片方だけにするか
 struct NumeralStyleSettingsSection: View {
     @Binding var selection: NumeralStylePreference
 
     var body: some View {
         SegmentedSettingsCard(
-            title: "X.18 数詞の表記 – chiffres",
+            title: "X.19 数詞の表記 – chiffres",
             subtitle: "2枚 / 二枚",
             pickerTitle: "数詞の表記",
             selection: $selection,
@@ -711,7 +764,7 @@ struct NumeralStyleSettingsSection: View {
             footnote: """
             にまい・ひとけた・だいにかい のように数と助数詞を続けて打ったとき、アラビア数字の表記(2枚・1桁・第2回)と漢数字の表記(二枚・一桁・第二回)をどの順で出すか、片方だけにするかを決めます。辞書に語としてある 一枚・三本 はこの設定に関わらず出ます。
 
-            助数詞の『か』の字(1か所 / 1箇所 / 1ヶ所)は X.11 で選びます。初期設定は アラビア数字だけ で、保守的初期設定では 漢数字が先、現代的初期設定では アラビア数字が先 です。
+            助数詞の『か』の字(1か所 / 1箇所 / 1ヶ所)は X.12 で選びます。初期設定は アラビア数字だけ で、保守的初期設定では 漢数字が先、現代的初期設定では アラビア数字が先 です。
             """
         )
     }

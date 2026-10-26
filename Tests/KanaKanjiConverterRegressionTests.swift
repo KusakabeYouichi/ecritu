@@ -21011,8 +21011,8 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "ぶっかけ"))
     }
 
-    // 3422: 同音の漢字による書きかえ(臆測⇄憶測)の 4 択。単文節・連文節・複合語(醗酵前)と、後から常用漢字に
-    // 加わった字の組(肝腎⇄肝心)は常に両方
+    // 3422: 同音の漢字による書きかえ(廻転⇄回転)の 4 択。単文節・連文節・複合語(醗酵前)と、後から常用漢字に
+    // 加わった字の組(肝腎⇄肝心)は X.9 では動かない(X.10 の設定が nil なので両方。3570)
     func testKakikaePreferenceModes() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
@@ -21064,7 +21064,7 @@ extension KanaKanjiConverterRegressionTests {
         list = single("はっこうまえ")
         XCTAssertFalse(list.contains("醗酵前"), "\(list)")
 
-        // 後から常用漢字に加わった字の組は設定に関わらず両方
+        // 後から常用漢字に加わった字の組は X.9 の設定に関わらず両方(X.10 が nil。3570)
         converter.setKakikaePreference(.afterOnly)
         list = single("かんじん")
         XCTAssertNotNil(index(list, "肝腎"), "\(list)")
@@ -24686,7 +24686,7 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(single("ごはんと").prefix(3)), ["ご飯と", "御飯と", "午飯と"], "\(single("ごはんと"))")
         XCTAssertEqual(multi("ごはんとみそしる").first, "ご飯と味噌汁")
 
-        // 和語数詞も X.18 の設定(テストの既定は アラビア数字が先)に従う(3702)
+        // 和語数詞も X.19 の設定(テストの既定は アラビア数字が先)に従う(3702)
         for (reading, expected) in [("ひとけた", ["1桁", "一桁"]), ("ふたけた", ["2桁", "二桁"]), ("みけた", ["3桁", "三桁"]),
                                     ("ひとくみ", ["1組", "一組"]), ("いつつぶ", ["5粒", "五粒"])] {
             XCTAssertEqual(Array(single(reading).prefix(2)), expected, reading)
@@ -24738,7 +24738,7 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(KanaKanjiConverter.kanjiNumeralString(10), "十")
     }
 
-    // 3702: 数詞の表記(X.18)。漢語数詞(にまい)も和語数詞(ひとけた)も序数(だいにかい)も、単文節・連文節とも設定どおりの順と有無
+    // 3702: 数詞の表記(X.19)。漢語数詞(にまい)も和語数詞(ひとけた)も序数(だいにかい)も、単文節・連文節とも設定どおりの順と有無
     func testRegressionNumeralStylePreferenceOrdersAndFilters() throws {
         try prepareRealLMDictionary()
         defer { converter.setNumeralStylePreference(.arabicFirst) }
@@ -24829,7 +24829,7 @@ extension KanaKanjiConverterRegressionTests {
             let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
             XCTAssertEqual(multi.first, expected, "\(reading): \(multi.prefix(4))")
         }
-        // curated の 二つ/2つ も X.18 の順(3708)。単文節・連文節とも
+        // curated の 二つ/2つ も X.19 の順(3708)。単文節・連文節とも
         defer { converter.setNumeralStylePreference(.arabicFirst) }
         for (style, single, multi) in [(NumeralStylePreference.arabicFirst, ["2つ", "二つ"], "2つ買って"),
                                        (.kanjiFirst, ["二つ", "2つ"], "二つ買って")] {
@@ -25057,7 +25057,7 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(sunda.prefix(2)), ["済んだ", "住んだ"], "\(sunda)")
         XCTAssertLessThan(sunda.firstIndex(of: "スンダ") ?? 99, sunda.firstIndex(of: "すんだ") ?? 0, "\(sunda)")
         XCTAssertEqual(shown("かんたんにすんだ"), "簡単に済んだ")
-        // 3750: 序数の め(X.13 ひらがなが先)を連文節にも、目/め+の+今日
+        // 3750: 序数の め(X.14 ひらがなが先)を連文節にも、目/め+の+今日
         converter.setOrdinalMeKanjiPreferred(false)
         let nichime = converter.multiClauseCandidates(for: "にちめのきょう", systemCandidateMode: .surface, precedingCharacter: "0")
         XCTAssertEqual(Array(nichime.prefix(2)), ["日めの今日", "日目の今日"], "\(nichime)")
@@ -25580,6 +25580,162 @@ extension KanaKanjiConverterRegressionTests {
         let multi = converter.multiClauseCandidates(for: "どせいのわ", systemCandidateMode: .surface)
         let list = multi.isEmpty ? converter.candidates(for: "どせいのわ", limit: 6, systemCandidateMode: .surface) : multi
         XCTAssertEqual(Array(list.prefix(2)), ["土星の輪", "土星の環"], "\(list)")
+    }
+
+    // 3570: 報告の後に常用漢字に加わった字の組(肝腎⇄肝心、臆測⇄憶測。X.10)は X.9 と別の 4 択で選ぶ。
+    // X.9(kakikaePreference)は nil のまま、X.10 だけを設定する(独立性は IsIndependentOfKakikaePreference)
+    private func lateStandardizedSingle(_ reading: String) -> [String] {
+        converter.candidates(for: reading, limit: 20, systemCandidateMode: .surface)
+    }
+
+    func testLateStandardizedRewriteBeforeOnlyShowsOnlyOriginalKanji() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        converter.setLateStandardizedRewritePreference(.beforeOnly)
+        var list = lateStandardizedSingle("かんじん")
+        XCTAssertTrue(list.contains("肝腎"), "\(list)")
+        XCTAssertFalse(list.contains("肝心"), "\(list)")
+        list = lateStandardizedSingle("おくそく")
+        XCTAssertTrue(list.contains("臆測"), "\(list)")
+        XCTAssertFalse(list.contains("憶測"), "\(list)")
+    }
+
+    func testLateStandardizedRewriteAfterOnlyShowsOnlyJoyoKanji() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        converter.setLateStandardizedRewritePreference(.afterOnly)
+        var list = lateStandardizedSingle("かんじん")
+        XCTAssertTrue(list.contains("肝心"), "\(list)")
+        XCTAssertFalse(list.contains("肝腎"), "\(list)")
+        list = lateStandardizedSingle("けんま")
+        XCTAssertTrue(list.contains("研摩"), "\(list)")
+        XCTAssertFalse(list.contains("研磨"), "\(list)")
+    }
+
+    func testLateStandardizedRewriteBothBeforeFirstPutsOriginalKanjiFirst() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        converter.setLateStandardizedRewritePreference(.bothBeforeFirst)
+        for (reading, before, after) in [("かんじん", "肝腎", "肝心"), ("かいめつ", "潰滅", "壊滅")] {
+            let list = lateStandardizedSingle(reading)
+            guard let beforeIndex = list.firstIndex(of: before), let afterIndex = list.firstIndex(of: after) else {
+                XCTFail("\(reading): \(list)")
+                continue
+            }
+            XCTAssertLessThan(beforeIndex, afterIndex, "\(reading): \(list)")
+        }
+    }
+
+    func testLateStandardizedRewriteBothAfterFirstPutsJoyoKanjiFirst() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        converter.setLateStandardizedRewritePreference(.bothAfterFirst)
+        for (reading, before, after) in [("かんじん", "肝腎", "肝心"), ("おくそく", "臆測", "憶測")] {
+            let list = lateStandardizedSingle(reading)
+            guard let beforeIndex = list.firstIndex(of: before), let afterIndex = list.firstIndex(of: after) else {
+                XCTFail("\(reading): \(list)")
+                continue
+            }
+            XCTAssertLessThan(afterIndex, beforeIndex, "\(reading): \(list)")
+        }
+    }
+
+    // X.10 の組の語を含む別の語(肝腎症候群=肝臓と腎臓、研磨材)は 常用漢字だけ でも書きかえない。
+    // 書きかえた表記(肝心症候群/研摩材)は辞書に無く、作ると別の意味になる(ユーザー指摘 3570)
+    func testLateStandardizedRewriteDoesNotMakeCompoundForms() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        converter.setLateStandardizedRewritePreference(.afterOnly)
+        for (reading, kept, made) in [("かんじんしょうこうぐん", "肝腎症候群", "肝心症候群"), ("けんまざい", "研磨材", "研摩材")] {
+            let list = lateStandardizedSingle(reading)
+            XCTAssertTrue(list.contains(kept), "\(reading): \(list)")
+            XCTAssertFalse(list.contains(made), "\(reading): \(list)")
+        }
+        let multi = converter.multiClauseCandidates(for: "かんじんしょうこうぐんのちりょう", systemCandidateMode: .surface)
+        XCTAssertTrue(multi.contains { $0.contains("肝腎症候群") }, "\(multi)")
+        XCTAssertFalse(multi.contains { $0.contains("肝心症候群") }, "\(multi)")
+    }
+
+    // 連文節は区切りを保ったまま表記だけ差し替える。出さない側の表記はどの候補にも残さない
+    func testLateStandardizedRewriteMultiClauseUsesChosenForm() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi() -> [String] { converter.multiClauseCandidates(for: "おくそくでものをいう", systemCandidateMode: .surface) }
+        converter.setLateStandardizedRewritePreference(.afterOnly)
+        var list = multi()
+        XCTAssertTrue(list.first?.hasPrefix("憶測で") ?? false, "\(list.prefix(4))")
+        XCTAssertFalse(list.contains { $0.contains("臆測") }, "\(list)")
+        converter.setLateStandardizedRewritePreference(.beforeOnly)
+        list = multi()
+        XCTAssertTrue(list.first?.hasPrefix("臆測で") ?? false, "\(list.prefix(4))")
+        XCTAssertFalse(list.contains { $0.contains("憶測") }, "\(list)")
+    }
+
+    // X.9 と X.10 はそれぞれの組にだけ効く
+    func testLateStandardizedRewriteIsIndependentOfKakikaePreference() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        converter.setKakikaePreference(.afterOnly)
+        converter.setLateStandardizedRewritePreference(.beforeOnly)
+        var hakkou = lateStandardizedSingle("はっこう")
+        var okusoku = lateStandardizedSingle("おくそく")
+        XCTAssertTrue(hakkou.contains("発酵") && !hakkou.contains("醗酵"), "\(hakkou)")
+        XCTAssertTrue(okusoku.contains("臆測") && !okusoku.contains("憶測"), "\(okusoku)")
+
+        converter.setKakikaePreference(.beforeOnly)
+        converter.setLateStandardizedRewritePreference(.afterOnly)
+        hakkou = lateStandardizedSingle("はっこう")
+        okusoku = lateStandardizedSingle("おくそく")
+        XCTAssertTrue(hakkou.contains("醗酵") && !hakkou.contains("発酵"), "\(hakkou)")
+        XCTAssertTrue(okusoku.contains("憶測") && !okusoku.contains("臆測"), "\(okusoku)")
+    }
+
+    // X.10 を入れる前(nil)は、X.9 が 常用漢字だけ でも 肝腎/肝心 の両方を出す(この設定より前の動作)
+    func testLateStandardizedRewriteNilKeepsBothForms() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        converter.setKakikaePreference(.afterOnly)
+        let list = lateStandardizedSingle("かんじん")
+        XCTAssertTrue(list.contains("肝腎"), "\(list)")
+        XCTAssertTrue(list.contains("肝心"), "\(list)")
+    }
+
+    // 両方を出すとき、組の他方は好む側の直後に並ぶ(辞書では 広範 が 0 番、広汎 が 15 番と離れている)
+    func testLateStandardizedRewriteBothKeepsPairAdjacent() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        converter.setLateStandardizedRewritePreference(.bothBeforeFirst)
+        let list = lateStandardizedSingle("こうはん")
+        guard let beforeIndex = list.firstIndex(of: "広汎") else {
+            XCTFail("\(list)")
+            return
+        }
+        XCTAssertEqual(list.firstIndex(of: "広範"), beforeIndex + 1, "\(list)")
+    }
+
+    // X.9 が両方・X.10 が 常用漢字だけ のとき、連文節の変種に X.10 の本来の漢字(臆測)を漏らさない。X.9 の組は両方出る
+    func testLateStandardizedRewriteMultiClauseMixedGroupsHidesExcludedForm() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        converter.setKakikaePreference(.bothBeforeFirst)
+        converter.setLateStandardizedRewritePreference(.afterOnly)
+        // かいてん は格子が 回転 を選ぶので、X.9 の両方(廻転 → 回転)が並ぶ
+        let list = converter.multiClauseCandidates(for: "おくそくでかいてんする", systemCandidateMode: .surface)
+        XCTAssertFalse(list.contains { $0.contains("臆測") }, "\(list)")
+        XCTAssertTrue(list.contains { $0.contains("憶測") && $0.contains("廻転") }, "\(list)")
+        XCTAssertTrue(list.contains { $0.contains("憶測") && $0.contains("回転") }, "\(list)")
+    }
+
+    // 表: X.10 の組は 17 組、X.9 の組は 291 組のまま。2 つのグループは語を共有せず、X.10 の語は日常語の例外に入っていない
+    func testLateStandardizedTableSeparatesGroups() {
+        XCTAssertEqual(KakikaeTable.lateStandardizedPairs.count, 17)
+        XCTAssertEqual(KakikaeTable.switchablePairs.count, 291)
+        XCTAssertTrue(KakikaeTable.lateStandardizedPairs.contains { $0.before == "肝腎" && $0.after == "肝心" })
+        XCTAssertNil(KakikaeTable.afterByBefore["肝腎"])
+        let lateWords = Set(KakikaeTable.lateStandardizedPairs.flatMap { [$0.before, $0.after] })
+        let switchableWords = Set(KakikaeTable.switchablePairs.flatMap { [$0.before, $0.after] })
+        XCTAssertTrue(lateWords.isDisjoint(with: switchableWords), "\(lateWords.intersection(switchableWords))")
+        XCTAssertTrue(lateWords.isDisjoint(with: KakikaePreference.everydayAfterFirstPairs))
     }
 
     func testDiagnosticCollocationSweep() throws {

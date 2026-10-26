@@ -363,7 +363,7 @@ extension KanaKanjiConverter {
         return results
     }
 
-    // 連文節の格子に載せる数詞+助数詞(設定 X.18 に従い、アラビア数字と漢数字を先の方から。3702)
+    // 連文節の格子に載せる数詞+助数詞(設定 X.19 に従い、アラビア数字と漢数字を先の方から。3702)
     func numeralCompoundCandidatesForLattice(for reading: String) -> [String] {
         let style = withStateLock { numeralStylePreference }
         let arabic = style.includesArabic ? arabicNumericCompoundCandidates(for: reading) : []

@@ -295,8 +295,8 @@
 	<dict><key>before</key><string>聯立</string><key>after</key><string>連立</string></dict>
 	<dict><key>before</key><string>彎曲</string><key>after</key><string>湾曲</string></dict>	<!-- （法） -->
 	<dict><key>before</key><string>彎入</string><key>after</key><string>湾入</string></dict>
-	<!-- ■ keepBoth 報告の後に常用漢字に加わった字の組(甚・磨・妄 は 1981 年、闇・臆・潰・毀・窟・腎・汎 は 2010 年)。原典も「書きかえないのが普通」
-	     「法令の表記を使う」と注記しているので、設定に関わらず両方を出す -->
+	<!-- ■ lateStandardized 報告の後に常用漢字に加わった字の組(甚・磨・妄 は 1981 年、闇・臆・潰・毀・窟・腎・汎 は 2010 年)。原典も「書きかえないのが普通」
+	     「法令の表記を使う」と注記している。normal とは別に、コンテナー X.10 で選ぶ(3570) -->
 	<dict><key>before</key><string>闇夜</string><key>after</key><string>暗夜</string></dict>
 	<dict><key>before</key><string>臆説</string><key>after</key><string>憶説</string></dict>
 	<dict><key>before</key><string>臆測</string><key>after</key><string>憶測</string></dict>

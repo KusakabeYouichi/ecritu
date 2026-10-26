@@ -1,10 +1,11 @@
 import Foundation
 
 // 生成ファイル。tools/build_kakikae_table.py が references/kakikae.plist から作る。手で直さない(3422)
-// 同音の漢字による書きかえ(1956 年 国語審議会報告)の語の組。コンテナー設定 X.9 で 書きかえ前だけ/後だけ/両方 を選ぶ
+// 同音の漢字による書きかえ(1956 年 国語審議会報告)の語の組。コンテナー設定 X.9 で 書きかえ前だけ/後だけ/両方 を選ぶ。
+// 報告の後に書きかえ前の字が常用漢字に加わった組は X.10 で別に選ぶ(3570)
 enum KakikaeTable {
-    // (書きかえ前, 書きかえ後, 設定に関わらず両方を出すか)。plist の順
-    static let pairs: [(before: String, after: String, keepsBoth: Bool)] = [
+    // (書きかえ前, 書きかえ後, 報告の後に常用漢字に加わった字の組か)。plist の順
+    static let pairs: [(before: String, after: String, isLateStandardized: Bool)] = [
         ("愛慾", "愛欲", false),
         ("安佚", "安逸", false),
         ("暗翳", "暗影", false),
@@ -315,10 +316,13 @@ enum KakikaeTable {
         ("生薑", "生姜", false),
     ]
 
-    // 設定どおりに書きかえる組(keepsBoth を除く)
-    static let switchablePairs: [(before: String, after: String)] = pairs.filter { !$0.keepsBoth }.map { ($0.before, $0.after) }
+    // X.9 で選ぶ組(isLateStandardized を除く)
+    static let switchablePairs: [(before: String, after: String)] = pairs.filter { !$0.isLateStandardized }.map { ($0.before, $0.after) }
 
-    // 書きかえ前 → 書きかえ後 / 書きかえ後 → 書きかえ前(設定どおりに書きかえる組だけ)
+    // X.10 で選ぶ組(報告の後に常用漢字に加わった字の組。3570)
+    static let lateStandardizedPairs: [(before: String, after: String)] = pairs.filter { $0.isLateStandardized }.map { ($0.before, $0.after) }
+
+    // 書きかえ前 → 書きかえ後 / 書きかえ後 → 書きかえ前(X.9 の組だけ)
     static let afterByBefore: [String: String] = Dictionary(switchablePairs.map { ($0.before, $0.after) }, uniquingKeysWith: { first, _ in first })
     static let beforeByAfter: [String: String] = Dictionary(switchablePairs.map { ($0.after, $0.before) }, uniquingKeysWith: { first, _ in first })
 
@@ -327,4 +331,8 @@ enum KakikaeTable {
         Dictionary(grouping: switchablePairs, by: { $0.before.first! })
     static let switchablePairsByAfterHead: [Character: [(before: String, after: String)]] =
         Dictionary(grouping: switchablePairs, by: { $0.after.first! })
+    static let lateStandardizedPairsByBeforeHead: [Character: [(before: String, after: String)]] =
+        Dictionary(grouping: lateStandardizedPairs, by: { $0.before.first! })
+    static let lateStandardizedPairsByAfterHead: [Character: [(before: String, after: String)]] =
+        Dictionary(grouping: lateStandardizedPairs, by: { $0.after.first! })
 }

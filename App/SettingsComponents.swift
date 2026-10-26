@@ -59,15 +59,16 @@ enum SettingsCardKeys {
         "X.8": [SettingsKeys.kanaGakiSuppressAdverb, SettingsKeys.kanaGakiSuppressConjunction, SettingsKeys.kanaGakiSuppressAuxiliary,
                 SettingsKeys.kanaGakiSuppressFormalNoun, SettingsKeys.kanaGakiSuppressDemonstrative, SettingsKeys.kanaGakiSuppressAdverbKanaFirst],
         "X.9": [SettingsKeys.kakikaePreference, SettingsKeys.kakikaeEverydayException],
-        "X.10": [SettingsKeys.radicalStrokeCountStyle],
-        "X.11": [SettingsKeys.kaCounterVariantPreference],
-        "X.12": [SettingsKeys.okuriganaVariantPreference],
-        "X.13": [SettingsKeys.ordinalMeKanjiPreferred],
-        "X.14": [SettingsKeys.adjectiveMeKanjiCandidatesEnabled],
-        "X.15": [SettingsKeys.emojiCandidateDisplayEnabled, SettingsKeys.kaomojiCandidateDisplayEnabled],
-        "X.16": [SettingsKeys.contactCandidateDisplayMode],
-        "X.17": [SettingsKeys.userDictionaryCandidateDisplayMode],
-        "X.18": [SettingsKeys.numeralStylePreference]
+        "X.10": [SettingsKeys.lateStandardizedRewritePreference],
+        "X.11": [SettingsKeys.radicalStrokeCountStyle],
+        "X.12": [SettingsKeys.kaCounterVariantPreference],
+        "X.13": [SettingsKeys.okuriganaVariantPreference],
+        "X.14": [SettingsKeys.ordinalMeKanjiPreferred],
+        "X.15": [SettingsKeys.adjectiveMeKanjiCandidatesEnabled],
+        "X.16": [SettingsKeys.emojiCandidateDisplayEnabled, SettingsKeys.kaomojiCandidateDisplayEnabled],
+        "X.17": [SettingsKeys.contactCandidateDisplayMode],
+        "X.18": [SettingsKeys.userDictionaryCandidateDisplayMode],
+        "X.19": [SettingsKeys.numeralStylePreference]
     ]
 
     // 見出しの先頭の番号(「X.9 常用漢字による書きかえ」→ X.9)

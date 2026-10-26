@@ -534,7 +534,7 @@ extension KanaKanjiConverter {
             group.contains(where: startsWithArabicDigit) && group.contains(where: { !startsWithArabicDigit($0) })
         }.flatMap { $0 }
     }
-    // curated の数量語(misc の 二つ/2つ)が同じ読みに両方あるとき、X.18 の順の表記に付ける加点(3708)。
+    // curated の数量語(misc の 二つ/2つ)が同じ読みに両方あるとき、X.19 の順の表記に付ける加点(3708)。
     // 生成でなく登録語なので帯(400/360)の差が付かず、登録順(二つ が先)のままだった(ふたつかって→二つ買って)
     static let multiClauseNumeralStyleCuratedBonus = 500
     // 数詞+助数詞の直後の活用派生の述語(2枚買って/3本買った/2つください)への加点(3704)。数量語は固定コスト 7200 で

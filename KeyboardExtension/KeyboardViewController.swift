@@ -498,6 +498,7 @@ final class KeyboardViewController: UIInputViewController {
         static let okuriganaVariantPreference = "okuriganaVariantPreference"
         static let kakikaePreference = "kakikaePreference"
         static let kakikaeEverydayException = "kakikaeEverydayException"
+        static let lateStandardizedRewritePreference = "lateStandardizedRewritePreference"
         static let adjectiveMeKanjiCandidatesEnabled = "adjectiveMeKanjiCandidatesEnabled"
         static let suspendMemorySlimmingEnabled = "suspendMemorySlimmingEnabled"
         static let kaomojiCandidateDisplayEnabled = "kaomojiCandidateDisplayEnabled"

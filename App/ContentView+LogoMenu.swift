@@ -265,6 +265,7 @@ extension ContentView {
         SettingsKeys.okuriganaVariantPreference,
         SettingsKeys.kakikaePreference,
         SettingsKeys.kakikaeEverydayException,
+        SettingsKeys.lateStandardizedRewritePreference,
         SettingsKeys.suspendMemorySlimmingEnabled, SettingsKeys.kaomojiCandidateDisplayEnabled,
         SettingsKeys.contactCandidateDisplayMode, SettingsKeys.userDictionaryCandidateDisplayMode
     ]
@@ -350,6 +351,7 @@ extension ContentView {
         // 同音の漢字による書きかえは 本来の漢字だけ(ユーザ指定 3422)
         SettingsKeys.kakikaePreference: KakikaePreference.strategicDefault.rawValue,
         SettingsKeys.kakikaeEverydayException: false,   // 戦略的=オフ(設定どおり。ユーザ指定 3644)
+        SettingsKeys.lateStandardizedRewritePreference: KakikaePreference.strategicDefault.rawValue,  // X.10 も 本来の漢字だけ(ユーザ指定 3570)
         SettingsKeys.suspendMemorySlimmingEnabled: true,
         SettingsKeys.kaomojiCandidateDisplayEnabled: true,
         SettingsKeys.contactCandidateDisplayMode: ContactCandidateDisplayModeOption.off.rawValue,
@@ -431,6 +433,7 @@ extension ContentView {
         SettingsKeys.okuriganaVariantPreference: OkuriganaVariantPreference.conservative.encoded,  // 保守的=本則を先に許容も出す(標準は本則だけ)
         SettingsKeys.kakikaePreference: KakikaePreference.bothAfterFirst.rawValue,  // 保守的=常用漢字を先に前も出す(ユーザ指定 3422)
         SettingsKeys.kakikaeEverydayException: true,   // 保守的=オン(ユーザ指定 3644)
+        SettingsKeys.lateStandardizedRewritePreference: KakikaePreference.bothAfterFirst.rawValue,  // 保守的=X.9 と同じ(ユーザ指定 3570)
         SettingsKeys.adjectiveMeKanjiCandidatesEnabled: true,
         SettingsKeys.suspendMemorySlimmingEnabled: true,
         SettingsKeys.kaomojiCandidateDisplayEnabled: true,
@@ -515,6 +518,7 @@ extension ContentView {
         SettingsKeys.okuriganaVariantPreference: OkuriganaVariantPreference.contemporary.encoded,  // 現代的=語幹の中だけ本則だけ、ほかは本則を先に(ユーザ指定 3737)
         SettingsKeys.kakikaePreference: KakikaePreference.bothBeforeFirst.rawValue,  // 現代的=本来の漢字を先に前も出す(3422、3431 で変更)
         SettingsKeys.kakikaeEverydayException: true,   // 現代的=オン(ユーザ指定 3644)
+        SettingsKeys.lateStandardizedRewritePreference: KakikaePreference.bothBeforeFirst.rawValue,  // 現代的=X.9 と同じ(ユーザ指定 3570)
         SettingsKeys.adjectiveMeKanjiCandidatesEnabled: true,
         SettingsKeys.suspendMemorySlimmingEnabled: true,
         SettingsKeys.kaomojiCandidateDisplayEnabled: true,
@@ -872,7 +876,7 @@ extension ContentView {
     // 同音の漢字による書きかえ(3422)の値がまだ無い端末(この設定より前から使っている人)に 1 回だけ 両方(本来の漢字を先に)を書く。
     // 組み込みの標準値(戦略的初期設定)は 本来の漢字だけ なので、書かないとアップデートした途端に 回転→廻転 等になる。
     // 初めてインストールした端末は直前の applyInitialPresetIfFreshInstall が 両方(本来の漢字を先に) を書いているので素通り
-    // 数詞の表記(X.18。3702)の値が無い端末は、基準の初期設定ごとの値を書く(戦略的=アラビア数字だけ、保守的=漢数字が先、現代的=アラビア数字が先)
+    // 数詞の表記(X.19。3702)の値が無い端末は、基準の初期設定ごとの値を書く(戦略的=アラビア数字だけ、保守的=漢数字が先、現代的=アラビア数字が先)
     func applyNumeralStyleDefaultForExistingInstallIfNeeded() {
         guard let defaults = Self.sharedDefaults,
             defaults.object(forKey: SettingsKeys.numeralStylePreference) == nil else {
@@ -905,6 +909,17 @@ extension ContentView {
             return
         }
         defaults.set(true, forKey: SettingsKeys.kakikaeEverydayException)
+        SettingsSyncNotification.postSettingsDidChange()
+    }
+
+    // 報告の後に常用漢字に加わった字の組(X.10。3570)の値がまだ無い端末は 両方(本来の漢字を先に)。
+    // この設定より前は常に両方を出していたので、組み込みの標準値(本来の漢字だけ)にすると 肝心/憶測 が消える
+    func applyLateStandardizedRewriteDefaultForExistingInstallIfNeeded() {
+        guard let defaults = Self.sharedDefaults,
+            defaults.object(forKey: SettingsKeys.lateStandardizedRewritePreference) == nil else {
+            return
+        }
+        defaults.set(KakikaePreference.existingInstallDefault.rawValue, forKey: SettingsKeys.lateStandardizedRewritePreference)
         SettingsSyncNotification.postSettingsDidChange()
     }
 

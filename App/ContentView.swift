@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20261026115509"
+    private static let editionUpdatedAtRaw: String = "20261026215623"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -358,6 +358,10 @@ struct ContentView: View {
     @AppStorage(SettingsKeys.kakikaeEverydayException, store: Self.sharedDefaults)
     private var kakikaeEverydayException: Bool = false
 
+    // 報告の後に常用漢字に加わった字の組(臆測/肝腎。X.10、3570)
+    @AppStorage(SettingsKeys.lateStandardizedRewritePreference, store: Self.sharedDefaults)
+    private var lateStandardizedRewritePreferenceRawValue: String = KakikaePreference.strategicDefault.rawValue
+
     @AppStorage(
         SettingsKeys.adjectiveMeKanjiCandidatesEnabled,
         store: Self.sharedDefaults
@@ -645,6 +649,7 @@ struct ContentView: View {
             okuriganaVariantPreferenceRawValue,
             kakikaePreferenceRawValue,
             String(kakikaeEverydayException),
+            lateStandardizedRewritePreferenceRawValue,
             String(adjectiveMeKanjiCandidatesEnabled),
             String(suspendMemorySlimmingEnabled),
             String(kaomojiCandidateDisplayEnabled),
@@ -776,6 +781,7 @@ struct ContentView: View {
         bool(SettingsKeys.kanaGakiSuppressAdverbKanaFirst, kanaGakiSuppressAdverbKanaFirst, "かなで書く言葉: 副詞(漢字も残す)を抑制")
         str(SettingsKeys.kakikaePreference, kakikaePreferenceRawValue, "常用漢字による書きかえ: beforeOnly(本来の漢字だけ)/afterOnly(常用漢字だけ)/bothBeforeFirst(両方、前を先に)/bothAfterFirst(両方、後を先に)")
         bool(SettingsKeys.kakikaeEverydayException, kakikaeEverydayException, "常用漢字による書きかえ: 日常語(了解・回復・連想 等)は常用漢字を先に")
+        str(SettingsKeys.lateStandardizedRewritePreference, lateStandardizedRewritePreferenceRawValue, "常用漢字による書きかえ(後に追加): beforeOnly(本来の漢字だけ)/afterOnly(常用漢字だけ)/bothBeforeFirst(両方、前を先に)/bothAfterFirst(両方、後を先に)")
         bool(SettingsKeys.emojiCandidateDisplayEnabled, emojiCandidateDisplayEnabled, "emojis & les émoticônes: emoji 😀")
         str(SettingsKeys.radicalStrokeCountStyle, radicalStrokeCountStyleRawValue, "部首の画数の数え方")
         bool(SettingsKeys.ordinalMeKanjiPreferred, ordinalMeKanjiPreferred, "序数化suffixe – me(première…): 順序の『目』を漢字で先に")
@@ -1358,6 +1364,8 @@ struct ContentView: View {
         )
 
         KakikaeSettingsSection(rawValue: $kakikaePreferenceRawValue, everydayException: $kakikaeEverydayException)
+
+        LateStandardizedRewriteSettingsSection(rawValue: $lateStandardizedRewritePreferenceRawValue)
 
         RadicalStrokeCountSettingsSection(
             rawValue: $radicalStrokeCountStyleRawValue

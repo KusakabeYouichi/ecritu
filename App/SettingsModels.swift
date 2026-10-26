@@ -110,7 +110,7 @@ enum SettingsKeys {
     // 最後に当てた初期設定(SettingsBasePreset の rawValue。3432)。ロゴメニューの下線と、各項目の「変更済み」の印の
     // 比べる相手。userSettingsKeys には入れない(初期設定を当てるときに消さない)。退避・復元では一緒に保存・復元する
     static let settingsBasePreset = "settingsBasePreset"
-    // 初めてのインストールで連絡先の候補を「使わない」で始めた印(3437)。立っている間は「使わない」を X.16 の基準の値にする。
+    // 初めてのインストールで連絡先の候補を「使わない」で始めた印(3437)。立っている間は「使わない」を X.17 の基準の値にする。
     // 初期設定を行なうと消える
     static let settingsBaseContactsStartedOff = "settingsBaseContactsStartedOff"
     // misc 分離以前の Ajout 播種残骸の one-shot 清掃(2390)実行済みフラグ
@@ -153,13 +153,15 @@ enum SettingsKeys {
     static let radicalStrokeCountStyle = "radicalStrokeCountStyle"
     static let ordinalMeKanjiPreferred = "ordinalMeKanjiPreferred"
     static let kaCounterVariantPreference = "kaCounterVariantPreference"
-    // 数詞+助数詞の表記(X.18。3702)
+    // 数詞+助数詞の表記(X.19。3702)
     static let numeralStylePreference = "numeralStylePreference"
     static let okuriganaVariantPreference = "okuriganaVariantPreference"
     // 同音の漢字による書きかえ(KakikaePreference の rawValue。3422)
     static let kakikaePreference = "kakikaePreference"
     // 書きかえ(X.9)の例外グループ(了解/了承/回復/連想 など日常語)は設定にかかわらず常用漢字を先に(3644)
     static let kakikaeEverydayException = "kakikaeEverydayException"
+    // 報告の後に常用漢字に加わった字の組(臆測/肝腎。X.10)の書きかえ(KakikaePreference の rawValue。3570)
+    static let lateStandardizedRewritePreference = "lateStandardizedRewritePreference"
     static let adjectiveMeKanjiCandidatesEnabled = "adjectiveMeKanjiCandidatesEnabled"
     static let suspendMemorySlimmingEnabled = "suspendMemorySlimmingEnabled"
     static let mazegakiCandidateMode = "mazegakiCandidateMode"
