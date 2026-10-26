@@ -1843,6 +1843,10 @@ extension KanaKanjiConverter {
     static let multiClauseTeAruAuxiliaryReadings: Set<String> = [
         "ある", "あった", "あって", "あります", "ありました", "ありません", "あれば", "あり", "あるの", "あったの", "あるから", "あったから"
     ]
+    // て形直後の補助動詞 くる(〜てくる)の形。かなが正書(出てきた。3573、ユーザ指定: でてきた が 出て来た/出て北/出て着た だった)
+    static let multiClauseTeKuruAuxiliaryReadings: Set<String> = [
+        "くる", "きた", "きて", "きます", "きました", "きません", "こない", "こなかった", "きたら", "くるの", "きたの", "くるから", "きたから", "きてる", "きている", "きてた"
+    ]
     static func isTeBenefactiveAuxiliaryReading(_ reading: String) -> Bool {
         guard reading.count >= 2, reading.count <= 8,
             reading.hasPrefix("くれ") || reading.hasPrefix("あげ") else {

@@ -25687,6 +25687,18 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("めがでた").first, "芽が出た", "\(multi("めがでた"))")
         XCTAssertEqual(multi("めがあった").first, "目が合った", "\(multi("めがあった"))")
     }
+
+    // 〜てくる: 出て来た/出て北/出て着た が かな きた より先だった(3573)
+    func testRegression3573TeKuru() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        let mega = multi("めがでてきた")
+        XCTAssertEqual(mega.first, "芽が出てきた", "\(mega)")
+        XCTAssertFalse(mega.contains("芽が出て北") || mega.contains("目が出て北"), "\(mega)")
+        XCTAssertEqual(multi("ほんをもってきた").first, "本を持ってきた", "\(multi("ほんをもってきた"))")
+        XCTAssertEqual(multi("ともだちがきた").first, "友達が来た", "\(multi("ともだちがきた"))")
+    }
     // 何人+いるか: いるか 1 語の中で イルカ が かな に勝ち 何人イルカを が先頭だった(3573)
     func testRegression3573NanninIruka() throws {
         try prepareRealLMDictionary()
