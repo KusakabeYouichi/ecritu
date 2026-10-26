@@ -25679,6 +25679,14 @@ extension KanaKanjiConverterRegressionTests {
     }
 
 
+    // 芽+が+出る: 目が出た が先頭だった(3573、連語表 manual.json)
+    func testRegression3573MegaDeru() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        XCTAssertEqual(multi("めがでた").first, "芽が出た", "\(multi("めがでた"))")
+        XCTAssertEqual(multi("めがあった").first, "目が合った", "\(multi("めがあった"))")
+    }
     // 何人+いるか: いるか 1 語の中で イルカ が かな に勝ち 何人イルカを が先頭だった(3573)
     func testRegression3573NanninIruka() throws {
         try prepareRealLMDictionary()
