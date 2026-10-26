@@ -25699,6 +25699,16 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("ほんをもってきた").first, "本を持ってきた", "\(multi("ほんをもってきた"))")
         XCTAssertEqual(multi("ともだちがきた").first, "友達が来た", "\(multi("ともだちがきた"))")
     }
+
+    // ばかみたい: 場+か+みたい に割られ、歯/刃/羽/葉(連濁でしか ば と読まない)が対抗に並んでいた(3573)
+    func testRegression3573BakaMitai() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        XCTAssertEqual(Array(multi("ばかみたい").prefix(3)), ["馬鹿みたい", "バカみたい", "莫迦みたい"], "\(multi("ばかみたい"))")
+        XCTAssertEqual(multi("ばかみたいなはなし").first, "馬鹿みたいな話", "\(multi("ばかみたいなはなし"))")
+        XCTAssertEqual(multi("はがぬける").first, "歯が抜ける", "\(multi("はがぬける"))")
+    }
     // 何人+いるか: いるか 1 語の中で イルカ が かな に勝ち 何人イルカを が先頭だった(3573)
     func testRegression3573NanninIruka() throws {
         try prepareRealLMDictionary()
