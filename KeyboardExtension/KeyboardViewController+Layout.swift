@@ -209,7 +209,12 @@ extension KeyboardViewController {
             host.traitOverrides.remove(UITraitVerticalSizeClass.self)
         }
         // 左右の灰色の余白は安全領域ではない。iOS がキーボードの窓を 951pt の画面の中央 801pt に絞っている
-        // (3570 の実測: 窓=801x203、左右の safeAreaInsets=0)。拡張からは広げられない(純正も同じ余白)
+        // (3570 の実測: 窓=801x203、左右の safeAreaInsets=0)。拡張からは広げられない(純正も同じ余白)。
+        // 下の安全領域(18pt)は窓がホームバーより上で終わるので要らない。面の上下の余白は面の側で持つ
+        let safeAreaRegions: SafeAreaRegions = needsOverride ? [] : .all
+        if host.safeAreaRegions != safeAreaRegions {
+            host.safeAreaRegions = safeAreaRegions
+        }
     }
 
     // 広い横画面(iPhone Duo の内画面)か(3570)。面の縦サイズクラスの上書き・候補欄の半々と 2 列の

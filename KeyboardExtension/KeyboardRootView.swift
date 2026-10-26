@@ -201,6 +201,10 @@ struct KeyboardRootView: View {
             return 0
         }
 
+        if usesWideLandscapeSidebar {
+            return Self.wideLandscapeVerticalPadding
+        }
+
         if isLandscapeLayout
             && (inputMode == .kana || inputMode == .number || isLandscapeLatinThreeByThreeMode) {
             return frameMetrics.topPaddingWhenRowsAreDense
@@ -214,10 +218,16 @@ struct KeyboardRootView: View {
     // 20pt は使わず 8pt に整理する(ユーザー指定 3165。高さの表も同じ前提で 12pt 多く要求する)。
     // 帯が無い機種(ホームボタン機)や横向きでは従来どおり
     private var keyboardBottomPadding: CGFloat {
-        bottomSafeAreaOutsideFrame > 0
+        if usesWideLandscapeSidebar {
+            return Self.wideLandscapeVerticalPadding
+        }
+        return bottomSafeAreaOutsideFrame > 0
             ? Self.portraitBottomGapOverHomeIndicator
             : frameMetrics.bottomPadding
     }
+    // 広い横画面(iPhone Duo の内画面)の上下の余白(3570)。窓はホームバーより上で終わるのに iOS は下に 18pt の
+    // 安全領域を伝えてくるため、キーの上 3pt・下 26pt と偏っていた。安全領域は使わず(VC 側で切る)上下を同じにする
+    static let wideLandscapeVerticalPadding: CGFloat = 6
     // 3165 は 8pt。キーを 1pt 戻したぶんを上 3pt・下 1pt から出す(ユーザー指定 3166)。
     // 3228 で 7→5: 純正より 2pt 高かったぶん(動画の画素比較)をここから出す
     static let portraitBottomGapOverHomeIndicator: CGFloat = 5
@@ -933,6 +943,11 @@ struct KeyboardRootView: View {
 
     var mainFlickKeyHeight: CGFloat {
         if isLandscapeLayout {
+            // 広い横画面は窓の高さから 4 段を割り付ける(3570)。下の安全領域ぶんが空いていたのをキーに回す
+            if usesWideLandscapeSidebar, containerFrame.height > 0 {
+                let available = containerFrame.height - Self.wideLandscapeVerticalPadding * 2 - keyboardRowSpacing * 3
+                return max(40, floor(available / 4))
+            }
             return 40
         }
         // 帯のぶんの詰め(定義コメント参照)。3166 で 45pt、3169 で候補欄を 4pt 詰めて 46pt へ戻し、
