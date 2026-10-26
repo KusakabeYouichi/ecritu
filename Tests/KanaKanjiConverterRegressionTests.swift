@@ -25610,6 +25610,14 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "おおめなだけ", systemCandidateMode: .surface).first, "多めなだけ")
         XCTAssertEqual(converter.candidates(for: "おおめ", limit: 3, systemCandidateMode: .surface).first, "多め")
     }
+
+    // やきにく/やきとり: 送りがなを省いた 焼肉/焼鳥 を先に(3572)
+    func testRegression3572YakinikuYakitori() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(Array(converter.candidates(for: "やきにく", limit: 4, systemCandidateMode: .surface).prefix(2)), ["焼肉", "焼き肉"])
+        XCTAssertEqual(Array(converter.candidates(for: "やきとり", limit: 4, systemCandidateMode: .surface).prefix(2)), ["焼鳥", "焼き鳥"])
+    }
     // とも+でしょう(3570): みっつともでしょう→3つとも出章 だった
     func testRegression3570TomoDeshou() throws {
         try prepareRealLMDictionary()
