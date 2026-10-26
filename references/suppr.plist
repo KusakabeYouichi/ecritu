@@ -250,6 +250,7 @@
 	<!-- ■ 交ぜ書き・表記ゆれの収穫(石ユ/ぜい金 等、意味のない混ぜ表記) -->
 	<dict><key>phrase</key><string>一そう</string><key>shortcut</key><string>いっそう</string></dict>	<!-- 一層 の交ぜ書き(副詞の一括点検 3552) -->
 	<dict><key>phrase</key><string>カン人</string><key>shortcut</key><string>かんじん</string></dict>	<!-- かんじん の交ぜ書きの合成(ユーザ指定 3570) -->
+	<dict><key>phrase</key><string>万幸</string><key>shortcut</key><string>まん</string></dict>	<!-- 万幸 は まん と読まない(人名の読みの誤り。ユーザ指摘 3572) -->
 	<dict><key>phrase</key><string>カンじん</string><key>shortcut</key><string>かんじん</string></dict>
 	<dict><key>phrase</key><string>肝じん</string><key>shortcut</key><string>かんじん</string></dict>	<!-- 肝腎 の交ぜ書き(腎 が常用漢字に入る前の表記) -->
 	<dict><key>phrase</key><string>一ばん</string><key>shortcut</key><string>いちばん</string></dict>	<!-- 一番 の交ぜ書き(副詞の一括点検 3552) -->

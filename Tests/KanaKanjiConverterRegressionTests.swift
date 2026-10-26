@@ -25618,6 +25618,15 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(converter.candidates(for: "やきにく", limit: 4, systemCandidateMode: .surface).prefix(2)), ["焼肉", "焼き肉"])
         XCTAssertEqual(Array(converter.candidates(for: "やきとり", limit: 4, systemCandidateMode: .surface).prefix(2)), ["焼鳥", "焼き鳥"])
     }
+
+    // まん: 万→マン→満→萬…、万幸(まん と読まない)は出さない(3572)
+    func testRegression3572Man() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let list = converter.candidates(for: "まん", limit: 15, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(4)), ["万", "マン", "満", "萬"], "\(list)")
+        XCTAssertFalse(list.contains("万幸"), "\(list)")
+    }
     // とも+でしょう(3570): みっつともでしょう→3つとも出章 だった
     func testRegression3570TomoDeshou() throws {
         try prepareRealLMDictionary()
