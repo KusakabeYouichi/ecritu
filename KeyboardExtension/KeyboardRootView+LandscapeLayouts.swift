@@ -53,13 +53,24 @@ extension KeyboardRootView {
 
     var landscapeNumberSymbolPanelRows: [[String]] {
         // Custom landscape number-side companion symbols (4 rows x 6 columns).
-        [
+        let rows = [
             ["+", "€", "℃", "mm", "mg", "ml"],
             ["-", "$", "℉", "cm", "cg", "cl"],
             ["±", "¥", "°", "m", "g", "l"],
             ["(", ")", "/", "km", "kg", "kl"]
         ]
+        guard usesWideLandscapeSidebar else {
+            return rows
+        }
+        // 広い横画面は + の列と € の列の間に 2 列足す(ユーザー指定 3570)
+        let wideExtraColumns = [["×", "%"], ["÷", "#"], ["=", "〜"], [",", ":"]]
+        return zip(rows, wideExtraColumns).map { row, extra in
+            [row[0]] + extra + row.dropFirst()
+        }
     }
+
+    // 広い横画面の数字の面は 13 列(面切替・数字 3・機能・記号 8)。58pt では窓(801pt)を超えるので収める(3570)
+    static let wideLandscapeNumberColumnCount: CGFloat = 13
 
     func isLandscapeLatinRightShiftKey(_ kana: FlickKanaSet) -> Bool {
         kana.label == "__latin_shift_right__"
@@ -121,7 +132,12 @@ extension KeyboardRootView {
         let rowHeight = mainFlickKeyHeight
         let rowSpacing: CGFloat = keyboardRowSpacing
         // Keep number-mode keys the same width as mode-switch keys.
-        let keyWidth = leftModeSwitchButtonWidth
+        var keyWidth = leftModeSwitchButtonWidth
+        if usesWideLandscapeSidebar, keyboardContainerWidth > 0 {
+            let columns = Self.wideLandscapeNumberColumnCount
+            let available = keyboardContainerWidth - keyboardHorizontalPadding * 2 - rowSpacing * (columns - 1)
+            keyWidth = min(keyWidth, floor(available / columns))
+        }
         let numberClusterOnLeft = landscapeNumberPaneSide == .left
 
         return HStack(spacing: 0) {
