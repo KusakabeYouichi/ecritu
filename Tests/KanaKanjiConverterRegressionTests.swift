@@ -25553,6 +25553,17 @@ extension KanaKanjiConverterRegressionTests {
                        ["米だから", "こめだから", "コメだから"])
     }
 
+    // かんじん: 指定の並び。カン人/カンじん/肝じん の交ぜ書きは出さない(3570)
+    func testRegression3570Kanjin() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let list = converter.candidates(for: "かんじん", limit: 20, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(11)), ["肝腎", "肝心", "寛仁", "漢人", "閑人", "韓人", "観心", "勧進", "勘甚", "姦人", "冠人"], "\(list)")
+        for mixed in ["カン人", "カンじん", "肝じん"] {
+            XCTAssertFalse(list.contains(mixed), "\(mixed): \(list)")
+        }
+    }
+
     // とも+でしょう(3570): みっつともでしょう→3つとも出章 だった
     func testRegression3570TomoDeshou() throws {
         try prepareRealLMDictionary()
@@ -25561,6 +25572,7 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("みっつともでしょう").first, "3つともでしょう", "\(multi("みっつともでしょう"))")
         XCTAssertEqual(multi("ともでしょう").first, "ともでしょう", "\(multi("ともでしょう"))")
     }
+
     // 土星の輪: LM は 和(5199<輪 5449)と の→和(3964<4620)が強く 土星の和 が先頭だった。misc で句を登録(3570)
     func testRegression3570DoseiNoWa() throws {
         try prepareRealLMDictionary()
@@ -25569,6 +25581,7 @@ extension KanaKanjiConverterRegressionTests {
         let list = multi.isEmpty ? converter.candidates(for: "どせいのわ", limit: 6, systemCandidateMode: .surface) : multi
         XCTAssertEqual(Array(list.prefix(2)), ["土星の輪", "土星の環"], "\(list)")
     }
+
     func testDiagnosticCollocationSweep() throws {
         guard ProcessInfo.processInfo.environment["SWEEP_COLLOC"] != nil else {
             throw XCTSkip("TEST_RUNNER_SWEEP_COLLOC=1 のときだけ実行")
