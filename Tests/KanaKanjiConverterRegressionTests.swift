@@ -25677,6 +25677,19 @@ extension KanaKanjiConverterRegressionTests {
         let shira = converter.candidates(for: "しらなくて", limit: 4, systemCandidateMode: .surface)
         XCTAssertEqual(shira.first, "知らなくて", "\(shira)")
     }
+
+
+    // 何人+いるか: いるか 1 語の中で イルカ が かな に勝ち 何人イルカを が先頭だった(3573)
+    func testRegression3573NanninIruka() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        XCTAssertEqual(multi("なんにんいるかを").first, "何人いるかを", "\(multi("なんにんいるかを"))")
+        XCTAssertEqual(multi("なんにんいるか").first, "何人いるか", "\(multi("なんにんいるか"))")
+        // いるか 単独は イルカ 先頭のまま
+        XCTAssertEqual(multi("いるかを").first, "イルカを", "\(multi("いるかを"))")
+    }
+
     // とも+でしょう(3570): みっつともでしょう→3つとも出章 だった
     func testRegression3570TomoDeshou() throws {
         try prepareRealLMDictionary()
