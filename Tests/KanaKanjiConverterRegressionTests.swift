@@ -25584,6 +25584,15 @@ extension KanaKanjiConverterRegressionTests {
         let multi = converter.multiClauseCandidates(for: "じゅうぶんに", systemCandidateMode: .surface)
         XCTAssertEqual(multi.first, "充分に", "\(multi)")
     }
+
+    // いっかい: 1回→一回→1階→一階→一介→一塊。もういっかい は単文節が空だった(3572)
+    func testRegression3572Ikkai() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(Array(converter.candidates(for: "いっかい", limit: 10, systemCandidateMode: .surface).prefix(6)),
+                       ["1回", "一回", "1階", "一階", "一介", "一塊"])
+        XCTAssertEqual(Array(converter.candidates(for: "もういっかい", limit: 6, systemCandidateMode: .surface).prefix(2)), ["もう1回", "もう一回"])
+    }
     // とも+でしょう(3570): みっつともでしょう→3つとも出章 だった
     func testRegression3570TomoDeshou() throws {
         try prepareRealLMDictionary()
