@@ -25627,6 +25627,15 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(list.prefix(4)), ["万", "マン", "満", "萬"], "\(list)")
         XCTAssertFalse(list.contains("万幸"), "\(list)")
     }
+
+    // こつがいるのは: 乞丐/小番 で区切っていた(3572)
+    func testRegression3572KotsuGaIru() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let multi = converter.multiClauseCandidates(for: "こつがいるのは", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "コツがいるのは", "\(multi)")
+        XCTAssertTrue(multi.contains("骨がいるのは"), "\(multi)")
+    }
     // とも+でしょう(3570): みっつともでしょう→3つとも出章 だった
     func testRegression3570TomoDeshou() throws {
         try prepareRealLMDictionary()
