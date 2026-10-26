@@ -41,6 +41,12 @@ extension KeyboardRootView {
                 kanaConversionCandidateHeaderView
             } else if showsLatinSuggestionCandidates {
                 latinSuggestionHeaderView
+            } else if candidateHeaderHeight == 0 {
+                // 横画面の数字の面は候補欄の高さが 0。案内の文字だけが枠の上へはみ出し、背景とずれて見えた(3570)。
+                // 横画面のかな・ラテン文字の面も案内を出していないのでそろえる
+                Color.clear
+                    .allowsHitTesting(false)
+                    .accessibilityHidden(true)
             } else if isSystemDictionaryFallback {
                 // 変換辞書(sqlite)が開けない異常時の案内。フォールバックJSONの同梱を
                 // やめた(2026-08-31 #4)ため、この状態では変換候補が出ない。劣化運転で
