@@ -422,7 +422,9 @@ extension KeyboardRootView {
                     landscapeStateCapsuleSlot(showsCapsule: false)
                     landscapeTrailingKanaChip
                 }
-                if !(showsParenthesesWrapper && composingText.isEmpty) {
+                if showsFullAccessNotice, composingText.isEmpty, !showsParenthesesWrapper {
+                    fullAccessNoticeSidebarView
+                } else if !(showsParenthesesWrapper && composingText.isEmpty) {
                     ForEach(0..<landscapeEmptyCandidatePlaceholderCount, id: \.self) { _ in
                         RoundedRectangle(cornerRadius: 8, style: .continuous)
                             .fill(KeyboardThemePalette.candidateHeaderPlaceholderBackground)

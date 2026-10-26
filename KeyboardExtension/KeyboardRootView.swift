@@ -1464,28 +1464,51 @@ struct KeyboardRootView: View {
 
     var fullAccessNoticeHeaderView: some View {
         HStack(spacing: 8) {
-            Text("フルアクセスがオフです — 学習・設定の保存は反映されません(設定 › 一般 › キーボード › キーボード › écritu)")
+            Text(Self.fullAccessNoticeText)
                 .font(.system(size: 12, weight: .semibold, design: .rounded))
                 .foregroundStyle(keyLabelColor.opacity(0.75))
                 .lineLimit(2)
                 .minimumScaleFactor(0.7)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-            Button {
-                didDismissFullAccessNotice = true
-                UserDefaults.standard.set(Self.currentEdition, forKey: Self.fullAccessNoticeDismissedEditionKey)
-            } label: {
-                Image(systemName: "xmark.circle.fill")
-                    .font(.system(size: 16))
-                    .foregroundStyle(keyLabelColor.opacity(0.6))
-                    .padding(6)
-                    .contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("この案内を閉じる")
+            fullAccessNoticeDismissButton
         }
         .padding(.leading, 2)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+    }
+
+    // 横画面のかなの候補欄(縦長)に出す同じ案内(3570)。横画面には候補欄の段が無く、案内が一度も出なかった。
+    // 何も打っていないとき空の枠の代わりに出し、打ち始めれば候補に置き換わる(縦画面の段と同じ考え方)
+    var fullAccessNoticeSidebarView: some View {
+        HStack(alignment: .top, spacing: 4) {
+            Text(Self.fullAccessNoticeText)
+                .font(.system(size: 12, weight: .semibold, design: .rounded))
+                .foregroundStyle(keyLabelColor.opacity(0.75))
+                .lineLimit(6)
+                .minimumScaleFactor(0.7)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            fullAccessNoticeDismissButton
+        }
+        .padding(.leading, 4)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+    }
+
+    static let fullAccessNoticeText = "フルアクセスがオフです — 学習・設定の保存は反映されません(設定 › 一般 › キーボード › キーボード › écritu)"
+
+    private var fullAccessNoticeDismissButton: some View {
+        Button {
+            didDismissFullAccessNotice = true
+            UserDefaults.standard.set(Self.currentEdition, forKey: Self.fullAccessNoticeDismissedEditionKey)
+        } label: {
+            Image(systemName: "xmark.circle.fill")
+                .font(.system(size: 16))
+                .foregroundStyle(keyLabelColor.opacity(0.6))
+                .padding(6)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("この案内を閉じる")
     }
 
 }
