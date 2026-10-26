@@ -25477,6 +25477,17 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("ちゅうせいせんざい").first, "中性洗剤", "\(multi("ちゅうせいせんざい"))")
         XCTAssertEqual(multi("ちゅうせいせんざいで").first, "中性洗剤で", "\(multi("ちゅうせいせんざいで"))")
     }
+
+    // 連文節でだけ稀な表記を下げる(3570): 寡め/尠なめ(すくなめ)、東方(あがりかた)
+    func testRegression3570RareHomophoneDemotions() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        XCTAssertEqual(multi("ぱすたよりはすくなめ").first, "パスタよりは少なめ", "\(multi("ぱすたよりはすくなめ"))")
+        XCTAssertEqual(multi("すくなめに").first, "少なめに", "\(multi("すくなめに"))")
+        XCTAssertEqual(multi("あがりかたは").first, "上がり方は", "\(multi("あがりかたは"))")
+        XCTAssertEqual(converter.candidates(for: "あがりかた", limit: 6, systemCandidateMode: .surface).first, "上がり方")
+    }
     // 土星の輪: LM は 和(5199<輪 5449)と の→和(3964<4620)が強く 土星の和 が先頭だった。misc で句を登録(3570)
     func testRegression3570DoseiNoWa() throws {
         try prepareRealLMDictionary()
