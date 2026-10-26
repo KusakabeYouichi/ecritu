@@ -965,7 +965,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(tamani.first, "たまに", "list=\(tamani)")
 
         let komeha = converter.candidates(for: "こめは", limit: 8, systemCandidateMode: .surface)
-        XCTAssertEqual(Array(komeha.prefix(3)), ["米は", "こめは", "コメは"], "list=\(komeha)")
+        XCTAssertEqual(Array(komeha.prefix(3)), ["米は", "コメは", "こめは"], "list=\(komeha)")
 
         let umai = converter.multiClauseCandidates(for: "りょうりうまい", systemCandidateMode: .surface)
         XCTAssertEqual(umai.first, "料理うまい", "multi=\(umai)")
@@ -25544,13 +25544,15 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi.first, "今日の分は", "\(multi)")
     }
 
-    // こめ: 米→こめ→コメ(3570。こめだから で コメだから が こめだから より前だった)
-    func testRegression3570Kome() throws {
+    // こめ: 米→コメ→こめ(3572。3570 の 米→こめ→コメ をユーザ指定で改めた)。こめだから は 混め/込め を出さない
+    func testRegression3572Kome() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
-        XCTAssertEqual(Array(converter.candidates(for: "こめ", limit: 6, systemCandidateMode: .surface).prefix(3)), ["米", "こめ", "コメ"])
-        XCTAssertEqual(Array(converter.candidates(for: "こめだから", limit: 6, systemCandidateMode: .surface).prefix(3)),
-                       ["米だから", "こめだから", "コメだから"])
+        XCTAssertEqual(Array(converter.candidates(for: "こめ", limit: 6, systemCandidateMode: .surface).prefix(3)), ["米", "コメ", "こめ"])
+        let list = converter.candidates(for: "こめだから", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(6)), ["米だから", "コメだから", "こめだから", "濃めだから", "濃目だから", "米田から"], "\(list)")
+        let multi = converter.multiClauseCandidates(for: "こめだから", systemCandidateMode: .surface)
+        XCTAssertNotEqual(multi.first, "コメだから", "\(multi)")
     }
 
     // かんじん: 指定の並び。カン人/カンじん/肝じん の交ぜ書きは出さない(3570)
