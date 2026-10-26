@@ -25446,6 +25446,19 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 起動に失敗する: LM は 軌道(4585<起動 5455)と 軌道→に(1164<1788)が強く、失敗 は に の後ろなので名詞を選べない。
+    // 連語表(manual.json)で 起動 を選ばせる(3570)
+    func testRegression3570KidouNiShippai() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        for (reading, expected) in [("きどうにしっぱいする", "起動に失敗する"), ("きどうにしっぱいした", "起動に失敗した"),
+                                    ("きどうにしっぱいしました", "起動に失敗しました"), ("きどうにせいこうした", "起動に成功した")] {
+            XCTAssertEqual(multi(reading).first, expected, "\(reading): \(multi(reading))")
+        }
+        // 軌道に乗る は軌道のまま
+        XCTAssertEqual(multi("きどうにのる").first, "軌道に乗る", "\(multi("きどうにのる"))")
+    }
     func testDiagnosticCollocationSweep() throws {
         guard ProcessInfo.processInfo.environment["SWEEP_COLLOC"] != nil else {
             throw XCTSkip("TEST_RUNNER_SWEEP_COLLOC=1 のときだけ実行")

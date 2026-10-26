@@ -57,7 +57,12 @@ tok = Dictionary().create()
 
 def conj_type(dform):
     ms = tok.tokenize(dform, SplitMode.C)
-    return ms[0].part_of_speech()[4] if len(ms) == 1 else ""
+    if len(ms) == 1:
+        return ms[0].part_of_speech()[4]
+    # 失敗する のような 名詞+する は 1 語にならない。する の活用(サ行変格)で扱う(3570)
+    if len(ms) == 2 and dform.endswith("する") and ms[1].dictionary_form() == "する":
+        return ms[1].part_of_speech()[4]
+    return ""
 
 
 def verb_prefixes(vr, ctype):
