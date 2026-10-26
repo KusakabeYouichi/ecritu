@@ -5442,10 +5442,12 @@ extension KanaKanjiConverter {
                 }
                 // 漢字が seed 先頭の読みのカタカナ兄弟(コメ/ネコ)は、DP では定額で下げる(3544)が変種では 2 番目に(ユーザ指定 3554:
                 // 米買ってた の次に コメ買ってた)。同区間の LM 僅差の兄弟(飼ってた)より前
-                // seed で漢字の直後に並ぶカタカナ(米/コメ)だけ。3 番目以降(減り/縁/ヘリ)は従来どおり
+                // seed で漢字の直後に並ぶカタカナ(米/コメ)だけ。間のかな(読みそのもの。米/こめ/コメ。3570)は飛ばす。
+                // 3 番目以降(減り/縁/ヘリ)は従来どおり
                 if Self.isKatakanaString(alt.surface), chosen.surface != chosen.reading, containsKanji(chosen.surface),
                     let seedList = KanaKanjiSeedDictionary.seed[alt.reading], seedList.count >= 2,
-                    seedList[0] == chosen.surface, seedList[1] == alt.surface {
+                    seedList[0] == chosen.surface,
+                    seedList.dropFirst().first(where: { $0 != alt.reading }) == alt.surface {
                     // 同区間の兄弟(飼ってた)が負の delta でも前に出ないよう固定の順位に(代替経路の Int.min/2 より後ろ)
                     delta = min(delta, Int.min / 3)
                 }
