@@ -25535,6 +25535,14 @@ extension KanaKanjiConverterRegressionTests {
         // 理由の せい はかなのまま(2873)
         XCTAssertEqual(multi("にほんせいふのせい").first, "日本政府のせい", "\(multi("にほんせいふのせい"))")
     }
+
+    // 今日の分(3570): 今日の文は が 241 差で先頭だった
+    func testRegression3570KyouNoBun() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let multi = converter.multiClauseCandidates(for: "きょうのぶんは", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "今日の分は", "\(multi)")
+    }
     // 土星の輪: LM は 和(5199<輪 5449)と の→和(3964<4620)が強く 土星の和 が先頭だった。misc で句を登録(3570)
     func testRegression3570DoseiNoWa() throws {
         try prepareRealLMDictionary()
