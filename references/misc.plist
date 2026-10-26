@@ -583,6 +583,8 @@
 
 	<!-- ■ 分割・断片に負ける語の救済(連文節の区切りを勝たせる固定句) -->
 	<dict><key>phrase</key><string>身に覚え</string><key>shortcut</key><string>みにおぼえ</string></dict>	<!-- 慣用句 身に覚え(がない/がある)。LM に 身に覚え が無く、文頭の 身 6730 と ミニ 6155 の差を に→覚え の bigram で埋めきれず(111 差)みにおぼえがない→ミニ覚えがない だった(ユーザ報告 3556) -->
+	<dict><key>phrase</key><string>土星の輪</string><key>shortcut</key><string>どせいのわ</string></dict>	<!-- 土星の輪: LM は 和 5199<輪 5449、の→和 3964<の→輪 4620 で どせいのわ→土星の和 だった。登録順=候補順(輪 が先頭、学術表記の 環 が 2 番手。ユーザ指定 3570) -->
+	<dict><key>phrase</key><string>土星の環</string><key>shortcut</key><string>どせいのわ</string></dict>
 	<dict><key>phrase</key><string>次に</string><key>shortcut</key><string>つぎに</string></dict>	<!-- 副詞 次に。連文節が 次+に(bigram 1404)より 継ぎに/次ぎに(連用形+目的の に の派生 7200)を採り、つぎにきたきゃく→継ぎに来た客 になっていた(ユーザ報告 2818) -->
 	<dict><key>phrase</key><string>何でもかんでも</string><key>shortcut</key><string>なんでもかんでも</string></dict>	<!-- 何でもかんでも: 辞書に句として無く 何でも+噛んでも が先頭だった。かんでも は かな書きの慣用句。登録順=候補順(なんでもかんでも が 2 番手。ユーザ指定 3339) -->
 	<dict><key>phrase</key><string>なんでもかんでも</string><key>shortcut</key><string>なんでもかんでも</string></dict>
