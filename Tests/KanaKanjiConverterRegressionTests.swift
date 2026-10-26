@@ -25552,6 +25552,15 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(converter.candidates(for: "こめだから", limit: 6, systemCandidateMode: .surface).prefix(3)),
                        ["米だから", "こめだから", "コメだから"])
     }
+
+    // とも+でしょう(3570): みっつともでしょう→3つとも出章 だった
+    func testRegression3570TomoDeshou() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        XCTAssertEqual(multi("みっつともでしょう").first, "3つともでしょう", "\(multi("みっつともでしょう"))")
+        XCTAssertEqual(multi("ともでしょう").first, "ともでしょう", "\(multi("ともでしょう"))")
+    }
     // 土星の輪: LM は 和(5199<輪 5449)と の→和(3964<4620)が強く 土星の和 が先頭だった。misc で句を登録(3570)
     func testRegression3570DoseiNoWa() throws {
         try prepareRealLMDictionary()
