@@ -25564,6 +25564,14 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // かんじんな: 感じ+ん(な) の合成が先頭だった(3572)。肝腎な→肝心な
+    func testRegression3572Kanjinna() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let multi = converter.multiClauseCandidates(for: "かんじんな", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(multi.prefix(2)), ["肝腎な", "肝心な"], "\(multi)")
+        XCTAssertFalse(multi.contains("感じんな"), "\(multi)")
+    }
 
     // じゅうぶん: 充分 を先頭、かなは末尾(3572。十分 が先頭だった)
     func testRegression3572Juubun() throws {
