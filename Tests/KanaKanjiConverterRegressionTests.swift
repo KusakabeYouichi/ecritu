@@ -25564,6 +25564,16 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+
+    // じゅうぶん: 充分 を先頭、かなは末尾(3572。十分 が先頭だった)
+    func testRegression3572Juubun() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let list = converter.candidates(for: "じゅうぶん", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(5)), ["充分", "十分", "重文", "従文", "じゅうぶん"], "\(list)")
+        let multi = converter.multiClauseCandidates(for: "じゅうぶんに", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "充分に", "\(multi)")
+    }
     // とも+でしょう(3570): みっつともでしょう→3つとも出章 だった
     func testRegression3570TomoDeshou() throws {
         try prepareRealLMDictionary()
