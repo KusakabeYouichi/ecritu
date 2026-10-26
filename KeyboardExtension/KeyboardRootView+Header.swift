@@ -60,7 +60,9 @@ extension KeyboardRootView {
                     .padding(.leading, 2)
                     .padding(.top, emojiHeaderTopPadding)
                     .allowsHitTesting(false)
-            } else if showsFullAccessNotice {
+            } else if showsFullAccessNotice, inputMode != .number, inputMode != .formattedNumber {
+                // 数字・書式化数値の面には出さない(ユーザー指定 3570。案内はかなの面で足りる)。
+                // 書式化数値は候補欄の高さを 0 に畳むので、出すと案内がテンキーに重なる
                 fullAccessNoticeHeaderView
             } else {
                 Color.clear
