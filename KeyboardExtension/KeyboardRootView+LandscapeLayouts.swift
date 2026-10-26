@@ -14,6 +14,11 @@ extension KeyboardRootView {
             && landscapeLatinSuggestionMode == .sidebar
     }
 
+    // 広い横画面(iPhone Duo の内画面)の候補欄: 幅をキー側と半々にし、7 つ以上で 2 列(3570)
+    var usesWideLandscapeSidebar: Bool {
+        usesWideLandscapeLayout && isLandscapeLayout
+    }
+
     var usesLandscapeLatinTypewriterLayout: Bool {
         isLandscapeLayout
             && inputMode == .latin
@@ -254,6 +259,14 @@ extension KeyboardRootView {
     }
 
     func landscapeCandidateSidebarWidth() -> CGFloat {
+        // 広い横画面はキー側と半々(上限 320 は外す。3570)
+        if usesWideLandscapeSidebar {
+            return WideLandscapeCandidateLayout.sidebarWidth(
+                containerWidth: keyboardContainerWidth,
+                horizontalPadding: keyboardHorizontalPadding,
+                spacing: keyboardRowSpacing
+            )
+        }
         let screenWidth = keyboardContainerWidth
         let ratio: CGFloat = isKanaFiveByTwoMode ? 0.34 : 0.4
         let desired = screenWidth * ratio
@@ -289,10 +302,15 @@ extension KeyboardRootView {
     // 横画面の候補列の末尾に置くかなチップ(3266)。縦画面と同じく、変換候補に同じかなが無いときだけ出す。
     // 以前(7 月〜)は候補列の上に状態カプセル(鉛筆)と読みの行を常に出していて、かんじ のように候補にかながあっても
     // 読みの行が重複していた
-    @ViewBuilder var landscapeTrailingKanaChip: some View {
+    // 末尾のかなチップを出すか。広い横画面の 2 列の項目数にも数えるので 1 か所にまとめる(3570)
+    var showsLandscapeTrailingKanaChip: Bool {
         let showsWrapperOnly = showsParenthesesWrapper && composingText.isEmpty
-        if !showsWrapperOnly, !composingText.isEmpty, canTapComposingTextToCommit,
-            !conversionCandidates.contains(composingText) {
+        return !showsWrapperOnly && !composingText.isEmpty && canTapComposingTextToCommit
+            && !conversionCandidates.contains(composingText)
+    }
+
+    @ViewBuilder var landscapeTrailingKanaChip: some View {
+        if showsLandscapeTrailingKanaChip {
             let showsKatakanaCommitFeedback = isShowingKatakanaCommitFeedback(for: composingText)
 
             Button {
@@ -412,57 +430,18 @@ extension KeyboardRootView {
                             .frame(height: 24)
                     }
                 }
+            } else if usesWideLandscapeSidebar,
+                landscapeKanaSidebarItemCount >= WideLandscapeCandidateLayout.minimumCountForTwoColumns {
+                landscapeKanaCandidateTwoColumnList
             } else {
                 // 縦画面と同じく、変換キー連打での選択送りに追従させる(2605)。
                 ScrollViewReader { proxy in
                 ScrollView(.vertical, showsIndicators: false) {
                     LazyVStack(alignment: .leading, spacing: 4) {
                         ForEach(Array(conversionCandidates.enumerated()), id: \.offset) { index, candidate in
-                            let isSelected = selectedConversionCandidateIndex == index
-
                             HStack(spacing: Self.landscapeStateCapsuleSpacing) {
                             landscapeStateCapsuleSlot(showsCapsule: index == 0)
-                            Button {
-                                onSelectConversionCandidate(index)
-                            } label: {
-                                if showsParenthesesWrapper {
-                                    HStack(spacing: 0) {
-                                        Text("(")
-                                            .foregroundStyle(isSelected ? Color.white : accentColor)
-                                        CandidateGlyphText(candidate, fontSize: candidateTextFontSize, color: isSelected ? Color.white : keyLabelColor)
-                                        Text(")")
-                                            .foregroundStyle(isSelected ? Color.white : accentColor)
-                                    }
-                                    .font(.system(size: candidateTextFontSize, weight: .semibold))
-                                    .lineLimit(1)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 6)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 9, style: .continuous)
-                                            .fill(
-                                                isSelected
-                                                    ? accentColor.opacity(0.9)
-                                                    : KeyboardThemePalette.candidateHeaderChipBackground
-                                            )
-                                    )
-                                } else {
-                                    CandidateGlyphText(candidate, fontSize: candidateTextFontSize, color: isSelected ? Color.white : keyLabelColor)
-                                        .lineLimit(1)
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                        .padding(.horizontal, 8)
-                                        .padding(.vertical, 6)
-                                        .background(
-                                            RoundedRectangle(cornerRadius: 9, style: .continuous)
-                                                .fill(
-                                                    isSelected
-                                                        ? accentColor.opacity(0.9)
-                                                        : KeyboardThemePalette.candidateHeaderChipBackground
-                                                )
-                                        )
-                                }
-                            }
-                            .buttonStyle(.plain)
+                            landscapeKanaCandidateButton(index: index, candidate: candidate)
                             }
                             .id(index)
                         }
@@ -488,6 +467,105 @@ extension KeyboardRootView {
         .modifier(LandscapeSidebarContainer())
     }
 
+    // 横画面の候補 1 つ(1 列・2 列で共用)
+    func landscapeKanaCandidateButton(index: Int, candidate: String) -> some View {
+        let isSelected = selectedConversionCandidateIndex == index
+
+        return Button {
+            onSelectConversionCandidate(index)
+        } label: {
+            if showsParenthesesWrapper {
+                HStack(spacing: 0) {
+                    Text("(")
+                        .foregroundStyle(isSelected ? Color.white : accentColor)
+                    CandidateGlyphText(candidate, fontSize: candidateTextFontSize, color: isSelected ? Color.white : keyLabelColor)
+                    Text(")")
+                        .foregroundStyle(isSelected ? Color.white : accentColor)
+                }
+                .font(.system(size: candidateTextFontSize, weight: .semibold))
+                .lineLimit(1)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 6)
+                .background(
+                    RoundedRectangle(cornerRadius: 9, style: .continuous)
+                        .fill(
+                            isSelected
+                                ? accentColor.opacity(0.9)
+                                : KeyboardThemePalette.candidateHeaderChipBackground
+                        )
+                )
+            } else {
+                CandidateGlyphText(candidate, fontSize: candidateTextFontSize, color: isSelected ? Color.white : keyLabelColor)
+                    .lineLimit(1)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 6)
+                    .background(
+                        RoundedRectangle(cornerRadius: 9, style: .continuous)
+                            .fill(
+                                isSelected
+                                    ? accentColor.opacity(0.9)
+                                    : KeyboardThemePalette.candidateHeaderChipBackground
+                            )
+                    )
+            }
+        }
+        .buttonStyle(.plain)
+    }
+
+    // 広い横画面の候補欄の項目数(候補+末尾のかなチップ。3570)
+    var landscapeKanaSidebarItemCount: Int {
+        conversionCandidates.count + (showsLandscapeTrailingKanaChip ? 1 : 0)
+    }
+
+    // 広い横画面の候補欄の 2 列(3570)。左列を上から下へ、続きを右列へ。行ごとに 1 つの ScrollView に入れて
+    // 2 列まとめて縦にスクロールする。両列とも左に状態カプセルの枠(34+4pt)を空けて列幅をそろえ、
+    // カプセル自体は左列の先頭(第 1 候補)だけに出す
+    var landscapeKanaCandidateTwoColumnList: some View {
+        let itemCount = landscapeKanaSidebarItemCount
+        let rows = WideLandscapeCandidateLayout.arrange(count: itemCount)
+
+        return ScrollViewReader { proxy in
+            ScrollView(.vertical, showsIndicators: false) {
+                LazyVStack(alignment: .leading, spacing: 4) {
+                    ForEach(Array(rows.enumerated()), id: \.offset) { rowIndex, row in
+                        HStack(spacing: Self.landscapeStateCapsuleSpacing) {
+                            ForEach(Array(row.enumerated()), id: \.offset) { _, index in
+                                HStack(spacing: Self.landscapeStateCapsuleSpacing) {
+                                    landscapeStateCapsuleSlot(showsCapsule: index == 0)
+                                    if let index, index < conversionCandidates.count {
+                                        landscapeKanaCandidateButton(index: index, candidate: conversionCandidates[index])
+                                    } else if index != nil {
+                                        landscapeTrailingKanaChip
+                                    } else {
+                                        Color.clear
+                                            .frame(maxWidth: .infinity)
+                                            .frame(height: 1)
+                                    }
+                                }
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            }
+                        }
+                        .id(rowIndex)
+                    }
+                }
+                .padding(.vertical, 0)
+            }
+            .onChange(of: selectedConversionCandidateIndex) { _, index in
+                guard let index else {
+                    return
+                }
+                withAnimation(.easeOut(duration: 0.12)) {
+                    proxy.scrollTo(
+                        WideLandscapeCandidateLayout.rowIndex(forItemAt: index, count: itemCount),
+                        anchor: .center
+                    )
+                }
+            }
+        }
+    }
+
     var landscapeLatinSuggestionSidebar: some View {
         VStack(alignment: .leading, spacing: 4) {
             if latinSuggestionQuery.isEmpty {
@@ -510,26 +588,32 @@ extension KeyboardRootView {
                             .fill(KeyboardThemePalette.candidateHeaderPlaceholderBackground)
                     )
                     .accessibilityLabel("候補なし")
+            } else if usesWideLandscapeSidebar,
+                latinSuggestions.count >= WideLandscapeCandidateLayout.minimumCountForTwoColumns {
+                // 広い横画面は かな と同じく 7 つ以上で 2 列(左列を上から下へ、続きを右列へ。3570)
+                ScrollView(.vertical, showsIndicators: false) {
+                    LazyVStack(alignment: .leading, spacing: 4) {
+                        ForEach(Array(WideLandscapeCandidateLayout.arrange(count: latinSuggestions.count).enumerated()), id: \.offset) { _, row in
+                            HStack(spacing: 4) {
+                                ForEach(Array(row.enumerated()), id: \.offset) { _, index in
+                                    if let index {
+                                        landscapeLatinSuggestionButton(index: index, candidate: latinSuggestions[index])
+                                    } else {
+                                        Color.clear
+                                            .frame(maxWidth: .infinity)
+                                            .frame(height: 1)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    .padding(.vertical, 0)
+                }
             } else {
                 ScrollView(.vertical, showsIndicators: false) {
                     LazyVStack(alignment: .leading, spacing: 4) {
                         ForEach(Array(latinSuggestions.enumerated()), id: \.offset) { index, candidate in
-                            Button {
-                                onSelectConversionCandidate(index)
-                            } label: {
-                                Text(candidate)
-                                    .font(.system(size: candidateTextFontSize, weight: .semibold))
-                                    .foregroundStyle(keyLabelColor)
-                                    .lineLimit(1)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 6)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 9, style: .continuous)
-                                            .fill(KeyboardThemePalette.candidateHeaderChipBackground)
-                                    )
-                            }
-                            .buttonStyle(.plain)
+                            landscapeLatinSuggestionButton(index: index, candidate: candidate)
                         }
                     }
                     .padding(.vertical, 0)
@@ -537,6 +621,26 @@ extension KeyboardRootView {
             }
         }
         .modifier(LandscapeSidebarContainer())
+    }
+
+    // 横画面の欧文サジェスト 1 つ(1 列・2 列で共用)
+    func landscapeLatinSuggestionButton(index: Int, candidate: String) -> some View {
+        Button {
+            onSelectConversionCandidate(index)
+        } label: {
+            Text(candidate)
+                .font(.system(size: candidateTextFontSize, weight: .semibold))
+                .foregroundStyle(keyLabelColor)
+                .lineLimit(1)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 6)
+                .background(
+                    RoundedRectangle(cornerRadius: 9, style: .continuous)
+                        .fill(KeyboardThemePalette.candidateHeaderChipBackground)
+                )
+        }
+        .buttonStyle(.plain)
     }
 
     var landscapeLatinReferenceClusterHeight: CGFloat {

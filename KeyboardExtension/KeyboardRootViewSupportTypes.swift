@@ -151,6 +151,52 @@ struct KeyboardScrollEdgeEffectHiddenModifier: ViewModifier {
     }
 }
 
+// 広い横画面(iPhone Duo の内画面)の候補欄の寸法と列分け(3570)。普通の iPhone の横画面・iPad では使わない。
+// 候補欄とキー側(面切替の列+キー塊)を半分ずつにし、項目が 7 つ以上なら 2 列で縦に進めて並べる(ユーザ指定)
+enum WideLandscapeCandidateLayout {
+    // この数以上で 2 列にする。6 以下は従来どおり 1 列
+    static let minimumCountForTwoColumns = 7
+
+    // 行ごとの [左列, 右列] の index。左列を上から下へ埋めてから右列へ進む(r = ceil(n/2))。
+    // 1 列のときは 1 要素の行。右列が足りない最終行は nil
+    static func arrange(count: Int) -> [[Int?]] {
+        guard count > 0 else {
+            return []
+        }
+        guard count >= minimumCountForTwoColumns else {
+            return (0..<count).map { [$0] }
+        }
+        let rowCount = (count + 1) / 2
+        return (0..<rowCount).map { row in
+            let right = row + rowCount
+            return [row, right < count ? right : nil]
+        }
+    }
+
+    // index 番目の項目が載る行(選択送りの scrollTo 先。2605)
+    static func rowIndex(forItemAt index: Int, count: Int) -> Int {
+        guard count >= minimumCountForTwoColumns else {
+            return index
+        }
+        return index % ((count + 1) / 2)
+    }
+
+    // 候補欄の幅。使える幅から左右の外側余白と候補欄の隣の間隔 1 つを引いた残りの半分(残り半分がキー側)
+    static func sidebarWidth(containerWidth: CGFloat, horizontalPadding: CGFloat, spacing: CGFloat) -> CGFloat {
+        max(0, (containerWidth - horizontalPadding * 2 - spacing) / 2)
+    }
+
+    // 判定(唯一の旗): 横向きの iPhone なのに本来の縦サイズクラスが .regular(=内画面が広い)。
+    // 面の縦サイズクラスを .compact に上書きする条件(syncHostVerticalSizeClassOverride)と同じ式
+    static func isWideLandscapePhone(
+        isPhone: Bool,
+        isLandscape: Bool,
+        verticalSizeClass: UIUserInterfaceSizeClass
+    ) -> Bool {
+        isPhone && isLandscape && verticalSizeClass == .regular
+    }
+}
+
 // 記号の一覧は、長押しの吹き出しが最上段で見切れないようクリップを外している(iOS17+)。
 // ただし外すと下側も描かれるため、枠が詰まる横画面では中身が下段バーに重なって見えていた
 // (ユーザー報告の画像 3190)。上だけ広げた覆いにして、下は枠で切る

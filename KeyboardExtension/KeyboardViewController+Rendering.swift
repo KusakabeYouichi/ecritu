@@ -48,6 +48,8 @@ extension KeyboardViewController {
         // 枠の外(ホームインジケーターの帯)にある下端セーフエリアの量。高さの表はこのぶんを
         // 引いた値を要求しているのに、面を組む側は下の余白を足したままで二重になっていた(3164)
         let bottomSafeAreaOutsideFrame: CGFloat
+        // 広い横画面(iPhone Duo の内画面。3570)。開閉・回転で変わったら差分検出で面を作り直す
+        var usesWideLandscapeLayout: Bool = false
         let shortcutVocabulary: [String]
         var composingText: String
         // tokushima(3211): 候補欄に下線付きで出す未確定(他の方式では空)
@@ -346,6 +348,7 @@ extension KeyboardViewController {
             showsNextKeyboardKey: cachedNeedsInputModeSwitchKey && !Self.isIPadFloatingContainer(containerFrame),
             containerFrame: containerFrame,
             bottomSafeAreaOutsideFrame: bottomSafeAreaOutsideKeyboardFrame(),
+            usesWideLandscapeLayout: isWideLandscapePhone(),
             shortcutVocabulary: effectiveShortcutVocabularyForRender(),
             composingText: candidatePresentation.composingText,
             internalCompositionPreviewText: internalCompositionPreviewTextForRender,
@@ -569,6 +572,7 @@ extension KeyboardViewController {
         // 寸法・位置の端末別分岐(KeyboardLayoutMetrics)。引数順に依存しないよう生成後に渡す。
         rootView.layoutMetrics = layoutMetrics
         rootView.kanaYaBracketMode = rootViewYaBracketMode
+        rootView.usesWideLandscapeLayout = configuration.usesWideLandscapeLayout
         // 絵文字/顔文字の確定をショートカット語彙の先頭へ(3243)。保存は共有領域、表示側はキャッシュ破棄で次の描画から反映
         rootView.onShortcutCandidateCommitted = { [weak self] text in
             self?.kanaKanjiStore.prependShortcutCandidate(text)

@@ -198,19 +198,7 @@ extension KeyboardViewController {
         guard let host = hostingController else {
             return
         }
-        let isLandscape: Bool = {
-            if let target = transitionTargetSize ?? pendingSizeTransitionTargetSize {
-                let fixedBounds = view.window?.windowScene?.screen.fixedCoordinateSpace.bounds ?? UIScreen.main.bounds
-                return KeyboardLayoutMetrics.isLandscapeTransitionTarget(
-                    targetWidth: target.width,
-                    shorterScreenEdge: min(fixedBounds.width, fixedBounds.height)
-                )
-            }
-            return view.window?.windowScene?.interfaceOrientation.isLandscape ?? false
-        }()
-        let needsOverride = traitCollection.userInterfaceIdiom == .phone
-            && isLandscape
-            && traitCollection.verticalSizeClass == .regular
+        let needsOverride = isWideLandscapePhone(transitionTargetSize: transitionTargetSize)
         // 未設定の上書きを読むと UIKit が例外を投げる(読む前に contains で確かめる)
         let hasOverride = host.traitOverrides.contains(UITraitVerticalSizeClass.self)
         if needsOverride {
@@ -220,6 +208,33 @@ extension KeyboardViewController {
         } else if hasOverride {
             host.traitOverrides.remove(UITraitVerticalSizeClass.self)
         }
+        // 左右の灰色の余白は安全領域ではない。iOS がキーボードの窓を 951pt の画面の中央 801pt に絞っている
+        // (3570 の実測: 窓=801x203、左右の safeAreaInsets=0)。拡張からは広げられない(純正も同じ余白)
+    }
+
+    // 広い横画面(iPhone Duo の内画面)か(3570)。面の縦サイズクラスの上書き・候補欄の半々と 2 列の
+    // 唯一の判定。縦サイズクラスはこの VC の値(上書きはホスト側だけなので本来の値のまま)。向きは遷移先 →
+    // シーンの向き → 画面の縦横比の順に決める(窓が無いあいだも決まるように)
+    func isWideLandscapePhone(transitionTargetSize: CGSize? = nil) -> Bool {
+        let isLandscape: Bool = {
+            if let target = transitionTargetSize ?? pendingSizeTransitionTargetSize {
+                let fixedBounds = view.window?.windowScene?.screen.fixedCoordinateSpace.bounds ?? UIScreen.main.bounds
+                return KeyboardLayoutMetrics.isLandscapeTransitionTarget(
+                    targetWidth: target.width,
+                    shorterScreenEdge: min(fixedBounds.width, fixedBounds.height)
+                )
+            }
+            if let orientation = view.window?.windowScene?.interfaceOrientation {
+                return orientation.isLandscape
+            }
+            let screenBounds = view.window?.windowScene?.screen.bounds ?? UIScreen.main.bounds
+            return screenBounds.width > screenBounds.height
+        }()
+        return WideLandscapeCandidateLayout.isWideLandscapePhone(
+            isPhone: traitCollection.userInterfaceIdiom == .phone,
+            isLandscape: isLandscape,
+            verticalSizeClass: traitCollection.verticalSizeClass
+        )
     }
 
     // 枠の外にある下端セーフエリア(ホームインジケーターの帯)。縦向きだけ、高さの表がこのぶんを

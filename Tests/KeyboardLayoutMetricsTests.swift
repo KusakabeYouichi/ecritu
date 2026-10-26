@@ -420,4 +420,137 @@ extension KeyboardLayoutMetricsTests {
         RawTouchLongPress.unregister(keyID: "⌫", frame: CGRect(x: 0, y: 0, width: 50, height: 44))
         XCTAssertEqual(RawTouchLongPress.registeredKeyCount, 1)
     }
+
+    // MARK: - 広い横画面(iPhone Duo の内画面。3570)
+
+    func testWideLandscapeSixItemsStayInOneColumn() {
+        XCTAssertEqual(
+            WideLandscapeCandidateLayout.arrange(count: 6),
+            [[0], [1], [2], [3], [4], [5]]
+        )
+    }
+
+    func testWideLandscapeSevenItemsGoDownLeftColumnThenRight() {
+        XCTAssertEqual(
+            WideLandscapeCandidateLayout.arrange(count: 7),
+            [[0, 4], [1, 5], [2, 6], [3, nil]]
+        )
+    }
+
+    func testWideLandscapeFourteenItemsFillSevenFullRows() {
+        XCTAssertEqual(
+            WideLandscapeCandidateLayout.arrange(count: 14),
+            [[0, 7], [1, 8], [2, 9], [3, 10], [4, 11], [5, 12], [6, 13]]
+        )
+    }
+
+    func testWideLandscapeFifteenItemsLeaveRightOfLastRowEmpty() {
+        let rows = WideLandscapeCandidateLayout.arrange(count: 15)
+        XCTAssertEqual(rows.count, 8)
+        XCTAssertEqual(rows.first, [0, 8])
+        XCTAssertEqual(rows.last, [7, nil])
+    }
+
+    func testWideLandscapeZeroAndOneItem() {
+        XCTAssertEqual(WideLandscapeCandidateLayout.arrange(count: 0), [])
+        XCTAssertEqual(WideLandscapeCandidateLayout.arrange(count: 1), [[0]])
+    }
+
+    func testWideLandscapeSelectedItemScrollsToItsRow() {
+        XCTAssertEqual(WideLandscapeCandidateLayout.rowIndex(forItemAt: 9, count: 14), 2)
+        XCTAssertEqual(WideLandscapeCandidateLayout.rowIndex(forItemAt: 3, count: 7), 3)
+        XCTAssertEqual(WideLandscapeCandidateLayout.rowIndex(forItemAt: 4, count: 7), 0, "右列の先頭は 1 行め")
+        XCTAssertEqual(WideLandscapeCandidateLayout.rowIndex(forItemAt: 5, count: 6), 5, "1 列なら index の行")
+    }
+
+    func testWideLandscapeSidebarTakesHalfOfUsableWidth() {
+        // Duo 内画面 951pt、左右余白 6pt、候補欄の隣の間隔 4pt → (951 - 12 - 4) / 2
+        XCTAssertEqual(
+            WideLandscapeCandidateLayout.sidebarWidth(containerWidth: 951, horizontalPadding: 6, spacing: 4),
+            467.5
+        )
+    }
+
+    func testWideLandscapeOnlyForLandscapePhoneWithRegularHeight() {
+        XCTAssertTrue(WideLandscapeCandidateLayout.isWideLandscapePhone(isPhone: true, isLandscape: true, verticalSizeClass: .regular))
+        XCTAssertFalse(
+            WideLandscapeCandidateLayout.isWideLandscapePhone(isPhone: true, isLandscape: true, verticalSizeClass: .compact),
+            "普通の iPhone の横画面"
+        )
+        XCTAssertFalse(
+            WideLandscapeCandidateLayout.isWideLandscapePhone(isPhone: true, isLandscape: false, verticalSizeClass: .regular),
+            "iPhone の縦画面"
+        )
+        XCTAssertFalse(
+            WideLandscapeCandidateLayout.isWideLandscapePhone(isPhone: false, isLandscape: true, verticalSizeClass: .regular),
+            "iPad の横画面"
+        )
+    }
+
+    // 旗が立っていない(普通の iPhone・iPad)ときの候補欄の幅は従来どおり(幅の 0.4 を 180…320 に収める)
+    @MainActor
+    func testLandscapeSidebarWidthIsUnchangedWithoutWideFlag() {
+        XCTAssertEqual(makeRootView(containerWidth: 951).landscapeCandidateSidebarWidth(), 320)
+        XCTAssertEqual(makeRootView(containerWidth: 393).landscapeCandidateSidebarWidth(), 180)
+        XCTAssertEqual(makeRootView(containerWidth: 600).landscapeCandidateSidebarWidth(), 240)
+    }
+
+    @MainActor
+    private func makeRootView(containerWidth: CGFloat) -> KeyboardRootView {
+        KeyboardRootView(
+            onTextInput: { _ in },
+            onDeleteBackward: {},
+            onLookupRadicalEntries: { _ in [] },
+            onSpace: {},
+            onReturn: {},
+            onAdvanceKeyboard: {},
+            onApplyKanaPostModifier: { _, _ in .ignored },
+            onToggleParenthesesWrapper: {},
+            onSelectConversionCandidate: { _ in },
+            onCommitComposingText: {},
+            onCommitComposingTextAsKatakana: {},
+            onUpgradeRecentKanaCommitToKatakana: { false },
+            onInputModeChanged: { _, _ in },
+            showsNextKeyboardKey: false,
+            containerFrame: CGRect(x: 0, y: 0, width: containerWidth, height: 203),
+            directionProfile: .littlebear,
+            kanaLayoutMode: .threeByThreePlusWa,
+            kanaModifierPlacementMode: .postfix,
+            numberLayoutMode: .calculette,
+            latinLayoutMode: .flick,
+            accentPaletteRawValue: "emeraude",
+            isSystemDictionaryFallback: false,
+            hasFullAccess: true,
+            keyboardBackgroundThemeRawValue: "sakura",
+            basicSymbolOrderRawValue: "ascii",
+            temperatureUnitRawValue: TemperatureUnitPreference.celsius.rawValue,
+            radicalStrokeCountStyleRawValue: "",
+            spaceToastTrigger: 0,
+            returnKeySystemImageName: nil,
+            returnKeyTitleOverride: nil,
+            isReturnKeyEnabled: true,
+            kanaFlickGuideDisplayMode: .fourDirections,
+            latinFlickGuideDisplayMode: .fourDirections,
+            numberFlickGuideDisplayMode: .fourDirections,
+            modifierFlickGuideDisplayMode: .off,
+            keyRepeatInitialDelay: 0.5,
+            keyRepeatInterval: 0.1,
+            kanaModeSwitcherTapActionRawValue: "symbols",
+            kanaModeSwitcherRightFlickActionRawValue: "kaomoji",
+            kanaModeSwitcherUpFlickActionRawValue: "emoji",
+            kanaPostModifierEmptyTapActionRawValue: "kaomoji",
+            kanaPostModifierEmptyTapKaomojiCategoryID: "existing",
+            kanaPostModifierEmptyTapEmojiCategoryID: "0",
+            kanaPostModifierEmptyTapSymbolCategoryID: "0",
+            kanaPostModifierFlickDakutenEnabled: true,
+            landscapeCandidateSideRawValue: "left",
+            landscapeNumberPaneSideRawValue: "left",
+            landscapeLatinSuggestionModeRawValue: "sidebar",
+            shortcutVocabulary: [],
+            candidateBarModel: KeyboardCandidateBarModel(),
+            showsParenthesesWrapper: false,
+            initialSpaceToastText: nil,
+            initialInputMode: .kana
+        )
+    }
 }

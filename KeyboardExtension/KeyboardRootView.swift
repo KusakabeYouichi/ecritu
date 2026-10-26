@@ -156,6 +156,8 @@ struct KeyboardRootView: View {
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.verticalSizeClass) private var verticalSizeClass
     var layoutMetrics: KeyboardLayoutMetrics = .phone
+    // 広い横画面(iPhone Duo の内画面。3570)。生成後に代入する。普通の iPhone・iPad は常に false
+    var usesWideLandscapeLayout = false
 
     let shiftDoubleTapThreshold: TimeInterval = 0.32
     let latinModeSwitchDoubleTapThreshold: TimeInterval = 0.28
@@ -206,7 +208,8 @@ struct KeyboardRootView: View {
 
         return frameMetrics.topPadding
     }
-    private var keyboardHorizontalPadding: CGFloat { frameMetrics.horizontalPadding }
+    // 広い横画面の候補欄の幅(+LandscapeLayouts)も外側余白を引くので private にしない(3570)
+    var keyboardHorizontalPadding: CGFloat { frameMetrics.horizontalPadding }
     // 下の余白。枠の外にホームインジケーターの帯がある縦向きでは、帯のぶんが二重になるので
     // 20pt は使わず 8pt に整理する(ユーザー指定 3165。高さの表も同じ前提で 12pt 多く要求する)。
     // 帯が無い機種(ホームボタン機)や横向きでは従来どおり
