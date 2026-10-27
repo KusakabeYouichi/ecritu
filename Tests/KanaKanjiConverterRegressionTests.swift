@@ -25771,6 +25771,19 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertFalse(koko.first?.contains("板") ?? true, "\(koko)")
     }
 
+    // 文の中の いた: ここにいたよ/ねこがいた が 居た 先頭だった(3576、ユーザ指定 かな)
+    func testRegression3576ItaInSentence() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        for (reading, expected) in [
+            ("ここにいたよ", "ここにいたよ"), ("そこにいたね", "そこにいたね"), ("ずっといえにいた", "ずっと家にいた"), ("ねこがいた", "猫がいた"),
+            ("あしがいたい", "足が痛い"), ("そうおもっていた", "そう思っていた")
+        ] {
+            XCTAssertEqual(multi(reading).first, expected, "\(reading) \(multi(reading))")
+        }
+    }
+
     // めーとる: 古い当て字 米 が メートル より先だった(3576)
     func testRegression3576Metre() throws {
         try prepareRealLMDictionary()

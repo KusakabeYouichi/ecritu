@@ -2811,6 +2811,9 @@ extension KanaKanjiConverter {
     // 下の表の読みのうち、活用形(読み・表層の接頭一致)には減点を掛けない読み。名詞としての並びだけを直し、
     // サ変の活用形(若採りした)は対抗(若鶏+した)より先のままにする(3573)
     static let multiClauseHomophoneDemotionUnderivedOnlyReadings: Set<String> = ["わかどり"]
+    // 下の表の読みのうち、活用形でも表記の完全一致(居た)だけを減点し、接頭一致(居たい/居たら)には掛けない読み(3576。
+    // いた を前方一致で下げると ここにいたい が ここに遺体 に崩れた)
+    static let multiClauseHomophoneDemotionExactOnlyReadings: Set<String> = ["いた"]
     static let multiClauseHomophoneDemotionsByReading: [String: [String: Int]] = [
         "かんりょう": ["官僚": 800],
         // 勝(かち): 主読み しょう(3勝/勝率)の LM 統計(勝 4795、勝→だ 3344)を借りて 勝ちだな/価値だな に勝っていた。
@@ -2843,6 +2846,9 @@ extension KanaKanjiConverter {
         // わかどり: 若採り(misc curated、床 1500)が 若鶏(約 8000)より先だった。若鶏→若鳥→若採り の順(3573、ユーザ指定)
         // 活用形(若採りした/若採りする)は減点しない(multiClauseHomophoneDemotionUnderivedOnlyReadings)
         "わかどり": ["若採り": 7000, "若鳥": 600],
+        // いた: 存在の いる の過去はかなが正書(ここにいたよ。3576、ユーザ指定)。居た/射た/鋳た を かな いた より後ろへ。
+        // 居たい/居たら には掛けない(multiClauseHomophoneDemotionExactOnlyReadings)
+        "いた": ["居た": 2500, "射た": 4000, "鋳た": 4000],
         // しじ: 連文節は 支持/師事 が 指示 より前に出ていた(しじする→支持する、しじしたとおり→師事した通り)。
         // 指示 → 支持 → 師事 の順(単文節の並びに揃える。ユーザ指定 3645)
         "しじ": ["支持": 1200, "師事": 3000],

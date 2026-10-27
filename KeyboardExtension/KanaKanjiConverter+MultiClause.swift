@@ -3301,8 +3301,9 @@ extension KanaKanjiConverter {
                     for (readingKey, demotions) in Self.multiClauseHomophoneDemotionsByReading
                     where (reading == readingKey || reading.hasPrefix(readingKey))
                         && !Self.multiClauseHomophoneDemotionUnderivedOnlyReadings.contains(readingKey) {
+                        let exactOnly = Self.multiClauseHomophoneDemotionExactOnlyReadings.contains(readingKey)
                         for (demotedSurface, demotion) in demotions
-                        where surface == demotedSurface || surface.hasPrefix(demotedSurface) {
+                        where surface == demotedSurface || (!exactOnly && surface.hasPrefix(demotedSurface)) {
                             penalty += demotion
                         }
                     }
