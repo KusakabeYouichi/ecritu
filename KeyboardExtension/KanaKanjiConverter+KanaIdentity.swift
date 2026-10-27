@@ -636,6 +636,11 @@ extension KanaKanjiConverter {
                 guard KanaKanjiSeedDictionary.seed[suffix]?.first == suffix else {
                     continue
                 }
+                // 否定辞(なくて)は動詞未然形にも付く。読み全体が用言の活用形(しらなくて=知らなくて)なら立てない(上の curated と同じ。3573)
+                if Self.kanaNegativeAuxiliaryCuratedSuffixes.contains(suffix),
+                    deinflectsToDictionaryPredicate(normalized) {
+                    continue
+                }
                 // て/で形+補助動詞(しんで+しまった)は末尾語(しまった)がかな正書でも、全体のかな正書は前半の
                 // 動詞次第(死んでしまった)。前半自体にかなの根拠(やって/して)が無ければ立てない(3718、ユーザ報告:
                 // しんでしまっ までは 死んでしまっ が先頭なのに しんでしまった で かな が先頭になっていた)
