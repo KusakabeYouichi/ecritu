@@ -219,6 +219,7 @@
 	<dict><key>phrase</key><string>LinkedIn</string><key>shortcut</key><string>りんくどいん</string></dict>
 	<dict><key>phrase</key><string>Bluesky</string><key>shortcut</key><string>ぶるーすかい</string></dict>
 	<dict><key>phrase</key><string>TikTok</string><key>shortcut</key><string>てぃっくとっく</string></dict>
+	<dict><key>phrase</key><string>GRAVITY</string><key>shortcut</key><string>ぐらゔぃてぃ</string></dict>
 
 	<!-- misc. -->
 	<dict><key>phrase</key><string>Amazon</string><key>shortcut</key><string>あまぞん</string></dict>
