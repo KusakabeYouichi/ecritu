@@ -25747,6 +25747,18 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(multi("ちゅうもんやのうひん").prefix(2)), ["註文や納品", "注文や納品"], "\(multi("ちゅうもんやのうひん"))")
     }
 
+    // 9+いんち: インチ が助数詞の表に無く、位んち(位+口語の んち)が先頭だった(3574)
+    func testRegression3574Inch() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        // 先に素の読みを引いてから数字付きを引く(キャッシュの取り違えも見る)
+        _ = converter.candidates(for: "いんち", limit: 6, systemCandidateMode: .surface)
+        let nine = converter.candidates(for: "9いんち", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(nine.first, "インチ", "\(nine)")
+        XCTAssertFalse(nine.contains("位んち"), "\(nine)")
+        XCTAssertEqual(converter.candidates(for: "いんち", limit: 6, systemCandidateMode: .surface).first, "インチ")
+    }
+
     // ちゅうもんやのうひん: 中+もん+や に割られ 中もんや納品 だった(3573)
     func testRegression3573ChuumonYa() throws {
         try prepareRealLMDictionary()
