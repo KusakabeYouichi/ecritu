@@ -25759,6 +25759,21 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.candidates(for: "いんち", limit: 6, systemCandidateMode: .surface).first, "インチ")
     }
 
+    // 数字+単位: ポンド/リットル/キロメートル の先頭が 歩んど/里っとる/機ろめーとる だった(3575)
+    func testRegression3575UnitsAfterDigit() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("5ぽんど", "ポンド"), ("5りっとる", "リットル"), ("5きろめーとる", "キロメートル"), ("5みり", "ミリ"), ("5きろ", "キロ"),
+            ("5ふぃーと", "フィート"), ("5やーど", "ヤード"), ("5まいる", "マイル")
+        ] {
+            let list = converter.candidates(for: reading, limit: 5, systemCandidateMode: .surface)
+            XCTAssertEqual(list.first, expected, "\(reading) \(list)")
+        }
+        // 数字の付かない語は今までどおり
+        XCTAssertEqual(converter.candidates(for: "いきろ", limit: 3, systemCandidateMode: .surface).first, "生きろ")
+    }
+
     // ちゅうもんやのうひん: 中+もん+や に割られ 中もんや納品 だった(3573)
     func testRegression3573ChuumonYa() throws {
         try prepareRealLMDictionary()
