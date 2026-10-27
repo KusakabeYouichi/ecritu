@@ -25770,6 +25770,15 @@ extension KanaKanjiConverterRegressionTests {
         let koko = converter.multiClauseCandidates(for: "ここにいたぞ", systemCandidateMode: .surface)
         XCTAssertFalse(koko.first?.contains("板") ?? true, "\(koko)")
     }
+
+    // めーとる: 古い当て字 米 が メートル より先だった(3576)
+    func testRegression3576Metre() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(Array(converter.candidates(for: "5めーとる", limit: 4, systemCandidateMode: .surface).prefix(2)), ["メートル", "米"])
+        XCTAssertEqual(converter.multiClauseCandidates(for: "さんめーとる", systemCandidateMode: .surface).first, "三メートル")
+    }
+
     // 数字+単位: ポンド/リットル/キロメートル の先頭が 歩んど/里っとる/機ろめーとる だった(3575)
     func testRegression3575UnitsAfterDigit() throws {
         try prepareRealLMDictionary()
