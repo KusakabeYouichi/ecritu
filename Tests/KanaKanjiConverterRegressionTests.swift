@@ -25759,6 +25759,17 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.candidates(for: "いんち", limit: 6, systemCandidateMode: .surface).first, "インチ")
     }
 
+    // いたぞ/いたよ/いたね: 基底 いた の辞書順のまま 板ぞ が先頭だった(3576)
+    func testRegression3576ItaZo() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for r in ["いたぞ", "いたよ", "いたね"] {
+            let list = converter.candidates(for: r, limit: 5, systemCandidateMode: .surface)
+            XCTAssertEqual(Array(list.prefix(2)), [r, "居た" + String(r.last!)], "\(list)")
+        }
+        let koko = converter.multiClauseCandidates(for: "ここにいたぞ", systemCandidateMode: .surface)
+        XCTAssertFalse(koko.first?.contains("板") ?? true, "\(koko)")
+    }
     // 数字+単位: ポンド/リットル/キロメートル の先頭が 歩んど/里っとる/機ろめーとる だった(3575)
     func testRegression3575UnitsAfterDigit() throws {
         try prepareRealLMDictionary()
