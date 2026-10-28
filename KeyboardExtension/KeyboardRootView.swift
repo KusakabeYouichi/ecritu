@@ -160,22 +160,13 @@ struct KeyboardRootView: View {
     // 調査用ログ(記号面切替 2838): 直近のモード切替の引き金(左下キー タップ/フリック、修飾キー空タップ 等)。
     // 「触っていないのに記号面になった」の再現待ち。原因判明後に外す
     @State var inputModeChangeTrigger: String = "面内キー"
-    @State var formattedNumberBuffer: String = ""
-    @State var selectedFormattedNumberCategory: FormattedNumberCategory = FormattedNumberPreferences.lastCategory()
-    @State var formattedNumberGroupingEnabled: Bool = true
-    @State var formattedNumberUnitSelection: [Int: String] = FormattedNumberPreferences.loadUnitSelection()
-    // 接頭辞(補助単位)はSI単位系カテゴリーごとに独立保持。
-    @State var formattedNumberPrefixSelection: [Int: String] = FormattedNumberPreferences.loadPrefixSelection()
-    // 金額カテゴリー: 通貨記号を数値の前に付けるか(既定は選択通貨の慣習に追従、スイッチで反転可)。
-    @State var formattedNumberCurrencySymbolBefore: Bool = FormattedNumberPreferences.lastCurrencySymbolBefore()
-    // 単位3カテゴリー: 数値と単位の間に空白を入れるか(既定なし)。
-    @State var formattedNumberUnitSpacing: Bool = FormattedNumberPreferences.lastUnitSpacing()
+    // 書式化数値の入力の状態(バッファ・カテゴリー・単位/接頭辞・スイッチ・日付と書式)。
+    // 持ち主はここだけ。寿命は以前の @State と同じ
+    @State var formattedNumberState = FormattedNumberState()
     // 単位ドラムをプレス中、選択中単位のフル表記カードを表示するか。
     @State var formattedNumberDrumFullNameVisible: Bool = false
     // プレス中に自前ホイールから随時通知される中央行のタグ(空=非プレス)。
     @State var formattedNumberDrumLiveTag: String = ""
-    @State var formattedNumberDate: Date = Date()
-    @State var formattedNumberDateFormatTemplate: String = DateFormatCatalog.japaneseVariants.first ?? "m月j日"
     @State var didTriggerComposingCommitLongPress = false
     @State var katakanaCommitFeedbackText: String? = nil
     @State var pendingKatakanaCommitWorkItem: DispatchWorkItem?

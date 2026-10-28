@@ -88,6 +88,12 @@ final class KeyboardInputState {
         transitionState = next
     }
 
+    // 書式化数値へ入る。1 件確定したらかなへ戻す印を付ける
+    func enterFormattedNumberMode() {
+        transitionState = KeyboardModeTransition.enterFormattedNumberMode(from: transitionState)
+        returnToKanaAfterNextCommit = true
+    }
+
     func consumeReturnToKanaAfterNextCommitIfNeeded() {
         guard returnToKanaAfterNextCommit else {
             return

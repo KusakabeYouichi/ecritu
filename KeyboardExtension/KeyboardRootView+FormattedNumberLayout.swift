@@ -378,7 +378,7 @@ extension KeyboardRootView {
         navigation: FormattedNumberCalendarGridView.NavigationPlacement
     ) -> some View {
         FormattedNumberCalendarGridView(
-            selectedDate: $formattedNumberDate,
+            selectedDate: formattedNumberDateBinding,
             firstWeekday: formattedNumberCalendarFirstWeekday,
             language: formattedNumberCalendarLanguage,
             sundayColor: formattedNumberCalendarSundayColor,
@@ -413,7 +413,7 @@ extension KeyboardRootView {
     // 自前の月グリッド(常時表示・コンパクト)。週開始・曜日表記はコンテナー設定から読む。
     private var formattedNumberScaledCalendar: some View {
         FormattedNumberCalendarGridView(
-            selectedDate: $formattedNumberDate,
+            selectedDate: formattedNumberDateBinding,
             firstWeekday: formattedNumberCalendarFirstWeekday,
             language: formattedNumberCalendarLanguage,
             sundayColor: formattedNumberCalendarSundayColor,
@@ -430,62 +430,18 @@ extension KeyboardRootView {
         UserDefaults(suiteName: KeyboardViewController.SharedDefaultsKeys.appGroupID)
     }
 
-    // 千の位区切り文字(既定=空白)。sep_mil オン時に3桁ごとに挿入。
-    var formattedNumberThousandsSeparator: String {
-        switch formattedNumberSharedDefaults?.string(forKey: KeyboardViewController.SharedDefaultsKeys.numberThousandsSeparator) {
-        case "comma": return ","
-        case "dot": return "."
-        default: return " "
-        }
+    // 選択中のカテゴリー(formattedNumberState への読み取りの取り次ぎ。変更は selectFormattedNumberCategory から)
+    private var selectedFormattedNumberCategory: FormattedNumberCategory {
+        formattedNumberState.selectedCategory
     }
 
-    // 小数点区切り文字(既定=".")。小数点キーの表示/挿入に反映。
-    var formattedNumberDecimalSeparator: String {
-        formattedNumberSharedDefaults?.string(forKey: KeyboardViewController.SharedDefaultsKeys.numberDecimalSeparator) == "comma" ? "," : "."
+    // 書式設定(区切り・積の記号・リットル・度記号・日付の方式)。キャッシュせず使う所で毎回読む
+    var formattedNumberFormatSettings: FormattedNumberFormatSettings {
+        FormattedNumberFormatSettings.load(from: formattedNumberSharedDefaults)
     }
 
-    // que quatre: オンなら4桁の数値にも千区切りを付ける(オフは4桁を例外にする)。
-    private var formattedNumberGroupsFourDigits: Bool {
-        formattedNumberSharedDefaults?.bool(forKey: KeyboardViewController.SharedDefaultsKeys.numberGroupFourDigits) ?? false
-    }
-
-    // 単位の積の記号。内部は U+00B7(中点)で保持し、表示/確定時にこの設定へ変換する。
-    private var formattedNumberUnitProductSeparator: String {
-        switch formattedNumberSharedDefaults?.string(forKey: KeyboardViewController.SharedDefaultsKeys.numberUnitProductSeparator) {
-        case "dotOperator": return "\u{22C5}"
-        case "space": return " "
-        default: return "\u{00B7}"
-        }
-    }
-
-    // リットルの記号。内部は常に大文字 L で保持し、表示/確定時にこの設定へ変換する。
-    // 既定は小文字 l(SI が1879年から用いる記号)。
-    private var formattedNumberLitreSymbol: String {
-        switch formattedNumberSharedDefaults?.string(forKey: KeyboardViewController.SharedDefaultsKeys.numberLitreSymbol) {
-        case "capital": return "L"
-        case "script": return "\u{2113}"
-        default: return "l"
-        }
-    }
-
-    // 内部保持の記号を、設定に合わせた表示/確定用の記号にする。
-    // ・中点(U+00B7)→ 積の記号設定
-    // ・大文字 L → リットルの記号設定(L を含む単位はリットルだけなので単純置換で安全。
-    //   小文字 l は mol・lm・lx 等と衝突するため内部保持には使わない)
     private func formattedNumberDisplayUnitSymbol(_ symbol: String) -> String {
-        var result = symbol
-        let separator = formattedNumberUnitProductSeparator
-        if separator != "\u{00B7}" {
-            result = result.replacingOccurrences(of: "\u{00B7}", with: separator)
-        }
-        let litre = formattedNumberLitreSymbol
-        if litre != "L" {
-            result = result.replacingOccurrences(of: "L", with: litre)
-        }
-        // 度記号(内部は SI 形 °C)→ 設定 degreeSymbol の字形(°C / ℃)
-        result = DegreeSymbolStyle(sharedRawValue: formattedNumberSharedDefaults?.string(forKey: DegreeSymbolStyle.sharedDefaultsKey))
-            .styled(result)
-        return result
+        FormattedNumberFormatting.displayUnitSymbol(symbol, settings: formattedNumberFormatSettings)
     }
 
     // テンキー配列: téléphone(上段123)か calculette(上段789、既定)か。
@@ -570,40 +526,18 @@ extension KeyboardRootView {
 
     // 方式(日本/仏/英/米)はコンテナー設定で選ぶ。共有 UserDefaults から直接読む。
     private var formattedNumberDateStyle: DateFormatStyle {
-        let raw = formattedNumberSharedDefaults?
-            .string(forKey: KeyboardViewController.SharedDefaultsKeys.dateFormatStyle) ?? ""
-        return DateFormatStyle(rawValue: raw) ?? .japanese
-    }
-
-    // 選択中の書式が現方式のバリアントに無ければ先頭にフォールバックする。
-    private var formattedNumberEffectiveDateTemplate: String {
-        let variants = DateFormatCatalog.variants(for: formattedNumberDateStyle)
-        if variants.contains(formattedNumberDateFormatTemplate) {
-            return formattedNumberDateFormatTemplate
-        }
-        return variants.first ?? formattedNumberDateFormatTemplate
+        formattedNumberFormatSettings.dateStyle
     }
 
     private var formattedNumberDateTemplateBinding: Binding<String> {
         Binding(
-            get: { formattedNumberEffectiveDateTemplate },
-            set: { formattedNumberDateFormatTemplate = $0 }
+            get: { formattedNumberState.effectiveDateTemplate(settings: formattedNumberFormatSettings) },
+            set: { formattedNumberState.dateFormatTemplate = $0 }
         )
     }
 
-    // 選択中のカレンダー日付を選択書式でレンダリングした文字列。
-    func formattedNumberRenderedDate() -> String {
-        let calendar = Calendar.current
-        let components = calendar.dateComponents([.year, .month, .day, .weekday], from: formattedNumberDate)
-        let weekdayIndex = (components.weekday ?? 1) - 1
-        return DateFormatCatalog.render(
-            template: formattedNumberEffectiveDateTemplate,
-            style: formattedNumberDateStyle,
-            year: components.year ?? 2026,
-            month: components.month ?? 1,
-            day: components.day ?? 1,
-            weekdayIndex: weekdayIndex
-        )
+    private var formattedNumberDateBinding: Binding<Date> {
+        Bindable(formattedNumberState).date
     }
 
     // MARK: - テンキー(左側)
@@ -614,7 +548,7 @@ extension KeyboardRootView {
 
     // キーの表示文字。小数点キー(内部トークン ".")は設定の小数区切り(. か ,)を表示する。
     private func formattedNumberKeyTitle(_ token: String) -> String {
-        token == "." ? formattedNumberDecimalSeparator : token
+        token == "." ? formattedNumberFormatSettings.decimalSeparator : token
     }
 
     private var formattedNumberTenkey: some View {
@@ -645,127 +579,27 @@ extension KeyboardRootView {
         return 41
     }
 
-    // 桁数は当面8桁で足りるため、数字は8桁で頭打ちにする(符号/小数点は別カウント)。
-    private var formattedNumberMaxDigits: Int { 8 }
-
     private func appendFormattedNumberToken(_ token: String) {
-        switch token {
-        case "±":
-            toggleFormattedNumberSign()
-        case ".":
-            if !formattedNumberBuffer.contains(".") {
-                appendFormattedNumber(token)
-            }
-        default:
-            let digitCount = formattedNumberBuffer.filter { $0.isNumber }.count
-            guard digitCount < formattedNumberMaxDigits else {
-                return
-            }
-            appendFormattedNumber(token)
-        }
-    }
-
-    private func toggleFormattedNumberSign() {
-        if formattedNumberBuffer.hasPrefix("-") {
-            formattedNumberBuffer.removeFirst()
-        } else {
-            formattedNumberBuffer = "-" + formattedNumberBuffer
-        }
-    }
-
-    // MARK: - 書式化(内部バッファは小数点="."。表示/出力で設定の区切り文字に変換)
-
-    // バッファ(素の数字文字列)を表示用に整形する。3桁区切りは sep_mil(formattedNumberGroupingEnabled)
-    // 連動、区切り文字と小数点はコンテナー設定に従う。
-    func formattedNumberDisplayString() -> String {
-        var body = formattedNumberBuffer
-        let isNegative = body.hasPrefix("-")
-        if isNegative {
-            body.removeFirst()
-        }
-
-        let parts = body.split(separator: ".", maxSplits: 1, omittingEmptySubsequences: false)
-        let integerText = parts.isEmpty ? "" : String(parts[0])
-        let hasDecimalPoint = body.contains(".")
-        let fractionText = parts.count > 1 ? String(parts[1]) : ""
-
-        let groupedInteger = formattedNumberGroupingEnabled
-            ? groupedIntegerString(integerText)
-            : integerText
-
-        var result = groupedInteger
-        if hasDecimalPoint {
-            result += formattedNumberDecimalSeparator + fractionText
-        }
-        return (isNegative ? "-" : "") + result
-    }
-
-    // 整数部に3桁ごとの区切り文字を挿入する。que quatre オフのときは4桁を例外(5桁以上のみ区切る)。
-    private func groupedIntegerString(_ digits: String) -> String {
-        let threshold = formattedNumberGroupsFourDigits ? 3 : 4
-        guard digits.count > threshold else {
-            return digits
-        }
-        let separator = formattedNumberThousandsSeparator
-        var grouped = ""
-        for (offset, character) in digits.reversed().enumerated() {
-            if offset > 0, offset % 3 == 0 {
-                grouped.append(separator)
-            }
-            grouped.append(character)
-        }
-        return String(grouped.reversed())
+        formattedNumberState.appendToken(token)
     }
 
     // MARK: - 単位選択
 
-    // 現在カテゴリーで選択中の基本記号(接頭辞なし)。未選択時は先頭。単位なしは空文字。
     private var formattedNumberSelectedBaseSymbol: String {
-        let units = SIUnitCatalog.units(for: selectedFormattedNumberCategory)
-        guard !units.isEmpty else {
-            return ""
-        }
-        if let selected = formattedNumberUnitSelection[selectedFormattedNumberCategory.rawValue],
-            units.contains(where: { $0.symbol == selected }) {
-            return selected
-        }
-        return units.first?.symbol ?? ""
-    }
-
-    // 出力用の単位記号。SI単位系(基本/組立/固有)は接頭辞ドラムの選択を前置する(k+g=kg, k+N=kN 等)。
-    var formattedNumberCurrentUnitSymbol: String {
-        let base = formattedNumberSelectedBaseSymbol
-        guard !base.isEmpty else {
-            return ""
-        }
-        if selectedFormattedNumberCategory.usesSIPrefix {
-            let prefix = formattedNumberPrefixSelection[selectedFormattedNumberCategory.rawValue] ?? ""
-            return formattedNumberDisplayUnitSymbol(prefix + base)
-        }
-        return base
+        formattedNumberState.selectedBaseSymbol
     }
 
     private var formattedNumberUnitBinding: Binding<String> {
         Binding(
-            get: { formattedNumberSelectedBaseSymbol },
-            set: {
-                formattedNumberUnitSelection[selectedFormattedNumberCategory.rawValue] = $0
-                FormattedNumberPreferences.saveUnit($0, for: selectedFormattedNumberCategory)
-                // 通貨を変えたら、その通貨の慣習(前/後)に前後スイッチを合わせる。
-                if selectedFormattedNumberCategory == .currency {
-                    formattedNumberCurrencySymbolBefore = SIUnitCatalog.currencySymbolBeforeAmount($0)
-                }
-            }
+            get: { formattedNumberState.selectedBaseSymbol },
+            set: { formattedNumberState.selectUnit($0) }
         )
     }
 
     private var formattedNumberPrefixBinding: Binding<String> {
         Binding(
-            get: { formattedNumberPrefixSelection[selectedFormattedNumberCategory.rawValue] ?? "" },
-            set: {
-                formattedNumberPrefixSelection[selectedFormattedNumberCategory.rawValue] = $0
-                FormattedNumberPreferences.savePrefix($0, for: selectedFormattedNumberCategory)
-            }
+            get: { formattedNumberState.selectedPrefix },
+            set: { formattedNumberState.selectPrefix($0) }
         )
     }
 
@@ -809,59 +643,15 @@ extension KeyboardRootView {
 
     // カテゴリー選択(前回値を保存し、カレンダー↔単位の高さ差を反映させる)。
     private func selectFormattedNumberCategory(_ category: FormattedNumberCategory) {
-        let previous = selectedFormattedNumberCategory
-        selectedFormattedNumberCategory = category
-        FormattedNumberPreferences.saveCategory(category)
-        // 金額に切り替えたら、選択中通貨の慣習に前後スイッチを合わせる。
-        if category == .currency {
-            formattedNumberCurrencySymbolBefore =
-                SIUnitCatalog.currencySymbolBeforeAmount(formattedNumberSelectedBaseSymbol)
-        }
-        if (previous == .calendar) != (category == .calendar) {
+        if formattedNumberState.selectCategory(category) {
             onFormattedNumberCategoryChanged()
         }
-    }
-
-    // 確定/プレビューに使う最終文字列。カレンダーはレンダリング日付、単位系は数値+単位。
-    // 単位との間隔は当面なし(P4で設定化)。
-    func formattedNumberOutputString() -> String {
-        if selectedFormattedNumberCategory == .calendar {
-            return formattedNumberRenderedDate()
-        }
-        let number = formattedNumberDisplayString()
-        let unit = formattedNumberCurrentUnitSymbol
-        return formattedNumberJoin(number: number, unit: unit)
-    }
-
-    // 数値と単位/記号の連結。金額は前後スイッチ(formattedNumberCurrencySymbolBefore)に従う。
-    // 他カテゴリーの単位は後置(1,000N)。単位なしは数値のみ。
-    private func formattedNumberJoin(number: String, unit: String) -> String {
-        guard !unit.isEmpty else {
-            return number
-        }
-        if selectedFormattedNumberCategory == .currency {
-            if formattedNumberCurrencySymbolBefore {
-                // 通貨記号が前のときは負号を記号の前に出す(¥-100 ではなく -¥100)。
-                if number.hasPrefix("-") {
-                    return "-" + unit + String(number.dropFirst())
-                }
-                return unit + number
-            }
-            return number + unit
-        }
-        // 単位3カテゴリー: 空白スイッチが入っていれば数値と単位の間に空白を入れる。
-        return formattedNumberUnitSpacing ? number + " " + unit : number + unit
     }
 
     // MARK: - 右エリア(プレビュー+単位ドラム+区切りチェック+確定)
 
     private var formattedNumberPreviewText: String {
-        if selectedFormattedNumberCategory == .calendar {
-            return formattedNumberRenderedDate()
-        }
-        let number = formattedNumberBuffer.isEmpty ? "0" : formattedNumberDisplayString()
-        let unit = formattedNumberCurrentUnitSymbol
-        return formattedNumberJoin(number: number, unit: unit)
+        formattedNumberState.previewString(settings: formattedNumberFormatSettings)
     }
 
     private var formattedNumberPreview: some View {
@@ -915,11 +705,10 @@ extension KeyboardRootView {
     private var formattedNumberUnitSpacingToggle: some View {
         formattedNumberLockToggle(
             title: "espace",
-            isOn: formattedNumberUnitSpacing,
-            accessibilityLabel: formattedNumberUnitSpacing ? "数値と単位の間に空白を入れる" : "数値と単位を詰める"
+            isOn: formattedNumberState.unitSpacing,
+            accessibilityLabel: formattedNumberState.unitSpacing ? "数値と単位の間に空白を入れる" : "数値と単位を詰める"
         ) {
-            formattedNumberInstant { formattedNumberUnitSpacing.toggle() }
-            FormattedNumberPreferences.saveUnitSpacing(formattedNumberUnitSpacing)
+            formattedNumberInstant { formattedNumberState.toggleUnitSpacing() }
         }
     }
 
@@ -990,8 +779,8 @@ extension KeyboardRootView {
     // 金額の通貨記号を前(avant)/後(après)どちらに付けるかのスイッチ。左右2面のロッカースイッチ風に、
     // avant=左・après=右で、選択側が「点灯して手前に出る」・非選択側が「沈む」視覚効果にする。
     private var formattedNumberCurrencyPlacementToggle: some View {
-        let before = formattedNumberCurrencySymbolBefore
-        return Button(action: { formattedNumberInstant { formattedNumberCurrencySymbolBefore.toggle() } }) {
+        let before = formattedNumberState.currencySymbolBefore
+        return Button(action: { formattedNumberInstant { formattedNumberState.toggleCurrencySymbolBefore() } }) {
             HStack(spacing: 0) {
                 placementTumblerFace(title: "avant", active: before)
                 Rectangle()
@@ -1144,10 +933,10 @@ extension KeyboardRootView {
     private var formattedNumberGroupingToggle: some View {
         formattedNumberLockToggle(
             title: "sep mil",
-            isOn: formattedNumberGroupingEnabled,
+            isOn: formattedNumberState.groupingEnabled,
             accessibilityLabel: "千区切り(sep mil)"
         ) {
-            formattedNumberInstant { formattedNumberGroupingEnabled.toggle() }
+            formattedNumberInstant { formattedNumberState.toggleGrouping() }
         }
     }
 

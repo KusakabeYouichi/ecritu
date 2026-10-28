@@ -103,33 +103,21 @@ extension KeyboardRootView {
 
     // 書式化数値入力モード: 左端モード列 最下段キーの長押しで起動。1件確定でかなへ戻す。
     func enterFormattedNumberMode() {
-        formattedNumberBuffer = ""
-        transitionState = KeyboardModeTransition.enterFormattedNumberMode(from: transitionState)
-        returnToKanaAfterNextCommit = true
-    }
-
-    // テンキーからの数字/記号入力はホストへ流さず、ローカルバッファに溜めてプレビューする。
-    func appendFormattedNumber(_ token: String) {
-        formattedNumberBuffer.append(token)
+        formattedNumberState.resetBuffer()
+        inputState.enterFormattedNumberMode()
     }
 
     func deleteFormattedNumberBackward() {
-        guard !formattedNumberBuffer.isEmpty else {
-            return
-        }
-        formattedNumberBuffer.removeLast()
+        formattedNumberState.deleteBackward()
     }
 
     // 確定: 現在のバッファを整形(3桁区切り/小数点)してホストへ挿入し、かな入力へ戻す。
-    // 単位記号の付与・間隔設定は後続フェーズ。
     func commitFormattedNumber() {
         // カレンダーは日付ホイールから常に確定できる。単位系は数値未入力なら何もせず戻す。
-        if selectedFormattedNumberCategory != .calendar, formattedNumberBuffer.isEmpty {
+        guard let text = formattedNumberState.takeCommitText(settings: formattedNumberFormatSettings) else {
             switchInputMode(.kana)
             return
         }
-        let text = formattedNumberOutputString()
-        formattedNumberBuffer = ""
         onTextInput(text)
         consumeReturnToKanaAfterNextCommitIfNeeded()
     }
