@@ -826,3 +826,165 @@ final class KeyboardViewControllerLifecycleTests: XCTestCase {
         }
     }
 }
+
+// 入力の状態のモデル(iPad 版に向けた切り分け 段 1)。以前はビューの @State で、テストから触れなかった
+@MainActor
+final class KeyboardInputStateTests: XCTestCase {
+    // 2 度押しの窓がテスト中に勝手に閉じないよう、十分長く取る
+    private let longSecondTapThreshold: TimeInterval = 60
+
+    func testSwitchingToKanaClearsReturnToKanaMark() {
+        let state = KeyboardInputState()
+        state.switchInputMode(.emoji)
+        state.returnToKanaAfterNextCommit = true
+
+        state.switchInputMode(.kana)
+
+        XCTAssertEqual(state.inputMode, .kana)
+        XCTAssertFalse(state.returnToKanaAfterNextCommit)
+    }
+
+    func testSwitchingToNumberClearsReturnToKanaMark() {
+        let state = KeyboardInputState()
+        state.returnToKanaAfterNextCommit = true
+
+        state.switchInputMode(.number)
+
+        XCTAssertEqual(state.inputMode, .number)
+        XCTAssertFalse(state.returnToKanaAfterNextCommit)
+    }
+
+    func testSwitchingToEmojiKeepsReturnToKanaMark() {
+        let state = KeyboardInputState()
+        state.returnToKanaAfterNextCommit = true
+
+        state.switchInputMode(.emoji)
+
+        XCTAssertEqual(state.inputMode, .emoji)
+        XCTAssertTrue(state.returnToKanaAfterNextCommit)
+    }
+
+    func testSwitchingToFormattedNumberKeepsReturnToKanaMark() {
+        let state = KeyboardInputState()
+        state.returnToKanaAfterNextCommit = true
+
+        state.switchInputMode(.formattedNumber)
+
+        XCTAssertEqual(state.inputMode, .formattedNumber)
+        XCTAssertTrue(state.returnToKanaAfterNextCommit)
+    }
+
+    func testSwitchingAwayFromLatinClosesSecondTapWindow() throws {
+        let state = KeyboardInputState()
+        state.switchToLatinMode(with: .off)
+        state.startLatinModeSwitchSecondTapWindow(threshold: longSecondTapThreshold)
+        let pendingReset = try XCTUnwrap(state.pendingLatinModeSwitchSecondTapResetWorkItem)
+
+        state.switchInputMode(.kana)
+
+        XCTAssertFalse(state.isAwaitingLatinModeSwitchSecondTap)
+        XCTAssertNil(state.pendingLatinModeSwitchSecondTapResetWorkItem)
+        XCTAssertTrue(pendingReset.isCancelled)
+    }
+
+    func testSwitchingToLatinKeepsSecondTapWindowOpen() {
+        let state = KeyboardInputState()
+        state.switchToLatinMode(with: .off)
+        state.startLatinModeSwitchSecondTapWindow(threshold: longSecondTapThreshold)
+
+        state.switchInputMode(.latin)
+
+        XCTAssertTrue(state.isAwaitingLatinModeSwitchSecondTap)
+        state.cancelLatinModeSwitchSecondTapWindow()
+    }
+
+    func testSecondTapWindowClosesByItselfAfterThreshold() {
+        let state = KeyboardInputState()
+        state.startLatinModeSwitchSecondTapWindow(threshold: 0.05)
+        XCTAssertTrue(state.isAwaitingLatinModeSwitchSecondTap)
+
+        let closed = expectation(description: "2 度押しの窓が閉じる")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { closed.fulfill() }
+        wait(for: [closed], timeout: 2)
+
+        XCTAssertFalse(state.isAwaitingLatinModeSwitchSecondTap)
+        XCTAssertNil(state.pendingLatinModeSwitchSecondTapResetWorkItem)
+    }
+
+    func testSwitchToLatinModeWithLockedSetsLockedShift() {
+        let state = KeyboardInputState()
+        state.lastLatinShiftTapAt = Date(timeIntervalSinceReferenceDate: 10)
+
+        state.switchToLatinMode(with: .locked)
+
+        XCTAssertEqual(state.inputMode, .latin)
+        XCTAssertEqual(state.latinShiftState, .locked)
+        XCTAssertNil(state.lastLatinShiftTapAt)
+    }
+
+    func testConsumeReturnToKanaSwitchesToKanaAndClearsMark() {
+        let state = KeyboardInputState()
+        state.switchInputMode(.emoji)
+        state.emojiInputSubmode = .kaomoji
+        state.returnToKanaAfterNextCommit = true
+
+        state.consumeReturnToKanaAfterNextCommitIfNeeded()
+
+        XCTAssertEqual(state.inputMode, .kana)
+        XCTAssertEqual(state.emojiInputSubmode, .emoji)
+        XCTAssertFalse(state.returnToKanaAfterNextCommit)
+    }
+
+    func testConsumeReturnToKanaStaysWhenMarkIsNotSet() {
+        let state = KeyboardInputState()
+        state.switchInputMode(.emoji)
+        state.emojiInputSubmode = .kaomoji
+
+        state.consumeReturnToKanaAfterNextCommitIfNeeded()
+
+        XCTAssertEqual(state.inputMode, .emoji)
+        XCTAssertEqual(state.emojiInputSubmode, .kaomoji)
+    }
+
+    func testTransitionStateAssignmentIsReadBackFieldByField() {
+        let state = KeyboardInputState()
+        let tappedAt = Date(timeIntervalSinceReferenceDate: 42)
+        let assigned = KeyboardModeTransitionState(
+            inputMode: .latin,
+            diacriticMode: .dakuten,
+            kanaCharacterMode: .katakana,
+            latinShiftState: .on,
+            lastLatinShiftTapAt: tappedAt,
+            emojiInputSubmode: .symbols,
+            spaceToastText: "空白",
+            spaceToastOpacity: 0.5
+        )
+
+        state.transitionState = assigned
+
+        XCTAssertEqual(state.inputMode, .latin)
+        XCTAssertEqual(state.diacriticMode, .dakuten)
+        XCTAssertEqual(state.kanaCharacterMode, .katakana)
+        XCTAssertEqual(state.latinShiftState, .on)
+        XCTAssertEqual(state.lastLatinShiftTapAt, tappedAt)
+        XCTAssertEqual(state.emojiInputSubmode, .symbols)
+        XCTAssertEqual(state.spaceToastText, "空白")
+        XCTAssertEqual(state.spaceToastOpacity, 0.5)
+        XCTAssertEqual(state.transitionState, assigned)
+    }
+
+    func testInitialStateMatchesFormerViewDefaults() {
+        let state = KeyboardInputState()
+
+        XCTAssertEqual(state.inputMode, .kana)
+        XCTAssertEqual(state.diacriticMode, .none)
+        XCTAssertEqual(state.kanaCharacterMode, .hiragana)
+        XCTAssertEqual(state.latinShiftState, .off)
+        XCTAssertNil(state.lastLatinShiftTapAt)
+        XCTAssertEqual(state.emojiInputSubmode, .emoji)
+        XCTAssertNil(state.spaceToastText)
+        XCTAssertEqual(state.spaceToastOpacity, 0)
+        XCTAssertFalse(state.returnToKanaAfterNextCommit)
+        XCTAssertFalse(state.isAwaitingLatinModeSwitchSecondTap)
+    }
+}

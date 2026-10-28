@@ -64,6 +64,7 @@ iPad 版は、キー配列、高さ、フリックや長押しの操作、候補
 | ビューに残す(押している間の見た目・触れ方) | `activeLayerIndex`, `isTouchingLeftModeSwitchColumn`, `lastShownSpaceToastTrigger`, `didTriggerComposingCommitLongPress`, `katakanaCommitFeedbackText`, `pendingKatakanaCommitWorkItem`, `formattedNumberDrumFullNameVisible`, `formattedNumberDrumLiveTag`, `lastInputModeObservation`(`onChange` 用), `didDismissFullAccessNotice`(拡張ローカルの保存) |
 
 段 1 で実物を数え直し、この表と食い違えば表を直してから進める。
+`selectedEmojiCategory`、`selectedSymbolCategory`、`inputModeChangeTrigger` は、段 1 では移さない。これらを書き換えるのはモード切替の割り当てなので、段 6 で一緒に移す(2026-10-28 段 1 実施時)。
 
 ## 段取り(各段 1 コミット以上、見た目と挙動は不変)
 

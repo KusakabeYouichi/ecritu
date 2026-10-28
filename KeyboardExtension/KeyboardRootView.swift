@@ -90,19 +90,49 @@ struct KeyboardRootView: View {
     // onAppear で @State inputMode に反映する
     let initialInputMode: KeyboardInputMode
 
-    @State var inputMode: KeyboardInputMode = .kana
+    // 入力の状態(面・濁点・かな/カナ・英字シフト・空白の案内・かなへ戻る印・2 度押し待ち)。
+    // 持ち主はここだけ(makeRootView からは渡さない)。寿命は以前の @State と同じ
+    @State var inputState = KeyboardInputState()
+    // 以下は inputState への取り次ぎ(呼び元を書き換えずに済ませるため)
+    var inputMode: KeyboardInputMode {
+        get { inputState.inputMode }
+        nonmutating set { inputState.inputMode = newValue }
+    }
+    var diacriticMode: DiacriticMode {
+        get { inputState.diacriticMode }
+        nonmutating set { inputState.diacriticMode = newValue }
+    }
+    var kanaCharacterMode: KanaCharacterMode {
+        get { inputState.kanaCharacterMode }
+        nonmutating set { inputState.kanaCharacterMode = newValue }
+    }
+    var latinShiftState: LatinShiftState {
+        get { inputState.latinShiftState }
+        nonmutating set { inputState.latinShiftState = newValue }
+    }
+    var emojiInputSubmode: EmojiInputSubmode {
+        get { inputState.emojiInputSubmode }
+        nonmutating set { inputState.emojiInputSubmode = newValue }
+    }
+    var spaceToastText: String? {
+        get { inputState.spaceToastText }
+        nonmutating set { inputState.spaceToastText = newValue }
+    }
+    var spaceToastOpacity: Double {
+        get { inputState.spaceToastOpacity }
+        nonmutating set { inputState.spaceToastOpacity = newValue }
+    }
+    var returnToKanaAfterNextCommit: Bool {
+        get { inputState.returnToKanaAfterNextCommit }
+        nonmutating set { inputState.returnToKanaAfterNextCommit = newValue }
+    }
+    var isAwaitingLatinModeSwitchSecondTap: Bool { inputState.isAwaitingLatinModeSwitchSecondTap }
     @State private var lastInputModeObservation: InputModeObservation?
-    @State var diacriticMode: DiacriticMode = .none
-    @State var kanaCharacterMode: KanaCharacterMode = .hiragana
     @State var activeLayerIndex: Int? = nil
     // 触れているのが左の面切替の列か(3167)。列は段より前に描いているので、
     // 段のキーの左フリックの吹き出しが列に隠れていた。列側が触られていないときは列を下げる
     @State var isTouchingLeftModeSwitchColumn = false
-    @State var spaceToastText: String? = nil
-    @State var spaceToastOpacity: Double = 0
     @State var lastShownSpaceToastTrigger = -1
-    @State var latinShiftState: LatinShiftState = .off
-    @State private var lastLatinShiftTapAt: Date? = nil
     // フルアクセス案内を閉じたか。オフのままでも変換は動くので、閉じれば通常どおり使える。
     // フルアクセス未許可の案内を閉じた記録。拡張ローカルの UserDefaults.standard に永続化する
     // (フルアクセス無しでも書ける)。以前は @State で、アプリ切替ごとに案内が全面に再表示され
@@ -120,8 +150,6 @@ struct KeyboardRootView: View {
     // 根拠: 机に置いた衝撃での誤発火が 58ms(開始位置はキーの外、移動量 41pt の下フリック)。
     // 人の意図的なタップ/フリックは概ね 80ms 以上。文字入力のキーには効かせない
     static let kanaModeSwitcherMinimumTouchDurationMs = 70
-    @State var isAwaitingLatinModeSwitchSecondTap = false
-    @State var pendingLatinModeSwitchSecondTapResetWorkItem: DispatchWorkItem?
     @State var selectedEmojiCategory: EmojiCategory = .people
     @State var selectedSymbolCategory: SymbolCategory = .basic
     @State var selectedRadicalCategory: RadicalPositionCategory = .hen
@@ -129,11 +157,9 @@ struct KeyboardRootView: View {
     @State var selectedKaomojiCategoryID = "existing"
     @State var selectedKaomojiReadingPrefix: String? = nil
     @State var selectedKaomojiReading: String? = nil
-    @State var emojiInputSubmode: EmojiInputSubmode = .emoji
     // 調査用ログ(記号面切替 2838): 直近のモード切替の引き金(左下キー タップ/フリック、修飾キー空タップ 等)。
     // 「触っていないのに記号面になった」の再現待ち。原因判明後に外す
     @State var inputModeChangeTrigger: String = "面内キー"
-    @State var returnToKanaAfterNextCommit: Bool = false
     @State var formattedNumberBuffer: String = ""
     @State var selectedFormattedNumberCategory: FormattedNumberCategory = FormattedNumberPreferences.lastCategory()
     @State var formattedNumberGroupingEnabled: Bool = true
@@ -728,41 +754,10 @@ struct KeyboardRootView: View {
         modifierFlickGuideDisplayMode == .off
     }
 
+    // 適用(と漢字ピッカーの計測)は KeyboardInputState.transitionState の setter が行なう
     var transitionState: KeyboardModeTransitionState {
-        get {
-            KeyboardModeTransitionState(
-                inputMode: inputMode,
-                diacriticMode: diacriticMode,
-                kanaCharacterMode: kanaCharacterMode,
-                latinShiftState: latinShiftState,
-                lastLatinShiftTapAt: lastLatinShiftTapAt,
-                emojiInputSubmode: emojiInputSubmode,
-                spaceToastText: spaceToastText,
-                spaceToastOpacity: spaceToastOpacity
-            )
-        }
-        nonmutating set {
-            // MEMFORENSICS(時限計測 2782): 漢字ピッカー(部首→漢字一覧、SwiftUI LazyVGrid+明朝グリフ)の
-            // 表示/退出の footprint 推移。絵文字パネルの 絵文字切替/絵文字退出 と同じ窓(1.2s と 5s)
-            let enteringKanjiRadical = newValue.inputMode == .emoji && newValue.emojiInputSubmode == .kanjiRadical
-            let wasKanjiRadical = inputMode == .emoji && emojiInputSubmode == .kanjiRadical
-            if enteringKanjiRadical, !wasKanjiRadical {
-                MemoryForensics.noteOperation("漢字ピッカー切替")
-                MemoryForensics.noteSpikeWindow("漢字ピッカー切替")
-                MemoryForensics.noteSpikeWindow("漢字ピッカー切替+5s", delaySeconds: 5.0)
-            } else if wasKanjiRadical, !enteringKanjiRadical {
-                MemoryForensics.noteSpikeWindow("漢字ピッカー退出", minDeltaMB: -1_000)
-                MemoryForensics.noteSpikeWindow("漢字ピッカー退出+5s", delaySeconds: 5.0, minDeltaMB: -1_000)
-            }
-            inputMode = newValue.inputMode
-            diacriticMode = newValue.diacriticMode
-            kanaCharacterMode = newValue.kanaCharacterMode
-            latinShiftState = newValue.latinShiftState
-            lastLatinShiftTapAt = newValue.lastLatinShiftTapAt
-            emojiInputSubmode = newValue.emojiInputSubmode
-            spaceToastText = newValue.spaceToastText
-            spaceToastOpacity = newValue.spaceToastOpacity
-        }
+        get { inputState.transitionState }
+        nonmutating set { inputState.transitionState = newValue }
     }
 
     var activeKanaModifierMode: DiacriticMode {
@@ -1505,7 +1500,7 @@ struct KeyboardRootView: View {
         // (initialInputMode)への追従もこの1個で担う(4.4.1)。素の .onChange を
         // もう1個足すと Swift 6.3.3 Release(WMO)がopaque type置換の発散でクラッシュ
         // するため、複合値の監視に置き換えてモディファイア数を増やさない
-        .onChange(of: InputModeObservation(inputMode: inputMode, initialInputMode: initialInputMode, emojiInputSubmode: emojiInputSubmode)) { _, signal in
+        .onChange(of: InputModeObservation(inputMode: inputState.inputMode, initialInputMode: initialInputMode, emojiInputSubmode: inputState.emojiInputSubmode)) { _, signal in
             handleInputModeObservationChange(signal)
         }
         .onChange(of: spaceToastTrigger) { _, _ in

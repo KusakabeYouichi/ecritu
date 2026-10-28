@@ -29,12 +29,7 @@ extension KeyboardRootView {
     }
 
     func consumeReturnToKanaAfterNextCommitIfNeeded() {
-        guard returnToKanaAfterNextCommit else {
-            return
-        }
-
-        returnToKanaAfterNextCommit = false
-        switchInputMode(.kana)
+        inputState.consumeReturnToKanaAfterNextCommitIfNeeded()
     }
 
     func selectModifierMode(_ output: String) {
@@ -178,29 +173,11 @@ extension KeyboardRootView {
     }
 
     func switchInputMode(_ mode: KeyboardInputMode) {
-        if mode != .latin {
-            cancelLatinModeSwitchSecondTapWindow()
-        }
-
-        if mode != .emoji, mode != .formattedNumber {
-            returnToKanaAfterNextCommit = false
-        }
-
-        transitionState = KeyboardModeTransition.switchInputMode(
-            transitionState,
-            to: mode
-        )
+        inputState.switchInputMode(mode)
     }
 
     func switchToLatinMode(with shiftState: LatinShiftState) {
-        var next = KeyboardModeTransition.switchInputMode(
-            transitionState,
-            to: .latin
-        )
-
-        next.latinShiftState = shiftState
-        next.lastLatinShiftTapAt = nil
-        transitionState = next
+        inputState.switchToLatinMode(with: shiftState)
     }
 
     func handleLatinModeSwitchTap() {
@@ -228,23 +205,11 @@ extension KeyboardRootView {
     }
 
     func startLatinModeSwitchSecondTapWindow() {
-        cancelLatinModeSwitchSecondTapWindow()
-        isAwaitingLatinModeSwitchSecondTap = true
-
-        let safeThreshold = max(0.05, latinModeSwitchDoubleTapThreshold)
-        let workItem = DispatchWorkItem {
-            self.pendingLatinModeSwitchSecondTapResetWorkItem = nil
-            self.isAwaitingLatinModeSwitchSecondTap = false
-        }
-
-        pendingLatinModeSwitchSecondTapResetWorkItem = workItem
-        DispatchQueue.main.asyncAfter(deadline: .now() + safeThreshold, execute: workItem)
+        inputState.startLatinModeSwitchSecondTapWindow(threshold: latinModeSwitchDoubleTapThreshold)
     }
 
     func cancelLatinModeSwitchSecondTapWindow() {
-        pendingLatinModeSwitchSecondTapResetWorkItem?.cancel()
-        pendingLatinModeSwitchSecondTapResetWorkItem = nil
-        isAwaitingLatinModeSwitchSecondTap = false
+        inputState.cancelLatinModeSwitchSecondTapWindow()
     }
 
     func handleComposingTextCommitTap() {
