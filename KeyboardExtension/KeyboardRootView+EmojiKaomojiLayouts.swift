@@ -16,88 +16,6 @@ extension KeyboardRootView {
         Array(repeating: GridItem(.flexible(), spacing: keyboardRowSpacing), count: 3)
     }
 
-    var kaomojiCategories: [KaomojiCategory] {
-        // 分類の表示順は KaomojiCatalog.displayCategoryOrder に一元化(設定アプリも同じ並びを写す)
-        let importedCategorySet = Set(KaomojiCatalog.importedCategoryOrder)
-        let orderedImportedCategories = KaomojiCatalog.displayCategoryOrder
-            .filter { importedCategorySet.contains($0) }
-        let remainingImportedCategories = KaomojiCatalog.importedCategoryOrder
-            .filter { !orderedImportedCategories.contains($0) }
-
-        // 先頭3件(基本→ショートカット→検索)は設定アプリの選択肢と同じ順。
-        // 導入時から ⚡→🙂→🔎 で設定側(🙂→⚡→🔎)と食い違っていたのを是正(ユーザ指示 2755)
-        var categories: [KaomojiCategory] = [
-            KaomojiCategory(kind: .existing),
-            KaomojiCategory(kind: .shortcut),
-            KaomojiCategory(kind: .search)
-        ]
-
-        categories.append(contentsOf: orderedImportedCategories.map { name in
-            KaomojiCategory(kind: .imported(name))
-        })
-        categories.append(contentsOf: remainingImportedCategories.map { name in
-            KaomojiCategory(kind: .imported(name))
-        })
-        return categories
-    }
-
-    var selectedKaomojiCategory: KaomojiCategory {
-        kaomojiCategories.first(where: { $0.id == selectedKaomojiCategoryID })
-            ?? KaomojiCategory(kind: .existing)
-    }
-
-    var isKaomojiSearchCategorySelected: Bool {
-        if case .search = selectedKaomojiCategory.kind {
-            return true
-        }
-
-        return false
-    }
-
-    var selectedKaomojiCategoryEntries: [String] {
-        switch selectedKaomojiCategory.kind {
-        case .shortcut:
-            return shortcutVocabularyEntries
-        case .existing:
-            return KaomojiCatalog.existingEntries
-        case .imported(let name):
-            return KaomojiCatalog.entries(forImportedCategory: name)
-        case .search:
-            return []
-        }
-    }
-
-    // 「全」では全部の読み(816 個)を出す。以前は先頭 120 個で切っていて、か行の途中から後ろの読みは「全」から
-    // たどれず、切れている表示も無かった(ユーザ指摘)。一覧は遅延描画なので見えている分しか作らない
-    var kaomojiSearchReadings: [String] {
-        KaomojiCatalog.readings(prefix: selectedKaomojiReadingPrefix)
-    }
-
-    var selectedKaomojiSearchResults: [String] {
-        guard let selectedKaomojiReading,
-            !selectedKaomojiReading.isEmpty else {
-            return []
-        }
-
-        return KaomojiCatalog.entries(forReading: selectedKaomojiReading)
-    }
-
-    func selectKaomojiCategory(_ category: KaomojiCategory) {
-        selectedKaomojiCategoryID = category.id
-
-        if case .search = category.kind {
-            return
-        }
-
-        selectedKaomojiReadingPrefix = nil
-        selectedKaomojiReading = nil
-    }
-
-    func selectKaomojiReadingPrefix(_ prefix: String?) {
-        selectedKaomojiReadingPrefix = prefix
-        selectedKaomojiReading = nil
-    }
-
     func measuredKaomojiWidth(_ kaomoji: String) -> CGFloat {
         let attributes: [NSAttributedString.Key: Any] = [
             .font: UIFont.systemFont(ofSize: kaomojiFontSize, weight: .semibold)
@@ -340,16 +258,16 @@ extension KeyboardRootView {
         GeometryReader { geometry in
             let categoryRows = kaomojiRows(
                 for: geometry.size.width,
-                entries: selectedKaomojiCategoryEntries
+                entries: kaomojiPanelState.entries(shortcutEntries: shortcutVocabularyEntries)
             )
             let searchResultRows = kaomojiRows(
                 for: geometry.size.width,
-                entries: selectedKaomojiSearchResults
+                entries: kaomojiPanelState.searchResults
             )
 
             VStack(spacing: keyboardRowSpacing) {
                 Group {
-                    if isKaomojiSearchCategorySelected {
+                    if kaomojiPanelState.isSearchCategorySelected {
                         ScrollView(.vertical, showsIndicators: false) {
                         // 読みを全部(816 個)並べても見えている分しか作らないよう、外側も遅延の並びにする
                         LazyVStack(alignment: .leading, spacing: keyboardRowSpacing) {
@@ -361,21 +279,21 @@ extension KeyboardRootView {
                                 HStack(spacing: 8) {
                                     kaomojiSearchPrefixButton(
                                         title: "全",
-                                        isSelected: selectedKaomojiReadingPrefix == nil,
-                                        action: { selectKaomojiReadingPrefix(nil) }
+                                        isSelected: kaomojiPanelState.selectedReadingPrefix == nil,
+                                        action: { kaomojiPanelState.selectReadingPrefix(nil) }
                                     )
 
                                     ForEach(KaomojiCatalog.readingIndexHeadings, id: \.self) { heading in
                                         kaomojiSearchPrefixButton(
                                             title: heading,
-                                            isSelected: selectedKaomojiReadingPrefix == heading,
-                                            action: { selectKaomojiReadingPrefix(heading) }
+                                            isSelected: kaomojiPanelState.selectedReadingPrefix == heading,
+                                            action: { kaomojiPanelState.selectReadingPrefix(heading) }
                                         )
                                     }
                                 }
                             }
 
-                            if let selectedKaomojiReading,
+                            if let selectedKaomojiReading = kaomojiPanelState.selectedReading,
                                 !selectedKaomojiReading.isEmpty {
                                 HStack(spacing: 8) {
                                     Text("よみ: \(selectedKaomojiReading)")
@@ -384,7 +302,7 @@ extension KeyboardRootView {
 
                                     Spacer(minLength: 0)
 
-                                    Button(action: { self.selectedKaomojiReading = nil }) {
+                                    Button(action: { kaomojiPanelState.clearReading() }) {
                                         Text("読みを選び直す")
                                             .font(.system(size: 11, weight: .semibold, design: .rounded))
                                             .lineLimit(1)
@@ -425,16 +343,16 @@ extension KeyboardRootView {
                                 }
                             } else {
                                 LazyVGrid(columns: kaomojiSearchReadingColumns, spacing: keyboardRowSpacing) {
-                                    ForEach(kaomojiSearchReadings, id: \.self) { reading in
+                                    ForEach(kaomojiPanelState.searchReadings, id: \.self) { reading in
                                         kaomojiSearchReadingButton(
                                             reading: reading,
-                                            isSelected: selectedKaomojiReading == reading,
-                                            action: { selectedKaomojiReading = reading }
+                                            isSelected: kaomojiPanelState.selectedReading == reading,
+                                            action: { kaomojiPanelState.selectReading(reading) }
                                         )
                                     }
                                 }
 
-                                if kaomojiSearchReadings.isEmpty {
+                                if kaomojiPanelState.searchReadings.isEmpty {
                                     Text("該当する読みがありません")
                                         .font(.system(size: 12, weight: .regular, design: .rounded))
                                         .foregroundStyle(KeyboardThemePalette.keyLabelSecondary)
@@ -456,7 +374,7 @@ extension KeyboardRootView {
                             },
                             rowSpacing: keyboardRowSpacing,
                             itemHeight: compactKaomojiKeyHeight,
-                            categoryKey: "\(selectedKaomojiCategoryID)",
+                            categoryKey: "\(kaomojiPanelState.selectedCategoryID)",
                             onTextInput: commitEmojiKaomojiSymbolText
                         )
                         .padding(.vertical, 2)
@@ -481,12 +399,12 @@ extension KeyboardRootView {
 
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: keyboardRowSpacing) {
-                            ForEach(kaomojiCategories) { category in
+                            ForEach(KaomojiPanelState.categories) { category in
                                 KaomojiCategoryKeyButton(
                                     icon: category.icon,
                                     accessibilityLabel: category.title,
-                                    isSelected: selectedKaomojiCategoryID == category.id,
-                                    action: { selectKaomojiCategory(category) }
+                                    isSelected: kaomojiPanelState.selectedCategoryID == category.id,
+                                    action: { kaomojiPanelState.selectCategory(category) }
                                 )
                                 .frame(width: kaomojiCategoryButtonWidth)
                                 .frame(height: mainFlickKeyHeight)
@@ -513,7 +431,7 @@ extension KeyboardRootView {
         case .emoji:
             return selectedEmojiCategory.frenchName
         case .kaomoji:
-            return selectedKaomojiCategory.title
+            return kaomojiPanelState.selectedCategory.title
         case .symbols:
             return selectedSymbolCategory.frenchName
         case .kanjiRadical:

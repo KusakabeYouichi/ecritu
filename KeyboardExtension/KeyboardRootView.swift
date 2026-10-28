@@ -154,9 +154,7 @@ struct KeyboardRootView: View {
     @State var selectedSymbolCategory: SymbolCategory = .basic
     @State var selectedRadicalCategory: RadicalPositionCategory = .hen
     @State var selectedRadicalForm: RadicalForm?
-    @State var selectedKaomojiCategoryID = "existing"
-    @State var selectedKaomojiReadingPrefix: String? = nil
-    @State var selectedKaomojiReading: String? = nil
+    @State var kaomojiPanelState = KaomojiPanelState()
     // 調査用ログ(記号面切替 2838): 直近のモード切替の引き金(左下キー タップ/フリック、修飾キー空タップ 等)。
     // 「触っていないのに記号面になった」の再現待ち。原因判明後に外す
     @State var inputModeChangeTrigger: String = "面内キー"

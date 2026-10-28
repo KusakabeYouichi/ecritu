@@ -754,7 +754,7 @@ struct CategoryChoiceDescriptor: Identifiable, Hashable {
 }
 
 enum KaomojiCategoryChoice {
-    // Mirrored from KeyboardExtension/KeyboardRootViewSupportTypes.swift (KaomojiCategory)
+    // Mirrored from KeyboardExtension/KaomojiPanelState.swift (KaomojiCategory)
     // and KeyboardExtension/KaomojiCatalog.swift (displayCategoryOrder).
     // 先頭3件(基本→ショートカット→検索)の順はこちらが正で、キーボード側をこれに合わせている。
     // 初期設定は ショートカット(戦略的初期設定でも保守的でも同じ。ユーザ指定 3241)。キーボード側の fallback と揃える
@@ -798,7 +798,7 @@ enum KaomojiCategoryChoice {
         return entries
     }()
 
-    // キーボードのヘッダー表示名(KeyboardRootViewSupportTypes.swift KaomojiCategory.title のミラー)。
+    // キーボードのヘッダー表示名(KaomojiPanelState.swift KaomojiCategory.title のミラー)。
     // 設定YAMLエクスポートで ID の代わりに使う
     static func displayTitle(forID id: String) -> String {
         switch id {

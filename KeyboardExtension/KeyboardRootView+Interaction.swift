@@ -78,7 +78,7 @@ extension KeyboardRootView {
             }
             enterSymbolsMode()
         default:
-            selectedKaomojiCategoryID = kanaPostModifierEmptyTapKaomojiCategoryID
+            kaomojiPanelState.selectCategory(id: kanaPostModifierEmptyTapKaomojiCategoryID)
             enterKaomojiMode()
         }
 
@@ -86,16 +86,10 @@ extension KeyboardRootView {
     }
 
     func commitEmojiKaomojiSymbolText(_ text: String) {
-        // 履歴に足すかどうかの規則はモデル側(3243)。顔文字の分類の選択はまだビューにあるので判定だけ渡す
-        let isKaomojiShortcutCategory: Bool
-        if case .shortcut = selectedKaomojiCategory.kind {
-            isKaomojiShortcutCategory = true
-        } else {
-            isKaomojiShortcutCategory = false
-        }
+        // 履歴に足すかどうかの規則はモデル側(3243)。顔文字の分類がショートカットかどうかだけ渡す
         inputState.commitEmojiKaomojiSymbolText(
             text,
-            isKaomojiShortcutCategory: isKaomojiShortcutCategory,
+            isKaomojiShortcutCategory: kaomojiPanelState.isShortcutCategorySelected,
             onShortcutCandidateCommitted: onShortcutCandidateCommitted,
             onTextInput: onTextInput
         )
