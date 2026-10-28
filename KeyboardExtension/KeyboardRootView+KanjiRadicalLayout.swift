@@ -20,9 +20,8 @@ extension KeyboardRootView {
             strokeChoices: radicalStrokeChoices,
             onLookupEntries: onLookupRadicalEntries,
             onCommitCharacter: { character in
-                // タップ=確定してかなモードへ戻る
-                onTextInput(character)
-                switchInputMode(.kana)
+                // タップ=確定してかなモードへ戻る(履歴には足さない)
+                inputState.commitRadicalCharacter(character, onTextInput: onTextInput)
             },
             onSwitchToKana: { switchInputMode(.kana) },
             onSelectModePalette: { _ = selectModePalette($0) },

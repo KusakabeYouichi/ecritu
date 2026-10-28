@@ -5,27 +5,7 @@ import Darwin
 
 extension KeyboardRootView {
     func commitText(_ text: String) {
-        guard !text.isEmpty else {
-            return
-        }
-
-        if text == FlickKanaLayout.latinShiftKeyToken {
-            handleLatinShiftTap()
-            return
-        }
-
-        let usesShift = shouldApplyLatinShift(to: text)
-        let shiftedOutput = usesShift ? text.uppercased() : text
-        let output = convertedKanaOutputIfNeeded(shiftedOutput)
-
-        onTextInput(output)
-
-        transitionState = KeyboardModeTransition.finishCommit(
-            text,
-            state: transitionState
-        )
-
-        consumeReturnToKanaAfterNextCommitIfNeeded()
+        inputState.commitText(text, shiftDoubleTapThreshold: shiftDoubleTapThreshold, onTextInput: onTextInput)
     }
 
     func consumeReturnToKanaAfterNextCommitIfNeeded() {
@@ -106,22 +86,19 @@ extension KeyboardRootView {
     }
 
     func commitEmojiKaomojiSymbolText(_ text: String) {
-        // 絵文字/顔文字の確定はショートカット語彙の先頭へ(3243)。記号面・部首ピッカー・ショートカット・カテゴリーからは足さない
-        if inputMode == .emoji {
-            switch emojiInputSubmode {
-            case .emoji:
-                onShortcutCandidateCommitted(text)
-            case .kaomoji:
-                if case .shortcut = selectedKaomojiCategory.kind {
-                    break
-                }
-                onShortcutCandidateCommitted(text)
-            default:
-                break
-            }
+        // 履歴に足すかどうかの規則はモデル側(3243)。顔文字の分類の選択はまだビューにあるので判定だけ渡す
+        let isKaomojiShortcutCategory: Bool
+        if case .shortcut = selectedKaomojiCategory.kind {
+            isKaomojiShortcutCategory = true
+        } else {
+            isKaomojiShortcutCategory = false
         }
-        onTextInput(text)
-        consumeReturnToKanaAfterNextCommitIfNeeded()
+        inputState.commitEmojiKaomojiSymbolText(
+            text,
+            isKaomojiShortcutCategory: isKaomojiShortcutCategory,
+            onShortcutCandidateCommitted: onShortcutCandidateCommitted,
+            onTextInput: onTextInput
+        )
     }
 
     // 書式化数値入力モード: 左端モード列 最下段キーの長押しで起動。1件確定でかなへ戻す。
@@ -533,25 +510,6 @@ extension KeyboardRootView {
         return false
     }
 
-    func shouldApplyLatinShift(to text: String) -> Bool {
-        guard inputMode == .latin,
-                latinShiftState != .off,
-                isLatinAlphabetKey(text) else {
-            return false
-        }
-
-        return true
-    }
-
-    func convertedKanaOutputIfNeeded(_ text: String) -> String {
-        guard inputMode == .kana,
-                kanaCharacterMode == .katakana else {
-            return text
-        }
-
-        return text.applyingTransform(.hiraganaToKatakana, reverse: false) ?? text
-    }
-
     func displayedKanaForKanaCharacterModeIfNeeded(_ kana: FlickKanaSet) -> FlickKanaSet {
         guard inputMode == .kana,
                 kanaCharacterMode == .katakana else {
@@ -701,11 +659,7 @@ extension KeyboardRootView {
     }
 
     func handleLatinShiftTap() {
-        transitionState = KeyboardModeTransition.handleLatinShiftTap(
-            transitionState,
-            now: Date(),
-            doubleTapThreshold: shiftDoubleTapThreshold
-        )
+        inputState.handleLatinShiftTap(now: Date(), doubleTapThreshold: shiftDoubleTapThreshold)
     }
 
     func handleLatinShiftLongPress() {

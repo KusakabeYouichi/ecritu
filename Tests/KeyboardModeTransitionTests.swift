@@ -988,3 +988,248 @@ final class KeyboardInputStateTests: XCTestCase {
         XCTAssertFalse(state.isAwaitingLatinModeSwitchSecondTap)
     }
 }
+
+// 確定の規則(iPad 版に向けた切り分け 段 2)。以前はビューの commitText / commitEmojiKaomojiSymbolText と
+// 部首ピッカーの確定の中にあった。期待値は移す前のコードから作った期待表(経過ファイル)による
+@MainActor
+final class KeyboardCommitRulesTests: XCTestCase {
+    private let shiftDoubleTapThreshold: TimeInterval = 0.32
+
+    // ホストへ出た文字と履歴へ足した文字を、起きた順に残す
+    private enum Event: Equatable {
+        case text(String)
+        case history(String)
+    }
+
+    private final class Recorder {
+        var events: [Event] = []
+    }
+
+    private func commit(_ text: String, on state: KeyboardInputState, recorder: Recorder) {
+        state.commitText(text, shiftDoubleTapThreshold: shiftDoubleTapThreshold) { recorder.events.append(.text($0)) }
+    }
+
+    private func commitFromPanel(
+        _ text: String,
+        on state: KeyboardInputState,
+        isKaomojiShortcutCategory: Bool = false,
+        recorder: Recorder
+    ) {
+        state.commitEmojiKaomojiSymbolText(
+            text,
+            isKaomojiShortcutCategory: isKaomojiShortcutCategory,
+            onShortcutCandidateCommitted: { recorder.events.append(.history($0)) },
+            onTextInput: { recorder.events.append(.text($0)) }
+        )
+    }
+
+    private func latinState(shift: LatinShiftState) -> KeyboardInputState {
+        let state = KeyboardInputState()
+        state.switchToLatinMode(with: shift)
+        return state
+    }
+
+    private func emojiState(submode: EmojiInputSubmode) -> KeyboardInputState {
+        let state = KeyboardInputState()
+        state.switchInputMode(.emoji)
+        state.emojiInputSubmode = submode
+        return state
+    }
+
+    // MARK: 純関数 committedOutput
+
+    func testCommittedOutputUppercasesLetterWhileShiftIsOn() {
+        let state = latinState(shift: .on)
+        XCTAssertEqual(KeyboardModeTransition.committedOutput("a", state: state.transitionState), "A")
+    }
+
+    func testCommittedOutputKeepsLetterWhileShiftIsOff() {
+        let state = latinState(shift: .off)
+        XCTAssertEqual(KeyboardModeTransition.committedOutput("a", state: state.transitionState), "a")
+    }
+
+    func testCommittedOutputKeepsNonLetterAndMultiCharacterTextWhileShiftIsOn() {
+        let state = latinState(shift: .on)
+        XCTAssertEqual(KeyboardModeTransition.committedOutput("1", state: state.transitionState), "1")
+        XCTAssertEqual(KeyboardModeTransition.committedOutput("ab", state: state.transitionState), "ab")
+    }
+
+    func testCommittedOutputUppercasesSharpSToDoubleS() {
+        // 表示用のキーの字(ẞ)とは別に、確定は String.uppercased() のまま
+        let state = latinState(shift: .on)
+        XCTAssertEqual(KeyboardModeTransition.committedOutput("ß", state: state.transitionState), "SS")
+    }
+
+    func testCommittedOutputConvertsKanaToKatakanaInKatakanaMode() {
+        let state = KeyboardInputState()
+        state.kanaCharacterMode = .katakana
+        XCTAssertEqual(KeyboardModeTransition.committedOutput("か", state: state.transitionState), "カ")
+    }
+
+    func testCommittedOutputKeepsHiraganaInHiraganaMode() {
+        let state = KeyboardInputState()
+        XCTAssertEqual(KeyboardModeTransition.committedOutput("か", state: state.transitionState), "か")
+    }
+
+    // MARK: commitText
+
+    func testCommitWithShiftOnEmitsUppercaseAndTurnsShiftOff() {
+        let state = latinState(shift: .on)
+        let recorder = Recorder()
+
+        commit("a", on: state, recorder: recorder)
+
+        XCTAssertEqual(recorder.events, [.text("A")])
+        XCTAssertEqual(state.latinShiftState, .off)
+    }
+
+    func testCommitWithShiftLockedKeepsShiftLocked() {
+        let state = latinState(shift: .locked)
+        let recorder = Recorder()
+
+        commit("a", on: state, recorder: recorder)
+
+        XCTAssertEqual(recorder.events, [.text("A")])
+        XCTAssertEqual(state.latinShiftState, .locked)
+    }
+
+    func testCommitOfDigitWithShiftOnKeepsShiftOn() {
+        let state = latinState(shift: .on)
+        let recorder = Recorder()
+
+        commit("1", on: state, recorder: recorder)
+
+        XCTAssertEqual(recorder.events, [.text("1")])
+        XCTAssertEqual(state.latinShiftState, .on)
+    }
+
+    func testCommitInKatakanaModeEmitsKatakanaAndClearsDiacritic() {
+        let state = KeyboardInputState()
+        state.kanaCharacterMode = .katakana
+        state.diacriticMode = .dakuten
+        let recorder = Recorder()
+
+        commit("か", on: state, recorder: recorder)
+
+        XCTAssertEqual(recorder.events, [.text("カ")])
+        XCTAssertEqual(state.kanaCharacterMode, .katakana)
+        XCTAssertEqual(state.diacriticMode, .none)
+    }
+
+    func testCommitOfEmptyTextEmitsNothing() {
+        let state = latinState(shift: .on)
+        let recorder = Recorder()
+
+        commit("", on: state, recorder: recorder)
+
+        XCTAssertEqual(recorder.events, [])
+        XCTAssertEqual(state.latinShiftState, .on)
+    }
+
+    func testShiftKeyTokenTogglesShiftWithoutEmittingText() {
+        let state = latinState(shift: .off)
+        let recorder = Recorder()
+
+        commit(FlickKanaLayout.latinShiftKeyToken, on: state, recorder: recorder)
+
+        XCTAssertEqual(recorder.events, [])
+        XCTAssertEqual(state.latinShiftState, .on)
+        XCTAssertNotNil(state.lastLatinShiftTapAt)
+    }
+
+    func testShiftKeyTokenInNumberModeTogglesShift() {
+        let state = KeyboardInputState()
+        state.switchInputMode(.number)
+        let recorder = Recorder()
+
+        commit(FlickKanaLayout.latinShiftKeyToken, on: state, recorder: recorder)
+
+        XCTAssertEqual(recorder.events, [])
+        XCTAssertEqual(state.latinShiftState, .on)
+    }
+
+    func testCommitWithReturnToKanaMarkSwitchesToKana() {
+        let state = emojiState(submode: .symbols)
+        state.returnToKanaAfterNextCommit = true
+        let recorder = Recorder()
+
+        commit("★", on: state, recorder: recorder)
+
+        XCTAssertEqual(recorder.events, [.text("★")])
+        XCTAssertEqual(state.inputMode, .kana)
+        XCTAssertFalse(state.returnToKanaAfterNextCommit)
+    }
+
+    // MARK: 絵文字・顔文字・記号の面からの確定
+
+    func testEmojiCommitAddsToHistoryBeforeEmittingText() {
+        let state = emojiState(submode: .emoji)
+        let recorder = Recorder()
+
+        commitFromPanel("😀", on: state, recorder: recorder)
+
+        XCTAssertEqual(recorder.events, [.history("😀"), .text("😀")])
+        XCTAssertEqual(state.inputMode, .emoji)
+    }
+
+    func testKaomojiCommitOutsideShortcutCategoryAddsToHistory() {
+        let state = emojiState(submode: .kaomoji)
+        let recorder = Recorder()
+
+        commitFromPanel("(^_^)", on: state, isKaomojiShortcutCategory: false, recorder: recorder)
+
+        XCTAssertEqual(recorder.events, [.history("(^_^)"), .text("(^_^)")])
+    }
+
+    func testKaomojiCommitFromShortcutCategoryDoesNotAddToHistory() {
+        let state = emojiState(submode: .kaomoji)
+        let recorder = Recorder()
+
+        commitFromPanel("(^_^)", on: state, isKaomojiShortcutCategory: true, recorder: recorder)
+
+        XCTAssertEqual(recorder.events, [.text("(^_^)")])
+    }
+
+    func testSymbolCommitDoesNotAddToHistory() {
+        let state = emojiState(submode: .symbols)
+        let recorder = Recorder()
+
+        commitFromPanel("→", on: state, recorder: recorder)
+
+        XCTAssertEqual(recorder.events, [.text("→")])
+    }
+
+    func testEmojiCommitWithReturnToKanaMarkSwitchesToKana() {
+        let state = emojiState(submode: .emoji)
+        state.returnToKanaAfterNextCommit = true
+        let recorder = Recorder()
+
+        commitFromPanel("😀", on: state, recorder: recorder)
+
+        XCTAssertEqual(recorder.events, [.history("😀"), .text("😀")])
+        XCTAssertEqual(state.inputMode, .kana)
+        XCTAssertFalse(state.returnToKanaAfterNextCommit)
+    }
+
+    // MARK: 部首ピッカーの確定
+
+    func testRadicalCommitEmitsCharacterAndReturnsToKana() {
+        let state = emojiState(submode: .kanjiRadical)
+        let recorder = Recorder()
+
+        state.commitRadicalCharacter("漢") { recorder.events.append(.text($0)) }
+
+        XCTAssertEqual(recorder.events, [.text("漢")])
+        XCTAssertEqual(state.inputMode, .kana)
+    }
+
+    func testRadicalCommitClearsReturnToKanaMark() {
+        let state = emojiState(submode: .kanjiRadical)
+        state.returnToKanaAfterNextCommit = true
+
+        state.commitRadicalCharacter("漢") { _ in }
+
+        XCTAssertEqual(state.inputMode, .kana)
+        XCTAssertFalse(state.returnToKanaAfterNextCommit)
+    }
+}

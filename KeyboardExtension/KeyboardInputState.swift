@@ -97,6 +97,71 @@ final class KeyboardInputState {
         switchInputMode(.kana)
     }
 
+    // 文字キーの確定。文字を出してから状態を進める(順序は以前のビューの commitText と同じ)。
+    // シフト記号はシフトの切り替えだけで、文字は出さない
+    func commitText(
+        _ text: String,
+        shiftDoubleTapThreshold: TimeInterval,
+        onTextInput: (String) -> Void
+    ) {
+        guard !text.isEmpty else {
+            return
+        }
+
+        if text == FlickKanaLayout.latinShiftKeyToken {
+            handleLatinShiftTap(now: Date(), doubleTapThreshold: shiftDoubleTapThreshold)
+            return
+        }
+
+        onTextInput(KeyboardModeTransition.committedOutput(text, state: transitionState))
+
+        transitionState = KeyboardModeTransition.finishCommit(
+            text,
+            state: transitionState
+        )
+
+        consumeReturnToKanaAfterNextCommitIfNeeded()
+    }
+
+    func handleLatinShiftTap(now: Date, doubleTapThreshold: TimeInterval) {
+        transitionState = KeyboardModeTransition.handleLatinShiftTap(
+            transitionState,
+            now: now,
+            doubleTapThreshold: doubleTapThreshold
+        )
+    }
+
+    // 絵文字・顔文字・記号の面からの確定。絵文字と顔文字はショートカットの履歴の先頭へ足す(3243)。
+    // 顔文字のショートカット分類から選んだとき、記号面、それ以外の面からは足さない。
+    // 顔文字の分類の選択はまだビューの状態なので、ショートカット分類かどうかを引数で受け取る
+    func commitEmojiKaomojiSymbolText(
+        _ text: String,
+        isKaomojiShortcutCategory: Bool,
+        onShortcutCandidateCommitted: (String) -> Void,
+        onTextInput: (String) -> Void
+    ) {
+        if inputMode == .emoji {
+            switch emojiInputSubmode {
+            case .emoji:
+                onShortcutCandidateCommitted(text)
+            case .kaomoji:
+                if !isKaomojiShortcutCategory {
+                    onShortcutCandidateCommitted(text)
+                }
+            default:
+                break
+            }
+        }
+        onTextInput(text)
+        consumeReturnToKanaAfterNextCommitIfNeeded()
+    }
+
+    // 部首ピッカーで字をタップしたときの確定。履歴には足さず、かなへ戻る
+    func commitRadicalCharacter(_ character: String, onTextInput: (String) -> Void) {
+        onTextInput(character)
+        switchInputMode(.kana)
+    }
+
     // 2 度押しの待ち時間(秒)は設定(latinModeSwitchDoubleTapThreshold)なので引数で受け取る
     func startLatinModeSwitchSecondTapWindow(threshold: TimeInterval) {
         cancelLatinModeSwitchSecondTapWindow()

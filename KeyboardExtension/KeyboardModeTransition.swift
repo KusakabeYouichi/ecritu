@@ -123,6 +123,22 @@ enum KeyboardModeTransition {
         return next
     }
 
+    // 確定する文字の変換: 英字シフト中の英字 1 文字は大文字に、カタカナモードのかなはカタカナにする。
+    // シフト記号(latinShiftKeyToken)は文字を出さないので、呼び手が先に振り分ける
+    static func committedOutput(
+        _ text: String,
+        state: KeyboardModeTransitionState
+    ) -> String {
+        let shiftedOutput = shouldApplyLatinShift(to: text, state: state) ? text.uppercased() : text
+
+        guard state.inputMode == .kana,
+                state.kanaCharacterMode == .katakana else {
+            return shiftedOutput
+        }
+
+        return shiftedOutput.applyingTransform(.hiraganaToKatakana, reverse: false) ?? shiftedOutput
+    }
+
     static func finishCommit(
         _ committedText: String,
         state: KeyboardModeTransitionState
