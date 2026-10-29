@@ -1484,13 +1484,17 @@ struct KeyboardRootView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: keyboardContentAlignment)
         .onAppear {
-            // 調査用ログ(メール欄 3585): 表示時点の初期の面。原因判明後に外す
-            #if DEBUG
-            KeyboardStuckTouchDiagnostics.onTouchForensics?("調査(メール欄) onAppear initialInputMode=\(initialInputMode) inputMode=\(inputMode)")
-            #endif
             if inputMode != initialInputMode {
                 inputMode = initialInputMode
             }
+            // 表示時点の観測値を基準として記録する。.onChange は初期値では発火しないので、これが無いと
+            // 最初の変化のときに前の値が無く、欄の種類への追従が見送られる。メールの欄は表示の約 130ms 後に
+            // 欄の種類(.emailAddress)が届くので、ここで見送るとかなの面のまま開いていた(3586 の実機ログ)
+            lastInputModeObservation = InputModeObservation(
+                inputMode: inputMode,
+                initialInputMode: initialInputMode,
+                emojiInputSubmode: emojiInputSubmode
+            )
             onInputModeChanged(inputMode, "初期表示")
             showInitialSpaceToastIfNeeded()
         }
@@ -1647,6 +1651,22 @@ struct InputModeObservation: Equatable {
     let initialInputMode: KeyboardInputMode
     // 絵文字面のサブモード(絵文字/顔文字/記号/漢字ピッカー)。でばぐ表示の更新要求のためだけに監視する(3304)
     let emojiInputSubmode: EmojiInputSubmode
+
+    // 欄の種類(keyboardType)から決まる初期の面が変わったときに、面をそれへ合わせるかどうか。
+    // 前の観測値が無いとき(基準の記録前)と、すでにその面のときは合わせない。
+    // 同じ欄の中の手動切替では initialInputMode が変わらないので、手で選んだ面を上書きしない
+    static func traitFollowTarget(
+        previous: InputModeObservation?,
+        signal: InputModeObservation,
+        currentInputMode: KeyboardInputMode
+    ) -> KeyboardInputMode? {
+        guard let previous,
+            previous.initialInputMode != signal.initialInputMode,
+            currentInputMode != signal.initialInputMode else {
+            return nil
+        }
+        return signal.initialInputMode
+    }
 }
 
 extension KeyboardRootView {
@@ -1656,25 +1676,17 @@ extension KeyboardRootView {
     func handleInputModeObservationChange(_ signal: InputModeObservation) {
         let previous = lastInputModeObservation
         lastInputModeObservation = signal
-        // 調査用ログ(メール欄 3585): 欄の種類から決まる面の変化と、追従したかどうか。原因判明後に外す
-        #if DEBUG
-        if previous?.initialInputMode != signal.initialInputMode {
-            let previousText = previous.map { "\($0.initialInputMode)" } ?? "nil(初回)"
-            let followed = previous != nil && inputMode != signal.initialInputMode
-            KeyboardStuckTouchDiagnostics.onTouchForensics?(
-                "調査(メール欄) initialInputMode \(previousText) -> \(signal.initialInputMode) inputMode=\(inputMode) 追従=\(followed)"
-            )
-        }
-        #endif
 
-        if let previous, previous.initialInputMode != signal.initialInputMode {
-            if inputMode != signal.initialInputMode {
-                #if DEBUG
-                inputModeChangeTrigger = "フィールド trait 追従"  // 調査用ログ(記号面切替 2838)
-                #endif
-                inputMode = signal.initialInputMode
-                return
-            }
+        if let target = InputModeObservation.traitFollowTarget(
+            previous: previous,
+            signal: signal,
+            currentInputMode: inputMode
+        ) {
+            #if DEBUG
+            inputModeChangeTrigger = "フィールド trait 追従"  // 調査用ログ(記号面切替 2838)
+            #endif
+            inputMode = target
+            return
         }
         if previous == nil || previous?.inputMode != signal.inputMode {
             // 調査用ログ(記号面切替 2838): 引き金とサブモードを添える。原因判明後に外す

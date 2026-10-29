@@ -378,26 +378,7 @@ extension KeyboardViewController {
     // 4.4.1: 数字・小数用のキーボードタイプへの対応)。数値系フィールドでは数字モードで
     // 開く。それ以外は かな。同一フィールド内のユーザ手動切替は上書きしない(trait が
     // 変わったフィールド移動時のみ、rootView の .onChange(of: initialInputMode) で追従)。
-    // 調査用ログ(メール欄 3585): メールの欄でかなの面で開く件。keyboardType がいつ読めるかを時点ごとに記録する。
-    // always=false の時点は、前に記録した値から変わったときだけ書く。原因判明後に外す
-    #if DEBUG
-    func logKeyboardTypeForEmailFieldInvestigation(_ point: String, always: Bool) {
-        let raw = textDocumentProxy.keyboardType.map { $0.rawValue } ?? -1
-        guard always || raw != investigationLastLoggedKeyboardType else {
-            return
-        }
-        investigationLastLoggedKeyboardType = raw
-        let contentType = textDocumentProxy.textContentType.map { $0.rawValue } ?? "nil"
-        appendKeyboardDiagnosticsLog(
-            "調査(メール欄) \(point) keyboardType=\(raw) contentType=\(contentType) hasText=\(textDocumentProxy.hasText)"
-        )
-    }
-    #endif
-
     func preferredInitialInputMode() -> KeyboardInputMode {
-        #if DEBUG
-        logKeyboardTypeForEmailFieldInvestigation("preferredInitialInputMode", always: false)  // 調査用ログ(メール欄 3585)
-        #endif
         switch textDocumentProxy.keyboardType {
         case .numberPad, .decimalPad, .asciiCapableNumberPad, .phonePad, .numbersAndPunctuation:
             return .number

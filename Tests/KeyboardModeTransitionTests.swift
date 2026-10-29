@@ -1573,3 +1573,51 @@ final class KanaModeSwitcherGuideTests: XCTestCase {
         )
     }
 }
+
+// 欄の種類(keyboardType)への面の追従。メールの欄は表示の約 130ms 後に .emailAddress が届くので、
+// 表示時点を基準にした最初の変化でも英字へ合わせる(3586 の実機ログ)
+final class InputModeTraitFollowTests: XCTestCase {
+    private func observation(_ inputMode: KeyboardInputMode, initial: KeyboardInputMode) -> InputModeObservation {
+        InputModeObservation(inputMode: inputMode, initialInputMode: initial, emojiInputSubmode: .emoji)
+    }
+
+    func testNoPreviousObservationDoesNotFollow() {
+        XCTAssertNil(InputModeObservation.traitFollowTarget(
+            previous: nil,
+            signal: observation(.kana, initial: .latin),
+            currentInputMode: .kana
+        ))
+    }
+
+    func testEmailFieldArrivingAfterAppearSwitchesKanaToLatin() {
+        XCTAssertEqual(InputModeObservation.traitFollowTarget(
+            previous: observation(.kana, initial: .kana),
+            signal: observation(.kana, initial: .latin),
+            currentInputMode: .kana
+        ), .latin)
+    }
+
+    func testAlreadyOnTargetModeDoesNotFollow() {
+        XCTAssertNil(InputModeObservation.traitFollowTarget(
+            previous: observation(.latin, initial: .kana),
+            signal: observation(.latin, initial: .latin),
+            currentInputMode: .latin
+        ))
+    }
+
+    func testManualSwitchInSameFieldIsNotOverridden() {
+        XCTAssertNil(InputModeObservation.traitFollowTarget(
+            previous: observation(.latin, initial: .latin),
+            signal: observation(.kana, initial: .latin),
+            currentInputMode: .kana
+        ))
+    }
+
+    func testMovingToNumberFieldSwitchesLatinToNumber() {
+        XCTAssertEqual(InputModeObservation.traitFollowTarget(
+            previous: observation(.latin, initial: .latin),
+            signal: observation(.latin, initial: .number),
+            currentInputMode: .latin
+        ), .number)
+    }
+}
