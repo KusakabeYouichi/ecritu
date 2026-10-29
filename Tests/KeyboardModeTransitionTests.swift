@@ -1233,3 +1233,197 @@ final class KeyboardCommitRulesTests: XCTestCase {
         XCTAssertFalse(state.returnToKanaAfterNextCommit)
     }
 }
+
+// 面の切り替えの割り当て(iPad 版に向けた切り分け 段 6)。以前はビューの selectModePalette /
+// selectKanaModeSwitcher / selectCompactKeyboardSwitchKey / performPostModifierEmptyTapAction の中にあった。
+// 期待値は設計の期待表(c01-phase6-design.md)による
+@MainActor
+final class KeyboardPanelRoutingTests: XCTestCase {
+    // MARK: 面選択のパレット
+
+    func testPaletteLabelsOpenTheirPanels() {
+        XCTAssertEqual(KeyboardPanelRouting.panelTarget(forPaletteLabel: "記号"), .symbols)
+        XCTAssertEqual(KeyboardPanelRouting.panelTarget(forPaletteLabel: "絵文字"), .emoji)
+        XCTAssertEqual(KeyboardPanelRouting.panelTarget(forPaletteLabel: "顔文字"), .kaomoji)
+        XCTAssertEqual(KeyboardPanelRouting.panelTarget(forPaletteLabel: "単漢字"), .kanjiRadical)
+        XCTAssertEqual(KeyboardPanelRouting.panelTarget(forPaletteLabel: "書式化"), .formattedNumber)
+    }
+
+    func testUnknownPaletteLabelOpensNothing() {
+        XCTAssertNil(KeyboardPanelRouting.panelTarget(forPaletteLabel: "x"))
+        // 切替キーがパレットを使わずに確定したときに渡る空文字も面ではない
+        XCTAssertNil(KeyboardPanelRouting.panelTarget(forPaletteLabel: ""))
+    }
+
+    // MARK: 左下キーの方向
+
+    func testDownFlickAlwaysOpensKanjiRadical() {
+        XCTAssertEqual(
+            KeyboardPanelRouting.panelTarget(
+                forModeSwitchDirection: .bas,
+                tapAction: .emoji,
+                rightAction: .kaomoji,
+                upAction: .symbols
+            ),
+            .kanjiRadical
+        )
+    }
+
+    func testTapRightAndUpFollowTheirAssignedActions() {
+        func target(_ direction: FlickDirection) -> KeyboardPanelTarget? {
+            KeyboardPanelRouting.panelTarget(
+                forModeSwitchDirection: direction,
+                tapAction: .kaomoji,
+                rightAction: .symbols,
+                upAction: .emoji
+            )
+        }
+
+        XCTAssertEqual(target(.milieu), .kaomoji)
+        XCTAssertEqual(target(.droite), .symbols)
+        XCTAssertEqual(target(.haut), .emoji)
+    }
+
+    func testLeftFlickOpensNothing() {
+        XCTAssertNil(
+            KeyboardPanelRouting.panelTarget(
+                forModeSwitchDirection: .gauche,
+                tapAction: .emoji,
+                rightAction: .emoji,
+                upAction: .emoji
+            )
+        )
+    }
+
+    // MARK: コンパクト配列の左下キー
+
+    func testCompactSwitchKeyTapAdvancesKeyboardAndFlicksSwitchPanel() {
+        XCTAssertEqual(KeyboardPanelRouting.compactSwitchKeyRoute(direction: .milieu), .advanceKeyboard)
+        XCTAssertEqual(KeyboardPanelRouting.compactSwitchKeyRoute(direction: .droite), .switchPanel)
+        XCTAssertEqual(KeyboardPanelRouting.compactSwitchKeyRoute(direction: .haut), .switchPanel)
+        XCTAssertEqual(KeyboardPanelRouting.compactSwitchKeyRoute(direction: .bas), .switchPanel)
+        XCTAssertEqual(KeyboardPanelRouting.compactSwitchKeyRoute(direction: .gauche), .ignore)
+    }
+
+    // MARK: 面への入り方の適用
+
+    func testEnterPanelKanjiRadicalOpensRadicalPicker() {
+        let state = KeyboardInputState()
+
+        state.enterPanel(.kanjiRadical)
+
+        XCTAssertEqual(state.inputMode, .emoji)
+        XCTAssertEqual(state.emojiInputSubmode, .kanjiRadical)
+    }
+
+    func testModeSwitcherDownFlickOpensRadicalPickerRegardlessOfAssignment() {
+        let state = KeyboardInputState()
+
+        state.selectModeSwitcherPanel(
+            direction: .bas,
+            triggerLabel: nil,
+            tapAction: .symbols,
+            rightAction: .symbols,
+            upAction: .symbols
+        )
+
+        XCTAssertEqual(state.inputMode, .emoji)
+        XCTAssertEqual(state.emojiInputSubmode, .kanjiRadical)
+    }
+
+    func testModeSwitcherLeftFlickLeavesKana() {
+        let state = KeyboardInputState()
+
+        state.selectModeSwitcherPanel(
+            direction: .gauche,
+            triggerLabel: nil,
+            tapAction: .symbols,
+            rightAction: .symbols,
+            upAction: .symbols
+        )
+
+        XCTAssertEqual(state.inputMode, .kana)
+    }
+
+    // MARK: 修飾キーの空タップ
+
+    func testEmptyTapEmojiSelectsConfiguredCategoryAndMarksReturnToKana() {
+        let state = KeyboardInputState()
+
+        state.applyPostModifierEmptyTap(
+            actionRawValue: "emoji",
+            emojiCategoryID: "7",
+            symbolCategoryID: "0",
+            kaomojiCategoryID: "existing",
+            kaomojiPanel: KaomojiPanelState()
+        )
+
+        XCTAssertEqual(state.selectedEmojiCategory, .flags)
+        XCTAssertEqual(state.inputMode, .emoji)
+        XCTAssertEqual(state.emojiInputSubmode, .emoji)
+        XCTAssertTrue(state.returnToKanaAfterNextCommit)
+    }
+
+    func testEmptyTapEmojiWithNonNumericCategoryKeepsCurrentCategory() {
+        let state = KeyboardInputState()
+        state.selectedEmojiCategory = .food
+
+        state.applyPostModifierEmptyTap(
+            actionRawValue: "emoji",
+            emojiCategoryID: "flags",
+            symbolCategoryID: "0",
+            kaomojiCategoryID: "existing",
+            kaomojiPanel: KaomojiPanelState()
+        )
+
+        XCTAssertEqual(state.selectedEmojiCategory, .food)
+        XCTAssertEqual(state.inputMode, .emoji)
+        XCTAssertEqual(state.emojiInputSubmode, .emoji)
+    }
+
+    func testEmptyTapSymbolsSelectsConfiguredCategoryAndMarksReturnToKana() {
+        let state = KeyboardInputState()
+
+        state.applyPostModifierEmptyTap(
+            actionRawValue: "symbols",
+            emojiCategoryID: "0",
+            symbolCategoryID: "7",
+            kaomojiCategoryID: "existing",
+            kaomojiPanel: KaomojiPanelState()
+        )
+
+        XCTAssertEqual(state.selectedSymbolCategory, .music)
+        XCTAssertEqual(state.inputMode, .emoji)
+        XCTAssertEqual(state.emojiInputSubmode, .symbols)
+        XCTAssertTrue(state.returnToKanaAfterNextCommit)
+    }
+
+    func testEmptyTapOtherSelectsKaomojiCategoryKeepingSearchReading() {
+        let state = KeyboardInputState()
+        let kaomojiPanel = KaomojiPanelState()
+        kaomojiPanel.selectedReadingPrefix = "か"
+        kaomojiPanel.selectedReading = "かお"
+
+        state.applyPostModifierEmptyTap(
+            actionRawValue: "kaomoji",
+            emojiCategoryID: "0",
+            symbolCategoryID: "0",
+            kaomojiCategoryID: "shortcut",
+            kaomojiPanel: kaomojiPanel
+        )
+
+        XCTAssertEqual(kaomojiPanel.selectedCategoryID, "shortcut")
+        XCTAssertEqual(kaomojiPanel.selectedReadingPrefix, "か")
+        XCTAssertEqual(kaomojiPanel.selectedReading, "かお")
+        XCTAssertEqual(state.inputMode, .emoji)
+        XCTAssertEqual(state.emojiInputSubmode, .kaomoji)
+        XCTAssertTrue(state.returnToKanaAfterNextCommit)
+    }
+
+    func testInitialCategoriesMatchFormerViewDefaults() {
+        let state = KeyboardInputState()
+
+        XCTAssertEqual(state.selectedEmojiCategory, .people)
+        XCTAssertEqual(state.selectedSymbolCategory, .basic)
+    }
+}

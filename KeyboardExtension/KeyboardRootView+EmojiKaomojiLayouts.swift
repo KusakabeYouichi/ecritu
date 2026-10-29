@@ -125,7 +125,7 @@ extension KeyboardRootView {
     // 面ごとにスクロール縁のぼかしを切る(3140)。根で被せると候補欄の上余白まで消えた
     var emojiKeyboardView: some View {
         KeyboardRootEmojiKeyboardSectionView(
-            selectedEmojiCategory: $selectedEmojiCategory,
+            selectedEmojiCategory: Bindable(inputState).selectedEmojiCategory,
             keyboardRowSpacing: keyboardRowSpacing,
             emojiGridColumns: emojiGridColumns,
             emojiGridSpacing: emojiGridSpacing,
@@ -153,7 +153,7 @@ extension KeyboardRootView {
 
     var symbolKeyboardView: some View {
         KeyboardRootSymbolKeyboardSectionView(
-            selectedSymbolCategory: $selectedSymbolCategory,
+            selectedSymbolCategory: Bindable(inputState).selectedSymbolCategory,
             basicSymbolOrder: basicSymbolOrder,
             temperatureUnit: temperatureUnit,
             keyboardRowSpacing: keyboardRowSpacing,

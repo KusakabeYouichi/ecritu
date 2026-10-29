@@ -60,29 +60,13 @@ extension KeyboardRootView {
     }
 
     func performPostModifierEmptyTapAction() {
-        // 調査用ログ(記号面切替 2838): 未確定なしで修飾キーをタップした経路。原因判明後に外す
-        #if DEBUG
-        inputModeChangeTrigger = "修飾キー空タップ(\(kanaPostModifierEmptyTapActionRawValue))"
-        #endif
-        switch kanaPostModifierEmptyTapActionRawValue {
-        case "emoji":
-            if let rawValue = Int(kanaPostModifierEmptyTapEmojiCategoryID),
-                let category = EmojiCategory(rawValue: rawValue) {
-                selectedEmojiCategory = category
-            }
-            enterEmojiMode()
-        case "symbols":
-            if let rawValue = Int(kanaPostModifierEmptyTapSymbolCategoryID),
-                let category = SymbolCategory(rawValue: rawValue) {
-                selectedSymbolCategory = category
-            }
-            enterSymbolsMode()
-        default:
-            kaomojiPanelState.selectCategory(id: kanaPostModifierEmptyTapKaomojiCategoryID)
-            enterKaomojiMode()
-        }
-
-        returnToKanaAfterNextCommit = true
+        inputState.applyPostModifierEmptyTap(
+            actionRawValue: kanaPostModifierEmptyTapActionRawValue,
+            emojiCategoryID: kanaPostModifierEmptyTapEmojiCategoryID,
+            symbolCategoryID: kanaPostModifierEmptyTapSymbolCategoryID,
+            kaomojiCategoryID: kanaPostModifierEmptyTapKaomojiCategoryID,
+            kaomojiPanel: kaomojiPanelState
+        )
     }
 
     func commitEmojiKaomojiSymbolText(_ text: String) {
@@ -245,19 +229,14 @@ extension KeyboardRootView {
     static let modePaletteLabels: [String] = ["記号", "絵文字", "顔文字", "単漢字", "書式化"]
 
     func selectModePalette(_ label: String) -> Bool {
-        switch label {
-        case "記号":
-            enterSymbolsMode()
-        case "絵文字":
-            enterEmojiMode()
-        case "顔文字":
-            enterKaomojiMode()
-        case "単漢字":
-            enterKanjiRadicalMode()
-        case "書式化":
-            enterFormattedNumberMode()
-        default:
+        guard let target = KeyboardPanelRouting.panelTarget(forPaletteLabel: label) else {
             return false
+        }
+        // 書式化数値はバッファーも空にするのでビューから入る
+        if target == .formattedNumber {
+            enterFormattedNumberMode()
+        } else {
+            inputState.enterPanel(target)
         }
         #if DEBUG
         inputModeChangeTrigger = "面選択パレット(\(label))"  // 調査用ログ(記号面切替 2838)
@@ -290,14 +269,12 @@ extension KeyboardRootView {
     }
 
     func selectCompactKeyboardSwitchKey(direction: FlickDirection) {
-        switch direction {
-        case .milieu:
+        switch KeyboardPanelRouting.compactSwitchKeyRoute(direction: direction) {
+        case .advanceKeyboard:
             onAdvanceKeyboard()
-        // 下は通常の左下キーと同じく単漢字の面(案内「熙」)。以前は下を受けず、案内だけ出て何も起きなかった
-        // (提出前監査 第3回)
-        case .droite, .haut, .bas:
+        case .switchPanel:
             selectKanaModeSwitcher(direction: direction)
-        default:
+        case .ignore:
             return
         }
     }
@@ -331,61 +308,30 @@ extension KeyboardRootView {
             )
             return
         }
-        // 調査用ログ(記号面切替 2838): どの操作で面が変わったかを記録。原因判明後に外す
-        #if DEBUG
-        inputModeChangeTrigger = triggerLabel ?? "左下キー \(direction)"
-        #endif
-        // 下フリックは部首ピッカー固定(タップ/右/上の3スロットは設定で割り当て可)
-        if direction == .bas {
-            enterKanjiRadicalMode()
-            return
-        }
-
-        let action: KanaModeSwitcherAction
-
-        switch direction {
-        case .milieu:
-            action = kanaModeSwitcherTapAction
-        case .droite:
-            action = kanaModeSwitcherRightFlickAction
-        case .haut:
-            action = kanaModeSwitcherUpFlickAction
-        default:
-            return
-        }
-
-        switch action {
-        case .emoji:
-            enterEmojiMode()
-        case .kaomoji:
-            enterKaomojiMode()
-        case .symbols:
-            enterSymbolsMode()
-        }
+        // 割り当て(下=単漢字固定、タップ/右/上=設定)と引き金の記録は inputState が行なう
+        inputState.selectModeSwitcherPanel(
+            direction: direction,
+            triggerLabel: triggerLabel,
+            tapAction: kanaModeSwitcherTapAction,
+            rightAction: kanaModeSwitcherRightFlickAction,
+            upAction: kanaModeSwitcherUpFlickAction
+        )
     }
 
     func enterKanjiRadicalMode() {
-        transitionState = KeyboardModeTransition.enterKanjiRadicalMode(
-            from: transitionState
-        )
+        inputState.enterKanjiRadicalMode()
     }
 
     func enterEmojiMode() {
-        transitionState = KeyboardModeTransition.enterEmojiMode(
-            from: transitionState
-        )
+        inputState.enterEmojiMode()
     }
 
     func enterKaomojiMode() {
-        transitionState = KeyboardModeTransition.enterKaomojiMode(
-            from: transitionState
-        )
+        inputState.enterKaomojiMode()
     }
 
     func enterSymbolsMode() {
-        transitionState = KeyboardModeTransition.enterSymbolsMode(
-            from: transitionState
-        )
+        inputState.enterSymbolsMode()
     }
 
     func spaceActionKeyButton(

@@ -22,6 +22,12 @@ final class KeyboardInputState {
     // 『abc』キーの 2 度押し(英字の固定シフト)を待っているか
     var isAwaitingLatinModeSwitchSecondTap = false
     var pendingLatinModeSwitchSecondTapResetWorkItem: DispatchWorkItem?
+    // 絵文字・記号の面で選んでいる分類
+    var selectedEmojiCategory: KeyboardRootView.EmojiCategory = .people
+    var selectedSymbolCategory: KeyboardRootView.SymbolCategory = .basic
+    // 調査用ログ(記号面切替 2838): 直近のモード切替の引き金(左下キー タップ/フリック、修飾キー空タップ 等)。
+    // 「触っていないのに記号面になった」の再現待ち。原因判明後に外す
+    var inputModeChangeTrigger: String = "面内キー"
 
     init() {}
 
@@ -91,6 +97,104 @@ final class KeyboardInputState {
     // 書式化数値へ入る。1 件確定したらかなへ戻す印を付ける
     func enterFormattedNumberMode() {
         transitionState = KeyboardModeTransition.enterFormattedNumberMode(from: transitionState)
+        returnToKanaAfterNextCommit = true
+    }
+
+    func enterKanjiRadicalMode() {
+        transitionState = KeyboardModeTransition.enterKanjiRadicalMode(
+            from: transitionState
+        )
+    }
+
+    func enterEmojiMode() {
+        transitionState = KeyboardModeTransition.enterEmojiMode(
+            from: transitionState
+        )
+    }
+
+    func enterKaomojiMode() {
+        transitionState = KeyboardModeTransition.enterKaomojiMode(
+            from: transitionState
+        )
+    }
+
+    func enterSymbolsMode() {
+        transitionState = KeyboardModeTransition.enterSymbolsMode(
+            from: transitionState
+        )
+    }
+
+    // 書式化数値はバッファーも空にする必要があるので、ビューの enterFormattedNumberMode() から入る。ここでは何もしない
+    func enterPanel(_ target: KeyboardPanelTarget) {
+        switch target {
+        case .symbols:
+            enterSymbolsMode()
+        case .emoji:
+            enterEmojiMode()
+        case .kaomoji:
+            enterKaomojiMode()
+        case .kanjiRadical:
+            enterKanjiRadicalMode()
+        case .formattedNumber:
+            break
+        }
+    }
+
+    // 左下キー(面の切り替え)のタップ/フリック。70ms の門番はタッチの事実なのでビューに残し、通ったあとをここで行なう。
+    // タップ/右/上の割り当ては設定なので引数で受ける。書式化数値はこの経路からは選ばれない
+    func selectModeSwitcherPanel(
+        direction: FlickDirection,
+        triggerLabel: String?,
+        tapAction: KeyboardRootView.KanaModeSwitcherAction,
+        rightAction: KeyboardRootView.KanaModeSwitcherAction,
+        upAction: KeyboardRootView.KanaModeSwitcherAction
+    ) {
+        // 調査用ログ(記号面切替 2838): どの操作で面が変わったかを記録。原因判明後に外す
+        #if DEBUG
+        inputModeChangeTrigger = triggerLabel ?? "左下キー \(direction)"
+        #endif
+        guard let target = KeyboardPanelRouting.panelTarget(
+            forModeSwitchDirection: direction,
+            tapAction: tapAction,
+            rightAction: rightAction,
+            upAction: upAction
+        ) else {
+            return
+        }
+        enterPanel(target)
+    }
+
+    // 後置の修飾キーを未確定なしでタップしたとき、設定の面と分類を開く。1 件確定したらかなへ戻す。
+    // 設定値は引数で受ける。顔文字の分類の選択は KaomojiPanelState(ビューが持つ)を受け取って書く
+    func applyPostModifierEmptyTap(
+        actionRawValue: String,
+        emojiCategoryID: String,
+        symbolCategoryID: String,
+        kaomojiCategoryID: String,
+        kaomojiPanel: KaomojiPanelState
+    ) {
+        // 調査用ログ(記号面切替 2838): 未確定なしで修飾キーをタップした経路。原因判明後に外す
+        #if DEBUG
+        inputModeChangeTrigger = "修飾キー空タップ(\(actionRawValue))"
+        #endif
+        switch actionRawValue {
+        case "emoji":
+            if let rawValue = Int(emojiCategoryID),
+                let category = KeyboardRootView.EmojiCategory(rawValue: rawValue) {
+                selectedEmojiCategory = category
+            }
+            enterEmojiMode()
+        case "symbols":
+            if let rawValue = Int(symbolCategoryID),
+                let category = KeyboardRootView.SymbolCategory(rawValue: rawValue) {
+                selectedSymbolCategory = category
+            }
+            enterSymbolsMode()
+        default:
+            kaomojiPanel.selectCategory(id: kaomojiCategoryID)
+            enterKaomojiMode()
+        }
+
         returnToKanaAfterNextCommit = true
     }
 
@@ -187,5 +291,89 @@ final class KeyboardInputState {
         pendingLatinModeSwitchSecondTapResetWorkItem?.cancel()
         pendingLatinModeSwitchSecondTapResetWorkItem = nil
         isAwaitingLatinModeSwitchSecondTap = false
+    }
+}
+
+// 面の切り替えで開く面
+enum KeyboardPanelTarget: Equatable {
+    case symbols
+    case emoji
+    case kaomoji
+    case kanjiRadical
+    case formattedNumber
+}
+
+// コンパクト配列の左下キー(地球儀の位置)の行き先
+enum KeyboardCompactSwitchKeyRoute: Equatable {
+    case advanceKeyboard
+    case switchPanel
+    case ignore
+}
+
+// どのキー・どの方向でどの面を開くかの割り当て(純関数)。以前はビューの切り替え処理の中にあった
+enum KeyboardPanelRouting {
+    // 面選択のパレット(左下キーの長押し)のラベル。ラベルの一覧は KeyboardRootView.modePaletteLabels
+    static func panelTarget(forPaletteLabel label: String) -> KeyboardPanelTarget? {
+        switch label {
+        case "記号":
+            return .symbols
+        case "絵文字":
+            return .emoji
+        case "顔文字":
+            return .kaomoji
+        case "単漢字":
+            return .kanjiRadical
+        case "書式化":
+            return .formattedNumber
+        default:
+            return nil
+        }
+    }
+
+    static func panelTarget(
+        forModeSwitchDirection direction: FlickDirection,
+        tapAction: KeyboardRootView.KanaModeSwitcherAction,
+        rightAction: KeyboardRootView.KanaModeSwitcherAction,
+        upAction: KeyboardRootView.KanaModeSwitcherAction
+    ) -> KeyboardPanelTarget? {
+        // 下フリックは部首ピッカー固定(タップ/右/上の3スロットは設定で割り当て可)
+        if direction == .bas {
+            return .kanjiRadical
+        }
+
+        let action: KeyboardRootView.KanaModeSwitcherAction
+
+        switch direction {
+        case .milieu:
+            action = tapAction
+        case .droite:
+            action = rightAction
+        case .haut:
+            action = upAction
+        default:
+            return nil
+        }
+
+        switch action {
+        case .emoji:
+            return .emoji
+        case .kaomoji:
+            return .kaomoji
+        case .symbols:
+            return .symbols
+        }
+    }
+
+    static func compactSwitchKeyRoute(direction: FlickDirection) -> KeyboardCompactSwitchKeyRoute {
+        switch direction {
+        case .milieu:
+            return .advanceKeyboard
+        // 下は通常の左下キーと同じく単漢字の面(案内「熙」)。以前は下を受けず、案内だけ出て何も起きなかった
+        // (提出前監査 第3回)
+        case .droite, .haut, .bas:
+            return .switchPanel
+        default:
+            return .ignore
+        }
     }
 }

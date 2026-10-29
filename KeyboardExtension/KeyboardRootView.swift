@@ -150,13 +150,21 @@ struct KeyboardRootView: View {
     // 根拠: 机に置いた衝撃での誤発火が 58ms(開始位置はキーの外、移動量 41pt の下フリック)。
     // 人の意図的なタップ/フリックは概ね 80ms 以上。文字入力のキーには効かせない
     static let kanaModeSwitcherMinimumTouchDurationMs = 70
-    @State var selectedEmojiCategory: EmojiCategory = .people
-    @State var selectedSymbolCategory: SymbolCategory = .basic
+    // 絵文字・記号の分類と、調査用ログ(記号面切替 2838)の引き金は inputState が持つ。以下は取り次ぎ
+    var selectedEmojiCategory: EmojiCategory {
+        get { inputState.selectedEmojiCategory }
+        nonmutating set { inputState.selectedEmojiCategory = newValue }
+    }
+    var selectedSymbolCategory: SymbolCategory {
+        get { inputState.selectedSymbolCategory }
+        nonmutating set { inputState.selectedSymbolCategory = newValue }
+    }
+    var inputModeChangeTrigger: String {
+        get { inputState.inputModeChangeTrigger }
+        nonmutating set { inputState.inputModeChangeTrigger = newValue }
+    }
     @State var radicalPickerState = RadicalPickerState()
     @State var kaomojiPanelState = KaomojiPanelState()
-    // 調査用ログ(記号面切替 2838): 直近のモード切替の引き金(左下キー タップ/フリック、修飾キー空タップ 等)。
-    // 「触っていないのに記号面になった」の再現待ち。原因判明後に外す
-    @State var inputModeChangeTrigger: String = "面内キー"
     // 書式化数値の入力の状態(バッファ・カテゴリー・単位/接頭辞・スイッチ・日付と書式)。
     // 持ち主はここだけ。寿命は以前の @State と同じ
     @State var formattedNumberState = FormattedNumberState()
