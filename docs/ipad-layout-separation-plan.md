@@ -122,12 +122,14 @@ iPad 版は、キー配列、高さ、フリックや長押しの操作、候補
 - **ビュー木の根の状態**
   - 4 つのモデル(`KeyboardInputState`・`FormattedNumberState`・`KaomojiPanelState`・`RadicalPickerState`)と、押している間の見た目のための `@State` 10 個になった。
   - 10 個の中身は「状態 40 個の行き先」の表の「ビューに残す」と同じ。
-- **テスト**: 全部で 1,547 件。この枝で足したのは 108 件(段 1 から順に 12・21・34・18・9・14)。
+- **テスト**: 全部で 1,551 件。この枝で足したのは 112 件(段 1 から順に 12・21・34・18・9・14、全体チェック後の片付けで 4)。
 - **移さなかったもの**
   - `selectModifierMode`(修飾キーの後置の振り分け)。controller のクロージャーと設定を合わせて 11 個の引数が要り、モデルに移すと不自然になるため、ビューに残した。中から呼ぶ空タップの処理はモデルへ移した。
   - 70ms の門番。タッチの事実なので、計画どおりビューに残した。
 - **残っている宿題**
   - モデルが、ビューの入れ子の型(`KeyboardRootView.EmojiCategory`・`SymbolCategory`・`KanaModeSwitcherAction`)を参照している。iPad の配列を作るときに、トップレベルへ出す。
+  - 書式化数値の分類の型(`FormattedNumberCategory`)と前回の選択の保存先(`FormattedNumberPreferences`)が `KeyboardRootView+FormattedNumberLayout.swift` にあり、`FormattedNumberState` がそれを参照している。iPad 着手時に `FormattedNumberState.swift` へ移し、色(`tintColor`)だけビュー側の extension に残す。
+  - `KeyboardInputState.enterPanel(.formattedNumber)` は何もしない(バッファーの初期化を伴うのでビューの `enterFormattedNumberMode()` から入る)。iPad 側の呼び手が罠にかからないよう、着手時に戻り値で「ビューで入る」と示す形にする(今は何もしないことをテストで固定)。
   - 描画の回数の比較(各段の検証の 3)は、まだやっていない。段 1 の前の版(3577)と 3583 で、同じ打鍵の列を実機で打って比べる。
 - **ついでに見つかった、この枝とは関係のない不具合**: 左下のキーの右・上・下のフリックは、3174 以降は効かない(触れた瞬間に面選択のパレットが出るため)。それなのに設定 E.5 に右・上の割り当てが残っている。1.1.1 で扱う。
 

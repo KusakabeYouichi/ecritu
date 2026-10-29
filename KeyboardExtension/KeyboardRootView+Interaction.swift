@@ -318,16 +318,10 @@ extension KeyboardRootView {
         )
     }
 
-    func enterKanjiRadicalMode() {
-        inputState.enterKanjiRadicalMode()
-    }
-
+    // 単漢字・顔文字の面へはパレットと左下キーから inputState 経由で入る。ビュー側の取り次ぎは
+    // 面内のキーから呼ぶ絵文字と記号の 2 つだけ残す
     func enterEmojiMode() {
         inputState.enterEmojiMode()
-    }
-
-    func enterKaomojiMode() {
-        inputState.enterKaomojiMode()
     }
 
     func enterSymbolsMode() {

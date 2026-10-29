@@ -87,7 +87,7 @@ struct KeyboardRootView: View {
     let showsParenthesesWrapper: Bool
     let initialSpaceToastText: String?
     // フィールドの keyboardType(数字入力欄等)に合わせた初期入力モード(4.4.1 準拠)。
-    // onAppear で @State inputMode に反映する
+    // onAppear で inputState.inputMode に反映する
     let initialInputMode: KeyboardInputMode
 
     // 入力の状態(面・濁点・かな/カナ・英字シフト・空白の案内・かなへ戻る印・2 度押し待ち)。
@@ -121,10 +121,6 @@ struct KeyboardRootView: View {
     var spaceToastOpacity: Double {
         get { inputState.spaceToastOpacity }
         nonmutating set { inputState.spaceToastOpacity = newValue }
-    }
-    var returnToKanaAfterNextCommit: Bool {
-        get { inputState.returnToKanaAfterNextCommit }
-        nonmutating set { inputState.returnToKanaAfterNextCommit = newValue }
     }
     var isAwaitingLatinModeSwitchSecondTap: Bool { inputState.isAwaitingLatinModeSwitchSecondTap }
     @State private var lastInputModeObservation: InputModeObservation?

@@ -243,7 +243,7 @@ final class KeyboardInputState {
 
     // 絵文字・顔文字・記号の面からの確定。絵文字と顔文字はショートカットの履歴の先頭へ足す(3243)。
     // 顔文字のショートカット分類から選んだとき、記号面、それ以外の面からは足さない。
-    // 顔文字の分類の選択はまだビューの状態なので、ショートカット分類かどうかを引数で受け取る
+    // 顔文字の分類の選択は別のモデル(KaomojiPanelState)にあるので、ショートカット分類かどうかを Bool で受け取る
     func commitEmojiKaomojiSymbolText(
         _ text: String,
         isKaomojiShortcutCategory: Bool,

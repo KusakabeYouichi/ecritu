@@ -1249,6 +1249,15 @@ final class KeyboardPanelRoutingTests: XCTestCase {
         XCTAssertEqual(KeyboardPanelRouting.panelTarget(forPaletteLabel: "書式化"), .formattedNumber)
     }
 
+    // パレットに並べる文言と割り当て表の両端を結ぶ。文言を足して割り当てを忘れると、
+    // selectModePalette が false を返して黙ってタップ扱いに落ちるため
+    func testEveryPaletteLabelHasAPanel() {
+        for label in KeyboardRootView.modePaletteLabels {
+            XCTAssertNotNil(KeyboardPanelRouting.panelTarget(forPaletteLabel: label), "パレットの文言 \(label) に面の割り当てが無い")
+        }
+        XCTAssertEqual(KeyboardRootView.modePaletteLabels.count, 5)
+    }
+
     func testUnknownPaletteLabelOpensNothing() {
         XCTAssertNil(KeyboardPanelRouting.panelTarget(forPaletteLabel: "x"))
         // 切替キーがパレットを使わずに確定したときに渡る空文字も面ではない
@@ -1314,6 +1323,43 @@ final class KeyboardPanelRoutingTests: XCTestCase {
 
         XCTAssertEqual(state.inputMode, .emoji)
         XCTAssertEqual(state.emojiInputSubmode, .kanjiRadical)
+    }
+
+    func testEnterPanelOpensEmojiKaomojiAndSymbols() {
+        let emoji = KeyboardInputState()
+        emoji.enterPanel(.emoji)
+        XCTAssertEqual(emoji.inputMode, .emoji)
+        XCTAssertEqual(emoji.emojiInputSubmode, .emoji)
+
+        let kaomoji = KeyboardInputState()
+        kaomoji.enterPanel(.kaomoji)
+        XCTAssertEqual(kaomoji.inputMode, .emoji)
+        XCTAssertEqual(kaomoji.emojiInputSubmode, .kaomoji)
+
+        let symbols = KeyboardInputState()
+        symbols.enterPanel(.symbols)
+        XCTAssertEqual(symbols.inputMode, .emoji)
+        XCTAssertEqual(symbols.emojiInputSubmode, .symbols)
+    }
+
+    // 書式化数値はバッファーの初期化を伴うためビュー側の enterFormattedNumberMode() から入る。
+    // モデルの enterPanel は何もしない(iPad 側の呼び手が頼りにしないよう固定しておく)
+    func testEnterPanelFormattedNumberIsLeftToTheView() {
+        let state = KeyboardInputState()
+
+        state.enterPanel(.formattedNumber)
+
+        XCTAssertEqual(state.inputMode, .kana)
+        XCTAssertFalse(state.returnToKanaAfterNextCommit)
+    }
+
+    func testEnterFormattedNumberModeMarksReturnToKana() {
+        let state = KeyboardInputState()
+
+        state.enterFormattedNumberMode()
+
+        XCTAssertEqual(state.inputMode, .formattedNumber)
+        XCTAssertTrue(state.returnToKanaAfterNextCommit)
     }
 
     func testModeSwitcherDownFlickOpensRadicalPickerRegardlessOfAssignment() {
