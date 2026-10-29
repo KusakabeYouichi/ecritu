@@ -130,7 +130,16 @@ iPad 版は、キー配列、高さ、フリックや長押しの操作、候補
   - モデルが、ビューの入れ子の型(`KeyboardRootView.EmojiCategory`・`SymbolCategory`・`KanaModeSwitcherAction`)を参照している。iPad の配列を作るときに、トップレベルへ出す。
   - 書式化数値の分類の型(`FormattedNumberCategory`)と前回の選択の保存先(`FormattedNumberPreferences`)が `KeyboardRootView+FormattedNumberLayout.swift` にあり、`FormattedNumberState` がそれを参照している。iPad 着手時に `FormattedNumberState.swift` へ移し、色(`tintColor`)だけビュー側の extension に残す。
   - `KeyboardInputState.enterPanel(.formattedNumber)` は何もしない(バッファーの初期化を伴うのでビューの `enterFormattedNumberMode()` から入る)。iPad 側の呼び手が罠にかからないよう、着手時に戻り値で「ビューで入る」と示す形にする(今は何もしないことをテストで固定)。
-  - 描画の回数の比較(各段の検証の 3)は、まだやっていない。段 1 の前の版(3577)と 3583 で、同じ打鍵の列を実機で打って比べる。
+- **描画の回数(2026-10-30 実機)**: 増えていない。
+  - 測り方: 根の `body` の評価回数と `refreshKeyboardState` の回数を数える一時的な仕掛け(DEBUG のみ、キーボードを閉じたときに診断ログへ 1 行)を、3577(main)と 3584 から切った計測用の枝にだけ入れた。作業枝と main には入れていない。
+  - 打鍵の列: メモで かな「きょうはいいてんき」を確定 → 英字でシフト+「Hello」 → 数字「123」 → かなに戻ってパレットから絵文字 1 つ → パレットから顔文字 1 つ → ホームへ戻って閉じる。これを 2 回。
+
+    | 版 | 根の body の評価 | 状態の更新 |
+    |---|---|---|
+    | 3577 | 91 / 94 | 44 / 45 |
+    | 3584 | 87 / 87 | 45 / 42 |
+
+  - 計画の「描画の回数は今と同じになる見込み」のとおり。`_printChanges()` の回数は、拡張にデバッガーを付けない運用なので見ていない。
 - **ついでに見つかった、この枝とは関係のない不具合**: 左下のキーの右・上・下のフリックは、3174 以降は効かない(触れた瞬間に面選択のパレットが出るため)。それなのに設定 E.5 に右・上の割り当てが残っている。1.1.1 で扱う。
 
 ### 国旗の下調べ(2026-10-29)
