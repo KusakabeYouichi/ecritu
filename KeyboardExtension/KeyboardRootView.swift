@@ -152,8 +152,7 @@ struct KeyboardRootView: View {
     static let kanaModeSwitcherMinimumTouchDurationMs = 70
     @State var selectedEmojiCategory: EmojiCategory = .people
     @State var selectedSymbolCategory: SymbolCategory = .basic
-    @State var selectedRadicalCategory: RadicalPositionCategory = .hen
-    @State var selectedRadicalForm: RadicalForm?
+    @State var radicalPickerState = RadicalPickerState()
     @State var kaomojiPanelState = KaomojiPanelState()
     // 調査用ログ(記号面切替 2838): 直近のモード切替の引き金(左下キー タップ/フリック、修飾キー空タップ 等)。
     // 「触っていないのに記号面になった」の再現待ち。原因判明後に外す

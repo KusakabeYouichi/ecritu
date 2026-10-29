@@ -435,16 +435,16 @@ extension KeyboardRootView {
         case .symbols:
             return selectedSymbolCategory.frenchName
         case .kanjiRadical:
-            if let form = selectedRadicalForm {
+            if let form = radicalPickerState.selectedForm {
                 // 数え方が分かれる字形(艹/辶/礻/飠)は総画数の計算基準を添える。部首一覧の並びに
                 // 使う画数は設定で変えられるが、総画数(Unihan)はどの設定でも変わらないため、
                 // 「総画数は3画で計算」と事実を示す(2502)
                 let note = RadicalStrokeChoiceCatalog.totalBasisStrokes(forRadical: form.radical)
                     .map { " (総画数は\($0)画で計算)" } ?? ""
                 let displayForm = form.displayForm(choices: radicalStrokeChoices)
-                return "\(selectedRadicalCategory.title) › \(displayForm)(\(form.name))\(note)"
+                return "\(radicalPickerState.selectedCategory.title) › \(displayForm)(\(form.name))\(note)"
             }
-            return "\(selectedRadicalCategory.title)(\(selectedRadicalCategory.reading))"
+            return "\(radicalPickerState.selectedCategory.title)(\(radicalPickerState.selectedCategory.reading))"
         }
     }
 }

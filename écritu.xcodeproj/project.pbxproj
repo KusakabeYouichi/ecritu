@@ -138,10 +138,15 @@
 		AB000000000000000000357A /* KeyboardInputState.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000003578 /* KeyboardInputState.swift */; };
 		AB0000000000000000003581 /* FormattedNumberState.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000003580 /* FormattedNumberState.swift */; };
 		AB0000000000000000003586 /* KaomojiPanelState.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000003585 /* KaomojiPanelState.swift */; };
+		AB0000000000000000003591 /* RadicalPickerState.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000003590 /* RadicalPickerState.swift */; };
+		AB0000000000000000003596 /* RadicalPositionIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000003595 /* RadicalPositionIcon.swift */; };
 		AB0000000000000000003582 /* FormattedNumberState.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000003580 /* FormattedNumberState.swift */; };
 		AB0000000000000000003587 /* KaomojiPanelState.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000003585 /* KaomojiPanelState.swift */; };
+		AB0000000000000000003592 /* RadicalPickerState.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000003590 /* RadicalPickerState.swift */; };
+		AB0000000000000000003597 /* RadicalPositionIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000003595 /* RadicalPositionIcon.swift */; };
 		AB0000000000000000003584 /* FormattedNumberStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000003583 /* FormattedNumberStateTests.swift */; };
 		AB0000000000000000003589 /* KaomojiPanelStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000003588 /* KaomojiPanelStateTests.swift */; };
+		AB0000000000000000003594 /* RadicalPickerStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000003593 /* RadicalPickerStateTests.swift */; };
 		70F6C445A2D172371280F702 /* InitialShortcutVocabMigration.json in Resources */ = {isa = PBXBuildFile; fileRef = A736682B523FF46CC7E3B566 /* InitialShortcutVocabMigration.json */; };
 		77EA3B3953C08408CF31FE13 /* kana_kanji_dictionary.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 2D2A68C12E9937EB406DC707 /* kana_kanji_dictionary.sqlite */; };
 		7B1D9A4E6F8C2A0D5B3E1C09 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8C2E0B5F7A9D3B1E6C4F2D10 /* LaunchScreen.storyboard */; };
@@ -315,8 +320,11 @@
 		AB0000000000000000003578 /* KeyboardInputState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardInputState.swift; sourceTree = "<group>"; };
 		AB0000000000000000003580 /* FormattedNumberState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormattedNumberState.swift; sourceTree = "<group>"; };
 		AB0000000000000000003585 /* KaomojiPanelState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaomojiPanelState.swift; sourceTree = "<group>"; };
+		AB0000000000000000003590 /* RadicalPickerState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadicalPickerState.swift; sourceTree = "<group>"; };
+		AB0000000000000000003595 /* RadicalPositionIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadicalPositionIcon.swift; sourceTree = "<group>"; };
 		AB0000000000000000003583 /* FormattedNumberStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormattedNumberStateTests.swift; sourceTree = "<group>"; };
 		AB0000000000000000003588 /* KaomojiPanelStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaomojiPanelStateTests.swift; sourceTree = "<group>"; };
+		AB0000000000000000003593 /* RadicalPickerStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadicalPickerStateTests.swift; sourceTree = "<group>"; };
 		7ADCEB866223BD3028FABD48 /* ContentView+DictionaryStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "ContentView+DictionaryStore.swift"; sourceTree = "<group>"; };
 		83F54F6835629848F61C8D81 /* AppleEmojiCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleEmojiCatalog.swift; sourceTree = "<group>"; };
 		88923D70417B1F65997342BF /* ÉcrituSecondVocab.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "ÉcrituSecondVocab.json"; sourceTree = "<group>"; };
@@ -518,6 +526,8 @@
 				AB0000000000000000003578 /* KeyboardInputState.swift */,
 				AB0000000000000000003580 /* FormattedNumberState.swift */,
 				AB0000000000000000003585 /* KaomojiPanelState.swift */,
+				AB0000000000000000003590 /* RadicalPickerState.swift */,
+				AB0000000000000000003595 /* RadicalPositionIcon.swift */,
 				AB0000000000000000002614 /* KeyboardMemoryForensics.swift */,
 				AB0000000000000000002610 /* KeyboardLayoutMetrics.swift */,
 				6E86F6C5D01B42067D46B922 /* KeyboardRootView.swift */,
@@ -584,6 +594,7 @@
 				4BEF6D5508A6FD899B260559 /* KeyboardModeTransitionTests.swift */,
 				AB0000000000000000003583 /* FormattedNumberStateTests.swift */,
 				AB0000000000000000003588 /* KaomojiPanelStateTests.swift */,
+				AB0000000000000000003593 /* RadicalPickerStateTests.swift */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -958,8 +969,11 @@
 				AB000000000000000000357A /* KeyboardInputState.swift in Sources */,
 				AB0000000000000000003582 /* FormattedNumberState.swift in Sources */,
 				AB0000000000000000003587 /* KaomojiPanelState.swift in Sources */,
+				AB0000000000000000003592 /* RadicalPickerState.swift in Sources */,
+				AB0000000000000000003597 /* RadicalPositionIcon.swift in Sources */,
 				AB0000000000000000003584 /* FormattedNumberStateTests.swift in Sources */,
 				AB0000000000000000003589 /* KaomojiPanelStateTests.swift in Sources */,
+				AB0000000000000000003594 /* RadicalPickerStateTests.swift in Sources */,
 				AB0000000000000000002618 /* MemoryForensicsTests.swift in Sources */,
 				E477DC610F262272485792C2 /* KeyboardControllerLifecycleTests.swift in Sources */,
 				C9521F0CE9D3F61A234D0D97 /* PlainTextCompositionTests.swift in Sources */,
@@ -1052,6 +1066,8 @@
 				AB0000000000000000003579 /* KeyboardInputState.swift in Sources */,
 				AB0000000000000000003581 /* FormattedNumberState.swift in Sources */,
 				AB0000000000000000003586 /* KaomojiPanelState.swift in Sources */,
+				AB0000000000000000003591 /* RadicalPickerState.swift in Sources */,
+				AB0000000000000000003596 /* RadicalPositionIcon.swift in Sources */,
 				AB0000000000000000002616 /* KeyboardMemoryForensics.swift in Sources */,
 				AB0000000000000000002609 /* KeyboardLayoutMetrics.swift in Sources */,
 				62E37AD409B322FD8E105704 /* KeyboardRootView.swift in Sources */,

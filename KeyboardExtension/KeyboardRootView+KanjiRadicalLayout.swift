@@ -7,8 +7,7 @@ import CoreText
 extension KeyboardRootView {
     var kanjiRadicalKeyboardView: some View {
         KeyboardRootKanjiRadicalSectionView(
-            selectedCategory: $selectedRadicalCategory,
-            selectedForm: $selectedRadicalForm,
+            pickerState: radicalPickerState,
             keyboardRowSpacing: keyboardRowSpacing,
             emojiGridSpacing: emojiGridSpacing,
             compactEmojiKeyHeight: compactEmojiKeyHeight,
@@ -44,7 +43,7 @@ extension KeyboardRootView {
 // 同時生存のセルを画面分に固定する。描画倍率は落とさない(ぼやける。ユーザ指定)。
 // タップ=確定、0.35秒の長押し=字典風の吹き出し(読み/U+XXXX/区点)。長押し成立後は離しても確定しない。
 struct KanjiCharacterGridCollectionView: UIViewRepresentable {
-    typealias Item = (id: String, kind: KeyboardRootKanjiRadicalSectionView.CharacterListItem)
+    typealias Item = (id: String, kind: KanjiCharacterListItem)
 
     let items: [Item]
     let columnCount: Int
@@ -512,7 +511,7 @@ struct RadicalCategoryKeyButton: View {
 // メモリ警告時の内訳でも、辞書キャッシュは空なのに UI 側で 39MB 生きていた(3192 のログ)。
 // 最後に残っていたこの一覧もセル再利用へ移す
 struct RadicalFormGridCollectionView: UIViewRepresentable {
-    typealias Item = (id: String, kind: KeyboardRootKanjiRadicalSectionView.RadicalListItem)
+    typealias Item = (id: String, kind: RadicalListItem)
 
     let items: [Item]
     let columnCount: Int
@@ -780,8 +779,7 @@ struct RadicalStrokeMarkerCell: View {
 }
 
 struct KeyboardRootKanjiRadicalSectionView: View {
-    @Binding var selectedCategory: RadicalPositionCategory
-    @Binding var selectedForm: RadicalForm?
+    let pickerState: RadicalPickerState
     let keyboardRowSpacing: CGFloat
     let emojiGridSpacing: CGFloat
     let compactEmojiKeyHeight: CGFloat
@@ -805,64 +803,20 @@ struct KeyboardRootKanjiRadicalSectionView: View {
     var onAdvanceKeyboard: (() -> Void)? = nil
 
     private var forms: [RadicalForm] {
-        KanjiRadicalCatalog.forms(in: selectedCategory, choices: strokeChoices)
+        KanjiRadicalCatalog.forms(in: pickerState.selectedCategory, choices: strokeChoices)
     }
 
     private var radicalColumns: [GridItem] {
         Array(repeating: GridItem(.flexible(), spacing: emojiGridSpacing), count: 7)
     }
 
-    // 字グリッドに総画数の区切り(タップ不可)を挟む。索引は総画数順に並んでいるので
-    // 値が変わった位置に入れるだけでよい(2483)
-    enum CharacterListItem {
-        case totalStrokeMarker(Int)
-        case character(KanjiRadicalFileIndex.Entry)
-    }
-
-    // 総画数は Unicode(Unihan kTotalStrokes)の値をそのまま使う。部首の数え方の設定ぶんを
-    // 足し引きする方式(2483)は、字ごとにどの字形を使うか索引に無いため一律加算になり不正確
-    // だった。数え方が分かれる字形はヘッダーに「N画に数えてください」と添えて読み替えを促す(2492)。
-    private func characterListItems(for form: RadicalForm) -> [(id: String, kind: CharacterListItem)] {
-        var items: [(id: String, kind: CharacterListItem)] = []
-        var lastTotal = -1
-        for entry in onLookupEntries(form.radical) {
-            let total = entry.totalStrokes
-            if total > 0, total != lastTotal {
-                items.append((id: "total-\(total)", kind: .totalStrokeMarker(total)))
-                lastTotal = total
-            }
-            items.append((id: "char-\(entry.character)", kind: .character(entry)))
-        }
-        return items
-    }
-
-    // 部首一覧に画数の区切り(タップ不可)を挟む。部首を探す手掛かりは画数のため(2447)
-    enum RadicalListItem {
-        case strokeMarker(Int)
-        case form(RadicalForm)
-    }
-
-    private var radicalListItems: [(id: String, kind: RadicalListItem)] {
-        var items: [(id: String, kind: RadicalListItem)] = []
-        var lastStrokes = -1
-        for form in forms {
-            let strokes = form.strokes(choices: strokeChoices)
-            if strokes != lastStrokes {
-                items.append((id: "marker-\(strokes)", kind: .strokeMarker(strokes)))
-                lastStrokes = strokes
-            }
-            items.append((id: form.id, kind: .form(form)))
-        }
-        return items
-    }
-
     var body: some View {
         VStack(spacing: keyboardRowSpacing) {
-            if let form = selectedForm {
+            if let form = pickerState.selectedForm {
                 // 戻るはヘッダー(◀ 偏 › 氵(さんずい))が担う。行内にパンくずは置かない。
                 // 字グリッドは UICollectionView(セル再利用。吹き出しもその中で描く。2783)
                 KanjiCharacterGridCollectionView(
-                    items: characterListItems(for: form),
+                    items: RadicalPickerListing.characterListItems(entries: onLookupEntries(form.radical)),
                     columnCount: 9,
                     itemSpacing: emojiGridSpacing,
                     itemHeight: compactEmojiKeyHeight,
@@ -873,12 +827,12 @@ struct KeyboardRootKanjiRadicalSectionView: View {
             } else {
                 // 部首の一覧もセル再利用へ(定義箇所のコメント参照。3193)
                 RadicalFormGridCollectionView(
-                    items: radicalListItems,
+                    items: RadicalPickerListing.radicalListItems(forms: forms, strokeChoices: strokeChoices),
                     columnCount: radicalColumns.count,
                     itemSpacing: emojiGridSpacing,
                     itemHeight: compactEmojiKeyHeight,
                     strokeChoices: strokeChoices,
-                    onSelect: { form in selectedForm = form }
+                    onSelect: { form in pickerState.selectForm(form) }
                 )
                 .frame(height: fourRowAlignedTopContentHeight)
             }
@@ -898,10 +852,9 @@ struct KeyboardRootKanjiRadicalSectionView: View {
                 ForEach(RadicalPositionCategory.allCases) { category in
                     RadicalCategoryKeyButton(
                         category: category,
-                        isSelected: selectedCategory == category
+                        isSelected: pickerState.selectedCategory == category
                     ) {
-                        selectedCategory = category
-                        selectedForm = nil
+                        pickerState.selectCategory(category)
                     }
                     .frame(maxWidth: .infinity)
                     .frame(height: mainFlickKeyHeight)

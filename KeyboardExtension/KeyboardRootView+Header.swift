@@ -8,11 +8,11 @@ extension KeyboardRootView {
         Group {
             if inputMode == .emoji,
                 emojiInputSubmode == .kanjiRadical,
-                selectedRadicalForm != nil {
+                radicalPickerState.selectedForm != nil {
                 // 部首ピッカーの字グリッド中はヘッダー自体を戻るボタンにする
                 // (行内にもう1段パンくずを置くと二重になるため。2447)
                 Button {
-                    selectedRadicalForm = nil
+                    radicalPickerState.clearForm()
                 } label: {
                     Text("◀ \(emojiHeaderTitle)")
                         .font(.system(size: 14, weight: .semibold, design: .rounded))
