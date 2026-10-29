@@ -106,8 +106,8 @@ extension KeyboardRootView {
             if isKanaFiveByTwoMode {
                 FlickKeyView(
                     kana: kanaModeSwitcherKana,
+                    // 方向は渡さない(フリックはパレットが先取りする。届いてもタップ扱い)
                     onCommit: selectKanaModeSwitcher,
-                    onCommitWithDirection: selectKanaModeSwitcher,
                     mainLabelFontSize: kanaModeSwitcherMainLabelFontSize,
                     showsDirectionalHints: showsFlickGuideCharacters,
                     showsGuideText: false,
@@ -174,8 +174,8 @@ extension KeyboardRootView {
 
             FlickKeyView(
                 kana: kanaModeSwitcherKana,
+                // 方向は渡さない(フリックはパレットが先取りする。届いてもタップ扱い)
                 onCommit: selectKanaModeSwitcher,
-                onCommitWithDirection: selectKanaModeSwitcher,
                 mainLabelFontSize: kanaModeSwitcherMainLabelFontSize,
                 showsDirectionalHints: showsFlickGuideCharacters,
                 showsGuideText: false,

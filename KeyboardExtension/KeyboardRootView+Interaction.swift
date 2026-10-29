@@ -244,20 +244,14 @@ extension KeyboardRootView {
         return true
     }
 
-    // キー部品の onCommit/onCommitWithDirection の型に合わせて出力文字列を受ける。切替キーは通常
-    // ラベル文字を出力しないが、パレットから決めたときだけ選んだ面のラベルが渡る
+    // キー部品の onCommit の型に合わせて出力文字列を受ける。切替キーは通常ラベル文字を出力しないが、
+    // パレットから決めたときだけ選んだ面のラベルが渡る。方向は受けない(左下のキーのフリックは
+    // パレットに先取りされて届かないので、届いてもタップ扱い。3174 以降)
     func selectKanaModeSwitcher(_ text: String) {
         if selectModePalette(text) {
             return
         }
         selectKanaModeSwitcher(direction: .milieu)
-    }
-
-    func selectKanaModeSwitcher(_ text: String, direction: FlickDirection) {
-        if selectModePalette(text) {
-            return
-        }
-        selectKanaModeSwitcher(direction: direction)
     }
 
     func selectCompactKeyboardSwitchKey(_: String) {

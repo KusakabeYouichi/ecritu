@@ -869,13 +869,15 @@ struct KeyboardRootView: View {
         KanaModeSwitcherAction(rawValue: kanaModeSwitcherUpFlickActionRawValue) ?? .symbols
     }
 
+    // 左下のキー(パレット付き)はフリックの案内を出さない。触れた瞬間にパレットが出てフリックが
+    // 届かないため(3174 以降)。右・上・下の割り当ては 🌐 キー(compactKeyboardSwitchKana)が別に持つ
     var kanaModeSwitcherKana: FlickKanaSet {
         FlickKanaSet(
             label: kanaModeSwitcherTapAction.keyLabel,
             center: kanaModeSwitcherTapAction.keyLabel,
-            up: kanaModeSwitcherUpFlickAction.keyLabel,
-            right: kanaModeSwitcherRightFlickAction.keyLabel,
-            down: "熙",  // 単漢字の面(康熙字典の熙。面選択パレットのアイコンと同じ字。ユーザ指定)
+            up: "",
+            right: "",
+            down: "",
             left: "",
             usesProfileDependentGuideOrder: false
         )
@@ -887,7 +889,7 @@ struct KeyboardRootView: View {
             center: "🌐",
             up: kanaModeSwitcherUpFlickAction.keyLabel,
             right: kanaModeSwitcherRightFlickAction.keyLabel,
-            down: "熙",  // 同上
+            down: "熙",  // 単漢字の面(康熙字典の熙。面選択パレットのアイコンと同じ字。ユーザ指定)
             left: "",
             usesProfileDependentGuideOrder: false
         )

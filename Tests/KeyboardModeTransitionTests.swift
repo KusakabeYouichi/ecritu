@@ -1473,3 +1473,103 @@ final class KeyboardPanelRoutingTests: XCTestCase {
         XCTAssertEqual(state.selectedSymbolCategory, .basic)
     }
 }
+
+// c02(1.1.1): 左下のキー(パレット付き)はフリックの案内を出さない。フリックはパレットに先取りされて
+// 届かないため(3174 以降)。右・上・下の割り当ては 🌐 キー(画面の狭い iPhone の 5×2 縦)が持ち続ける。
+// 3 方向を別々の値にして、取り違えを検出できるようにする(初期値に頼らない)
+@MainActor
+final class KanaModeSwitcherGuideTests: XCTestCase {
+    func testLeftKeyShowsOnlyTapAssignmentWithoutFlickGuides() {
+        let view = makeRootView(tap: "symbols", right: "kaomoji", up: "emoji")
+
+        let kana = view.kanaModeSwitcherKana
+
+        XCTAssertEqual(kana.label, "⌘")
+        XCTAssertEqual(kana.center, "⌘")
+        XCTAssertEqual(kana.up, "")
+        XCTAssertEqual(kana.right, "")
+        XCTAssertEqual(kana.down, "")
+        XCTAssertEqual(kana.left, "")
+    }
+
+    func testGlobeKeyKeepsFlickAssignments() {
+        let view = makeRootView(tap: "symbols", right: "kaomoji", up: "emoji")
+
+        let kana = view.compactKeyboardSwitchKana
+
+        XCTAssertEqual(kana.center, "🌐")
+        XCTAssertEqual(kana.up, "☺︎")
+        XCTAssertEqual(kana.right, "^_^")
+        XCTAssertEqual(kana.down, "熙")
+    }
+
+    // 左下のキーのフリックの経路(onCommitWithDirection を渡さない)はビューの配線なので単体では見られない。実機で確かめる
+    func testSwappedAssignmentsFollowOnGlobeKeyAndStayHiddenOnLeftKey() {
+        let view = makeRootView(tap: "emoji", right: "symbols", up: "kaomoji")
+
+        XCTAssertEqual(view.kanaModeSwitcherKana.center, "☺︎")
+        XCTAssertEqual(view.kanaModeSwitcherKana.up, "")
+        XCTAssertEqual(view.kanaModeSwitcherKana.right, "")
+        XCTAssertEqual(view.compactKeyboardSwitchKana.up, "^_^")
+        XCTAssertEqual(view.compactKeyboardSwitchKana.right, "⌘")
+        XCTAssertEqual(view.compactKeyboardSwitchKana.down, "熙")
+    }
+
+    private func makeRootView(tap: String, right: String, up: String) -> KeyboardRootView {
+        KeyboardRootView(
+            onTextInput: { _ in },
+            onDeleteBackward: {},
+            onLookupRadicalEntries: { _ in [] },
+            onSpace: {},
+            onReturn: {},
+            onAdvanceKeyboard: {},
+            onApplyKanaPostModifier: { _, _ in .ignored },
+            onToggleParenthesesWrapper: {},
+            onSelectConversionCandidate: { _ in },
+            onCommitComposingText: {},
+            onCommitComposingTextAsKatakana: {},
+            onUpgradeRecentKanaCommitToKatakana: { false },
+            onInputModeChanged: { _, _ in },
+            showsNextKeyboardKey: true,
+            containerFrame: CGRect(x: 0, y: 0, width: 375, height: 203),
+            directionProfile: .littlebear,
+            kanaLayoutMode: .fiveByTwo,
+            kanaModifierPlacementMode: .postfix,
+            numberLayoutMode: .calculette,
+            latinLayoutMode: .flick,
+            accentPaletteRawValue: "emeraude",
+            isSystemDictionaryFallback: false,
+            hasFullAccess: true,
+            keyboardBackgroundThemeRawValue: "sakura",
+            basicSymbolOrderRawValue: "ascii",
+            temperatureUnitRawValue: TemperatureUnitPreference.celsius.rawValue,
+            radicalStrokeCountStyleRawValue: "",
+            spaceToastTrigger: 0,
+            returnKeySystemImageName: nil,
+            returnKeyTitleOverride: nil,
+            isReturnKeyEnabled: true,
+            kanaFlickGuideDisplayMode: .fourDirections,
+            latinFlickGuideDisplayMode: .fourDirections,
+            numberFlickGuideDisplayMode: .fourDirections,
+            modifierFlickGuideDisplayMode: .off,
+            keyRepeatInitialDelay: 0.5,
+            keyRepeatInterval: 0.1,
+            kanaModeSwitcherTapActionRawValue: tap,
+            kanaModeSwitcherRightFlickActionRawValue: right,
+            kanaModeSwitcherUpFlickActionRawValue: up,
+            kanaPostModifierEmptyTapActionRawValue: "kaomoji",
+            kanaPostModifierEmptyTapKaomojiCategoryID: "existing",
+            kanaPostModifierEmptyTapEmojiCategoryID: "0",
+            kanaPostModifierEmptyTapSymbolCategoryID: "0",
+            kanaPostModifierFlickDakutenEnabled: true,
+            landscapeCandidateSideRawValue: "left",
+            landscapeNumberPaneSideRawValue: "left",
+            landscapeLatinSuggestionModeRawValue: "sidebar",
+            shortcutVocabulary: [],
+            candidateBarModel: KeyboardCandidateBarModel(),
+            showsParenthesesWrapper: false,
+            initialSpaceToastText: nil,
+            initialInputMode: .kana
+        )
+    }
+}
