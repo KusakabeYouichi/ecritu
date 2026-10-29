@@ -644,6 +644,12 @@ final class KeyboardViewController: UIInputViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         MemoryForensics.notePhase("個体の生成(viewDidLoad)")
+        // 調査用ログ(メール欄 3585): ビューの最初の onAppear は viewWillAppear より前に来るので、受け口をここでもつなぐ。原因判明後に外す
+        #if DEBUG
+        KeyboardStuckTouchDiagnostics.onTouchForensics = { [weak self] detail in
+            self?.appendKeyboardDiagnosticsLog("接触詳細 \(detail)")
+        }
+        #endif
         // 外観とサイズクラスの変化の監視(3685)。クロージャーは self を引数で受けるので循環参照にならない
         registerForTraitChanges([UITraitUserInterfaceStyle.self, UITraitVerticalSizeClass.self]) {
             (controller: KeyboardViewController, previous: UITraitCollection) in
@@ -2001,6 +2007,16 @@ final class KeyboardViewController: UIInputViewController {
         let previousConfiguration = lastRenderConfiguration
         lastRenderConfiguration = configuration
         updateCandidateBarModel(from: configuration)
+        // 調査用ログ(メール欄 3585): 欄の種類から決まる初期の面が変わった設定を、画面へ渡したかどうか。原因判明後に外す
+        #if DEBUG
+        if previousConfiguration?.initialInputMode != configuration.initialInputMode {
+            let previousMode = previousConfiguration.map { "\($0.initialInputMode)" } ?? "nil(初回)"
+            let skipsReplacement = previousConfiguration.map { configuration.equalIgnoringCandidateBar($0) } ?? false
+            appendKeyboardDiagnosticsLog(
+                "調査(メール欄) 設定の初期の面 \(previousMode) -> \(configuration.initialInputMode) trigger=\(trigger) 差し替えを省く=\(skipsReplacement) hosting=\(hostingController != nil) window=\(view.window != nil)"
+            )
+        }
+        #endif
 
         if let previousConfiguration,
             configuration.equalIgnoringCandidateBar(previousConfiguration),
