@@ -1482,6 +1482,10 @@ struct KeyboardRootView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: keyboardContentAlignment)
         .onAppear {
+            // 調査用ログ(メール欄 3585): 表示時点の初期の面。原因判明後に外す
+            #if DEBUG
+            KeyboardStuckTouchDiagnostics.onTouchForensics?("調査(メール欄) onAppear initialInputMode=\(initialInputMode) inputMode=\(inputMode)")
+            #endif
             if inputMode != initialInputMode {
                 inputMode = initialInputMode
             }
@@ -1650,6 +1654,16 @@ extension KeyboardRootView {
     func handleInputModeObservationChange(_ signal: InputModeObservation) {
         let previous = lastInputModeObservation
         lastInputModeObservation = signal
+        // 調査用ログ(メール欄 3585): 欄の種類から決まる面の変化と、追従したかどうか。原因判明後に外す
+        #if DEBUG
+        if previous?.initialInputMode != signal.initialInputMode {
+            let previousText = previous.map { "\($0.initialInputMode)" } ?? "nil(初回)"
+            let followed = previous != nil && inputMode != signal.initialInputMode
+            KeyboardStuckTouchDiagnostics.onTouchForensics?(
+                "調査(メール欄) initialInputMode \(previousText) -> \(signal.initialInputMode) inputMode=\(inputMode) 追従=\(followed)"
+            )
+        }
+        #endif
 
         if let previous, previous.initialInputMode != signal.initialInputMode {
             if inputMode != signal.initialInputMode {

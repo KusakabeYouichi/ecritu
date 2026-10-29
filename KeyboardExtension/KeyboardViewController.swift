@@ -4,6 +4,11 @@ import CoreFoundation
 import Darwin
 
 final class KeyboardViewController: UIInputViewController {
+    // 調査用ログ(メール欄 3585): 欄の keyboardType を最後に記録した値。変わったときだけ記録する。原因判明後に外す
+    #if DEBUG
+    var investigationLastLoggedKeyboardType: Int?
+    #endif
+
     enum UserInitiatedRefreshReason: String {
         case kanaInput = "kanaInput"
         case commit = "commit"
@@ -753,6 +758,9 @@ final class KeyboardViewController: UIInputViewController {
         }
         #endif
         updateKeyboardDiagnosticsHeartbeat(event: "viewWillAppear", appendLog: true)
+        #if DEBUG
+        logKeyboardTypeForEmailFieldInvestigation("viewWillAppear", always: true)  // 調査用ログ(メール欄 3585)
+        #endif
         // 高さが落ち着くまで面を隠す(定義コメント参照。3100)
         isAwaitingInitialHeightSettle = true
         initialHeightSettleDeadline = CFAbsoluteTimeGetCurrent() + Self.initialHeightSettleTimeoutSec
@@ -794,6 +802,9 @@ final class KeyboardViewController: UIInputViewController {
     // 外部変更の直前通知。完了ボタンでは textDidChange(文脈空)の 8ms 前に文脈そのままで届く(2684 実機)
     override func textWillChange(_ textInput: UITextInput?) {
         super.textWillChange(textInput)
+        #if DEBUG
+        logKeyboardTypeForEmailFieldInvestigation("textWillChange", always: false)  // 調査用ログ(メール欄 3585)
+        #endif
         commitComposingTextOnExternalTextWillChangeIfNeeded(trigger: "textWillChange")
     }
 
@@ -898,6 +909,9 @@ final class KeyboardViewController: UIInputViewController {
 
     override func textDidChange(_ textInput: UITextInput?) {
         super.textDidChange(textInput)
+        #if DEBUG
+        logKeyboardTypeForEmailFieldInvestigation("textDidChange", always: false)  // 調査用ログ(メール欄 3585)
+        #endif
         updateKeyboardDiagnosticsHeartbeat(event: "textDidChange")
         publishMemoryFootprintPeakForDebugDisplay()
 
@@ -1013,6 +1027,9 @@ final class KeyboardViewController: UIInputViewController {
     override func viewDidAppear(_ animated: Bool) {
         defer { MemoryForensics.notePhase("表示(viewDidAppear)") }
         super.viewDidAppear(animated)
+        #if DEBUG
+        logKeyboardTypeForEmailFieldInvestigation("viewDidAppear", always: true)  // 調査用ログ(メール欄 3585)
+        #endif
         setNeedsUpdateOfScreenEdgesDeferringSystemGestures()
         updateKeyboardDiagnosticsHeartbeat(event: "viewDidAppear", appendLog: true)
         recordFullAccessConfirmationIfNeeded()
