@@ -340,6 +340,10 @@ enum LongPressCandidateAxis {
 // 端で寄せるので、以前の「押した位置から何マス動いたか」で数えると、見た目と選ばれる候補がずれていた
 // (9 候補の e では、キーの真上が 5 番目なのに 1 番目から数えていた。ユーザ報告)
 enum LongPressHorizontalCandidateHitTest {
+    // 出た直後の 1 番目から、指が半マス以上動いたキー。FlickKeyView に格納プロパティを足すとキー群の
+    // 巨大なタプルが太る(2921 のスタック超過)ので、ここに置く。盤は同時に 1 つしか出ない
+    static var keyIDLeftAnchor: String?
+
     // localX はキーの左端からの位置。パネルはキーの中央に置いて panelOffsetX だけ寄せたもの
     static func index(
         forLocalX localX: CGFloat,
@@ -479,7 +483,6 @@ struct FlickKeyView: View {
     @State private var latestTouchLocationX: CGFloat = 0
     @State private var longPressAnchorLocationX: CGFloat = 0
     @State private var longPressAnchorLocationY: CGFloat = 0
-    @State private var longPressHasLeftAnchor = false
     @State private var keyFrameInGlobal: CGRect = .zero
     @State private var secondaryFlickPrimaryDirection: FlickDirection?
     @State private var secondaryFlickVerticalDirection: FlickDirection?
@@ -1281,7 +1284,7 @@ struct FlickKeyView: View {
             latestTouchLocationY = keyFrameInGlobal.height * 0.5
             longPressAnchorLocationX = localX
             longPressAnchorLocationY = latestTouchLocationY
-            longPressHasLeftAnchor = false
+            LongPressHorizontalCandidateHitTest.keyIDLeftAnchor = nil
             highlightedLongPressIndex = 0
             longPressIsActive = true
             #if DEBUG
@@ -1368,7 +1371,7 @@ struct FlickKeyView: View {
             activeDirection = .milieu
             longPressAnchorLocationX = latestTouchLocationX
             longPressAnchorLocationY = latestTouchLocationY
-            longPressHasLeftAnchor = false
+            LongPressHorizontalCandidateHitTest.keyIDLeftAnchor = nil
             // 縦(面選択のパレット)は、指が盤に入るまでどれも選ばない(ユーザ指定 3138)
             highlightedLongPressIndex = longPressCandidateAxis == .vertical
                 ? LongPressVerticalCandidatePanel.noSelection
@@ -1463,7 +1466,9 @@ struct FlickKeyView: View {
         latestTouchLocationX = 0
         longPressAnchorLocationX = 0
         longPressAnchorLocationY = 0
-        longPressHasLeftAnchor = false
+        if LongPressHorizontalCandidateHitTest.keyIDLeftAnchor == rawLongPressKeyID {
+            LongPressHorizontalCandidateHitTest.keyIDLeftAnchor = nil
+        }
         didTriggerLongPressAction = false
 
         if isTouching {
@@ -1494,11 +1499,11 @@ struct FlickKeyView: View {
 
         // 出た直後は 1 番目(元の文字)。指が半マス以上動いてからは、指の真下の候補を選ぶ(3590)
         let slotWidth = effectiveCandidateCellWidth + Metrics.candidateSpacing
-        if !longPressHasLeftAnchor {
+        if LongPressHorizontalCandidateHitTest.keyIDLeftAnchor != rawLongPressKeyID {
             guard abs(locationX - longPressAnchorLocationX) >= slotWidth * 0.5 else {
                 return 0
             }
-            longPressHasLeftAnchor = true
+            LongPressHorizontalCandidateHitTest.keyIDLeftAnchor = rawLongPressKeyID
         }
         return LongPressHorizontalCandidateHitTest.index(
             forLocalX: locationX,
