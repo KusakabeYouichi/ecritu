@@ -60,6 +60,9 @@
 	        <dict><key>phrase</key><string>柳月</string><key>shortcut</key><string>りゅうげつ</string></dict>
 	        <dict><key>phrase</key><string>稚加栄</string><key>shortcut</key><string>ちかえ</string></dict>
 	        <dict><key>phrase</key><string>木川屋</string><key>shortcut</key><string>きがわや</string></dict>
+	        <dict><key>phrase</key><string>蓬莱軒</string><key>shortcut</key><string>ほうらいけん</string></dict>
+	        <dict><key>phrase</key><string>あつた蓬莱軒</string><key>shortcut</key><string>あつたほうらいけん</string></dict>
+	        <dict><key>phrase</key><string>一芳亭</string><key>shortcut</key><string>いっぽうてい</string></dict>
 	<!-- 音楽 -->
 	        <dict><key>phrase</key><string>iReal b</string><key>shortcut</key><string>あいりあるびー</string></dict>
 	        <dict><key>phrase</key><string>iReal Pro</string><key>shortcut</key><string>あいりあるぷろ</string></dict>

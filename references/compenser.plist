@@ -877,5 +877,7 @@
 	        <dict><key>phrase</key><string>Vermicular</string><key>shortcut</key><string>ゔぁーみきゅら</string></dict>
 	        <dict><key>phrase</key><string>クリストフル</string><key>shortcut</key><string>くりすとふる</string></dict>	<!-- 銀器のブランド。辞書にあるが LM に無く、連文節で クリストフ+る に割れていた(ユーザ報告 3769) -->
 	        <dict><key>phrase</key><string>Christofle</string><key>shortcut</key><string>くりすとふる</string></dict>
+	        <dict><key>phrase</key><string>ラギオール</string><key>shortcut</key><string>らぎおーる</string></dict>
+	        <dict><key>phrase</key><string>ライヨール</string><key>shortcut</key><string>らいよーる</string></dict>
 </array>
 </plist>

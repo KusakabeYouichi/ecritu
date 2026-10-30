@@ -222,6 +222,23 @@
 	<dict><key>phrase</key><string>TikTok</string><key>shortcut</key><string>てぃっくとっく</string></dict>
 	<dict><key>phrase</key><string>GRAVITY</string><key>shortcut</key><string>ぐらゔぃてぃ</string></dict>
 
+	<!-- 動画配信 -->
+	<dict><key>phrase</key><string>Netflix</string><key>shortcut</key><string>ねっとふりっくす</string></dict>
+	<dict><key>phrase</key><string>dアニメストア</string><key>shortcut</key><string>でぃーあにめすとあ</string></dict>
+	<dict><key>phrase</key><string>DMM TV</string><key>shortcut</key><string>でぃーえむえむてぃーゔぃー</string></dict>
+	<dict><key>phrase</key><string>U-NEXT</string><key>shortcut</key><string>ゆーねくすと</string></dict>
+	<dict><key>phrase</key><string>Amazonプライム</string><key>shortcut</key><string>あまぞんぷらいむ</string></dict>
+	<dict><key>phrase</key><string>Amazon prime video</string><key>shortcut</key><string>あまぞんぷらいむゔぃでお</string></dict>
+	<dict><key>phrase</key><string>Amazonプライム・ビデオ</string><key>shortcut</key><string>あまぞんぷらいむびでお</string></dict>
+	<dict><key>phrase</key><string>Disney+</string><key>shortcut</key><string>でぃずにーぷらす</string></dict>
+	<dict><key>phrase</key><string>FOD</string><key>shortcut</key><string>えふおーでぃー</string></dict>
+	<dict><key>phrase</key><string>ABEMA</string><key>shortcut</key><string>あべま</string></dict>
+	<dict><key>phrase</key><string>ABEMAプレミアム</string><key>shortcut</key><string>あべまぷれみあむ</string></dict>
+	<dict><key>phrase</key><string>Hulu</string><key>shortcut</key><string>ふーるー</string></dict>
+	<dict><key>phrase</key><string>TELASA</string><key>shortcut</key><string>てらさ</string></dict>
+	<dict><key>phrase</key><string>Lemino</string><key>shortcut</key><string>れみの</string></dict>
+	<dict><key>phrase</key><string>WOWOW</string><key>shortcut</key><string>わうわう</string></dict>
+
 	<!-- misc. -->
 	<dict><key>phrase</key><string>Amazon</string><key>shortcut</key><string>あまぞん</string></dict>
 	<dict><key>phrase</key><string>au</string><key>shortcut</key><string>えいゆー</string></dict>
@@ -232,8 +249,6 @@
 	<dict><key>phrase</key><string>Google</string><key>shortcut</key><string>ぐーぐる</string></dict>
 	<dict><key>phrase</key><string>Intel</string><key>shortcut</key><string>いんてる</string></dict>
 	<dict><key>phrase</key><string>Microsoft</string><key>shortcut</key><string>まいくろそふと</string></dict>
-	<dict><key>phrase</key><string>Netflix</string><key>shortcut</key><string>ねっとふりっくす</string></dict>
-	<dict><key>phrase</key><string>Hulu</string><key>shortcut</key><string>ふーるー</string></dict>
 	<dict><key>phrase</key><string>SoftBank</string><key>shortcut</key><string>そふとばんく</string></dict>
 	<dict><key>phrase</key><string>Type-A</string><key>shortcut</key><string>たいぷえい</string></dict>
 	<dict><key>phrase</key><string>Type-A</string><key>shortcut</key><string>たいぷえー</string></dict>
