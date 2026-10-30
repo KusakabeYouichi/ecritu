@@ -606,11 +606,13 @@ struct ShortcutDictionarySettingsSection: View {
                 List {
                     ForEach(entries) { entry in
                         HStack(spacing: 8) {
-                            // 確認を待つ間は取り消し線で示す(ユーザー指定 3595)
+                            // [削除]が出ている間と確認を待つ間は取り消し線で示す(ユーザー指定 3595・3598)
+                            let isMarkedForDeletion = pendingDeletionEntry?.id == entry.id
+                                || (revealedDeletionEntryID == entry.id && !isReordering)
                             Text(entry.candidate)
                                 .font(.system(size: 14, weight: .semibold))
-                                .foregroundStyle(pendingDeletionEntry?.id == entry.id ? .secondary : .primary)
-                                .strikethrough(pendingDeletionEntry?.id == entry.id)
+                                .foregroundStyle(isMarkedForDeletion ? .secondary : .primary)
+                                .strikethrough(isMarkedForDeletion)
                                 .lineLimit(1)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             if revealedDeletionEntryID == entry.id, !isReordering {
