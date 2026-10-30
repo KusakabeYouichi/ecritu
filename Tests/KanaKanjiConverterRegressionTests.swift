@@ -9063,6 +9063,80 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         converter.invalidateCandidateCache()
     }
 
+    // ユーザ報告 3602 のまとめ(実機同様の追加語彙・抑制の下で、表示の先頭=連文節の最良、連文節が空なら単文節の先頭)。
+    // 直し方は misc/suppr/連語表/pair bonus/seed。数字の後ろは precedingCharacter で渡す(数字は数字モードで確定済み)
+    func testRegressionRealLMUserReport3602Batch() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+
+        let expectations: [(preceding: Character?, reading: String, top: String)] = [
+            (nil, "のままで", "のままで"),
+            (nil, "みにきてました", "見に来てました"),
+            (nil, "なんなの", "なんなの"),
+            (nil, "そもそもそととつうしんするきのうはないし", "そもそも外と通信する機能はないし"),
+            (nil, "なんていいますか", "なんて言いますか"),
+            (nil, "たのしみですね", "楽しみですね"),
+            (nil, "おかしなこという", "おかしなこと言う"),
+            (nil, "もしよらなかったなら", "もし寄らなかったなら"),
+            (nil, "あるきって", "歩きって"),
+            (nil, "なんけんぐらい", "何件ぐらい"),
+            (nil, "あぷりのしょうたい", "アプリの招待"),
+            (nil, "しんさとおらんだろう", "審査通らんだろう"),
+            (nil, "しんさとおったようだ", "審査通ったようだ"),
+            (nil, "でみれるようになるまで", "で見れるようになるまで"),
+            (nil, "うちなんか", "うちなんか"),
+            ("2", "まいざし", "枚挿し"),
+            (nil, "こうはならない", "こうはならない"),
+            (nil, "べつのばしょにうつったのね", "別の場所に移ったのね"),
+            (nil, "おるてまが", "折る手間が"),
+            (nil, "もってるかねのわりにはしょうがく", "持ってる金の割には少額"),
+            (nil, "みおぼえあるかもなていど", "見覚えあるかもな程度"),
+            (nil, "まっくみに", "Mac mini"),
+            (nil, "せいきか", "正規化"),
+            (nil, "まるだいず", "丸大豆"),
+            (nil, "りんさんえん", "リン酸塩"),
+            (nil, "しゅかいせん", "主回線"),
+            (nil, "めいるあどれす", "メイルアドレス"),
+            (nil, "あわもり", "泡盛"),
+            (nil, "たんごのためかたは", "単語の貯め方は"),
+            ("0", "とかなら", "とかなら")
+        ]
+        for expectation in expectations {
+            converter.invalidateCandidateCache()
+            let multi = converter.multiClauseCandidates(
+                for: expectation.reading,
+                systemCandidateMode: .surface,
+                precedingCharacter: expectation.preceding
+            )
+            let single = converter.candidates(
+                for: expectation.preceding.map(String.init).map { $0 + expectation.reading } ?? expectation.reading,
+                limit: 8,
+                systemCandidateMode: .surface
+            )
+            XCTAssertEqual(
+                multi.first ?? single.first,
+                expectation.top,
+                "\(expectation.reading): multi=\(multi.prefix(4)) single=\(single.prefix(4))"
+            )
+            // かなが先頭の語は、表示層で末尾へ退避されないこと
+            if expectation.top == expectation.reading {
+                XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: expectation.reading), "keepKana \(expectation.reading)")
+            }
+        }
+
+        // 煮出したが の次に に出したが
+        converter.invalidateCandidateCache()
+        XCTAssertEqual(
+            Array(converter.candidates(for: "にだしたが", limit: 4, systemCandidateMode: .surface).prefix(2)),
+            ["煮出したが", "に出したが"]
+        )
+        // 数字の直後の と は、読み全体が と のときだけ 斗(10+とかなら が 10斗かなら だった)
+        converter.invalidateCandidateCache()
+        XCTAssertFalse(converter.candidates(for: "10とかなら", limit: 8, systemCandidateMode: .surface).contains("斗かなら"))
+        converter.invalidateCandidateCache()
+        XCTAssertEqual(converter.candidates(for: "10と", limit: 8, systemCandidateMode: .surface).first, "斗")
+    }
+
     // 実機同様に追加語彙をロードした状態で、追加語彙断片(ろー→raw)が長語を分断しないこと。
     // 実データ(sacoche.plist→InitialAjout)由来で ろーぬげんさん→ローヌ原産 を固定し、
     // 「テストが追加語彙を読まないため実機のみ再現していた」ギャップを回帰で塞ぐ。
@@ -17121,8 +17195,10 @@ extension KanaKanjiConverterRegressionTests {
                 ("のみにくる", "飲みに来る"),
                 ("ちしまをさきに", "千島を先に")
             ] {
+                // 表示の先頭=連文節の最良。読み全体が 1 語(飲みに来る は misc の句。3602)なら連文節は空で単文節の先頭
                 XCTAssertEqual(
-                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first
+                        ?? converter.candidates(for: reading, limit: 4, systemCandidateMode: mode).first,
                     expected,
                     "mode=\(mode.rawValue) reading=\(reading)"
                 )

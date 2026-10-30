@@ -976,6 +976,11 @@ extension KanaKanjiConverter {
             where !readingHasSeedWord && !isOrdinalMeReading && !hasUnitComposition && !readingIsParticle
                 && reading.count > counterReading.count && reading.hasPrefix(counterReading)
                 && !(seedStemBeforeParticle.map { counterReading.count < $0.count } ?? false) {
+                // 斗(と)は助詞 と(とか/とも/とは)と同音で、後ろにかなが続く形はまず助詞。10+とかなら が 10斗かなら になっていた
+                // (ユーザ報告 3602)。斗 は読み全体が と のときだけ(上の digitBoostCounterSurfaces)出す
+                if counterReading == "と" {
+                    continue
+                }
                 let surfaces = Self.digitBoostCounterSurfaces(for: counterReading) ?? []
                 let tail = String(reading.dropFirst(counterReading.count))
                 // 末尾の長さでは制限しない(ユーザ指定 2700)。数字につながる1文節め(助数詞読み)が

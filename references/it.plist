@@ -70,6 +70,7 @@
 	<dict><key>phrase</key><string>MacBook Neo</string><key>shortcut</key><string>まっくぶっくねお</string></dict>
 	<dict><key>phrase</key><string>MacBook Pro</string><key>shortcut</key><string>まっくぶっくぷろ</string></dict>
 	<dict><key>phrase</key><string>MacBook</string><key>shortcut</key><string>まっくぶっく</string></dict>
+	<dict><key>phrase</key><string>Mac mini</string><key>shortcut</key><string>まっくみに</string></dict>	<!-- まっくみに が マックミニ/Mac美仁 になっていた(ユーザ報告 3602) -->
 	<dict><key>phrase</key><string>Macintosh</string><key>shortcut</key><string>まっきんとっしゅ</string></dict>
 	<dict><key>phrase</key><string>Newton</string><key>shortcut</key><string>にゅーとん</string></dict>	<!-- 1993-1998 の携帯情報端末。フリック入力の Hanabi(style-hanabi の由来)が動いた機種(ユーザ指定 3018) -->
 	<dict><key>phrase</key><string>Magic Mouse</string><key>shortcut</key><string>まじっくまうす</string></dict>

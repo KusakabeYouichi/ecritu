@@ -180,6 +180,26 @@ extension KeyboardCandidateMergingTests {
         XCTAssertEqual(SupplementaryCandidateMerger.promotingPresentationOrderSeed(input, reading: "そうだ"), input)
     }
 
+    // 3602: 単独の読みの先頭そろえ(ユーザ指定)。らん→欄、みそに→味噌煮、しょうがく→少額、うるか→売るか、ぜひ/すげー→かな、ひがわ→樋川
+    func testPresentationOrderSeedUserReport3602() {
+        XCTAssertEqual(SupplementaryCandidateMerger.promotingPresentationOrderSeed(["蘭", "欄", "乱"], reading: "らん"), ["欄", "蘭", "乱"])
+        XCTAssertEqual(SupplementaryCandidateMerger.promotingPresentationOrderSeed(["味噌に", "みそに", "味噌煮"], reading: "みそに"), ["味噌煮", "味噌に", "みそに"])
+        XCTAssertEqual(SupplementaryCandidateMerger.promotingPresentationOrderSeed(["小学", "小額", "少額"], reading: "しょうがく").first, "少額")
+        XCTAssertEqual(SupplementaryCandidateMerger.promotingPresentationOrderSeed(["うるか", "売るか"], reading: "うるか").first, "売るか")
+        XCTAssertEqual(SupplementaryCandidateMerger.promotingPresentationOrderSeed(["是非", "ぜひ"], reading: "ぜひ"), ["ぜひ", "是非"])
+        XCTAssertEqual(SupplementaryCandidateMerger.promotingPresentationOrderSeed(["スゲー", "すげー"], reading: "すげー"), ["すげー", "スゲー"])
+        XCTAssertEqual(
+            SupplementaryCandidateMerger.promotingPresentationOrderSeed(["ひがわ", "比川", "樋川", "比側"], reading: "ひがわ"),
+            ["樋川", "比川", "比側", "ひがわ"]
+        )
+    }
+
+    // 3602: 知能/智能 は書きかえの日常語の例外(本来の漢字を先に の設定でも 知能 が先)
+    func testKakikaeEverydayExceptionIncludesChinou() {
+        XCTAssertEqual(KakikaePreference.bothBeforeFirst.demotingEverydayPair(for: "知能"), .bothAfterFirst)
+        XCTAssertEqual(KakikaePreference.bothBeforeFirst.demotingEverydayPair(for: "知能", enabled: false), .bothBeforeFirst)
+    }
+
     // あさって 等の相対の日付語を実際の日付へ(カレンダーの日付書式に合わせる。3445)
     private func relativeDateTestNow() -> Date {
         Calendar(identifier: .gregorian).date(from: DateComponents(year: 2026, month: 10, day: 8, hour: 12))!

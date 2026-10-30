@@ -345,8 +345,8 @@
 	<dict><key>phrase</key><string>泡瀬養護</string><key>shortcut</key><string>あわせようご</string></dict>
 	<dict><key>phrase</key><string>泡波</string><key>shortcut</key><string>あわなみ</string></dict>
 	<dict><key>phrase</key><string>阿波根</string><key>shortcut</key><string>あわね</string></dict>
-	<dict><key>phrase</key><string>AWAMORI</string><key>shortcut</key><string>あわもり</string></dict>
 	<dict><key>phrase</key><string>泡盛</string><key>shortcut</key><string>あわもり</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>AWAMORI</string><key>shortcut</key><string>あわもり</string></dict>
 	<dict><key>phrase</key><string>あわもり</string><key>shortcut</key><string>あわもり</string></dict>
 	<dict><key>phrase</key><string>泡盛貴族</string><key>shortcut</key><string>あわもりきぞく</string></dict>
 	<dict><key>phrase</key><string>泡盛野郎</string><key>shortcut</key><string>あわもりやろう</string></dict>
@@ -6408,5 +6408,6 @@
 	<dict><key>phrase</key><string>ル・ボア</string><key>shortcut</key><string>るぼあ</string></dict>
 	<dict><key>phrase</key><string>le bois</string><key>shortcut</key><string>るぼあ</string></dict>
 	<dict><key>phrase</key><string>萬たく</string><key>shortcut</key><string>まんたく</string></dict>
+	<dict><key>phrase</key><string>よか寿司</string><key>shortcut</key><string>よかずし</string></dict>
 </array>
 </plist>
