@@ -7,6 +7,20 @@ extension KanaKanjiConverter {
     // お/ご+語幹 の合成で、語幹の LM unigram がこれより高い(=珍しい)か無いときは作らない(3395)。
     // 料理 4934 / 酒 5387 / 稽古 6455 は残り、良吏 8139・綾里(LM なし)・料り(LM なし)は落ちる。LM の無い辞書(テストの小辞書)では判定しない
     static let politePrefixStemMaxUnigramCost = 7500
+    // お ではなく ご が付く漢語(ご持参/ご連絡)と、どちらも付かない漢語(自賛)。お+ を作らない。
+    // サ変名詞は お も許している(お勉強/お掃除。3379)ため、おじさん から お持参・お自賛 が立っていた(ユーザ報告 3606)。
+    // お返事/お食事/お電話 のように お も付く語は入れない
+    static let honorificOExcludedSinoNouns: Set<String> = [
+        "持参", "自賛", "心配", "連絡", "案内", "説明", "利用", "確認", "相談", "報告",
+        "招待", "紹介", "注文", "協力", "参加", "返信", "検討", "理解", "了承", "承知",
+        "指導", "支援", "提案", "依頼", "対応", "予約", "入金", "購入", "契約", "登録",
+        "記入", "来店", "来場", "出席", "欠席", "結婚", "出産", "入学", "卒業", "就職",
+        "入院", "退院", "安心", "迷惑", "期待", "意見", "質問", "回答", "要望", "希望",
+        "配慮", "尽力", "遠慮", "訪問", "送付", "返送", "請求", "了解", "選択", "判断",
+        "注意", "指摘", "賛同", "愛顧", "贔屓", "参考", "検収", "査収", "清聴", "来社",
+        "来訪", "家族", "両親", "主人", "近所", "本人", "自身", "自宅", "住所", "職業",
+        "意向", "用件", "用命", "注目", "支持", "活躍", "健康", "無事", "冥福",
+    ]
 
     // 呼ばれるたびに組んで並べ替えていた(サンプルで約 2%。3038)。内容は静的なので 1 回だけ作る
     static func honorificOSuruInflectionSuffixes() -> [String] {
@@ -997,6 +1011,10 @@ extension KanaKanjiConverter {
         guard !candidate.hasPrefix(prefix),
             !candidate.hasPrefix("御"),
             let firstScalar = candidate.unicodeScalars.first else {
+            return false
+        }
+
+        if prefix == "お", Self.honorificOExcludedSinoNouns.contains(candidate) {
             return false
         }
 

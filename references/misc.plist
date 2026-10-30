@@ -198,7 +198,7 @@
 	<!-- ■ かな正書の語・句(かな識別 curated。漢字化・カタカナ化・全かなエコー抑制から守る) -->
 	<dict><key>phrase</key><string>うどんすき</string><key>shortcut</key><string>うどんすき</string><key>pos</key><string>名詞</string></dict>	<!-- うどんすき(美々卯の登録商標の鍋料理、かな表記が正式): 辞書に無く うどん好き/うどん隙 の合成ばかりだった(ユーザ指定 3329) -->
 	<dict><key>phrase</key><string>のなのか</string><key>shortcut</key><string>のなのか</string></dict>	<!-- のなのか: 所有の の+なのか(アジアのなのか/誰のなのか)。の→名(な)の連接が安く アジアの名のか になっていた(ユーザ報告 3366)。なのか 単独で登録すると 七日(なのか)を押しのけるので の ごと 1 語にする -->
-	<dict><key>phrase</key><string>おじさん</string><key>shortcut</key><string>おじさん</string></dict>	<!-- おじさん: お+持参 の お持参 が先頭だった(かなが正書の呼び名。ユーザ報告 3604) -->
+	<dict><key>phrase</key><string>おじさん</string><key>shortcut</key><string>おじさん</string></dict>	<!-- おじさん: かなが正書の呼び名なので伯父さん/叔父さん より先(ユーザ報告 3604)。お持参/お自賛 は登録でなく お+ の規則で作らない(3606) -->
 	<dict><key>phrase</key><string>なんなの</string><key>shortcut</key><string>なんなの</string></dict>	<!-- なんなの: 何+名(な)+の の 何名の が先頭だった(ユーザ報告 3602。以下 4 句も同じ報告) -->
 	<dict><key>phrase</key><string>のままで</string><key>shortcut</key><string>のままで</string></dict>	<!-- のままで: の+ママ+で の のママで が先頭だった -->
 	<dict><key>phrase</key><string>うちなんか</string><key>shortcut</key><string>うちなんか</string></dict>	<!-- うちなんか: うち何か が先頭だった -->

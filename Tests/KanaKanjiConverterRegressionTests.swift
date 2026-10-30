@@ -21048,6 +21048,23 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(walk.first, "犬とお散歩に行く", "multi=\(walk.prefix(4))")
     }
 
+    // 3606: ご が付く漢語(持参)と、どちらも付かない漢語(自賛)には お+ を作らない。おじさん が お持参 の後ろだった
+    func testPolitePrefixOSkipsGoOnlySinoNouns() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let single = converter.candidates(for: "おじさん", limit: 12, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "おじさん", "\(single)")
+        XCTAssertFalse(single.contains("お持参"), "\(single)")
+        XCTAssertFalse(single.contains("お自賛"), "\(single)")
+        let multi = converter.multiClauseCandidates(for: "おじさん", systemCandidateMode: .surface)
+        XCTAssertFalse(multi.contains("お持参"), "multi=\(multi.prefix(6))")
+        XCTAssertTrue(multi.isEmpty || multi.first == "おじさん", "multi=\(multi.prefix(6))")
+        let contact = converter.candidates(for: "おれんらく", limit: 8, systemCandidateMode: .surface)
+        XCTAssertFalse(contact.contains("お連絡"), "\(contact)")
+        let goJisan = converter.candidates(for: "ごじさん", limit: 8, systemCandidateMode: .surface)
+        XCTAssertTrue(goJisan.contains("ご持参"), "\(goJisan)")
+    }
+
     // 3380: よしのや は 吉野家 が先頭(Sudachi の wc10000 で後ろに回され 吉野+や の合成が先頭だった)
     func testYoshinoyaRegistered() throws {
         try prepareRealLMDictionary()
