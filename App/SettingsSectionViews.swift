@@ -790,6 +790,8 @@ struct KanaPostModifierEmptyTapAssignmentSection: View {
                     }
                 }
                 .pickerStyle(.menu)
+                // 中身の幅で置く。幅を詰められて[ショートカット]が 2 行に折れていた(3593、ユーザ報告)
+                .fixedSize(horizontal: true, vertical: false)
                 .onAppear {
                     let validIDs = Set(currentCategoryDescriptors.map(\.id))
 
