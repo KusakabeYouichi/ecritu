@@ -204,6 +204,27 @@ enum RawTouchLongPress {
         }
     }
 
+    // SwiftUI のジェスチャーがキーに届いたときに呼ぶ。生タッチ側が別のキーを追っていたら、そちらを取り消す。
+    // 同じ接触を、生タッチは上の段の g、SwiftUI は下の段の c と割り当て、盤が 2 つ出た(3590 の実機ログ。
+    // 行の境目付近)。どのキーかは SwiftUI のヒットテストを正とする
+    static func yield(toKeyID keyID: String) {
+        if let pendingKeyID, pendingKeyID != keyID {
+            cancelPending()
+        }
+        guard let activeKeyID, activeKeyID != keyID else {
+            return
+        }
+        #if DEBUG
+        let activeFrame = frames[activeKeyID].map { "\(Int($0.minX)),\(Int($0.minY)),\(Int($0.width))x\(Int($0.height))" } ?? "nil"
+        let yieldFrame = frames[keyID].map { "\(Int($0.minX)),\(Int($0.minY)),\(Int($0.width))x\(Int($0.height))" } ?? "nil"
+        KeyboardStuckTouchDiagnostics.onTouchForensics?(
+            "長押しの割り当て食い違い 生タッチ=\(activeKeyID)[\(activeFrame)] SwiftUI=\(keyID)[\(yieldFrame)] 指x=\(Int(lastGlobalX))"
+        )
+        #endif
+        self.activeKeyID = nil
+        events.send(Event(keyID: activeKeyID, globalX: lastGlobalX, kind: .cancel))
+    }
+
     // 受け手(FlickKeyView)が生タッチ側で確定したときに呼ぶ。遅れて届く SwiftUI の判定に「済み」を伝える
     static func noteConsumed(keyID: String) {
         consumedKeyID = keyID
@@ -1026,6 +1047,9 @@ struct FlickKeyView: View {
                     if isRawLongPressDriven, RawTouchLongPress.takeConsumed(keyID: rawLongPressKeyID) {
                         didTriggerLongPressAction = true
                         return
+                    }
+                    if isRawLongPressDriven {
+                        RawTouchLongPress.yield(toKeyID: rawLongPressKeyID)
                     }
                     // 調査用ログ(長押しパネルの遅れ 3507): 接触の時刻と届いた時刻(差が配送遅れ)。接触開始の処理
                     // (onTouchStateChanged 等)より前に取り、OS の配送と自前の処理を切り分ける(3511)。

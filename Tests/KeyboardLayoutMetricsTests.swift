@@ -368,6 +368,46 @@ extension KeyboardLayoutMetricsTests {
         XCTAssertFalse(RawTouchLongPress.takeConsumed(keyID: "c"), "印は 1 回だけ")
     }
 
+    // 生タッチが上の段の g を起動したあと、SwiftUI が同じ接触を下の段の c に届けたら g を取り消す(3590 の実機)。
+    // 以後の動きと離しは g へ流さない
+    @MainActor
+    func testRawTouchLongPressYieldsToTheKeySwiftUIHit() {
+        RawTouchLongPress.resetForTesting()
+        defer { RawTouchLongPress.resetForTesting() }
+        RawTouchLongPress.register(keyID: "g", frame: CGRect(x: 100, y: 100, width: 30, height: 44))
+        RawTouchLongPress.register(keyID: "c", frame: CGRect(x: 100, y: 150, width: 30, height: 44))
+
+        let touch = ObjectIdentifier(NSObject())
+        let events = collectRawLongPressEvents(timeout: RawTouchLongPress.delay + 0.25) {
+            RawTouchLongPress.touchBegan(id: touch, at: CGPoint(x: 110, y: 140))
+            DispatchQueue.main.asyncAfter(deadline: .now() + RawTouchLongPress.delay + 0.1) {
+                RawTouchLongPress.yield(toKeyID: "c")
+                RawTouchLongPress.touchMoved(id: touch, to: CGPoint(x: 150, y: 140))
+                RawTouchLongPress.touchEnded(id: touch, at: CGPoint(x: 152, y: 140), cancelled: false)
+            }
+        }
+        XCTAssertEqual(events.map(\.kind), [.activate, .cancel])
+        XCTAssertEqual(events.map(\.keyID), ["g", "g"])
+    }
+
+    // 同じキーへ SwiftUI が遅れて届いたときは取り消さない
+    @MainActor
+    func testRawTouchLongPressKeepsTheSameKeyOnYield() {
+        RawTouchLongPress.resetForTesting()
+        defer { RawTouchLongPress.resetForTesting() }
+        RawTouchLongPress.register(keyID: "c", frame: CGRect(x: 100, y: 150, width: 30, height: 44))
+
+        let touch = ObjectIdentifier(NSObject())
+        let events = collectRawLongPressEvents(timeout: RawTouchLongPress.delay + 0.25) {
+            RawTouchLongPress.touchBegan(id: touch, at: CGPoint(x: 110, y: 170))
+            DispatchQueue.main.asyncAfter(deadline: .now() + RawTouchLongPress.delay + 0.1) {
+                RawTouchLongPress.yield(toKeyID: "c")
+                RawTouchLongPress.touchEnded(id: touch, at: CGPoint(x: 112, y: 170), cancelled: false)
+            }
+        }
+        XCTAssertEqual(events.map(\.kind), [.activate, .end])
+    }
+
     @MainActor
     func testRawTouchLongPressDoesNotActivateForShortTapOrOutsideKeys() {
         RawTouchLongPress.resetForTesting()
