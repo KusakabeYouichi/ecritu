@@ -9152,8 +9152,24 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
         XCTAssertEqual(
             converter.multiClauseCandidates(for: "いかのけんしょういたしました", systemCandidateMode: .surface).first,
-            "以下の検証致しました"
+            "以下の検証いたしました"
         )
+    }
+
+    // 3605(ユーザ指定): 補助の いたす は かなを先に(活用形の seed で 致し* より前)
+    func testRegressionRealLMAuxiliaryItasuKanaFirst() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+
+        for (reading, expected) in [
+            ("けんしょういたしました", "検証いたしました"),
+            ("しつれいいたしました", "失礼いたしました"),
+            ("ごあんないいたします", "ご案内いたします")
+        ] {
+            converter.invalidateCandidateCache()
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "\(reading): \(multi.prefix(4))")
+        }
     }
 
     // 実機同様に追加語彙をロードした状態で、追加語彙断片(ろー→raw)が長語を分断しないこと。
