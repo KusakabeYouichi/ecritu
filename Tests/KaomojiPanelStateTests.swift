@@ -19,6 +19,17 @@ final class KaomojiPanelStateTests: XCTestCase {
         XCTAssertNil(state.selectedReading)
     }
 
+    // 検索の見出しは清音→濁音→半濁音の順(初出順だと[が]が[か]より先、[ぴ][び][ひ]などになっていた)
+    func testReadingIndexHeadingsPutSeionBeforeDakuonAndHandakuon() throws {
+        let headings = KaomojiCatalog.readingIndexHeadings
+        for (former, latter) in [("か", "が"), ("は", "ば"), ("ば", "ぱ"), ("ひ", "び"), ("び", "ぴ"), ("ふ", "ぶ"), ("ぶ", "ぷ")] {
+            let formerIndex = try XCTUnwrap(headings.firstIndex(of: former), former)
+            let latterIndex = try XCTUnwrap(headings.firstIndex(of: latter), latter)
+            XCTAssertLessThan(formerIndex, latterIndex, "\(former) は \(latter) より前")
+        }
+        XCTAssertEqual(headings.first, "あ")
+    }
+
     func testCategoriesStartWithExistingShortcutSearch() {
         let ids = KaomojiPanelState.categories.map(\.id)
         XCTAssertEqual(Array(ids.prefix(3)), ["existing", "shortcut", "search"])

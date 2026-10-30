@@ -3964,7 +3964,11 @@ enum KaomojiCatalog {
             }
         }
 
-        return headings
+        // allReadings の並び(localizedStandardCompare)は濁点を後回しに比べるので、初出順だと
+        // [が]が[か]より先になったりする。見出しは文字コード順(か→が、は→ば→ぱ)に並べ直す
+        return headings.sorted { lhs, rhs in
+            lhs.unicodeScalars.lexicographicallyPrecedes(rhs.unicodeScalars)
+        }
     }()
 
     static func entries(forImportedCategory category: String) -> [String] {
