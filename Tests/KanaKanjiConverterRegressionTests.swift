@@ -9137,6 +9137,20 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.candidates(for: "10と", limit: 8, systemCandidateMode: .surface).first, "斗")
     }
 
+    // 3603(ユーザ判定 案A): いか→イカ を学習しても、文の中では 以下(よく使う同音語)と LM で競う(単文節の経路は変えていない)
+    func testRegressionRealLMLearnedRareHomophoneDoesNotTakeOverInSentence() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        converter.learn(reading: "いか", candidate: "イカ")
+        converter.store.waitForPendingLearningPersists()
+        converter.invalidateCandidateCache()
+
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "いかのけんしょういたしました", systemCandidateMode: .surface).first,
+            "以下の検証致しました"
+        )
+    }
+
     // 実機同様に追加語彙をロードした状態で、追加語彙断片(ろー→raw)が長語を分断しないこと。
     // 実データ(sacoche.plist→InitialAjout)由来で ろーぬげんさん→ローヌ原産 を固定し、
     // 「テストが追加語彙を読まないため実機のみ再現していた」ギャップを回帰で塞ぐ。

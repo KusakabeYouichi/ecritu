@@ -674,11 +674,26 @@ extension KanaKanjiConverter {
                 // 辞書語としては残し、LM で競わせる
                 let learnedSurfaces = (learnedDictionary[segmentReading] ?? []).filter { $0 != segmentReading && len < n }
                 let learnedCrossesCommonWord = !learnedSurfaces.isEmpty && !learnedIsParticleReading && crossesCommonWordFromLeft()
+                // 同じ読みによく使う語(いか=以下)がある学習語彙も、読みの一部では床を与えない。いか→イカ を 1 度確定すると
+                // いかのけんしょう が イカの検証 になっていた(ユーザ判定 3603)。学習語のほうが LM で安い(よく使う)ときは床を残す。
+                // 読み全体の一致(単独の いか)は上の wholeLearned で従来どおり先頭
+                var learnedLosingToCommonHomophone = Set<String>()
+                if !learnedSurfaces.isEmpty, !learnedIsParticleReading, !learnedCrossesCommonWord {
+                    let homophones = store.wordCosts(for: segmentReading).keys
+                        .filter { !learnedSurfaces.contains($0) && $0 != segmentReading }
+                    if !homophones.isEmpty {
+                        let unigrams = store.wordLMUnigramCosts(for: Array(homophones) + learnedSurfaces)
+                        if let common = homophones.compactMap({ unigrams[$0] }).min(),
+                            common <= Self.multiClauseLearnedCrossedCommonWordMaxUnigram {
+                            learnedLosingToCommonHomophone = Set(learnedSurfaces.filter { (unigrams[$0] ?? Int.max) > common })
+                        }
+                    }
+                }
                 for surface in learnedSurfaces {
                     if learnedIsParticleReading {
                         continue
                     }
-                    if learnedCrossesCommonWord {
+                    if learnedCrossesCommonWord || learnedLosingToCommonHomophone.contains(surface) {
                         add(surface, isDictWord: true, isCurated: false)
                         continue
                     }
