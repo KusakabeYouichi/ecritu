@@ -1645,3 +1645,41 @@ final class InputModeTraitFollowTests: XCTestCase {
         ), .number)
     }
 }
+
+// 横の長押しパネル(アクセント候補)で、指の真下の候補を選ぶ(3590)。
+// 幅 34 のマス・間 3・左右の余白 8。キー幅 40 で、パネルはキーの中央に置く
+final class LongPressHorizontalCandidateHitTestTests: XCTestCase {
+    private func index(localX: CGFloat, offset: CGFloat = 0, count: Int = 9) -> Int {
+        LongPressHorizontalCandidateHitTest.index(
+            forLocalX: localX,
+            keyWidth: 40,
+            panelOffsetX: offset,
+            count: count,
+            cellWidth: 34,
+            spacing: 3,
+            padding: 8
+        )
+    }
+
+    // 9 候補(e)の真ん中、5 番目のマスがキーの真上に来る
+    func testKeyCenterIsOverMiddleCandidate() {
+        XCTAssertEqual(index(localX: 20), 4)
+    }
+
+    // 1 マス(37)左へずらすと 4 番目、2 マス右へで 7 番目
+    func testOneSlotStepsMoveOneCandidate() {
+        XCTAssertEqual(index(localX: 20 - 37), 3)
+        XCTAssertEqual(index(localX: 20 + 74), 6)
+    }
+
+    // 端で寄せたパネル(右へ 100 寄せ)では、寄せた分だけ候補もずれる
+    func testShiftedPanelFollowsOffset() {
+        XCTAssertEqual(index(localX: 20, offset: 100), 1)
+    }
+
+    // パネルの外は端の候補に丸める
+    func testOutsidePanelClampsToEnds() {
+        XCTAssertEqual(index(localX: -500), 0)
+        XCTAssertEqual(index(localX: 500), 8)
+    }
+}
