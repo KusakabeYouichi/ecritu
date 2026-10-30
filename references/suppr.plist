@@ -218,6 +218,8 @@
 	<dict><key>phrase</key><string>親拝</string><key>shortcut</key><string>しんぱい</string></dict>	<!-- 親拝/進拝: しんぱい のレア語収穫。inflection_classes に suru 登録されており(心配は未登録=メタデータ穴)、心配しなくて 等の正規形より先に 親拝しなくて を導出する -->
 	<dict><key>phrase</key><string>進拝</string><key>shortcut</key><string>しんぱい</string></dict>
 	<dict><key>phrase</key><string>集り</string><key>shortcut</key><string>あつまり</string></dict>	<!-- 集り(あつまり): 集まり の送り仮名を省いた表記(たかり なら 集り でよい)。あつまり では 集まり だけでよい(ユーザ指定 3506) -->
+	<dict><key>phrase</key><string>三蓼</string><key>shortcut</key><string>みたで</string></dict>	<!-- 三蓼/味蓼(みたで): レア語。みたでらんち が 三蓼ランチ だった(ユーザ報告 3604) -->
+	<dict><key>phrase</key><string>味蓼</string><key>shortcut</key><string>みたで</string></dict>
 	<dict><key>phrase</key><string>用田</string><key>shortcut</key><string>ようだ</string></dict>	<!-- 用田/要田(ようだ): レア地名・姓。しんさとおったようだ が 審査通った用田 だった(ユーザ報告 3602。以下 4 件も同じ報告) -->
 	<dict><key>phrase</key><string>要田</string><key>shortcut</key><string>ようだ</string></dict>
 	<dict><key>phrase</key><string>オラン</string><key>shortcut</key><string>おらん</string></dict>	<!-- オラン: しんさとおらんだろう が 審査とオランだろう だった -->

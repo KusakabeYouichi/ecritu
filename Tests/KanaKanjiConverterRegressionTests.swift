@@ -9099,7 +9099,12 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             (nil, "めいるあどれす", "メイルアドレス"),
             (nil, "あわもり", "泡盛"),
             (nil, "たんごのためかたは", "単語の貯め方は"),
-            ("0", "とかなら", "とかなら")
+            ("0", "とかなら", "とかなら"),
+            // 3604(前回の一覧で抜けていた 4 件)
+            (nil, "おじさん", "おじさん"),
+            (nil, "みたでらんち", "三田でランチ"),
+            (nil, "いかなきゃ", "行かなきゃ"),
+            (nil, "かれしになったり", "彼氏になったり")
         ]
         for expectation in expectations {
             converter.invalidateCandidateCache()
