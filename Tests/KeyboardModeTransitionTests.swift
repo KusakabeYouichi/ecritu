@@ -1574,8 +1574,32 @@ final class KanaModeSwitcherGuideTests: XCTestCase {
     }
 }
 
-// 欄の種類(keyboardType)への面の追従。メールの欄は表示の約 130ms 後に .emailAddress が届くので、
-// 表示時点を基準にした最初の変化でも英字へ合わせる(3586 の実機ログ)
+// 欄の種類(keyboardType)から決める初期の面。メールの欄は[宛先]で名前を打つのでかな(3588)
+final class InitialInputModeForKeyboardTypeTests: XCTestCase {
+    func testEmailFieldOpensOnKana() {
+        XCTAssertEqual(KeyboardViewController.initialInputMode(for: .emailAddress), .kana)
+    }
+
+    func testURLAndASCIIFieldsOpenOnLatin() {
+        XCTAssertEqual(KeyboardViewController.initialInputMode(for: .URL), .latin)
+        XCTAssertEqual(KeyboardViewController.initialInputMode(for: .asciiCapable), .latin)
+    }
+
+    func testNumericFieldsOpenOnNumber() {
+        XCTAssertEqual(KeyboardViewController.initialInputMode(for: .numberPad), .number)
+        XCTAssertEqual(KeyboardViewController.initialInputMode(for: .decimalPad), .number)
+        XCTAssertEqual(KeyboardViewController.initialInputMode(for: .phonePad), .number)
+    }
+
+    func testDefaultAndWebSearchFieldsOpenOnKana() {
+        XCTAssertEqual(KeyboardViewController.initialInputMode(for: .default), .kana)
+        XCTAssertEqual(KeyboardViewController.initialInputMode(for: .webSearch), .kana)
+        XCTAssertEqual(KeyboardViewController.initialInputMode(for: nil), .kana)
+    }
+}
+
+// 欄の種類(keyboardType)への面の追従。欄の種類は表示の約 130ms 後に届くので、
+// 表示時点を基準にした最初の変化でも合わせる(3586 の実機ログ、メールの欄で確認)
 final class InputModeTraitFollowTests: XCTestCase {
     private func observation(_ inputMode: KeyboardInputMode, initial: KeyboardInputMode) -> InputModeObservation {
         InputModeObservation(inputMode: inputMode, initialInputMode: initial, emojiInputSubmode: .emoji)

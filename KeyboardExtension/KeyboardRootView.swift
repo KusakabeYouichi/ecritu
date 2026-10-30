@@ -1488,8 +1488,8 @@ struct KeyboardRootView: View {
                 inputMode = initialInputMode
             }
             // 表示時点の観測値を基準として記録する。.onChange は初期値では発火しないので、これが無いと
-            // 最初の変化のときに前の値が無く、欄の種類への追従が見送られる。メールの欄は表示の約 130ms 後に
-            // 欄の種類(.emailAddress)が届くので、ここで見送るとかなの面のまま開いていた(3586 の実機ログ)
+            // 最初の変化のときに前の値が無く、欄の種類への追従が見送られる。欄の種類は表示の約 130ms 後に
+            // 届くので、ここで見送ると初期の面のまま開いていた(3586 の実機ログ、メールの欄で確認)
             lastInputModeObservation = InputModeObservation(
                 inputMode: inputMode,
                 initialInputMode: initialInputMode,

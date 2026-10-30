@@ -379,14 +379,19 @@ extension KeyboardViewController {
     // 開く。それ以外は かな。同一フィールド内のユーザ手動切替は上書きしない(trait が
     // 変わったフィールド移動時のみ、rootView の .onChange(of: initialInputMode) で追従)。
     func preferredInitialInputMode() -> KeyboardInputMode {
-        switch textDocumentProxy.keyboardType {
+        Self.initialInputMode(for: textDocumentProxy.keyboardType)
+    }
+
+    static func initialInputMode(for keyboardType: UIKeyboardType?) -> KeyboardInputMode {
+        switch keyboardType {
         case .numberPad, .decimalPad, .asciiCapableNumberPad, .phonePad, .numbersAndPunctuation:
             return .number
-        case .emailAddress, .URL, .asciiCapable:
-            // ASCII系フィールドはラテン面で開く(IsASCIICapable 申告とセット。メール/URL欄で
-            // かな面で開くと申告実態と食い違う)。数字・記号は面切替で到達できる
+        case .URL, .asciiCapable:
+            // ASCII系フィールドはラテン面で開く(IsASCIICapable 申告とセット)。数字・記号は面切替で到達できる
             return .latin
         default:
+            // メールの欄(.emailAddress)はかな面。メールの[宛先]は名前で連絡先を引く欄でもあり、
+            // 連絡先の[メールを追加]と届く性質が全部同じで見分けられない(3588 の実機ログ)
             return .kana
         }
     }
