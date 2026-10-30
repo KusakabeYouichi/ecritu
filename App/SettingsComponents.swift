@@ -72,6 +72,26 @@ enum SettingsCardKeys {
     ]
 
     // 見出しの先頭の番号(「X.9 常用漢字による書きかえ」→ X.9)
+    // 変更済みの印で比べるキー。E.6 は今の動作のカテゴリーだけを見る。一時的に絵文字・記号へ切り替えて選んだ
+    // カテゴリーが、顔文字に戻したあとも隠れて残り、印が消えなかった(3593、ユーザ報告)
+    static func keysForModifiedMark(cardID: String, action: KanaPostModifierEmptyTapActionOption) -> [String]? {
+        guard cardID == "E.6" else {
+            return keysByCardID[cardID]
+        }
+        let categoryKey: String
+        switch action {
+        case .kaomoji: categoryKey = SettingsKeys.kanaPostModifierEmptyTapKaomojiCategory
+        case .emoji: categoryKey = SettingsKeys.kanaPostModifierEmptyTapEmojiCategory
+        case .symbols: categoryKey = SettingsKeys.kanaPostModifierEmptyTapSymbolCategory
+        }
+        return [SettingsKeys.kanaPostModifierEmptyTapAction, categoryKey]
+    }
+
+    static var currentPostModifierEmptyTapAction: KanaPostModifierEmptyTapActionOption {
+        ContentView.sharedDefaults?.string(forKey: SettingsKeys.kanaPostModifierEmptyTapAction)
+            .flatMap(KanaPostModifierEmptyTapActionOption.init(rawValue:)) ?? .default
+    }
+
     static func cardID(fromTitle title: String) -> String? {
         guard let first = title.split(separator: " ", maxSplits: 1).first,
             keysByCardID[String(first)] != nil else {
@@ -89,7 +109,10 @@ struct SettingsModifiedMark: View {
     var body: some View {
         let _ = tracker.revision
         if let cardID = SettingsCardKeys.cardID(fromTitle: title),
-            let keys = SettingsCardKeys.keysByCardID[cardID],
+            let keys = SettingsCardKeys.keysForModifiedMark(
+                cardID: cardID,
+                action: SettingsCardKeys.currentPostModifierEmptyTapAction
+            ),
             ContentView.isModifiedFromBasePreset(keys: keys) {
             Text("●")
                 .font(.system(size: 8))
