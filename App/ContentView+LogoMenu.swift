@@ -23,12 +23,17 @@ enum LogoMenuAction: String, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
+    var startsNewGroup: Bool {
+        self == .copyYAML || self == .openManual
+    }
+
     var title: String {
         switch self {
         case .strategicDefaults: return "戦略的初期設定"
         case .conservativeDefaults: return "保守的初期設定"
         case .contemporaryDefaults: return "現代的初期設定"
-        case .copyYAML: return "設定をクリップボードにコピー"
+        // 「設定をクリップボードにコピー」は幅 300 で 2 行に折れていた(3591)
+        case .copyYAML: return "設定をコピー"
         case .stashSettings: return "現在の設定を退避"
         case .restoreStashedSettings: return "退避した設定を復元"
         case .openManual: return "操作マニュアル"
@@ -42,7 +47,7 @@ enum LogoMenuAction: String, CaseIterable, Identifiable {
         case .strategicDefaults: return "組み込みの標準値に戻す"
         case .conservativeDefaults: return "3×3+わ・téléphone など従来型の配列にする"
         case .contemporaryDefaults: return "保守的+かなで書く言葉をすべて抑制"
-        case .copyYAML: return "YAML 形式"
+        case .copyYAML: return "YAML 形式でクリップボードへ"
         case .stashSettings: return "再インストール後も残る場所に保存"
         case .restoreStashedSettings: return "退避していた設定に戻す"
         case .openManual: return "Safari で開く(全10章)"
@@ -673,6 +678,10 @@ extension ContentView {
                 Color.black.opacity(0.18)
                 VStack(spacing: 0) {
                     ForEach(LogoMenuAction.allCases) { action in
+                        // まとまりの境目に区切り線(初期設定 / 設定の控え / 案内。ユーザー指定 3591)
+                        if action.startsNewGroup {
+                            Divider()
+                        }
                         logoMenuRowContent(
                             action,
                             isHighlighted: logoMenuHighlightedAction == action,
