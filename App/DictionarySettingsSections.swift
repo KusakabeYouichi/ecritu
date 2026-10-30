@@ -21,6 +21,7 @@ struct AjoutVocabularySettingsSection: View {
     @State private var isDeleteAllConfirmationPresented = false
     @State private var isReimportConfirmationPresented = false
     @State private var editingEntry: VocabularyEntry?
+    @State private var pendingDeletionEntry: VocabularyEntry?
     @State private var didCopyUserRegistered = false
     // 自分で登録したものだけを出す(3778。初期設定はオフ)
     @AppStorage(SettingsKeys.ajoutVocabularyShowsUserRegisteredOnly) private var showsUserRegisteredOnly = false
@@ -115,13 +116,14 @@ struct AjoutVocabularySettingsSection: View {
                     entries: displayedEntries,
                     listHeight: listHeight,
                     selectedEntryID: editingEntry?.id,
+                    pendingDeletionEntryID: pendingDeletionEntry?.id,
                     onDelete: { entry in
                         if editingEntry?.id == entry.id {
                             editingEntry = nil
                             readingInput = ""
                             candidateInput = ""
                         }
-                        onDeleteEntry(entry)
+                        pendingDeletionEntry = entry
                     },
                     onSelect: { entry in
                         editingEntry = entry
@@ -219,6 +221,7 @@ struct AjoutVocabularySettingsSection: View {
                 .foregroundStyle(.secondary)
         }
         .settingsCardStyle()
+        .vocabularyDeletionConfirmation(vocabularyName: "追加語彙", pendingEntry: $pendingDeletionEntry, onConfirm: onDeleteEntry)
     }
 }
 
@@ -233,6 +236,7 @@ struct LearnedDictionarySettingsSection: View {
     let onResetLearning: () -> Void
 
     @State private var isDeleteAllConfirmationPresented = false
+    @State private var pendingDeletionEntry: VocabularyEntry?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -261,7 +265,8 @@ struct LearnedDictionarySettingsSection: View {
                     entries: entries,
                     listHeight: listHeight,
                     selectedEntryID: nil,
-                    onDelete: onDeleteEntry,
+                    pendingDeletionEntryID: pendingDeletionEntry?.id,
+                    onDelete: { entry in pendingDeletionEntry = entry },
                     onSelect: nil,
                     onIndexIndicatorStateChange: { title, isVisible in
                         applyScrollIndexIndicatorState(
@@ -319,6 +324,7 @@ struct LearnedDictionarySettingsSection: View {
                 .foregroundStyle(.secondary)
         }
         .settingsCardStyle()
+        .vocabularyDeletionConfirmation(vocabularyName: "学習語彙", pendingEntry: $pendingDeletionEntry, onConfirm: onDeleteEntry)
     }
 }
 
@@ -337,6 +343,7 @@ struct SuppressionDictionarySettingsSection: View {
     let onDeleteEntry: (VocabularyEntry) -> Void
 
     @State private var editingEntry: VocabularyEntry?
+    @State private var pendingDeletionEntry: VocabularyEntry?
     @State private var didCopyUserRegistered = false
     // 自分で登録したものだけを出す(追加語彙と同じ。初期設定はオフ)
     @AppStorage(SettingsKeys.suppressionVocabularyShowsUserRegisteredOnly) private var showsUserRegisteredOnly = false
@@ -426,13 +433,14 @@ struct SuppressionDictionarySettingsSection: View {
                     entries: displayedEntries,
                     listHeight: listHeight,
                     selectedEntryID: editingEntry?.id,
+                    pendingDeletionEntryID: pendingDeletionEntry?.id,
                     onDelete: { entry in
                         if editingEntry?.id == entry.id {
                             editingEntry = nil
                             readingInput = ""
                             candidateInput = ""
                         }
-                        onDeleteEntry(entry)
+                        pendingDeletionEntry = entry
                     },
                     onSelect: { entry in
                         editingEntry = entry
@@ -482,6 +490,7 @@ struct SuppressionDictionarySettingsSection: View {
                 .foregroundStyle(.secondary)
         }
         .settingsCardStyle()
+        .vocabularyDeletionConfirmation(vocabularyName: "抑制語彙", pendingEntry: $pendingDeletionEntry, onConfirm: onDeleteEntry)
     }
 }
 
@@ -709,29 +718,12 @@ struct ShortcutDictionarySettingsSection: View {
                 .foregroundStyle(.secondary)
         }
         .settingsCardStyle()
-        .alert(
-            pendingDeletionEntry.map { "ショートカット語彙『\($0.candidate)』を削除しますか?" } ?? "",
-            isPresented: Binding(
-                get: { pendingDeletionEntry != nil },
-                set: { isPresented in
-                    if !isPresented {
-                        pendingDeletionEntry = nil
-                    }
-                }
-            ),
-            presenting: pendingDeletionEntry
-        ) { entry in
-            Button("キャンセル", role: .cancel) {
-                pendingDeletionEntry = nil
-                revealedDeletionEntryID = nil
-            }
-
-            Button("削除", role: .destructive) {
-                onDeleteEntry(entry)
-                pendingDeletionEntry = nil
-                revealedDeletionEntryID = nil
-            }
-        }
+        .vocabularyDeletionConfirmation(
+            vocabularyName: "ショートカット語彙",
+            pendingEntry: $pendingDeletionEntry,
+            onDismiss: { revealedDeletionEntryID = nil },
+            onConfirm: onDeleteEntry
+        )
     }
 }
 
@@ -841,5 +833,40 @@ struct ReadOnlyDictionarySettingsSection: View {
                 .foregroundStyle(.secondary)
         }
         .settingsCardStyle()
+    }
+}
+
+extension View {
+    // 語彙を 1 件消す前の確認(文言はショートカット語彙で決めた形。3595)。閉じると pendingEntry は nil に戻る
+    func vocabularyDeletionConfirmation(
+        vocabularyName: String,
+        pendingEntry: Binding<VocabularyEntry?>,
+        onDismiss: @escaping () -> Void = {},
+        onConfirm: @escaping (VocabularyEntry) -> Void
+    ) -> some View {
+        alert(
+            pendingEntry.wrappedValue.map { "\(vocabularyName)『\($0.candidate)』を削除しますか?" } ?? "",
+            isPresented: Binding(
+                get: { pendingEntry.wrappedValue != nil },
+                set: { isPresented in
+                    if !isPresented {
+                        pendingEntry.wrappedValue = nil
+                        onDismiss()
+                    }
+                }
+            ),
+            presenting: pendingEntry.wrappedValue
+        ) { entry in
+            Button("キャンセル", role: .cancel) {
+                pendingEntry.wrappedValue = nil
+                onDismiss()
+            }
+
+            Button("削除", role: .destructive) {
+                onConfirm(entry)
+                pendingEntry.wrappedValue = nil
+                onDismiss()
+            }
+        }
     }
 }

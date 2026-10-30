@@ -6,6 +6,9 @@ struct IndexedVocabularyList: UIViewRepresentable {
     let entries: [VocabularyEntry]
     let listHeight: CGFloat
     let selectedEntryID: String?
+    // 確認のダイアログを出している行(取り消し線で示す)。閉じて nil に戻ると[削除]も引っ込める
+    var pendingDeletionEntryID: String? = nil
+    // [削除]が押されたときに呼ぶ。消すのは呼び出し側が確認を取ってから
     let onDelete: ((VocabularyEntry) -> Void)?
     let onSelect: ((VocabularyEntry) -> Void)?
     let onIndexIndicatorStateChange: (String, Bool) -> Void
@@ -97,6 +100,17 @@ struct IndexedVocabularyList: UIViewRepresentable {
         panGesture.maximumNumberOfTouches = 1
         indexContainerView.addGestureRecognizer(panGesture)
 
+        // 標準の左スワイプは行を左へずらして文字が見えなくなる(3597 のショートカット語彙と同じ)ので、
+        // 横に払う動きを自前で拾い、文字は動かさずに行の右端へ[削除]を出す
+        let deletionRevealPan = UIPanGestureRecognizer(
+            target: context.coordinator,
+            action: #selector(Coordinator.handleDeletionRevealPan(_:))
+        )
+        deletionRevealPan.maximumNumberOfTouches = 1
+        deletionRevealPan.cancelsTouchesInView = false
+        deletionRevealPan.delegate = context.coordinator
+        tableView.addGestureRecognizer(deletionRevealPan)
+
         context.coordinator.attach(
             tableView: tableView,
             indexContainerView: indexContainerView,
@@ -111,6 +125,7 @@ struct IndexedVocabularyList: UIViewRepresentable {
             entries: entries,
             listHeight: listHeight,
             selectedEntryID: selectedEntryID,
+            pendingDeletionEntryID: pendingDeletionEntryID,
             onDelete: onDelete,
             onSelect: onSelect,
             onIndexIndicatorStateChange: onIndexIndicatorStateChange
@@ -164,10 +179,13 @@ struct IndexedVocabularyList: UIViewRepresentable {
         }
     }
 
-    final class Coordinator: NSObject, UITableViewDataSource, UITableViewDelegate {
+    final class Coordinator: NSObject, UITableViewDataSource, UITableViewDelegate, UIGestureRecognizerDelegate {
         static let cellReuseIdentifier = "IndexedVocabularyCell"
         static let candidateLabelTag = 1001
         static let readingLabelTag = 1002
+        static let deleteButtonTag = 1003
+        static let readingBeforeDeleteButtonConstraintID = "readingBeforeDeleteButton"
+        static let deleteActionID = UIAction.Identifier("deleteVocabularyEntry")
 
         private var entries: [VocabularyEntry]
         private var listHeight: CGFloat
@@ -183,7 +201,11 @@ struct IndexedVocabularyList: UIViewRepresentable {
         private weak var indexContainerView: UIView?
         private weak var indexStackView: UIStackView?
         private var displayedIndexTitles: [String] = []
-        private var isRowSwipeActionVisible = false
+        private var pendingDeletionEntryID: String?
+        private var revealedDeletionEntryID: String?
+        private var isRowSwipeActionVisible: Bool {
+            revealedDeletionEntryID != nil
+        }
         private var entriesStorageIdentity: UInt
 
         init(
@@ -200,10 +222,6 @@ struct IndexedVocabularyList: UIViewRepresentable {
             self.onDelete = onDelete
             self.onSelect = onSelect
             self.onIndexIndicatorStateChange = onIndexIndicatorStateChange
-
-            if onDelete == nil {
-                isRowSwipeActionVisible = false
-            }
             self.entriesStorageIdentity = Self.storageIdentity(for: entries)
             super.init()
             rebuildSections()
@@ -314,6 +332,7 @@ struct IndexedVocabularyList: UIViewRepresentable {
             entries: [VocabularyEntry],
             listHeight: CGFloat,
             selectedEntryID: String?,
+            pendingDeletionEntryID: String?,
             onDelete: ((VocabularyEntry) -> Void)?,
             onSelect: ((VocabularyEntry) -> Void)?,
             onIndexIndicatorStateChange: @escaping (String, Bool) -> Void
@@ -342,6 +361,22 @@ struct IndexedVocabularyList: UIViewRepresentable {
 
             if entriesChanged {
                 rebuildSections()
+            }
+
+            let pendingDeletionChanged = self.pendingDeletionEntryID != pendingDeletionEntryID
+            if pendingDeletionChanged, pendingDeletionEntryID == nil {
+                // ダイアログを閉じたら([キャンセル]でも[削除]でも)[削除]ボタンも引っ込める
+                revealedDeletionEntryID = nil
+            }
+            self.pendingDeletionEntryID = pendingDeletionEntryID
+            if onDelete == nil
+                || (revealedDeletionEntryID.map { id in !entries.contains { $0.id == id } } ?? false) {
+                revealedDeletionEntryID = nil
+            }
+            // 行が変わったときは表の読み直し(cellForRow)で反映する。読み直す前に見えている行を
+            // 引くと、古い行番号で新しい entries を引いてしまう
+            if pendingDeletionChanged, !entriesChanged {
+                refreshDeletionAppearanceOfVisibleRows(animated: true)
             }
 
             return entriesChanged
@@ -518,14 +553,124 @@ struct IndexedVocabularyList: UIViewRepresentable {
         }
 
         private func dismissVisibleSwipeActionImmediately() {
-            guard isRowSwipeActionVisible,
+            guard isRowSwipeActionVisible, pendingDeletionEntryID == nil else {
+                return
+            }
+
+            setRevealedDeletionEntryID(nil, animated: false)
+        }
+
+        private func setRevealedDeletionEntryID(_ id: String?, animated: Bool) {
+            guard revealedDeletionEntryID != id else {
+                return
+            }
+
+            revealedDeletionEntryID = id
+            refreshDeletionAppearanceOfVisibleRows(animated: animated)
+            refreshCustomIndexInteractionState()
+        }
+
+        private func refreshDeletionAppearanceOfVisibleRows(animated: Bool) {
+            guard let tableView else {
+                return
+            }
+
+            for cell in tableView.visibleCells {
+                guard let indexPath = tableView.indexPath(for: cell) else {
+                    continue
+                }
+                applyDeletionAppearance(to: cell, entry: entry(at: indexPath), animated: animated)
+            }
+            refreshCustomIndexInteractionState()
+        }
+
+        // [削除]が出ている間と確認を待つ間は取り消し線で示す(ショートカット語彙と同じ。3598)
+        private func applyDeletionAppearance(to cell: UITableViewCell, entry: VocabularyEntry, animated: Bool) {
+            guard let candidateLabel = cell.contentView.viewWithTag(Self.candidateLabelTag) as? UILabel,
+                let readingLabel = cell.contentView.viewWithTag(Self.readingLabelTag) as? UILabel,
+                let deleteButton = cell.contentView.viewWithTag(Self.deleteButtonTag) as? UIButton else {
+                return
+            }
+
+            let isRevealed = onDelete != nil && revealedDeletionEntryID == entry.id
+            let isMarkedForDeletion = isRevealed || pendingDeletionEntryID == entry.id
+            let strikethrough: [NSAttributedString.Key: Any] = isMarkedForDeletion
+                ? [.strikethroughStyle: NSUnderlineStyle.single.rawValue]
+                : [:]
+
+            candidateLabel.attributedText = NSAttributedString(string: entry.candidate, attributes: strikethrough)
+            candidateLabel.textColor = isMarkedForDeletion ? .secondaryLabel : .label
+            readingLabel.attributedText = NSAttributedString(string: entry.reading, attributes: strikethrough)
+
+            cell.contentView.constraints
+                .first { $0.identifier == Self.readingBeforeDeleteButtonConstraintID }?
+                .isActive = isRevealed
+
+            deleteButton.removeAction(identifiedBy: Self.deleteActionID, for: .touchUpInside)
+            deleteButton.addAction(
+                UIAction(identifier: Self.deleteActionID) { [weak self] _ in
+                    self?.onDelete?(entry)
+                },
+                for: .touchUpInside
+            )
+
+            let changes = {
+                deleteButton.alpha = isRevealed ? 1 : 0
+                deleteButton.transform = isRevealed ? .identity : CGAffineTransform(translationX: 16, y: 0)
+                cell.contentView.layoutIfNeeded()
+            }
+            deleteButton.isUserInteractionEnabled = isRevealed
+            if animated {
+                UIView.animate(withDuration: 0.15, delay: 0, options: [.curveEaseOut], animations: changes)
+            } else {
+                changes()
+            }
+        }
+
+        // 横に払ったときだけ反応する(縦のスクロールは表に任せる)。左で出し、右で引っ込める
+        func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+            guard let pan = gestureRecognizer as? UIPanGestureRecognizer,
+                pan.view === tableView else {
+                return true
+            }
+            guard onDelete != nil else {
+                return false
+            }
+
+            let velocity = pan.velocity(in: pan.view)
+            return abs(velocity.x) > abs(velocity.y) * 1.5
+        }
+
+        func gestureRecognizer(
+            _ gestureRecognizer: UIGestureRecognizer,
+            shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer
+        ) -> Bool {
+            true
+        }
+
+        @objc func handleDeletionRevealPan(_ gesture: UIPanGestureRecognizer) {
+            guard gesture.state == .ended,
                 let tableView else {
                 return
             }
 
-            tableView.setEditing(false, animated: false)
-            isRowSwipeActionVisible = false
-            refreshCustomIndexInteractionState()
+            let translation = gesture.translation(in: tableView)
+            guard abs(translation.x) > abs(translation.y) * 1.5 else {
+                return
+            }
+
+            let location = gesture.location(in: tableView)
+            let startPoint = CGPoint(x: location.x - translation.x, y: location.y - translation.y)
+            guard let indexPath = tableView.indexPathForRow(at: startPoint) else {
+                return
+            }
+
+            let target = entry(at: indexPath)
+            if translation.x < -30 {
+                setRevealedDeletionEntryID(target.id, animated: true)
+            } else if translation.x > 30, revealedDeletionEntryID == target.id {
+                setRevealedDeletionEntryID(nil, animated: true)
+            }
         }
 
         private func customIndexTitle(for locationY: CGFloat, in indexView: UIView) -> String? {
@@ -704,8 +849,36 @@ struct IndexedVocabularyList: UIViewRepresentable {
                 readingLabel.textAlignment = .left
                 readingLabel.lineBreakMode = .byTruncatingTail
 
+                // [削除]は左へ払った行だけに出す(ショートカット語彙と同じ赤い丸ボタン)
+                var deleteButtonConfiguration = UIButton.Configuration.filled()
+                deleteButtonConfiguration.baseBackgroundColor = .systemRed
+                deleteButtonConfiguration.baseForegroundColor = .white
+                deleteButtonConfiguration.cornerStyle = .capsule
+                deleteButtonConfiguration.contentInsets = NSDirectionalEdgeInsets(top: 3, leading: 12, bottom: 3, trailing: 12)
+                deleteButtonConfiguration.attributedTitle = AttributedString(
+                    "削除",
+                    attributes: AttributeContainer([
+                        .font: UIFont.systemFont(
+                            ofSize: UIFont.preferredFont(forTextStyle: .footnote).pointSize,
+                            weight: .semibold
+                        )
+                    ])
+                )
+                let deleteButton = UIButton(configuration: deleteButtonConfiguration)
+                deleteButton.tag = Self.deleteButtonTag
+                deleteButton.translatesAutoresizingMaskIntoConstraints = false
+                deleteButton.alpha = 0
+                deleteButton.isUserInteractionEnabled = false
+
                 cell.contentView.addSubview(candidateLabel)
                 cell.contentView.addSubview(readingLabel)
+                cell.contentView.addSubview(deleteButton)
+
+                let readingBeforeDeleteButton = readingLabel.trailingAnchor.constraint(
+                    lessThanOrEqualTo: deleteButton.leadingAnchor,
+                    constant: -6
+                )
+                readingBeforeDeleteButton.identifier = Self.readingBeforeDeleteButtonConstraintID
 
                 NSLayoutConstraint.activate([
                     candidateLabel.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 10),
@@ -714,12 +887,16 @@ struct IndexedVocabularyList: UIViewRepresentable {
 
                     readingLabel.leadingAnchor.constraint(equalTo: cell.contentView.centerXAnchor, constant: -2),
                     readingLabel.trailingAnchor.constraint(lessThanOrEqualTo: cell.contentView.trailingAnchor, constant: -10),
-                    readingLabel.centerYAnchor.constraint(equalTo: cell.contentView.centerYAnchor)
+                    readingLabel.centerYAnchor.constraint(equalTo: cell.contentView.centerYAnchor),
+
+                    // 右端の索引(あかさたな)と重ならない位置に出す
+                    deleteButton.trailingAnchor.constraint(
+                        equalTo: cell.contentView.trailingAnchor,
+                        constant: -(IndexedVocabularyList.customIndexWidth + 6)
+                    ),
+                    deleteButton.centerYAnchor.constraint(equalTo: cell.contentView.centerYAnchor)
                 ])
             }
-
-            candidateLabel.text = entry.candidate
-            readingLabel.text = entry.reading
 
             let isSelected = entry.id == selectedEntryID
 
@@ -728,50 +905,19 @@ struct IndexedVocabularyList: UIViewRepresentable {
                 ? UIColor.systemBlue.withAlphaComponent(0.18)
                 : UIColor.secondarySystemGroupedBackground.withAlphaComponent(0.95)
             cell.selectionStyle = .none
+            applyDeletionAppearance(to: cell, entry: entry, animated: false)
 
             return cell
         }
 
         func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-            let selectedEntry = entry(at: indexPath)
-            onSelect?(selectedEntry)
             tableView.deselectRow(at: indexPath, animated: true)
-        }
-
-        func tableView(_ tableView: UITableView, willBeginEditingRowAt indexPath: IndexPath) {
-            guard onDelete != nil else {
+            // [削除]を出している間のタップは、ボタンを引っ込めるだけ
+            if isRowSwipeActionVisible {
+                setRevealedDeletionEntryID(nil, animated: true)
                 return
             }
-
-            isRowSwipeActionVisible = true
-            refreshCustomIndexInteractionState()
-        }
-
-        func tableView(_ tableView: UITableView, didEndEditingRowAt indexPath: IndexPath?) {
-            guard onDelete != nil else {
-                return
-            }
-
-            isRowSwipeActionVisible = false
-            refreshCustomIndexInteractionState()
-        }
-
-        func tableView(
-            _ tableView: UITableView,
-            trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath
-        ) -> UISwipeActionsConfiguration? {
-            guard let onDelete else {
-                return nil
-            }
-
-            let target = entry(at: indexPath)
-
-            let delete = UIContextualAction(style: .destructive, title: "削除") { _, _, completion in
-                onDelete(target)
-                completion(true)
-            }
-
-            return UISwipeActionsConfiguration(actions: [delete])
+            onSelect?(entry(at: indexPath))
         }
     }
 }
