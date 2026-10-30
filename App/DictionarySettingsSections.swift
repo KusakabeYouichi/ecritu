@@ -491,6 +491,9 @@ struct ShortcutDictionarySettingsSection: View {
     @Binding var isRegistrationVisible: Bool
 
     @State private var pendingDeletionEntry: VocabularyEntry?
+    // 左へ払って[削除]を出している行。標準の swipeActions は行を左へずらし、短いショートカットが
+    // 見えなくなっていた(3597、ユーザー報告)ので、文字は動かさず右端にボタンを出す
+    @State private var revealedDeletionEntryID: String?
     @State private var editingEntry: VocabularyEntry?
 
     let canAddEntry: Bool
@@ -591,6 +594,7 @@ struct ShortcutDictionarySettingsSection: View {
                     Button(isReordering ? "完了" : "並べ替え") {
                         editingEntry = nil
                         pendingDeletionEntry = nil
+                        revealedDeletionEntryID = nil
                         withAnimation(.easeInOut(duration: 0.2)) {
                             isReordering.toggle()
                         }
@@ -609,6 +613,24 @@ struct ShortcutDictionarySettingsSection: View {
                                 .strikethrough(pendingDeletionEntry?.id == entry.id)
                                 .lineLimit(1)
                                 .frame(maxWidth: .infinity, alignment: .leading)
+                            if revealedDeletionEntryID == entry.id, !isReordering {
+                                Button {
+                                    if editingEntry?.id == entry.id {
+                                        editingEntry = nil
+                                        candidateInput = ""
+                                    }
+                                    pendingDeletionEntry = entry
+                                } label: {
+                                    Text("削除")
+                                        .font(.footnote.weight(.semibold))
+                                        .foregroundStyle(.white)
+                                        .padding(.horizontal, 12)
+                                        .padding(.vertical, 3)
+                                        .background(Color.red, in: Capsule())
+                                }
+                                .buttonStyle(.plain)
+                                .transition(.move(edge: .trailing).combined(with: .opacity))
+                            }
                         }
                         .padding(.horizontal, 10)
                         .padding(.vertical, 4)
@@ -637,6 +659,13 @@ struct ShortcutDictionarySettingsSection: View {
                             guard !isReordering else {
                                 return
                             }
+                            // [削除]を出している間のタップは、ボタンを引っ込めるだけ
+                            if revealedDeletionEntryID != nil {
+                                withAnimation(.easeOut(duration: 0.15)) {
+                                    revealedDeletionEntryID = nil
+                                }
+                                return
+                            }
                             editingEntry = entry
                             candidateInput = entry.candidate
                             pendingDeletionEntry = nil
@@ -645,22 +674,23 @@ struct ShortcutDictionarySettingsSection: View {
                                 isRegistrationVisible = true
                             }
                         }
-                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                            if !isReordering {
-                                // role: .destructive にすると、確認の前に行が消える動きになり、ダイアログの後ろで
-                                // 空欄の行が元に戻って見えた(3595、ユーザー報告)。赤い色だけを付ける
-                                Button {
-                                    if editingEntry?.id == entry.id {
-                                        editingEntry = nil
-                                        candidateInput = ""
+                        // 横に払ったときだけ反応する(縦のスクロールは List に任せる)。左で出し、右で引っ込める
+                        .simultaneousGesture(
+                            DragGesture(minimumDistance: 20)
+                                .onEnded { value in
+                                    guard !isReordering,
+                                        abs(value.translation.width) > abs(value.translation.height) * 1.5 else {
+                                        return
                                     }
-                                    pendingDeletionEntry = entry
-                                } label: {
-                                    Text("削除")
+                                    withAnimation(.easeOut(duration: 0.15)) {
+                                        if value.translation.width < -30 {
+                                            revealedDeletionEntryID = entry.id
+                                        } else if value.translation.width > 30, revealedDeletionEntryID == entry.id {
+                                            revealedDeletionEntryID = nil
+                                        }
+                                    }
                                 }
-                                .tint(.red)
-                            }
-                        }
+                        )
                     }
                     .onMove(perform: onMoveEntries)
                 }
@@ -691,11 +721,13 @@ struct ShortcutDictionarySettingsSection: View {
         ) { entry in
             Button("キャンセル", role: .cancel) {
                 pendingDeletionEntry = nil
+                revealedDeletionEntryID = nil
             }
 
             Button("削除", role: .destructive) {
                 onDeleteEntry(entry)
                 pendingDeletionEntry = nil
+                revealedDeletionEntryID = nil
             }
         }
     }
