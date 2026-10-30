@@ -47,21 +47,21 @@ def parse_args() -> argparse.Namespace:
         "--exclude-plist",
         type=Path,
         default=None,
-        help="Appleユーザー辞書のエクスポートplist（shortcut/phraseペアを除外）",
+        help="Appleユーザー辞書のエクスポートplist(shortcut/phraseペアを除外)",
     )
     return parser.parse_args()
 
 
 def is_katakana(text: str) -> bool:
-    # 全てカタカナ（長音含む）
+    # 全てカタカナ(長音含む)
     return all(("ァ" <= ch <= "ヶ" or ch == "ー") for ch in text)
 
 def is_english(text: str) -> bool:
-    # 全て英字または数字または記号（A-Za-z0-9-_.など）
+    # 全て英字または数字または記号(A-Za-z0-9-_.など)
     return all(("A" <= ch <= "Z") or ("a" <= ch <= "z") or ("0" <= ch <= "9") or ch in "-_ .+/#&'()[]" for ch in text)
 
 def is_katakana_to_english_pair(reading: str, candidate: str) -> bool:
-    # 読みがカタカナ、候補が英語（ラテン文字）
+    # 読みがカタカナ、候補が英語(ラテン文字)
     return is_katakana(reading) and is_english(candidate)
     parser.add_argument(
         "--katakana-to-english",

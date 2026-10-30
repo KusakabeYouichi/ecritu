@@ -19,15 +19,15 @@
 	<dict><key>before</key><string>叡智</string><key>after</key><string>英知</string></dict>
 	<dict><key>before</key><string>頴才</string><key>after</key><string>英才</string></dict>
 	<dict><key>before</key><string>掩護</string><key>after</key><string>援護</string></dict>
-	<dict><key>before</key><string>苑地</string><key>after</key><string>園地</string></dict>	<!-- （法） -->
+	<dict><key>before</key><string>苑地</string><key>after</key><string>園地</string></dict>	<!-- (法) -->
 	<dict><key>before</key><string>恩誼</string><key>after</key><string>恩義</string></dict>
-	<dict><key>before</key><string>外廓</string><key>after</key><string>外郭</string></dict>	<!-- （法） -->
+	<dict><key>before</key><string>外廓</string><key>after</key><string>外郭</string></dict>	<!-- (法) -->
 	<dict><key>before</key><string>快濶</string><key>after</key><string>快活</string></dict>
 	<dict><key>before</key><string>皆既蝕</string><key>after</key><string>皆既食</string></dict>
 	<dict><key>before</key><string>誡告</string><key>after</key><string>戒告</string></dict>
 	<dict><key>before</key><string>開鑿</string><key>after</key><string>開削</string></dict>
 	<dict><key>before</key><string>廻送</string><key>after</key><string>回送</string></dict>
-	<dict><key>before</key><string>蛔虫</string><key>after</key><string>回虫</string></dict>	<!-- （医） -->
+	<dict><key>before</key><string>蛔虫</string><key>after</key><string>回虫</string></dict>	<!-- (医) -->
 	<dict><key>before</key><string>廻転</string><key>after</key><string>回転</string></dict>
 	<dict><key>before</key><string>恢復</string><key>after</key><string>回復</string></dict>
 	<dict><key>before</key><string>廻廊</string><key>after</key><string>回廊</string></dict>
@@ -41,26 +41,26 @@
 	<dict><key>before</key><string>間歇</string><key>after</key><string>間欠</string></dict>
 	<dict><key>before</key><string>管絃楽</string><key>after</key><string>管弦楽</string></dict>
 	<dict><key>before</key><string>旱天</string><key>after</key><string>干天</string></dict>
-	<dict><key>before</key><string>乾溜</string><key>after</key><string>乾留</string></dict>	<!-- （化） -->
+	<dict><key>before</key><string>乾溜</string><key>after</key><string>乾留</string></dict>	<!-- (化) -->
 	<dict><key>before</key><string>気焔</string><key>after</key><string>気炎</string></dict>
 	<dict><key>before</key><string>饑餓</string><key>after</key><string>飢餓</string></dict>
 	<dict><key>before</key><string>企劃</string><key>after</key><string>企画</string></dict>
 	<dict><key>before</key><string>畸形</string><key>after</key><string>奇形</string></dict>
 	<dict><key>before</key><string>稀元素</string><key>after</key><string>希元素</string></dict>
-	<dict><key>before</key><string>稀釈</string><key>after</key><string>希釈</string></dict>	<!-- （化） -->
+	<dict><key>before</key><string>稀釈</string><key>after</key><string>希釈</string></dict>	<!-- (化) -->
 	<dict><key>before</key><string>稀少</string><key>after</key><string>希少</string></dict>
 	<dict><key>before</key><string>徽章</string><key>after</key><string>記章</string></dict>
 	<dict><key>before</key><string>奇蹟</string><key>after</key><string>奇跡</string></dict>
 	<dict><key>before</key><string>稀代</string><key>after</key><string>希代</string></dict>
 	<dict><key>before</key><string>綺談</string><key>after</key><string>奇談</string></dict>
 	<dict><key>before</key><string>機智</string><key>after</key><string>機知</string></dict>
-	<dict><key>before</key><string>吃水</string><key>after</key><string>喫水</string></dict>	<!-- （法・船） -->
+	<dict><key>before</key><string>吃水</string><key>after</key><string>喫水</string></dict>	<!-- (法・船) -->
 	<dict><key>before</key><string>稀薄</string><key>after</key><string>希薄</string></dict>
 	<dict><key>before</key><string>糺弾</string><key>after</key><string>糾弾</string></dict>
 	<dict><key>before</key><string>糺明</string><key>after</key><string>糾明</string></dict>
 	<dict><key>before</key><string>旧蹟</string><key>after</key><string>旧跡</string></dict>
 	<dict><key>before</key><string>兇悪</string><key>after</key><string>凶悪</string></dict>
-	<dict><key>before</key><string>饗応</string><key>after</key><string>供応</string></dict>	<!-- （法） -->
+	<dict><key>before</key><string>饗応</string><key>after</key><string>供応</string></dict>	<!-- (法) -->
 	<dict><key>before</key><string>教誨</string><key>after</key><string>教戒</string></dict>
 	<dict><key>before</key><string>兇漢</string><key>after</key><string>凶漢</string></dict>
 	<dict><key>before</key><string>兇器</string><key>after</key><string>凶器</string></dict>
@@ -75,13 +75,13 @@
 	<dict><key>before</key><string>技倆</string><key>after</key><string>技量</string></dict>
 	<dict><key>before</key><string>吟誦</string><key>after</key><string>吟唱</string></dict>
 	<dict><key>before</key><string>区劃</string><key>after</key><string>区画</string></dict>
-	<dict><key>before</key><string>掘鑿</string><key>after</key><string>掘削</string></dict>	<!-- （鉱） -->
+	<dict><key>before</key><string>掘鑿</string><key>after</key><string>掘削</string></dict>	<!-- (鉱) -->
 	<dict><key>before</key><string>訓誡</string><key>after</key><string>訓戒</string></dict>
 	<dict><key>before</key><string>燻製</string><key>after</key><string>薫製</string></dict>
-	<dict><key>before</key><string>繋船</string><key>after</key><string>係船</string></dict>	<!-- （法・船） -->
+	<dict><key>before</key><string>繋船</string><key>after</key><string>係船</string></dict>	<!-- (法・船) -->
 	<dict><key>before</key><string>繋争</string><key>after</key><string>係争</string></dict>
-	<dict><key>before</key><string>繋属</string><key>after</key><string>係属</string></dict>	<!-- （法） -->
-	<dict><key>before</key><string>繋留</string><key>after</key><string>係留</string></dict>	<!-- （法） -->
+	<dict><key>before</key><string>繋属</string><key>after</key><string>係属</string></dict>	<!-- (法) -->
+	<dict><key>before</key><string>繋留</string><key>after</key><string>係留</string></dict>	<!-- (法) -->
 	<dict><key>before</key><string>下剋上</string><key>after</key><string>下克上</string></dict>
 	<dict><key>before</key><string>蹶起</string><key>after</key><string>決起</string></dict>
 	<dict><key>before</key><string>月蝕</string><key>after</key><string>月食</string></dict>
@@ -93,17 +93,17 @@
 	<dict><key>before</key><string>交驩</string><key>after</key><string>交歓</string></dict>
 	<dict><key>before</key><string>礦業</string><key>after</key><string>鉱業</string></dict>
 	<dict><key>before</key><string>鯁骨</string><key>after</key><string>硬骨</string></dict>
-	<dict><key>before</key><string>交叉</string><key>after</key><string>交差</string></dict>	<!-- （法） -->
-	<dict><key>before</key><string>扣除</string><key>after</key><string>控除</string></dict>	<!-- （法） -->
+	<dict><key>before</key><string>交叉</string><key>after</key><string>交差</string></dict>	<!-- (法) -->
+	<dict><key>before</key><string>扣除</string><key>after</key><string>控除</string></dict>	<!-- (法) -->
 	<dict><key>before</key><string>甦生</string><key>after</key><string>更生</string></dict>
-	<dict><key>before</key><string>礦石</string><key>after</key><string>鉱石</string></dict>	<!-- （鉱） -->
+	<dict><key>before</key><string>礦石</string><key>after</key><string>鉱石</string></dict>	<!-- (鉱) -->
 	<dict><key>before</key><string>宏壮</string><key>after</key><string>広壮</string></dict>
 	<dict><key>before</key><string>宏大</string><key>after</key><string>広大</string></dict>
 	<dict><key>before</key><string>香奠</string><key>after</key><string>香典</string></dict>
 	<dict><key>before</key><string>昂騰</string><key>after</key><string>高騰</string></dict>
 	<dict><key>before</key><string>昂奮</string><key>after</key><string>興奮</string></dict>
 	<dict><key>before</key><string>亢奮</string><key>after</key><string>興奮</string></dict>
-	<dict><key>before</key><string>弘報</string><key>after</key><string>広報</string></dict>	<!-- （法） -->
+	<dict><key>before</key><string>弘報</string><key>after</key><string>広報</string></dict>	<!-- (法) -->
 	<dict><key>before</key><string>曠野</string><key>after</key><string>広野</string></dict>
 	<dict><key>before</key><string>昂揚</string><key>after</key><string>高揚</string></dict>
 	<dict><key>before</key><string>強慾</string><key>after</key><string>強欲</string></dict>
@@ -111,14 +111,14 @@
 	<dict><key>before</key><string>涸渇</string><key>after</key><string>枯渇</string></dict>
 	<dict><key>before</key><string>古稀</string><key>after</key><string>古希</string></dict>
 	<dict><key>before</key><string>古蹟</string><key>after</key><string>古跡</string></dict>
-	<dict><key>before</key><string>骨骼</string><key>after</key><string>骨格</string></dict>	<!-- （動・医） -->
-	<dict><key>before</key><string>雇傭</string><key>after</key><string>雇用</string></dict>	<!-- （法） -->
+	<dict><key>before</key><string>骨骼</string><key>after</key><string>骨格</string></dict>	<!-- (動・医) -->
+	<dict><key>before</key><string>雇傭</string><key>after</key><string>雇用</string></dict>	<!-- (法) -->
 	<dict><key>before</key><string>混淆</string><key>after</key><string>混交</string></dict>
 	<dict><key>before</key><string>根柢</string><key>after</key><string>根底</string></dict>
 	<dict><key>before</key><string>昏迷</string><key>after</key><string>混迷</string></dict>
-	<dict><key>before</key><string>醋酸</string><key>after</key><string>酢酸</string></dict>	<!-- （化） -->
+	<dict><key>before</key><string>醋酸</string><key>after</key><string>酢酸</string></dict>	<!-- (化) -->
 	<dict><key>before</key><string>坐視</string><key>after</key><string>座視</string></dict>
-	<dict><key>before</key><string>坐礁</string><key>after</key><string>座礁</string></dict>	<!-- （船） -->
+	<dict><key>before</key><string>坐礁</string><key>after</key><string>座礁</string></dict>	<!-- (船) -->
 	<dict><key>before</key><string>坐洲</string><key>after</key><string>座州</string></dict>
 	<dict><key>before</key><string>雑沓</string><key>after</key><string>雑踏</string></dict>
 	<dict><key>before</key><string>三絃</string><key>after</key><string>三弦</string></dict>
@@ -131,7 +131,7 @@
 	<dict><key>before</key><string>色慾</string><key>after</key><string>色欲</string></dict>
 	<dict><key>before</key><string>刺戟</string><key>after</key><string>刺激</string></dict>
 	<dict><key>before</key><string>史蹟</string><key>after</key><string>史跡</string></dict>
-	<dict><key>before</key><string>屍体</string><key>after</key><string>死体</string></dict>	<!-- （医） -->
+	<dict><key>before</key><string>屍体</string><key>after</key><string>死体</string></dict>	<!-- (医) -->
 	<dict><key>before</key><string>七顚八倒</string><key>after</key><string>七転八倒</string></dict>
 	<dict><key>before</key><string>死歿</string><key>after</key><string>死没</string></dict>
 	<dict><key>before</key><string>射倖心</string><key>after</key><string>射幸心</string></dict>
@@ -143,23 +143,23 @@
 	<dict><key>before</key><string>手蹟</string><key>after</key><string>手跡</string></dict>
 	<dict><key>before</key><string>駿才</string><key>after</key><string>俊才</string></dict>
 	<dict><key>before</key><string>銷夏</string><key>after</key><string>消夏</string></dict>
-	<dict><key>before</key><string>銷却</string><key>after</key><string>消却</string></dict>	<!-- （法） -->
-	<dict><key>before</key><string>障碍</string><key>after</key><string>障害</string></dict>	<!-- （法） -->
+	<dict><key>before</key><string>銷却</string><key>after</key><string>消却</string></dict>	<!-- (法) -->
+	<dict><key>before</key><string>障碍</string><key>after</key><string>障害</string></dict>	<!-- (法) -->
 	<dict><key>before</key><string>情誼</string><key>after</key><string>情義</string></dict>
 	<dict><key>before</key><string>称讃</string><key>after</key><string>称賛</string></dict>
 	<dict><key>before</key><string>賞讃</string><key>after</key><string>賞賛</string></dict>
 	<dict><key>before</key><string>陞叙</string><key>after</key><string>昇叙</string></dict>
 	<dict><key>before</key><string>焦躁</string><key>after</key><string>焦燥</string></dict>
 	<dict><key>before</key><string>銷鎮</string><key>after</key><string>消沈</string></dict>
-	<dict><key>before</key><string>牆壁</string><key>after</key><string>障壁</string></dict>	<!-- （法） -->
-	<dict><key>before</key><string>蒸溜</string><key>after</key><string>蒸留</string></dict>	<!-- （化） -->
+	<dict><key>before</key><string>牆壁</string><key>after</key><string>障壁</string></dict>	<!-- (法) -->
+	<dict><key>before</key><string>蒸溜</string><key>after</key><string>蒸留</string></dict>	<!-- (化) -->
 	<dict><key>before</key><string>書翰</string><key>after</key><string>書簡</string></dict>
-	<dict><key>before</key><string>食慾</string><key>after</key><string>食欲</string></dict>	<!-- （医） -->
+	<dict><key>before</key><string>食慾</string><key>after</key><string>食欲</string></dict>	<!-- (医) -->
 	<dict><key>before</key><string>抒情</string><key>after</key><string>叙情</string></dict>
 	<dict><key>before</key><string>試煉</string><key>after</key><string>試練</string></dict>
 	<dict><key>before</key><string>鍼術</string><key>after</key><string>針術</string></dict>
-	<dict><key>before</key><string>侵蝕</string><key>after</key><string>侵食</string></dict>	<!-- （法） -->
-	<dict><key>before</key><string>浸蝕</string><key>after</key><string>浸食</string></dict>	<!-- （化） -->
+	<dict><key>before</key><string>侵蝕</string><key>after</key><string>侵食</string></dict>	<!-- (法) -->
+	<dict><key>before</key><string>浸蝕</string><key>after</key><string>浸食</string></dict>	<!-- (化) -->
 	<dict><key>before</key><string>真蹟</string><key>after</key><string>真跡</string></dict>
 	<dict><key>before</key><string>伸暢</string><key>after</key><string>伸長</string></dict>
 	<dict><key>before</key><string>滲透</string><key>after</key><string>浸透</string></dict>
@@ -175,9 +175,9 @@
 	<dict><key>before</key><string>尖鋭</string><key>after</key><string>先鋭</string></dict>
 	<dict><key>before</key><string>銓衡</string><key>after</key><string>選考</string></dict>
 	<dict><key>before</key><string>煽情</string><key>after</key><string>扇情</string></dict>
-	<dict><key>before</key><string>洗滌</string><key>after</key><string>洗浄</string></dict>	<!-- （法・医） -->
+	<dict><key>before</key><string>洗滌</string><key>after</key><string>洗浄</string></dict>	<!-- (法・医) -->
 	<dict><key>before</key><string>戦々兢々</string><key>after</key><string>戦々恐々</string></dict>
-	<dict><key>before</key><string>船艙</string><key>after</key><string>船倉</string></dict>	<!-- （船） -->
+	<dict><key>before</key><string>船艙</string><key>after</key><string>船倉</string></dict>	<!-- (船) -->
 	<dict><key>before</key><string>尖端</string><key>after</key><string>先端</string></dict>
 	<dict><key>before</key><string>擅断</string><key>after</key><string>専断</string></dict>
 	<dict><key>before</key><string>煽動</string><key>after</key><string>扇動</string></dict>
@@ -195,7 +195,7 @@
 	<dict><key>before</key><string>疏水</string><key>after</key><string>疎水</string></dict>
 	<dict><key>before</key><string>沮喪</string><key>after</key><string>阻喪</string></dict>
 	<dict><key>before</key><string>疏通</string><key>after</key><string>疎通</string></dict>
-	<dict><key>before</key><string>疏明</string><key>after</key><string>疎明</string></dict>	<!-- （法） -->
+	<dict><key>before</key><string>疏明</string><key>after</key><string>疎明</string></dict>	<!-- (法) -->
 	<dict><key>before</key><string>褪色</string><key>after</key><string>退色</string></dict>
 	<dict><key>before</key><string>頽勢</string><key>after</key><string>退勢</string></dict>
 	<dict><key>before</key><string>頽廃</string><key>after</key><string>退廃</string></dict>
@@ -206,8 +206,8 @@
 	<dict><key>before</key><string>炭礦</string><key>after</key><string>炭鉱</string></dict>
 	<dict><key>before</key><string>端坐</string><key>after</key><string>端座</string></dict>
 	<dict><key>before</key><string>短篇</string><key>after</key><string>短編</string></dict>
-	<dict><key>before</key><string>煖房</string><key>after</key><string>暖房</string></dict>	<!-- （建） -->
-	<dict><key>before</key><string>煖炉</string><key>after</key><string>暖炉</string></dict>	<!-- （建） -->
+	<dict><key>before</key><string>煖房</string><key>after</key><string>暖房</string></dict>	<!-- (建) -->
+	<dict><key>before</key><string>煖炉</string><key>after</key><string>暖炉</string></dict>	<!-- (建) -->
 	<dict><key>before</key><string>智慧</string><key>after</key><string>知恵</string></dict>
 	<dict><key>before</key><string>智能</string><key>after</key><string>知能</string></dict>
 	<dict><key>before</key><string>智謀</string><key>after</key><string>知謀</string></dict>
@@ -215,29 +215,29 @@
 	<dict><key>before</key><string>註釈</string><key>after</key><string>注釈</string></dict>
 	<dict><key>before</key><string>註文</string><key>after</key><string>注文</string></dict>
 	<dict><key>before</key><string>長篇</string><key>after</key><string>長編</string></dict>
-	<dict><key>before</key><string>沈澱</string><key>after</key><string>沈殿</string></dict>	<!-- （化） -->
+	<dict><key>before</key><string>沈澱</string><key>after</key><string>沈殿</string></dict>	<!-- (化) -->
 	<dict><key>before</key><string>彽徊</string><key>after</key><string>低回</string></dict>
-	<dict><key>before</key><string>牴触</string><key>after</key><string>抵触</string></dict>	<!-- （法） -->
-	<dict><key>before</key><string>觝触</string><key>after</key><string>抵触</string></dict>	<!-- （法） -->
+	<dict><key>before</key><string>牴触</string><key>after</key><string>抵触</string></dict>	<!-- (法) -->
+	<dict><key>before</key><string>觝触</string><key>after</key><string>抵触</string></dict>	<!-- (法) -->
 	<dict><key>before</key><string>鄭重</string><key>after</key><string>丁重</string></dict>
 	<dict><key>before</key><string>叮嚀</string><key>after</key><string>丁寧</string></dict>
-	<dict><key>before</key><string>碇泊</string><key>after</key><string>停泊</string></dict>	<!-- （法） -->
+	<dict><key>before</key><string>碇泊</string><key>after</key><string>停泊</string></dict>	<!-- (法) -->
 	<dict><key>before</key><string>手帖</string><key>after</key><string>手帳</string></dict>
 	<dict><key>before</key><string>顚倒</string><key>after</key><string>転倒</string></dict>
-	<dict><key>before</key><string>顚覆</string><key>after</key><string>転覆</string></dict>	<!-- （法） -->
+	<dict><key>before</key><string>顚覆</string><key>after</key><string>転覆</string></dict>	<!-- (法) -->
 	<dict><key>before</key><string>蹈襲</string><key>after</key><string>踏襲</string></dict>
 	<dict><key>before</key><string>特輯</string><key>after</key><string>特集</string></dict>
 	<dict><key>before</key><string>杜絶</string><key>after</key><string>途絶</string></dict>
 	<dict><key>before</key><string>日蝕</string><key>after</key><string>日食</string></dict>
 	<dict><key>before</key><string>悖徳</string><key>after</key><string>背徳</string></dict>
-	<dict><key>before</key><string>曝露</string><key>after</key><string>暴露</string></dict>	<!-- （法） -->
+	<dict><key>before</key><string>曝露</string><key>after</key><string>暴露</string></dict>	<!-- (法) -->
 	<dict><key>before</key><string>破摧</string><key>after</key><string>破砕</string></dict>
 	<dict><key>before</key><string>醗酵</string><key>after</key><string>発酵</string></dict>
 	<dict><key>before</key><string>薄倖</string><key>after</key><string>薄幸</string></dict>
 	<dict><key>before</key><string>抜萃</string><key>after</key><string>抜粋</string></dict>
 	<dict><key>before</key><string>叛旗</string><key>after</key><string>反旗</string></dict>
 	<dict><key>before</key><string>叛逆</string><key>after</key><string>反逆</string></dict>
-	<dict><key>before</key><string>蕃殖</string><key>after</key><string>繁殖</string></dict>	<!-- （法） -->
+	<dict><key>before</key><string>蕃殖</string><key>after</key><string>繁殖</string></dict>	<!-- (法) -->
 	<dict><key>before</key><string>蕃族</string><key>after</key><string>蛮族</string></dict>
 	<dict><key>before</key><string>反撥</string><key>after</key><string>反発</string></dict>
 	<dict><key>before</key><string>叛乱</string><key>after</key><string>反乱</string></dict>
@@ -253,27 +253,27 @@
 	<dict><key>before</key><string>編輯</string><key>after</key><string>編集</string></dict>
 	<dict><key>before</key><string>哺育</string><key>after</key><string>保育</string></dict>
 	<dict><key>before</key><string>妨碍</string><key>after</key><string>妨害</string></dict>
-	<dict><key>before</key><string>抛棄</string><key>after</key><string>放棄</string></dict>	<!-- （法） -->
+	<dict><key>before</key><string>抛棄</string><key>after</key><string>放棄</string></dict>	<!-- (法) -->
 	<dict><key>before</key><string>防禦</string><key>after</key><string>防御</string></dict>
-	<dict><key>before</key><string>繃帯</string><key>after</key><string>包帯</string></dict>	<!-- （医） -->
+	<dict><key>before</key><string>繃帯</string><key>after</key><string>包帯</string></dict>	<!-- (医) -->
 	<dict><key>before</key><string>厖大</string><key>after</key><string>膨大</string></dict>
 	<dict><key>before</key><string>庖丁</string><key>after</key><string>包丁</string></dict>
-	<dict><key>before</key><string>抛物線</string><key>after</key><string>放物線</string></dict>	<!-- （物） -->
+	<dict><key>before</key><string>抛物線</string><key>after</key><string>放物線</string></dict>	<!-- (物) -->
 	<dict><key>before</key><string>輔佐</string><key>after</key><string>補佐</string></dict>
 	<dict><key>before</key><string>鋪装</string><key>after</key><string>舗装</string></dict>
 	<dict><key>before</key><string>輔導</string><key>after</key><string>補導</string></dict>
 	<dict><key>before</key><string>保姆</string><key>after</key><string>保母</string></dict>
 	<dict><key>before</key><string>無智</string><key>after</key><string>無知</string></dict>
 	<dict><key>before</key><string>無慾</string><key>after</key><string>無欲</string></dict>
-	<dict><key>before</key><string>熔解</string><key>after</key><string>溶解</string></dict>	<!-- （鉱） -->
-	<dict><key>before</key><string>熔岩</string><key>after</key><string>溶岩</string></dict>	<!-- （鉱） -->
-	<dict><key>before</key><string>鎔鉱炉</string><key>after</key><string>溶鉱炉</string></dict>	<!-- （鉱） -->
-	<dict><key>before</key><string>熔接</string><key>after</key><string>溶接</string></dict>	<!-- （船・鉱） -->
+	<dict><key>before</key><string>熔解</string><key>after</key><string>溶解</string></dict>	<!-- (鉱) -->
+	<dict><key>before</key><string>熔岩</string><key>after</key><string>溶岩</string></dict>	<!-- (鉱) -->
+	<dict><key>before</key><string>鎔鉱炉</string><key>after</key><string>溶鉱炉</string></dict>	<!-- (鉱) -->
+	<dict><key>before</key><string>熔接</string><key>after</key><string>溶接</string></dict>	<!-- (船・鉱) -->
 	<dict><key>before</key><string>名誉慾</string><key>after</key><string>名誉欲</string></dict>
 	<dict><key>before</key><string>棉花</string><key>after</key><string>綿花</string></dict>
 	<dict><key>before</key><string>摸索</string><key>after</key><string>模索</string></dict>
 	<dict><key>before</key><string>野鄙</string><key>after</key><string>野卑</string></dict>
-	<dict><key>before</key><string>落磐</string><key>after</key><string>落盤</string></dict>	<!-- （鉱・法） -->
+	<dict><key>before</key><string>落磐</string><key>after</key><string>落盤</string></dict>	<!-- (鉱・法) -->
 	<dict><key>before</key><string>悧巧</string><key>after</key><string>利口</string></dict>
 	<dict><key>before</key><string>理智</string><key>after</key><string>理知</string></dict>
 	<dict><key>before</key><string>離叛</string><key>after</key><string>離反</string></dict>
@@ -287,13 +287,13 @@
 	<dict><key>before</key><string>連坐</string><key>after</key><string>連座</string></dict>
 	<dict><key>before</key><string>聯想</string><key>after</key><string>連想</string></dict>
 	<dict><key>before</key><string>聯珠</string><key>after</key><string>連珠</string></dict>
-	<dict><key>before</key><string>煉炭</string><key>after</key><string>練炭</string></dict>	<!-- （化） -->
-	<dict><key>before</key><string>煉乳</string><key>after</key><string>練乳</string></dict>	<!-- （化） -->
+	<dict><key>before</key><string>煉炭</string><key>after</key><string>練炭</string></dict>	<!-- (化) -->
+	<dict><key>before</key><string>煉乳</string><key>after</key><string>練乳</string></dict>	<!-- (化) -->
 	<dict><key>before</key><string>聯邦</string><key>after</key><string>連邦</string></dict>
 	<dict><key>before</key><string>聯盟</string><key>after</key><string>連盟</string></dict>
 	<dict><key>before</key><string>聯絡</string><key>after</key><string>連絡</string></dict>
 	<dict><key>before</key><string>聯立</string><key>after</key><string>連立</string></dict>
-	<dict><key>before</key><string>彎曲</string><key>after</key><string>湾曲</string></dict>	<!-- （法） -->
+	<dict><key>before</key><string>彎曲</string><key>after</key><string>湾曲</string></dict>	<!-- (法) -->
 	<dict><key>before</key><string>彎入</string><key>after</key><string>湾入</string></dict>
 	<!-- ■ lateStandardized 報告の後に常用漢字に加わった字の組(甚・磨・妄 は 1981 年、闇・臆・潰・毀・窟・腎・汎 は 2010 年)。原典も「書きかえないのが普通」
 	     「法令の表記を使う」と注記している。normal とは別に、コンテナー X.10 で選ぶ(3570) -->
@@ -304,14 +304,14 @@
 	<dict><key>before</key><string>潰乱</string><key>after</key><string>壊乱</string></dict>
 	<dict><key>before</key><string>肝腎</string><key>after</key><string>肝心</string></dict>
 	<dict><key>before</key><string>決潰</string><key>after</key><string>決壊</string></dict>
-	<dict><key>before</key><string>研磨</string><key>after</key><string>研摩</string></dict>	<!-- （鉱） -->
+	<dict><key>before</key><string>研磨</string><key>after</key><string>研摩</string></dict>	<!-- (鉱) -->
 	<dict><key>before</key><string>広汎</string><key>after</key><string>広範</string></dict>
 	<dict><key>before</key><string>蝕甚</string><key>after</key><string>食尽</string></dict>
 	<dict><key>before</key><string>全潰</string><key>after</key><string>全壊</string></dict>
 	<dict><key>before</key><string>倒潰</string><key>after</key><string>倒壊</string></dict>
-	<dict><key>before</key><string>破毀</string><key>after</key><string>破棄</string></dict>	<!-- （法） -->
+	<dict><key>before</key><string>破毀</string><key>after</key><string>破棄</string></dict>	<!-- (法) -->
 	<dict><key>before</key><string>崩潰</string><key>after</key><string>崩壊</string></dict>
-	<dict><key>before</key><string>磨滅</string><key>after</key><string>摩滅</string></dict>	<!-- （土） -->
+	<dict><key>before</key><string>磨滅</string><key>after</key><string>摩滅</string></dict>	<!-- (土) -->
 	<dict><key>before</key><string>妄動</string><key>after</key><string>盲動</string></dict>
 	<dict><key>before</key><string>理窟</string><key>after</key><string>理屈</string></dict>
 

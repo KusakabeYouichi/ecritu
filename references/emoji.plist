@@ -4223,17 +4223,17 @@
 	<dict><key>phrase</key><string>🌙</string><key>shortcut</key><string>みっかつき</string></dict> <!-- 三日月 -->
 	<dict><key>phrase</key><string>🌙</string><key>shortcut</key><string>うちゅう</string></dict> <!-- 宇宙 -->
 	<dict><key>phrase</key><string>🌙</string><key>shortcut</key><string>つき</string></dict> <!-- 月 -->
-	<!-- 🌎 地球（アメリカ大陸） -->
+	<!-- 🌎 地球(アメリカ大陸) -->
 	<dict><key>phrase</key><string>🌎</string><key>shortcut</key><string>あめりか</string></dict> <!-- アメリカ -->
 	<dict><key>phrase</key><string>🌎</string><key>shortcut</key><string>あめりかたいりく</string></dict> <!-- アメリカ大陸 -->
 	<dict><key>phrase</key><string>🌎</string><key>shortcut</key><string>せかい</string></dict> <!-- 世界 -->
 	<dict><key>phrase</key><string>🌎</string><key>shortcut</key><string>ちきゅう</string></dict> <!-- 地球 -->
-	<!-- 🌍 地球（ヨーロッパとアフリカ） -->
+	<!-- 🌍 地球(ヨーロッパとアフリカ) -->
 	<dict><key>phrase</key><string>🌍</string><key>shortcut</key><string>あふりか</string></dict> <!-- アフリカ -->
 	<dict><key>phrase</key><string>🌍</string><key>shortcut</key><string>よーろっぱ</string></dict> <!-- ヨーロッパ -->
 	<dict><key>phrase</key><string>🌍</string><key>shortcut</key><string>せかい</string></dict> <!-- 世界 -->
 	<dict><key>phrase</key><string>🌍</string><key>shortcut</key><string>ちきゅう</string></dict> <!-- 地球 -->
-	<!-- 🌏 地球（アジアとオーストラリア） -->
+	<!-- 🌏 地球(アジアとオーストラリア) -->
 	<dict><key>phrase</key><string>🌏</string><key>shortcut</key><string>あじあ</string></dict> <!-- アジア -->
 	<dict><key>phrase</key><string>🌏</string><key>shortcut</key><string>おーすとらりあ</string></dict> <!-- オーストラリア -->
 	<dict><key>phrase</key><string>🌏</string><key>shortcut</key><string>せかい</string></dict> <!-- 世界 -->
@@ -7413,25 +7413,25 @@
 	<dict><key>phrase</key><string>🪧</string><key>shortcut</key><string>こうぎ</string></dict> <!-- 抗議 -->
 	<dict><key>phrase</key><string>🪧</string><key>shortcut</key><string>いぎ</string></dict> <!-- 異議 -->
 	<dict><key>phrase</key><string>🪧</string><key>shortcut</key><string>かんばん</string></dict> <!-- 看板 -->
-	<!-- 📪 閉じた郵便受け（手紙なし） -->
+	<!-- 📪 閉じた郵便受け(手紙なし) -->
 	<dict><key>phrase</key><string>📪</string><key>shortcut</key><string>ぽすと</string></dict> <!-- ポスト -->
 	<dict><key>phrase</key><string>📪</string><key>shortcut</key><string>てがみなし</string></dict> <!-- 手紙なし -->
 	<dict><key>phrase</key><string>📪</string><key>shortcut</key><string>ゆうびんうけ</string></dict> <!-- 郵便受け -->
 	<dict><key>phrase</key><string>📪</string><key>shortcut</key><string>ゆうびんばこ</string></dict> <!-- 郵便箱 -->
 	<dict><key>phrase</key><string>📪</string><key>shortcut</key><string>とじた</string></dict> <!-- 閉じた -->
-	<!-- 📫 閉じた郵便受け（手紙あり） -->
+	<!-- 📫 閉じた郵便受け(手紙あり) -->
 	<dict><key>phrase</key><string>📫</string><key>shortcut</key><string>ぽすと</string></dict> <!-- ポスト -->
 	<dict><key>phrase</key><string>📫</string><key>shortcut</key><string>てがみあり</string></dict> <!-- 手紙あり -->
 	<dict><key>phrase</key><string>📫</string><key>shortcut</key><string>ゆうびんうけ</string></dict> <!-- 郵便受け -->
 	<dict><key>phrase</key><string>📫</string><key>shortcut</key><string>ゆうびんばこ</string></dict> <!-- 郵便箱 -->
 	<dict><key>phrase</key><string>📫</string><key>shortcut</key><string>とじた</string></dict> <!-- 閉じた -->
-	<!-- 📬 開いた郵便受け（手紙あり） -->
+	<!-- 📬 開いた郵便受け(手紙あり) -->
 	<dict><key>phrase</key><string>📬</string><key>shortcut</key><string>ぽすと</string></dict> <!-- ポスト -->
 	<dict><key>phrase</key><string>📬</string><key>shortcut</key><string>てがみあり</string></dict> <!-- 手紙あり -->
 	<dict><key>phrase</key><string>📬</string><key>shortcut</key><string>ゆうびんうけ</string></dict> <!-- 郵便受け -->
 	<dict><key>phrase</key><string>📬</string><key>shortcut</key><string>ゆうびんばこ</string></dict> <!-- 郵便箱 -->
 	<dict><key>phrase</key><string>📬</string><key>shortcut</key><string>ひらいた</string></dict> <!-- 開いた -->
-	<!-- 📭 開いた郵便受け（手紙なし） -->
+	<!-- 📭 開いた郵便受け(手紙なし) -->
 	<dict><key>phrase</key><string>📭</string><key>shortcut</key><string>ぽすと</string></dict> <!-- ポスト -->
 	<dict><key>phrase</key><string>📭</string><key>shortcut</key><string>てがみなし</string></dict> <!-- 手紙なし -->
 	<dict><key>phrase</key><string>📭</string><key>shortcut</key><string>ゆうびんうけ</string></dict> <!-- 郵便受け -->
@@ -8651,7 +8651,7 @@
 	<dict><key>phrase</key><string>⏸️</string><key>shortcut</key><string>ぽーず</string></dict> <!-- ポーズ -->
 	<dict><key>phrase</key><string>⏸️</string><key>shortcut</key><string>ぼたん</string></dict> <!-- ボタン -->
 	<dict><key>phrase</key><string>⏸️</string><key>shortcut</key><string>いちじていし</string></dict> <!-- 一時停止 -->
-	<!-- ⏯️ 再生／一時停止ボタン -->
+	<!-- ⏯️ 再生/一時停止ボタン -->
 	<dict><key>phrase</key><string>⏯️</string><key>shortcut</key><string>ぼたん</string></dict> <!-- ボタン -->
 	<dict><key>phrase</key><string>⏯️</string><key>shortcut</key><string>いちじていし</string></dict> <!-- 一時停止 -->
 	<dict><key>phrase</key><string>⏯️</string><key>shortcut</key><string>さいせい</string></dict> <!-- 再生 -->

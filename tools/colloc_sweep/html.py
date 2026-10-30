@@ -136,7 +136,7 @@ function render() {
     const head = document.createElement('div'); head.className = 'head';
     head.innerHTML = '<span class="phrase"></span><span class="meta"></span>';
     head.querySelector('.phrase').textContent = r.key;
-    head.querySelector('.meta').textContent = 'コーパス ' + r.count + ' 回・' + r.share + '%／ほかの表記: ' + r.rivals;
+    head.querySelector('.meta').textContent = 'コーパス ' + r.count + ' 回・' + r.share + '% / ほかの表記: ' + r.rivals;
     if (r.kana) { const t = document.createElement('span'); t.className = 'tag'; t.textContent = '先頭がかな'; head.appendChild(t); }
     card.appendChild(head);
     const box = document.createElement('div'); box.className = 'forms';

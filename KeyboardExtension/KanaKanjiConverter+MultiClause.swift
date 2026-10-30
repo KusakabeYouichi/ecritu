@@ -5795,7 +5795,7 @@ extension KanaKanjiConverter {
         }
     }
 
-    // 期間を表す数量名詞か(数分/3時間/２週間/数か月/五年間 等。2772)。数詞(算用/漢数字/数/何)+期間の助数詞。
+    // 期間を表す数量名詞か(数分/3時間/2週間/数か月/五年間 等。2772)。数詞(算用/漢数字/数/何)+期間の助数詞。
     // 日/月/年 単独は時点(3日=三日目)と両義なので入れない(日間/年間 は入れる)
     static func isDurationNounSurface(_ surface: String) -> Bool {
         guard let counter = multiClauseDurationCounterSuffixes.first(where: { surface.hasSuffix($0) }) else {

@@ -904,9 +904,9 @@
 	<dict><key>phrase</key><string>ザシアン</string><key>shortcut</key><string>ざしあん</string></dict>	<!-- No.888 -->
 	<dict><key>phrase</key><string>ザマゼンタ</string><key>shortcut</key><string>ざまぜんた</string></dict>	<!-- No.889 -->
 	<dict><key>phrase</key><string>ムゲンダイナ</string><key>shortcut</key><string>むげんだいな</string></dict>	<!-- No.890 -->
-	<dict><key>phrase</key><string>ダクマ</string><key>shortcut</key><string>だくま</string></dict>	<!-- （図鑑No.不明） -->
-	<dict><key>phrase</key><string>ウーラオス</string><key>shortcut</key><string>うーらおす</string></dict>	<!-- （図鑑No.不明） -->
-	<dict><key>phrase</key><string>バドレックス</string><key>shortcut</key><string>ばどれっくす</string></dict>	<!-- （図鑑No.不明） -->
+	<dict><key>phrase</key><string>ダクマ</string><key>shortcut</key><string>だくま</string></dict>	<!-- (図鑑No.不明) -->
+	<dict><key>phrase</key><string>ウーラオス</string><key>shortcut</key><string>うーらおす</string></dict>	<!-- (図鑑No.不明) -->
+	<dict><key>phrase</key><string>バドレックス</string><key>shortcut</key><string>ばどれっくす</string></dict>	<!-- (図鑑No.不明) -->
 	<dict><key>phrase</key><string>ザルード</string><key>shortcut</key><string>ざるーど</string></dict>	<!-- No.893 -->
 	<dict><key>phrase</key><string>レジエレキ</string><key>shortcut</key><string>れじえれき</string></dict>	<!-- No.894 -->
 	<dict><key>phrase</key><string>レジドラゴ</string><key>shortcut</key><string>れじどらご</string></dict>	<!-- No.895 -->
