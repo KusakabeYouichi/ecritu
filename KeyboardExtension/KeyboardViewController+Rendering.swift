@@ -378,38 +378,6 @@ extension KeyboardViewController {
     // 4.4.1: 数字・小数用のキーボードタイプへの対応)。数値系フィールドでは数字モードで
     // 開く。それ以外は かな。同一フィールド内のユーザ手動切替は上書きしない(trait が
     // 変わったフィールド移動時のみ、rootView の .onChange(of: initialInputMode) で追従)。
-    // 調査用ログ(メール欄の区別 3588): メールの[宛先]と連絡先の[メールを追加]を見分ける性質があるかを記録する。
-    // どちらも keyboardType=7・textContentType=nil(3586)。本文は残さず、文字数と U+FFFC(宛先のトークン)の有無だけ
-    #if DEBUG
-    func logFieldTraitsForEmailFieldInvestigation(_ point: String, always: Bool) {
-        let proxy = textDocumentProxy
-        let before = proxy.documentContextBeforeInput ?? ""
-        let after = proxy.documentContextAfterInput ?? ""
-        let traits = [
-            "keyboardType=\(proxy.keyboardType.map { $0.rawValue } ?? -1)",
-            "contentType=\(proxy.textContentType.map { $0.rawValue } ?? "nil")",
-            "returnKey=\(proxy.returnKeyType.map { $0.rawValue } ?? -1)",
-            "autocap=\(proxy.autocapitalizationType.map { $0.rawValue } ?? -1)",
-            "autocorrect=\(proxy.autocorrectionType.map { $0.rawValue } ?? -1)",
-            "spell=\(proxy.spellCheckingType.map { $0.rawValue } ?? -1)",
-            "smartQuotes=\(proxy.smartQuotesType.map { $0.rawValue } ?? -1)",
-            "smartDashes=\(proxy.smartDashesType.map { $0.rawValue } ?? -1)",
-            "smartInsert=\(proxy.smartInsertDeleteType.map { $0.rawValue } ?? -1)",
-            "autoReturn=\(proxy.enablesReturnKeyAutomatically.map { String($0) } ?? "nil")",
-            "secure=\(proxy.isSecureTextEntry.map { String($0) } ?? "nil")",
-            "appearance=\(proxy.keyboardAppearance.map { $0.rawValue } ?? -1)",
-            "hasText=\(proxy.hasText)",
-            "before=\(before.count) after=\(after.count)",
-            "token=\(before.contains("\u{FFFC}") || after.contains("\u{FFFC}"))",
-        ].joined(separator: " ")
-        guard always || traits != investigationLastLoggedFieldTraits else {
-            return
-        }
-        investigationLastLoggedFieldTraits = traits
-        appendKeyboardDiagnosticsLog("調査(メール欄の区別) \(point) \(traits)")
-    }
-    #endif
-
     func preferredInitialInputMode() -> KeyboardInputMode {
         switch textDocumentProxy.keyboardType {
         case .numberPad, .decimalPad, .asciiCapableNumberPad, .phonePad, .numbersAndPunctuation:

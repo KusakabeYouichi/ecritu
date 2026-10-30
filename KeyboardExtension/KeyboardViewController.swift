@@ -4,11 +4,6 @@ import CoreFoundation
 import Darwin
 
 final class KeyboardViewController: UIInputViewController {
-    // 調査用ログ(メール欄の区別 3588): 最後に記録した欄の性質。変わったときだけ記録する。結論が出たら外す
-    #if DEBUG
-    var investigationLastLoggedFieldTraits: String?
-    #endif
-
     enum UserInitiatedRefreshReason: String {
         case kanaInput = "kanaInput"
         case commit = "commit"
@@ -903,9 +898,6 @@ final class KeyboardViewController: UIInputViewController {
 
     override func textDidChange(_ textInput: UITextInput?) {
         super.textDidChange(textInput)
-        #if DEBUG
-        logFieldTraitsForEmailFieldInvestigation("textDidChange", always: false)  // 調査用ログ(メール欄の区別 3588)
-        #endif
         updateKeyboardDiagnosticsHeartbeat(event: "textDidChange")
         publishMemoryFootprintPeakForDebugDisplay()
 
@@ -1021,9 +1013,6 @@ final class KeyboardViewController: UIInputViewController {
     override func viewDidAppear(_ animated: Bool) {
         defer { MemoryForensics.notePhase("表示(viewDidAppear)") }
         super.viewDidAppear(animated)
-        #if DEBUG
-        logFieldTraitsForEmailFieldInvestigation("viewDidAppear", always: true)  // 調査用ログ(メール欄の区別 3588)
-        #endif
         setNeedsUpdateOfScreenEdgesDeferringSystemGestures()
         updateKeyboardDiagnosticsHeartbeat(event: "viewDidAppear", appendLog: true)
         recordFullAccessConfirmationIfNeeded()
