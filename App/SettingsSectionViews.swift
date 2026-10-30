@@ -719,6 +719,14 @@ struct KanaPostModifierEmptyTapAssignmentSection: View {
         }
     }
 
+    private var currentCategoryLabel: String {
+        let id = currentCategoryBinding.wrappedValue
+        guard let descriptor = currentCategoryDescriptors.first(where: { $0.id == id }) else {
+            return id
+        }
+        return "\(descriptor.icon)  \(descriptor.title)"
+    }
+
     private var currentCategoryFallback: String {
         switch actionSelection {
         case .kaomoji: return KaomojiCategoryChoice.defaultID
@@ -784,14 +792,24 @@ struct KanaPostModifierEmptyTapAssignmentSection: View {
                 Text("切替時に開くカテゴリー")
                     .font(.subheadline.weight(.semibold))
 
-                Picker("カテゴリー", selection: currentCategoryBinding) {
-                    ForEach(currentCategoryDescriptors) { descriptor in
-                        Text("\(descriptor.icon)  \(descriptor.title)").tag(descriptor.id)
+                // 見出しは自前で描く。.menu の Picker は見出しの幅を自分で詰め、fixedSize でも
+                // [ショートカット]が 2 行に折れていた(3593・3594、ユーザ報告)
+                Menu {
+                    Picker("カテゴリー", selection: currentCategoryBinding) {
+                        ForEach(currentCategoryDescriptors) { descriptor in
+                            Text("\(descriptor.icon)  \(descriptor.title)").tag(descriptor.id)
+                        }
+                    }
+                    .pickerStyle(.inline)
+                } label: {
+                    HStack(spacing: 6) {
+                        Text(currentCategoryLabel)
+                            .lineLimit(1)
+                            .fixedSize(horizontal: true, vertical: false)
+                        Image(systemName: "chevron.up.chevron.down")
+                            .font(.caption.weight(.semibold))
                     }
                 }
-                .pickerStyle(.menu)
-                // 中身の幅で置く。幅を詰められて[ショートカット]が 2 行に折れていた(3593、ユーザ報告)
-                .fixedSize(horizontal: true, vertical: false)
                 .onAppear {
                     let validIDs = Set(currentCategoryDescriptors.map(\.id))
 
