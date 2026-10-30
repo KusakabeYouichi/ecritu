@@ -21065,6 +21065,21 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(goJisan.contains("ご持参"), "\(goJisan)")
     }
 
+    // 3607: 漢字 1 字+じる の連用形に、単独の お+ と お〜する を作らない(おへんじ が お変じ→お返事 の順だった)。お〜になる は残す
+    func testPolitePrefixOSkipsBareSinoJiruRenyou() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let reply = converter.candidates(for: "おへんじ", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(reply.first, "お返事", "\(reply)")
+        XCTAssertFalse(reply.contains("お変じ"), "\(reply)")
+        converter.invalidateCandidateCache()
+        let replySuru = converter.candidates(for: "おへんじします", limit: 8, systemCandidateMode: .surface)
+        XCTAssertFalse(replySuru.contains("お変じします"), "\(replySuru)")
+        converter.invalidateCandidateCache()
+        let feel = converter.candidates(for: "おかんじになる", limit: 8, systemCandidateMode: .surface)
+        XCTAssertTrue(feel.contains("お感じになる"), "\(feel)")
+    }
+
     // 3380: よしのや は 吉野家 が先頭(Sudachi の wc10000 で後ろに回され 吉野+や の合成が先頭だった)
     func testYoshinoyaRegistered() throws {
         try prepareRealLMDictionary()

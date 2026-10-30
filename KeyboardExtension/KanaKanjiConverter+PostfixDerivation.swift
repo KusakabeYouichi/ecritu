@@ -941,6 +941,14 @@ extension KanaKanjiConverter {
             guard shouldApplyPolitePrefix(prefix, to: renyouCandidate) else {
                 continue
             }
+            // 漢字 1 字+じる(変じる/感じる/信じる)の連用形は、お〜になる/お〜ください(お感じになる)にはなるが、
+            // 単独(お変じ)と お〜する には ならない。おへんじ が お変じ→お返事 の順だった(ユーザ報告 3607)
+            if expectedInflectionClass == InflectionClass.ichidan,
+                renyouCandidate.count == 2,
+                renyouCandidate.hasSuffix("じ"),
+                trailingSuffix.isEmpty || Self.honorificOSuruInflectionSuffixes().contains(trailingSuffix) {
+                continue
+            }
 
             derived.append(prefix + renyouCandidate + trailingSuffix)
         }
