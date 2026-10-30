@@ -602,9 +602,11 @@ struct ShortcutDictionarySettingsSection: View {
                 List {
                     ForEach(entries) { entry in
                         HStack(spacing: 8) {
+                            // 確認を待つ間は取り消し線で示す(ユーザー指定 3595)
                             Text(entry.candidate)
                                 .font(.system(size: 14, weight: .semibold))
-                                .foregroundStyle(.primary)
+                                .foregroundStyle(pendingDeletionEntry?.id == entry.id ? .secondary : .primary)
+                                .strikethrough(pendingDeletionEntry?.id == entry.id)
                                 .lineLimit(1)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                         }
@@ -645,7 +647,9 @@ struct ShortcutDictionarySettingsSection: View {
                         }
                         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                             if !isReordering {
-                                Button(role: .destructive) {
+                                // role: .destructive にすると、確認の前に行が消える動きになり、ダイアログの後ろで
+                                // 空欄の行が元に戻って見えた(3595、ユーザー報告)。赤い色だけを付ける
+                                Button {
                                     if editingEntry?.id == entry.id {
                                         editingEntry = nil
                                         candidateInput = ""
@@ -654,6 +658,7 @@ struct ShortcutDictionarySettingsSection: View {
                                 } label: {
                                     Text("削除")
                                 }
+                                .tint(.red)
                             }
                         }
                     }
@@ -673,7 +678,7 @@ struct ShortcutDictionarySettingsSection: View {
         }
         .settingsCardStyle()
         .alert(
-            "ショートカット語彙を削除しますか？",
+            pendingDeletionEntry.map { "ショートカット語彙『\($0.candidate)』を削除しますか?" } ?? "",
             isPresented: Binding(
                 get: { pendingDeletionEntry != nil },
                 set: { isPresented in
@@ -692,8 +697,6 @@ struct ShortcutDictionarySettingsSection: View {
                 onDeleteEntry(entry)
                 pendingDeletionEntry = nil
             }
-        } message: { entry in
-            Text("『\(entry.candidate)』を削除します。")
         }
     }
 }
