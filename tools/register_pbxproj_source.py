@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """新規 Swift ファイルを écritu.xcodeproj/project.pbxproj に登録する(手動編集の代行)。
 
-pbxproj は手で管理している(xcodegen は運用しない。project.yml 冒頭の注意を参照)。新ファイルは
+pbxproj は手で管理している(xcodegen は運用しない。実行すると手動登録した資源・設定が落ちる。2785)。新ファイルは
 PBXFileReference + グループ掲載 + ターゲットごとの PBXBuildFile/Sources 掲載が要る。既存の同グループ・
 同ターゲットのファイルを「手本」に、同じ場所へ 1 行ずつ差し込む。
 
@@ -11,8 +11,6 @@ PBXFileReference + グループ掲載 + ターゲットごとの PBXBuildFile/So
 例: KeyboardExtension/SortedTSVBlob.swift を KanaKanjiStore+LatinSuggestions.swift と同じターゲット群(拡張+テスト)へ:
   python3 tools/register_pbxproj_source.py KeyboardExtension/SortedTSVBlob.swift \
       --like KeyboardExtension/KanaKanjiStore+LatinSuggestions.swift
-
-手本がテストターゲットにも入っている場合は project.yml のテスト sources 一覧にも追記する(写しの同期)。
 """
 import argparse
 import hashlib
@@ -22,7 +20,6 @@ import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PBXPROJ = os.path.join(ROOT, "écritu.xcodeproj", "project.pbxproj")
-PROJECT_YML = os.path.join(ROOT, "project.yml")
 
 
 def make_id(seed: str) -> str:
@@ -115,16 +112,6 @@ def main() -> int:
     with open(PBXPROJ, "w", encoding="utf-8") as f:
         f.write(text)
     print(f"pbxproj: {new_name} を {len(new_build_ids)} ターゲットへ登録")
-
-    # project.yml(写し): 手本がテスト sources に個別掲載されていれば同じ並びに追記
-    with open(PROJECT_YML, encoding="utf-8") as f:
-        yml = f.read()
-    like_yml_line = f"      - path: {args.like_path}\n"
-    if like_yml_line in yml and f"      - path: {args.new_path}\n" not in yml:
-        yml = yml.replace(like_yml_line, like_yml_line + f"      - path: {args.new_path}\n", 1)
-        with open(PROJECT_YML, "w", encoding="utf-8") as f:
-            f.write(yml)
-        print("project.yml: テスト sources に追記")
     return 0
 
 
