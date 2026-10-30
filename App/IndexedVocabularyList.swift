@@ -107,7 +107,8 @@ struct IndexedVocabularyList: UIViewRepresentable {
             action: #selector(Coordinator.handleDeletionRevealPan(_:))
         )
         deletionRevealPan.maximumNumberOfTouches = 1
-        deletionRevealPan.cancelsTouchesInView = false
+        // 払う動きと認めた指は行のタップにしない(離した瞬間の didSelectRow が出したばかりの[削除]を引っ込めていた)
+        deletionRevealPan.cancelsTouchesInView = true
         deletionRevealPan.delegate = context.coordinator
         tableView.addGestureRecognizer(deletionRevealPan)
 
@@ -637,8 +638,9 @@ struct IndexedVocabularyList: UIViewRepresentable {
                 return false
             }
 
-            let velocity = pan.velocity(in: pan.view)
-            return abs(velocity.x) > abs(velocity.y) * 1.5
+            // 始めの瞬間の速度ではなく、そこまでに動いた距離の縦横比で見る(ゆっくり払っても拾う)
+            let translation = pan.translation(in: pan.view)
+            return abs(translation.x) > abs(translation.y)
         }
 
         func gestureRecognizer(
