@@ -1331,7 +1331,7 @@
 	<dict><key>phrase</key><string>蒼斗七星</string><key>shortcut</key><string>あおとしちせい</string></dict>	<!-- 青砥酒造 -->
 
 	<!-- ■ 出雲地方 -->
-	<dict><key>phrase</key><string>＋旭日</string><key>shortcut</key><string>じゅうじあさひ</string></dict>	<!-- 旭日酒造 -->
+	<dict><key>phrase</key><string>十旭日</string><key>shortcut</key><string>じゅうじあさひ</string></dict>	<!-- 旭日酒造 -->
 	<dict><key>phrase</key><string>八千矛</string><key>shortcut</key><string>やちほこ</string></dict>	<!-- 旭日酒造 -->
 	<dict><key>phrase</key><string>天穏</string><key>shortcut</key><string>てんおん</string></dict>	<!-- 板倉酒造 -->
 	<dict><key>phrase</key><string>出雲富士</string><key>shortcut</key><string>いずもふじ</string></dict>	<!-- 富士酒造 -->

@@ -559,7 +559,7 @@ struct ShortcutDictionarySettingsSection: View {
                             Text("よみ")
                                 .foregroundStyle(.secondary)
                             Spacer(minLength: 8)
-                            Text("☻（固定）")
+                            Text("☻(固定)")
                                 .foregroundStyle(.secondary)
                         }
                         .font(.footnote)
