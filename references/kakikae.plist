@@ -229,6 +229,7 @@
 	<dict><key>before</key><string>特輯</string><key>after</key><string>特集</string></dict>
 	<dict><key>before</key><string>杜絶</string><key>after</key><string>途絶</string></dict>
 	<dict><key>before</key><string>日蝕</string><key>after</key><string>日食</string></dict>
+	<dict><key>before</key><string>人蔘</string><key>after</key><string>人参</string></dict>	<!-- 蔘→参(代用字 参 の語例。辞書は 人参/人蔘 を同じ読みの別語として持つ。ユーザ指定 3632) -->
 	<dict><key>before</key><string>悖徳</string><key>after</key><string>背徳</string></dict>
 	<dict><key>before</key><string>曝露</string><key>after</key><string>暴露</string></dict>	<!-- (法) -->
 	<dict><key>before</key><string>破摧</string><key>after</key><string>破砕</string></dict>

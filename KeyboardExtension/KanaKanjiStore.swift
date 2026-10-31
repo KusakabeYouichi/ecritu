@@ -86,6 +86,8 @@ final class KanaKanjiStore {
     private var cachedInflectionClassMapsByReading = TwoGenerationCache<String, [String: String]>()
     // 読み別の人名区分キャッシュ(連文節の人名判定用。表層→姓/名。空も覚える)
     private var cachedPersonNameKindsByReading = TwoGenerationCache<String, [String: String]>()
+    // 読み別の地名区分キャッシュ(連文節の地名判定用。表層→国/一般。3633)
+    private var cachedPlaceNameKindsByReading = TwoGenerationCache<String, [String: String]>()
     private static let readingMapCacheLimit = 2048
     // 連文節 DP の LM 点引きキャッシュ。前置き入力ではスパン/ペアの大半が毎キーストロークで
     // 再出現するため、点クエリ(1変換あたり unigram 数百+bigram 千超)を初出のみに抑える。
@@ -558,6 +560,16 @@ final class KanaKanjiStore {
         }
         let kinds = sqliteIndexIfAvailable()?.personNameKindMap(for: reading) ?? [:]
         withCacheLock { cachedPersonNameKindsByReading.set(kinds, for: reading, limit: Self.readingMapCacheLimit) }
+        return kinds
+    }
+
+    // 読みに対する地名区分(表層→国/一般。Sudachi の 名詞,固有名詞,地名 由来。3633)。表が無い辞書では空
+    func placeNameKinds(for reading: String) -> [String: String] {
+        if let cached = withCacheLock({ cachedPlaceNameKindsByReading[reading] }) {
+            return cached
+        }
+        let kinds = sqliteIndexIfAvailable()?.placeNameKindMap(for: reading) ?? [:]
+        withCacheLock { cachedPlaceNameKindsByReading.set(kinds, for: reading, limit: Self.readingMapCacheLimit) }
         return kinds
     }
 

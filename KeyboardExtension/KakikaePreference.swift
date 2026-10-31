@@ -37,7 +37,8 @@ enum KakikaePreference: String, CaseIterable, Identifiable {
     // 常用漢字を先にして本来の漢字も後ろに出す(了解 が 諒解 の下になる報告 3611、回復/恢復 3635、連想/聯想 3644)。
     // スイッチ kakikaeEverydayException がオフなら例外にせず、設定どおり(戦略的初期設定はオフ)
     static let everydayAfterFirstPairs: Set<String> = ["了解", "了承", "諒解", "諒承", "回復", "恢復", "連想", "聯想", "制御", "制禦", "制馭", "生姜", "生薑", "区画", "区劃",
-                                                           "連絡", "聯絡", "台風", "颱風", "抜粋", "抜萃", "注文", "註文", "知能", "智能"]  // 区画/区劃(ユーザ指定 3747)、連絡/台風/抜粋(ユーザ指定 3778)、注文(ユーザ指定 3573)、知能(ユーザ指定 3602)
+                                                           "連絡", "聯絡", "台風", "颱風", "抜粋", "抜萃", "注文", "註文", "知能", "智能",
+                                                           "人参", "人蔘"]  // 区画/区劃(ユーザ指定 3747)、連絡/台風/抜粋(ユーザ指定 3778)、注文(ユーザ指定 3573)、知能(ユーザ指定 3602)、人参(蔘→参 の代用。野菜の にんじん は 人参 が普通。ユーザ指定 3632)
 
     func demotingEverydayPair(for surface: String, enabled: Bool = true) -> KakikaePreference {
         guard enabled, self == .bothBeforeFirst || self == .beforeOnly,

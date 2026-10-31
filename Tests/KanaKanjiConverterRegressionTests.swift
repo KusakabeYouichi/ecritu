@@ -16613,9 +16613,10 @@ extension KanaKanjiConverterRegressionTests {
                 converter.multiClauseCandidates(for: "ぎふじゃない", systemCandidateMode: mode).first,
                 "岐阜じゃない", "mode=\(mode.rawValue)"
             )
-            // 丁寧接頭辞の正当な合成は残る
+            // 丁寧接頭辞の正当な合成は残る(3632 以降は 1 ノードで読み全体を覆うので連文節は空、単文節の先頭が出る)
             XCTAssertEqual(
-                converter.multiClauseCandidates(for: "おわたしします", systemCandidateMode: mode).first,
+                converter.multiClauseCandidates(for: "おわたしします", systemCandidateMode: mode).first
+                    ?? converter.candidates(for: "おわたしします", limit: 4, systemCandidateMode: mode).first,
                 "お渡しします", "mode=\(mode.rawValue)"
             )
             // 名詞直後の 却って は先頭に来ない(帰って の先頭化は活用供給順の課題で未達)
@@ -21086,10 +21087,14 @@ extension KanaKanjiConverterRegressionTests {
         let feel = converter.candidates(for: "おかんじになる", limit: 8, systemCandidateMode: .surface)
         XCTAssertTrue(feel.contains("お感じになる"), "\(feel)")
         // 3608: 連文節では、後ろに続きがある区間の お信じ は部品として残す(3607 で お神事ください になっていた)
+        // 3632 以降は接尾付きの合成(お信じになる)が 1 ノードで読み全体を覆うので、連文節は空を返し単文節の先頭が出る
         for (reading, top) in [("おしんじください", "お信じください"), ("おしんじになる", "お信じになる"), ("おかんじください", "お感じください")] {
             converter.invalidateCandidateCache()
             let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
-            XCTAssertEqual(multi.first, top, "multi=\(multi.prefix(4))")
+            XCTAssertTrue(multi.isEmpty || multi.first == top, "multi=\(multi.prefix(4))")
+            converter.invalidateCandidateCache()
+            let single = converter.candidates(for: reading, limit: 4, systemCandidateMode: .surface)
+            XCTAssertEqual((multi.first ?? single.first), top, "multi=\(multi.prefix(4)) single=\(single)")
         }
     }
 
@@ -21198,6 +21203,77 @@ extension KanaKanjiConverterRegressionTests {
             "生成だってば"
         )
         XCTAssertEqual(Array(single("せいせい").prefix(3)), ["生成", "精製", "製成"], "\(single("せいせい"))")
+    }
+
+    // 3632: おおくりください→大栗ください(姓が「1 語」と見なされ お送り が作られない)、おせわになって→御世話になって(ユーザ報告)
+    func testRegressionRealLMUserReport3632() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        func multi(_ reading: String) -> [String] {
+            converter.invalidateCandidateCache()
+            return converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+        }
+        func single(_ reading: String, limit: Int = 8) -> [String] {
+            converter.invalidateCandidateCache()
+            return converter.candidates(for: reading, limit: limit, systemCandidateMode: .surface)
+        }
+        XCTAssertEqual(Array(multi("おおくりください").prefix(2)), ["お送りください", "お贈りください"], "\(multi("おおくりください"))")
+        // 1 ノードで読み全体を覆う(お送りします)ので連文節は空を返し、単文節の先頭が出る
+        let okurishimasu = multi("おおくりします")
+        XCTAssertTrue(okurishimasu.isEmpty || okurishimasu.first == "お送りします", "\(okurishimasu)")
+        XCTAssertEqual(single("おおくりします").first, "お送りします", "\(single("おおくりします"))")
+        XCTAssertTrue(single("おおくり").contains("お送り"), "\(single("おおくり"))")
+        // 姓としての 大栗 は残る(単文節。連文節の おおくりさん は 多く離散 が勝つ既存の問題で、ここでは扱わない)
+        XCTAssertEqual(single("おおくりさん").first, "大栗さん", "\(single("おおくりさん"))")
+        XCTAssertTrue(single("おおくり").contains("大栗"))
+        XCTAssertEqual(single("おせわ").first, "お世話", "\(single("おせわ"))")
+        XCTAssertEqual(multi("おせわに").first, "お世話に")
+        XCTAssertEqual(multi("おせわになって").first, "お世話になって", "\(multi("おせわになって"))")
+        XCTAssertEqual(multi("おせわになっております").first, "お世話になっております", "\(multi("おせわになっております"))")
+        XCTAssertEqual(multi("おせわになりました").first, "お世話になりました")
+        // 人名でない名詞+ください は減点しない(水ください)
+        XCTAssertEqual(multi("みずください").first, "水ください", "\(multi("みずください"))")
+        // にんじん: かな→カタカナ→人参→人蔘(ユーザ指定 3632)。人参/人蔘 は書きかえ(X.9)の組
+        XCTAssertEqual(Array(single("にんじん").prefix(4)), ["にんじん", "ニンジン", "人参", "人蔘"], "\(single("にんじん"))")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "にんじん"))
+        XCTAssertEqual(multi("にんじんを").first, "にんじんを", "\(multi("にんじんを"))")
+        XCTAssertTrue(KakikaeTable.pairs.contains { $0.before == "人蔘" && $0.after == "人参" })
+        // まっくおーえす: 連文節が Mac+OS を合成して MacOS を先頭にしていた。macOS(1 語)を先頭に
+        let macos = multi("まっくおーえす")
+        XCTAssertTrue(macos.isEmpty || macos.first == "macOS", "\(macos)")
+        XCTAssertEqual(single("まっくおーえす").first, "macOS", "\(single("まっくおーえす"))")
+        // iPhone(あいふぉん)を学習しただけで あいふぉんでゅお が iPhone+デュオ になり、一語の iPhone Duo が負けていた(3634)。
+        // 読み全体に一致する一語は学習語の部分一致を頭にした合成より先頭に出し、合成は別解として残す(3692 と同じ形)。
+        // 一語が無い読み(あいふぉんが)では学習の床は従来どおり
+        converter.learn(reading: "あいふぉん", candidate: "iPhone")
+        converter.store.waitForPendingLearningPersists()
+        let duo = multi("あいふぉんでゅお")
+        XCTAssertEqual(Array(duo.prefix(2)), ["iPhone Duo", "iPhoneデュオ"], "\(duo)")
+        XCTAssertEqual(single("あいふぉんでゅお").first, "iPhone Duo", "\(single("あいふぉんでゅお"))")
+        XCTAssertEqual(multi("あいふぉんが").first, "iPhoneが", "\(multi("あいふぉんが"))")
+    }
+
+    // 3633: 地名+りょう は 領(かんこくりょう→韓国量、つしまりょう→対馬量 だった。ユーザ指定)。地名は place_names(Sudachi の 地名)
+    func testRegressionRealLMPlaceNameTerritory() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        func multi(_ reading: String) -> [String] {
+            converter.invalidateCandidateCache()
+            return converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+        }
+        XCTAssertEqual(converter.store.placeNameKinds(for: "かんこく")["韓国"], "国")
+        XCTAssertNotNil(converter.store.placeNameKinds(for: "つしま")["対馬"])
+        for (reading, top) in [("かんこくりょう", "韓国領"), ("つしまりょう", "対馬領"), ("にほんりょう", "日本領"), ("ふらんすりょう", "フランス領")] {
+            XCTAssertEqual(multi(reading).first, top, "\(reading) \(multi(reading))")
+        }
+        // 地名でない語の後ろの りょう は従来どおり(1 語で読み全体を覆うので連文節は空、単文節の先頭が出る)
+        func single(_ reading: String) -> [String] {
+            converter.invalidateCandidateCache()
+            return converter.candidates(for: reading, limit: 4, systemCandidateMode: .surface)
+        }
+        for (reading, top) in [("せいさんりょう", "生産量"), ("こうすいりょう", "降水量")] {
+            XCTAssertEqual(multi(reading).first ?? single(reading).first, top, "\(reading) multi=\(multi(reading)) single=\(single(reading))")
+        }
     }
 
     // 3612: 日付(八日 等)と月名(四月 等)が出ない/かなのままだった
@@ -26361,10 +26437,10 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(list.contains { $0.contains("憶測") && $0.contains("回転") }, "\(list)")
     }
 
-    // 表: X.10 の組は 17 組、X.9 の組は 291 組のまま。2 つのグループは語を共有せず、X.10 の語は日常語の例外に入っていない
+    // 表: X.10 の組は 17 組、X.9 の組は 292 組(3632 で 人蔘/人参 を追加)。2 つのグループは語を共有せず、X.10 の語は日常語の例外に入っていない
     func testLateStandardizedTableSeparatesGroups() {
         XCTAssertEqual(KakikaeTable.lateStandardizedPairs.count, 17)
-        XCTAssertEqual(KakikaeTable.switchablePairs.count, 291)
+        XCTAssertEqual(KakikaeTable.switchablePairs.count, 292)
         XCTAssertTrue(KakikaeTable.lateStandardizedPairs.contains { $0.before == "肝腎" && $0.after == "肝心" })
         XCTAssertNil(KakikaeTable.afterByBefore["肝腎"])
         let lateWords = Set(KakikaeTable.lateStandardizedPairs.flatMap { [$0.before, $0.after] })

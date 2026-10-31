@@ -24,6 +24,7 @@ final class KanaKanjiSQLiteIndex {
     private var selectInflectionStatement: OpaquePointer?
     private var selectWordCostStatement: OpaquePointer?
     private var selectPersonNameStatement: OpaquePointer?
+    private var selectPlaceNameStatement: OpaquePointer?
     private var selectWordLMUnigramStatement: OpaquePointer?
     private var selectWordLMBigramStatement: OpaquePointer?
     // 32 対をまとめて引く文(VALUES の CTE と結合)。点引きは 1 対ごとに VDBE のカーソル等を確保し直す
@@ -35,6 +36,7 @@ final class KanaKanjiSQLiteIndex {
     private(set) var hasInflectionMetadata = false
     private(set) var hasWordCostMetadata = false
     private(set) var hasPersonNameMetadata = false
+    private(set) var hasPlaceNameMetadata = false
     private(set) var hasWordLMMetadata = false
     private(set) var hasCandidateMinWordCostMetadata = false
     private(set) var hasAnyEntries = false
@@ -137,6 +139,14 @@ final class KanaKanjiSQLiteIndex {
             )
         }
 
+        // 地名区分(国/一般。Sudachi の 名詞,固有名詞,地名 由来。3633)。旧形式の DB には表が無い=機能オフ
+        hasPlaceNameMetadata = tableExists("place_names")
+        if hasPlaceNameMetadata {
+            selectPlaceNameStatement = prepareStatement(
+                sql: "SELECT candidate, kind FROM place_names WHERE reading = ?"
+            )
+        }
+
         // 連文節変換(案1: 自前単語 n-gram LM)。unigram/bigram の両テーブルが揃って初めて有効。
         hasWordLMMetadata = tableExists("word_lm_unigram") && tableExists("word_lm_bigram")
         if hasWordLMMetadata {
@@ -196,6 +206,10 @@ final class KanaKanjiSQLiteIndex {
 
         if let selectPersonNameStatement {
             sqlite3_finalize(selectPersonNameStatement)
+        }
+
+        if let selectPlaceNameStatement {
+            sqlite3_finalize(selectPlaceNameStatement)
         }
 
         if let selectWordLMUnigramStatement {
@@ -287,9 +301,17 @@ final class KanaKanjiSQLiteIndex {
 
     // 読みに対する人名候補(表層→姓/名)。表が無ければ空
     func personNameKindMap(for reading: String) -> [String: String] {
+        kindMap(for: reading, statement: hasPersonNameMetadata ? selectPersonNameStatement : nil)
+    }
+
+    func placeNameKindMap(for reading: String) -> [String: String] {
+        kindMap(for: reading, statement: hasPlaceNameMetadata ? selectPlaceNameStatement : nil)
+    }
+
+    // 読み→表層→区分(人名の 姓/名、地名の 国/一般)の共通の引き方
+    private func kindMap(for reading: String, statement: OpaquePointer?) -> [String: String] {
         withQueryLock {
-            guard hasPersonNameMetadata,
-                let statement = selectPersonNameStatement else {
+            guard let statement else {
                 return [:]
             }
 

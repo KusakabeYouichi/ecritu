@@ -230,9 +230,29 @@ extension KanaKanjiConverter {
         // (連文節が先)が iPhoneデュオ になっていた(ユーザ報告)。かな識別(表記==読み)はかなチップに任せる
         if !candidates.isEmpty {
             let normalized = KanaTextNormalizer.normalizedReading(reading)
-            let wholeLearned = (store.learnedDictionary()[normalized] ?? []).filter { $0 != normalized && !candidates.prefix(1).contains($0) }
+            let learnedDictionary = store.learnedDictionary()
+            let wholeLearned = (learnedDictionary[normalized] ?? []).filter { $0 != normalized && !candidates.prefix(1).contains($0) }
             if !wholeLearned.isEmpty {
                 candidates = wholeLearned + candidates.filter { !wholeLearned.contains($0) }
+            } else if let top = candidates.first,
+                learnedDictionary.contains(where: { key, surfaces in
+                    key != normalized && normalized.hasPrefix(key) && surfaces.contains { $0 != key && top.hasPrefix($0) }
+                }) {
+                // 読み全体に一致する一語が辞書・追加語彙にある(あいふぉんでゅお=iPhone Duo)ときも、学習語彙の部分一致
+                // (あいふぉん=iPhone)を頭にした合成(iPhoneデュオ)より先頭に(ユーザ報告 3634)。iPhone を学習しただけで
+                // 合成(床 1500+8329)が一語(8700)に勝っていた。一語は単文節の先頭(seed 順込み)で決め、合成は 2 番目に残す
+                converter_wholeWordPromotion: do {
+                    let wholeWords = store.wordCosts(for: normalized).filter { surface, cost in
+                        surface != normalized && cost < KanaKanjiConverter.CandidateScore.harvestTierWordCostFloor
+                    }.map(\.key)
+                    guard !wholeWords.isEmpty else {
+                        break converter_wholeWordPromotion
+                    }
+                    let singleTop = self.candidates(for: reading, limit: 1, systemCandidateMode: systemCandidateMode).first
+                    if let singleTop, wholeWords.contains(singleTop), singleTop != top {
+                        candidates = [singleTop] + candidates.filter { $0 != singleTop }
+                    }
+                }
             }
         }
         candidates = singleTopLeadBeforeParticle(reading: reading, candidates: candidates, systemCandidateMode: systemCandidateMode)
@@ -521,6 +541,8 @@ extension KanaKanjiConverter {
         var scriptVariantDemotedNodeKeys = Set<String>()
         // 丁寧接頭辞合成ノードの後置対象(同スパンに実辞書語があるもの。定数コメント参照)
         var politeSupplementDemotedNodeKeys = Set<String>()
+        // 丁寧接頭辞の合成ノード(お送り)の語幹の区間キー(start+1-end-送り)。最良経路の お+送り を合成ノードに差し替える判定に使う(3632)
+        var politePrefixSplitStemKeys = Set<String>()
         // 補助語彙由来のカタカナ語ノード(ジャングリア 等)。手選別語なので
         // カタカナ化ペナルティ(multiClauseKatakanaNativeCost)を免除する
         var supplementalKatakanaExemptNodeKeys = Set<String>()
@@ -1231,19 +1253,24 @@ extension KanaKanjiConverter {
                         limit: Self.multiClauseInflectionTopK,
                         allowsBareSinoJiruRenyou: end < n
                     )
-                    // 同スパンに実辞書語(収穫底値未満)があれば合成ノードを後置(定数コメント参照)
-                    let spanHasRealDictWord = costMap.values.contains {
-                        $0 < KanaKanjiConverter.CandidateScore.harvestTierWordCostFloor
+                    // 同スパンに実辞書語(収穫底値未満)があれば合成ノードを後置(定数コメント参照)。
+                    // 人名(姓/名)は「実辞書語」に数えない: おおくり は 大栗(姓 wc 9219)のために お送り が後置され、
+                    // おおくりください が 大栗ください になっていた(ユーザ報告 3632)
+                    let spanPersonNameKinds = store.personNameKinds(for: segmentReading)
+                    let spanHasRealDictWord = costMap.contains { surface, cost in
+                        cost < KanaKanjiConverter.CandidateScore.harvestTierWordCostFloor
+                            && spanPersonNameKinds[surface] == nil
                     }
                     // 語幹が LM 未収録なら合成しない(2879、ユーザ報告 おみせがわは→お三瀬川は)。
                     // お+三瀬川(地名、LM 未収録)が 1 ノード 8700 で お店+側 の 2 ノードを
                     // 下回っていた。お渡し/お預かり/お届け の語幹(渡し/預かり/届け)は LM 収録済み
+                    // 接尾付き(お送りします/お送りください)は接尾を外した連用形(送り)で LM を引く(3632)
                     let politeStemSurfaces = polite.compactMap { surface -> String? in
                         guard let first = surface.first,
                             first == "お" || first == "ご" || first == "御" else {
                             return nil
                         }
-                        return String(surface.dropFirst())
+                        return Self.politePrefixRenyouSurfaceForLMCheck(String(surface.dropFirst()))
                     }
                     let politeStemLMCosts = politeStemSurfaces.isEmpty
                         ? [:]
@@ -1251,12 +1278,15 @@ extension KanaKanjiConverter {
                     for surface in polite.prefix(Self.multiClauseInflectionTopK)
                     where surface != segmentReading {
                         if let first = surface.first, first == "お" || first == "ご" || first == "御",
-                            politeStemLMCosts[String(surface.dropFirst())] == nil {
+                            politeStemLMCosts[Self.politePrefixRenyouSurfaceForLMCheck(String(surface.dropFirst()))] == nil {
                             continue
                         }
                         add(surface, isDictWord: true, isCurated: false)
                         if spanHasRealDictWord {
                             politeSupplementDemotedNodeKeys.insert(spanKeyByStart[start][end] + "-" + surface)
+                        }
+                        if let first = surface.first, first == "お" || first == "ご" || first == "御", surface.count >= 2 {
+                            politePrefixSplitStemKeys.insert("\(start + 1)-\(end)-\(String(surface.dropFirst()))")
                         }
                     }
                 }
@@ -1893,6 +1923,20 @@ extension KanaKanjiConverter {
                 }
                 if let kind = personNameKindsByReading[node.reading]?[node.surface] {
                     personNameKindByNodeKey[node.key] = kind
+                }
+            }
+        }
+        // 地名ノード(国/一般。place_names、3633): 漢字・カタカナの辞書語の読みごとに引く(読み単位でキャッシュ)。
+        // 地名+りょう は 領(韓国領/対馬領)の判定に使う
+        var placeNameKindByNodeKey: [String: String] = [:]
+        do {
+            var placeNameKindsByReading: [String: [String: String]] = [:]
+            for node in nodes where node.isDictWord && !node.isInflectionDerived && !node.isKanaIdentity {
+                if placeNameKindsByReading[node.reading] == nil {
+                    placeNameKindsByReading[node.reading] = store.placeNameKinds(for: node.reading)
+                }
+                if let kind = placeNameKindsByReading[node.reading]?[node.surface] {
+                    placeNameKindByNodeKey[node.key] = kind
                 }
             }
         }
@@ -3722,6 +3766,19 @@ extension KanaKanjiConverter {
                             !(personNameKindByNodeKey[prevNode.key] == "姓" && nodeKind == "名") {
                             cost += Self.multiClauseHarvestedPersonNameAfterFragmentPenalty
                         }
+                        // 人名(姓/名)の直後に助詞なしで ください が続くのは非文(大栗ください)。お+連用形(お送りください)や
+                        // 名詞(ビールください)はそのまま。姓の直後は さん/様 等の敬称が本来の続き(ユーザ報告 3632)
+                        if node.isKanaIdentity, Self.multiClauseKudasaiReadingsID.contains(node.readingID),
+                            personNameKindByNodeKey[prevNode.key] != nil, !prevNode.isCurated {
+                            cost += Self.multiClauseKudasaiAfterPersonNamePenalty
+                        }
+                        // 地名(国/地域)の直後の りょう は 領(韓国領/対馬領)。量 が unigram(4727 < 5026)で 114 差で勝っていた。
+                        // 日本→領/フランス→領 は連接があるので元から 領(ユーザ指定 3633)
+                        if Self.multiClausePlaceNameTerritoryReadingsID.contains(node.readingID),
+                            node.surface == "領",
+                            placeNameKindByNodeKey[prevNode.key] != nil {
+                            cost -= Self.multiClausePlaceNameTerritoryBonus
+                        }
                         // 述語の直後の人名が末尾の助詞を飲み込む形(しゃべれる+八束=やつ+か。定数コメント参照。3440)
                         if personNameKindByNodeKey[nodeKeySV] != nil, !node.isCurated,
                             node.end - node.start >= 3,
@@ -4895,6 +4952,31 @@ extension KanaKanjiConverter {
         // た形 1 ノード(結んだ)/たて複合 1 ノード(濡れたて)の区間を割った代替経路(3537): 辞書形述語+んだ(蒸す+んだけど)、
         // た形+残り(濡れた+手で)は区切りが違うので 1 文節差し替えの変種では作れない。必須ノード付きで再最適化し、
         // seed 順変種と同じ刻みで第2候補群に出す(コストは動かさない。ゆでてからむすんだけど/ぬれたてで、ユーザ報告)
+        // 最良経路の お/ご(1 字のかな)+連用形(送り)を、同じ区間・同じ表層の丁寧接頭辞ノード(お送り)に差し替える(3632)。
+        // 表層は変わらず、変種の軸が 送り の兄弟(贈り。delta 4286 で変種から落ちる)でなく お送り の区間(お贈り/大栗)になる。
+        // お+送り は お→送り の連接(3083)で合成ノードより 37 だけ安く、おおくりください に お贈りください が並ばなかった。
+        // DP の減点で揃えると ご+自宅(御自宅 が勝つ)や お+酒(お避け が勝つ)まで動くので、経路を決めたあとに差し替える
+        do {
+            var merged = pathIndices
+            var pos = 0
+            var changed = false
+            while pos + 1 < merged.count {
+                let lead = nodes[merged[pos]]
+                let stem = nodes[merged[pos + 1]]
+                if lead.isKanaIdentity, lead.reading.count == 1, lead.surface == "お" || lead.surface == "ご",
+                    politePrefixSplitStemKeys.contains(stem.key),
+                    let mergedIndex = nodes.indices.first(where: {
+                        nodes[$0].start == lead.start && nodes[$0].end == stem.end && nodes[$0].surface == lead.surface + stem.surface
+                    }) {
+                    merged.replaceSubrange(pos...(pos + 1), with: [mergedIndex])
+                    changed = true
+                }
+                pos += 1
+            }
+            if changed {
+                pathIndices = merged
+            }
+        }
         var taFormSplitAlternatives: [(delta: Int, joined: String)] = []
         do {
             let bestJoined = pathIndices.map { nodes[$0].surface }.joined()
@@ -5563,6 +5645,12 @@ extension KanaKanjiConverter {
                 // 変種順だけを下げる隣接ペア(の→一。定数コメント参照。2880)
                 if let demotion = Self.multiClauseVariantDemotionPairs[prevSurface + "\t" + alt.surface] {
                     delta += demotion
+                }
+                // 人名の直後に助詞なしで ください が続く変種(大栗ください)は DP と同じく下げる(ユーザ指定 3632: お贈りください を
+                // 2 番目に)。変種は素のコスト差で並ぶため、遷移の減点が届かない
+                if let nextNode, Self.multiClauseKudasaiReadingsID.contains(nextNode.readingID),
+                    personNameKindByNodeKey[alt.key] != nil {
+                    delta += Self.multiClauseKudasaiAfterPersonNamePenalty
                 }
                 // 連語の名詞スパンの表記変種(めど/メド 等、かな識別か seed 掲載)は
                 // 変種枠の主役なので delta 上限を緩和する(2559)

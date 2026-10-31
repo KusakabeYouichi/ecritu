@@ -456,6 +456,8 @@ def build_index(
     # 人名(名詞,固有名詞,人名,姓/名)の印。読み→表層→{姓,名,一般}。連文節で「敬称の前は人名を優先」
     # 「1 字の断片の直後に収穫底値の人名は立たない」の判定に使う(きたがわさん/いつもまんせきな。2845)
     person_kinds: Dict[str, Dict[str, Set[str]]] = defaultdict(lambda: defaultdict(set))
+    # 地名(名詞,固有名詞,地名,国/一般)の印。読み→表層→{国,一般}。連文節で「地名+りょう は 領」等の判定に使う(3633)
+    place_kinds: Dict[str, Dict[str, Set[str]]] = defaultdict(lambda: defaultdict(set))
 
     include_normalized = candidate_policy in (CANDIDATE_POLICY_NORMALIZED, CANDIDATE_POLICY_BOTH)
     include_surface = candidate_policy in (CANDIDATE_POLICY_SURFACE, CANDIDATE_POLICY_BOTH)
@@ -571,6 +573,13 @@ def build_index(
                 and row[SUDACHI_POS_INDEX + 2].strip() == "人名"
             ):
                 person_kinds[reading][candidate].add(row[SUDACHI_POS_INDEX + 3].strip() or "一般")
+
+            if (
+                len(row) > SUDACHI_POS_INDEX + 3
+                and row[SUDACHI_POS_INDEX + 1].strip() == "固有名詞"
+                and row[SUDACHI_POS_INDEX + 2].strip() == "地名"
+            ):
+                place_kinds[reading][candidate].add(row[SUDACHI_POS_INDEX + 3].strip() or "一般")
 
             if candidate_cost is not None:
                 stats = cost_stats[reading][candidate]
@@ -734,7 +743,21 @@ def build_index(
         if candidate_map:
             person_name_index[reading] = candidate_map
 
-    return index, inflection_index, candidate_source_index, cost_index, person_name_index
+    place_name_index: Dict[str, Dict[str, str]] = {}
+    for reading, candidates in index.items():
+        kinds_by_candidate = place_kinds.get(reading)
+        if not kinds_by_candidate:
+            continue
+        candidate_map = {}
+        for candidate in candidates:
+            kinds = kinds_by_candidate.get(candidate)
+            if not kinds:
+                continue
+            candidate_map[candidate] = "国" if "国" in kinds else sorted(kinds)[0]
+        if candidate_map:
+            place_name_index[reading] = candidate_map
+
+    return index, inflection_index, candidate_source_index, cost_index, person_name_index, place_name_index
 
 
 def parse_args() -> argparse.Namespace:
@@ -764,6 +787,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--output-person-names",
         help="Optional output path for reading->candidate->人名区分(姓/名) JSON(連文節の人名判定用)",
+    )
+    parser.add_argument(
+        "--output-place-names",
+        help="Optional output path for reading->candidate->地名区分(国/一般) JSON(連文節の地名判定用。3633)",
     )
     parser.add_argument(
         "--adjective-garu-allowlist",
@@ -836,7 +863,7 @@ def main() -> int:
         print(f"No files matched: {args.input_glob}")
         return 1
 
-    index, inflection_index, candidate_source_index, cost_index, person_name_index = build_index(
+    index, inflection_index, candidate_source_index, cost_index, person_name_index, place_name_index = build_index(
         paths=paths,
         max_candidates=max(1, args.max_candidates),
         min_reading_len=max(1, args.min_reading_len),
@@ -883,6 +910,12 @@ def main() -> int:
         with open(args.output_person_names, "w", encoding="utf-8") as f:
             json.dump(person_name_index, f, ensure_ascii=False, sort_keys=True)
         print(f"wrote {len(person_name_index)} readings with person-name kinds -> {args.output_person_names}")
+
+    if args.output_place_names:
+        os.makedirs(os.path.dirname(args.output_place_names) or ".", exist_ok=True)
+        with open(args.output_place_names, "w", encoding="utf-8") as f:
+            json.dump(place_name_index, f, ensure_ascii=False, sort_keys=True)
+        print(f"wrote {len(place_name_index)} readings with place-name kinds -> {args.output_place_names}")
 
     if args.output_costs:
         os.makedirs(os.path.dirname(args.output_costs) or ".", exist_ok=True)

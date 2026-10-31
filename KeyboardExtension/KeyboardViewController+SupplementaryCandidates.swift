@@ -543,6 +543,15 @@ extension KeyboardViewController {
         return contactCandidatesByReading.candidates(for: normalizedReading)
     }
 
+    // 絵文字の窓(SupplementaryCandidateMerger.applyEmojiWindow、3632)に渡す、この読みの絵文字候補。設定で表示するときだけ
+    func emojiCandidatesForMergeWindow(reading: String) -> [String] {
+        let normalizedReading = KanaTextNormalizer.normalizedReading(reading)
+        guard !normalizedReading.isEmpty, currentEmojiCandidateDisplayEnabled(from: sharedDefaults) else {
+            return []
+        }
+        return Self.emojiReadingCandidatesByReading[normalizedReading] ?? []
+    }
+
     func supplementaryLexiconCandidates(for reading: String) -> [String] {
         guard Self.isSupplementaryExternalCandidatesEnabled else {
             return []

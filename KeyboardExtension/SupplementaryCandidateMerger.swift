@@ -19,6 +19,7 @@ enum SupplementaryCandidateMerger {
         supplementaryCandidates: [String],
         converterCandidates: [String],
         contactCandidates: [String] = [],
+        emojiCandidates: [String] = [],
         limit: Int
     ) -> [String] {
         // コアには早期return(limit到達)が複数あるため、窓の適用は必ずこのラッパーで行う
@@ -29,7 +30,43 @@ enum SupplementaryCandidateMerger {
             limit: limit
         )
         applyContactWindow(to: &merged, contactCandidates: contactCandidates, limit: limit)
+        applyEmojiWindow(to: &merged, reading: reading, emojiCandidates: emojiCandidates, limit: limit)
         return merged
+    }
+
+    // 絵文字候補の「窓」(3632): seed で人手の並びがある読み(にんじん=かな/カタカナ/人参/人蔘)は、その並びの直後に
+    // 絵文字の先頭 1 件を前出しする。エンジン候補の枠(8)の後ろだと、合成の断片(ニン人/任人)の後ろに 🥕 が沈む。
+    // seed の無い読みは従来どおり(枠の後ろ)。2 件目以降の絵文字は従来の補完位置のまま
+    static func emojiWindowIndex(forReading reading: String) -> Int? {
+        let normalizedReading = KanaTextNormalizer.normalizedReading(reading)
+        guard let seed = KanaKanjiSeedDictionary.seed[normalizedReading], !seed.isEmpty else {
+            return nil
+        }
+        return seed.count
+    }
+
+    private static func applyEmojiWindow(
+        to mergedCandidates: inout [String],
+        reading: String,
+        emojiCandidates: [String],
+        limit: Int
+    ) {
+        guard let windowIndex = emojiWindowIndex(forReading: reading),
+            let firstEmoji = emojiCandidates.first(where: { !$0.isEmpty }) else {
+            return
+        }
+        if let currentIndex = mergedCandidates.firstIndex(of: firstEmoji) {
+            guard currentIndex > windowIndex else {
+                return
+            }
+            mergedCandidates.remove(at: currentIndex)
+            mergedCandidates.insert(firstEmoji, at: min(windowIndex, mergedCandidates.count))
+            return
+        }
+        mergedCandidates.insert(firstEmoji, at: min(windowIndex, mergedCandidates.count))
+        if mergedCandidates.count > limit {
+            mergedCandidates.removeLast()
+        }
     }
 
     private static func mergeCoreWithoutContactWindow(

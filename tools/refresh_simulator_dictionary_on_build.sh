@@ -41,6 +41,7 @@ TMP_SOURCES="$ROOT_DIR/tmp/kana_kanji_candidate_sources.json"
 TMP_INFLECTIONS="$ROOT_DIR/tmp/kana_kanji_inflection_dictionary.json"
 TMP_COSTS="$ROOT_DIR/tmp/kana_kanji_word_costs.json"
 TMP_PERSON_NAMES="$ROOT_DIR/tmp/kana_kanji_person_names.json"
+TMP_PLACE_NAMES="$ROOT_DIR/tmp/kana_kanji_place_names.json"
 REF_PERSON_NAMES_ADD="$ROOT_DIR/references/person_names_add.json"
 TMP_WORD_LM="$ROOT_DIR/tmp/word_lm.json"
 TMP_EMOJI_READING="$ROOT_DIR/tmp/EmojiReadingVocab.json"
@@ -314,6 +315,7 @@ outputs = [
     root / "tmp" / "kana_kanji_inflection_dictionary.json",
     root / "tmp" / "kana_kanji_word_costs.json",
     root / "tmp" / "kana_kanji_person_names.json",
+    root / "tmp" / "kana_kanji_place_names.json",
 ]
 
 if not inputs or any(not out.exists() for out in outputs):
@@ -460,6 +462,11 @@ regenerate_sqlite_if_possible() {
     sqlite_args+=(--person-names-json "$TMP_PERSON_NAMES")
   fi
 
+  # 地名区分(国/一般。Sudachi の 名詞,固有名詞,地名 由来。地名+りょう は 領 等の判定。3633)
+  if [[ -f "$TMP_PLACE_NAMES" ]]; then
+    sqlite_args+=(--place-names-json "$TMP_PLACE_NAMES")
+  fi
+
   # Sudachi に無い人名の補い(桃原(とうばる)=姓 等。敬称の前の人名優先が Sudachi 掲載の 当原 だけに効き
   # 桃原さん が負けていた。3112)。reading→candidate→姓/名 の JSON、dictionary_entries に載る候補だけ有効
   if [[ -f "$REF_PERSON_NAMES_ADD" ]]; then
@@ -514,6 +521,7 @@ if ((${#SUDACHI_CSV_FILES[@]} > 0)); then
       --output-inflections "$TMP_INFLECTIONS"
       --output-costs "$TMP_COSTS"
       --output-person-names "$TMP_PERSON_NAMES"
+      --output-place-names "$TMP_PLACE_NAMES"
       --max-candidates 24
       --min-reading-len 1
       --max-reading-len 10

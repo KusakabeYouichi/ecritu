@@ -751,6 +751,14 @@ extension KanaKanjiConverter {
         "しがつ": 1500,
         // ほしい: 文頭・単独の形容詞は 欲しい を先に(かな ほしい と 19 差。3768、ユーザ指定)
         "ほしい": 300,
+        // お世話(seed 先頭)を 御世話(dictUnknown 8700 vs 9000 で 300 差)に勝たせる。登録語 になって は連接を見ないので
+        // お世話→に の連接(104)では足りない(お世話になって/お世話になっております。ユーザ指定 3632)
+        "おせわ": 800,
+        // にんじん(seed 先頭=かな)を連文節でも ニンジン(unigram 6633 < 7302、ニンジン→を 1506 の連接あり。かなには連接が無く
+        // 後退 2 千台)に勝たせる(ユーザ指定 3632)。1500 では にんじんを が ニンジンを のままだった
+        "にんじん": 2500,
+        // macOS(seed 先頭)を Mac+OS の合成(MacOS。Mac→OS の連接 277)に勝たせる(ユーザ報告 3632)
+        "まっくおーえす": 3000,
         // 生姜(seed 先頭)を連文節でも 省+が/章+が に勝たせる(しょうがいいね→省がいいね。ユーザ指定 3711)。しょうがない は別ノード
         "しょうが": 2000,
         // 手動(seed 先頭)を連文節でも(しゅどうのやつ→主導のやつ だった。主導 5454+の 812 < 手動 6154+の 1180 の差 1068。ユーザ指定 3778)
@@ -2393,6 +2401,14 @@ extension KanaKanjiConverter {
     // (しゃべれるやつか→しゃべれる八束。ユーザ報告 3440)
     static let multiClausePersonNameSwallowedParticleTails: Set<Character> = Set("かがはもをにでとのや")
     static let multiClausePersonNameSwallowingParticlePenalty = 1500
+    // 人名の直後に助詞なしで続く ください(大栗ください)の減点(適用箇所のコメント参照。3632)
+    static let multiClauseKudasaiAfterPersonNamePenalty = 3000
+    static let multiClauseKudasaiReadings: Set<String> = ["ください", "くださいませ", "くださいな"]
+    static let multiClauseKudasaiReadingsID = MultiClauseIDSet(multiClauseKudasaiReadings)
+    // 地名(place_names)の直後の りょう→領 の加点(適用箇所のコメント参照。3633)
+    static let multiClausePlaceNameTerritoryBonus = 1500
+    static let multiClausePlaceNameTerritoryReadings: Set<String> = ["りょう"]
+    static let multiClausePlaceNameTerritoryReadingsID = MultiClauseIDSet(multiClausePlaceNameTerritoryReadings)
     // 文末の「る+終助詞」を飲み込む 2 字の語(ルネ 5922 等。名前の収穫)。直前+る に用言が立つ(つき+る=尽きる)なら、
     // 用言+終助詞(尽きる+ね)に勝たせる(ユーザ報告 3472: それにつきるね → それにつきルネ)
     static let multiClauseVerbEndingSwallowedFinalParticles: Set<Character> = ["ね", "よ", "な", "わ", "ぞ", "さ", "か"]
@@ -3443,6 +3459,8 @@ extension KanaKanjiConverter {
             for s in KanaKanjiConverter.multiClauseSouCopulaFollowerReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseSubstantiveNounReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseKanaNounReadingsBeforeFinalParticle.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseKudasaiReadings.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClausePlaceNameTerritoryReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseSugiSuffixSurfaces.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseTeOruAuxiliaryReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseBigramBorrowDeniedReadingsBySurface.keys.sorted() { add(s) }

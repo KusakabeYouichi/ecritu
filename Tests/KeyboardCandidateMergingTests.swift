@@ -107,6 +107,34 @@ final class KeyboardCandidateMergingTests: XCTestCase {
         XCTAssertEqual(KeyboardViewController.diagnosticsLogLines(fromStoredData: legacy), ["a", "b"])
     }
 
+    // 絵文字の窓(3632): seed の並び(にんじん/ニンジン/人参/人蔘)の直後に 🥕 を前出しする
+    func testEmojiWindowFollowsSeedOrderForSeededReading() {
+        let converter = ["にんじん", "ニンジン", "人参", "人蔘", "ニン人", "任人", "人人", "仁人", "忍仁", "任陣"]
+        let merged = SupplementaryCandidateMerger.mergeSupplementaryAndConverterCandidates(
+            reading: "にんじん",
+            supplementaryCandidates: ["🥕"],
+            converterCandidates: converter,
+            emojiCandidates: ["🥕"],
+            limit: 24
+        )
+        XCTAssertEqual(Array(merged.prefix(5)), ["にんじん", "ニンジン", "人参", "人蔘", "🥕"], "\(merged)")
+        XCTAssertEqual(merged.filter { $0 == "🥕" }.count, 1)
+    }
+
+    func testEmojiWindowLeavesUnseededReadingAlone() {
+        XCTAssertNil(SupplementaryCandidateMerger.emojiWindowIndex(forReading: "ぜったいにseedにないよみ"))
+        let converter = (1...10).map { "変換候補\($0)" }
+        let merged = SupplementaryCandidateMerger.mergeSupplementaryAndConverterCandidates(
+            reading: "ぜったいにseedにないよみ",
+            supplementaryCandidates: ["🙂"],
+            converterCandidates: converter,
+            emojiCandidates: ["🙂"],
+            limit: 24
+        )
+        // seed の無い読みは従来どおり(エンジン候補の後ろ)
+        XCTAssertEqual(merged.firstIndex(of: "🙂"), converter.count, "\(merged)")
+    }
+
     func testContactWindowPromotesFirstContactToFourth() {
         let supplementary = ["紗綾鼓"] + (1...10).map { "補助候補\($0)" }
         let converter = (1...20).map { "変換候補\($0)" }
@@ -210,6 +238,13 @@ extension KeyboardCandidateMergingTests {
     func testKakikaeEverydayExceptionIncludesChinou() {
         XCTAssertEqual(KakikaePreference.bothBeforeFirst.demotingEverydayPair(for: "知能"), .bothAfterFirst)
         XCTAssertEqual(KakikaePreference.bothBeforeFirst.demotingEverydayPair(for: "知能", enabled: false), .bothBeforeFirst)
+    }
+
+    // 3632: 人参/人蔘(蔘→参 の代用)も日常語の例外(本来の漢字を先に の設定でも 人参 が先)
+    func testKakikaeEverydayExceptionIncludesNinjin() {
+        XCTAssertEqual(KakikaePreference.bothBeforeFirst.demotingEverydayPair(for: "人参"), .bothAfterFirst)
+        XCTAssertEqual(KakikaePreference.beforeOnly.demotingEverydayPair(for: "人蔘"), .bothAfterFirst)
+        XCTAssertTrue(KakikaeTable.pairs.contains { $0.before == "人蔘" && $0.after == "人参" && !$0.isLateStandardized })
     }
 
     // あさって 等の相対の日付語を実際の日付へ(カレンダーの日付書式に合わせる。3445)

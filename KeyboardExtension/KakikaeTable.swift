@@ -230,6 +230,7 @@ enum KakikaeTable {
         ("特輯", "特集", false),
         ("杜絶", "途絶", false),
         ("日蝕", "日食", false),
+        ("人蔘", "人参", false),
         ("悖徳", "背徳", false),
         ("曝露", "暴露", false),
         ("破摧", "破砕", false),

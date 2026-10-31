@@ -27,6 +27,24 @@ extension KanaKanjiConverter {
         honorificOSuruInflectionSuffixesCache
     }
 
+    // お/ご+連用形+接尾(お送りします/お送りください/お送りになる)の表層から、LM で語幹の実在を見るための
+    // 連用形(送り)を取り出す。連文節 (b3) は接尾付きの合成ノードも供給するが、語幹の LM 判定が
+    // 接尾ごと(送りします)で引いて必ず外れ、おおくりします が 多く利します になっていた(ユーザ報告 3632)
+    static func politePrefixRenyouSurfaceForLMCheck(_ stemSurface: String) -> String {
+        var candidates = honorificOSuruInflectionSuffixes()
+        candidates.append(contentsOf: ["ください", "くださいませ", "くださいな", "になる", "になります", "になった", "になって",
+                                       "になりました", "になれば", "になり", "になろう"])
+        candidates.append(contentsOf: honorificOSoftRequestSuffixes)
+        var best = stemSurface
+        for suffix in candidates where stemSurface.hasSuffix(suffix) && stemSurface.count > suffix.count {
+            let remainder = String(stemSurface.dropLast(suffix.count))
+            if remainder.count < best.count {
+                best = remainder
+            }
+        }
+        return best
+    }
+
     private static let honorificOSuruInflectionSuffixesCache: [String] = {
         var suffixes = ["する"]
         suffixes.append(contentsOf: KanaKanjiConverter.suruInflectionRules.map(\.readingSuffix))
@@ -419,6 +437,36 @@ extension KanaKanjiConverter {
             systemCandidateMode: systemCandidateMode
         )
         let fullReadingUnigrams = store.wordLMUnigramCosts(for: fullReadingCandidates)
+        // 人名(姓/名)は「1 語がある」と見なさず、お+連用形(お送り)を作る。おおくり が 大栗(姓)で塞がれ、
+        // お送り/お送りください が一切出なかった(ユーザ報告 3632)。お+名詞の素通り合成(下のゲート)には効かせない
+        // (おおの→お斧 のような合成を増やさない)
+        let fullReadingPersonNameKinds = store.personNameKinds(for: reading)
+        func hasStandaloneWord(ignoringPersonNames: Bool) -> Bool {
+            fullReadingCandidates.contains { candidate in
+            guard let firstScalar = candidate.unicodeScalars.first else {
+                return false
+            }
+            if candidate.hasPrefix("お") || candidate.hasPrefix("ご") || candidate.hasPrefix("御") {
+                return false
+            }
+            let isKanjiLead = (0x4E00...0x9FFF).contains(firstScalar.value)
+                || (0x3400...0x4DBF).contains(firstScalar.value)
+                || firstScalar.value == 0x3005
+            guard isKanjiLead else {
+                return false
+            }
+            if ignoringPersonNames, fullReadingPersonNameKinds[candidate] != nil {
+                return false
+            }
+            if let wordCost = fullReadingWordCosts[candidate],
+                wordCost >= CandidateScore.harvestTierWordCostFloor,
+                fullReadingUnigrams[candidate] == nil {
+                return false
+            }
+            return true
+            }
+        }
+        let fullReadingHasStandaloneNonPersonWord = hasStandaloneWord(ignoringPersonNames: true)
         let fullReadingHasStandaloneWord = fullReadingCandidates.contains { candidate in
             guard let firstScalar = candidate.unicodeScalars.first else {
                 return false
@@ -465,7 +513,7 @@ extension KanaKanjiConverter {
             // バラの お+連用形(お持ち/お以ち/お保ち)は先頭の1件だけ名詞合成(お餅)より前に置き、
             // 同読みの別動詞由来(以つ/保つ)は名詞の後ろへ回す。お持ち→お以ち→お保ち→お餅 と
             // レア動詞の連用形が名詞を押し下げていた(ユーザ報告 2799)
-            if !fullReadingHasStandaloneWord {
+            if !fullReadingHasStandaloneNonPersonWord {
                 let bareRenyou = politePrefixRenyouCandidates(
                     prefix: prefix,
                     trailingSuffix: "",

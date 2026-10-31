@@ -69,6 +69,12 @@ def parse_args() -> argparse.Namespace:
         help="Optional reading->candidate->人名区分(姓/名) JSON (repeatable)",
     )
     parser.add_argument(
+        "--place-names-json",
+        action="append",
+        default=[],
+        help="Optional reading->candidate->地名区分(国/一般) JSON (repeatable, 3633)",
+    )
+    parser.add_argument(
         "--word-lm-json",
         help="Optional word n-gram LM JSON({unigram,bigram,params})(連文節/案1用)",
     )
@@ -267,6 +273,7 @@ def build_sqlite(
     costs: Dict[str, Dict[str, int]] = {},
     word_lm=None,
     person_names: Dict[str, Dict[str, str]] = {},
+    place_names: Dict[str, Dict[str, str]] = {},
     trailing_pairs: Set[Tuple[str, str]] = set(),
 ) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -305,6 +312,13 @@ def build_sqlite(
             ) WITHOUT ROWID;
 
             CREATE TABLE person_names (
+                reading TEXT NOT NULL,
+                candidate TEXT NOT NULL,
+                kind TEXT NOT NULL,
+                PRIMARY KEY (reading, candidate)
+            ) WITHOUT ROWID;
+
+            CREATE TABLE place_names (
                 reading TEXT NOT NULL,
                 candidate TEXT NOT NULL,
                 kind TEXT NOT NULL,
@@ -389,6 +403,23 @@ def build_sqlite(
             conn.executemany(
                 "INSERT INTO person_names(reading, candidate, kind) VALUES (?, ?, ?)",
                 person_rows,
+            )
+
+        # 地名区分(国/一般)。dictionary_entries に載る候補のみ保持(3633)。LM があるときは LM 収録の表層に絞る
+        # (210,026 行 11MB → 約 22,000 行。レア地名は収穫底値で格子に立たないので判定に要らない)
+        lm_surfaces = set(word_lm.get("unigram", {}).keys()) if word_lm else None
+        place_rows: List[Tuple[str, str, str]] = []
+        for reading, candidate_map in place_names.items():
+            allowed_candidates = dictionary_candidate_set.get(reading)
+            if not allowed_candidates:
+                continue
+            for candidate, kind in candidate_map.items():
+                if candidate in allowed_candidates and (lm_surfaces is None or candidate in lm_surfaces):
+                    place_rows.append((reading, candidate, kind))
+        if place_rows:
+            conn.executemany(
+                "INSERT INTO place_names(reading, candidate, kind) VALUES (?, ?, ?)",
+                place_rows,
             )
 
         # 語コスト(案A ビタビ用)。dictionary_entries に載る候補のみ保持。
@@ -513,8 +544,9 @@ def main() -> int:
     extra_vocab_paths = [Path(path) for path in args.inflection_extra_vocab_json]
     cost_paths = [Path(path) for path in args.costs_json]
     person_name_paths = [Path(path) for path in args.person_names_json]
+    place_name_paths = [Path(path) for path in args.place_names_json]
 
-    for path in vocab_paths + source_paths + inflection_paths + extra_vocab_paths + cost_paths + person_name_paths:
+    for path in vocab_paths + source_paths + inflection_paths + extra_vocab_paths + cost_paths + person_name_paths + place_name_paths:
         if not path.exists():
             raise FileNotFoundError(path)
 
@@ -540,6 +572,7 @@ def main() -> int:
     costs = merge_costs(cost_paths)
     # 形が inflections(reading->candidate->str)と同じなので merge_inflections を流用
     person_names = merge_inflections(person_name_paths)
+    place_names = merge_inflections(place_name_paths)
 
     word_lm = None
     if args.word_lm_json:
@@ -561,6 +594,7 @@ def main() -> int:
         costs=costs,
         word_lm=word_lm,
         person_names=person_names,
+        place_names=place_names,
         trailing_pairs=trailing_pairs,
     )
     return 0

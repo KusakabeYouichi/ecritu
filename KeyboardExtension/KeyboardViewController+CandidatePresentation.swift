@@ -397,6 +397,7 @@ extension KeyboardViewController {
                 supplementaryCandidates: supplementaryCandidates,
                 converterCandidates: converterCandidates,
                 contactCandidates: contactCandidatesForMergeWindow(reading: cacheKey.reading),
+                emojiCandidates: emojiCandidatesForMergeWindow(reading: cacheKey.reading),
                 limit: presentationLimit
             )
         }
@@ -531,6 +532,7 @@ extension KeyboardViewController {
                 supplementaryCandidates: supplementaryCandidates,
                 converterCandidates: converterCandidates,
                 contactCandidates: contactCandidatesForMergeWindow(reading: reading),
+                emojiCandidates: emojiCandidatesForMergeWindow(reading: reading),
                 limit: limit
             )
         }
