@@ -606,6 +606,81 @@
 	        <dict><key>phrase</key><string>Rodolphe Le Meunier</string><key>shortcut</key><string>るどるふるむにえ</string></dict>
 	        <dict><key>phrase</key><string>オー・ボン・ブール</string><key>shortcut</key><string>おーぼんぶーる</string></dict>
 	        <dict><key>phrase</key><string>Aux Bons Beurres</string><key>shortcut</key><string>おーぼんぶーる</string></dict>
+	        <dict><key>phrase</key><string>Overture</string><key>shortcut</key><string>おゔぁちゅあ</string></dict>
+	        <dict><key>phrase</key><string>オヴァチュア</string><key>shortcut</key><string>おゔぁちゅあ</string></dict>
+	<!-- 食器・調理器具 -->
+	        <dict><key>phrase</key><string>ル・クルーゼ</string><key>shortcut</key><string>るくるーぜ</string></dict>	<!-- 鋳物ほうろう鍋のブランド(ユーザ指定 3769) -->
+	        <dict><key>phrase</key><string>Le Creuset</string><key>shortcut</key><string>るくるーぜ</string></dict>
+	        <dict><key>phrase</key><string>ストウブ</string><key>shortcut</key><string>すとうぶ</string></dict>
+	        <dict><key>phrase</key><string>STAUB</string><key>shortcut</key><string>すとうぶ</string></dict>
+	        <dict><key>phrase</key><string>staub</string><key>shortcut</key><string>すとうぶ</string></dict>
+	        <dict><key>phrase</key><string>シャスール</string><key>shortcut</key><string>しゃすーる</string></dict>
+	        <dict><key>phrase</key><string>CHASSEUR</string><key>shortcut</key><string>しゃすーる</string></dict>
+	        <dict><key>phrase</key><string>バーミキュラ</string><key>shortcut</key><string>ばーみきゅら</string></dict>
+	        <dict><key>phrase</key><string>Vermicular</string><key>shortcut</key><string>ばーみきゅら</string></dict>
+	        <dict><key>phrase</key><string>ヴァーミキュラ</string><key>shortcut</key><string>ゔぁーみきゅら</string></dict>
+	        <dict><key>phrase</key><string>Vermicular</string><key>shortcut</key><string>ゔぁーみきゅら</string></dict>
+	        <dict><key>phrase</key><string>クリストフル</string><key>shortcut</key><string>くりすとふる</string></dict>	<!-- 銀器のブランド。辞書にあるが LM に無く、連文節で クリストフ+る に割れていた(ユーザ報告 3769) -->
+	        <dict><key>phrase</key><string>Christofle</string><key>shortcut</key><string>くりすとふる</string></dict>
+	        <dict><key>phrase</key><string>ラギオール</string><key>shortcut</key><string>らぎおーる</string></dict>
+	        <dict><key>phrase</key><string>ライヨール</string><key>shortcut</key><string>らいよーる</string></dict>
+	<!-- グラス (オーストリア)-->
+	        <dict><key>phrase</key><string>RIEDEL</string><key>shortcut</key><string>りーでる</string></dict>
+	        <dict><key>phrase</key><string>リーデル</string><key>shortcut</key><string>りーでる</string></dict>
+	        <dict><key>phrase</key><string>vinum</string><key>shortcut</key><string>ゔぃのむ</string></dict>
+	        <dict><key>phrase</key><string>ヴィノム</string><key>shortcut</key><string>ゔぃのむ</string></dict>
+	        <dict><key>phrase</key><string>Sommelier</string><key>shortcut</key><string>そむりえ</string></dict>
+	        <dict><key>phrase</key><string>ソムリエ</string><key>shortcut</key><string>そむりえ</string></dict>
+	        <dict><key>phrase</key><string>ouverture</string><key>shortcut</key><string>おゔぁちゅあ</string></dict>
+	        <dict><key>phrase</key><string>オヴァチュア</string><key>shortcut</key><string>おゔぁちゅあ</string></dict>
+	        <dict><key>phrase</key><string>Zalto</string><key>shortcut</key><string>ざると</string></dict>
+	        <dict><key>phrase</key><string>ザルト</string><key>shortcut</key><string>ざると</string></dict>
+	        <dict><key>phrase</key><string>Zalto Denk'Art</string><key>shortcut</key><string>ざるとでんくあーと</string></dict>
+	        <dict><key>phrase</key><string>ザルト・デンクアート</string><key>shortcut</key><string>ざるとでんくあーと</string></dict>
+	        <dict><key>phrase</key><string>Lobmeyr</string><key>shortcut</key><string>ろぶまいやー</string></dict>
+	        <dict><key>phrase</key><string>ロブマイヤー</string><key>shortcut</key><string>ろぶまいやー</string></dict>
+	<!-- グラス (ドイツ)-->
+	        <dict><key>phrase</key><string>SCHOTT ZWIESEL</string><key>shortcut</key><string>しょっとつゔぃーぜる</string></dict>
+	        <dict><key>phrase</key><string>ショット・ツヴィーゼル</string><key>shortcut</key><string>しょっとつゔぃーぜる</string></dict>
+	        <dict><key>phrase</key><string>ZWIESEL</string><key>shortcut</key><string>つゔぃーぜる</string></dict>
+	        <dict><key>phrase</key><string>ツヴィーゼル</string><key>shortcut</key><string>つゔぃーぜる</string></dict>
+	        <dict><key>phrase</key><string>ZWIESEL GLAS</string><key>shortcut</key><string>つゔぃーぜるぐらす</string></dict>
+	        <dict><key>phrase</key><string>ツヴィーゼル・グラス</string><key>shortcut</key><string>つゔぃーぜるぐらす</string></dict>
+	        <dict><key>phrase</key><string>Spiegelau</string><key>shortcut</key><string>しゅぴげらう</string></dict>
+	        <dict><key>phrase</key><string>シュピゲラウ</string><key>shortcut</key><string>しゅぴげらう</string></dict>
+	        <dict><key>phrase</key><string>Nachtmann</string><key>shortcut</key><string>なはとまん</string></dict>
+	        <dict><key>phrase</key><string>ナハトマン</string><key>shortcut</key><string>なはとまん</string></dict>
+	        <dict><key>phrase</key><string>Stolzle</string><key>shortcut</key><string>しょとつる</string></dict>
+	        <dict><key>phrase</key><string>シュトルツル</string><key>shortcut</key><string>しょとつる</string></dict>
+	<!-- グラス (フランス)-->
+	        <dict><key>phrase</key><string>Baccarat</string><key>shortcut</key><string>ばから</string></dict>
+	        <dict><key>phrase</key><string>バカラ</string><key>shortcut</key><string>ばから</string></dict>
+	        <dict><key>phrase</key><string>Cristal d'Arques</string><key>shortcut</key><string>くりすたるだるく</string></dict>
+	        <dict><key>phrase</key><string>クリスタル・ダルク</string><key>shortcut</key><string>くりすたるだるく</string></dict>
+	        <dict><key>phrase</key><string>Arcoroc</string><key>shortcut</key><string>あるころっく</string></dict>
+	        <dict><key>phrase</key><string>アルコロック</string><key>shortcut</key><string>あるころっく</string></dict>
+	        <dict><key>phrase</key><string>Lehmann</string><key>shortcut</key><string>れーまん</string></dict>
+	        <dict><key>phrase</key><string>レーマン</string><key>shortcut</key><string>れーまん</string></dict>
+	<!-- グラス (イタリア)-->
+	        <dict><key>phrase</key><string>Italesse</string><key>shortcut</key><string>いたれっせ</string></dict>
+	        <dict><key>phrase</key><string>イタレッセ</string><key>shortcut</key><string>いたれっせ</string></dict>
+	        <dict><key>phrase</key><string>Luigi Bormioli</string><key>shortcut</key><string>るいじぼるみおり</string></dict>
+	        <dict><key>phrase</key><string>ルイジ・ボルミオリ</string><key>shortcut</key><string>るいじぼるみおり</string></dict>
+	        <dict><key>phrase</key><string>Bormioli Rocco</string><key>shortcut</key><string>ぼるみおりろっこ</string></dict>
+	        <dict><key>phrase</key><string>ボルイオリ・ロッコ</string><key>shortcut</key><string>ぼるみおりろっこ</string></dict>
+	<!-- グラス (チェコ)-->
+	        <dict><key>phrase</key><string>Bohemia</string><key>shortcut</key><string>ぼへみあ</string></dict>
+	        <dict><key>phrase</key><string>ボヘミア</string><key>shortcut</key><string>ぼへみあ</string></dict>
+	<!-- グラス (日本)-->
+	        <dict><key>phrase</key><string>木村硝子店</string><key>shortcut</key><string>きむらがらすてん</string></dict>
+	        <dict><key>phrase</key><string>木村硝子</string><key>shortcut</key><string>きむらがらす</string></dict>
+	        <dict><key>phrase</key><string>東洋佐々木ガラス</string><key>shortcut</key><string>とうようささきがらす</string></dict>
+	        <dict><key>phrase</key><string>佐々木ガラス</string><key>shortcut</key><string>ささきがらす</string></dict>
+	        <dict><key>phrase</key><string>カガミクリスタル</string><key>shortcut</key><string>かがみくりすたる</string></dict>
+	        <dict><key>phrase</key><string>松徳硝子</string><key>shortcut</key><string>しょうとくがらす</string></dict>
+	        <dict><key>phrase</key><string>うすはり</string><key>shortcut</key><string>うすはり</string></dict>
+	        <dict><key>phrase</key><string>アデリア</string><key>shortcut</key><string>あでりあ</string></dict>
+
 	<!-- ポルシェ -->
 	        <dict><key>phrase</key><string>カレラ</string><key>shortcut</key><string>かれら</string></dict>	<!-- Sudachiにもある(基底1位/2、コスト5496。単文節は既に先頭) -->
 	<!--既存<dict><key>phrase</key><string>スパイダー</string><key>shortcut</key><string>すぱいだー</string></dict> -->
@@ -864,20 +939,8 @@
 	        <dict><key>phrase</key><string>竈門禰󠄀豆子</string><key>shortcut</key><string>かまどねずこ</string></dict>
 	        <dict><key>phrase</key><string>炭治郎</string><key>shortcut</key><string>たんじろう</string></dict>
 	        <dict><key>phrase</key><string>禰󠄀豆子</string><key>shortcut</key><string>ねずこ</string></dict>
-	        <dict><key>phrase</key><string>ル・クルーゼ</string><key>shortcut</key><string>るくるーぜ</string></dict>	<!-- 鋳物ほうろう鍋のブランド(ユーザ指定 3769) -->
-	        <dict><key>phrase</key><string>Le Creuset</string><key>shortcut</key><string>るくるーぜ</string></dict>
-	        <dict><key>phrase</key><string>ストウブ</string><key>shortcut</key><string>すとうぶ</string></dict>
-	        <dict><key>phrase</key><string>STAUB</string><key>shortcut</key><string>すとうぶ</string></dict>
-	        <dict><key>phrase</key><string>staub</string><key>shortcut</key><string>すとうぶ</string></dict>
-	        <dict><key>phrase</key><string>シャスール</string><key>shortcut</key><string>しゃすーる</string></dict>
-	        <dict><key>phrase</key><string>CHASSEUR</string><key>shortcut</key><string>しゃすーる</string></dict>
-	        <dict><key>phrase</key><string>バーミキュラ</string><key>shortcut</key><string>ばーみきゅら</string></dict>
-	        <dict><key>phrase</key><string>Vermicular</string><key>shortcut</key><string>ばーみきゅら</string></dict>
-	        <dict><key>phrase</key><string>ヴァーミキュラ</string><key>shortcut</key><string>ゔぁーみきゅら</string></dict>
-	        <dict><key>phrase</key><string>Vermicular</string><key>shortcut</key><string>ゔぁーみきゅら</string></dict>
-	        <dict><key>phrase</key><string>クリストフル</string><key>shortcut</key><string>くりすとふる</string></dict>	<!-- 銀器のブランド。辞書にあるが LM に無く、連文節で クリストフ+る に割れていた(ユーザ報告 3769) -->
-	        <dict><key>phrase</key><string>Christofle</string><key>shortcut</key><string>くりすとふる</string></dict>
-	        <dict><key>phrase</key><string>ラギオール</string><key>shortcut</key><string>らぎおーる</string></dict>
-	        <dict><key>phrase</key><string>ライヨール</string><key>shortcut</key><string>らいよーる</string></dict>
+	        <dict><key>phrase</key><string>sommelière</string><key>shortcut</key><string>そむりえーる</string></dict>
+	        <dict><key>phrase</key><string>ソムリエール</string><key>shortcut</key><string>そむりえーる</string></dict>
+	        <dict><key>phrase</key><string>タカシマヤ</string><key>shortcut</key><string>たかしまや</string></dict>
 </array>
 </plist>

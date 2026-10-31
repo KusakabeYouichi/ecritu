@@ -20463,13 +20463,13 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(shita.first, "トレイニングした", "\(shita)")
     }
 
-    // 3251: compenser の Laguiole(らぎおーる/らいよーる)
+    // 3251: compenser の Laguiole(らぎおーる/らいよーる)。食器の節へ移して カタカナ を先に(ユーザ編集 3612)
     func testLaguioleBothReadings() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
-        for reading in ["らぎおーる", "らいよーる"] {
+        for (reading, katakana) in [("らぎおーる", "ラギオール"), ("らいよーる", "ライヨール")] {
             let list = converter.candidates(for: reading, limit: 3, systemCandidateMode: .surface)
-            XCTAssertEqual(list.first, "Laguiole", "\(reading) \(list)")
+            XCTAssertEqual(Array(list.prefix(2)), [katakana, "Laguiole"], "\(reading) \(list)")
         }
         let chateau = converter.candidates(for: "しゃとーらぎおーる", limit: 3, systemCandidateMode: .surface)
         XCTAssertEqual(Array(chateau.prefix(2)), ["Château Laguiole", "シャトー・ラギオール"], "\(chateau)")

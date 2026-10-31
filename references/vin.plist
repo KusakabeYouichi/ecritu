@@ -3877,7 +3877,8 @@
 	<dict><key>phrase</key><string>白ワイン&amp;ロゼワイン</string><key>shortcut</key><string>しろわいんろぜわいん</string></dict>
 	<dict><key>phrase</key><string>白ワイン&amp;赤ワイン</string><key>shortcut</key><string>しろわいんあかわいん</string></dict>
 	<dict><key>phrase</key><string>白ワイン・発泡性白ワイン</string><key>shortcut</key><string>しろわいんはっぽうせいしろわいん</string></dict>
-	<dict><key>phrase</key><string>白辛口〜甘口</string><key>shortcut</key><string>しろからくちあまくち</string></dict>
+	<dict><key>phrase</key><string>白辛口</string><key>shortcut</key><string>しろからくち</string></dict>
+	<dict><key>phrase</key><string>白甘口</string><key>shortcut</key><string>しろまくち</string></dict>
 	<dict><key>phrase</key><string>自家消費用</string><key>shortcut</key><string>じかしょうひよう</string></dict>
 	<dict><key>phrase</key><string>葦ワイン</string><key>shortcut</key><string>あしわいん</string></dict>
 	<dict><key>phrase</key><string>藁ワイン</string><key>shortcut</key><string>わらわいん</string></dict>
@@ -3886,11 +3887,13 @@
 	<dict><key>phrase</key><string>赤泡</string><key>shortcut</key><string>あかあわ</string></dict>
 	<dict><key>phrase</key><string>赤白共</string><key>shortcut</key><string>あかしろとも</string></dict>
 	<dict><key>phrase</key><string>辛口Száraz</string><key>shortcut</key><string>からくちさーらず</string></dict>
-	<dict><key>phrase</key><string>辛口〜甘口</string><key>shortcut</key><string>からくちあまくち</string></dict>
-	<dict><key>phrase</key><string>辛口〜甘口タイプ</string><key>shortcut</key><string>からくちあまくちたいぷ</string></dict>
+	<dict><key>phrase</key><string>辛口</string><key>shortcut</key><string>からくち</string></dict>
+	<dict><key>phrase</key><string>甘口</string><key>shortcut</key><string>あまくち</string></dict>
+	<dict><key>phrase</key><string>辛口タイプ</string><key>shortcut</key><string>からくちたいぷ</string></dict>
+	<dict><key>phrase</key><string>甘口タイプ</string><key>shortcut</key><string>あまくちたいぷ</string></dict>
 	<dict><key>phrase</key><string>辛口スパークリング・ワイン</string><key>shortcut</key><string>からくちすぱーくりんぐわいん</string></dict>
-	<dict><key>phrase</key><string>辛口〜甘口</string><key>shortcut</key><string>からくちあまくち</string></dict>
-	<dict><key>phrase</key><string>辛口〜甘口白</string><key>shortcut</key><string>からくちあまくちしろ</string></dict>
+	<dict><key>phrase</key><string>辛口白</string><key>shortcut</key><string>からくちしろ</string></dict>
+	<dict><key>phrase</key><string>甘口白</string><key>shortcut</key><string>あまくちしろ</string></dict>
 	<dict><key>phrase</key><string>酒用語Paille</string><key>shortcut</key><string>さけようごぱいゆ</string></dict>
 	<dict><key>phrase</key><string>量産用ワイン向</string><key>shortcut</key><string>りょうさんようわいんむけ</string></dict>
 	<dict><key>phrase</key><string>量販ワイン用</string><key>shortcut</key><string>りょうはんわいんよう</string></dict>
@@ -9113,7 +9116,7 @@
 	<dict><key>phrase</key><string>エメラルド色</string><key>shortcut</key><string>えめらるどいろ</string></dict>
 	<dict><key>phrase</key><string>オッキオ・ディ・ペルニーチェ</string><key>shortcut</key><string>おっきおでぃぺるにーちぇ</string></dict>
 	<dict><key>phrase</key><string>オレンジ色</string><key>shortcut</key><string>おれんじいろ</string></dict>
-	<dict><key>phrase</key><string>オレンジ〜レンガ色</string><key>shortcut</key><string>おれんじれんがいろ</string></dict>
+	<dict><key>phrase</key><string>レンガ色</string><key>shortcut</key><string>れんがいろ</string></dict>
 	<dict><key>phrase</key><string>カビ状</string><key>shortcut</key><string>かびじょう</string></dict>
 	<dict><key>phrase</key><string>キャンディ香</string><key>shortcut</key><string>きゃんでぃこう</string></dict>
 	<dict><key>phrase</key><string>クリーム状</string><key>shortcut</key><string>くりーむじょう</string></dict>
