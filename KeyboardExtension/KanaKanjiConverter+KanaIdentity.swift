@@ -836,6 +836,15 @@ extension KanaKanjiConverter {
                 return true
             }
         }
+        // 副助詞+で(までで/ほどで/だけで)。で の一般剥がしは名詞+で(ずかんで)を巻き込むので、剥がした残りが
+        // 副助詞で終わるときに限る(までで が 迄で→間でで の順で、かなが末尾へ回されていた。までは/までに は上で拾える。3614)
+        if normalized.hasSuffix("で") {
+            let stem = String(normalized.dropLast())
+            if Self.kanaOrthographyAdverbialParticlesBeforeDe.contains(where: { stem.hasSuffix($0) }),
+                computeShouldKeepKanaIdentityLeading(normalized: stem) {
+                return true
+            }
+        }
         // 指示代名詞+助詞(これで/ここまで/そこから 等)はかなが正書。助詞の一般剥がしは
         // 名詞+助詞(ずかんで)を巻き込むため、かな正書の指示代名詞語幹に限定する(2406、
         // 2476 で助詞を まで/から/より/だけ 等に拡張 — ここまで が 小駒で/個々まで に

@@ -2058,6 +2058,11 @@ extension KanaKanjiConverter {
         "だけ", "でも", "では", "にも", "までは", "からは", "までに"
     ]
 
+    // で の前に来る かな正書の副助詞(までで/ほどで/だけで/くらいで。3614)
+    static let kanaOrthographyAdverbialParticlesBeforeDe: [String] = [
+        "まで", "ほど", "だけ", "など", "くらい", "ぐらい", "ばかり", "ばっかり", "きり", "っきり"
+    ]
+
     // 引用の という 連鎖(かなが正書)。末尾の 名詞化節(のは/のが)込みの形も並べる。
     static let kanaOrthographyQuotationTails: [String] = [
         "という", "といって", "といえば", "といった", "といっても", "というか",

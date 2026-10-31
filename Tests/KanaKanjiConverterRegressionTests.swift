@@ -21171,6 +21171,20 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "みっかぼうず", systemCandidateMode: .surface).first, "三日坊主")
     }
 
+    // 3614: 副助詞+で(までで/ほどで/だけで)は かなが正書。で の一般剥がしは名詞+で(ずかんで)を巻き込むので副助詞に限る
+    func testRegressionRealLMAdverbialParticlePlusDeKeepsKana() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for reading in ["までで", "ほどで", "だけで", "などで"] {
+            converter.invalidateCandidateCache()
+            XCTAssertEqual(converter.candidates(for: reading, limit: 4, systemCandidateMode: .surface).first, reading)
+            XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: reading), reading)
+        }
+        XCTAssertEqual(Array(converter.candidates(for: "までで", limit: 4, systemCandidateMode: .surface).prefix(2)), ["までで", "迄で"])
+        XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "ずかんで"))
+        XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "なかまで"))
+    }
+
     // 3380: よしのや は 吉野家 が先頭(Sudachi の wc10000 で後ろに回され 吉野+や の合成が先頭だった)
     func testYoshinoyaRegistered() throws {
         try prepareRealLMDictionary()
