@@ -79,7 +79,7 @@ extension KeyboardRootView {
         )
     }
 
-    // 書式化数値入力モード: 左端モード列 最下段キーの長押しで起動。1件確定でかなへ戻す。
+    // 書式化数値入力モード: 左端列の右フリック(初期設定は [123])か面選択のパレットから起動。1件確定でかなへ戻す。
     func enterFormattedNumberMode() {
         formattedNumberState.resetBuffer()
         inputState.enterFormattedNumberMode()

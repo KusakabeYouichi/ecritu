@@ -84,24 +84,43 @@ extension KeyboardRootView {
             .frame(width: leftModeSwitchButtonWidth, height: height)
     }
 
-    func leftModeSwitchEmojiButton(height: CGFloat) -> some View {
-        // 長押しは書式化数値入力モードを起動(顔文字は切替キーのフリック割当から到達)。
-        ActionKeyButton(
-            title: "☺︎",
-            accessibilityLabel: "絵文字",
-            fontSize: kanaModeSwitcherFaceEmojiIconFontSize,
-            onLongPress: enterFormattedNumberMode,
-            action: enterEmojiMode
-        )
-            .frame(width: leftModeSwitchButtonWidth, height: height)
-    }
-
-    func leftModeSwitchSymbolsButton(height: CGFloat) -> some View {
-        ActionKeyButton(
-            title: "⌘",
-            accessibilityLabel: "記号入力",
-            fontSize: symbolTransitionIconFontSize,
-            action: enterSymbolsMode
+    // 左端最下段のキー(面を切り替えるキー)。かな・英字・数字のどのモードでも同じ(3625。以前は英字=☺︎ 絵文字
+    // (長押しで書式化)、数字 clavier=⌘ 記号、calculette/téléphone=空きと、モードごとに別のキーだった)。
+    // タップ(.milieu)と右フリック(.droite)は設定 E.5 の面。面選択のパレットは押したままで出る
+    func modeSwitcherPaletteKey(
+        height: CGFloat,
+        touchForensicsLabel: String,
+        onTouchStateChanged: @escaping (Bool) -> Void = { _ in }
+    ) -> some View {
+        FlickKeyView(
+            kana: kanaModeSwitcherKana,
+            onCommit: selectKanaModeSwitcher,
+            onCommitWithDirection: selectKanaModeSwitcher(_:direction:),
+            mainLabelFontSize: kanaModeSwitcherMainLabelFontSize,
+            showsDirectionalHints: showsFlickGuideCharacters,
+            showsGuideText: false,
+            longPressCandidates: Self.modePaletteLabels,
+            longPressCandidateAxis: .vertical,
+            longPressCandidateCellWidth: 116,
+            longPressCandidateColumnCount: modePaletteColumnCount,
+            longPressDelayOverride: Self.modePaletteLongPressDelay,
+            activePreviewFontSize: kanaModeSwitcherPreviewFontSize,
+            activeMainLabelFontSizeProvider: { direction, mainText in
+                kanaModeSwitcherMainLabelFontSizeForDirection(
+                    direction,
+                    mainText: mainText
+                )
+            },
+            activePreviewFontSizeProvider: { direction, previewText in
+                kanaModeSwitcherPreviewFontSizeForDirection(
+                    direction,
+                    previewText: previewText
+                )
+            },
+            activePreviewHorizontalPadding: kanaModeSwitcherPreviewHorizontalPadding,
+            directionalHintHorizontalOffset: 16,
+            onTouchStateChanged: onTouchStateChanged,
+            touchForensicsLabel: touchForensicsLabel  // 調査用ログ(記号面切替 2838)
         )
             .frame(width: leftModeSwitchButtonWidth, height: height)
     }
@@ -119,49 +138,10 @@ extension KeyboardRootView {
                 fontSize: compactKanaModeSwitchButtonFontSize
             )
         case 3:
-            if isKanaFiveByTwoMode {
-                FlickKeyView(
-                    kana: kanaModeSwitcherKana,
-                    // タップ(.milieu)と右フリック(.droite)は設定 E.5 の面。面選択のパレットは長押しで出る(3618)
-                    onCommit: selectKanaModeSwitcher,
-                    onCommitWithDirection: selectKanaModeSwitcher(_:direction:),
-                    mainLabelFontSize: kanaModeSwitcherMainLabelFontSize,
-                    showsDirectionalHints: showsFlickGuideCharacters,
-                    showsGuideText: false,
-                    longPressCandidates: Self.modePaletteLabels,
-                    longPressCandidateAxis: .vertical,
-                    longPressCandidateCellWidth: 116,
-                    longPressCandidateColumnCount: modePaletteColumnCount,
-                    longPressDelayOverride: Self.modePaletteLongPressDelay,
-                    activePreviewFontSize: kanaModeSwitcherPreviewFontSize,
-                    activeMainLabelFontSizeProvider: { direction, mainText in
-                        kanaModeSwitcherMainLabelFontSizeForDirection(
-                            direction,
-                            mainText: mainText
-                        )
-                    },
-                    activePreviewFontSizeProvider: { direction, previewText in
-                        kanaModeSwitcherPreviewFontSizeForDirection(
-                            direction,
-                            previewText: previewText
-                        )
-                    },
-                    activePreviewHorizontalPadding: kanaModeSwitcherPreviewHorizontalPadding,
-                    directionalHintHorizontalOffset: 16,
-                    touchForensicsLabel: "左下キー(5x2)"  // 調査用ログ(記号面切替 2838)
-                )
-                    .frame(width: leftModeSwitchButtonWidth, height: height)
-            } else if inputMode == .latin {
-                leftModeSwitchEmojiButton(height: height)
-            } else if inputMode == .number && effectiveNumberLayoutMode == .clavier {
-                // clavier 縦画面では電卓/電話モードと同じく ⌘ (記号入力モードへの切替)を
-                // 左コンパクト列の最下段(slot 3)に配置する。
-                leftModeSwitchSymbolsButton(height: height)
-            } else {
-                Color.clear
-                    .allowsHitTesting(false)
-                    .frame(width: leftModeSwitchButtonWidth, height: height)
-            }
+            modeSwitcherPaletteKey(
+                height: height,
+                touchForensicsLabel: isKanaFiveByTwoMode ? "左下キー(5x2)" : "左下キー(コンパクト)"
+            )
         default:
             Color.clear
                 .allowsHitTesting(false)
@@ -189,40 +169,13 @@ extension KeyboardRootView {
                 fontSize: standardKanaModeSwitchButtonFontSize
             )
 
-            FlickKeyView(
-                kana: kanaModeSwitcherKana,
-                // タップ(.milieu)と右フリック(.droite)は設定 E.5 の面。面選択のパレットは長押しで出る(3618)
-                onCommit: selectKanaModeSwitcher,
-                onCommitWithDirection: selectKanaModeSwitcher(_:direction:),
-                mainLabelFontSize: kanaModeSwitcherMainLabelFontSize,
-                showsDirectionalHints: showsFlickGuideCharacters,
-                showsGuideText: false,
-                longPressCandidates: Self.modePaletteLabels,
-                longPressCandidateAxis: .vertical,
-                longPressCandidateCellWidth: 116,
-                longPressCandidateColumnCount: modePaletteColumnCount,
-                longPressDelayOverride: Self.modePaletteLongPressDelay,
-                activePreviewFontSize: kanaModeSwitcherPreviewFontSize,
-                activeMainLabelFontSizeProvider: { direction, mainText in
-                    kanaModeSwitcherMainLabelFontSizeForDirection(
-                        direction,
-                        mainText: mainText
-                    )
-                },
-                activePreviewFontSizeProvider: { direction, previewText in
-                    kanaModeSwitcherPreviewFontSizeForDirection(
-                        direction,
-                        previewText: previewText
-                    )
-                },
-                activePreviewHorizontalPadding: kanaModeSwitcherPreviewHorizontalPadding,
-                directionalHintHorizontalOffset: 16,
+            modeSwitcherPaletteKey(
+                height: rowHeight,
+                touchForensicsLabel: "左下キー(3x3)",
                 onTouchStateChanged: { isTouching in
                     updateActiveLayer(isTouching, layerIndex: 3, isLeftModeSwitchColumn: true)
-                },
-                touchForensicsLabel: "左下キー(3x3)"  // 調査用ログ(記号面切替 2838)
+                }
             )
-                .frame(width: leftModeSwitchButtonWidth, height: rowHeight)
         }
         // 列の吹き出しは段より前、ただし段のキーを触っているあいだは後ろへ(定義箇所のコメント参照。3167)
         .zIndex(leftModeSwitchColumnZIndex)
@@ -447,11 +400,7 @@ extension KeyboardRootView {
                 fontSize: standardKanaModeSwitchButtonFontSize
             )
         case 3:
-            if inputMode == .number {
-                leftModeSwitchSymbolsButton(height: rowHeight)
-            } else {
-                leftModeSwitchEmojiButton(height: rowHeight)
-            }
+            modeSwitcherPaletteKey(height: rowHeight, touchForensicsLabel: "左下キー(3x3 列)")
         default:
             Color.clear
                 .allowsHitTesting(false)

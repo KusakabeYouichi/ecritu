@@ -838,7 +838,7 @@ extension KeyboardRootView {
                 height: mainFlickKeyHeight,
                 fontSize: compactKanaModeSwitchButtonFontSize
             )
-            leftModeSwitchEmojiButton(height: mainFlickKeyHeight)
+            modeSwitcherPaletteKey(height: mainFlickKeyHeight, touchForensicsLabel: "左下キー(横 英字)")
         }
     }
 
