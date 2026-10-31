@@ -1896,6 +1896,27 @@ extension KanaKanjiConverter {
                 }
             }
         }
+        // かなの名(person_names に かなの表記で載る名)で、直後の読みが敬称(さん/ちゃん 等)のノード(3610 の規則に使う)
+        var kanaGivenNameBeforeHonorificNodeKeys = Set<String>()
+        // りん は短く他の語(りんさんえん=燐酸塩)を割りやすいので、敬称の後は読みの終わりか助詞 1 字に限る
+        for node in nodes where node.surface == node.reading && node.end < n {
+            let rest = Self.spanString(chars, node.end..<n)
+            guard let honorific = Self.multiClausePersonNameHonorificReadings.first(where: { rest.hasPrefix($0) }) else {
+                continue
+            }
+            let afterHonorific = rest.dropFirst(honorific.count)
+            guard afterHonorific.isEmpty
+                || Self.multiClauseKanaGivenNameFollowingParticles.contains(afterHonorific.first!) else {
+                continue
+            }
+            // 地域接尾にもなる読み(けん=県/し=市)は除く(あいちけんさん=愛知県産。愛知 は姓でもある)
+            if store.personNameKinds(for: node.reading)[node.reading] == "名",
+                !store.wordCosts(for: node.reading).keys.contains(where: { surface in
+                    surface.count == 1 && KanaKanjiConverter.regionalSuffixCharactersBeforeSan.contains(surface.first!)
+                }) {
+                kanaGivenNameBeforeHonorificNodeKeys.insert(node.key)
+            }
+        }
         // 人名でない辞書語が立つ区間(3440 の「人名が末尾の助詞を飲み込む」判定に使う。やつ が立つ区間)
         var nonPersonDictWordSpanKeys = Set<String>()
         for node in nodes where node.isDictWord && !node.isKanaIdentity && personNameKindByNodeKey[node.key] == nil {
@@ -3644,6 +3665,12 @@ extension KanaKanjiConverter {
                             Self.multiClauseCaseParticleSurfacesID.contains(prevNode.surfaceID) {
                             cost += Self.multiClauseInflectionDerivedOOVCost
                                 - Self.multiClauseInflectionAfterParticleCost
+                        }
+                        // の/姓 の直後の かなの名+敬称 は、かなのまま人名として読む(定数コメント参照。3610)
+                        if kanaGivenNameBeforeHonorificNodeKeys.contains(node.key),
+                            (prevNode.surface == "の" && prevNode.reading == "の")
+                                || personNameKindByNodeKey[prevNode.key] == "姓" {
+                            cost -= Self.multiClauseKanaGivenNameAfterNoOrSurnameBonus
                         }
                         // 人名の 2 規則(定数コメント参照。2845)
                         // seed で並びを決めている読み(ゆずか: 柚花→柚香)は seed に委ね、〜屋 が同区間に立つ読み(かじや)は職業優先

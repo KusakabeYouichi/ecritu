@@ -192,6 +192,13 @@ extension KeyboardCandidateMergingTests {
             SupplementaryCandidateMerger.promotingPresentationOrderSeed(["ひがわ", "比川", "樋川", "比側"], reading: "ひがわ"),
             ["樋川", "比川", "比側", "ひがわ"]
         )
+        // 3610: 元素名はカタカナが先(本来の漢字は残す)
+        XCTAssertEqual(SupplementaryCandidateMerger.promotingPresentationOrderSeed(["燐", "林", "リン", "りん"], reading: "りん"), ["リン", "燐", "林", "りん"])
+        XCTAssertEqual(SupplementaryCandidateMerger.promotingPresentationOrderSeed(["砒素", "檜曽", "ヒ素"], reading: "ひそ"), ["ヒ素", "砒素", "檜曽"])
+        XCTAssertEqual(
+            SupplementaryCandidateMerger.promotingPresentationOrderSeed(["放射", "硼砂", "ホウ砂", "報謝"], reading: "ほうしゃ"),
+            ["放射", "ホウ砂", "硼砂", "報謝"]
+        )
     }
 
     // 3602: 知能/智能 は書きかえの日常語の例外(本来の漢字を先に の設定でも 知能 が先)

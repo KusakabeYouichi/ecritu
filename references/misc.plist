@@ -593,6 +593,9 @@
 	<dict><key>phrase</key><string>口座維持</string><key>shortcut</key><string>こうざいじ</string><key>pos</key><string>名詞</string></dict>	<!-- 口座維持: こうざいじ が 鋼材+時/香西+時/功罪+時 になり 口座維持 が出なかった(維持 は いじ の上位に無く、こうざい が 1 語で勝つ)。口座維持手数料 の部品として語で登録(ユーザ報告) -->
 	<dict><key>phrase</key><string>丸大豆</string><key>shortcut</key><string>まるだいず</string></dict>	<!-- 丸大豆: 辞書に無く 丸大図 だった(ユーザ報告 3602。以下 5 語も同じ報告) -->
 	<dict><key>phrase</key><string>リン酸塩</string><key>shortcut</key><string>りんさんえん</string></dict>	<!-- リン酸塩: 辞書に無く リン酸円 だった -->
+	<dict><key>phrase</key><string>燐酸塩</string><key>shortcut</key><string>りんさんえん</string></dict>	<!-- 燐酸塩: リン酸塩 の次に(ユーザ指定 3610) -->
+	<dict><key>phrase</key><string>ヨウ化</string><key>shortcut</key><string>ようか</string><key>pos</key><string>名詞</string></dict>	<!-- ヨウ化: 辞書に 沃化 しか無く、元素名のカタカナが出なかった(ようかかりうむ→八鹿カリウム。ユーザ指定 3610) -->
+	<dict><key>phrase</key><string>ヒ素中毒</string><key>shortcut</key><string>ひそちゅうどく</string><key>pos</key><string>名詞</string></dict>	<!-- ヒ素中毒: 辞書に 砒素中毒 しか無かった(元素名はカタカナが普通。ユーザ指定 3610) -->
 	<dict><key>phrase</key><string>主回線</string><key>shortcut</key><string>しゅかいせん</string></dict>	<!-- 主回線: 辞書に無く 酒海戦/主海戦 だった -->
 	<dict><key>phrase</key><string>貯め方</string><key>shortcut</key><string>ためかた</string></dict>	<!-- 貯め方/溜め方: 辞書に無く 単語のため方は だった(貯め方 を先頭に) -->
 	<dict><key>phrase</key><string>溜め方</string><key>shortcut</key><string>ためかた</string></dict>
@@ -634,7 +637,6 @@
 	<dict><key>phrase</key><string>うまいね</string><key>shortcut</key><string>うまいね</string></dict>	<!-- うまいね: うま|いね 分割(馬+イネ/ウマ+イネ=ウマイネ)が勝つ。いいね/かわいいね と同処方 -->
 	<dict><key>phrase</key><string>しか知らない</string><key>shortcut</key><string>しかしらない</string></dict>	<!-- しか知らない(副助詞しか+知らない の慣用連語): 占い師+かしら+ないが 等の誤区切りに勝たせる -->
 	<dict><key>phrase</key><string>顔</string><key>shortcut</key><string>かお</string></dict>	<!-- 顔: curated のか(疑問形)が 〜のかお を のか+お に分断し 顔 のスパンが消える(あんたのかおなんかいもみたい→あんたのかお南海揉みたい、変種に 乃佳お 等)。ろーまにいたる事件の処方箋どおり、分断される側の 顔 も curated 化して同床で文節数の少ない区切りを勝たせる -->	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>アプリの招待</string><key>shortcut</key><string>あぷりのしょうたい</string></dict>	<!-- アプリの招待: アプリの正体 が先頭だった(の→正体 の連接が強い。の+招待 の一般の加点は 〜の正体 を崩すので句で登録。ユーザ報告 3602) -->
 	<dict><key>phrase</key><string>正規化</string><key>shortcut</key><string>せいきか</string></dict>	<!-- 正規化: 単文節では先頭だが、連文節で 世紀+か(疑問)に分断されて 世紀か が先頭だった(ユーザ報告 3602) -->
 
 	<!-- ■ 同音・同読みの優先順の是正(コーパスのコスト/バイアスを頻度実感に寄せる) -->

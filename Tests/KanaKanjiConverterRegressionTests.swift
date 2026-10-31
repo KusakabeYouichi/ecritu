@@ -21085,6 +21085,45 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3610: ユーザ報告(アプリの正体 が消えた/ダメなら を 2 番め/燐酸 と元素名/の・姓 の後の かなの名+さん)
+    func testRegressionRealLMUserReport3610() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        func multi(_ reading: String) -> [String] {
+            converter.invalidateCandidateCache()
+            return converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+        }
+        func single(_ reading: String) -> [String] {
+            converter.invalidateCandidateCache()
+            return converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+        }
+        // アプリの招待 が先頭で、アプリの正体 も候補に残る。〜の正体 の一般は崩さない
+        XCTAssertEqual(Array(multi("あぷりのしょうたい").prefix(2)), ["アプリの招待", "アプリの正体"])
+        XCTAssertEqual(multi("そのおとこのしょうたい").first, "その男の正体")
+        // だめなら の次に ダメなら
+        XCTAssertEqual(Array(multi("だめなら").prefix(2)), ["だめなら", "ダメなら"], "\(multi("だめなら"))")
+        // リン酸塩 の次に 燐酸塩、りんさん は リン酸 の次に 燐酸
+        XCTAssertEqual(Array(single("りんさんえん").prefix(2)), ["リン酸塩", "燐酸塩"])
+        XCTAssertEqual(Array(single("りんさん").prefix(2)), ["リン酸", "燐酸"])
+        // の/姓 の後の かなの名+敬称 は かなのまま。敬称の後に語が続く(りんさんえん)ときと、単独の りんさん は従来どおり
+        XCTAssertEqual(multi("らーめんのりんさん").first, "ラーメンのりんさん")
+        XCTAssertEqual(multi("いちのせりんさん").first, "一ノ瀬りんさん")
+        XCTAssertEqual(multi("いちのせりんさんは").first, "一ノ瀬りんさんは")
+        XCTAssertEqual(multi("らーめんのりんさんえん").first, "ラーメンのリン酸塩")
+        XCTAssertEqual(multi("かなちゃん").first, "佳奈ちゃん")
+        // 元素名はカタカナが先で、本来の漢字も候補に出る
+        for (reading, katakana, kanji) in [
+            ("ふっそ", "フッ素", "弗素"), ("ほうそ", "ホウ素", "硼素"), ("けいそ", "ケイ素", "珪素"),
+            ("ほうさん", "ホウ酸", "硼酸"), ("ようか", "ヨウ化", "沃化"), ("ひそちゅうどく", "ヒ素中毒", "砒素中毒")
+        ] {
+            let list = single(reading)
+            XCTAssertEqual(list.first, katakana, "\(reading) \(list)")
+            XCTAssertTrue(list.contains(kanji), "\(reading) \(list)")
+        }
+        XCTAssertEqual(Array(single("けいさん").prefix(3)), ["計算", "ケイ酸", "珪酸"])
+        XCTAssertEqual(multi("ようかかりうむ").first, "ヨウ化カリウム")
+    }
+
     // 3380: よしのや は 吉野家 が先頭(Sudachi の wc10000 で後ろに回され 吉野+や の合成が先頭だった)
     func testYoshinoyaRegistered() throws {
         try prepareRealLMDictionary()
@@ -22865,7 +22904,7 @@ extension KanaKanjiConverterRegressionTests {
             ("ひさし", ["庇", "久志", "寿史", "恒"], ["廂", "裳層"]),
             ("よしひら", ["善平", "良平"], ["吉平", "楽平"]),
             ("せんたい", ["戦隊", "船体", "蘚苔"], ["選対", "先体", "洗体", "浅堆", "船隊"]),
-            ("けいさん", ["計算", "珪酸", "ケイ酸"], ["経産"]),
+            ("けいさん", ["計算", "ケイ酸", "珪酸"], ["経産"]),  // 元素名はカタカナが先(3610)
             ("さいせん", ["再選", "賽銭", "再戦", "西線"], ["再栓", "再染", "再撰"]),
             ("しょうぞう", ["肖像", "正像", "章三", "省三", "正三"], ["焼造", "小像", "抄造"]),
             ("しんぎょう", ["心経", "信行", "新行"], ["心行", "秦行"]),
