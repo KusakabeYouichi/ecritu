@@ -442,8 +442,17 @@ final class KanaKanjiStore {
     // 初回変換を遅くしていた。呼び出し側の形状ゲート(かな終止形尾+漢字)でクエリ回数
     // 自体も span あたり高々1回に抑えている。
     func isShortReadingDictionaryFormPredicate(reading: String, candidate: String) -> Bool {
+        inflectionClassMapCached(reading: reading)[candidate] != nil
+    }
+
+    // その読みが動詞・形容詞(サ変名詞を除く活用の分類)として登録されているか。かなのままの語(いる)が述語かを見る(3615)
+    func hasPredicateInflectionClass(reading: String) -> Bool {
+        inflectionClassMapCached(reading: reading).values.contains { $0 != "suru" }  // InflectionClass.suru(変換層の定義。ストアからは見えない)
+    }
+
+    private func inflectionClassMapCached(reading: String) -> [String: String] {
         if let cached = withCacheLock({ cachedInflectionClassMapsByReading[reading] }) {
-            return cached[candidate] != nil
+            return cached
         }
         let classMap: [String: String]
         if let sqliteIndex = sqliteIndexIfAvailable() {
@@ -452,7 +461,7 @@ final class KanaKanjiStore {
             classMap = loadInflectionDictionary()[reading] ?? [:]
         }
         withCacheLock { cachedInflectionClassMapsByReading.set(classMap, for: reading, limit: Self.readingMapCacheLimit) }
-        return classMap[candidate] != nil
+        return classMap
     }
 
     // その読みが五段動詞として登録されているか(inflection_classes の godan-*)。

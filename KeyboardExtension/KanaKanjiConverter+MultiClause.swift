@@ -2421,10 +2421,15 @@ extension KanaKanjiConverter {
                 base = min(base, Self.multiClausePpoiAfterNounCost)
             }
             // 名詞化節 のが/のは/のを/のも/のに は述語形直後のみ安価にクランプ(定数コメント参照)。
+            // かなのままの直前(とうきょう)は語尾の文字(う)だけでは述語と言えないので、活用派生・辞書形の述語か、
+            // 読みが動詞・形容詞として辞書にある かな(いる)に限る
+            // (とうきょうのものよね が とうきょう+のも+のよね に崩れていた。3615、ユーザ報告)
             if !prevIsBOS,
                 isKanaIdentity,
                 Self.multiClauseNominalizerSurfacesID.contains(surfaceID),
-                prev.last.map({ Self.multiClausePredicateTailCharacters.contains($0) }) ?? false {
+                prev.last.map({ Self.multiClausePredicateTailCharacters.contains($0) }) ?? false,
+                !prevIsKanaIdentity || prevIsInflectionDerived || prevIsDictionaryFormPredicate
+                    || store.hasPredicateInflectionClass(reading: prev) {
                 base = min(base, Self.multiClauseNominalizerAfterPredicateCost)
             }
             // 漢字名詞(2 字以上)+複数の たち(地面師たち/友達たち)。LM に 名詞→たち の連接が無い語(地面師)は

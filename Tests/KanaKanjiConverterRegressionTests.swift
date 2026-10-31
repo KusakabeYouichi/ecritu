@@ -21185,6 +21185,20 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "なかまで"))
     }
 
+    // 3615: かなのままの直前(とうきょう)を述語扱いして のも を安くし、とうきょう+のも+のよね に崩れていた
+    func testRegressionRealLMNominalizerNeedsRealPredicate() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        func multi(_ reading: String) -> [String] {
+            converter.invalidateCandidateCache()
+            return converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+        }
+        XCTAssertEqual(multi("とうきょうのものよね").first, "東京のものよね")
+        XCTAssertEqual(multi("おおさかのものよね").first, "大阪のものよね")
+        XCTAssertEqual(multi("たべるのもいいよね").first, "食べるのもいいよね")
+        XCTAssertEqual(multi("いくのは").first, "行くのは")
+    }
+
     // 3380: よしのや は 吉野家 が先頭(Sudachi の wc10000 で後ろに回され 吉野+や の合成が先頭だった)
     func testYoshinoyaRegistered() throws {
         try prepareRealLMDictionary()
