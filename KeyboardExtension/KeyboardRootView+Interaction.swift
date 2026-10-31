@@ -227,9 +227,9 @@ extension KeyboardRootView {
     // 「部首」→「単漢字」(ユーザー指定 3194)。部首を入力する面ではなく、部首や画数から
     // 1 文字を探して入れる面なので、機能を言い当てる名前にする
     static let modePaletteLabels: [String] = ["記号", "絵文字", "顔文字", "単漢字", "書式化"]
-    // 面選択のパレットが出るまでの待ち。文字キーの長押し(0.35 秒)より短くする(ユーザ指定 3620。3174〜3617 は 0 で、
-    // 右フリックを生かすため 3618 で 0.35 に戻したが遅いとの報告)。右フリックはこれより前に動き始めていれば盤を出さない
-    static let modePaletteLongPressDelay: TimeInterval = 0.2
+    // 面選択のパレットが出るまでの待ち。触れた瞬間に出す(3174 と同じ。3618 で右フリックのため 0.35 に戻し、
+    // 3621 で 0.2、3623 で 0 に。ユーザ指定)。右フリックは、盤が出たあとに右へ動けば盤を畳んで効く(FlickKeyView)
+    static let modePaletteLongPressDelay: TimeInterval = 0
 
     func selectModePalette(_ label: String) -> Bool {
         guard let target = KeyboardPanelRouting.panelTarget(forPaletteLabel: label) else {

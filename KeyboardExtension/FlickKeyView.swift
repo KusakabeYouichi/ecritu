@@ -1094,10 +1094,25 @@ struct FlickKeyView: View {
                 }
 
                 if longPressIsActive {
-                    highlightedLongPressIndex = longPressCandidateAxis == .vertical
+                    let nextIndex = longPressCandidateAxis == .vertical
                         ? longPressIndex(forVertical: value.location.y)
                         : longPressIndex(for: value.location.x, localY: value.location.y)
-                    return
+                    // 面選択のパレット(縦)は触れた瞬間に出る(3174。3623 で戻した)ので、盤が出たあとに右へ動いたら
+                    // 盤を畳んで右フリックに切り替える。盤の中の面を選んでいる(上へ動いた)ときは畳まない
+                    if longPressCandidateAxis == .vertical,
+                        nextIndex == LongPressVerticalCandidatePanel.noSelection,
+                        allowsDirectionalFlick,
+                        !kana.output(for: .droite).isEmpty,
+                        FlickGestureResolver.resolve(
+                            translation: value.translation,
+                            threshold: directionalFlickThreshold
+                        ) == .droite {
+                        longPressIsActive = false
+                        highlightedLongPressIndex = LongPressVerticalCandidatePanel.noSelection
+                    } else {
+                        highlightedLongPressIndex = nextIndex
+                        return
+                    }
                 }
 
                 guard allowsDirectionalFlick else {
@@ -1154,8 +1169,8 @@ struct FlickKeyView: View {
                     longPressCandidateAxis == .vertical,
                     !longPressCandidates.indices.contains(highlightedLongPressIndex) {
                     // 盤を出したまま、どれも選ばずに離した。長く押していたなら何も起きない
-                    // (ユーザ指定 3138)。盤は 0.2 秒(modePaletteLongPressDelay)で出る(3174〜3617 は触れた瞬間、3618 で右フリックのため
-                    // 戻した)ので、出た直後(400ms まで)に離したときは「ただのタップ」として扱う
+                    // (ユーザ指定 3138)。盤は触れた瞬間に出る(modePaletteLongPressDelay=0。3618 で右フリックのため 0.35 に戻したが 3623 で元に。右へ動けば盤を畳む)ので、
+                    // 出た直後(400ms まで)に離したときは「ただのタップ」として扱う
                     // ─ でないと面切替のタップが遅い指で効かなくなる
                     let heldMs = touchBeganAt.map { Int(value.time.timeIntervalSince($0) * 1000) } ?? 0
                     guard heldMs <= Self.paletteTapReleaseMaxMs else {
