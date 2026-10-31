@@ -1154,7 +1154,7 @@ struct FlickKeyView: View {
                     longPressCandidateAxis == .vertical,
                     !longPressCandidates.indices.contains(highlightedLongPressIndex) {
                     // 盤を出したまま、どれも選ばずに離した。長く押していたなら何も起きない
-                    // (ユーザ指定 3138)。盤は 0.35 秒で出る(3174〜3617 は触れた瞬間、3618 で右フリックのため
+                    // (ユーザ指定 3138)。盤は 0.2 秒(modePaletteLongPressDelay)で出る(3174〜3617 は触れた瞬間、3618 で右フリックのため
                     // 戻した)ので、出た直後(400ms まで)に離したときは「ただのタップ」として扱う
                     // ─ でないと面切替のタップが遅い指で効かなくなる
                     let heldMs = touchBeganAt.map { Int(value.time.timeIntervalSince($0) * 1000) } ?? 0
