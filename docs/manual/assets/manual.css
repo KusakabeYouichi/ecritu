@@ -81,6 +81,8 @@ kbd {
   background: var(--card); border: 1px solid var(--line); border-bottom-width: 2px;
   border-radius: 6px; padding: 0 .45em; white-space: nowrap;
 }
+/* ☺︎(絵文字の面の字)は文字の大きさでは小さく見えるので、本文・kbd・表・キャプションでは ⌘ と釣り合うまで大きくする(3626)。図のキーは個別に大きさを指定している */
+.smiley { font-size: 1.35em; line-height: 1; }
 .note {
   background: var(--note-bg); border-radius: 10px; padding: .9rem 1.1rem;
   font-size: .88rem; margin: 1.2rem 0;

@@ -675,7 +675,10 @@ struct KanaModeSwitcherAssignmentSection: View {
                 assignmentRow("左端最下段 タップ", selection: $tapSelection)
             }
 
-            Text("かな・英字・数字の各モードの左端の列は、上から[123][abc][あい]と面を切り替えるキー(最下段)です。それぞれを右へフリックしたときに開く面と、最下段をタップしたときに開く面を選びます。最下段のキーには、タップに割り当てた面の字(⌘ / ☺︎ / ^_^ / 熙 / 1,000)が出ます。最下段を押したままにすると[面選択のパレット]が出て、ほかの面へも移れます。同じ面を複数に割り当てることもできます。")
+            // ☺︎ は字の大きさでは小さく見えるので、⌘ と釣り合うまで大きくする(ユーザ指定 3626)
+            (Text("かな・英字・数字の各モードの左端の列は、上から[123][abc][あい]と面を切り替えるキー(最下段)です。それぞれを右へフリックしたときに開く面と、最下段をタップしたときに開く面を選びます。最下段のキーには、タップに割り当てた面の字(⌘ / ")
+                + Text("☺︎").font(.system(size: 18, weight: .semibold))
+                + Text(" / ^_^ / 熙 / 1,000)が出ます。最下段を押したままにすると[面選択のパレット]が出て、ほかの面へも移れます。同じ面を複数に割り当てることもできます。"))
                 .font(.footnote)
                 .foregroundStyle(.secondary)
 
@@ -773,8 +776,9 @@ struct KanaPostModifierEmptyTapAssignmentSection: View {
                         actionSelection = option
                     } label: {
                         HStack(spacing: 9) {
+                            // ☺︎ は字の大きさでは小さく見えるので、⌘ と釣り合うまで大きくする(ユーザ指定 3626)
                             Text(option.iconLabel)
-                                .font(.system(size: 16, weight: .semibold, design: .rounded))
+                                .font(.system(size: option == .emoji ? 23 : 16, weight: .semibold, design: .rounded))
                                 .frame(width: 38, alignment: .center)
 
                             Text(option.title)
