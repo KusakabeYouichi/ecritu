@@ -111,6 +111,12 @@ extension KanaKanjiConverter {
                 !Self.isPredicateLikeStemReading(stem) {
                 continue
             }
+            // なきゃ/なくちゃ は動詞の未然形(行か/作ら)にだけ付くが、語幹のキャッシュには未然形が無く(いか=以下/イカ/井か)、
+            // い+か の 井か が残って 井かなきゃ/伊かなきゃ… が並び、行かなきゃ が消えていた(実機だけ。3609、ユーザ報告)。
+            // キャッシュを使わず BFS(未然形を活用から作る)に任せる
+            if passthrough.hasPrefix("なきゃ") || passthrough.hasPrefix("なくちゃ") {
+                continue
+            }
 
             // 語幹の再利用なので数字接頭は無し(語幹は常にかな)。
             let stemKey = CandidateCacheKey(

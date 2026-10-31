@@ -125,7 +125,6 @@
 	<dict><key>phrase</key><string>飲みに来る</string><key>shortcut</key><string>のみにくる</string><key>pos</key><string>カ変</string></dict>	<!-- 飲みに来る: 見に来る の登録で のみにくる が の+見に来る になったので、同じ強さで 1 語にして文節の少ない区切りを勝たせる -->
 
 	<!-- ■ 頻出活用形の直接登録(活用エンジンでは届かない形を表層のまま入れる) -->
-	<dict><key>phrase</key><string>行かなきゃ</string><key>shortcut</key><string>いかなきゃ</string></dict>	<!-- 行かなきゃ: 実機で 井かなきゃ が先頭だった(Mac では再現せず。なきゃ 形は活用で作られないので表層で登録。ユーザ報告 3604) -->
 	<dict><key>phrase</key><string>気がした</string><key>shortcut</key><string>きがした</string></dict>	<!-- 頻出形の直接登録(いただきました と同じ方式)。派生供給だけだとサ変推論の 帰臥した/起臥した がルール順で先に立つ -->
 	<dict><key>phrase</key><string>気がして</string><key>shortcut</key><string>きがして</string></dict>
 	<dict><key>phrase</key><string>気がします</string><key>shortcut</key><string>きがします</string></dict>

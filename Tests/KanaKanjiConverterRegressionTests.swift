@@ -9103,7 +9103,6 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             // 3604(前回の一覧で抜けていた 4 件)
             (nil, "おじさん", "おじさん"),
             (nil, "みたでらんち", "三田でランチ"),
-            (nil, "いかなきゃ", "行かなきゃ"),
             (nil, "かれしになったり", "彼氏になったり")
         ]
         for expectation in expectations {
@@ -25310,6 +25309,18 @@ extension KanaKanjiConverterRegressionTests {
         let tsukuranakya = converter.candidates(for: "つくらなきゃ", limit: 40, systemCandidateMode: .surface)
         XCTAssertEqual(tsukuranakya.first, "作らなきゃ", "\(tsukuranakya.prefix(5))")
         XCTAssertFalse(tsukuranakya.contains("津倉なきゃ"))
+        // 3609: 逐次入力でも 漢字語幹+かなきゃ(井かなきゃ)を組み立てない
+        converter.invalidateCandidateCache()
+        for prefix in ["い", "いか", "いかな", "いかなき"] {
+            _ = converter.candidates(for: prefix, limit: 40, systemCandidateMode: .surface)
+        }
+        let ikanakya = converter.candidates(for: "いかなきゃ", limit: 40, systemCandidateMode: .surface)
+        // かなの先頭は、かな正書の根拠が無いので表示層が末尾のかなチップへ回す。漢字の先頭が 行かなきゃ ならよい
+        // (3604 の misc 登録は外した)
+        XCTAssertEqual(ikanakya.first { $0 != "いかなきゃ" }, "行かなきゃ", "\(ikanakya.prefix(5))")
+        XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "いかなきゃ"))
+        XCTAssertFalse(ikanakya.contains("井かなきゃ"), "\(ikanakya.prefix(8))")
+        XCTAssertFalse(ikanakya.contains("伊かなきゃ"), "\(ikanakya.prefix(8))")
         // 3756: のみたい→飲みたい,呑みたい
         XCTAssertEqual(Array(single("のみたい").prefix(2)), ["飲みたい", "呑みたい"], "\(single("のみたい"))")
         // 3753: よもぎ/よもぎを は seed の順(よもぎ,ヨモギ,蓬,艾,蒿,四方木,蓬生)
