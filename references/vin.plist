@@ -3878,7 +3878,7 @@
 	<dict><key>phrase</key><string>白ワイン&amp;赤ワイン</string><key>shortcut</key><string>しろわいんあかわいん</string></dict>
 	<dict><key>phrase</key><string>白ワイン・発泡性白ワイン</string><key>shortcut</key><string>しろわいんはっぽうせいしろわいん</string></dict>
 	<dict><key>phrase</key><string>白辛口</string><key>shortcut</key><string>しろからくち</string></dict>
-	<dict><key>phrase</key><string>白甘口</string><key>shortcut</key><string>しろまくち</string></dict>
+	<dict><key>phrase</key><string>白甘口</string><key>shortcut</key><string>しろあまくち</string></dict>
 	<dict><key>phrase</key><string>自家消費用</string><key>shortcut</key><string>じかしょうひよう</string></dict>
 	<dict><key>phrase</key><string>葦ワイン</string><key>shortcut</key><string>あしわいん</string></dict>
 	<dict><key>phrase</key><string>藁ワイン</string><key>shortcut</key><string>わらわいん</string></dict>
