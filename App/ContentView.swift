@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20261101001142"
+    private static let editionUpdatedAtRaw: String = "20261101001655"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -235,7 +235,7 @@ struct ContentView: View {
     )
     private var composingTextStyleRawValue: String = ComposingTextStyleOption.ecritu.rawValue
 
-    // E.5 左端のモード切り替え列の割り当て。初期値は builtInDefaultValues と同じ式にする(3242)
+    // E.5 モード切り替えキーの割り当て。初期値は builtInDefaultValues と同じ式にする(3242)
     @AppStorage(
         SettingsKeys.leftModeSwitchNumberKeyRightFlickAction,
         store: Self.sharedDefaults
@@ -749,13 +749,13 @@ struct ContentView: View {
         bool(SettingsKeys.idleCommitEnabled, idleCommitEnabled, "自動確定(アイドル): 入力が止まったら未確定を自動確定")
         num(SettingsKeys.idleCommitInterval, idleCommitInterval, "自動確定(アイドル): 確定までの待ち時間(秒)")
         str(SettingsKeys.composingTextStyle, composingTextStyleRawValue, "未確定の方式")
-        str(SettingsKeys.leftModeSwitchNumberKeyRightFlickAction, leftModeSwitchNumberKeyRightFlickActionRawValue, "左端のモード切り替え列の割り当て: 左端上段[123] 右フリック")
-        str(SettingsKeys.leftModeSwitchLatinKeyRightFlickAction, leftModeSwitchLatinKeyRightFlickActionRawValue, "左端のモード切り替え列の割り当て: 左端中段[abc] 右フリック")
-        str(SettingsKeys.leftModeSwitchKanaKeyRightFlickAction, leftModeSwitchKanaKeyRightFlickActionRawValue, "左端のモード切り替え列の割り当て: 左端下段[あい] 右フリック")
-        str(SettingsKeys.kanaModeSwitcherTapAction, kanaModeSwitcherTapActionRawValue, "左端のモード切り替え列の割り当て: 左端最下段 タップ")
-        str(SettingsKeys.kanaModeSwitcherRightFlickAction, kanaModeSwitcherRightFlickActionRawValue, "左端のモード切り替え列の割り当て: 左端最下段 右フリック")
-        str(SettingsKeys.compactKeyboardSwitchKeyRightFlickAction, compactKeyboardSwitchKeyRightFlickActionRawValue, "左端のモード切り替え列の割り当て: 🌐 キー 右フリック")
-        str(SettingsKeys.compactKeyboardSwitchKeyUpFlickAction, compactKeyboardSwitchKeyUpFlickActionRawValue, "左端のモード切り替え列の割り当て: 🌐 キー 上フリック")
+        str(SettingsKeys.leftModeSwitchNumberKeyRightFlickAction, leftModeSwitchNumberKeyRightFlickActionRawValue, "モード切り替えキーの割り当て: 左端列 上段[123] 右フリック")
+        str(SettingsKeys.leftModeSwitchLatinKeyRightFlickAction, leftModeSwitchLatinKeyRightFlickActionRawValue, "モード切り替えキーの割り当て: 左端列 中段[abc] 右フリック")
+        str(SettingsKeys.leftModeSwitchKanaKeyRightFlickAction, leftModeSwitchKanaKeyRightFlickActionRawValue, "モード切り替えキーの割り当て: 左端列 下段[あい] 右フリック")
+        str(SettingsKeys.kanaModeSwitcherTapAction, kanaModeSwitcherTapActionRawValue, "モード切り替えキーの割り当て: 左端列 最下段 タップ")
+        str(SettingsKeys.kanaModeSwitcherRightFlickAction, kanaModeSwitcherRightFlickActionRawValue, "モード切り替えキーの割り当て: 左端列 最下段 右フリック")
+        str(SettingsKeys.compactKeyboardSwitchKeyRightFlickAction, compactKeyboardSwitchKeyRightFlickActionRawValue, "モード切り替えキーの割り当て: ホームボタンのある機種 🌐 キー 右フリック")
+        str(SettingsKeys.compactKeyboardSwitchKeyUpFlickAction, compactKeyboardSwitchKeyUpFlickActionRawValue, "モード切り替えキーの割り当て: ホームボタンのある機種 🌐 キー 上フリック")
         str(SettingsKeys.kanaPostModifierEmptyTapAction, kanaPostModifierEmptyTapActionRawValue, "修飾キーのタップ (後置修飾、未確定なし)")
         // カテゴリーは内部ID(0/1/shortcut等)ではなく、キーボードのヘッダーに表示されるタイトルで書き出す(YAMLは書き出し専用)
         str(SettingsKeys.kanaPostModifierEmptyTapKaomojiCategory, KaomojiCategoryChoice.displayTitle(forID: kanaPostModifierEmptyTapKaomojiCategoryID), "修飾キーのタップ (後置修飾、未確定なし): 切替時に開くカテゴリー(顔文字)")

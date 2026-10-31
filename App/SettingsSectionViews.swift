@@ -651,8 +651,8 @@ struct KeyboardDiagnosticsSection: View {
 
 #endif
 
-// E.5 左端のモード切り替え列の割り当て(3618 で上 3 段と最下段の右フリックを追加)。
-// 行の名前はキーの位置で呼ぶ(左端上段[123] 等。ユーザ指定)。🌐 キーの 2 行は地球儀を付けて別物と分かるようにする
+// E.5 モード切り替えキーの割り当て(3618 で上 3 段と最下段の右フリックを追加)。
+// 行の名前はキーの位置で呼ぶ(上段[123] 等。ユーザ指定)。🌐 キーの 2 行は地球儀を付けて別物と分かるようにする
 struct KanaModeSwitcherAssignmentSection: View {
     @Binding var numberKeyRightFlickSelection: KanaModeSwitcherActionOption
     @Binding var latinKeyRightFlickSelection: KanaModeSwitcherActionOption
@@ -664,16 +664,19 @@ struct KanaModeSwitcherAssignmentSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SettingsCardHeadline("E.5 左端のモード切り替え列の割り当て")
+            SettingsCardHeadline("E.5 モード切り替えキーの割り当て")
 
+            // 見出しと項目の間に、中間の大きさの小見出し(左端列 / ホームボタンのある機種。ユーザ指定 3629)
+            subheading("左端列")
             VStack(alignment: .leading, spacing: 10) {
-                assignmentRow("左端上段[123] 右フリック", selection: $numberKeyRightFlickSelection)
-                assignmentRow("左端中段[abc] 右フリック", selection: $latinKeyRightFlickSelection)
-                assignmentRow("左端下段[あい] 右フリック", selection: $kanaKeyRightFlickSelection)
+                assignmentRow("上段[123] 右フリック", selection: $numberKeyRightFlickSelection)
+                assignmentRow("中段[abc] 右フリック", selection: $latinKeyRightFlickSelection)
+                assignmentRow("下段[あい] 右フリック", selection: $kanaKeyRightFlickSelection)
                 // 最下段は右フリックを先に(上 3 段と揃える。ユーザ指定 3625)
-                assignmentRow("左端最下段 右フリック", selection: $rightFlickSelection)
-                assignmentRow("左端最下段 タップ", selection: $tapSelection)
+                assignmentRow("最下段 右フリック", selection: $rightFlickSelection)
+                assignmentRow("最下段 タップ", selection: $tapSelection)
             }
+            .padding(.leading, 8)
 
             // ☺︎ は字の大きさでは小さく見えるので、⌘ と釣り合うまで大きくする(ユーザ指定 3626)
             (Text("かな・ラテン文字・数字の各モードの左端の列は、上から[123][abc][あい]と面を切り替えるキー(最下段)です。それぞれを右へフリックしたときに開く面と、最下段をタップしたときに開く面を選びます。最下段のキーには、タップに割り当てた面の字(⌘ / ")
@@ -683,16 +686,25 @@ struct KanaModeSwitcherAssignmentSection: View {
                 .foregroundStyle(.secondary)
 
             // 🌐 キーの 2 行は説明の段落の間に置く(ユーザ指定 3625)
+            subheading("ホームボタンのある機種(iPhone SE など)")
             VStack(alignment: .leading, spacing: 10) {
                 assignmentRow("🌐 キー 右フリック", selection: $compactKeyRightFlickSelection)
                 assignmentRow("🌐 キー 上フリック", selection: $compactKeyUpFlickSelection)
             }
+            .padding(.leading, 8)
 
-            Text("🌐 キーの2行は、ホームボタンのある画面の狭い iPhone で、かなの5×2配列を縦画面で使うときに最下段の代わりに出る 🌐 キーのフリックに効きます(このときパレットは出ません。🌐 キーの長押しで[左端最下段 タップ]の面、下フリックで単漢字の面が開きます)。")
+            Text("🌐 キーの2行は、ホームボタンのある画面の狭い iPhone で、かなの5×2配列を縦画面で使うときに最下段の代わりに出る 🌐 キーのフリックに効きます(このときパレットは出ません。🌐 キーの長押しで[最下段 タップ]の面、下フリックで単漢字の面が開きます)。")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
         .settingsCardStyle()
+    }
+
+    // 見出し(.headline 17pt)と項目名(.subheadline 15pt)の中間の大きさ
+    private func subheading(_ title: String) -> some View {
+        Text(title)
+            .font(.system(size: 16, weight: .semibold))
+            .padding(.top, 2)
     }
 
     private func assignmentRow(

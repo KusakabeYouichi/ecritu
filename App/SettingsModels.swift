@@ -79,7 +79,7 @@ enum SettingsKeys {
     static let idleCommitInterval = "idleCommitInterval"
     // 未確定の方式(3209): écritu(下線) / mountain view(本文に確定文字) / tokushima(キーボード内)
     static let composingTextStyle = "composingTextStyle"
-    // E.5 左端のモード切り替え列の割り当て(3618 で上 3 段の右フリックと最下段の右フリックを追加)。
+    // E.5 モード切り替えキーの割り当て(3618 で上 3 段の右フリックと最下段の右フリックを追加)。
     // 値は KanaModeSwitcherActionOption.rawValue。拡張側の SharedDefaultsKeys と同じ文字列
     static let leftModeSwitchNumberKeyRightFlickAction = "leftModeSwitchNumberKeyRightFlickAction"
     static let leftModeSwitchLatinKeyRightFlickAction = "leftModeSwitchLatinKeyRightFlickAction"
