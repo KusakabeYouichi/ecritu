@@ -23058,6 +23058,25 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(iku.first, "行くのです", "multi=\(iku)")
     }
 
+    // いくらぐらいかかるんですか→いくらぐらい係るんですか(3635、ユーザ報告)。最良経路が かな かかる のとき、漢字の変種が
+    // LM unigram(係る<掛かる)の順になっていた。かかる を seed 順(かな先頭の opt-in)に足し、単文節と同じ 掛かる→罹る→係る に
+    func testRegressionRealLMKakaruVariantsFollowSeedOrderFromKanaLead() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        XCTAssertEqual(KanaKanjiSeedDictionary.seed["かかる"], ["掛かる", "罹る", "係る", "かかる"])
+        let single = converter.candidates(for: "かかる", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(single, ["掛かる", "罹る", "係る", "かかる"], "single=\(single)")
+        for reading in ["いくらぐらいかかるんですか", "かかるんですか"] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            let kanji = multi.filter { $0.contains("掛かる") || $0.contains("係る") }
+            XCTAssertEqual(kanji.first?.contains("掛かる"), true, "\(reading) multi=\(multi)")
+        }
+        let plain = converter.multiClauseCandidates(for: "いくらぐらいかかる", systemCandidateMode: .surface)
+        XCTAssertEqual(plain.first, "いくらぐらい掛かる", "multi=\(plain)")
+        let jikan = converter.multiClauseCandidates(for: "じかんがかかる", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(jikan.prefix(2)), ["時間がかかる", "時間が掛かる"], "multi=\(jikan)")
+    }
+
     // みにおぼえがない→身に覚えがない(3556、ユーザ報告: ミニ覚えがない)。慣用句 身に覚え を misc.plist に curated 登録
     func testRegressionRealLMMiniOboePrefersMiNiOboe() throws {
         try prepareRealLMDictionary()
