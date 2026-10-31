@@ -1404,15 +1404,15 @@ struct ModeSwitchColumnKey: View {
     let rightFlickLabel: String
     // かなのフリックガイドと同じ条件で、右上の隅に行き先の字を小さく出す
     var showsRightFlickHint = false
-    // 長押し(0.4 秒)の割り当て。nil なら押し続けたときにタップと同じ切り替えを行なう(指を離す前に)
+    // 長押し(0.3 秒)の割り当て。nil なら押し続けたときにタップと同じ切り替えを行なう(指を離す前に)
     var onLongPress: (() -> Void)? = nil
     let onTap: () -> Void
     let onRightFlick: () -> Void
 
     // 文字キーと同じ距離(FlickKeyView.directionalFlickThreshold の初期値)。方向は FlickGestureResolver で決める
     static let rightFlickThreshold: CGFloat = 18
-    // ActionKeyButton の LongPressGesture と同じ
-    static let longPressDelay: TimeInterval = 0.4
+    // ActionKeyButton の LongPressGesture(0.4 秒)より少し短く(押し続けての切り替えが遅いとの報告。3624)
+    static let longPressDelay: TimeInterval = 0.3
 
     @State private var isTouching = false
     @State private var isRightFlickActive = false
