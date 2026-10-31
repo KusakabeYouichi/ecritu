@@ -22,6 +22,10 @@ fi
 
 cd "$ROOT_DIR"
 
+# 同梱する語彙のデータに U+FF01〜U+FFEE の文字(いわゆる全角の英数字・記号、いわゆる半角のカタカナ)が無いかを毎ビルドで見て、
+# あれば Xcode の警告にする(3616)
+bash "$ROOT_DIR/tools/check_halfwidth_fullwidth_forms_in_vocab.sh"
+
 TMP_PREMIER="$ROOT_DIR/tmp/ÉcrituPremierVocab.json"
 TMP_SECOND="$ROOT_DIR/tmp/ÉcrituSecondVocab.json"
 TMP_SECOND_COMPACT="$ROOT_DIR/tmp/ÉcrituSecondVocab.eccs"
