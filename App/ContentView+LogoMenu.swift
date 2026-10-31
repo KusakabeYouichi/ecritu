@@ -948,6 +948,32 @@ extension ContentView {
         SettingsSyncNotification.postSettingsDidChange()
     }
 
+    // 🌐 キーの右・上フリックの割り当て(3618)は、3617 まで kanaModeSwitcherRightFlickAction /
+    // kanaModeSwitcherUpFlickAction に入っていた。新しいキーが無い端末には旧キーの保存値を 1 回写す。
+    // 写さないと組み込みの初期値(上=記号)が見え、保守的・現代的(上=絵文字)の端末で ● の印が付く。
+    // 右の旧キーは最下段の右フリックの意味で残るので、そのまま 🌐 の右にも写す
+    func applyCompactKeyboardSwitchKeyAssignmentsForExistingInstallIfNeeded() {
+        guard let defaults = Self.sharedDefaults else {
+            return
+        }
+        var didWrite = false
+        if defaults.object(forKey: SettingsKeys.compactKeyboardSwitchKeyUpFlickAction) == nil,
+            let legacyUp = defaults.string(forKey: SettingsKeys.legacyKanaModeSwitcherUpFlickAction),
+            KanaModeSwitcherActionOption(rawValue: legacyUp) != nil {
+            defaults.set(legacyUp, forKey: SettingsKeys.compactKeyboardSwitchKeyUpFlickAction)
+            didWrite = true
+        }
+        if defaults.object(forKey: SettingsKeys.compactKeyboardSwitchKeyRightFlickAction) == nil,
+            let legacyRight = defaults.string(forKey: SettingsKeys.kanaModeSwitcherRightFlickAction),
+            KanaModeSwitcherActionOption(rawValue: legacyRight) != nil {
+            defaults.set(legacyRight, forKey: SettingsKeys.compactKeyboardSwitchKeyRightFlickAction)
+            didWrite = true
+        }
+        if didWrite {
+            SettingsSyncNotification.postSettingsDidChange()
+        }
+    }
+
     // 『や』キーの括弧の保存値を、括弧そのもの(3656 より前)から名前へ書き換える。
     // 読むほうは両方を受けるが、初期設定との一致判定(灰色・● の印)は保存値の文字列で比べるため揃えておく。
     // 起動時と、退避した設定の復元のあとに呼ぶ

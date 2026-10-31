@@ -855,6 +855,7 @@ extension ContentView {
             applyKakikaeEverydayExceptionDefaultForExistingInstallIfNeeded()
             applyLateStandardizedRewriteDefaultForExistingInstallIfNeeded()
             applyNumeralStyleDefaultForExistingInstallIfNeeded()
+            applyCompactKeyboardSwitchKeyAssignmentsForExistingInstallIfNeeded()
             normalizeLegacyKanaYaBracketValueIfNeeded()
             applyBasePresetDefaultIfNeeded()
             refreshSettingsStashSavedAt()

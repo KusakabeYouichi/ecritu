@@ -453,6 +453,7 @@ final class KeyboardViewController: UIInputViewController {
         // kanaModeSwitcherRightFlickAction / kanaModeSwitcherUpFlickAction がこのキーの割り当てだった
         static let compactKeyboardSwitchKeyRightFlickAction = "compactKeyboardSwitchKeyRightFlickAction"
         static let compactKeyboardSwitchKeyUpFlickAction = "compactKeyboardSwitchKeyUpFlickAction"
+        static let legacyKanaModeSwitcherUpFlickAction = "kanaModeSwitcherUpFlickAction"
         static let kanaPostModifierEmptyTapAction = "kanaPostModifierEmptyTapAction"
         static let kanaPostModifierEmptyTapKaomojiCategory = "kanaPostModifierEmptyTapKaomojiCategory"
         static let kanaPostModifierEmptyTapEmojiCategory = "kanaPostModifierEmptyTapEmojiCategory"

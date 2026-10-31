@@ -90,6 +90,8 @@ enum SettingsKeys {
     // kanaModeSwitcherRightFlickAction / kanaModeSwitcherUpFlickAction がこのキーの割り当てだった
     static let compactKeyboardSwitchKeyRightFlickAction = "compactKeyboardSwitchKeyRightFlickAction"
     static let compactKeyboardSwitchKeyUpFlickAction = "compactKeyboardSwitchKeyUpFlickAction"
+    // 3617 までの 🌐 キーの上フリックの保存値。新しいキーへ 1 回写すためだけに読む(書かない)
+    static let legacyKanaModeSwitcherUpFlickAction = "kanaModeSwitcherUpFlickAction"
     static let kanaPostModifierEmptyTapAction = "kanaPostModifierEmptyTapAction"
     static let kanaPostModifierEmptyTapKaomojiCategory = "kanaPostModifierEmptyTapKaomojiCategory"
     static let kanaPostModifierEmptyTapEmojiCategory = "kanaPostModifierEmptyTapEmojiCategory"

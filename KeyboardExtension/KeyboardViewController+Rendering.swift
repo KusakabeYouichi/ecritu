@@ -284,15 +284,21 @@ extension KeyboardViewController {
             key: SharedDefaultsKeys.kanaModeSwitcherRightFlickAction,
             fallback: "kaomoji"
         )
+        // 🌐 キーの右・上は、新しいキーが無ければ 3617 までの保存値(右=kanaModeSwitcherRightFlickAction、
+        // 上=旧 kanaModeSwitcherUpFlickAction)を読む。コンテナーアプリが起動すれば新しいキーへ写される
         let compactKeyboardSwitchKeyRightFlickActionRawValue = sharedStringValue(
             from: sharedDefaults,
             key: SharedDefaultsKeys.compactKeyboardSwitchKeyRightFlickAction,
-            fallback: "kaomoji"
+            fallback: kanaModeSwitcherRightFlickActionRawValue
         )
         let compactKeyboardSwitchKeyUpFlickActionRawValue = sharedStringValue(
             from: sharedDefaults,
             key: SharedDefaultsKeys.compactKeyboardSwitchKeyUpFlickAction,
-            fallback: "symbols"
+            fallback: sharedStringValue(
+                from: sharedDefaults,
+                key: SharedDefaultsKeys.legacyKanaModeSwitcherUpFlickAction,
+                fallback: "symbols"
+            )
         )
         let kanaPostModifierEmptyTapActionRawValue = sharedStringValue(
             from: sharedDefaults,
