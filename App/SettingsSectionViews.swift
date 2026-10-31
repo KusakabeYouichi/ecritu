@@ -651,49 +651,52 @@ struct KeyboardDiagnosticsSection: View {
 
 #endif
 
+// E.5 左端のモード切り替え列の割り当て(3618 で上 3 段と最下段の右フリックを追加)。
+// 行の名前はキーの位置で呼ぶ(左端上段[123] 等。ユーザ指定)。🌐 キーの 2 行は地球儀を付けて別物と分かるようにする
 struct KanaModeSwitcherAssignmentSection: View {
+    @Binding var numberKeyRightFlickSelection: KanaModeSwitcherActionOption
+    @Binding var latinKeyRightFlickSelection: KanaModeSwitcherActionOption
+    @Binding var kanaKeyRightFlickSelection: KanaModeSwitcherActionOption
     @Binding var tapSelection: KanaModeSwitcherActionOption
     @Binding var rightFlickSelection: KanaModeSwitcherActionOption
-    @Binding var upFlickSelection: KanaModeSwitcherActionOption
+    @Binding var compactKeyRightFlickSelection: KanaModeSwitcherActionOption
+    @Binding var compactKeyUpFlickSelection: KanaModeSwitcherActionOption
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SettingsCardHeadline("E.5 かな左下キー割り当て")
+            SettingsCardHeadline("E.5 左端のモード切り替え列の割り当て")
 
             VStack(alignment: .leading, spacing: 10) {
-                Text("タップ")
-                    .font(.subheadline.weight(.semibold))
-                Picker("タップ", selection: $tapSelection) {
-                    ForEach(KanaModeSwitcherActionOption.allCases) { option in
-                        Text("\(option.title) (\(option.keyLabel))").tag(option)
-                    }
-                }
-                .pickerStyle(.segmented)
-
-                Text("右フリック")
-                    .font(.subheadline.weight(.semibold))
-                Picker("右フリック", selection: $rightFlickSelection) {
-                    ForEach(KanaModeSwitcherActionOption.allCases) { option in
-                        Text("\(option.title) (\(option.keyLabel))").tag(option)
-                    }
-                }
-                .pickerStyle(.segmented)
-
-                Text("上フリック")
-                    .font(.subheadline.weight(.semibold))
-                Picker("上フリック", selection: $upFlickSelection) {
-                    ForEach(KanaModeSwitcherActionOption.allCases) { option in
-                        Text("\(option.title) (\(option.keyLabel))").tag(option)
-                    }
-                }
-                .pickerStyle(.segmented)
+                assignmentRow("左端上段[123] 右フリック", selection: $numberKeyRightFlickSelection)
+                assignmentRow("左端中段[abc] 右フリック", selection: $latinKeyRightFlickSelection)
+                assignmentRow("左端下段[あい] 右フリック", selection: $kanaKeyRightFlickSelection)
+                assignmentRow("左端最下段 タップ", selection: $tapSelection)
+                assignmentRow("左端最下段 右フリック", selection: $rightFlickSelection)
+                assignmentRow("🌐 キー 右フリック", selection: $compactKeyRightFlickSelection)
+                assignmentRow("🌐 キー 上フリック", selection: $compactKeyUpFlickSelection)
             }
 
-            Text("[タップ]は、かな入力モード左下キーをタップしたときに開く面です。左下キーのフリックは使えません。ほかの面へは、左下キーを長押しして出るパレットから移ります。[右フリック]と[上フリック]は、ホームボタンのある画面の狭い iPhone で、かなの5×2配列を縦画面で使うときに左下キーの代わりに出る 🌐 キーのフリックに効きます(このときパレットは出ません。🌐 キーの長押しで[タップ]の面、下フリックで単漢字の面が開きます)。同じ機能を複数に割り当てることもできます。")
+            Text("かな入力モードの左端の列は、上から[123][abc][あい]と面を切り替えるキー(最下段)です。それぞれを右へフリックしたときに開く面と、最下段をタップしたときに開く面を選びます。最下段のキーには、タップに割り当てた面の字(⌘ / ☺︎ / ^_^ / 熙 / 1,000)が出ます。最下段を押したままにすると[面選択のパレット]が出て、ほかの面へも移れます。同じ面を複数に割り当てることもできます。\n🌐 キーの2行は、ホームボタンのある画面の狭い iPhone で、かなの5×2配列を縦画面で使うときに最下段の代わりに出る 🌐 キーのフリックに効きます(このときパレットは出ません。🌐 キーの長押しで[左端最下段 タップ]の面、下フリックで単漢字の面が開きます)。")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
         .settingsCardStyle()
+    }
+
+    private func assignmentRow(
+        _ title: String,
+        selection: Binding<KanaModeSwitcherActionOption>
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title)
+                .font(.subheadline.weight(.semibold))
+            Picker(title, selection: selection) {
+                ForEach(KanaModeSwitcherActionOption.allCases) { option in
+                    Text(option.title).tag(option)
+                }
+            }
+            .pickerStyle(.segmented)
+        }
     }
 }
 

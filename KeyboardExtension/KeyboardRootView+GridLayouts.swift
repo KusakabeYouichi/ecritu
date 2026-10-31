@@ -27,24 +27,35 @@ extension KeyboardRootView {
         )
     }
 
+    // 左端上段[123]・中段[abc]・下段[あい]。タップで面を切り替え、右フリックで設定 E.5 の面を開く(3618)
     func leftModeSwitchNumberButton(height: CGFloat) -> some View {
-        ActionKeyButton(
+        ModeSwitchColumnKey(
             title: "123",
             fontSize: leftModeSwitchNumberFontSize,
-            isEnabled: inputMode != .number,
-            action: { switchInputMode(.number) }
+            isTapEnabled: inputMode != .number,
+            rightFlickLabel: leftModeSwitchNumberKeyRightFlickAction.keyLabel,
+            showsRightFlickHint: showsFlickGuideCharacters,
+            onTap: { switchInputMode(.number) },
+            onRightFlick: {
+                selectLeftModeSwitchKeyRightFlick(leftModeSwitchNumberKeyRightFlickAction, keyTitle: "123")
+            }
         )
             .frame(width: leftModeSwitchButtonWidth, height: height)
     }
 
     func leftModeSwitchLatinButton(height: CGFloat) -> some View {
         ZStack {
-            ActionKeyButton(
+            ModeSwitchColumnKey(
                 title: "abc",
                 fontSize: leftModeSwitchLatinFontSize,
-                isEnabled: inputMode != .latin,
+                isTapEnabled: inputMode != .latin,
+                rightFlickLabel: leftModeSwitchLatinKeyRightFlickAction.keyLabel,
+                showsRightFlickHint: showsFlickGuideCharacters,
                 onLongPress: handleLatinModeSwitchLongPress,
-                action: handleLatinModeSwitchTap
+                onTap: handleLatinModeSwitchTap,
+                onRightFlick: {
+                    selectLeftModeSwitchKeyRightFlick(leftModeSwitchLatinKeyRightFlickAction, keyTitle: "abc")
+                }
             )
 
             if inputMode == .latin,
@@ -59,11 +70,16 @@ extension KeyboardRootView {
     }
 
     func leftModeSwitchKanaButton(height: CGFloat, fontSize: CGFloat) -> some View {
-        ActionKeyButton(
+        ModeSwitchColumnKey(
             title: kanaModeSwitchButtonTitle,
             fontSize: fontSize,
-            isEnabled: inputMode != .kana,
-            action: { switchInputMode(.kana) }
+            isTapEnabled: inputMode != .kana,
+            rightFlickLabel: leftModeSwitchKanaKeyRightFlickAction.keyLabel,
+            showsRightFlickHint: showsFlickGuideCharacters,
+            onTap: { switchInputMode(.kana) },
+            onRightFlick: {
+                selectLeftModeSwitchKeyRightFlick(leftModeSwitchKanaKeyRightFlickAction, keyTitle: "あい")
+            }
         )
             .frame(width: leftModeSwitchButtonWidth, height: height)
     }
@@ -106,8 +122,9 @@ extension KeyboardRootView {
             if isKanaFiveByTwoMode {
                 FlickKeyView(
                     kana: kanaModeSwitcherKana,
-                    // 方向は渡さない(フリックはパレットが先取りする。届いてもタップ扱い)
+                    // タップ(.milieu)と右フリック(.droite)は設定 E.5 の面。面選択のパレットは長押しで出る(3618)
                     onCommit: selectKanaModeSwitcher,
+                    onCommitWithDirection: selectKanaModeSwitcher(_:direction:),
                     mainLabelFontSize: kanaModeSwitcherMainLabelFontSize,
                     showsDirectionalHints: showsFlickGuideCharacters,
                     showsGuideText: false,
@@ -115,7 +132,6 @@ extension KeyboardRootView {
                     longPressCandidateAxis: .vertical,
                     longPressCandidateCellWidth: 116,
                     longPressCandidateColumnCount: modePaletteColumnCount,
-                    longPressDelayOverride: 0,
                     activePreviewFontSize: kanaModeSwitcherPreviewFontSize,
                     activeMainLabelFontSizeProvider: { direction, mainText in
                         kanaModeSwitcherMainLabelFontSizeForDirection(
@@ -174,8 +190,9 @@ extension KeyboardRootView {
 
             FlickKeyView(
                 kana: kanaModeSwitcherKana,
-                // 方向は渡さない(フリックはパレットが先取りする。届いてもタップ扱い)
+                // タップ(.milieu)と右フリック(.droite)は設定 E.5 の面。面選択のパレットは長押しで出る(3618)
                 onCommit: selectKanaModeSwitcher,
+                onCommitWithDirection: selectKanaModeSwitcher(_:direction:),
                 mainLabelFontSize: kanaModeSwitcherMainLabelFontSize,
                 showsDirectionalHints: showsFlickGuideCharacters,
                 showsGuideText: false,
@@ -183,7 +200,6 @@ extension KeyboardRootView {
                 longPressCandidateAxis: .vertical,
                 longPressCandidateCellWidth: 116,
                 longPressCandidateColumnCount: modePaletteColumnCount,
-                longPressDelayOverride: 0,
                 activePreviewFontSize: kanaModeSwitcherPreviewFontSize,
                 activeMainLabelFontSizeProvider: { direction, mainText in
                     kanaModeSwitcherMainLabelFontSizeForDirection(

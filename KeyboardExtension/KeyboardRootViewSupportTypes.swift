@@ -511,11 +511,16 @@ extension KeyboardRootView {
         ]
     }
 
-    enum KanaModeSwitcherAction: String {
+    // 面を切り替えるキーに割り当てられる行き先(設定 E.5)。値はコンテナーアプリの KanaModeSwitcherActionOption と同じ。
+    // 単漢字・書式化は 3618 で追加(左端列の右フリックに割り当てられるようにした)
+    enum KanaModeSwitcherAction: String, CaseIterable {
         case emoji
         case kaomoji
         case symbols
+        case kanjiRadical
+        case formattedNumber
 
+        // キーに出す字(面選択のパレットのアイコンと同じ字。LongPressVerticalCandidatePanel.iconByLabel)
         var keyLabel: String {
             switch self {
             case .emoji:
@@ -524,7 +529,19 @@ extension KeyboardRootView {
                 return "^_^"
             case .symbols:
                 return "⌘"
+            case .kanjiRadical:
+                return "熙"
+            case .formattedNumber:
+                return "1,000"
             }
+        }
+
+        // キーに出ている字から逆引きする(押している間の字の大きさを決めるとき)
+        init?(keyLabel: String) {
+            guard let action = Self.allCases.first(where: { $0.keyLabel == keyLabel }) else {
+                return nil
+            }
+            self = action
         }
     }
 

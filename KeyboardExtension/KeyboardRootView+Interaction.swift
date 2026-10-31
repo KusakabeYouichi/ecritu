@@ -245,13 +245,18 @@ extension KeyboardRootView {
     }
 
     // キー部品の onCommit の型に合わせて出力文字列を受ける。切替キーは通常ラベル文字を出力しないが、
-    // パレットから決めたときだけ選んだ面のラベルが渡る。方向は受けない(左下のキーのフリックは
-    // パレットに先取りされて届かないので、届いてもタップ扱い。3174 以降)
+    // パレットから決めたときだけ選んだ面のラベルが渡る
     func selectKanaModeSwitcher(_ text: String) {
+        selectKanaModeSwitcher(text, direction: .milieu)
+    }
+
+    // 左端最下段のキーのタップ(.milieu)と右フリック(.droite。3618 で復活)。パレットから決めたときは
+    // text に面のラベルが渡るので先に見る
+    func selectKanaModeSwitcher(_ text: String, direction: FlickDirection) {
         if selectModePalette(text) {
             return
         }
-        selectKanaModeSwitcher(direction: .milieu)
+        selectKanaModeSwitcher(direction: direction)
     }
 
     func selectCompactKeyboardSwitchKey(_: String) {
@@ -267,14 +272,51 @@ extension KeyboardRootView {
         case .advanceKeyboard:
             onAdvanceKeyboard()
         case .switchPanel:
-            selectKanaModeSwitcher(direction: direction)
+            selectCompactKeyboardSwitchPanel(direction: direction)
         case .ignore:
             return
         }
     }
 
     func handleCompactKeyboardSwitchLongPress() {
-        selectKanaModeSwitcher(direction: .milieu, triggerLabel: "左下キー長押し(コンパクト)")
+        selectCompactKeyboardSwitchPanel(direction: .milieu, triggerLabel: "🌐 キー長押し")
+    }
+
+    // 🌐 キーの長押し(.milieu=最下段のタップの割り当て)・右・上(🌐 キー用の割り当て)・下(単漢字固定)
+    private func selectCompactKeyboardSwitchPanel(direction: FlickDirection, triggerLabel: String? = nil) {
+        guard !rejectsModeSwitchForShortTouch(direction: direction) else {
+            return
+        }
+        guard let target = KeyboardPanelRouting.panelTarget(
+            forModeSwitchDirection: direction,
+            tapAction: kanaModeSwitcherTapAction,
+            rightAction: compactKeyboardSwitchKeyRightFlickAction,
+            upAction: compactKeyboardSwitchKeyUpFlickAction
+        ) else {
+            return
+        }
+        openModeSwitcherPanel(target, triggerLabel: triggerLabel ?? "🌐 キー \(direction)")
+    }
+
+    // 左端上段[123]・中段[abc]・下段[あい] の右フリック(3618)。割り当ては設定 E.5
+    func selectLeftModeSwitchKeyRightFlick(_ action: KanaModeSwitcherAction, keyTitle: String) {
+        openModeSwitcherPanel(
+            KeyboardPanelRouting.panelTarget(for: action),
+            triggerLabel: "左端列[\(keyTitle)] 右フリック"
+        )
+    }
+
+    // 割り当てで決まった面を開く。書式化数値はバッファーも空にするのでビューから入り、ほかは inputState へ
+    private func openModeSwitcherPanel(_ target: KeyboardPanelTarget, triggerLabel: String) {
+        // 調査用ログ(記号面切替 2838): どの操作で面が変わったかを記録。原因判明後に外す
+        #if DEBUG
+        inputModeChangeTrigger = triggerLabel
+        #endif
+        if target == .formattedNumber {
+            enterFormattedNumberMode()
+        } else {
+            inputState.enterPanel(target)
+        }
     }
 
     /// 面の切り替えを「短すぎる接触」として無視するか(定数コメント参照。2938)。
@@ -286,30 +328,38 @@ extension KeyboardRootView {
         return commitDurationMs < kanaModeSwitcherMinimumTouchDurationMs
     }
 
-    func selectKanaModeSwitcher(direction: FlickDirection, triggerLabel: String? = nil) {
-        // 短すぎる接触では面を切り替えない(2938、ユーザ報告: 机に置いた衝撃で部首入力面になった)。
-        // 実測の誤発火は接触 58ms・開始位置がキーの外(-6,44)・移動量 41pt の下フリック。人のタップは
-        // 概ね 80〜150ms なので、面の切り替えという戻しにくい操作にだけ下限を設ける。
-        // 文字入力のキーは対象外(この分岐を通らない)。測れなかったとき(nil)は通す。
-        // 却下は診断へ残すので、実使用で弾かれるようなら閾値を下げるか撤去する
-        if Self.shouldIgnoreModeSwitchForShortTouch(
+    // 短すぎる接触では面を切り替えない(2938、ユーザ報告: 机に置いた衝撃で部首入力面になった)。
+    // 実測の誤発火は接触 58ms・開始位置がキーの外(-6,44)・移動量 41pt の下フリック。人のタップは
+    // 概ね 80〜150ms なので、面の切り替えという戻しにくい操作にだけ下限を設ける。
+    // 文字入力のキーは対象外(この分岐を通らない)。測れなかったとき(nil)は通す。
+    // 却下は診断へ残すので、実使用で弾かれるようなら閾値を下げるか撤去する
+    private func rejectsModeSwitchForShortTouch(direction: FlickDirection) -> Bool {
+        guard Self.shouldIgnoreModeSwitchForShortTouch(
             commitDurationMs: KeyboardStuckTouchDiagnostics.lastCommitDurationMs
-        ) {
-            let durationMs = KeyboardStuckTouchDiagnostics.lastCommitDurationMs ?? -1
-            KeyboardStuckTouchDiagnostics.onTouchForensics?(
-                "面切替を却下(接触が短すぎ) dir=\(direction) durMs=\(durationMs)"
-                    + " 下限=\(Self.kanaModeSwitcherMinimumTouchDurationMs)ms"
-            )
+        ) else {
+            return false
+        }
+        let durationMs = KeyboardStuckTouchDiagnostics.lastCommitDurationMs ?? -1
+        KeyboardStuckTouchDiagnostics.onTouchForensics?(
+            "面切替を却下(接触が短すぎ) dir=\(direction) durMs=\(durationMs)"
+                + " 下限=\(Self.kanaModeSwitcherMinimumTouchDurationMs)ms"
+        )
+        return true
+    }
+
+    // 左端最下段のキーのタップ(.milieu)と右フリック(.droite)。割り当ては設定 E.5、上・下・左は何もしない
+    func selectKanaModeSwitcher(direction: FlickDirection, triggerLabel: String? = nil) {
+        guard !rejectsModeSwitchForShortTouch(direction: direction) else {
             return
         }
-        // 割り当て(下=単漢字固定、タップ/右/上=設定)と引き金の記録は inputState が行なう
-        inputState.selectModeSwitcherPanel(
-            direction: direction,
-            triggerLabel: triggerLabel,
+        guard let target = KeyboardPanelRouting.panelTarget(
+            forModeSwitcherKeyDirection: direction,
             tapAction: kanaModeSwitcherTapAction,
-            rightAction: kanaModeSwitcherRightFlickAction,
-            upAction: kanaModeSwitcherUpFlickAction
-        )
+            rightFlickAction: kanaModeSwitcherRightFlickAction
+        ) else {
+            return
+        }
+        openModeSwitcherPanel(target, triggerLabel: triggerLabel ?? "左下キー \(direction)")
     }
 
     // 単漢字・顔文字の面へはパレットと左下キーから inputState 経由で入る。ビュー側の取り次ぎは

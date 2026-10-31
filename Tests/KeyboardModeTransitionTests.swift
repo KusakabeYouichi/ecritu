@@ -1304,6 +1304,55 @@ final class KeyboardPanelRoutingTests: XCTestCase {
         )
     }
 
+    // MARK: 割り当て→面(3618)
+
+    func testEveryAssignmentOpensItsPanel() {
+        XCTAssertEqual(KeyboardPanelRouting.panelTarget(for: .symbols), .symbols)
+        XCTAssertEqual(KeyboardPanelRouting.panelTarget(for: .emoji), .emoji)
+        XCTAssertEqual(KeyboardPanelRouting.panelTarget(for: .kaomoji), .kaomoji)
+        XCTAssertEqual(KeyboardPanelRouting.panelTarget(for: .kanjiRadical), .kanjiRadical)
+        XCTAssertEqual(KeyboardPanelRouting.panelTarget(for: .formattedNumber), .formattedNumber)
+    }
+
+    // 割り当ての字は面選択のパレットのアイコンと同じ字。字から割り当てを引き戻せる(押している間の字の大きさに使う)
+    func testAssignmentKeyLabelsMatchPaletteIconsAndRoundTrip() {
+        for action in KeyboardRootView.KanaModeSwitcherAction.allCases {
+            XCTAssertNotNil(LongPressVerticalCandidatePanel.iconByText[action.keyLabel], "\(action) の字がパレットのアイコンに無い")
+            XCTAssertEqual(KeyboardRootView.KanaModeSwitcherAction(keyLabel: action.keyLabel), action)
+        }
+        XCTAssertNil(KeyboardRootView.KanaModeSwitcherAction(keyLabel: "🌐"))
+        XCTAssertNil(KeyboardRootView.KanaModeSwitcherAction(keyLabel: ""))
+    }
+
+    // MARK: 左端最下段のキー(タップ/右フリック)
+
+    func testModeSwitcherKeyTapAndRightFlickFollowTheirAssignments() {
+        XCTAssertEqual(
+            KeyboardPanelRouting.panelTarget(forModeSwitcherKeyDirection: .milieu, tapAction: .emoji, rightFlickAction: .kaomoji),
+            .emoji
+        )
+        XCTAssertEqual(
+            KeyboardPanelRouting.panelTarget(forModeSwitcherKeyDirection: .droite, tapAction: .emoji, rightFlickAction: .kaomoji),
+            .kaomoji
+        )
+        XCTAssertEqual(
+            KeyboardPanelRouting.panelTarget(forModeSwitcherKeyDirection: .droite, tapAction: .emoji, rightFlickAction: .formattedNumber),
+            .formattedNumber
+        )
+    }
+
+    // 🌐 キーの右・上に単漢字・書式化を割り当てても経路が通る
+    func testGlobeKeyAcceptsNewAssignments() {
+        XCTAssertEqual(
+            KeyboardPanelRouting.panelTarget(forModeSwitchDirection: .droite, tapAction: .emoji, rightAction: .formattedNumber, upAction: .kanjiRadical),
+            .formattedNumber
+        )
+        XCTAssertEqual(
+            KeyboardPanelRouting.panelTarget(forModeSwitchDirection: .haut, tapAction: .emoji, rightAction: .formattedNumber, upAction: .kanjiRadical),
+            .kanjiRadical
+        )
+    }
+
     // MARK: コンパクト配列の左下キー
 
     func testCompactSwitchKeyTapAdvancesKeyboardAndFlicksSwitchPanel() {
@@ -1362,33 +1411,36 @@ final class KeyboardPanelRoutingTests: XCTestCase {
         XCTAssertTrue(state.returnToKanaAfterNextCommit)
     }
 
-    func testModeSwitcherDownFlickOpensRadicalPickerRegardlessOfAssignment() {
+    // 🌐 キーの下フリックは割り当てに関わらず単漢字。経路(純関数)の結果を面の状態まで通す
+    func testGlobeKeyDownFlickOpensRadicalPickerRegardlessOfAssignment() {
         let state = KeyboardInputState()
-
-        state.selectModeSwitcherPanel(
-            direction: .bas,
-            triggerLabel: nil,
+        let target = KeyboardPanelRouting.panelTarget(
+            forModeSwitchDirection: .bas,
             tapAction: .symbols,
             rightAction: .symbols,
             upAction: .symbols
         )
+
+        XCTAssertEqual(target, .kanjiRadical)
+        state.enterPanel(target!)
 
         XCTAssertEqual(state.inputMode, .emoji)
         XCTAssertEqual(state.emojiInputSubmode, .kanjiRadical)
     }
 
-    func testModeSwitcherLeftFlickLeavesKana() {
-        let state = KeyboardInputState()
-
-        state.selectModeSwitcherPanel(
-            direction: .gauche,
-            triggerLabel: nil,
-            tapAction: .symbols,
-            rightAction: .symbols,
-            upAction: .symbols
-        )
-
-        XCTAssertEqual(state.inputMode, .kana)
+    // 左端最下段のキーの割り当ては タップと右フリックだけ(左・上・下は nil。キーは字の無い方向を
+    // タップに畳むので、ビューからこれらの方向は届かない)
+    func testModeSwitcherKeyOtherDirectionsHaveNoAssignment() {
+        for direction in [FlickDirection.gauche, .haut, .bas] {
+            XCTAssertNil(
+                KeyboardPanelRouting.panelTarget(
+                    forModeSwitcherKeyDirection: direction,
+                    tapAction: .symbols,
+                    rightFlickAction: .kaomoji
+                ),
+                "\(direction)"
+            )
+        }
     }
 
     // MARK: 修飾キーの空タップ
@@ -1479,43 +1531,64 @@ final class KeyboardPanelRoutingTests: XCTestCase {
 // 3 方向を別々の値にして、取り違えを検出できるようにする(初期値に頼らない)
 @MainActor
 final class KanaModeSwitcherGuideTests: XCTestCase {
-    func testLeftKeyShowsOnlyTapAssignmentWithoutFlickGuides() {
-        let view = makeRootView(tap: "symbols", right: "kaomoji", up: "emoji")
+    // 左端最下段のキー: 中央=タップの面、右=右フリックの面(3618 で復活)。上・下・左は無し(パレットは長押し)
+    func testLeftKeyShowsTapAndRightFlickAssignments() {
+        let view = makeRootView(tap: "symbols", right: "kaomoji")
 
         let kana = view.kanaModeSwitcherKana
 
         XCTAssertEqual(kana.label, "⌘")
         XCTAssertEqual(kana.center, "⌘")
         XCTAssertEqual(kana.up, "")
-        XCTAssertEqual(kana.right, "")
+        XCTAssertEqual(kana.right, "^_^")
         XCTAssertEqual(kana.down, "")
         XCTAssertEqual(kana.left, "")
     }
 
-    func testGlobeKeyKeepsFlickAssignments() {
-        let view = makeRootView(tap: "symbols", right: "kaomoji", up: "emoji")
+    // 🌐 キーの右・上は 🌐 キー用の割り当て(最下段の右フリックとは別)
+    func testGlobeKeyUsesItsOwnFlickAssignments() {
+        let view = makeRootView(tap: "symbols", right: "kaomoji", compactRight: "formattedNumber", compactUp: "emoji")
 
         let kana = view.compactKeyboardSwitchKana
 
         XCTAssertEqual(kana.center, "🌐")
         XCTAssertEqual(kana.up, "☺︎")
-        XCTAssertEqual(kana.right, "^_^")
+        XCTAssertEqual(kana.right, "1,000")
         XCTAssertEqual(kana.down, "熙")
+        XCTAssertEqual(view.kanaModeSwitcherKana.right, "^_^")
     }
 
-    // 左下のキーのフリックの経路(onCommitWithDirection を渡さない)はビューの配線なので単体では見られない。実機で確かめる
-    func testSwappedAssignmentsFollowOnGlobeKeyAndStayHiddenOnLeftKey() {
-        let view = makeRootView(tap: "emoji", right: "symbols", up: "kaomoji")
+    func testNewTargetsShowTheirPaletteIconsOnTheLeftKey() {
+        let view = makeRootView(tap: "kanjiRadical", right: "formattedNumber")
 
-        XCTAssertEqual(view.kanaModeSwitcherKana.center, "☺︎")
-        XCTAssertEqual(view.kanaModeSwitcherKana.up, "")
-        XCTAssertEqual(view.kanaModeSwitcherKana.right, "")
-        XCTAssertEqual(view.compactKeyboardSwitchKana.up, "^_^")
-        XCTAssertEqual(view.compactKeyboardSwitchKana.right, "⌘")
-        XCTAssertEqual(view.compactKeyboardSwitchKana.down, "熙")
+        XCTAssertEqual(view.kanaModeSwitcherKana.center, "熙")
+        XCTAssertEqual(view.kanaModeSwitcherKana.right, "1,000")
     }
 
-    private func makeRootView(tap: String, right: String, up: String) -> KeyboardRootView {
+    // 上 3 段の右フリックの割り当て。読めない値は組み込みの初期値(書式化/絵文字/単漢字)に倒す
+    func testUpperKeysRightFlickAssignmentsAndFallbacks() {
+        let view = makeRootView(numberKeyRight: "symbols", latinKeyRight: "kaomoji", kanaKeyRight: "emoji")
+
+        XCTAssertEqual(view.leftModeSwitchNumberKeyRightFlickAction, .symbols)
+        XCTAssertEqual(view.leftModeSwitchLatinKeyRightFlickAction, .kaomoji)
+        XCTAssertEqual(view.leftModeSwitchKanaKeyRightFlickAction, .emoji)
+
+        let fallback = makeRootView(numberKeyRight: "", latinKeyRight: "x", kanaKeyRight: "radical")
+
+        XCTAssertEqual(fallback.leftModeSwitchNumberKeyRightFlickAction, .formattedNumber)
+        XCTAssertEqual(fallback.leftModeSwitchLatinKeyRightFlickAction, .emoji)
+        XCTAssertEqual(fallback.leftModeSwitchKanaKeyRightFlickAction, .kanjiRadical)
+    }
+
+    private func makeRootView(
+        numberKeyRight: String = "formattedNumber",
+        latinKeyRight: String = "emoji",
+        kanaKeyRight: String = "kanjiRadical",
+        tap: String = "emoji",
+        right: String = "kaomoji",
+        compactRight: String = "kaomoji",
+        compactUp: String = "symbols"
+    ) -> KeyboardRootView {
         KeyboardRootView(
             onTextInput: { _ in },
             onDeleteBackward: {},
@@ -1554,9 +1627,13 @@ final class KanaModeSwitcherGuideTests: XCTestCase {
             modifierFlickGuideDisplayMode: .off,
             keyRepeatInitialDelay: 0.5,
             keyRepeatInterval: 0.1,
+            leftModeSwitchNumberKeyRightFlickActionRawValue: numberKeyRight,
+            leftModeSwitchLatinKeyRightFlickActionRawValue: latinKeyRight,
+            leftModeSwitchKanaKeyRightFlickActionRawValue: kanaKeyRight,
             kanaModeSwitcherTapActionRawValue: tap,
             kanaModeSwitcherRightFlickActionRawValue: right,
-            kanaModeSwitcherUpFlickActionRawValue: up,
+            compactKeyboardSwitchKeyRightFlickActionRawValue: compactRight,
+            compactKeyboardSwitchKeyUpFlickActionRawValue: compactUp,
             kanaPostModifierEmptyTapActionRawValue: "kaomoji",
             kanaPostModifierEmptyTapKaomojiCategoryID: "existing",
             kanaPostModifierEmptyTapEmojiCategoryID: "0",
@@ -1698,5 +1775,70 @@ final class LongPressHorizontalCandidateLeaveAnchorTests: XCTestCase {
 
     func testHalfSlotSidewaysLeavesAnchor() {
         XCTAssertTrue(LongPressHorizontalCandidateHitTest.hasLeftAnchor(deltaX: -18.5, localY: 20, slotWidth: 37))
+    }
+}
+
+// 左端上段[123]・中段[abc]・下段[あい] のキー(ModeSwitchColumnKey)の離したときの判定(3618)
+final class ModeSwitchColumnKeyReleaseTests: XCTestCase {
+    private let keySize = CGSize(width: 32, height: 47)
+
+    private func outcome(
+        translation: CGSize,
+        location: CGPoint = CGPoint(x: 16, y: 23),
+        heldMs: Int? = 120,
+        didTriggerLongPress: Bool = false,
+        isTapEnabled: Bool = true
+    ) -> ModeSwitchColumnKey.ReleaseOutcome {
+        ModeSwitchColumnKey.releaseOutcome(
+            translation: translation,
+            location: location,
+            keySize: keySize,
+            heldMs: heldMs,
+            didTriggerLongPress: didTriggerLongPress,
+            isTapEnabled: isTapEnabled
+        )
+    }
+
+    func testStillFingerIsATap() {
+        XCTAssertEqual(outcome(translation: .zero), .tap)
+        // 文字キーの閾値(18pt)の手前の揺れはタップ
+        XCTAssertEqual(outcome(translation: CGSize(width: 10, height: -8)), .tap)
+    }
+
+    func testRightMovementBeyondThresholdIsARightFlick() {
+        XCTAssertEqual(outcome(translation: CGSize(width: 24, height: 2), location: CGPoint(x: 40, y: 25)), .rightFlick)
+        // 今いる面のキー(タップ無効)でも右フリックは効く
+        XCTAssertEqual(
+            outcome(translation: CGSize(width: 30, height: 0), location: CGPoint(x: 46, y: 23), isTapEnabled: false),
+            .rightFlick
+        )
+    }
+
+    // 面の切り替えは短すぎる接触では行なわない(左下のキーと同じ下限 70ms)。測れなかったときは通す
+    func testTooShortRightFlickIsIgnored() {
+        XCTAssertEqual(outcome(translation: CGSize(width: 30, height: 0), heldMs: 40), .nothing)
+        XCTAssertEqual(outcome(translation: CGSize(width: 30, height: 0), heldMs: 70), .rightFlick)
+        XCTAssertEqual(outcome(translation: CGSize(width: 30, height: 0), heldMs: nil), .rightFlick)
+    }
+
+    func testDisabledTapDoesNothing() {
+        XCTAssertEqual(outcome(translation: .zero, isTapEnabled: false), .nothing)
+    }
+
+    func testLongPressConsumesTheRelease() {
+        XCTAssertEqual(outcome(translation: .zero, didTriggerLongPress: true), .nothing)
+        XCTAssertEqual(outcome(translation: CGSize(width: 30, height: 0), didTriggerLongPress: true), .nothing)
+    }
+
+    // ほかの方向へ動かして離したとき: 指がキーの中ならタップ(Button と同じ)、外なら何もしない
+    func testOtherDirectionsTapOnlyWhenReleasedInsideTheKey() {
+        XCTAssertEqual(outcome(translation: CGSize(width: 0, height: 20), location: CGPoint(x: 16, y: 43)), .tap)
+        XCTAssertEqual(outcome(translation: CGSize(width: 0, height: 40), location: CGPoint(x: 16, y: 63)), .nothing)
+        XCTAssertEqual(outcome(translation: CGSize(width: -40, height: 0), location: CGPoint(x: -24, y: 23)), .nothing)
+    }
+
+    // 上フリックの誤判定にならない: 縦の動きが横より大きければ右フリックではない
+    func testDiagonalUpwardMovementIsNotARightFlick() {
+        XCTAssertEqual(outcome(translation: CGSize(width: 20, height: -30), location: CGPoint(x: 36, y: -7)), .nothing)
     }
 }

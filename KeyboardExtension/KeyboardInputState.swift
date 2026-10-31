@@ -140,30 +140,6 @@ final class KeyboardInputState {
         }
     }
 
-    // 左下キー(面の切り替え)のタップ/フリック。70ms の門番はタッチの事実なのでビューに残し、通ったあとをここで行なう。
-    // タップ/右/上の割り当ては設定なので引数で受ける。書式化数値はこの経路からは選ばれない
-    func selectModeSwitcherPanel(
-        direction: FlickDirection,
-        triggerLabel: String?,
-        tapAction: KeyboardRootView.KanaModeSwitcherAction,
-        rightAction: KeyboardRootView.KanaModeSwitcherAction,
-        upAction: KeyboardRootView.KanaModeSwitcherAction
-    ) {
-        // 調査用ログ(記号面切替 2838): どの操作で面が変わったかを記録。原因判明後に外す
-        #if DEBUG
-        inputModeChangeTrigger = triggerLabel ?? "左下キー \(direction)"
-        #endif
-        guard let target = KeyboardPanelRouting.panelTarget(
-            forModeSwitchDirection: direction,
-            tapAction: tapAction,
-            rightAction: rightAction,
-            upAction: upAction
-        ) else {
-            return
-        }
-        enterPanel(target)
-    }
-
     // 後置の修飾キーを未確定なしでタップしたとき、設定の面と分類を開く。1 件確定したらかなへ戻す。
     // 設定値は引数で受ける。顔文字の分類の選択は KaomojiPanelState(ビューが持つ)を受け取って書く
     func applyPostModifierEmptyTap(
@@ -330,6 +306,24 @@ enum KeyboardPanelRouting {
         }
     }
 
+    // 設定の割り当て(E.5)→ 開く面。1 対 1
+    static func panelTarget(for action: KeyboardRootView.KanaModeSwitcherAction) -> KeyboardPanelTarget {
+        switch action {
+        case .emoji:
+            return .emoji
+        case .kaomoji:
+            return .kaomoji
+        case .symbols:
+            return .symbols
+        case .kanjiRadical:
+            return .kanjiRadical
+        case .formattedNumber:
+            return .formattedNumber
+        }
+    }
+
+    // 🌐 キー(ホームボタンのある画面の狭い iPhone の かな 5×2 縦画面)の長押し・右・上・下。
+    // 長押しは .milieu で渡る(タップは次のキーボードへ進むので compactSwitchKeyRoute が先に振り分ける)
     static func panelTarget(
         forModeSwitchDirection direction: FlickDirection,
         tapAction: KeyboardRootView.KanaModeSwitcherAction,
@@ -341,26 +335,33 @@ enum KeyboardPanelRouting {
             return .kanjiRadical
         }
 
-        let action: KeyboardRootView.KanaModeSwitcherAction
-
         switch direction {
         case .milieu:
-            action = tapAction
+            return panelTarget(for: tapAction)
         case .droite:
-            action = rightAction
+            return panelTarget(for: rightAction)
         case .haut:
-            action = upAction
+            return panelTarget(for: upAction)
         default:
             return nil
         }
+    }
 
-        switch action {
-        case .emoji:
-            return .emoji
-        case .kaomoji:
-            return .kaomoji
-        case .symbols:
-            return .symbols
+    // 左端最下段のキー(面選択のパレット付き)のタップと右フリック(3618)。上・下・左はこの関数では nil だが、
+    // キー(FlickKeyView)は字の無い方向を .milieu に畳むのでビューからは届かず、タップと同じ扱いになる
+    // (面選択のパレットは長押しで出る)
+    static func panelTarget(
+        forModeSwitcherKeyDirection direction: FlickDirection,
+        tapAction: KeyboardRootView.KanaModeSwitcherAction,
+        rightFlickAction: KeyboardRootView.KanaModeSwitcherAction
+    ) -> KeyboardPanelTarget? {
+        switch direction {
+        case .milieu:
+            return panelTarget(for: tapAction)
+        case .droite:
+            return panelTarget(for: rightFlickAction)
+        default:
+            return nil
         }
     }
 

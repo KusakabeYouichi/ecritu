@@ -1113,10 +1113,10 @@ struct FlickKeyView: View {
                 let effectiveResolvedDirection = effectiveDirection(for: resolvedDirection)
                 activeDirection = effectiveResolvedDirection
 
-                if onLongPress != nil,
-                    longPressCandidates.isEmpty,
-                    effectiveResolvedDirection != .milieu {
+                if effectiveResolvedDirection != .milieu,
+                    (onLongPress != nil && longPressCandidates.isEmpty) || longPressCandidateAxis == .vertical {
                     // Do not let long-press override a deliberate directional flick.
+                    // 面選択のパレット(縦)のキーも同じ: 右フリックの途中で盤を出さない(3618)
                     cancelLongPressTimer()
                 }
 
@@ -1154,8 +1154,9 @@ struct FlickKeyView: View {
                     longPressCandidateAxis == .vertical,
                     !longPressCandidates.indices.contains(highlightedLongPressIndex) {
                     // 盤を出したまま、どれも選ばずに離した。長く押していたなら何も起きない
-                    // (ユーザ指定 3138)。ただし盤は触れた瞬間に出る(3174)ので、さっと離した
-                    // ときは「ただのタップ」として扱う ─ でないと面切替のタップができなくなる
+                    // (ユーザ指定 3138)。盤は 0.35 秒で出る(3174〜3617 は触れた瞬間、3618 で右フリックのため
+                    // 戻した)ので、出た直後(400ms まで)に離したときは「ただのタップ」として扱う
+                    // ─ でないと面切替のタップが遅い指で効かなくなる
                     let heldMs = touchBeganAt.map { Int(value.time.timeIntervalSince($0) * 1000) } ?? 0
                     guard heldMs <= Self.paletteTapReleaseMaxMs else {
                         finalizeTouchInteractionState()
@@ -1358,9 +1359,12 @@ struct FlickKeyView: View {
     // 実機(2026-10-11)では、下段(常に)と中段(ときどき)で、触れてから onChanged が届くまでに約 0.67 秒の
     // 遅れがあった(上段は約 0.1 秒。自前の接触処理は 0ms なので OS 側の配送)。届いてから 0.35 秒数えると
     // 下段のアクサン候補だけ 1.1 秒かかって見える。届いた時点で既に 0.35 秒以上押していれば、すぐ出す。
-    // フリックが効くキー(かな)は、遅れて届いた最初のイベントが既に移動中のことがあるので補正しない
+    // フリックが効くキー(かな)は、遅れて届いた最初のイベントが既に移動中のことがあるので補正しない。
+    // ただし面選択のパレット(縦)のキーは補正する(3618。右フリックを生かすため待ちを 0 から 0.35 秒に戻した。
+    // 届いた時点で既に動いていればタイマーを捨て、発火時にも動いていないことを見るので、移動中でも盤は出ない)
     private func longPressDelayCompensation(touchTime: Date) -> TimeInterval {
-        guard !allowsDirectionalFlick, !longPressCandidates.isEmpty else {
+        guard !longPressCandidates.isEmpty,
+            !allowsDirectionalFlick || longPressCandidateAxis == .vertical else {
             return 0
         }
         let deliveryDelay = RawTouchLongPress.uptimeNow() - touchTime.timeIntervalSinceReferenceDate
@@ -1392,6 +1396,10 @@ struct FlickKeyView: View {
             }
             // 生タッチ側が先に盤を出していたら、選択位置をここで戻さない(3516)
             guard !longPressIsActive else {
+                return
+            }
+            // 面選択のパレット(縦)のキーで既に指が動いている(右フリックの途中)なら盤を出さない(3618)
+            if longPressCandidateAxis == .vertical, activeDirection != .milieu {
                 return
             }
 

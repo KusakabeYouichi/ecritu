@@ -30,9 +30,13 @@ extension KeyboardViewController {
         let modifierFlickGuideDisplayMode: FlickGuideDisplayMode
         let keyRepeatInitialDelay: TimeInterval
         let keyRepeatInterval: TimeInterval
+        let leftModeSwitchNumberKeyRightFlickActionRawValue: String
+        let leftModeSwitchLatinKeyRightFlickActionRawValue: String
+        let leftModeSwitchKanaKeyRightFlickActionRawValue: String
         let kanaModeSwitcherTapActionRawValue: String
         let kanaModeSwitcherRightFlickActionRawValue: String
-        let kanaModeSwitcherUpFlickActionRawValue: String
+        let compactKeyboardSwitchKeyRightFlickActionRawValue: String
+        let compactKeyboardSwitchKeyUpFlickActionRawValue: String
         let kanaPostModifierEmptyTapActionRawValue: String
         let kanaPostModifierEmptyTapKaomojiCategoryID: String
         let kanaPostModifierEmptyTapEmojiCategoryID: String
@@ -254,6 +258,22 @@ extension KeyboardViewController {
             fallback: 0.1,
             range: 0.05...0.2
         )
+        // 左端のモード切り替え列の割り当て(E.5)。fallback は組み込みの初期値(App の builtInDefaultValues と同じ)
+        let leftModeSwitchNumberKeyRightFlickActionRawValue = sharedStringValue(
+            from: sharedDefaults,
+            key: SharedDefaultsKeys.leftModeSwitchNumberKeyRightFlickAction,
+            fallback: "formattedNumber"
+        )
+        let leftModeSwitchLatinKeyRightFlickActionRawValue = sharedStringValue(
+            from: sharedDefaults,
+            key: SharedDefaultsKeys.leftModeSwitchLatinKeyRightFlickAction,
+            fallback: "emoji"
+        )
+        let leftModeSwitchKanaKeyRightFlickActionRawValue = sharedStringValue(
+            from: sharedDefaults,
+            key: SharedDefaultsKeys.leftModeSwitchKanaKeyRightFlickAction,
+            fallback: "kanjiRadical"
+        )
         let kanaModeSwitcherTapActionRawValue = sharedStringValue(
             from: sharedDefaults,
             key: SharedDefaultsKeys.kanaModeSwitcherTapAction,
@@ -264,9 +284,14 @@ extension KeyboardViewController {
             key: SharedDefaultsKeys.kanaModeSwitcherRightFlickAction,
             fallback: "kaomoji"
         )
-        let kanaModeSwitcherUpFlickActionRawValue = sharedStringValue(
+        let compactKeyboardSwitchKeyRightFlickActionRawValue = sharedStringValue(
             from: sharedDefaults,
-            key: SharedDefaultsKeys.kanaModeSwitcherUpFlickAction,
+            key: SharedDefaultsKeys.compactKeyboardSwitchKeyRightFlickAction,
+            fallback: "kaomoji"
+        )
+        let compactKeyboardSwitchKeyUpFlickActionRawValue = sharedStringValue(
+            from: sharedDefaults,
+            key: SharedDefaultsKeys.compactKeyboardSwitchKeyUpFlickAction,
             fallback: "symbols"
         )
         let kanaPostModifierEmptyTapActionRawValue = sharedStringValue(
@@ -337,9 +362,13 @@ extension KeyboardViewController {
             modifierFlickGuideDisplayMode: modifierFlickGuideDisplayMode,
             keyRepeatInitialDelay: keyRepeatInitialDelay,
             keyRepeatInterval: keyRepeatInterval,
+            leftModeSwitchNumberKeyRightFlickActionRawValue: leftModeSwitchNumberKeyRightFlickActionRawValue,
+            leftModeSwitchLatinKeyRightFlickActionRawValue: leftModeSwitchLatinKeyRightFlickActionRawValue,
+            leftModeSwitchKanaKeyRightFlickActionRawValue: leftModeSwitchKanaKeyRightFlickActionRawValue,
             kanaModeSwitcherTapActionRawValue: kanaModeSwitcherTapActionRawValue,
             kanaModeSwitcherRightFlickActionRawValue: kanaModeSwitcherRightFlickActionRawValue,
-            kanaModeSwitcherUpFlickActionRawValue: kanaModeSwitcherUpFlickActionRawValue,
+            compactKeyboardSwitchKeyRightFlickActionRawValue: compactKeyboardSwitchKeyRightFlickActionRawValue,
+            compactKeyboardSwitchKeyUpFlickActionRawValue: compactKeyboardSwitchKeyUpFlickActionRawValue,
             kanaPostModifierEmptyTapActionRawValue: kanaPostModifierEmptyTapActionRawValue,
             kanaPostModifierEmptyTapKaomojiCategoryID: kanaPostModifierEmptyTapKaomojiCategoryID,
             kanaPostModifierEmptyTapEmojiCategoryID: kanaPostModifierEmptyTapEmojiCategoryID,
@@ -570,9 +599,13 @@ extension KeyboardViewController {
             modifierFlickGuideDisplayMode: configuration.modifierFlickGuideDisplayMode,
             keyRepeatInitialDelay: configuration.keyRepeatInitialDelay,
             keyRepeatInterval: configuration.keyRepeatInterval,
+            leftModeSwitchNumberKeyRightFlickActionRawValue: configuration.leftModeSwitchNumberKeyRightFlickActionRawValue,
+            leftModeSwitchLatinKeyRightFlickActionRawValue: configuration.leftModeSwitchLatinKeyRightFlickActionRawValue,
+            leftModeSwitchKanaKeyRightFlickActionRawValue: configuration.leftModeSwitchKanaKeyRightFlickActionRawValue,
             kanaModeSwitcherTapActionRawValue: configuration.kanaModeSwitcherTapActionRawValue,
             kanaModeSwitcherRightFlickActionRawValue: configuration.kanaModeSwitcherRightFlickActionRawValue,
-            kanaModeSwitcherUpFlickActionRawValue: configuration.kanaModeSwitcherUpFlickActionRawValue,
+            compactKeyboardSwitchKeyRightFlickActionRawValue: configuration.compactKeyboardSwitchKeyRightFlickActionRawValue,
+            compactKeyboardSwitchKeyUpFlickActionRawValue: configuration.compactKeyboardSwitchKeyUpFlickActionRawValue,
             kanaPostModifierEmptyTapActionRawValue: configuration.kanaPostModifierEmptyTapActionRawValue,
             kanaPostModifierEmptyTapKaomojiCategoryID: configuration.kanaPostModifierEmptyTapKaomojiCategoryID,
             kanaPostModifierEmptyTapEmojiCategoryID: configuration.kanaPostModifierEmptyTapEmojiCategoryID,

@@ -188,6 +188,9 @@ extension KeyboardRootView {
             return compactKanaModeSwitcherEmojiMainLabelFontSize
         case .kaomoji:
             return unifiedLeftModeSwitchFontSize
+        case .kanjiRadical, .formattedNumber:
+            // 単漢字(熙)と書式化(1,000)は面選択のパレットのアイコンと同じ大きさ(3618)
+            return paletteKeyIconFontSize(for: action.keyLabel) ?? unifiedLeftModeSwitchFontSize
         }
     }
 
@@ -199,6 +202,8 @@ extension KeyboardRootView {
             return kanaModeSwitcherFaceEmojiMainLabelFontSize
         case .kaomoji:
             return kanaModeSwitcherKaomojiMainLabelFontSize
+        case .kanjiRadical, .formattedNumber:
+            return paletteKeyIconFontSize(for: action.keyLabel) ?? unifiedLeftModeSwitchFontSize
         }
     }
 
@@ -210,6 +215,8 @@ extension KeyboardRootView {
             return compactKanaModeSwitcherEmojiActiveIconFontSize
         case .kaomoji:
             return compactKanaModeSwitcherPreviewIconFontSize
+        case .kanjiRadical, .formattedNumber:
+            return paletteKeyIconFontSize(for: action.keyLabel) ?? unifiedLeftModeSwitchFontSize
         }
     }
 
@@ -221,6 +228,8 @@ extension KeyboardRootView {
             return kanaModeSwitcherFaceEmojiIconFontSize
         case .kaomoji:
             return kanaModeSwitcherKaomojiMainLabelFontSize
+        case .kanjiRadical, .formattedNumber:
+            return paletteKeyIconFontSize(for: action.keyLabel) ?? unifiedLeftModeSwitchFontSize
         }
     }
 
@@ -232,6 +241,8 @@ extension KeyboardRootView {
             return kanaModeSwitcherFaceEmojiIconFontSize
         case .kaomoji:
             return kanaModeSwitcherEmojiIconFontSize
+        case .kanjiRadical, .formattedNumber:
+            return paletteKeyIconFontSize(for: action.keyLabel) ?? unifiedLeftModeSwitchFontSize
         }
     }
 
@@ -261,7 +272,7 @@ extension KeyboardRootView {
                 return kanaModeSwitcherMainLabelFontSize
             }
 
-            if let action = kanaModeSwitcherAction(for: direction) {
+            if direction != .milieu, let action = KanaModeSwitcherAction(keyLabel: mainText) {
                 return compactKanaModeSwitcherActiveLabelFontSize(for: action)
             }
 
@@ -289,7 +300,7 @@ extension KeyboardRootView {
             return kanaModeSwitcherMainLabelFontSize
         }
 
-        if let action = kanaModeSwitcherAction(for: direction) {
+        if direction != .milieu, let action = KanaModeSwitcherAction(keyLabel: mainText) {
             return wideKanaModeSwitcherActiveMainLabelFontSize(for: action)
         }
 
@@ -353,7 +364,7 @@ extension KeyboardRootView {
         }
 
         if !usesWideLeftModeSwitchButtons {
-            if let action = kanaModeSwitcherAction(for: direction) {
+            if direction != .milieu, let action = KanaModeSwitcherAction(keyLabel: previewText) {
                 return compactKanaModeSwitcherActiveLabelFontSize(for: action)
             }
 
@@ -372,7 +383,7 @@ extension KeyboardRootView {
             return kanaModeSwitcherPreviewFontSize
         }
 
-        if let action = kanaModeSwitcherAction(for: direction) {
+        if direction != .milieu, let action = KanaModeSwitcherAction(keyLabel: previewText) {
             return wideKanaModeSwitcherActivePreviewFontSize(for: action)
         }
 

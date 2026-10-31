@@ -79,9 +79,17 @@ enum SettingsKeys {
     static let idleCommitInterval = "idleCommitInterval"
     // 未確定の方式(3209): écritu(下線) / mountain view(本文に確定文字) / tokushima(キーボード内)
     static let composingTextStyle = "composingTextStyle"
+    // E.5 左端のモード切り替え列の割り当て(3618 で上 3 段の右フリックと最下段の右フリックを追加)。
+    // 値は KanaModeSwitcherActionOption.rawValue。拡張側の SharedDefaultsKeys と同じ文字列
+    static let leftModeSwitchNumberKeyRightFlickAction = "leftModeSwitchNumberKeyRightFlickAction"
+    static let leftModeSwitchLatinKeyRightFlickAction = "leftModeSwitchLatinKeyRightFlickAction"
+    static let leftModeSwitchKanaKeyRightFlickAction = "leftModeSwitchKanaKeyRightFlickAction"
     static let kanaModeSwitcherTapAction = "kanaModeSwitcherTapAction"
     static let kanaModeSwitcherRightFlickAction = "kanaModeSwitcherRightFlickAction"
-    static let kanaModeSwitcherUpFlickAction = "kanaModeSwitcherUpFlickAction"
+    // 🌐 キー(ホームボタンのある画面の狭い iPhone の かな 5×2 縦画面)の右・上。3617 までは
+    // kanaModeSwitcherRightFlickAction / kanaModeSwitcherUpFlickAction がこのキーの割り当てだった
+    static let compactKeyboardSwitchKeyRightFlickAction = "compactKeyboardSwitchKeyRightFlickAction"
+    static let compactKeyboardSwitchKeyUpFlickAction = "compactKeyboardSwitchKeyUpFlickAction"
     static let kanaPostModifierEmptyTapAction = "kanaPostModifierEmptyTapAction"
     static let kanaPostModifierEmptyTapKaomojiCategory = "kanaPostModifierEmptyTapKaomojiCategory"
     static let kanaPostModifierEmptyTapEmojiCategory = "kanaPostModifierEmptyTapEmojiCategory"
@@ -697,26 +705,35 @@ enum ContactCandidateDisplayModeOption: String, CaseIterable, Identifiable {
     }
 }
 
+// E.5 の行き先。並びは面選択のパレットと同じ(記号・絵文字・顔文字・単漢字・書式化)。
+// rawValue は拡張側の KeyboardRootView.KanaModeSwitcherAction と同じ
 enum KanaModeSwitcherActionOption: String, CaseIterable, Identifiable {
+    case symbols
     case emoji
     case kaomoji
-    case symbols
+    case kanjiRadical
+    case formattedNumber
 
     var id: String { rawValue }
 
     var title: String {
         switch self {
+        case .symbols: return "記号"
         case .emoji: return "絵文字"
         case .kaomoji: return "顔文字"
-        case .symbols: return "記号"
+        case .kanjiRadical: return "単漢字"
+        case .formattedNumber: return "書式化"
         }
     }
 
+    // キーに出る字(面選択のパレットのアイコンと同じ)
     var keyLabel: String {
         switch self {
+        case .symbols: return "⌘"
         case .emoji: return "☺︎"
         case .kaomoji: return "^_^"
-        case .symbols: return "⌘"
+        case .kanjiRadical: return "熙"
+        case .formattedNumber: return "1,000"
         }
     }
 }

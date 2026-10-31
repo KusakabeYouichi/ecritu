@@ -443,9 +443,16 @@ final class KeyboardViewController: UIInputViewController {
         static let idleCommitInterval = "idleCommitInterval"
         // 未確定の方式(3209)。値は écritu / mountain view / tokushima。拡張側の分岐は方式の実装時に足す
         static let composingTextStyle = "composingTextStyle"
+        // 左端のモード切り替え列の割り当て(E.5。3618)。値は KanaModeSwitcherAction の rawValue
+        static let leftModeSwitchNumberKeyRightFlickAction = "leftModeSwitchNumberKeyRightFlickAction"
+        static let leftModeSwitchLatinKeyRightFlickAction = "leftModeSwitchLatinKeyRightFlickAction"
+        static let leftModeSwitchKanaKeyRightFlickAction = "leftModeSwitchKanaKeyRightFlickAction"
         static let kanaModeSwitcherTapAction = "kanaModeSwitcherTapAction"
         static let kanaModeSwitcherRightFlickAction = "kanaModeSwitcherRightFlickAction"
-        static let kanaModeSwitcherUpFlickAction = "kanaModeSwitcherUpFlickAction"
+        // 🌐 キー(ホームボタンのある画面の狭い iPhone の かな 5×2 縦画面)の右・上。3617 までは
+        // kanaModeSwitcherRightFlickAction / kanaModeSwitcherUpFlickAction がこのキーの割り当てだった
+        static let compactKeyboardSwitchKeyRightFlickAction = "compactKeyboardSwitchKeyRightFlickAction"
+        static let compactKeyboardSwitchKeyUpFlickAction = "compactKeyboardSwitchKeyUpFlickAction"
         static let kanaPostModifierEmptyTapAction = "kanaPostModifierEmptyTapAction"
         static let kanaPostModifierEmptyTapKaomojiCategory = "kanaPostModifierEmptyTapKaomojiCategory"
         static let kanaPostModifierEmptyTapEmojiCategory = "kanaPostModifierEmptyTapEmojiCategory"

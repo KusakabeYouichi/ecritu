@@ -59,9 +59,15 @@ struct KeyboardRootView: View {
     let modifierFlickGuideDisplayMode: FlickGuideDisplayMode
     let keyRepeatInitialDelay: TimeInterval
     let keyRepeatInterval: TimeInterval
+    // 左端のモード切り替え列の割り当て(設定 E.5。3618 で右フリックを復活)。上 3 段は右フリックだけ、
+    // 最下段はタップと右フリック、🌐 キー(ホームボタンのある画面の狭い iPhone の かな 5×2 縦画面)は右と上
+    let leftModeSwitchNumberKeyRightFlickActionRawValue: String
+    let leftModeSwitchLatinKeyRightFlickActionRawValue: String
+    let leftModeSwitchKanaKeyRightFlickActionRawValue: String
     let kanaModeSwitcherTapActionRawValue: String
     let kanaModeSwitcherRightFlickActionRawValue: String
-    let kanaModeSwitcherUpFlickActionRawValue: String
+    let compactKeyboardSwitchKeyRightFlickActionRawValue: String
+    let compactKeyboardSwitchKeyUpFlickActionRawValue: String
     let kanaPostModifierEmptyTapActionRawValue: String
     let kanaPostModifierEmptyTapKaomojiCategoryID: String
     let kanaPostModifierEmptyTapEmojiCategoryID: String
@@ -857,26 +863,56 @@ struct KeyboardRootView: View {
         left: "。"
     )
 
+    // 設定の文字列→割り当て。読めない値は組み込みの初期値(コンテナーアプリの builtInDefaultValues と同じ)に倒す
+    private static func modeSwitcherAction(
+        _ rawValue: String,
+        fallback: KanaModeSwitcherAction
+    ) -> KanaModeSwitcherAction {
+        KanaModeSwitcherAction(rawValue: rawValue) ?? fallback
+    }
+
+    // 左端上段[123] の右フリック
+    var leftModeSwitchNumberKeyRightFlickAction: KanaModeSwitcherAction {
+        Self.modeSwitcherAction(leftModeSwitchNumberKeyRightFlickActionRawValue, fallback: .formattedNumber)
+    }
+
+    // 左端中段[abc] の右フリック
+    var leftModeSwitchLatinKeyRightFlickAction: KanaModeSwitcherAction {
+        Self.modeSwitcherAction(leftModeSwitchLatinKeyRightFlickActionRawValue, fallback: .emoji)
+    }
+
+    // 左端下段[あい] の右フリック
+    var leftModeSwitchKanaKeyRightFlickAction: KanaModeSwitcherAction {
+        Self.modeSwitcherAction(leftModeSwitchKanaKeyRightFlickActionRawValue, fallback: .kanjiRadical)
+    }
+
+    // 左端最下段のタップ
     var kanaModeSwitcherTapAction: KanaModeSwitcherAction {
-        KanaModeSwitcherAction(rawValue: kanaModeSwitcherTapActionRawValue) ?? .emoji
+        Self.modeSwitcherAction(kanaModeSwitcherTapActionRawValue, fallback: .emoji)
     }
 
+    // 左端最下段の右フリック
     var kanaModeSwitcherRightFlickAction: KanaModeSwitcherAction {
-        KanaModeSwitcherAction(rawValue: kanaModeSwitcherRightFlickActionRawValue) ?? .kaomoji
+        Self.modeSwitcherAction(kanaModeSwitcherRightFlickActionRawValue, fallback: .kaomoji)
     }
 
-    var kanaModeSwitcherUpFlickAction: KanaModeSwitcherAction {
-        KanaModeSwitcherAction(rawValue: kanaModeSwitcherUpFlickActionRawValue) ?? .symbols
+    // 🌐 キーの右フリック・上フリック
+    var compactKeyboardSwitchKeyRightFlickAction: KanaModeSwitcherAction {
+        Self.modeSwitcherAction(compactKeyboardSwitchKeyRightFlickActionRawValue, fallback: .kaomoji)
     }
 
-    // 左下のキー(パレット付き)はフリックの案内を出さない。触れた瞬間にパレットが出てフリックが
-    // 届かないため(3174 以降)。右・上・下の割り当ては 🌐 キー(compactKeyboardSwitchKana)が別に持つ
+    var compactKeyboardSwitchKeyUpFlickAction: KanaModeSwitcherAction {
+        Self.modeSwitcherAction(compactKeyboardSwitchKeyUpFlickActionRawValue, fallback: .symbols)
+    }
+
+    // 左端最下段のキー(面選択のパレット付き)。タップと右フリックに割り当てた面の字を出す。上・下・左は無し
+    // (パレットは長押しで出る。3174〜3617 はパレットが触れた瞬間に出てフリックが届かなかったため案内も外していた)
     var kanaModeSwitcherKana: FlickKanaSet {
         FlickKanaSet(
             label: kanaModeSwitcherTapAction.keyLabel,
             center: kanaModeSwitcherTapAction.keyLabel,
             up: "",
-            right: "",
+            right: kanaModeSwitcherRightFlickAction.keyLabel,
             down: "",
             left: "",
             usesProfileDependentGuideOrder: false
@@ -887,8 +923,8 @@ struct KeyboardRootView: View {
         FlickKanaSet(
             label: "🌐",
             center: "🌐",
-            up: kanaModeSwitcherUpFlickAction.keyLabel,
-            right: kanaModeSwitcherRightFlickAction.keyLabel,
+            up: compactKeyboardSwitchKeyUpFlickAction.keyLabel,
+            right: compactKeyboardSwitchKeyRightFlickAction.keyLabel,
             down: "熙",  // 単漢字の面(康熙字典の熙。面選択パレットのアイコンと同じ字。ユーザ指定)
             left: "",
             usesProfileDependentGuideOrder: false
@@ -1238,17 +1274,6 @@ struct KeyboardRootView: View {
 
     var kanaModeSwitchButtonTitle: String {
         usesWideLeftModeSwitchButtons ? "あいう" : "あい"
-    }
-
-    func kanaModeSwitcherAction(for direction: FlickDirection) -> KanaModeSwitcherAction? {
-        switch direction {
-        case .droite:
-            return kanaModeSwitcherRightFlickAction
-        case .haut:
-            return kanaModeSwitcherUpFlickAction
-        default:
-            return nil
-        }
     }
 
     var kanaModeSwitcherPreviewHorizontalPadding: CGFloat {
@@ -1618,9 +1643,13 @@ struct KeyboardRootView: View {
         modifierFlickGuideDisplayMode: .fourDirections,
         keyRepeatInitialDelay: 0.5,
         keyRepeatInterval: 0.1,
+                leftModeSwitchNumberKeyRightFlickActionRawValue: "formattedNumber",
+                leftModeSwitchLatinKeyRightFlickActionRawValue: "emoji",
+                leftModeSwitchKanaKeyRightFlickActionRawValue: "kanjiRadical",
                 kanaModeSwitcherTapActionRawValue: "emoji",
                 kanaModeSwitcherRightFlickActionRawValue: "kaomoji",
-                kanaModeSwitcherUpFlickActionRawValue: "symbols",
+                compactKeyboardSwitchKeyRightFlickActionRawValue: "kaomoji",
+                compactKeyboardSwitchKeyUpFlickActionRawValue: "symbols",
                 kanaPostModifierEmptyTapActionRawValue: "kaomoji",
                 kanaPostModifierEmptyTapKaomojiCategoryID: "shortcut",
                 kanaPostModifierEmptyTapEmojiCategoryID: "0",

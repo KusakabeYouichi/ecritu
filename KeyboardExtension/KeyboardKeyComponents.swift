@@ -1385,6 +1385,244 @@ struct ReturnToKanaPaletteKey: View {
     }
 }
 
+// 左端のモード切り替え列の上 3 段([123][abc][あい])のキー(3618)。タップで面を切り替え、右フリックで
+// 設定 E.5 に割り当てた面を開く。今いる面のキーはタップが効かない(灰色)が、右フリックは効く。
+// ActionKeyButton に方向の判定を足すと、あのキーは盤面のあちこちで使われていて型が膨らむ(本体の注記参照)
+// ため、ReturnToKanaPaletteKey と同じく見た目だけ合わせた専用のキーにしている
+struct ModeSwitchColumnKey: View {
+    enum ReleaseOutcome: Equatable {
+        case tap
+        case rightFlick
+        case nothing
+    }
+
+    let title: String
+    var fontSize: CGFloat = 16
+    // タップが効くか(今いる面のキーは押せない)。右フリックはこれに関わらず効く
+    var isTapEnabled: Bool = true
+    // 右フリックで開く面の字(面選択のパレットのアイコンと同じ字)。右へ動かしている間はキーにこれを出す
+    let rightFlickLabel: String
+    // かなのフリックガイドと同じ条件で、右上の隅に行き先の字を小さく出す
+    var showsRightFlickHint = false
+    var onLongPress: (() -> Void)? = nil
+    let onTap: () -> Void
+    let onRightFlick: () -> Void
+
+    // 文字キーと同じ距離(FlickKeyView.directionalFlickThreshold の初期値)。方向は FlickGestureResolver で決める
+    static let rightFlickThreshold: CGFloat = 18
+    // ActionKeyButton の LongPressGesture と同じ
+    static let longPressDelay: TimeInterval = 0.4
+
+    @State private var isTouching = false
+    @State private var isRightFlickActive = false
+    @State private var didTriggerLongPress = false
+    @State private var longPressWorkItem: DispatchWorkItem?
+    @State private var touchBeganAt: Date?
+    @State private var keySize: CGSize = .zero
+    @GestureState private var isGestureInProgress = false
+    @Environment(\.keyboardAccentColor) private var accentColor
+
+    // 離したときに何をするか(純関数。テストで見る)。長押しが済んでいれば何もしない。右へ動かしていれば右フリック
+    // (面の切り替えなので、左下のキーと同じ短すぎる接触の下限を通す)。ほかの方向へ動かして離したときは、
+    // 指がキーの中にあればタップ(Button と同じ)、外なら何もしない
+    static func releaseOutcome(
+        translation: CGSize,
+        location: CGPoint,
+        keySize: CGSize,
+        heldMs: Int?,
+        didTriggerLongPress: Bool,
+        isTapEnabled: Bool
+    ) -> ReleaseOutcome {
+        if didTriggerLongPress {
+            return .nothing
+        }
+        let direction = FlickGestureResolver.resolve(translation: translation, threshold: rightFlickThreshold)
+        if direction == .droite {
+            if KeyboardRootView.shouldIgnoreModeSwitchForShortTouch(commitDurationMs: heldMs) {
+                return .nothing
+            }
+            return .rightFlick
+        }
+        guard isTapEnabled else {
+            return .nothing
+        }
+        if direction != .milieu,
+            keySize.width > 0,
+            !CGRect(origin: .zero, size: keySize).contains(location) {
+            return .nothing
+        }
+        return .tap
+    }
+
+    private var rightFlickIcon: LongPressVerticalCandidatePanel.Icon? {
+        LongPressVerticalCandidatePanel.iconByText[rightFlickLabel]
+    }
+
+    private var labelColor: Color {
+        if isRightFlickActive {
+            return .white
+        }
+        return isTapEnabled ? KeyboardThemePalette.keyLabel : KeyboardThemePalette.keyLabelSecondary
+    }
+
+    private var backgroundColor: Color {
+        if isRightFlickActive {
+            return accentColor.opacity(0.85)
+        }
+        return isTapEnabled ? KeyboardThemePalette.keyBackground : KeyboardThemePalette.keyBackgroundDisabled
+    }
+
+    var body: some View {
+        Text(isRightFlickActive ? rightFlickLabel : title)
+            .font(
+                isRightFlickActive && rightFlickIcon?.usesMincho == true
+                    ? .custom("HiraMinProN-W6", size: rightFlickIcon?.size ?? fontSize)
+                    : .system(
+                        size: isRightFlickActive ? (rightFlickIcon?.size ?? fontSize) : fontSize,
+                        weight: .semibold,
+                        design: .rounded
+                    )
+            )
+            .lineLimit(1)
+            .minimumScaleFactor(0.6)
+            .padding(.horizontal, 2)
+            .foregroundStyle(labelColor)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .fill(backgroundColor)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .stroke(KeyboardThemePalette.keyBorder, lineWidth: 1)
+            )
+            .overlay(alignment: .topTrailing) {
+                if showsRightFlickHint, !isRightFlickActive {
+                    Text(rightFlickLabel)
+                        .font(.system(size: 9, weight: .semibold, design: .rounded))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.6)
+                        .foregroundStyle(KeyboardThemePalette.keyLabelSecondary)
+                        .padding(.top, 2)
+                        .padding(.trailing, 3)
+                }
+            }
+            .contentShape(Rectangle())
+            .onGeometryChange(for: CGSize.self) { proxy in
+                proxy.size
+            } action: { newValue in
+                keySize = newValue
+            }
+            .accessibilityLabel(title)
+            .accessibilityAddTraits(.isButton)
+            .accessibilityAction {
+                if isTapEnabled {
+                    onTap()
+                }
+            }
+            .gesture(dragGesture)
+            .onChange(of: isGestureInProgress) { _, active in
+                // タッチが取り消されると onEnded は呼ばれない。GestureState は取り消しでも戻るので、ここで片づける
+                guard !active, isTouching else {
+                    return
+                }
+                DispatchQueue.main.async {
+                    finalizeTouch()
+                }
+            }
+            .onDisappear {
+                finalizeTouch()
+            }
+    }
+
+    private var dragGesture: some Gesture {
+        DragGesture(minimumDistance: 0)
+            .updating($isGestureInProgress) { _, state, _ in
+                state = true
+            }
+            .onChanged { value in
+                if !isTouching {
+                    isTouching = true
+                    touchBeganAt = value.time
+                    didTriggerLongPress = false
+                    isRightFlickActive = false
+                    scheduleLongPressIfNeeded(touchTime: value.time)
+                }
+                guard !didTriggerLongPress else {
+                    return
+                }
+                let direction = FlickGestureResolver.resolve(
+                    translation: value.translation,
+                    threshold: Self.rightFlickThreshold
+                )
+                if direction != .milieu {
+                    // 動かしたなら長押しではない
+                    cancelLongPress()
+                }
+                isRightFlickActive = direction == .droite
+            }
+            .onEnded { value in
+                cancelLongPress()
+                let heldMs = touchBeganAt.map { Int(value.time.timeIntervalSince($0) * 1000) }
+                let outcome = Self.releaseOutcome(
+                    translation: value.translation,
+                    location: value.location,
+                    keySize: keySize,
+                    heldMs: heldMs,
+                    didTriggerLongPress: didTriggerLongPress,
+                    isTapEnabled: isTapEnabled
+                )
+                finalizeTouch()
+                switch outcome {
+                case .tap:
+                    onTap()
+                case .rightFlick:
+                    onRightFlick()
+                case .nothing:
+                    break
+                }
+            }
+    }
+
+    // 長押しの待ち時間は指が触れた時刻から数える(FlickKeyView.longPressDelayCompensation と同じ考え。3515)。
+    // 下段では触れてから届くまでに配送の遅れがあるので、届いてから数えると遅く見える
+    private func scheduleLongPressIfNeeded(touchTime: Date) {
+        // 長押しはタップと同じく、今いる面のキー(灰色)では効かせない(ActionKeyButton のときと同じ)
+        guard onLongPress != nil, isTapEnabled else {
+            return
+        }
+        cancelLongPress()
+        let workItem = DispatchWorkItem {
+            guard isTouching, !isRightFlickActive, let onLongPress else {
+                return
+            }
+            didTriggerLongPress = true
+            onLongPress()
+        }
+        longPressWorkItem = workItem
+        let deliveryDelay = RawTouchLongPress.uptimeNow() - touchTime.timeIntervalSinceReferenceDate
+        // 稼働時間基準でない Date が来たら(負や桁違い)補正しない
+        let compensation = (deliveryDelay > 0 && deliveryDelay < 5) ? deliveryDelay : 0
+        DispatchQueue.main.asyncAfter(
+            deadline: .now() + max(0, Self.longPressDelay - compensation),
+            execute: workItem
+        )
+    }
+
+    private func cancelLongPress() {
+        longPressWorkItem?.cancel()
+        longPressWorkItem = nil
+    }
+
+    private func finalizeTouch() {
+        cancelLongPress()
+        isTouching = false
+        isRightFlickActive = false
+        didTriggerLongPress = false
+        touchBeganAt = nil
+    }
+}
+
 struct EmojiGridCollectionView: UIViewRepresentable {
     struct Section: Equatable {
         let emojis: [String]
