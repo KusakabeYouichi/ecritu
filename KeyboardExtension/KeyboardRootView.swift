@@ -96,7 +96,7 @@ struct KeyboardRootView: View {
     // onAppear で inputState.inputMode に反映する
     let initialInputMode: KeyboardInputMode
 
-    // 入力の状態(面・濁点・かな/カナ・英字シフト・空白の案内・かなへ戻る印・2 度押し待ち)。
+    // 入力の状態(面・濁点・かな/カナ・ラテン文字シフト・空白の案内・かなへ戻る印・2 度押し待ち)。
     // 持ち主はここだけ(makeRootView からは渡さない)。寿命は以前の @State と同じ
     @State var inputState = KeyboardInputState()
     // 以下は inputState への取り次ぎ(呼び元を書き換えずに済ませるため)
@@ -338,9 +338,9 @@ struct KeyboardRootView: View {
         return (topRowLetterWidth + keyboardRowSpacing) * trailingPitchFactor
     }
 
-    // 縦向きの QWERTY/AZERTY の下段(シフト+英字+アポストロフィー+削除)のキー幅(3512)。
-    // アポストロフィー(')は英単語・メール・URI・パスワード用で頻度が低く字も細いので、英字の半分の幅の
-    // 狭いキーにする。幅は 削除キーを足す前と同じに保ち(ユーザ指定)、残りをシフトと英字で分ける
+    // 縦向きの QWERTY/AZERTY の下段(シフト+ラテン文字+アポストロフィー+削除)のキー幅(3512)。
+    // アポストロフィー(')は英単語・メール・URI・パスワード用で頻度が低く字も細いので、ラテン文字の半分の幅の
+    // 狭いキーにする。幅は 削除キーを足す前と同じに保ち(ユーザ指定)、残りをシフトとラテン文字で分ける
     struct PortraitLatinBottomRowKeyMetrics: Equatable {
         let letter: CGFloat
         let shift: CGFloat
@@ -351,7 +351,7 @@ struct KeyboardRootView: View {
     static let latinApostropheKeyWidthFactor: CGFloat = 0.5
 
     // 下段右端のアポストロフィーのキー。中心は「'」(U+0027。メール・URI・パスワードで要る方)、
-    // 左フリックに「’」(U+2019。組版用)。英字でないキーなので QWERTY/AZERTY でもフリックが効く
+    // 左フリックに「’」(U+2019。組版用)。ラテン文字でないキーなので QWERTY/AZERTY でもフリックが効く
     static let latinApostropheKey = FlickKanaSet(
         label: "'",
         center: "'",
@@ -388,9 +388,9 @@ struct KeyboardRootView: View {
     }
 
     // 純粋関数(テスト用に分離)。slackWidth は QWERTY で削除/シフトに配る余白(AZERTY は 0)。
-    // アポストロフィーを足す前の並び(シフト+英字+削除。QWERTY は 9 キー、AZERTY は 8 キー)の
-    // シフトと削除の幅をそのまま使い、残りの幅を英字とアポストロフィー(英字の半分)で分ける。
-    // 当初はシフトも英字と一緒に縮めていたが、AZERTY で 3.6pt 狭くなり打ちにくかった(ユーザ報告 3514)。
+    // アポストロフィーを足す前の並び(シフト+ラテン文字+削除。QWERTY は 9 キー、AZERTY は 8 キー)の
+    // シフトと削除の幅をそのまま使い、残りの幅をラテン文字とアポストロフィー(ラテン文字の半分)で分ける。
+    // 当初はシフトもラテン文字と一緒に縮めていたが、AZERTY で 3.6pt 狭くなり打ちにくかった(ユーザ報告 3514)。
     // includesApostrophe が false(QWERTY)なら以前の並びのまま(apostrophe は 0)
     static func portraitLatinBottomRowKeyMetrics(
         availableRowWidth: CGFloat,
@@ -400,7 +400,7 @@ struct KeyboardRootView: View {
         includesApostrophe: Bool
     ) -> PortraitLatinBottomRowKeyMetrics {
         let letters = CGFloat(letterCount)
-        // 以前の並び: シフト + 英字 + 削除(キー数 letters+2、隙間 letters+1)
+        // 以前の並び: シフト + ラテン文字 + 削除(キー数 letters+2、隙間 letters+1)
         let previousKeyCount = letters + 2
         let previousLetterWidth = max(
             1,
@@ -411,7 +411,7 @@ struct KeyboardRootView: View {
             return PortraitLatinBottomRowKeyMetrics(
                 letter: previousLetterWidth, shift: edgeWidth, delete: edgeWidth, apostrophe: 0)
         }
-        // 新しい並び: シフト + 英字 + アポストロフィー + 削除(隙間 letters+2)
+        // 新しい並び: シフト + ラテン文字 + アポストロフィー + 削除(隙間 letters+2)
         let remaining = availableRowWidth - edgeWidth * 2 - spacing * (letters + 2)
         let letterWidth = max(1, remaining / (letters + latinApostropheKeyWidthFactor))
 
@@ -424,8 +424,8 @@ struct KeyboardRootView: View {
     }
 
     // 縦向き QWERTY の中段(asdfghjkl)右端のアポストロフィーの幅(3515、ユーザ指定)。中段は 9 字で上段(10 字)より
-    // 広いので、ここに半分幅のキーを足しても英字は上段より広いまま(iPhone 15: 33.5 → 31.0pt、上段 29.5pt)。
-    // 下段(シフト+7 字+削除)は触らない。英字は伸縮のままなので、ここでは英字が半分幅の分だけ詰まる幅を返す
+    // 広いので、ここに半分幅のキーを足してもラテン文字は上段より広いまま(iPhone 15: 33.5 → 31.0pt、上段 29.5pt)。
+    // 下段(シフト+7 字+削除)は触らない。ラテン文字は伸縮のままなので、ここではラテン文字が半分幅の分だけ詰まる幅を返す
     func portraitQwertyMiddleRowApostropheWidth(rowIndex: Int) -> CGFloat? {
         guard usesPortraitLatinInlineDeleteLayout,
             latinLayoutMode == .qwerty,
@@ -1188,7 +1188,7 @@ struct KeyboardRootView: View {
     }
 
     // メインキー(letter / number / kana)の中央ラベルのフォントウエイト。
-    // AZERTY/QWERTY の英字キー、および clavier 配列の数字・記号キーは semibold、
+    // AZERTY/QWERTY のラテン文字キー、および clavier 配列の数字・記号キーは semibold、
     // それ以外(かなフリック、calculette/telephone)は従来通り bold。
     var rowKeyMainLabelFontWeight: Font.Weight {
         if inputMode == .latin && (latinLayoutMode == .qwerty || latinLayoutMode == .azerty) {
@@ -1399,7 +1399,7 @@ struct KeyboardRootView: View {
 
     @ViewBuilder
     // 縦向き QWERTY/AZERTY の下段右端のアポストロフィーのキー(3512。latinApostropheKey 参照)。
-    // 英字キーと同じ FlickKeyView で、左フリックに「’」。長押し候補は無い
+    // ラテン文字キーと同じ FlickKeyView で、左フリックに「’」。長押し候補は無い
     func latinApostropheKeyView(width: CGFloat?, rowIndex: Int) -> some View {
         let key = FlickKeyView(
             kana: Self.latinApostropheKey,

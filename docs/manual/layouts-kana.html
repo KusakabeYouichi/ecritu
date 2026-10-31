@@ -42,7 +42,7 @@
 </header>
 <main>
   <h1><span class="chapno">第9章</span>配列リファレンス(かな)</h1>
-  <p class="lede">この章は、かなモードの全キー・全フリック方向を図で確認するためのリファレンスです。かな配列(5×2 / 3×3+わ)、フリック方向(écritu式 / littlebear式)、修飾キー(前置 / 後置)のすべての組み合わせを掲載しています。英字と数字は<a href="layouts-latin-number.html">次のページ</a>、横画面は<a href="layouts-landscape.html">その次のページ</a>にあります。</p>
+  <p class="lede">この章は、かなモードの全キー・全フリック方向を図で確認するためのリファレンスです。かな配列(5×2 / 3×3+わ)、フリック方向(écritu式 / littlebear式)、修飾キー(前置 / 後置)のすべての組み合わせを掲載しています。ラテン文字と数字は<a href="layouts-latin-number.html">次のページ</a>、横画面は<a href="layouts-landscape.html">その次のページ</a>にあります。</p>
 
   <div class="note"><b>図の見かた:</b>キーボード全体図はソースコードの寸法・配色を HTML で描画したものです(iPhone 17・地球儀キーなし基準)。早見表は1マスが1キーで、<b>中央の大きい文字=タップ</b>、上下左右の緑の文字=その方向へのフリックで入る文字です。</div>
 
@@ -108,7 +108,7 @@
     <tr><td>5文字目(お)</td><td>下</td><td>下</td><td>上</td></tr>
   </table></div>
 
-  <div class="note"><b>方向プロファイルが影響する範囲:</b>フリック方向の設定で変わるのは、<b>かなの文字キー(あ〜わ)と数字キーのフリック</b>だけです。<a href="#punctuation-key">、キー</a>・<a href="#modifier-key">修飾キー(小)</a>、そして英字3×3のフリック(<a href="layouts-latin-number.html#latin-flick">次ページ</a>)は、どの方式でも同じ方向割り当てです。</div>
+  <div class="note"><b>方向プロファイルが影響する範囲:</b>フリック方向の設定で変わるのは、<b>かなの文字キー(あ〜わ)と数字キーのフリック</b>だけです。<a href="#punctuation-key">、キー</a>・<a href="#modifier-key">修飾キー(小)</a>、そしてラテン文字3×3のフリック(<a href="layouts-latin-number.html#latin-flick">次ページ</a>)は、どの方式でも同じ方向割り当てです。</div>
 
   <h3 id="direction-guide-order">ガイド文字の並び順も変わります</h3>
   <p>フリックガイドを『4方向』で表示しているときは、ガイド文字が各方向の位置にそのまま出るので迷いません。ガイドを『下』(キー下部に1行でまとめて表示)にしているときは、並び順が方式に追従します — écritu式では『上・右・左・下』の順、littlebear式では『左・上・右・下』の順、hanabi式では『右・下・左・上』の順に文字が並びます。かなキーはどの方式でも五十音順(い う え お)に見えるように設計されています。</p>
@@ -227,7 +227,7 @@
   <div class="tablewrap"><table class="spec">
     <tr><th>段</th><th>内容</th></tr>
     <tr><td>数字ストリップ</td><td>左端の <kbd>123</kbd>(数字モードへ切り替え、幅32pt。右フリックで書式化数値の面)+ <kbd>1</kbd>〜<kbd>0</kbd> の10キー。タップでそのまま数字が入ります(5×2配列だけの段です)。</td></tr>
-    <tr><td>かな上段</td><td>左端の <kbd>abc</kbd>(英字モードへ。右フリックで絵文字パネル)+ あ・か・さ・た・な の5キー。</td></tr>
+    <tr><td>かな上段</td><td>左端の <kbd>abc</kbd>(ラテン文字モードへ。右フリックで絵文字パネル)+ あ・か・さ・た・な の5キー。</td></tr>
     <tr><td>かな下段</td><td>左端の <kbd>あい</kbd>(かなモード中はグレー表示。右フリックで単漢字の面)+ は・ま・や・ら・わ の5キー。</td></tr>
     <tr><td>アクション行</td><td><kbd><span class="smiley">☺︎</span></kbd>(32pt)→ <kbd>⌫</kbd>(64pt)→ 空白(可変幅)→ <kbd>小</kbd>(54pt)→ <kbd>、</kbd>(54pt)→ <kbd>⏎</kbd>(72pt)。iPhone 17では地球儀キーはありません(キーボード切り替えは画面下端の地球儀を使います)。</td></tr>
   </table></div>
@@ -423,11 +423,11 @@
 
   <!-- ================================================================ -->
   <h2 id="emoji-switcher-key">左端の列と ☺︎ キー(かな左下)</h2>
-  <p>かな・英字・数字の各モードの左端の列は、上から <kbd>123</kbd>・<kbd>abc</kbd>・<kbd>あい</kbd>・<span class="smiley">☺︎</span> キーです。上3段はタップで数字・英字・かなの各モードへ切り替わり(今いるモードのキーはグレー表示。[123][あい]は0.3秒押し続けても切り替わり、[abc]の長押しは大文字固定)、<b>右へフリック</b>すると、記号・絵文字・顔文字・単漢字・書式化のうち割り当てた面が開きます(設定は<a href="settings.html#kana-mode-switcher">第8章</a>の[E.5 左端のモード切り替え列の割り当て])。グレー表示のキーでも右フリックは効きます。右へ動かしている間はキーが色付きになり、行き先の面の字が出ます。</p>
+  <p>かな・ラテン文字・数字の各モードの左端の列は、上から <kbd>123</kbd>・<kbd>abc</kbd>・<kbd>あい</kbd>・<span class="smiley">☺︎</span> キーです。上3段はタップで数字・ラテン文字・かなの各モードへ切り替わり(今いるモードのキーはグレー表示。[123][あい]は0.3秒押し続けても切り替わり、[abc]の長押しは大文字固定)、<b>右へフリック</b>すると、記号・絵文字・顔文字・単漢字・書式化のうち割り当てた面が開きます(設定は<a href="settings.html#kana-mode-switcher">第8章</a>の[E.5 左端のモード切り替え列の割り当て])。グレー表示のキーでも右フリックは効きます。右へ動かしている間はキーが色付きになり、行き先の面の字が出ます。</p>
   <div class="tablewrap"><table class="spec">
     <tr><th>キー</th><th>タップ</th><th>右フリック(初期設定)</th></tr>
     <tr><td><kbd>123</kbd></td><td>数字モードへ</td><td>書式化数値の面(1,000)</td></tr>
-    <tr><td><kbd>abc</kbd></td><td>英字モードへ(続けてもう一度タップで大文字固定)</td><td>絵文字パネル(<span class="smiley">☺︎</span>)</td></tr>
+    <tr><td><kbd>abc</kbd></td><td>ラテン文字モードへ(続けてもう一度タップで大文字固定)</td><td>絵文字パネル(<span class="smiley">☺︎</span>)</td></tr>
     <tr><td><kbd>あい</kbd></td><td>かなモードへ</td><td>単漢字の面(熙)</td></tr>
     <tr><td><span class="smiley">☺︎</span> キー</td><td>割り当てた面(初期設定は記号 ⌘)</td><td>割り当てた面(初期設定は顔文字 ^_^)</td></tr>
   </table></div>
@@ -459,7 +459,7 @@
 </main>
 <footer class="pager">
   <a class="prev" href="settings.html">← 第8章 設定リファレンス</a>
-  <a class="next" href="layouts-latin-number.html">第9章(続) 配列リファレンス(英字・数字) →</a>
+  <a class="next" href="layouts-latin-number.html">第9章(続) 配列リファレンス(ラテン文字・数字) →</a>
 </footer>
 </body>
 </html>

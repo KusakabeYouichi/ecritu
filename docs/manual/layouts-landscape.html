@@ -14,20 +14,20 @@
 </header>
 <main>
   <h1><span class="chapno">第9章(続)</span>配列リファレンス(横画面)</h1>
-  <p class="lede">iPhone を横向きにすると、縦長の候補バーの代わりに<b>サイドバー</b>を使う横画面専用のレイアウトに切り替わります。このページでは横画面で何がどう変わるかを、モードごとに領域図と表で示します。キーの中身(フリック割り当て)は縦画面と同じなので、各キーの詳細は<a href="layouts-kana.html">かな</a>・<a href="layouts-latin-number.html">英字・数字</a>のページを参照してください。</p>
+  <p class="lede">iPhone を横向きにすると、縦長の候補バーの代わりに<b>サイドバー</b>を使う横画面専用のレイアウトに切り替わります。このページでは横画面で何がどう変わるかを、モードごとに領域図と表で示します。キーの中身(フリック割り当て)は縦画面と同じなので、各キーの詳細は<a href="layouts-kana.html">かな</a>・<a href="layouts-latin-number.html">ラテン文字・数字</a>のページを参照してください。</p>
 
   <!-- ================================================================ -->
   <h2 id="landscape-overview">横画面で変わること(概観)</h2>
   <div class="tablewrap"><table class="spec">
     <tr><th>項目</th><th>縦画面</th><th>横画面</th></tr>
     <tr><td>キーの高さ</td><td>46pt</td><td>40pt(アクションキーは34pt)</td></tr>
-    <tr><td>候補の表示</td><td>キーボード上部の候補バー(横1列)</td><td>かな: 候補サイドバー(縦一覧)/英字: サジェストサイドバー(オン・オフ設定あり)</td></tr>
+    <tr><td>候補の表示</td><td>キーボード上部の候補バー(横1列)</td><td>かな: 候補サイドバー(縦一覧)/ラテン文字: サジェストサイドバー(オン・オフ設定あり)</td></tr>
     <tr><td>かな配列</td><td>5×2 / 3×3+わ</td><td>同じ配列のまま、横に候補サイドバーが付きます</td></tr>
     <tr><td>数字配列</td><td>calculette / téléphone / clavier</td><td>幅の狭い数字グリッド+付属記号パネル(4×6)。clavier は使えず calculette に自動切り替え</td></tr>
-    <tr><td>英字 QWERTY / AZERTY</td><td>各行が左揃えの3段</td><td>タイプライタ風の段ずれ配置(右シフト復活・, / ' キー追加)</td></tr>
+    <tr><td>ラテン文字 QWERTY / AZERTY</td><td>各行が左揃えの3段</td><td>タイプライタ風の段ずれ配置(右シフト復活・, / ' キー追加)</td></tr>
     <tr><td>モード切り替え列</td><td>32pt 幅(あい 表示)が基本</td><td>常に58pt 幅(あいう 表示)</td></tr>
   </table></div>
-  <p>サイドバーやパネルを左右どちらに置くかは設定で選べます(かな・英字の候補側は[<a href="settings.html#landscape-latin-pane">候補ペイン</a>]、数字は[<a href="settings.html#landscape-number-pane">数字ペイン配列</a>])。以下の図は候補が左・数字が左(戦略的初期設定)で描いています。初期設定では候補が右です。</p>
+  <p>サイドバーやパネルを左右どちらに置くかは設定で選べます(かな・ラテン文字の候補側は[<a href="settings.html#landscape-latin-pane">候補ペイン</a>]、数字は[<a href="settings.html#landscape-number-pane">数字ペイン配列</a>])。以下の図は候補が左・数字が左(戦略的初期設定)で描いています。初期設定では候補が右です。</p>
 
   <!-- ================================================================ -->
   <h2 id="landscape-kana">かな(横画面)</h2>
@@ -72,7 +72,7 @@
   </ul>
 
   <!-- ================================================================ -->
-  <h2 id="landscape-latin">英字(横画面)</h2>
+  <h2 id="landscape-latin">ラテン文字(横画面)</h2>
   <p>QWERTY / AZERTY は、横画面では物理キーボード風の<b>タイプライタ配置</b>になります。2段目が1/4キー、3段目が3/4キーぶん右へずれ、3段目には右シフトが復活し、<kbd>,</kbd> <kbd>/</kbd>(AZERTY はさらに <kbd>'</kbd>)が挿入されます。<kbd>⌫</kbd> は1段目の右端、<kbd>⏎</kbd> は2段目の右端に入ります。</p>
   <figure>
     <div style="display:flex;gap:6px;max-width:660px;margin:0 auto;font-size:.78rem;text-align:center;align-items:stretch">
@@ -80,7 +80,7 @@
       <div style="flex:0 0 26%;border:1px dashed var(--accent-ink);border-radius:10px;background:var(--note-bg);padding:.6em .4em;display:flex;flex-direction:column;justify-content:center"><b>サジェスト<br>サイドバー</b><span>入力中の単語の候補</span></div>
       <div style="flex:1;border:1px solid var(--line);border-radius:10px;background:var(--card);padding:.6em .4em;display:flex;flex-direction:column;justify-content:center"><b>タイプライタ配置</b><span>3段+下段(段ずれあり)</span></div>
     </div>
-    <figcaption>英字横画面の領域構成(戦略的初期設定: 候補が左。初期設定は右)。サイドバーは設定[候補ペイン]の[候補ペインを使う]をオフにすると消え、タイプライタ配置が全幅に広がります。</figcaption>
+    <figcaption>ラテン文字の横画面の領域構成(戦略的初期設定: 候補が左。初期設定は右)。サイドバーは設定[候補ペイン]の[候補ペインを使う]をオフにすると消え、タイプライタ配置が全幅に広がります。</figcaption>
   </figure>
   <div class="tablewrap"><table class="spec">
     <tr><th>段</th><th>QWERTY(横)</th><th>AZERTY(横)</th></tr>
@@ -93,11 +93,11 @@
     <li>QWERTY では縦画面になかった <kbd>'</kbd> キーが2段目の右端に入ります。左右のシフトキーは他のキーより1.5倍幅です。</li>
     <li>下段の記号は縦画面(@ / . -)と少し異なり、<b>@ _ 空白 . -</b> の並びです。</li>
     <li>長押しアクセント・シフトの3状態は縦画面と共通です(<a href="layouts-latin-number.html#latin-long-press">前ページ</a>)。横画面では1段目のキーの長押しパネルだけ、画面からはみ出さないようにキーの下側へ開きます。</li>
-    <li>英字3×3(フリック)を選んでいる場合は、横画面でも3×3グリッドのまま、右端に ⌫・空白・⏎ の機能列が付き、サイドバー(オンのとき)が横に並びます。</li>
+    <li>ラテン文字3×3(フリック)を選んでいる場合は、横画面でも3×3グリッドのまま、右端に ⌫・空白・⏎ の機能列が付き、サイドバー(オンのとき)が横に並びます。</li>
   </ul>
 </main>
 <footer class="pager">
-  <a class="prev" href="layouts-latin-number.html">← 第9章(続) 配列リファレンス(英字・数字)</a>
+  <a class="prev" href="layouts-latin-number.html">← 第9章(続) 配列リファレンス(ラテン文字・数字)</a>
   <a class="next" href="trouble.html">第10章 困ったとき →</a>
 </footer>
 </body>

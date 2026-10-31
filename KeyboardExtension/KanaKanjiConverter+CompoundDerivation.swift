@@ -841,7 +841,7 @@ extension KanaKanjiConverter {
         return nil
     }
 
-    // 英字の直後で先頭に来るべき語(ユーザー指定 3390)。A確定→がた→A型(既定は がた/ガタ/方/型 の順で 型 が出なかった)
+    // ラテン文字の直後で先頭に来るべき語(ユーザー指定 3390)。A確定→がた→A型(既定は がた/ガタ/方/型 の順で 型 が出なかった)
     static let latinContextPreferredSurfacesByReading: [String: [String]] = [
         "がた": ["型"]
     ]

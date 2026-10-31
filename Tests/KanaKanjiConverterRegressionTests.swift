@@ -21733,7 +21733,7 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(list.prefix(9)), ["席", "咳", "堰", "積", "責", "関", "籍", "咳き", "寂"], "\(list)")
     }
 
-    // 3390: 英字の直後の がた は 型 を先頭(A型)
+    // 3390: ラテン文字の直後の がた は 型 を先頭(A型)
     func testLatinContextGataPrefersKata() {
         let boosted = KanaKanjiConverter.latinContextPreferredCandidates(["がた", "ガタ", "方", "型", "形"], reading: "がた", precedingCharacter: "A")
         XCTAssertEqual(boosted.first, "型")

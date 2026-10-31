@@ -84,7 +84,7 @@ extension KeyboardRootView {
             .frame(width: leftModeSwitchButtonWidth, height: height)
     }
 
-    // 左端最下段のキー(面を切り替えるキー)。かな・英字・数字のどのモードでも同じ(3625。以前は英字=☺︎ 絵文字
+    // 左端最下段のキー(面を切り替えるキー)。かな・ラテン文字・数字のどのモードでも同じ(3625。以前はラテン文字=☺︎ 絵文字
     // (長押しで書式化)、数字 clavier=⌘ 記号、calculette/téléphone=空きと、モードごとに別のキーだった)。
     // タップ(.milieu)と右フリック(.droite)は設定 E.5 の面。面選択のパレットは押したままで出る
     func modeSwitcherPaletteKey(

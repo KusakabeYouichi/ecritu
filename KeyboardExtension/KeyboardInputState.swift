@@ -1,7 +1,7 @@
 import Foundation
 import Observation
 
-// キーボードの入力の状態(面・濁点・かな/カナ・英字シフト・空白の案内・かなへ戻る印・2 度押し待ち)。
+// キーボードの入力の状態(面・濁点・かな/カナ・ラテン文字シフト・空白の案内・かなへ戻る印・2 度押し待ち)。
 // 以前は KeyboardRootView の @State だったものを、配列(iPhone/iPad)をまたいで使えるように外へ出した。
 // 持ち主はビュー木の根(@State で持つ)。寿命は以前の @State と同じで、makeRootView から渡したりはしない。
 // クロージャーと描画設定(RenderConfiguration 由来の値)は持たない。要る処理は引数で受け取る。
@@ -19,7 +19,7 @@ final class KeyboardInputState {
     var spaceToastOpacity: Double = 0
     // 絵文字・書式化数値などから 1 件確定したら、かなへ戻す印
     var returnToKanaAfterNextCommit: Bool = false
-    // 『abc』キーの 2 度押し(英字の固定シフト)を待っているか
+    // 『abc』キーの 2 度押し(ラテン文字の固定シフト)を待っているか
     var isAwaitingLatinModeSwitchSecondTap = false
     var pendingLatinModeSwitchSecondTapResetWorkItem: DispatchWorkItem?
     // 絵文字・記号の面で選んでいる分類

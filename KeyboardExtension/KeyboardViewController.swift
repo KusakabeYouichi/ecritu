@@ -1986,7 +1986,7 @@ final class KeyboardViewController: UIInputViewController {
             return
         }
 
-        // 候補バー系(未確定/変換候補/英字サジェスト)だけの変化なら、rootView を差し替えず
+        // 候補バー系(未確定/変換候補/ラテン文字サジェスト)だけの変化なら、rootView を差し替えず
         // モデルの publish だけで更新する。差し替えは view ツリー全体の再構築+同期
         // layoutIfNeeded を伴い、毎打鍵では最も高くつく(キー盤面は不変のまま)。
         let previousConfiguration = lastRenderConfiguration

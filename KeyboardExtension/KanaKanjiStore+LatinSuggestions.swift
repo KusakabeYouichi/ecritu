@@ -78,7 +78,7 @@ struct GenericLatinLexiconFileIndex {
 }
 
 
-// ラテン(英字)入力のサジェスト。読み検索キーの正規化・二分探索・候補判定を担う。
+// ラテン文字入力のサジェスト。読み検索キーの正規化・二分探索・候補判定を担う。
 // 索引は2層とも同梱ファイルの mmap(追加語彙由来 LatinSuggestionSupplemental.txt と
 // 汎用レキシコン LatinSuggestionLexicon_{lang}.txt)で、実行時構築は行わない。
 extension KanaKanjiStore {

@@ -123,7 +123,7 @@ enum KeyboardModeTransition {
         return next
     }
 
-    // 確定する文字の変換: 英字シフト中の英字 1 文字は大文字に、カタカナモードのかなはカタカナにする。
+    // 確定する文字の変換: ラテン文字シフト中のラテン文字 1 文字は大文字に、カタカナモードのかなはカタカナにする。
     // シフト記号(latinShiftKeyToken)は文字を出さないので、呼び手が先に振り分ける
     static func committedOutput(
         _ text: String,

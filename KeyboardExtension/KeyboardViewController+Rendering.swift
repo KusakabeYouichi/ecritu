@@ -76,7 +76,7 @@ extension KeyboardViewController {
         // configuration に含める(4.4.1: 数字・小数フィールドへの追従)
         let initialInputMode: KeyboardInputMode
 
-        // 候補バー系(composing/変換候補/選択位置/英字サジェスト)を除いた等価判定。
+        // 候補バー系(composing/変換候補/選択位置/ラテン文字サジェスト)を除いた等価判定。
         // これが等しい打鍵ではキー盤面に影響がなく、rootView 差し替えを省略できる。
         func equalIgnoringCandidateBar(_ other: RenderConfiguration) -> Bool {
             var normalizedSelf = self

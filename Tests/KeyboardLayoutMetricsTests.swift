@@ -221,7 +221,7 @@ final class KeyboardLayoutMetricsTests: XCTestCase {
 }
 
 // 縦向き QWERTY/AZERTY の下段にアポストロフィーのキーを足しても(3512)、削除キーの幅は足す前と同じで、
-// 幅の合計は段の幅に収まり、英字は 3pt 程度しか狭くならないこと
+// 幅の合計は段の幅に収まり、ラテン文字は 3pt 程度しか狭くならないこと
 extension KeyboardLayoutMetricsTests {
     func testPortraitLatinBottomRowApostropheKeepsDeleteWidth() {
         let spacing: CGFloat = 6
@@ -236,14 +236,14 @@ extension KeyboardLayoutMetricsTests {
         XCTAssertEqual(qwerty.shift, qwerty.delete, accuracy: 0.01)
         XCTAssertEqual(qwerty.apostrophe, 0)
         XCTAssertEqual(qwerty.shift + qwerty.letter * 7 + qwerty.delete + spacing * 8, rowWidth, accuracy: 0.01)
-        // 中段(9 字)の右端に半分幅のアポストロフィー。英字は上段(10 字)より広いまま
+        // 中段(9 字)の右端に半分幅のアポストロフィー。ラテン文字は上段(10 字)より広いまま
         let middleApostrophe = KeyboardRootView.portraitQwertyMiddleRowApostropheWidth(
             availableRowWidth: rowWidth, spacing: spacing, letterCount: 9)
         let middleLetter = (rowWidth - middleApostrophe - spacing * 9) / 9
         XCTAssertEqual(middleApostrophe, middleLetter / 2, accuracy: 0.01)
         XCTAssertGreaterThan(middleLetter, (rowWidth - spacing * 9) / 10, "中段 \(middleLetter) は上段より広い")
 
-        // AZERTY: 英字 6 字、余白なし。以前は シフト+6 字+削除 の 8 キーが等幅
+        // AZERTY: ラテン文字 6 字、余白なし。以前は シフト+6 字+削除 の 8 キーが等幅
         let azerty = KeyboardRootView.portraitLatinBottomRowKeyMetrics(
             availableRowWidth: rowWidth, spacing: spacing, slackWidth: 0, letterCount: 6, includesApostrophe: true)
         let previousAzertyKey = (rowWidth - spacing * 7) / 8
@@ -253,8 +253,8 @@ extension KeyboardLayoutMetricsTests {
         XCTAssertEqual(
             azerty.shift + azerty.letter * 6 + azerty.apostrophe + azerty.delete + spacing * 8,
             rowWidth, accuracy: 0.01)
-        // AZERTY は分け合う英字が 6 字なので 1 字あたり 4.2pt(QWERTY は 3.1pt)。シフトと削除は縮めない(3514)
-        XCTAssertGreaterThan(azerty.letter, previousAzertyKey - 4.5, "英字の幅 \(azerty.letter) ← \(previousAzertyKey)")
+        // AZERTY は分け合うラテン文字が 6 字なので 1 字あたり 4.2pt(QWERTY は 3.1pt)。シフトと削除は縮めない(3514)
+        XCTAssertGreaterThan(azerty.letter, previousAzertyKey - 4.5, "ラテン文字の幅 \(azerty.letter) ← \(previousAzertyKey)")
     }
 }
 

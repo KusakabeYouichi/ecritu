@@ -44,7 +44,7 @@ enum KeyboardStuckTouchDiagnostics {
 // 生タッチ駆動の長押し(3516)。縦画面では画面下端のシステム操作の門番(_UISystemGestureGate)が、下の段に
 // 触れた touch を約 0.75 秒握ってから SwiftUI のジェスチャーへ配る(3172 で名指し。待ちの指定を外しても
 // 効かず、門番を止めるとホストが落ちた 3173/3181)。一方、面に付けた素の UIGestureRecognizer には
-// 30ms 以内に届く(3150 の実測)。そこで、アクサン候補を持つ英字キー(フリックの効かないキー)だけ、
+// 30ms 以内に届く(3150 の実測)。そこで、アクサン候補を持つラテン文字キー(フリックの効かないキー)だけ、
 // 素の認識器で見た touch から長押しの待ちを数え、盤を SwiftUI の判定より先に出す。
 //
 // 役割分担: ここは「触れた位置がどのキーか」「0.35 秒経った」「指が動いた/離れた」を Combine で流すだけ。
@@ -605,7 +605,7 @@ struct FlickKeyView: View {
             }
 
         }
-        // 横長の長押しパネル(英字のアクセント候補)もキーの大きさに影響しない overlay に置く(3488)。以前は ZStack の
+        // 横長の長押しパネル(ラテン文字のアクセント候補)もキーの大きさに影響しない overlay に置く(3488)。以前は ZStack の
         // 子で、パネルの幅までキーが広がり同じ段の他のキーを押し縮めていた(上段では消えた。ユーザ報告の画像)
         .overlay {
             if longPressIsActive,
@@ -1300,7 +1300,7 @@ struct FlickKeyView: View {
     // 盤を出したまま何も選ばずに離したとき、これ以内なら「ただのタップ」とみなす(3174)
     static let paletteTapReleaseMaxMs = 400
 
-    // 生タッチ駆動の長押し(RawTouchLongPress 3516)の対象: アクサン候補を持ちフリックの効かない英字キー
+    // 生タッチ駆動の長押し(RawTouchLongPress 3516)の対象: アクサン候補を持ちフリックの効かないラテン文字キー
     private var isRawLongPressDriven: Bool {
         !allowsDirectionalFlick && !longPressCandidates.isEmpty && longPressCandidateAxis == .horizontal && onLongPress == nil
     }
