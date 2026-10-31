@@ -71,6 +71,8 @@ enum RawTouchLongPress {
         let keyID: String
         let globalX: CGFloat
         let kind: Kind
+        // 指の高さ(.move だけ。アクサン候補の盤へ真上に動いたかを見る 3613)
+        var globalY: CGFloat = 0
     }
 
     static let events = PassthroughSubject<Event, Never>()
@@ -174,7 +176,7 @@ enum RawTouchLongPress {
         }
         lastGlobalX = point.x
         if let activeKeyID {
-            events.send(Event(keyID: activeKeyID, globalX: point.x, kind: .move))
+            events.send(Event(keyID: activeKeyID, globalX: point.x, kind: .move, globalY: point.y))
         }
     }
 
@@ -364,6 +366,11 @@ enum LongPressHorizontalCandidateHitTest {
     // 出た直後の 1 番目から、指が半マス以上動いたキー。FlickKeyView に格納プロパティを足すとキー群の
     // 巨大なタプルが太る(2921 のスタック超過)ので、ここに置く。盤は同時に 1 つしか出ない
     static var keyIDLeftAnchor: String?
+
+    // 出た直後の 1 番目から離れたか。横に半マス以上動くか、キーの上端(localY = 0)を越えて盤へ入ったら離れた(3613)
+    static func hasLeftAnchor(deltaX: CGFloat, localY: CGFloat, slotWidth: CGFloat) -> Bool {
+        abs(deltaX) >= slotWidth * 0.5 || localY < 0
+    }
 
     // localX はキーの左端からの位置。パネルはキーの中央に置いて panelOffsetX だけ寄せたもの
     static func index(
@@ -1089,7 +1096,7 @@ struct FlickKeyView: View {
                 if longPressIsActive {
                     highlightedLongPressIndex = longPressCandidateAxis == .vertical
                         ? longPressIndex(forVertical: value.location.y)
-                        : longPressIndex(for: value.location.x)
+                        : longPressIndex(for: value.location.x, localY: value.location.y)
                     return
                 }
 
@@ -1321,7 +1328,7 @@ struct FlickKeyView: View {
                 return
             }
             latestTouchLocationX = localX
-            highlightedLongPressIndex = longPressIndex(for: localX)
+            highlightedLongPressIndex = longPressIndex(for: localX, localY: event.globalY - keyFrameInGlobal.minY)
         case .end:
             guard longPressIsActive, !isGestureInProgress else {
                 return
@@ -1516,15 +1523,20 @@ struct FlickKeyView: View {
         )
     }
 
-    private func longPressIndex(for locationX: CGFloat) -> Int {
+    private func longPressIndex(for locationX: CGFloat, localY: CGFloat) -> Int {
         guard !longPressCandidates.isEmpty else {
             return 0
         }
 
-        // 出た直後は 1 番目(元の文字)。指が半マス以上動いてからは、指の真下の候補を選ぶ(3590)
+        // 出た直後は 1 番目(元の文字)。指が横に半マス以上動くか、キーの上端を越えて盤へ入ってからは、指の真下の候補を選ぶ
+        // (3590。真上の盤へ動かしても 1 番目のままで、e の真上の é が選べなかった。3613、ユーザ報告)
         let slotWidth = effectiveCandidateCellWidth + Metrics.candidateSpacing
         if LongPressHorizontalCandidateHitTest.keyIDLeftAnchor != rawLongPressKeyID {
-            guard abs(locationX - longPressAnchorLocationX) >= slotWidth * 0.5 else {
+            guard LongPressHorizontalCandidateHitTest.hasLeftAnchor(
+                deltaX: locationX - longPressAnchorLocationX,
+                localY: localY,
+                slotWidth: slotWidth
+            ) else {
                 return 0
             }
             LongPressHorizontalCandidateHitTest.keyIDLeftAnchor = rawLongPressKeyID

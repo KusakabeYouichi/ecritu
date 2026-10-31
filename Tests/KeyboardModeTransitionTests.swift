@@ -1683,3 +1683,20 @@ final class LongPressHorizontalCandidateHitTestTests: XCTestCase {
         XCTAssertEqual(index(localX: 500), 8)
     }
 }
+
+// 出た直後の 1 番目(元の文字)から離れたか(3613)。横に半マス、またはキーの上端を越えて盤へ入ったら離れた
+final class LongPressHorizontalCandidateLeaveAnchorTests: XCTestCase {
+    // 真上へ動かして盤へ入ったら、横に動いていなくても指の真下を選ぶ(e の真上の é。ユーザ報告)
+    func testMovingStraightUpIntoPanelLeavesAnchor() {
+        XCTAssertTrue(LongPressHorizontalCandidateHitTest.hasLeftAnchor(deltaX: 0, localY: -1, slotWidth: 37))
+    }
+
+    // キーの中で少し揺れただけなら 1 番目のまま
+    func testSmallWobbleInsideKeyKeepsAnchor() {
+        XCTAssertFalse(LongPressHorizontalCandidateHitTest.hasLeftAnchor(deltaX: 10, localY: 5, slotWidth: 37))
+    }
+
+    func testHalfSlotSidewaysLeavesAnchor() {
+        XCTAssertTrue(LongPressHorizontalCandidateHitTest.hasLeftAnchor(deltaX: -18.5, localY: 20, slotWidth: 37))
+    }
+}
