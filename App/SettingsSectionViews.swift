@@ -740,15 +740,20 @@ struct KanaPostModifierEmptyTapAssignmentSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            HStack(alignment: .firstTextBaseline, spacing: 2) {
+            // 見出しはキーの名前で呼び、あひるは括弧の中に添える(3618。修飾キーの表示はガイド表示オフのときだけ
+            // あひるで、ふつうは ^_^/小/゛/゜ なので、あひるを見出しの頭に置くと別のキーに見える)
+            HStack(alignment: .firstTextBaseline, spacing: 0) {
+                Text("E.6 修飾キー(")
+                    .font(.headline)
                 DakutenDuckCompositeIconView()
                     .frame(width: 18, height: 18)
                     .alignmentGuide(.firstTextBaseline) { dimensions in
                         dimensions[VerticalAlignment.center] + 6
                     }
-                SettingsCardHeadline("E.6 タップ (後置修飾、未確定なし)")
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.85)
+                Text(")のタップ (後置修飾、未確定なし)")
+                    .font(.headline)
+                SettingsModifiedMark(title: "E.6 修飾キーのタップ (後置修飾、未確定なし)")
+                    .padding(.leading, 5)
             }
 
             VStack(spacing: 8) {

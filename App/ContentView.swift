@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20261031170533"
+    private static let editionUpdatedAtRaw: String = "20261031230400"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -756,11 +756,11 @@ struct ContentView: View {
         str(SettingsKeys.kanaModeSwitcherRightFlickAction, kanaModeSwitcherRightFlickActionRawValue, "左端のモード切り替え列の割り当て: 左端最下段 右フリック")
         str(SettingsKeys.compactKeyboardSwitchKeyRightFlickAction, compactKeyboardSwitchKeyRightFlickActionRawValue, "左端のモード切り替え列の割り当て: 🌐 キー 右フリック")
         str(SettingsKeys.compactKeyboardSwitchKeyUpFlickAction, compactKeyboardSwitchKeyUpFlickActionRawValue, "左端のモード切り替え列の割り当て: 🌐 キー 上フリック")
-        str(SettingsKeys.kanaPostModifierEmptyTapAction, kanaPostModifierEmptyTapActionRawValue, "タップ (後置修飾、未確定なし)")
+        str(SettingsKeys.kanaPostModifierEmptyTapAction, kanaPostModifierEmptyTapActionRawValue, "修飾キーのタップ (後置修飾、未確定なし)")
         // カテゴリーは内部ID(0/1/shortcut等)ではなく、キーボードのヘッダーに表示されるタイトルで書き出す(YAMLは書き出し専用)
-        str(SettingsKeys.kanaPostModifierEmptyTapKaomojiCategory, KaomojiCategoryChoice.displayTitle(forID: kanaPostModifierEmptyTapKaomojiCategoryID), "タップ (後置修飾、未確定なし): 切替時に開くカテゴリー(顔文字)")
-        str(SettingsKeys.kanaPostModifierEmptyTapEmojiCategory, EmojiCategoryChoice.displayTitle(forID: kanaPostModifierEmptyTapEmojiCategoryID), "タップ (後置修飾、未確定なし): 切替時に開くカテゴリー(絵文字)")
-        str(SettingsKeys.kanaPostModifierEmptyTapSymbolCategory, SymbolCategoryChoice.displayTitle(forID: kanaPostModifierEmptyTapSymbolCategoryID), "タップ (後置修飾、未確定なし): 切替時に開くカテゴリー(記号)")
+        str(SettingsKeys.kanaPostModifierEmptyTapKaomojiCategory, KaomojiCategoryChoice.displayTitle(forID: kanaPostModifierEmptyTapKaomojiCategoryID), "修飾キーのタップ (後置修飾、未確定なし): 切替時に開くカテゴリー(顔文字)")
+        str(SettingsKeys.kanaPostModifierEmptyTapEmojiCategory, EmojiCategoryChoice.displayTitle(forID: kanaPostModifierEmptyTapEmojiCategoryID), "修飾キーのタップ (後置修飾、未確定なし): 切替時に開くカテゴリー(絵文字)")
+        str(SettingsKeys.kanaPostModifierEmptyTapSymbolCategory, SymbolCategoryChoice.displayTitle(forID: kanaPostModifierEmptyTapSymbolCategoryID), "修飾キーのタップ (後置修飾、未確定なし): 切替時に開くカテゴリー(記号)")
         bool(SettingsKeys.kanaPostModifierFlickDakutenEnabled, kanaPostModifierFlickDakutenEnabled, "後置修飾キーのフリックで濁点・半濁点")
         str(SettingsKeys.kanaYaBracketStyle, kanaYaBracketStyleRawValue, "『や』キーの左右フリックの括弧")
         str(SettingsKeys.numberThousandsSeparator, numberThousandsSeparatorRawValue, "format numérique: Séparateur de milliers")
