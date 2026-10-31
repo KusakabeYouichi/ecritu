@@ -5739,13 +5739,17 @@ extension KanaKanjiConverter {
         // 先頭 2 ノード(移動+だ)を LM 未収録の漢字 1 ノード(収穫の人名 伊藤田)が覆えるとき、それを強制した経路を末尾に温存する(3610、
         // ユーザ指定: いどうだなんて は 移動だなんて が先頭になった(3609)が、以前先頭だった 伊藤田なんて も末尾に残す)。
         // 区切りの違う経路は 1 文節差し替えの変種では作れない。変種枠の外に 1 件だけ追記する(レアな地名+なんて 等)
+        // 文頭の裸の 1 字助詞(は+まだ)を語(浜田)が覆うときも、LM の有無に関係なく同じく温存する
+        // (ユーザ指定 3611: はまだなれない は はまだ慣れない が先頭、浜田慣れない 等も残す)
         if pathIndices.count >= 3 {
             let first = nodes[pathIndices[0]]
             let second = nodes[pathIndices[1]]
-            if first.start == 0, !first.isKanaIdentity,
+            let leadIsBareParticle = first.reading.count == 1 && first.surface == first.reading
+                && Self.multiClauseSingleTopParticleTails.contains(first.reading.first!)
+            if first.start == 0, !first.isKanaIdentity || leadIsBareParticle,
                 let mergedIdx = nodesStartingAt[first.start].first(where: {
                     nodes[$0].end == second.end && Self.isAllKanjiSurface(nodes[$0].surface)
-                        && nodes[$0].surface.count >= 2 && unigramCosts[nodes[$0].surface] == nil
+                        && nodes[$0].surface.count >= 2 && (leadIsBareParticle || unigramCosts[nodes[$0].surface] == nil)
                 }),
                 let alternative = solveViterbi(allowedStartNodeIndex: nil, requiredNodeIndices: [mergedIdx]),
                 alternative.bestTotal - bestTotal <= Self.multiClauseMergedLeadTailMaxDelta {

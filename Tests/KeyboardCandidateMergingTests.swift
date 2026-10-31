@@ -199,6 +199,11 @@ extension KeyboardCandidateMergingTests {
             SupplementaryCandidateMerger.promotingPresentationOrderSeed(["放射", "硼砂", "ホウ砂", "報謝"], reading: "ほうしゃ"),
             ["放射", "ホウ砂", "硼砂", "報謝"]
         )
+        // 3611: 炊かそう は 高価そう の後ろ
+        XCTAssertEqual(
+            SupplementaryCandidateMerger.promotingPresentationOrderSeed(["炊かそう", "高そう", "高価そう", "貴三"], reading: "たかそう"),
+            ["高そう", "高価そう", "炊かそう", "貴三"]
+        )
     }
 
     // 3602: 知能/智能 は書きかえの日常語の例外(本来の漢字を先に の設定でも 知能 が先)

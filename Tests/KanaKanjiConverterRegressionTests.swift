@@ -21124,6 +21124,28 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("ようかかりうむ").first, "ヨウ化カリウム")
     }
 
+    // 3611: ユーザ報告(高かそう/のとこ/三絃の/はまだ慣れない)
+    func testRegressionRealLMUserReport3611() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        func multi(_ reading: String) -> [String] {
+            converter.invalidateCandidateCache()
+            return converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+        }
+        // 高かい(非標準の送り仮名)を抑制して 高かそう を作らない。高価そう は残す
+        converter.invalidateCandidateCache()
+        let takasou = converter.candidates(for: "たかそう", limit: 8, systemCandidateMode: .surface)
+        XCTAssertFalse(takasou.contains("高かそう"), "\(takasou)")
+        XCTAssertTrue(takasou.contains("高価そう"), "\(takasou)")
+        XCTAssertEqual(multi("ふらんすごのとこだけ").first, "フランス語のとこだけ")
+        XCTAssertEqual(multi("へやのとこのま").first, "部屋の床の間")
+        XCTAssertEqual(Array(multi("さんしんの").prefix(2)), ["三振の", "三絃の"])
+        let hamada = multi("はまだなれない")
+        XCTAssertEqual(hamada.first, "はまだ慣れない", "\(hamada)")
+        XCTAssertTrue(hamada.contains { $0.hasPrefix("浜田") }, "\(hamada)")
+        XCTAssertEqual(multi("はまだのいえ").first, "浜田の家")
+    }
+
     // 3380: よしのや は 吉野家 が先頭(Sudachi の wc10000 で後ろに回され 吉野+や の合成が先頭だった)
     func testYoshinoyaRegistered() throws {
         try prepareRealLMDictionary()
