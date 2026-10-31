@@ -196,6 +196,7 @@
 	<dict><key>phrase</key><string>AI</string><key>shortcut</key><string>えいあい</string></dict>
 	<dict><key>phrase</key><string>AI</string><key>shortcut</key><string>えーあい</string></dict>
 	<dict><key>phrase</key><string>Claude</string><key>shortcut</key><string>くろーど</string></dict>
+	<dict><key>phrase</key><string>Claude Code</string><key>shortcut</key><string>くろーどこーど</string></dict>
 	<dict><key>phrase</key><string>GPT</string><key>shortcut</key><string>じーぴーてぃー</string></dict>
 	<dict><key>phrase</key><string>Gemini</string><key>shortcut</key><string>じぇみに</string></dict>
 	<dict><key>phrase</key><string>Mythos</string><key>shortcut</key><string>みとす</string></dict>
@@ -208,7 +209,6 @@
 	<dict><key>phrase</key><string>Fable</string><key>shortcut</key><string>ふぇいぶる</string></dict>
 	<dict><key>phrase</key><string>Fable 5</string><key>shortcut</key><string>ふぇいぶる</string></dict>
 	<dict><key>phrase</key><string>Fable 5</string><key>shortcut</key><string>ふぇいぶるふぁいゔ</string></dict>
-
 	<!-- SNS -->
 	<dict><key>phrase</key><string>Threads</string><key>shortcut</key><string>すれっず</string></dict>
 	<dict><key>phrase</key><string>YouTube</string><key>shortcut</key><string>ゆーちゅーぶ</string></dict>

@@ -942,5 +942,13 @@
 	        <dict><key>phrase</key><string>sommelière</string><key>shortcut</key><string>そむりえーる</string></dict>
 	        <dict><key>phrase</key><string>ソムリエール</string><key>shortcut</key><string>そむりえーる</string></dict>
 	        <dict><key>phrase</key><string>タカシマヤ</string><key>shortcut</key><string>たかしまや</string></dict>
+	        <dict><key>phrase</key><string>御学所</string><key>shortcut</key><string>おがくしょ</string></dict>
+	        <dict><key>phrase</key><string>御学所</string><key>shortcut</key><string>ごがくしょ</string></dict>
+	        <dict><key>phrase</key><string>御学問所</string><key>shortcut</key><string>おがくもんじょ</string></dict>
+	        <dict><key>phrase</key><string>御学問所</string><key>shortcut</key><string>ごがくもんじょ</string></dict>
+	        <dict><key>phrase</key><string>華族会館</string><key>shortcut</key><string>かぞくかいかん</string></dict>
+	        <dict><key>phrase</key><string>霞会館</string><key>shortcut</key><string>かすみかいかん</string></dict>
+	        <dict><key>phrase</key><string>Thanksgiving</string><key>shortcut</key><string>さんくすぎゔぃんぐ</string></dict>
+	        <dict><key>phrase</key><string>サンクスギヴィング</string><key>shortcut</key><string>さんくすぎゔぃんぐ</string></dict>
 </array>
 </plist>
