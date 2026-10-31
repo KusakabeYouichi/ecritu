@@ -8202,8 +8202,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // 提示層がかな候補を除去せず残す根拠(のね を剥がした ある が辞書かな語)
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "あるのね"))
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "ひらがなのは"))
-        // 語幹が2字未満(のね だけ)は対象外(空語幹で誤発火しない)
-        XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "のね"))
+        // 語幹が2字未満(のね だけ)はこの規則の対象外。単独の のね は付属語の連なりの断片として別の規則で真(3634)
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "のね"))
     }
 
     // ひらがななのは: コピュラ な を挟む名詞化(ひらがな+な+のは)。stem 剥がしが のは のみで
@@ -13454,7 +13454,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // 提示層: 根拠が無いとかな最良が末尾へ退避し 公なるのか が先頭化していた(実機トレース 2669)
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "こうなるのか"))
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "どうなるのかな"))
-        XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "のか"))
+        // 単独の のか は付属語の連なりの断片として真(3634)
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "のか"))
     }
 
     // さすが をかな副詞に(指す+が 分割が勝っていた)。seed 順変種で 流石Apple を2番目に(2666)
@@ -23042,6 +23043,19 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(kite.first, "ぜひ来てください", "multi=\(kite)")
         let noun = converter.multiClauseCandidates(for: "そのぜひをとう", systemCandidateMode: .surface)
         XCTAssertTrue(noun.first?.hasPrefix("その是非を") ?? false, "名詞の 是非 multi=\(noun)")
+    }
+
+    // のです/のだ/のに を単独で打ったとき(断片)、かな識別を末尾に回さない(3634、ユーザ報告: 乃です が先頭に見えていた)
+    func testRegressionRealLMFunctionWordFragmentsKeepKanaLeading() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for fragment in ["のです", "のだ", "のに", "んです"] {
+            XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: fragment), fragment)
+        }
+        let nodesu = converter.candidates(for: "のです", limit: 3, systemCandidateMode: .surface)
+        XCTAssertEqual(nodesu.first, "のです", "single=\(nodesu)")
+        let iku = converter.multiClauseCandidates(for: "いくのです", systemCandidateMode: .surface)
+        XCTAssertEqual(iku.first, "行くのです", "multi=\(iku)")
     }
 
     // みにおぼえがない→身に覚えがない(3556、ユーザ報告: ミニ覚えがない)。慣用句 身に覚え を misc.plist に curated 登録

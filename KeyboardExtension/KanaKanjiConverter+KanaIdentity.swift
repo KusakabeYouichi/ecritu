@@ -111,6 +111,12 @@ extension KanaKanjiConverter {
         if Self.kanaHarvestDemotedReadings.contains(normalized) {
             return false
         }
+        // 述語の直後に続く付属語の連なり(のです/のだ/んです/のに 等。multiClausePredicateFollowingFunctionReadings)を
+        // 単独で打ったとき(断片として使う)、かなが唯一の正書なのに根拠が無く、表示層が かな を末尾へ回して 乃です が
+        // 先頭に見えていた(ユーザ報告 3633。ので は seed、のですが は か/が の剥がしで既に真)
+        if Self.multiClausePredicateFollowingFunctionReadings.contains(normalized) {
+            return true
+        }
         // 比較の より(は/も)+まし(ないよりはましだ)はかなが正書。連文節はかな最良を返すが、根拠が無いと全かなエコー抑制で
         // 落ちて 増しだ/倍田 の変種だけが残る(ユーザ報告 2898)
         for phrase in ["よりはまし", "よりもまし", "よりまし"] where normalized.contains(phrase) {
