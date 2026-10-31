@@ -1404,6 +1404,7 @@ struct ModeSwitchColumnKey: View {
     let rightFlickLabel: String
     // かなのフリックガイドと同じ条件で、右上の隅に行き先の字を小さく出す
     var showsRightFlickHint = false
+    // 長押し(0.4 秒)の割り当て。nil なら押し続けたときにタップと同じ切り替えを行なう(指を離す前に)
     var onLongPress: (() -> Void)? = nil
     let onTap: () -> Void
     let onRightFlick: () -> Void
@@ -1587,17 +1588,20 @@ struct ModeSwitchColumnKey: View {
     // 長押しの待ち時間は指が触れた時刻から数える(FlickKeyView.longPressDelayCompensation と同じ考え。3515)。
     // 下段では触れてから届くまでに配送の遅れがあるので、届いてから数えると遅く見える
     private func scheduleLongPressIfNeeded(touchTime: Date) {
-        // 長押しはタップと同じく、今いる面のキー(灰色)では効かせない(ActionKeyButton のときと同じ)
-        guard onLongPress != nil, isTapEnabled else {
+        // 長押しはタップと同じく、今いる面のキー(灰色)では効かせない(ActionKeyButton のときと同じ)。
+        // 長押しの割り当てが無いキー([123][あい])は、押し続けたら指を離す前に切り替える(ユーザ指定 3622。
+        // 右フリックを足した結果、離すまで何も起きないのが待たされて見えた)
+        guard isTapEnabled else {
             return
         }
+        let holdAction = onLongPress ?? onTap
         cancelLongPress()
         let workItem = DispatchWorkItem {
-            guard isTouching, !isRightFlickActive, let onLongPress else {
+            guard isTouching, !isRightFlickActive else {
                 return
             }
             didTriggerLongPress = true
-            onLongPress()
+            holdAction()
         }
         longPressWorkItem = workItem
         let deliveryDelay = RawTouchLongPress.uptimeNow() - touchTime.timeIntervalSinceReferenceDate
