@@ -713,7 +713,7 @@ struct ShortcutDictionarySettingsSection: View {
                 .frame(height: listHeight)
             }
 
-            Text("ショートカット語彙は顔文字入力の先頭側に表示され、固定顔文字とは区切り線で分離されます。")
+            Text("ショートカット語彙は顔文字パネルの[ショートカット]カテゴリー(⚡️)に、この一覧の順に並びます。絵文字パネル・顔文字パネルで確定した文字は先頭に自動で足されます。")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
