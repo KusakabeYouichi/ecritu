@@ -185,6 +185,7 @@
 	<dict><key>phrase</key><string>見谷</string><key>shortcut</key><string>みたに</string></dict>
 
 	<!-- ■ 収穫ノイズ: レア語・レア読み(実在するが日常入力では雑音) -->
+	<dict><key>phrase</key><string>佚</string><key>shortcut</key><string>いつ</string></dict>	<!-- 佚(いつ): 逸 の古い字。単独では使わず、いつくうの が 佚空の に合成された(ユーザ報告 3630) -->
 	<dict><key>phrase</key><string>稲氷</string><key>shortcut</key><string>いないの</string><key>pos</key><string>名詞</string></dict>	<!-- 稲氷(いないの): Sudachi のレア語(LM 未収録)。いないのかな の単文節の先頭が 稲氷かな になり、候補欄の 2 番めに割り込んでいた(ユーザ報告 3754) -->
 	<dict><key>phrase</key><string>可</string><key>shortcut</key><string>かなり</string></dict>	<!-- 可なり の縮約(Sudachi rank0)。副詞 かなり の変換で 可 が先頭に出てストレス源(ユーザ指定 2736) -->
 	<dict><key>phrase</key><string>釈ける</string><key>shortcut</key><string>とける</string></dict>	<!-- 解ける の稀な表記。氷が釈けて が 氷が解けて の直後に並び紛らわしい(ユーザ指定 2739) -->

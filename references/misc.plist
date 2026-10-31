@@ -342,6 +342,7 @@
 	<dict><key>phrase</key><string>としかない</string><key>shortcut</key><string>としかない</string></dict>
 	<dict><key>phrase</key><string>志望動機</string><key>shortcut</key><string>しぼうどうき</string></dict>	<!-- 志望動機(辞書に無く 死亡同期/脂肪同期 の合成が並んだ。ユーザ報告 3633) -->
 	<dict><key>phrase</key><string>だけだってば</string><key>shortcut</key><string>だけだってば</string></dict>	<!-- 口語の言い切り(ってば)。連文節は だけだって+場 に割れて だけだって場 が先頭だった(ユーザ報告 3631) -->
+	<dict><key>phrase</key><string>だってば</string><key>shortcut</key><string>だってば</string></dict>	<!-- 口語の言い切り(ってば)単独。連文節は だって+場 に割れて だって場 が先頭だった(ユーザ報告 3630)。製成(酒造用語)は misc から外した(Sudachi にあり seed で 3 位。curated の床 1500 で せいせいだってば が 製成 先頭になった) -->
 	<dict><key>phrase</key><string>気のせい</string><key>shortcut</key><string>きのせい</string></dict>	<!-- 慣用句。連文節は 木+の+せい(気 が 木 より 516 高く、の→せい の連接も無い)で 木のせい/木の製 ばかりになり 気のせい が出なかった(ユーザ報告 3618)。1 ノード化 -->
 	<dict><key>phrase</key><string>ルセット</string><key>shortcut</key><string>るせっと</string></dict>	<!-- ルセット(辞書の 1 語): 連文節は る+セット(セット の頻度)の 2 ノードが 75 だけ安く、るセット/るセット通りに になっていた(ユーザ報告 3620)。curated 化して 1 語を先頭に -->
 	<dict><key>phrase</key><string>タイポ</string><key>shortcut</key><string>たいぽ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- タイポ(誤字): 辞書に無く、たいぽ→対ぽ/タイぽ、たいぽする→対ぽする になっていた。サ変名詞(タイポする/タイポした)(ユーザ報告 3622) -->
@@ -754,7 +755,6 @@
 	        <dict><key>phrase</key><string>その後</string><key>shortcut</key><string>そのご</string></dict><!-- [そのあと]ならある -->
 	        <dict><key>phrase</key><string>母方</string><key>shortcut</key><string>ははがた</string></dict><!-- [ははかた]ならある -->
 	        <dict><key>phrase</key><string>父方</string><key>shortcut</key><string>ちちがた</string></dict><!-- [ちちかた]ならある -->
-	        <dict><key>phrase</key><string>製成</string><key>shortcut</key><string>せいせい</string></dict>	<!-- Sudachiにもある -->	<!-- 酒造用語。日常語の 生成/精製 を優先するため seed で3位に置く(2564) -->
 	        <dict><key>phrase</key><string>芯</string><key>shortcut</key><string>しん</string></dict><!-- 単独でもない!! -->
 	        <dict><key>phrase</key><string>ラバーダッキー</string><key>shortcut</key><string>らばーだっきー</string></dict><!-- 単独でもない!! -->
 	        <dict><key>phrase</key><string>グランメゾン</string><key>shortcut</key><string>ぐらんめぞん</string></dict><!-- 単独でもない!! -->

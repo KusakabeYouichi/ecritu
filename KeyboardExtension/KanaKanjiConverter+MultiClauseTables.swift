@@ -91,6 +91,9 @@ extension KanaKanjiConverter {
         "の\t一": 2500,
         // の+もの の変種は 物 を 者 より先に(東京の物よね→東京の者よね。差 211。ユーザ指定 3617)。最良経路(者 が LM で先の文)はそのまま
         "の\t者": 400,
+        // に+着た/着て/着る は変種に出さない(着る は を を取る。沖縄に着たばかりの頃 が 来た と同点で 2 番目だった。ユーザ報告 3630)。
+        // 最良経路は に→来た のカ変供給が勝つが、変種は素のコスト差(同点)で並ぶため上限 4000 超で落とす
+        "に\t着た": 4500, "に\t着て": 4500, "に\t着る": 4500,
         // 小説+描いて/掻いて/買い手 は変種に出さない(小説を描く とは言わない。3767、ユーザ指定)。上限 4000 を超えるので変種から落ちる
         "小説\t描いて": 5000, "小説\t掻いて": 5000, "小説\t買い手": 5000, "小説\t買手": 5000, "小説\t飼手": 5000
     ]
@@ -1488,6 +1491,11 @@ extension KanaKanjiConverter {
         "の\tとこ": 1800,
         "三絃\tの": 1200, "三絃\tを": 1200, "三絃\tが": 1200, "三絃\tは": 1200, "三絃\tで": 1200, "三絃\tと": 1200, "三絃\tも": 1200,
         "まだ\t慣れない": 3000, "は\tまだ": 2500,
+        // いつくうの→いつ空の(空 5055 < 食う 6911 の unigram だけで決まり、LM に いつ→食う/空 の連接が無い。ユーザ報告 3630)。
+        // 疑問詞 いつ の後ろは動詞。喰う も 空 より前に(ユーザ指定の並び いつ食うの/いつ喰うの)
+        "いつ\t食う": 2000, "いつ\t喰う": 2500,
+        // の/その/あの/この+ころ は かな(〜のころ。頃 は の→頃 3726 < の→ころ 4234 で 508 差。ユーザ報告 3630)。単文節は seed で ころ 先頭
+        "の\tころ": 1000, "その\tころ": 1000, "あの\tころ": 1000, "この\tころ": 1000,
         // の+は+知ら*(ユーザ報告: はいにえいきょうでるのはしらなかった→肺に影響出るの柱なかった/の走らなかった)。のは→知らなかった は
         // 活用派生の定額(+7200)で、の→柱(5428)+柱→なかった の区切りと 50 差しかなく負けていた。のは知らない 型の定型を加点する
         "のは\t知らなかった": 1500, "のは\t知らない": 1500, "のは\t知らなくて": 1500, "のは\t知りませんでした": 1500,
@@ -2147,6 +2155,17 @@ extension KanaKanjiConverter {
     static let multiClausePredicateFollowingCuratedNounPenalty = 6000
     // 裸の 1 字助詞(も/は/が…)の直後の の+終助詞クラスタ(も+のよね)の減点(適用箇所のコメント参照。3617)
     static let multiClauseNoClusterAfterBareParticlePenalty = 8000
+    // 丁寧の終止(です/ます/でした/ました)の直後に、読み 1 字・漢字 1 字の語(具/愚/巣…)が助詞なしで続く減点(適用箇所のコメント参照。3630)
+    static let multiClauseSingleKanjiAfterPoliteEndingPenalty = 3000
+    static let multiClausePoliteEndingSuffixes: [String] = ["でした", "ました", "です", "ます"]
+    // かなで書く言葉のうち、漢字を常に下げる仲間(副詞/接続詞/補助/指示語)を持つ読みか。形式名詞(述語の直後だけ)と
+    // 副詞(漢字も残す)は含めない(適用箇所のコメント参照。3630)
+    static func isKanaGakiAlwaysKanaReading(_ reading: String) -> Bool {
+        guard let entries = KanaGakiTable.categoryByReadingAndSurface[reading] else {
+            return false
+        }
+        return entries.values.contains { $0 != .formalNoun && $0 != .adverbKanaFirst }
+    }
     static let multiClauseParticleSwallowedVerbHeadStemMargin = 500
     static let multiClauseParticleSwallowedVerbHeadPenalty = 2500
     // 補助動詞 ておく(2798)。さくじょしておきながら が 削除して置きながら になっていた: 補助動詞は

@@ -21154,6 +21154,52 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("はまだのいえ").first, "浜田の家")
     }
 
+    // 3630: いつくうの→いつ空の/佚空の、さりげなく→さり気無く、なのですぐきづく→なのです具気づく、くだらない→下らない、
+    // おきなわにきたばかりのころ→沖縄に来たばかりの頃/沖縄に着たばかりの頃(ユーザ報告)
+    func testRegressionRealLMUserReport3630() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ reading: String) -> [String] {
+            converter.invalidateCandidateCache()
+            return converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+        }
+        func single(_ reading: String, limit: Int = 8) -> [String] {
+            converter.invalidateCandidateCache()
+            return converter.candidates(for: reading, limit: limit, systemCandidateMode: .surface)
+        }
+        let itsukuu = multi("いつくうの")
+        XCTAssertEqual(Array(itsukuu.prefix(2)), ["いつ食うの", "いつ喰うの"], "\(itsukuu)")
+        XCTAssertFalse(itsukuu.contains("佚空の"), "\(itsukuu)")
+        XCTAssertFalse(single("いつ").contains("佚"))
+        XCTAssertEqual(single("さりげなく"), ["さりげなく", "さり気なく", "さり気無く", "然りげ無く", "然り気無く"])
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "さりげなく"))
+        XCTAssertEqual(multi("なのですぐきづく").first, "なのですぐ気づく", "\(multi("なのですぐきづく"))")
+        XCTAssertEqual(single("くだらない").first, "くだらない", "\(single("くだらない"))")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "くだらない"))
+        let okinawa = multi("おきなわにきたばかりのころ")
+        XCTAssertEqual(Array(okinawa.prefix(2)), ["沖縄に来たばかりのころ", "沖縄に来たばかりの頃"], "\(okinawa)")
+        XCTAssertFalse(okinawa.contains("沖縄に着たばかりの頃"), "\(okinawa)")
+        XCTAssertEqual(Array(single("ころ").prefix(2)), ["ころ", "頃"], "\(single("ころ"))")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "ころ"))
+        // 隣の読みを崩さない
+        XCTAssertEqual(multi("そのころは").first, "そのころは")
+        XCTAssertEqual(multi("きたにいく").first, "北に行く")
+        XCTAssertEqual(multi("ふくをきた").first, "服を着た")
+        // だってば(口語の言い切り)は 1 語。製成(酒造用語、curated の床 1500)が 生成 を抜いていたので misc から外した
+        // 全かな最良は連文節の全かなエコー抑制で空になり、単文節(curated かな)と提示層のかな保持で先頭に出る
+        let datteba = multi("だってば")
+        XCTAssertTrue(datteba.isEmpty || datteba.first == "だってば", "\(datteba)")
+        XCTAssertEqual(single("だってば").first, "だってば", "\(single("だってば"))")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "だってば"))
+        XCTAssertEqual(multi("せいせいだってば").first, "生成だってば", "\(multi("せいせいだってば"))")
+        converter.invalidateCandidateCache()
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "せいせいだってば", systemCandidateMode: .surface, precedingCharacter: "I").first,
+            "生成だってば"
+        )
+        XCTAssertEqual(Array(single("せいせい").prefix(3)), ["生成", "精製", "製成"], "\(single("せいせい"))")
+    }
+
     // 3612: 日付(八日 等)と月名(四月 等)が出ない/かなのままだった
     func testRegressionRealLMDayAndMonthNames() throws {
         try prepareRealLMDictionary()

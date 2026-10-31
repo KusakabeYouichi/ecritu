@@ -2192,7 +2192,13 @@ extension KanaKanjiConverter {
                     containsKanji(surface)
                         || (isKanaIdentity
                             && !isCurated
-                            && !Self.multiClauseKanaIdentityFloorExemptReadingsID.contains(readingID)) {
+                            && !Self.multiClauseKanaIdentityFloorExemptReadingsID.contains(readingID)
+                            // かなで書く言葉(すぐ/かなり/ここ 等。KanaGakiTable)のかなは正当な高頻度かなで、断片ではない。
+                            // 漢字(直ぐ wc 4938)を抑制/かな先頭にしたのに、かな(すぐ wc 8075)が床上げで漢字より高くなり、
+                            // なのですぐきづく が なのです+具+気づく に割れていた(ユーザ報告 3630)。
+                            // 形式名詞(とき/こと/よう)は述語の直後だけ漢字を下げる仲間なので外さない(時は金なり/赤ワイン用 が崩れた)。
+                            // 副詞(漢字も残す)も漢字を下げないので外さない
+                            && !Self.isKanaGakiAlwaysKanaReading(reading)) {
                     base = max(base, wordCost)
                 }
                 // 会話的時相名詞の unigram キャップ(定数コメント参照)。観測 bigram
@@ -4127,6 +4133,14 @@ extension KanaKanjiConverter {
                             prevNode.isKanaIdentity, prevNode.reading.count == 1,
                             Self.multiClauseSingleTopParticleTails.contains(prevNode.reading.first!) {
                             cost += Self.multiClauseNoClusterAfterBareParticlePenalty
+                        }
+                        // 丁寧の終止(なのです/ます/でした)の直後に、読み 1 字・漢字 1 字の語(具/愚/巣…)が助詞なしで続くのは非文。
+                        // 文は終止で切れていて、続くなら終助詞・接続助詞(ね/よ/が/し。かな識別なので対象外)か句読点。
+                        // なのですぐきづく が なのです+具+気づく に割れた(具 6828 < すぐ 8075 で、なので+すぐ より安かった。ユーザ報告 3630)
+                        if !node.isKanaIdentity, node.reading.count == 1, node.surface.count == 1,
+                            Self.isKanjiOnlyString(node.surface),
+                            Self.multiClausePoliteEndingSuffixes.contains(where: { prevNode.surface.hasSuffix($0) }) {
+                            cost += Self.multiClauseSingleKanjiAfterPoliteEndingPenalty
                         }
                         // curated の名詞(香信 等)の直後に助詞なしで する/される の付属部が続くのは、その語がサ変名詞でない限り
                         // 非文(定数コメント参照。3054)。かな識別・派生の curated と、pos サ変で登録された語(有する)は対象外
