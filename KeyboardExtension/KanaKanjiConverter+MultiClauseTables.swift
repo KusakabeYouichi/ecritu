@@ -3141,6 +3141,10 @@ extension KanaKanjiConverter {
     // 助詞直後と同じく述語が続くのが自然なので活用派生の割引を許す(2818)。つぎにきたきゃく が
     // 次に(curated)+来た(OOV 7200)で 次に+北+客 に負けていた。かな識別(ついで 等)や 1 字は対象外
     static func isParticleTailedAdverbialSurface(_ surface: String, reading: String?) -> Bool {
+        // 副詞(漢字も残す)のかな識別(とくに)は漢字(特に)で判定する(同じ語の別表記。とくにお願いします が 特に のままだった。3633)
+        if let reading, surface == reading, let kanji = multiClauseAdverbKanaFirstKanjiByReading[reading] {
+            return isParticleTailedAdverbialSurface(kanji, reading: reading)
+        }
         guard surface.count >= 2, let last = surface.last, last == "に" || last == "で",
             let reading, reading.last == last, surface != reading else {
             return false
@@ -3290,6 +3294,12 @@ extension KanaKanjiConverter {
         guard node.isInflectionDerived || node.surface == node.reading else {
             return nil
         }
+        // 副詞(漢字も残す)のかな識別(ぜひ/とくに)は同じ語の別表記なので、漢字(是非/特に)の bigram を代用する。
+        // かな ぜひ には後続語との観測が無く、是非→お(是非お願いします)の実績に負けて、かな先頭の加点(3552)が
+        // あっても ぜひお願いします だけ 是非 が先頭に残っていた(ユーザ報告 3633)。直接の観測があればそちらが先
+        if !node.isInflectionDerived, let kanji = multiClauseAdverbKanaFirstKanjiByReading[node.reading] {
+            return kanji
+        }
         guard let tail = inflectionAuxTail(of: node.surface) else {
             return nil
         }
@@ -3304,6 +3314,15 @@ extension KanaKanjiConverter {
         }
         return tail
     }
+
+    // 副詞(漢字も残す)の読み→表(KanaGakiTable)で最初の漢字表記(ぜひ→是非、とくに→特に)。上の bigram 代用に使う
+    static let multiClauseAdverbKanaFirstKanjiByReading: [String: String] = {
+        var map: [String: String] = [:]
+        for entry in KanaGakiTable.entries[.adverbKanaFirst] ?? [] where map[entry.reading] == nil {
+            map[entry.reading] = entry.surface
+        }
+        return map
+    }()
 
     static func inflectionAuxTail(of surface: String) -> String? {
         for tail in multiClauseInflectionAuxTails where surface.hasSuffix(tail) {

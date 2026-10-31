@@ -519,5 +519,7 @@
 	<dict><key>phrase</key><string>出来る限り</string><key>shortcut</key><string>できるかぎり</string></dict>
 	<dict><key>phrase</key><string>何だかんだ</string><key>shortcut</key><string>なんだかんだ</string></dict>
 	<dict><key>phrase</key><string>実に</string><key>shortcut</key><string>げに</string></dict>
+	<!-- ぜひ: 単文節は 3602 で表示層がかなを先頭にしていたが、連文節(ぜひ買ってみて)は 是非 のままだった(ユーザ報告 3633)。名詞の 是非(是非を問う)は残す -->
+	<dict><key>phrase</key><string>是非</string><key>shortcut</key><string>ぜひ</string></dict>
 </array>
 </plist>

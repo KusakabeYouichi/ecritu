@@ -2076,8 +2076,10 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(kaishime.first, "買い占めよね", "multi=\(kaishime.prefix(4))")
 
         // せんじつはじめて: じつ 読みの 日 助数詞合成(1000日)を作らない
+        // 3633: はじめて は 副詞(漢字も残す)(X.8)で、かな はじめて が漢字 初めて の bigram(文末)を代用するようになり、
+        // かなが漢字のすぐ上に(はじめての/はじめてあった と同じ並び)
         let senjitsu = converter.multiClauseCandidates(for: "せんじつはじめて", systemCandidateMode: .surface)
-        XCTAssertEqual(senjitsu.first, "先日初めて", "multi=\(senjitsu.prefix(4))")
+        XCTAssertEqual(Array(senjitsu.prefix(2)), ["先日はじめて", "先日初めて"], "multi=\(senjitsu.prefix(4))")
         XCTAssertFalse(senjitsu.prefix(4).contains { $0.contains("1000日") || $0.contains("千日") },
                        "multi=\(senjitsu.prefix(4))")
     }
@@ -23015,6 +23017,31 @@ extension KanaKanjiConverterRegressionTests {
         // 連文節でも かな先頭(抑制しない仲間)
         let multi = converter.multiClauseCandidates(for: "とくにきをつけて", systemCandidateMode: .surface)
         XCTAssertEqual(multi.first, "とくに気をつけて", "multi=\(multi)")
+    }
+
+    // ぜひ を 副詞(漢字も残す)に(3633、ユーザ報告: ぜひかってみて が 是非買ってみて)。連文節でかなを先頭に、是非 は残す。
+    // かな ぜひ は漢字 是非 の bigram を代用(ぜひお願いします)。名詞の 是非(その是非を問う)は bigram で 是非 のまま
+    func testRegressionRealLMZehiKanaFirstInMultiClause() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        XCTAssertEqual(KanaGakiTable.categoryByReadingAndSurface["ぜひ"]?["是非"], .adverbKanaFirst)
+        XCTAssertEqual(KanaKanjiConverter.multiClauseAdverbKanaFirstKanjiByReading["ぜひ"], "是非")
+        let single = converter.candidates(for: "ぜひ", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(2)), ["ぜひ", "是非"], "single=\(single)")
+        let katte = converter.multiClauseCandidates(for: "ぜひかってみて", systemCandidateMode: .surface)
+        XCTAssertEqual(katte.first, "ぜひ買ってみて", "multi=\(katte)")
+        XCTAssertTrue(katte.contains("是非買ってみて"), "是非 は残す multi=\(katte)")
+        let onegai = converter.multiClauseCandidates(for: "ぜひおねがいします", systemCandidateMode: .surface)
+        XCTAssertEqual(onegai.first, "ぜひお願いします", "multi=\(onegai)")
+        // 直接の観測(とくに→お)があっても漢字(特に→お)の方が安ければそちら。助詞付き副詞の派生割引も漢字で判定
+        let tokuni = converter.multiClauseCandidates(for: "とくにおねがいします", systemCandidateMode: .surface)
+        XCTAssertEqual(tokuni.first, "とくにお願いします", "multi=\(tokuni)")
+        let tokuniKita = converter.multiClauseCandidates(for: "とくにきたきゃく", systemCandidateMode: .surface)
+        XCTAssertEqual(tokuniKita.first, "とくに来た客", "multi=\(tokuniKita)")
+        let kite = converter.multiClauseCandidates(for: "ぜひきてください", systemCandidateMode: .surface)
+        XCTAssertEqual(kite.first, "ぜひ来てください", "multi=\(kite)")
+        let noun = converter.multiClauseCandidates(for: "そのぜひをとう", systemCandidateMode: .surface)
+        XCTAssertTrue(noun.first?.hasPrefix("その是非を") ?? false, "名詞の 是非 multi=\(noun)")
     }
 
     // みにおぼえがない→身に覚えがない(3556、ユーザ報告: ミニ覚えがない)。慣用句 身に覚え を misc.plist に curated 登録
