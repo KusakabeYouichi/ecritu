@@ -21078,6 +21078,12 @@ extension KanaKanjiConverterRegressionTests {
         converter.invalidateCandidateCache()
         let feel = converter.candidates(for: "おかんじになる", limit: 8, systemCandidateMode: .surface)
         XCTAssertTrue(feel.contains("お感じになる"), "\(feel)")
+        // 3608: 連文節では、後ろに続きがある区間の お信じ は部品として残す(3607 で お神事ください になっていた)
+        for (reading, top) in [("おしんじください", "お信じください"), ("おしんじになる", "お信じになる"), ("おかんじください", "お感じください")] {
+            converter.invalidateCandidateCache()
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, top, "multi=\(multi.prefix(4))")
+        }
     }
 
     // 3380: よしのや は 吉野家 が先頭(Sudachi の wc10000 で後ろに回され 吉野+や の合成が先頭だった)

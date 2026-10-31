@@ -1228,7 +1228,8 @@ extension KanaKanjiConverter {
                         ajoutVocabulary: manualAjoutVocabulary,
                         initialAjoutVocabulary: initialAjoutVocabulary,
                         systemCandidateMode: systemCandidateMode,
-                        limit: Self.multiClauseInflectionTopK
+                        limit: Self.multiClauseInflectionTopK,
+                        allowsBareSinoJiruRenyou: end < n
                     )
                     // 同スパンに実辞書語(収穫底値未満)があれば合成ノードを後置(定数コメント参照)
                     let spanHasRealDictWord = costMap.values.contains {

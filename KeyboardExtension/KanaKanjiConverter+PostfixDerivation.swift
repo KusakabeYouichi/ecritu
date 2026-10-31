@@ -387,7 +387,8 @@ extension KanaKanjiConverter {
         ajoutVocabulary: [String: [String]],
         initialAjoutVocabulary: [String: [String]],
         systemCandidateMode: KanaKanjiCandidateSourceMode,
-        limit: Int
+        limit: Int,
+        allowsBareSinoJiruRenyou: Bool = false
     ) -> [String] {
         guard reading.count >= 2,
             limit > 0 else {
@@ -471,9 +472,13 @@ extension KanaKanjiConverter {
                 let bareRenyouStemCosts = store.wordLMUnigramCosts(
                     for: bareRenyou.map { String($0.dropFirst(prefix.count)) }
                 )
-                let usableBareRenyou = !store.hasWordLMMetadata ? bareRenyou : bareRenyou.filter { surface in
+                let usableBareRenyou = (!store.hasWordLMMetadata ? bareRenyou : bareRenyou.filter { surface in
                     let stemSurface = String(surface.dropFirst(prefix.count))
                     return (bareRenyouStemCosts[stemSurface] ?? Int.max) <= Self.politePrefixStemMaxUnigramCost
+                }).filter { surface in
+                    // 単独の お変じ/お信じ は語にならない(おへんじ が お変じ→お返事 の順だった。3607)。連文節で後ろに
+                    // ください/になる が続く区間では部品として要る(お信じください。allowsBareSinoJiruRenyou、3608)
+                    allowsBareSinoJiruRenyou || !Self.isSinoJiruRenyou(String(surface.dropFirst(prefix.count)))
                 }
                 derived.append(contentsOf: usableBareRenyou.prefix(1))
                 deferredBareRenyou.append(contentsOf: usableBareRenyou.dropFirst())
@@ -942,11 +947,9 @@ extension KanaKanjiConverter {
                 continue
             }
             // 漢字 1 字+じる(変じる/感じる/信じる)の連用形は、お〜になる/お〜ください(お感じになる)にはなるが、
-            // 単独(お変じ)と お〜する には ならない。おへんじ が お変じ→お返事 の順だった(ユーザ報告 3607)
-            if expectedInflectionClass == InflectionClass.ichidan,
-                renyouCandidate.count == 2,
-                renyouCandidate.hasSuffix("じ"),
-                trailingSuffix.isEmpty || Self.honorificOSuruInflectionSuffixes().contains(trailingSuffix) {
+            // お〜する には ならない(お変じします。ユーザ報告 3607)。単独(お変じ)は politePrefixPassthroughCandidates で外す
+            if Self.isSinoJiruRenyou(renyouCandidate),
+                Self.honorificOSuruInflectionSuffixes().contains(trailingSuffix) {
                 continue
             }
 
@@ -1013,6 +1016,14 @@ extension KanaKanjiConverter {
         }
 
         return true
+    }
+
+    // 漢字 1 字+じ(変じ/信じ)。2 文字で じ で終わる連用形は一段の じる 動詞だけ(五段に じ の連用形は無い)
+    static func isSinoJiruRenyou(_ renyou: String) -> Bool {
+        guard renyou.count == 2, renyou.hasSuffix("じ"), let firstScalar = renyou.unicodeScalars.first else {
+            return false
+        }
+        return (0x4E00...0x9FFF).contains(firstScalar.value) || (0x3400...0x4DBF).contains(firstScalar.value)
     }
 
     func shouldApplyPolitePrefix(_ prefix: String, to candidate: String) -> Bool {
