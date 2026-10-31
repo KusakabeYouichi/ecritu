@@ -21199,6 +21199,18 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("いくのは").first, "行くのは")
     }
 
+    // 3615: そう+書く/言う(名札2層書いてあったら だった)
+    func testRegressionRealLMSouKaku() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        converter.invalidateCandidateCache()
+        XCTAssertEqual(converter.multiClauseCandidates(for: "なふだにそうかいてあったら", systemCandidateMode: .surface).first, "名札にそう書いてあったら")
+        converter.invalidateCandidateCache()
+        XCTAssertEqual(converter.multiClauseCandidates(for: "かれにそういってた", systemCandidateMode: .surface).first, "彼にそう言ってた")
+        converter.invalidateCandidateCache()
+        XCTAssertEqual(converter.multiClauseCandidates(for: "そうかいがある", systemCandidateMode: .surface).first, "総会がある")
+    }
+
     // 3380: よしのや は 吉野家 が先頭(Sudachi の wc10000 で後ろに回され 吉野+や の合成が先頭だった)
     func testYoshinoyaRegistered() throws {
         try prepareRealLMDictionary()
