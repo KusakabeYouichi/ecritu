@@ -21199,6 +21199,39 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("いくのは").first, "行くのは")
     }
 
+    // 3617: とうきょうのものよね の並び(東京のものよね→東京の物よね→東京の者よね、全かなは末尾。東境/頭胸 は出さない)。
+    // よね が もの の後ろで割高なまま 東京+の+も+のよね / 東京+野母+のよね に割れていたので、かな正書の形式名詞・代名詞・
+    // 副助詞の直後の終助詞クラスタをクランプし、裸の 1 字助詞の直後の の+終助詞クラスタ(も+のよね)を減点した
+    func testRegressionRealLMMonoYoneVariants() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        func multi(_ reading: String) -> [String] {
+            converter.invalidateCandidateCache()
+            return converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+        }
+        let tokyo = multi("とうきょうのものよね")
+        XCTAssertEqual(Array(tokyo.prefix(3)), ["東京のものよね", "東京の物よね", "東京の者よね"], "\(tokyo)")
+        XCTAssertEqual(tokyo.last, "とうきょうのものよね", "\(tokyo)")
+        XCTAssertFalse(tokyo.contains { $0.hasPrefix("東境") || $0.hasPrefix("頭胸") || $0.contains("野母") }, "\(tokyo)")
+        XCTAssertEqual(multi("おおさかのものよね").first, "大阪のものよね")
+        XCTAssertEqual(multi("これかな").first, "これかな")
+        XCTAssertEqual(multi("ものかな").first, "ものかな")
+        XCTAssertEqual(multi("そうなのよね").first, "そうなのよね")
+        // 米田(よねだ)のように よね を含む語は崩さない
+        XCTAssertEqual(multi("よねださん").first, "米田さん")
+        // の+かな正書の名詞(のやつ/のこと)は かなを先頭に残す(乃やつ/之やつ の下に回されていた)
+        for reading in ["のやつ", "のこと", "のため"] {
+            XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: reading), reading)
+        }
+        for reading in ["のやつ", "のこと"] {
+            converter.invalidateCandidateCache()
+            XCTAssertEqual(converter.candidates(for: reading, limit: 4, systemCandidateMode: .surface).first, reading)
+        }
+        // 判定は「かなが先頭なら残す」だけで昇格はしない。のうち(農地 が先頭)は変わらない
+        converter.invalidateCandidateCache()
+        XCTAssertEqual(converter.candidates(for: "のうち", limit: 4, systemCandidateMode: .surface).first, "農地")
+    }
+
     // 3615: そう+書く/言う(名札2層書いてあったら だった)
     func testRegressionRealLMSouKaku() throws {
         try prepareRealLMDictionary()

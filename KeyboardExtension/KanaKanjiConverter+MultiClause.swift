@@ -3184,7 +3184,11 @@ extension KanaKanjiConverter {
                     // 読みでも見る(2852): 表層だけだと かな だめ しかクランプされず、ダメ/駄目 の遷移が
                     // 素通り(7000/字)のままになって だめでしょー の変種が 1 つも出なかった。
                     // 上の述語末尾判定と同じで、表記が違うだけの同じ語は同じ扱いにする
-                    || prev.hasSuffix("め") || (prevReading?.hasSuffix("め") ?? false)),
+                    || prev.hasSuffix("め") || (prevReading?.hasSuffix("め") ?? false)
+                    // かな正書の形式名詞・代名詞・副助詞(もの/こと/やつ/これ/だけ…)の直後も自然な口語(ものよね/これかな)。
+                    // 読みで見るので 物/者 の変種も同じ遷移になる。よね が もの の後ろで 8700 のままだと、とうきょうのものよね が
+                    // 東京+の+も+のよね や 東京+野母+のよね に割れていた(ユーザ報告 3617)
+                    || (prevReadingID.map { Self.multiClauseKanaNounReadingsBeforeFinalParticleID.contains($0) } ?? false)),
                 // 読みが た/だ で終わる全漢字の語(円田/遠田/神田)は名詞で、読みの だ はコピュラでない。
                 // 名詞+けど は非文(名詞には だけど)なのに述語扱いでクランプされ、300えんだけどな の変種に
                 // 円田けどな/遠田けどな が並んでいた(3555)
@@ -4113,6 +4117,16 @@ extension KanaKanjiConverter {
                             prevNode.isInflectionDerived
                                 || (prevNode.surface.last?.unicodeScalars.first.map { (0x3041...0x309F).contains($0.value) } ?? false) {
                             cost += Self.multiClausePredicateFollowingCuratedNounPenalty
+                        }
+                        // 説明の の+終助詞のかなクラスタ(のよね/のね/のよ…。misc の curated 含む)は、裸の 1 字助詞(も/は/が…)の直後には
+                        // 立たない。curated の床 1500 が bigram を見ないため、とうきょうのものよね が 東京+の+も+のよね に割れ、
+                        // もの が 1 ノードにならず 物/者 の変種が消えていた(ユーザ報告 3617)
+                        if node.isKanaIdentity, node.reading.count >= 2, node.reading.hasPrefix("の"),
+                            Self.multiClauseFinalParticleReadingsID.contains(node.readingID)
+                                || Self.multiClausePredicateFollowingFunctionReadingsID.contains(node.readingID),
+                            prevNode.isKanaIdentity, prevNode.reading.count == 1,
+                            Self.multiClauseSingleTopParticleTails.contains(prevNode.reading.first!) {
+                            cost += Self.multiClauseNoClusterAfterBareParticlePenalty
                         }
                         // curated の名詞(香信 等)の直後に助詞なしで する/される の付属部が続くのは、その語がサ変名詞でない限り
                         // 非文(定数コメント参照。3054)。かな識別・派生の curated と、pos サ変で登録された語(有する)は対象外

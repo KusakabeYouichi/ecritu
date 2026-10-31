@@ -89,6 +89,8 @@ extension KanaKanjiConverter {
     // 届かない。島の一はいいね で 一 が 市 より前に並ぶのを直す(ユーザ指定 3 番目以降。2880)
     static let multiClauseVariantDemotionPairs: [String: Int] = [
         "の\t一": 2500,
+        // の+もの の変種は 物 を 者 より先に(東京の物よね→東京の者よね。差 211。ユーザ指定 3617)。最良経路(者 が LM で先の文)はそのまま
+        "の\t者": 400,
         // 小説+描いて/掻いて/買い手 は変種に出さない(小説を描く とは言わない。3767、ユーザ指定)。上限 4000 を超えるので変種から落ちる
         "小説\t描いて": 5000, "小説\t掻いて": 5000, "小説\t買い手": 5000, "小説\t買手": 5000, "小説\t飼手": 5000
     ]
@@ -2143,6 +2145,8 @@ extension KanaKanjiConverter {
     ]
     static let multiClausePredicateFollowingFunctionReadingsID = MultiClauseIDSet(multiClausePredicateFollowingFunctionReadings)
     static let multiClausePredicateFollowingCuratedNounPenalty = 6000
+    // 裸の 1 字助詞(も/は/が…)の直後の の+終助詞クラスタ(も+のよね)の減点(適用箇所のコメント参照。3617)
+    static let multiClauseNoClusterAfterBareParticlePenalty = 8000
     static let multiClauseParticleSwallowedVerbHeadStemMargin = 500
     static let multiClauseParticleSwallowedVerbHeadPenalty = 2500
     // 補助動詞 ておく(2798)。さくじょしておきながら が 削除して置きながら になっていた: 補助動詞は
@@ -3131,6 +3135,12 @@ extension KanaKanjiConverter {
     static let multiClauseKanaYokattaAfterTeBonus = 1200
     // 上のクランプのうち、終止形・た形にしか付かない接続助詞(連用形 〜し の後ろでは掛けない。3723)
     static let multiClauseShuushiConjunctiveParticleReadings: Set<String> = ["から", "ので", "けど", "けれど"]
+    // 上のクランプを、述語でなくても掛ける かな正書の形式名詞・代名詞・副助詞の読み(ものよね/ことかな/これよね/だけかも。3617)
+    static let multiClauseKanaNounReadingsBeforeFinalParticle: Set<String> = [
+        "もの", "こと", "やつ", "とき", "ところ", "わけ", "はず", "つもり", "まま",
+        "これ", "それ", "あれ", "どれ", "ここ", "そこ", "あそこ", "どこ", "こっち", "そっち", "あっち", "どっち", "こちら", "そちら", "あちら", "どちら",
+        "だけ", "まで", "から", "ぐらい", "くらい", "ほど", "ばかり"
+    ]
     // 〜っと のオノマトペ判定から外す、先頭の助詞 1 字(で+リゾット 等。3729)
     static let multiClauseOnomatopoeiaExcludedLeadingParticles: Set<Character> = ["で", "に", "を", "が", "は", "も", "と", "の"]
     // 学習語彙が跨ぐと床を外す常用語の unigram 上限(沖縄 5130。3723)
@@ -3413,6 +3423,7 @@ extension KanaKanjiConverter {
             for s in KanaKanjiConverter.multiClauseSentenceInitialKanaConjunctions.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseSouCopulaFollowerReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseSubstantiveNounReadings.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseKanaNounReadingsBeforeFinalParticle.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseSugiSuffixSurfaces.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseTeOruAuxiliaryReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseBigramBorrowDeniedReadingsBySurface.keys.sorted() { add(s) }
@@ -3658,6 +3669,7 @@ extension KanaKanjiConverter {
     static let multiClauseSentenceInitialKanaConjunctionsID = MultiClauseIDSet(multiClauseSentenceInitialKanaConjunctions)
     static let multiClauseSouCopulaFollowerReadingsID = MultiClauseIDSet(multiClauseSouCopulaFollowerReadings)
     static let multiClauseSubstantiveNounReadingsID = MultiClauseIDSet(multiClauseSubstantiveNounReadings)
+    static let multiClauseKanaNounReadingsBeforeFinalParticleID = MultiClauseIDSet(multiClauseKanaNounReadingsBeforeFinalParticle)
     static let multiClauseSugiSuffixSurfacesID = MultiClauseIDSet(multiClauseSugiSuffixSurfaces)
     static let multiClauseTeOruAuxiliaryReadingsID = MultiClauseIDSet(multiClauseTeOruAuxiliaryReadings)
 

@@ -836,6 +836,14 @@ extension KanaKanjiConverter {
                 return true
             }
         }
+        // 準体助詞 の+かな正書の名詞(のやつ/のこと/のため)。の を外した残りが seed でかな先頭の語なら、かなのまま
+        // (のやつ が 乃やつ/之やつ/野やつ の下に回されていた。3617、ユーザ報告)。はな(花)/ほう(方)のように漢字先頭の語は対象外
+        if normalized.count >= 3, normalized.hasPrefix("の") {
+            let rest = String(normalized.dropFirst())
+            if let seed = KanaKanjiSeedDictionary.seed[rest], seed.first == rest {
+                return true
+            }
+        }
         // 副助詞+で(までで/ほどで/だけで)。で の一般剥がしは名詞+で(ずかんで)を巻き込むので、剥がした残りが
         // 副助詞で終わるときに限る(までで が 迄で→間でで の順で、かなが末尾へ回されていた。までは/までに は上で拾える。3614)
         if normalized.hasSuffix("で") {
