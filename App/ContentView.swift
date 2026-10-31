@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20261101050116"
+    private static let editionUpdatedAtRaw: String = "20261101073957"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -331,6 +331,12 @@ struct ContentView: View {
         store: Self.sharedDefaults
     )
     private var userDictionaryCandidateDisplayModeRawValue: String = UserDictionaryCandidateDisplayModeOption.on.rawValue
+
+    @AppStorage(
+        SettingsKeys.shortcutVocabularyRecentsFirst,
+        store: Self.sharedDefaults
+    )
+    private var shortcutVocabularyRecentsFirst = true
 
     @AppStorage(
         SettingsKeys.contactCandidateDisplayMode,
@@ -669,6 +675,7 @@ struct ContentView: View {
             delimiterAutoCommitCandidateRawValue,
             kanaKanjiCandidateSourceModeRawValue,
             userDictionaryCandidateDisplayModeRawValue,
+            String(shortcutVocabularyRecentsFirst),
             contactCandidateDisplayModeRawValue,
             String(emojiCandidateDisplayEnabled),
             radicalStrokeCountStyleRawValue,
@@ -826,6 +833,7 @@ struct ContentView: View {
         bool(SettingsKeys.kaomojiCandidateDisplayEnabled, kaomojiCandidateDisplayEnabled, "emojis & les émoticônes: émoticône (^_^)")
         str(SettingsKeys.contactCandidateDisplayMode, contactCandidateDisplayModeRawValue, "iOSの連絡先の姓、名、会社名")
         str(SettingsKeys.userDictionaryCandidateDisplayMode, userDictionaryCandidateDisplayModeRawValue, "iOSのユーザ辞書の単語")
+        bool(SettingsKeys.shortcutVocabularyRecentsFirst, shortcutVocabularyRecentsFirst, "ショートカット語彙: récents en premier")
 
         return lines.joined(separator: "\n") + "\n"
     }
@@ -1503,6 +1511,7 @@ struct ContentView: View {
             entries: $shortcutDictionaryEntries,
             candidateInput: $shortcutDictionaryCandidateInput,
             isRegistrationVisible: $isShortcutDictionaryRegistrationVisible,
+            recentsFirst: $shortcutVocabularyRecentsFirst,
             canAddEntry: canAddShortcutDictionaryEntry,
             listHeight: userVocabularyListHeight(for: shortcutDictionaryEntries.count),
             onAddEntry: addShortcutDictionaryEntry,

@@ -459,6 +459,7 @@ final class KeyboardViewController: UIInputViewController {
         static let kanaPostModifierEmptyTapEmojiCategory = "kanaPostModifierEmptyTapEmojiCategory"
         static let kanaPostModifierEmptyTapSymbolCategory = "kanaPostModifierEmptyTapSymbolCategory"
         static let kanaPostModifierFlickDakutenEnabled = "kanaPostModifierFlickDakutenEnabled"
+        static let shortcutVocabularyRecentsFirst = "shortcutVocabularyRecentsFirst"
         static let delimiterAutoCommitCandidate = "delimiterAutoCommitCandidate"
         static let landscapeCandidateSide = "landscapeCandidateSide"
         static let landscapeNumberPaneSide = "landscapeNumberPaneSide"

@@ -181,6 +181,8 @@ enum SettingsKeys {
     static let latinLexiconGermanEnabled = "latinLexiconGermanEnabled"
     static let latinLexiconItalianEnabled = "latinLexiconItalianEnabled"
     static let userDictionaryCandidateDisplayMode = "userDictionaryCandidateDisplayMode"
+    // ショートカット語彙 [récents en premier](3636): 絵文字/顔文字の確定を一覧の先頭へ足す。オフなら一覧は[並べ替え]の順のまま
+    static let shortcutVocabularyRecentsFirst = "shortcutVocabularyRecentsFirst"
     static let contactCandidateDisplayMode = "contactCandidateDisplayMode"
     static let emojiCandidateDisplayEnabled = "emojiCandidateDisplayEnabled"
     static let kaomojiCandidateDisplayEnabled = "kaomojiCandidateDisplayEnabled"

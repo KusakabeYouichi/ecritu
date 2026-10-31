@@ -42,6 +42,7 @@ extension KeyboardViewController {
         let kanaPostModifierEmptyTapEmojiCategoryID: String
         let kanaPostModifierEmptyTapSymbolCategoryID: String
         let kanaPostModifierFlickDakutenEnabled: Bool
+        let shortcutVocabularyRecentsFirst: Bool
         let landscapeCandidateSideRawValue: String
         let landscapeNumberPaneSideRawValue: String
         let landscapeLatinSuggestionModeRawValue: String
@@ -325,6 +326,11 @@ extension KeyboardViewController {
             key: SharedDefaultsKeys.kanaPostModifierFlickDakutenEnabled,
             fallback: true
         )
+        let shortcutVocabularyRecentsFirst = sharedBoolValue(
+            from: sharedDefaults,
+            key: SharedDefaultsKeys.shortcutVocabularyRecentsFirst,
+            fallback: true
+        )
         let landscapeCandidateSideRawValue = sharedStringValue(
             from: sharedDefaults,
             key: SharedDefaultsKeys.landscapeCandidateSide,
@@ -380,6 +386,7 @@ extension KeyboardViewController {
             kanaPostModifierEmptyTapEmojiCategoryID: kanaPostModifierEmptyTapEmojiCategoryID,
             kanaPostModifierEmptyTapSymbolCategoryID: kanaPostModifierEmptyTapSymbolCategoryID,
             kanaPostModifierFlickDakutenEnabled: kanaPostModifierFlickDakutenEnabled,
+            shortcutVocabularyRecentsFirst: shortcutVocabularyRecentsFirst,
             landscapeCandidateSideRawValue: landscapeCandidateSideRawValue,
             landscapeNumberPaneSideRawValue: landscapeNumberPaneSideRawValue,
             landscapeLatinSuggestionModeRawValue: landscapeLatinSuggestionModeRawValue,
@@ -634,8 +641,11 @@ extension KeyboardViewController {
         rootView.replacedLandscapeBottomInset = configuration.replacedLandscapeBottomInset
         rootView.faceHeight = configuration.faceHeight
         rootView.isFoldablePhone = configuration.isFoldablePhone
-        // 絵文字/顔文字の確定をショートカット語彙の先頭へ(3243)。保存は共有領域、表示側はキャッシュ破棄で次の描画から反映
+        // 絵文字/顔文字の確定をショートカット語彙の先頭へ(3243)。保存は共有領域、表示側はキャッシュ破棄で次の描画から反映。
+        // 設定[récents en premier]がオフなら足さない(一覧は[並べ替え]の順のまま。3636)
+        let shortcutVocabularyRecentsFirst = configuration.shortcutVocabularyRecentsFirst
         rootView.onShortcutCandidateCommitted = { [weak self] text in
+            guard shortcutVocabularyRecentsFirst else { return }
             self?.kanaKanjiStore.prependShortcutCandidate(text)
         }
         return rootView

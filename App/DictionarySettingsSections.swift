@@ -498,6 +498,8 @@ struct ShortcutDictionarySettingsSection: View {
     @Binding var entries: [VocabularyEntry]
     @Binding var candidateInput: String
     @Binding var isRegistrationVisible: Bool
+    // [récents en premier](3636): 絵文字/顔文字の確定を一覧の先頭へ足すか。オフなら一覧は[並べ替え]で決めた順のまま
+    @Binding var recentsFirst: Bool
 
     @State private var pendingDeletionEntry: VocabularyEntry?
     // 左へ払って[削除]を出している行。標準の swipeActions は行を左へずらし、短いショートカットが
@@ -713,7 +715,14 @@ struct ShortcutDictionarySettingsSection: View {
                 .frame(height: listHeight)
             }
 
-            Text("ショートカット語彙は顔文字パネルの[ショートカット]カテゴリー(⚡️)に、この一覧の順に並びます。絵文字パネル・顔文字パネルで確定した文字は先頭に自動で足されます。")
+            Text("ショートカット語彙は顔文字パネルの[ショートカット]カテゴリー(⚡️)に、この一覧の順に並びます。")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+
+            Toggle(isOn: $recentsFirst) {
+                Text("récents en premier")
+            }
+            Text("オンの場合、絵文字パネル・顔文字パネルで確定した文字をこの一覧の先頭に自動で足します(最近使ったものほど手前に)。オフにすると、一覧は[並べ替え]で決めた順のまま変わりません。初期設定はオンです。")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }

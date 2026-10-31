@@ -275,7 +275,8 @@ extension ContentView {
         SettingsKeys.kakikaeEverydayException,
         SettingsKeys.lateStandardizedRewritePreference,
         SettingsKeys.suspendMemorySlimmingEnabled, SettingsKeys.kaomojiCandidateDisplayEnabled,
-        SettingsKeys.contactCandidateDisplayMode, SettingsKeys.userDictionaryCandidateDisplayMode
+        SettingsKeys.contactCandidateDisplayMode, SettingsKeys.userDictionaryCandidateDisplayMode,
+        SettingsKeys.shortcutVocabularyRecentsFirst
     ]
 
     // 保守的初期設定 = 従来型の配列の組み合わせ(2026-09-02 の YAML エクスポートから転記。ユーザ指定 2760。3647 で「作者の使用設定」という呼称をやめた: 作者の実運用は現代的に近い)。
@@ -366,6 +367,7 @@ extension ContentView {
         SettingsKeys.kakikaeEverydayException: false,   // 戦略的=オフ(設定どおり。ユーザ指定 3644)
         SettingsKeys.lateStandardizedRewritePreference: KakikaePreference.strategicDefault.rawValue,  // X.10 も 本来の漢字だけ(ユーザ指定 3570)
         SettingsKeys.suspendMemorySlimmingEnabled: true,
+        SettingsKeys.shortcutVocabularyRecentsFirst: true,
         SettingsKeys.kaomojiCandidateDisplayEnabled: true,
         SettingsKeys.contactCandidateDisplayMode: ContactCandidateDisplayModeOption.off.rawValue,
         SettingsKeys.userDictionaryCandidateDisplayMode: UserDictionaryCandidateDisplayModeOption.on.rawValue,
@@ -453,6 +455,7 @@ extension ContentView {
         SettingsKeys.lateStandardizedRewritePreference: KakikaePreference.bothAfterFirst.rawValue,  // 保守的=X.9 と同じ(ユーザ指定 3570)
         SettingsKeys.adjectiveMeKanjiCandidatesEnabled: true,
         SettingsKeys.suspendMemorySlimmingEnabled: true,
+        SettingsKeys.shortcutVocabularyRecentsFirst: true,
         SettingsKeys.kaomojiCandidateDisplayEnabled: true,
         SettingsKeys.contactCandidateDisplayMode: ContactCandidateDisplayModeOption.namesOnly.rawValue,  // 保守的=連絡先の名前を使う設定。選択操作起点なので許可要求は 5.1.1 上問題なし
         SettingsKeys.userDictionaryCandidateDisplayMode: UserDictionaryCandidateDisplayModeOption.on.rawValue
@@ -542,6 +545,7 @@ extension ContentView {
         SettingsKeys.lateStandardizedRewritePreference: KakikaePreference.bothBeforeFirst.rawValue,  // 現代的=X.9 と同じ(ユーザ指定 3570)
         SettingsKeys.adjectiveMeKanjiCandidatesEnabled: true,
         SettingsKeys.suspendMemorySlimmingEnabled: true,
+        SettingsKeys.shortcutVocabularyRecentsFirst: true,
         SettingsKeys.kaomojiCandidateDisplayEnabled: true,
         SettingsKeys.contactCandidateDisplayMode: ContactCandidateDisplayModeOption.namesOnly.rawValue,  // 保守的=連絡先の名前を使う設定。選択操作起点なので許可要求は 5.1.1 上問題なし
         SettingsKeys.userDictionaryCandidateDisplayMode: UserDictionaryCandidateDisplayModeOption.on.rawValue
