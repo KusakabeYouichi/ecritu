@@ -594,6 +594,20 @@
 	<dict><key>phrase</key><string>丸大豆</string><key>shortcut</key><string>まるだいず</string></dict>	<!-- 丸大豆: 辞書に無く 丸大図 だった(ユーザ報告 3602。以下 5 語も同じ報告) -->
 	<dict><key>phrase</key><string>リン酸塩</string><key>shortcut</key><string>りんさんえん</string></dict>	<!-- リン酸塩: 辞書に無く リン酸円 だった -->
 	<dict><key>phrase</key><string>燐酸塩</string><key>shortcut</key><string>りんさんえん</string></dict>	<!-- 燐酸塩: リン酸塩 の次に(ユーザ指定 3610) -->
+	<dict><key>phrase</key><string>二日</string><key>shortcut</key><string>ふつか</string><key>pos</key><string>名詞</string></dict>	<!-- 日付(ふつか/みっか/よっか/ようか/ここのか/とおか/はつか): 辞書に無いか下位で、八日 が出なかった(仏貨/三か/欲火/沃化/十花/廿日 が先頭。ユーザ指定 3612)。いつか(五日)は seed の末尾供給 -->
+	<dict><key>phrase</key><string>三日</string><key>shortcut</key><string>みっか</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>四日</string><key>shortcut</key><string>よっか</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>八日</string><key>shortcut</key><string>ようか</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>九日</string><key>shortcut</key><string>ここのか</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>十日</string><key>shortcut</key><string>とおか</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>二十日</string><key>shortcut</key><string>はつか</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>二月</string><key>shortcut</key><string>にがつ</string><key>pos</key><string>名詞</string></dict>	<!-- 月名: 短い助数詞 がつ は数字の直後だけの表へ移したため(さんま→3間 の防止)、かなの数詞からは作られず しがつ/にがつ/くがつ が空、しちがつ はかなのまま、じゅうにがつ は 中に月 だった(3612) -->
+	<dict><key>phrase</key><string>三月</string><key>shortcut</key><string>さんがつ</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>七月</string><key>shortcut</key><string>しちがつ</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>八月</string><key>shortcut</key><string>はちがつ</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>九月</string><key>shortcut</key><string>くがつ</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>十一月</string><key>shortcut</key><string>じゅういちがつ</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>十二月</string><key>shortcut</key><string>じゅうにがつ</string><key>pos</key><string>名詞</string></dict>
 	<dict><key>phrase</key><string>ヨウ化</string><key>shortcut</key><string>ようか</string><key>pos</key><string>名詞</string></dict>	<!-- ヨウ化: 辞書に 沃化 しか無く、元素名のカタカナが出なかった(ようかかりうむ→八鹿カリウム。ユーザ指定 3610) -->
 	<dict><key>phrase</key><string>ヒ素中毒</string><key>shortcut</key><string>ひそちゅうどく</string><key>pos</key><string>名詞</string></dict>	<!-- ヒ素中毒: 辞書に 砒素中毒 しか無かった(元素名はカタカナが普通。ユーザ指定 3610) -->
 	<dict><key>phrase</key><string>主回線</string><key>shortcut</key><string>しゅかいせん</string></dict>	<!-- 主回線: 辞書に無く 酒海戦/主海戦 だった -->

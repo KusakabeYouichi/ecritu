@@ -4,6 +4,8 @@ enum KanaKanjiSeedDictionary {
     // Minimal fallback seed used until a preprocessed Sudachi index is supplied.
     static let seed: [String: [String]] = [
         "あい": ["愛", "藍", "会い", "あい"],
+        // 四月: misc に 1 語で登録すると ひざしがつよい が 膝四月よい に割れた(日差し+が+強い)。seed で供給だけする(3612)
+        "しがつ": ["四月"],
         "あお": ["青", "蒼", "あお"],
         "あさ": ["朝", "あさ"],
         "あした": ["明日", "あした"],
@@ -4569,6 +4571,8 @@ enum KanaKanjiSeedDictionary {
     ]
 
     static let exactReadingOnlySeed: [String: [String]] = [
+        // 日付の 五日: 辞書に無く出なかった。いつか(いつの日か)の先頭は守り、完全一致時のみ末尾供給(ユーザ指定 3612)
+        "いつか": ["五日"],
         // 五択: ごたく=御託 の先頭は守り、完全一致時のみ末尾供給(2633)
         "ごたく": ["五択", "5択"],
         // 麹塵(装束色): 辞書の 麴塵 は正字 麴 の一括抑制で消えるため 麹 表記を末尾供給。

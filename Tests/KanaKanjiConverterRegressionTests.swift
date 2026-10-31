@@ -21114,7 +21114,7 @@ extension KanaKanjiConverterRegressionTests {
         // 元素名はカタカナが先で、本来の漢字も候補に出る
         for (reading, katakana, kanji) in [
             ("ふっそ", "フッ素", "弗素"), ("ほうそ", "ホウ素", "硼素"), ("けいそ", "ケイ素", "珪素"),
-            ("ほうさん", "ホウ酸", "硼酸"), ("ようか", "ヨウ化", "沃化"), ("ひそちゅうどく", "ヒ素中毒", "砒素中毒")
+            ("ほうさん", "ホウ酸", "硼酸"), ("ひそちゅうどく", "ヒ素中毒", "砒素中毒")
         ] {
             let list = single(reading)
             XCTAssertEqual(list.first, katakana, "\(reading) \(list)")
@@ -21144,6 +21144,31 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(hamada.first, "はまだ慣れない", "\(hamada)")
         XCTAssertTrue(hamada.contains { $0.hasPrefix("浜田") }, "\(hamada)")
         XCTAssertEqual(multi("はまだのいえ").first, "浜田の家")
+    }
+
+    // 3612: 日付(八日 等)と月名(四月 等)が出ない/かなのままだった
+    func testRegressionRealLMDayAndMonthNames() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        func single(_ reading: String, limit: Int = 8) -> [String] {
+            converter.invalidateCandidateCache()
+            return converter.candidates(for: reading, limit: limit, systemCandidateMode: .surface)
+        }
+        for (reading, top) in [
+            ("ふつか", "二日"), ("みっか", "三日"), ("よっか", "四日"), ("ようか", "八日"), ("ここのか", "九日"), ("とおか", "十日"),
+            ("はつか", "二十日"), ("にがつ", "二月"), ("さんがつ", "三月"), ("しがつ", "四月"), ("しちがつ", "七月"),
+            ("はちがつ", "八月"), ("くがつ", "九月"), ("じゅういちがつ", "十一月"), ("じゅうにがつ", "十二月")
+        ] {
+            XCTAssertEqual(single(reading).first, top, "\(reading) \(single(reading))")
+        }
+        XCTAssertEqual(Array(single("ようか").prefix(2)), ["八日", "ヨウ化"])
+        // いつか は いつの日か を守り、五日 は末尾に出す
+        XCTAssertNotEqual(single("いつか").first, "五日")
+        XCTAssertTrue(single("いつか", limit: 40).contains("五日"))
+        converter.invalidateCandidateCache()
+        XCTAssertEqual(converter.multiClauseCandidates(for: "しがつようか", systemCandidateMode: .surface).first, "四月八日")
+        converter.invalidateCandidateCache()
+        XCTAssertEqual(converter.multiClauseCandidates(for: "みっかぼうず", systemCandidateMode: .surface).first, "三日坊主")
     }
 
     // 3380: よしのや は 吉野家 が先頭(Sudachi の wc10000 で後ろに回され 吉野+や の合成が先頭だった)
