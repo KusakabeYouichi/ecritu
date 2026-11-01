@@ -2370,7 +2370,10 @@ extension KanaKanjiConverter {
                     || Self.multiClauseCompoundParticlesID.contains(prevID)
                     || Self.multiClauseInflectionDiscountConjunctiveParticlesID.contains(prevID)
                     || Self.isParticleTailedAdverbialSurface(prev, reading: prevReading)
-                base = prevAllowsInflectionDiscount
+                // seed がかなを先頭に置く読み(にんじん)の、seed に無い漢字派生(任じん)には割引を与えない(定数コメント参照。3638)。
+                // seed に並ぶ派生(なくて/無くて)は従来どおり(かねがなくて の 2 番め 金が無くて を保つ)
+                let seedLeadsWithKana = !isKanaIdentity && Self.multiClauseSeedKanaLeadReadingsID.contains(readingID) && !isSeedListedValue()
+                base = prevAllowsInflectionDiscount && !seedLeadsWithKana
                     ? Self.multiClauseInflectionAfterParticleCost
                     : Self.multiClauseInflectionDerivedOOVCost
             } else if isDictWord {
@@ -2430,7 +2433,9 @@ extension KanaKanjiConverter {
                     || Self.multiClauseCompoundParticlesID.contains(prevID)
                     || Self.multiClauseInflectionDiscountConjunctiveParticlesID.contains(prevID)
                     || Self.isParticleTailedAdverbialSurface(prev, reading: prevReading)
-                var cap = prevAllowsInflectionDiscount
+                // seed がかなを先頭に置く読みの漢字派生(任じん)には割引を与えない(定数コメント参照。3638)。上の基礎コストと同じ除外
+                let capSeedLeadsWithKana = !isKanaIdentity && Self.multiClauseSeedKanaLeadReadingsID.contains(readingID) && !isSeedListedValue()
+                var cap = prevAllowsInflectionDiscount && !capSeedLeadsWithKana
                     ? Self.multiClauseInflectionAfterParticleCost
                     : Self.multiClauseInflectionDerivedOOVCost
                 // 語幹 bigram 借用(stemHeadForBigramBorrow)。表層(治った)は LM に無く同族(直った)と
@@ -5683,6 +5688,14 @@ extension KanaKanjiConverter {
                     delta = Self.multiClauseSeedOrderVariantStrictReadings.contains(alt.reading)
                         ? seedDelta
                         : min(delta, seedDelta)
+                }
+                // かな先頭の seed 順を変種に使う読み(にんにく/にんじん 等の opt-in)では、seed に無い表層(任じん=任じ+ん の
+                // 関西弁否定の派生)は seed の全員の後ろに置く。述語扱いで文末が安く、差分 -2 で 人参(seed 順 200)より前だった(3638)
+                if alt.reading == chosen.reading, allowsSeedOrderFromKanaLead,
+                    Self.multiClauseSeedOrderVariantKanaLeadReadings.contains(alt.reading),
+                    let seedList = KanaKanjiSeedDictionary.seed[alt.reading],
+                    seedList.contains(chosen.surface), !seedList.contains(alt.surface) {
+                    delta = max(delta, seedList.count * Self.multiClauseSeedOrderVariantStep)
                 }
                 // 文脈の pair bonus(行→返る 等、multiClauseBigramPairBonuses の正値)が付く変種は、seed 順(帰る が先)より
                 // 文脈の選好を優先して変種の先頭に出す。DP ではすでに 返る<帰る なのに、変種順だけ seed 順で

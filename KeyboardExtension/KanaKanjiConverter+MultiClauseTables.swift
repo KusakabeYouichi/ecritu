@@ -39,6 +39,10 @@ extension KanaKanjiConverter {
     // 7200 固定だと 高頻度語の断片チェーン(に+おか+ない+と 計~7538)に負ける。
     // 格助詞直後に限り 5000 へ下げ、断片チェーンに勝てるようにする(名詞は影響なし)。
     static let multiClauseInflectionAfterParticleCost = 5000
+    // seed がかなを先頭に置く読み(にんじん/ぜひ 等)。その読みの、seed に無い漢字の活用派生(任じん=任じ+ん の関西弁否定)には
+    // 上の割引を与えない。こっちがにんじん が が→任じん(5000)でかな にんじん(5302)に 302 勝っていた(3638、ユーザ報告)。
+    // seed に並ぶ派生(無くて)まで外すと かねがなくて の 2 番めが 鐘がなくて になる(全網 1 件)
+    static let multiClauseSeedKanaLeadReadings: Set<String> = Set(KanaKanjiSeedDictionary.seed.compactMap { $0.value.first == $0.key ? $0.key : nil })
     // サ変の派生のうち、かなの語幹から作った かな派生(ぜんしんできる)だけが立つときの判定に使う接尾(3638)。
     // 語幹のかな(ぜんしん 8139)が LM で漢字(前身 5238/前進 6049)に劣るなら供給しない。漢字側は 前進+できる の 2 ノードが担う
     static let multiClauseSuruDerivedKanaSuffixes: [String] = [
@@ -1263,7 +1267,7 @@ extension KanaKanjiConverter {
     // 縁(へり の seed 2 番目、strict で 100)と同点にして文節位置の早い方を先に出す(ユーザ指定)
     // かかる(3633、ユーザ報告: いくらぐらいかかるんですか が 係るんですか 先頭): 最良経路は かな かかる で、漢字の変種は
     // LM unigram(係る 6467 < 掛かる 6803。法律文の 〜に係る)の順になっていた。seed {掛かる, 罹る, 係る, かかる} の順に
-    static let multiClauseSeedOrderVariantKanaLeadReadings: Set<String> = ["かかる", "いない", "いまだ", "さすが", "たいして", "いそう", "とか", "えー", "うーむ", "あとあと", "たとえて", "であっても", "すみません", "おしい", "みずみずしさ", "みずみずしい", "おすすめ", "かけないで", "こつ", "なくし", "にんにく", "やめとけ"]  // やめとけ(3638)
+    static let multiClauseSeedOrderVariantKanaLeadReadings: Set<String> = ["かかる", "いない", "いまだ", "さすが", "たいして", "いそう", "とか", "えー", "うーむ", "あとあと", "たとえて", "であっても", "すみません", "おしい", "みずみずしさ", "みずみずしい", "おすすめ", "かけないで", "こつ", "なくし", "にんにく", "やめとけ", "にんじん"]  // やめとけ/にんじん(3638。にんじん は 任じん を 人参 の後ろに)
     // seed 順を変種の差分にそのまま使う(min でなく置換)読みの opt-in(2804)。派生同士は OOV 定額で同点になり、
     // min 方式では seed 2 番目のかな(たとえて)を同点 0 の 喩えて より前に出せない
     // おしい も seed 順(惜しい→おしい→押井)をそのまま変種順に使う。かな おしい を
@@ -3501,6 +3505,7 @@ extension KanaKanjiConverter {
             for s in KanaKanjiConverter.multiClauseRangeSuffixSurfaces.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseRenyouAuxKanaSurfaces.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseSeedFirstLMOverrideReadings.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseSeedKanaLeadReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseSentenceFinalAllKanjiPenaltyReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseSentenceFinalKanaParticles.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseConjunctiveParticlesBeforeFinalNa.sorted() { add(s) }
@@ -3746,6 +3751,7 @@ extension KanaKanjiConverter {
     static let multiClauseRangeSuffixSurfacesID = MultiClauseIDSet(multiClauseRangeSuffixSurfaces)
     static let multiClauseRenyouAuxKanaSurfacesID = MultiClauseIDSet(multiClauseRenyouAuxKanaSurfaces)
     static let multiClauseSeedFirstLMOverrideReadingsID = MultiClauseIDSet(multiClauseSeedFirstLMOverrideReadings)
+    static let multiClauseSeedKanaLeadReadingsID = MultiClauseIDSet(multiClauseSeedKanaLeadReadings)
     static let multiClauseSentenceFinalAllKanjiPenaltyReadingsID = MultiClauseIDSet(multiClauseSentenceFinalAllKanjiPenaltyReadings)
     static let multiClauseSentenceFinalKanaParticlesID = MultiClauseIDSet(multiClauseSentenceFinalKanaParticles)
     static let multiClauseSentenceInitialKotoParticleSurfacesID = MultiClauseIDSet(multiClauseSentenceInitialKotoParticleSurfaces)

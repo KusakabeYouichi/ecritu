@@ -26627,6 +26627,32 @@ extension KanaKanjiConverterRegressionTests {
     }
 
 
+    // 3638(ユーザ報告 4 件): やめとけ(命令形 とけ の供給と かな先頭)、すこしはぜんしんできる(かなだけのサ変派生を供給しない)、
+    // ぜんしん の seed 順、こっちがにんじん(seed かな先頭の読みの漢字派生 任じん に助詞直後の割引を与えない)
+    func testRegressionRealLMUserReports3638() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let yametoke = converter.multiClauseCandidates(for: "やめとけ", systemCandidateMode: .surface)
+        let yametokeSingle = converter.candidates(for: "やめとけ", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(yametokeSingle.prefix(2)), ["やめとけ", "止めとけ"], "single=\(yametokeSingle)")
+        XCTAssertTrue(yametoke.isEmpty || Array(yametoke.prefix(2)) == ["やめとけ", "止めとけ"], "multi=\(yametoke)")
+        XCTAssertFalse(yametoke.contains { $0.hasPrefix("已め") || $0.hasPrefix("八女") }, "multi=\(yametoke)")
+        for (reading, expected) in [
+            ("すこしはぜんしんできる", "少しは前進できる"), ("すこしはぜんしんする", "少しは前進する"), ("かれはぜんしんできる", "彼は前進できる"),
+            ("すこしはこうしんできる", "少しは更新できる")
+        ] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "\(reading) multi=\(multi)")
+        }
+        let zenshin = converter.candidates(for: "ぜんしん", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(zenshin.prefix(3)), ["全身", "前進", "前身"], "single=\(zenshin)")
+        for reading in ["こっちがにんじん", "かれがにんじん", "こっちがにんじんだ"] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertTrue(multi.first?.hasSuffix("にんじん") == true || multi.first?.hasSuffix("にんじんだ") == true, "\(reading) multi=\(multi)")
+            XCTAssertFalse(multi.prefix(3).contains { $0.contains("任じん") }, "\(reading) multi=\(multi)")
+        }
+    }
+
     // ゆうきがわく→勇気が湧く(連語表 manual.json に 湧く の主語。同音の名詞 枠 に が→枠 5851 < が→湧く 5962 で負けていた。ユーザ報告 3636)
     func testRegressionRealLMYuukiGaWaku() throws {
         try prepareRealLMDictionary()
