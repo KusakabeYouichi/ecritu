@@ -26847,4 +26847,26 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.candidates(for: "かんちした", limit: 3, systemCandidateMode: .surface).first, "完治した")
     }
 
+    // 一括検査 3640b の段階 1 の判定(ユーザ指定 3641)。辞書に無かった語の登録(misc.plist 供給欠落の補充)
+    func testRegressionRealLMAudit3640bRegistrations() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        // 読み全体が 1 ノードのときは連文節が空(単文節に任せる)なので、候補バーの先頭と同じく単文節の先頭で見る
+        func multi(_ r: String) -> [String] {
+            let m = converter.multiClauseCandidates(for: r, systemCandidateMode: .surface)
+            return m.isEmpty ? converter.candidates(for: r, limit: 8, systemCandidateMode: .surface) : m
+        }
+        func single(_ r: String) -> [String] { converter.candidates(for: r, limit: 8, systemCandidateMode: .surface) }
+        XCTAssertEqual(multi("けんめいのせんとうにじどうてきに").first, "件名の先頭に自動的に")
+        XCTAssertEqual(multi("へいこうしへんけい").first, "平行四辺形")
+        XCTAssertEqual(single("ろっぽうしょう").first, "六方晶")
+        XCTAssertEqual(single("ごへいもち").first, "五平餅")
+        XCTAssertEqual(single("ぶんげいしゅんじゅう").first, "文藝春秋")
+        XCTAssertEqual(multi("ちょうこくそのた").first, "彫刻その他")
+        XCTAssertEqual(multi("やねはきりづまづくり").first, "屋根は切妻造")
+        XCTAssertTrue(multi("おしのこ").contains("推しの子"), "\(multi("おしのこ"))")
+        XCTAssertEqual(single("おし").first, "押し", "押し は先頭のまま、推し は seed で供給")
+        XCTAssertTrue(single("おし").contains("推し"), "\(single("おし"))")
+    }
+
 }

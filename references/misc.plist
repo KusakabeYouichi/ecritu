@@ -617,6 +617,16 @@
 	<dict><key>phrase</key><string>貯め方</string><key>shortcut</key><string>ためかた</string></dict>	<!-- 貯め方/溜め方: 辞書に無く 単語のため方は だった(貯め方 を先頭に) -->
 	<dict><key>phrase</key><string>溜め方</string><key>shortcut</key><string>ためかた</string></dict>
 	<dict><key>phrase</key><string>メイルアドレス</string><key>shortcut</key><string>めいるあどれす</string></dict>	<!-- メイルアドレス: めい+る に分断されて 名るアドレス だった(ユーザ指定の表記) -->
+	<!-- 一括検査 3640b の判定(ユーザ指定 3641)。辞書に無く候補列に出なかった語 -->
+	<dict><key>phrase</key><string>件名</string><key>shortcut</key><string>けんめい</string><key>pos</key><string>名詞</string></dict>	<!-- 件名(けんめい): LM には有る(7792)が辞書に無く、件名の先頭に が 県名の先頭に だった -->
+	<dict><key>phrase</key><string>平行四辺形</string><key>shortcut</key><string>へいこうしへんけい</string><key>pos</key><string>名詞</string></dict>	<!-- 平行四辺形: しへんけい の辞書は 趾変形 だけで 平行趾変形 だった -->
+	<dict><key>phrase</key><string>四辺形</string><key>shortcut</key><string>しへんけい</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>六方晶</string><key>shortcut</key><string>ろっぽうしょう</string><key>pos</key><string>名詞</string></dict>	<!-- 六方晶(結晶系): 六方章 だった -->
+	<dict><key>phrase</key><string>五平餅</string><key>shortcut</key><string>ごへいもち</string><key>pos</key><string>名詞</string></dict>	<!-- 五平餅: 五平もち だった -->
+	<dict><key>phrase</key><string>文藝春秋</string><key>shortcut</key><string>ぶんげいしゅんじゅう</string><key>pos</key><string>名詞</string></dict>	<!-- 文藝春秋(社名・誌名は 藝 が正式): 文芸春秋 だけだった -->
+	<dict><key>phrase</key><string>その他</string><key>shortcut</key><string>そのた</string></dict>	<!-- その他(そのた): 読み そのほか は有るが そのた には無く、彫刻その他 が 彫刻そのた だった -->
+	<dict><key>phrase</key><string>切妻造</string><key>shortcut</key><string>きりづまづくり</string><key>pos</key><string>名詞</string></dict>	<!-- 切妻造(建築): 切妻作り だった。読みは づくり と つくり の両方(入母屋造 と同じ) -->
+	<dict><key>phrase</key><string>切妻造</string><key>shortcut</key><string>きりづまつくり</string><key>pos</key><string>名詞</string></dict>
 
 	<!-- ■ 分割・断片に負ける語の救済(連文節の区切りを勝たせる固定句) -->
 	<dict><key>phrase</key><string>身に覚え</string><key>shortcut</key><string>みにおぼえ</string></dict>	<!-- 慣用句 身に覚え(がない/がある)。LM に 身に覚え が無く、文頭の 身 6730 と ミニ 6155 の差を に→覚え の bigram で埋めきれず(111 差)みにおぼえがない→ミニ覚えがない だった(ユーザ報告 3556) -->
