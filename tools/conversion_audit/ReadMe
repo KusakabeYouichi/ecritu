@@ -12,3 +12,11 @@
 注意: 語 LM の学習元が Wikipedia なので Wikipedia の文は有利に出る(実際の入力より一致率が高く見える)。
       読みは Sudachi の推定(この他=このた/日本=にっぽん 等の違いは a に混ざる)。カタカナ語に候補が無いのは
       設計どおり(かなチップの長押しでカタカナ確定)で、辞書に足すかは語ごとに判断する。
+
+目視の確認表(連語スキャンと同じ型):
+4. python3 -I tools/conversion_audit/html.py tmp/audit_check/audit_check.html tmp/audit_check/items.json references/conversion_audit/<edition>...
+   を Artifact として公開(capabilities db+user、collection "audit"、doc id v-NNNN は items.json の並び)。
+   a/b に加えて c_policy/c_style も載せる(分類が誤っていればユーザが[直す]にできる)。判定は 直す/このままでよい+備考
+5. 回答の保存: ArtifactData list を out_dir に落としてから
+   python3 -I tools/conversion_audit/decisions.py export <out_dir>/audit tmp/audit_check/items.json references/conversion_audit/<edition>/decisions.json
+   decisions.py show <decisions.json> [fix|ok|pending|note] で一覧。備考に表記があれば期待より備考を優先する
