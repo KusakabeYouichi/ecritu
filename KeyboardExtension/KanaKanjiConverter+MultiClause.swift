@@ -505,6 +505,10 @@ extension KanaKanjiConverter {
         // 短い追加語彙断片(ろー→ロー/raw 等)のうち、同じ開始位置により長い辞書語(ろーぬ→ローヌ)が
         // 実在するものは「長語を分断する断片」とみなし、conn/床(1500)を与えないノードのキー。
         var shortCuratedFragmentNodeKeys = Set<String>()
+        // 漢字 1 字+助詞で始まる句の登録語(気になる/気がある)のうち、手前の常用語(病気/元気)を跨ぐものの
+        // キー。3765 の床外し(上限 5000)に漏れた常用語(病気 5456/元気 5912)向けに、直前が単漢字名詞のときだけ
+        // 床を外す(定数コメント参照。3634)
+        var phraseCrossedCommonWordNodeKeys = Set<String>()
         // 連語文脈でかなを優先するノードのキー(ひび+入る=ひびが入る 等)。日々 でなく ひび を勝たせる。
         var collocationPreferredKanaNodeKeys = Set<String>()
         var collocationPreferredVerbNodeKeys = Set<String>()
@@ -626,6 +630,10 @@ extension KanaKanjiConverter {
                     // 漢字 1 字+助詞で始まる句の登録語(気がある/気を配る)は、手前の常用語を跨ぐなら床を与えない(定義コメント参照。3765)。
                     // 登録語全体に掛けると 来た/ほうが/断線 のように床で守っている語まで崩れた(全網 15 件)
                     let isCurated = isCurated && !(Self.isKanjiHeadParticlePhrase(surface) && crossesCommonWordFromLeft(maxUnigram: Self.multiClausePhraseCrossedCommonWordMaxUnigram))
+                    if isCurated, Self.isKanjiHeadParticlePhrase(surface),
+                        crossesCommonWordFromLeft(maxUnigram: Self.multiClausePhraseCrossedCommonWordAfterSingleKanjiMaxUnigram) {
+                        phraseCrossedCommonWordNodeKeys.insert("\(start)-\(end)-\(surface)")
+                    }
                     if seenSurfaces.insert(surface).inserted {
                         surfaces.append((surface, isDictWord, isCurated, isInflectionDerived, wordCost, resolvedDFP))
                     } else if resolvedDFP,
@@ -2071,6 +2079,7 @@ extension KanaKanjiConverter {
             prevIsInflectionDerived: Bool = false,
             prevReading: String? = nil,
             isShortCuratedFragment: Bool = false,
+            isPhraseCrossedByCommonWord: Bool = false,
             isCollocationPreferredKana: Bool = false,
             isCollocationPreferredVerb: Bool = false,
             scriptVariantPenalty: Int = 0,
@@ -2422,7 +2431,11 @@ extension KanaKanjiConverter {
             // 未収録=高コスト)にする。個別語ではなく断片の性質(供給側で判定)で ろーぬげんさん→
             // ロー脱げんさん 等の誤分割を抑止する。長い辞書語が無い正当な短語(やつ/気を)は床維持。
             // 単文節(ろー だけ入力→ロー/raw)は別経路なので従来どおり先頭に出る。
-            if isCurated, Self.isWordLikeSurface(surface), !isShortCuratedFragment {
+            // 句の登録語が手前の常用語を跨ぎ、直前が単漢字名詞(秒/弦)のときも床を与えない(びょうきになる→秒気になる。
+            // 定数コメント参照。3634)。直前が活用派生(起きた+気がする)なら従来どおり床を保つ
+            let isCrossedPhraseAfterSingleKanji = isPhraseCrossedByCommonWord
+                && !prevIsBOS && prev.count == 1 && containsKanji(prev) && !prevIsInflectionDerived
+            if isCurated, Self.isWordLikeSurface(surface), !isShortCuratedFragment, !isCrossedPhraseAfterSingleKanji {
                 // 1 字漢字の curated(芯/夜/瓶/顔)は床 1500 でなく LM 水準を下限にする(2836)。単独供給のための登録が連文節では
                 // 激安ノードになり、芯(1500)+だ+例 が 死んだ(派生 7200)+例 を跨いで しんだれいも→芯だ例も になっていた
                 if surface.count == 1, containsKanji(surface), let unigram = unigramCostByID[surfaceID] {
@@ -3565,6 +3578,7 @@ extension KanaKanjiConverter {
                         + (singleTopLeadNodeBonuses[nodeKeySV] ?? 0)
                         + naAdjectiveSaStemBonus
                     let nodeIsShortCuratedFragment = shortCuratedFragmentNodeKeys.contains(nodeKeySV)
+                    let nodeIsPhraseCrossedByCommonWord = phraseCrossedCommonWordNodeKeys.contains(nodeKeySV)
                     let nodeIsCollocationPreferredKana = collocationPreferredKanaNodeKeys.contains(nodeKeySV)
                     let nodeIsCollocationPreferredVerb = collocationPreferredVerbNodeKeys.contains(nodeKeySV)
                     let nodeScriptVariantPenalty = (scriptVariantSuppressedNodeKeys.contains(nodeKeySV) ? 100000
@@ -3641,6 +3655,7 @@ extension KanaKanjiConverter {
                             wordCost: node.wordCost,
                             isDictionaryFormPredicate: node.isDictionaryFormPredicate,
                             isShortCuratedFragment: nodeIsShortCuratedFragment,
+                            isPhraseCrossedByCommonWord: nodeIsPhraseCrossedByCommonWord,
                             isCollocationPreferredKana: nodeIsCollocationPreferredKana,
                             isCollocationPreferredVerb: nodeIsCollocationPreferredVerb,
                             scriptVariantPenalty: nodeScriptVariantPenalty,
@@ -3716,6 +3731,7 @@ extension KanaKanjiConverter {
                             prevIsInflectionDerived: prevNode.isInflectionDerived,
                             prevReading: prevNode.reading,
                             isShortCuratedFragment: nodeIsShortCuratedFragment,
+                            isPhraseCrossedByCommonWord: nodeIsPhraseCrossedByCommonWord,
                             isCollocationPreferredKana: nodeIsCollocationPreferredKana,
                             isCollocationPreferredVerb: nodeIsCollocationPreferredVerb,
                             scriptVariantPenalty: nodeScriptVariantPenalty,
@@ -5315,11 +5331,12 @@ extension KanaKanjiConverter {
             // 変種評価で transitionCost に渡すノード別フラグ(選好/抑制の記録から引く)。node と nextNode の
             // 2 か所に同じ 4 引数を書いていたのを 1 本に(2805)。DP 側と違い politeSupplement の降格は含めない(従来どおり)
             func variantFlags(_ node: MultiClauseNode) -> (
-                isShortCuratedFragment: Bool, isCollocationPreferredKana: Bool,
+                isShortCuratedFragment: Bool, isPhraseCrossedByCommonWord: Bool, isCollocationPreferredKana: Bool,
                 isCollocationPreferredVerb: Bool, scriptVariantPenalty: Int
             ) {
                 (
                     shortCuratedFragmentNodeKeys.contains(node.key),
+                    phraseCrossedCommonWordNodeKeys.contains(node.key),
                     collocationPreferredKanaNodeKeys.contains(node.key),
                     collocationPreferredVerbNodeKeys.contains(node.key),
                     (scriptVariantSuppressedNodeKeys.contains(node.key) ? 100000
@@ -5352,6 +5369,7 @@ extension KanaKanjiConverter {
                         : false,
                     prevReading: pos > 0 ? nodes[pathIndices[pos - 1]].reading : nil,
                     isShortCuratedFragment: nodeFlags.isShortCuratedFragment,
+                    isPhraseCrossedByCommonWord: nodeFlags.isPhraseCrossedByCommonWord,
                     isCollocationPreferredKana: nodeFlags.isCollocationPreferredKana,
                     isCollocationPreferredVerb: nodeFlags.isCollocationPreferredVerb,
                     scriptVariantPenalty: nodeFlags.scriptVariantPenalty,
@@ -5409,6 +5427,7 @@ extension KanaKanjiConverter {
                         prevIsInflectionDerived: node.isInflectionDerived,
                         prevReading: node.reading,
                         isShortCuratedFragment: nextFlags.isShortCuratedFragment,
+                        isPhraseCrossedByCommonWord: nextFlags.isPhraseCrossedByCommonWord,
                         isCollocationPreferredKana: nextFlags.isCollocationPreferredKana,
                         isCollocationPreferredVerb: nextFlags.isCollocationPreferredVerb,
                         scriptVariantPenalty: nextFlags.scriptVariantPenalty,

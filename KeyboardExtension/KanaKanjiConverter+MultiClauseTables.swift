@@ -3068,6 +3068,10 @@ extension KanaKanjiConverter {
     static let multiClauseSeedOrderNeedsKanaPrevReadings: Set<String> = ["いない"]
     // 句の登録語が跨ぐと床を外す常用語の unigram 上限(時期 4556 は対象、た+き の 滝 5874 は対象外=起きた気がする を守る。3765)
     static let multiClausePhraseCrossedCommonWordMaxUnigram = 5000
+    // 同じ床外しを「直前が単漢字名詞(秒/弦)」のときだけ広げる上限(3634)。びょうきになる が 秒(4933)+気になる(床 1500)の
+    // 秒気になる になっていた(ユーザ報告)。病気 5456/元気 5912/勇気 6037 を対象に、平気 6911 は外。
+    // 上の上限を上げる案は 滝 5874 で 起きた気がする が崩れるため不採用。直前の単漢字で絞れば 起きた(活用派生)は無傷
+    static let multiClausePhraseCrossedCommonWordAfterSingleKanjiMaxUnigram = 6500
     // 漢字 1 字+格助詞(が/を/に)で始まる 3 字以上の句(気がある/気を遣う/目が覚める。3765)
     static func isKanjiHeadParticlePhrase(_ surface: String) -> Bool {
         let chars = Array(surface)

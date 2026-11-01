@@ -20357,6 +20357,22 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Set(multi.prefix(3)), ["ヤマタノオロチが", "八岐大蛇が", "八俣遠呂智が"], "\(multi.prefix(4))")
     }
 
+    // びょうきになる→病気になる(ユーザ報告 3634)。秒(4933)+気になる(句の登録語、床 1500)が 病気+になる に 523 勝っていた。
+    // 句の登録語が手前の常用語(病気 5456/元気 5912)を跨ぎ、直前が単漢字名詞のときは床を外す。起きた気がする(滝 5874 を跨ぐが
+    // 直前は活用派生)は従来どおり
+    func testRegressionRealLMByoukiNiNaruNotByouKiNiNaru() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for (reading, expected) in [
+            ("びょうきになる", "病気になる"), ("げんきになる", "元気になる"), ("びょうきになった", "病気になった"),
+            ("おきたきがする", "起きた気がする"), ("じきがあるとは", "時期があるとは"),
+            ("ときにきをつける", "時に気をつける"), ("かぜにきをつけて", "風に気をつけて")
+        ] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "\(reading) multi=\(multi)")
+        }
+    }
+
     // 3250: てんのうけに は 天皇家に(misc 天皇家 + レア語 家尼(けに)の抑制)
     func testTennoukeNiIsImperialFamilyWithParticle() throws {
         try prepareRealLMDictionary()
