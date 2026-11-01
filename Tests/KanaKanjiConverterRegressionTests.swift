@@ -26653,6 +26653,69 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // やめる の活用形全体をかな先頭に(ユーザ指定 3639)。基底 やめる/やめられる/やめさせる の seed にかなを先頭で書き、
+    // 連文節は seed 順をノードコストへ(かな識別も対象の opt-in)
+    func testRegressionRealLMYameruFamilyKanaFirst() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for reading in ["やめる", "やめた", "やめて", "やめない", "やめます", "やめよう", "やめとけば", "やめとく", "やめられる", "やめられない", "やめさせる", "やめなさい"] {
+            let single = converter.candidates(for: reading, limit: 3, systemCandidateMode: .surface)
+            XCTAssertEqual(single.first, reading, "\(reading) single=\(single)")
+            XCTAssertEqual(single.dropFirst().first, "止め" + reading.dropFirst(2), "\(reading) single=\(single)")
+        }
+        // 組織・職を を で受けるときは 辞め が先(連語表 manual.json。ユーザ指定 3639)。目的語が無いときや たばこ はかな
+        for (reading, expected) in [
+            ("しごとをやめた", "仕事を辞めた"), ("かいしゃをやめる", "会社を辞める"), ("かいしゃをやめたい", "会社を辞めたい"),
+            ("がっこうをやめて", "学校を辞めて"), ("もうやめよう", "もうやめよう"),
+            ("やめてください", "やめてください"), ("やめたほうがいい", "やめたほうがいい"), ("たばこをやめて", "煙草をやめて")
+        ] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "\(reading) multi=\(multi)")
+        }
+    }
+
+    // どうしよう(ユーザ報告 3639): 連文節で かな しよう が立たず 同仕様 が先頭、単文節は どう→同/堂/童+しよう のゴミ合成が並んでいた。
+    // どうしよう を misc の句に、指示副詞(こう/そう/どう/ああ/もう)のかな読みの 1 字漢字語幹は後置合成しない。しぼうりょう は seed で 脂肪量 を先頭に
+    func testRegressionRealLMDoushiyouAndShibouryou() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let single = converter.candidates(for: "どうしよう", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "どうしよう", "single=\(single)")
+        XCTAssertEqual(single.filter { $0.hasSuffix("しよう") }, ["どうしよう"], "single=\(single)")   // 同しよう/何うしよう/如何しよう も出さない
+        XCTAssertEqual(converter.candidates(for: "たいしぼうりつ", limit: 3, systemCandidateMode: .surface).first, "体脂肪率")
+        for (reading, expected) in [("どうしようか", "どうしようか"), ("どうしようもない", "どうしようもない"), ("どうしようかな", "どうしようかな"), ("どうした", "どうした")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "\(reading) multi=\(multi)")
+        }
+        let doushiyou = converter.multiClauseCandidates(for: "どうしよう", systemCandidateMode: .surface)
+        XCTAssertTrue(doushiyou.isEmpty || doushiyou.first == "どうしよう", "multi=\(doushiyou)")
+        XCTAssertFalse(doushiyou.contains("どう仕様"), "multi=\(doushiyou)")
+        let shibou = converter.multiClauseCandidates(for: "しぼうりょう", systemCandidateMode: .surface)
+        XCTAssertTrue(shibou.isEmpty || shibou.first == "脂肪量", "multi=\(shibou)")
+        XCTAssertEqual(converter.candidates(for: "しぼうりょう", limit: 3, systemCandidateMode: .surface).first, "脂肪量")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "しぼうりょうがおおい", systemCandidateMode: .surface).first, "脂肪量が多い")
+        XCTAssertEqual(converter.candidates(for: "たいしぼうりょう", limit: 3, systemCandidateMode: .surface).first, "体脂肪量")
+        // 連文節の変種でも 指示副詞のかな→1 字漢字(銅した/盲やめる)は出さない
+        for reading in ["どうした", "もうやめる", "どうする"] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, reading, "\(reading) multi=\(multi)")
+            XCTAssertFalse(multi.contains { $0.count == reading.count - 1 && containsKanjiCandidateForTest($0.prefix(1)) }, "\(reading) multi=\(multi)")
+        }
+    }
+
+    private func containsKanjiCandidateForTest(_ text: Substring) -> Bool {
+        text.unicodeScalars.contains { (0x4E00...0x9FFF).contains($0.value) }
+    }
+
+    // よんどけ の順(ユーザ指定 3639): 読/呼/招/喚/詠/誦/称/かな
+    func testRegressionRealLMYondokeSeedOrder() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "よんどけ", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(single, ["読んどけ", "呼んどけ", "招んどけ", "喚んどけ", "詠んどけ", "誦んどけ", "称んどけ", "よんどけ"], "single=\(single)")
+        let multi = converter.multiClauseCandidates(for: "ほんをよんどけ", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "本を読んどけ", "multi=\(multi)")
+    }
+
     // ゆうきがわく→勇気が湧く(連語表 manual.json に 湧く の主語。同音の名詞 枠 に が→枠 5851 < が→湧く 5962 で負けていた。ユーザ報告 3636)
     func testRegressionRealLMYuukiGaWaku() throws {
         try prepareRealLMDictionary()
