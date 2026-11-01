@@ -26797,4 +26797,16 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(moumaku.first, "網膜", "single=\(moumaku)")
     }
 
+    // けがした→怪我した、かんちした→完治した(misc.plist にサ変で登録。汚した/感知した が先頭だった。ユーザ指定 3640)
+    func testRegressionRealLMKegaKanchiSuruNouns() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for (reading, expected) in [("けがした", "怪我した"), ("けがして", "怪我して"), ("けがをした", "怪我をした"), ("かんちした", "完治した"), ("かんちして", "完治して")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "\(reading) multi=\(multi)")
+        }
+        XCTAssertEqual(converter.candidates(for: "けが", limit: 3, systemCandidateMode: .surface).first, "怪我")
+        XCTAssertEqual(converter.candidates(for: "かんちした", limit: 3, systemCandidateMode: .surface).first, "完治した")
+    }
+
 }

@@ -670,6 +670,8 @@
 	<dict><key>phrase</key><string>行きました</string><key>shortcut</key><string>いきました</string></dict>
 	<dict><key>phrase</key><string>行きましょう</string><key>shortcut</key><string>いきましょう</string></dict>
 	<dict><key>phrase</key><string>平気</string><key>shortcut</key><string>へいき</string></dict>	<!-- へいき は Wikipedia LM で 兵器(5259)<平気(6911)の系統バイアスがあり、へいきなんだろう が 兵器何だろう になる。会話頻度優先で 平気 を先頭化 -->	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>怪我</string><key>shortcut</key><string>けが</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 怪我: けがした が 汚した/瀆した/穢した(けがす の活用)の後ろで 怪我した が 5 番めだった。サ変で登録して 怪我した/怪我して を先頭に(ユーザ指定 3640) -->	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>完治</string><key>shortcut</key><string>かんち</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 完治: かんちした が辞書順の 感知した 先頭だった。会話では 完治した が優勢(ユーザ指定 3640) -->	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>連れて</string><key>shortcut</key><string>つれて</string></dict>	<!-- つれる は word_costs で 釣れる(8201)が最安で 連れる(8837)が2位。つれてくる 等の複合で基底順が波及するため 連れて をcurated供給 -->
 	<dict><key>phrase</key><string>貼って</string><key>shortcut</key><string>はって</string></dict>	<!-- はって は基底列挙で はう(這う/匍う/匐う)が はる(貼る/張る)より先に並び、はってある が 這ってある 等になる(てある は他動詞専用で 這う に付かない)。貼って/張って をcurated供給 -->
 	<dict><key>phrase</key><string>張って</string><key>shortcut</key><string>はって</string></dict>
