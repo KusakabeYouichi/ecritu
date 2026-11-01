@@ -2395,9 +2395,11 @@ extension KanaKanjiConverter {
     static let multiClauseKanaGakiKanaFirstPenalty = 1500
     // 副詞(漢字も残す)を抑制しないとき、かな識別を同じ読みの漢字の unigram のすぐ上に置く余白(3552)。漢字側は下げない
     static let multiClauseKanaGakiKanaFirstMargin = 200
-    // 副詞(漢字も残す)のかなが LM に無いときも連文節で漢字のすぐ上に置く読み(opt-in。3634-3635)。ひさしぶり(久しぶり のみ収録)。
-    // 一律にすると とうぶん(当分 のみ収録)も かな先頭になり 当分の間 が とうぶんの間 になる(ユーザ指定で漢字のまま)
-    static let multiClauseKanaGakiKanaFirstNoUnigramReadings: Set<String> = ["ひさしぶり"]
+    // 副詞(漢字も残す)のかなが LM に無いときの、連文節でのかなの置き場(読み→同じ読みの漢字の unigram からの差。負=上。3634-3636)。
+    // ひさしぶり(久しぶり のみ収録)は漢字の 200 上=先頭、とうぶん(当分 のみ収録)は 50 下=当分の間 の次(ユーザ指定)。
+    // 50 なのは、seed に並ぶ兄弟(糖分/等分)の変種が seed 順の刻み(multiClauseSeedOrderVariantStep 100)で並び、100 だと同点で後ろに回るため。
+    // 表に無い読みは触らない(一律にかな先頭にすると とうぶんのあいだ が とうぶんの間 になった)
+    static let multiClauseKanaGakiNoUnigramKanaOffsetByReading: [String: Int] = ["ひさしぶり": -200, "とうぶん": 50]
     // 同じ減点を当てる かな 1 語(名詞の直後には単独で来ない接尾辞の読み)。こう は 港/工/高 の接尾で、七類こう/日本こう が
     // 七類港/日本港 を抜いていた(かな こう 4590 < 港 5079、地名→港 の bigram が無い。ユーザ報告 3397)
     static let multiClauseKanaSuffixAfterNounSurfaces: Set<String> = ["せい", "こう"]

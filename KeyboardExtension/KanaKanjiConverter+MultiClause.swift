@@ -3486,16 +3486,27 @@ extension KanaKanjiConverter {
             }
             // 副詞(漢字も残す)を抑制しないとき、かな識別を同じ読みの漢字(特に 4238)のすぐ上に置く加点(とくに 5744 → 4038)。
             // 文頭(特に気をつけて)にも効かせるため transitionCost の中に置く(3552)
-            // かなが LM に無い(ひさしぶり: 久しぶり 6763 のみ収録)ときは、opt-in の読みに限りここまでの基礎コスト(未収録 8700)を
-            // かなの unigram の代わりにして同じ式で漢字のすぐ上に置く(ひさしぶりに が 久しぶりに のままだった。3634)。
-            // 一律にすると とうぶんのあいだ が とうぶんの間 になる(当分の間 を保つ。ユーザ指定 3635)
+            // かなが LM に無い(ひさしぶり: 久しぶり 6763 のみ収録、とうぶん: 当分 のみ)ときは、表(読み→漢字からの差)にある読みに限り
+            // 基礎コスト(未収録 8700、または借りた bigram)を「漢字のこの遷移でのコスト+差」に置き換える(ひさしぶり は漢字の 200 上、
+            // とうぶん は 50 下=当分の間 の次。3634-3636、ユーザ指定)。漢字のコストは bigram(prev→漢字)があればそれ、無ければ
+            // unigram+バックオフ(文頭の 当分 7488 = 6988+500。unigram だけと比べると 400 上に置いてしまい とうぶんの間 が先頭だった)。
+            // 表に無い読みは従来どおり触らない
             if isKanaIdentity, !kanaGakiSuppressed.contains(.adverbKanaFirst),
-                let entries = KanaGakiTable.categoryByReadingAndSurface[reading],
-                let kanaUni = unigramCosts[surface]
-                    ?? (Self.multiClauseKanaGakiKanaFirstNoUnigramReadings.contains(reading) ? base : nil) {
-                let kanjiUni = entries.compactMap { $0.value == .adverbKanaFirst ? unigramCosts[$0.key] : nil }.min()
-                if let kanjiUni, kanaUni + Self.multiClauseKanaGakiKanaFirstMargin > kanjiUni {
-                    penalty -= kanaUni + Self.multiClauseKanaGakiKanaFirstMargin - kanjiUni
+                let entries = KanaGakiTable.categoryByReadingAndSurface[reading] {
+                let kanjiCosts = entries.compactMap { entry -> (surface: String, unigram: Int)? in
+                    guard entry.value == .adverbKanaFirst, let unigram = unigramCosts[entry.key] else { return nil }
+                    return (entry.key, unigram)
+                }
+                if let kanji = kanjiCosts.min(by: { $0.unigram < $1.unigram }) {
+                    if let kanaUni = unigramCosts[surface] {
+                        if kanaUni + Self.multiClauseKanaGakiKanaFirstMargin > kanji.unigram {
+                            penalty -= kanaUni + Self.multiClauseKanaGakiKanaFirstMargin - kanji.unigram
+                        }
+                    } else if let offset = Self.multiClauseKanaGakiNoUnigramKanaOffsetByReading[reading] {
+                        let kanjiBigram = bigramCostByIDPair[MultiClauseSymbols.pairKey(prevID, symbolID(kanji.surface))]
+                        let kanjiBase = min(kanjiBigram ?? Int.max, kanji.unigram + Self.multiClauseBackoffCost)
+                        penalty += kanjiBase + offset - base
+                    }
                 }
             }
             // 稀な語幹の活用派生(動じよう)は同点の常用語(同じよう)の後ろに(定数コメント参照。2890)。
