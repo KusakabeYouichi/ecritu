@@ -4570,6 +4570,12 @@ extension KanaKanjiConverter {
                                     && Self.multiClauseInstrumentNounSurfaces.contains(nodes[backPointer[prevIdx]].surface)) {
                             cost -= Self.multiClauseInstrumentPlayVerbBonus
                         }
+                        // 名詞+だし(接続の 〜だし)の直後に て/た は続かない(えらーだして: エラー+だし+て が エラー+出して より安く、
+                        // 出して の変種も上限超えで落ちていた。ユーザ報告 3640)。かなの だして/だした は 1 ノード(出して/かな)が担う
+                        if prevNode.isKanaIdentity, prevNode.readingID == SID.だし,
+                            node.isKanaIdentity, Self.multiClauseDashiBannedFollowerReadings.contains(node.reading) {
+                            cost += Self.multiClauseForbiddenPenaltyCost
+                        }
                         // 述語直後の 人(にん/じん) は文法として接続しない(定数コメント参照)。
                         if node.surfaceID == SID.人,
                             Self.multiClausePersonSuffixSinoReadingsID.contains(node.readingID),

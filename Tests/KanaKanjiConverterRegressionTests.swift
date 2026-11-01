@@ -26758,4 +26758,16 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertFalse(boosted.contains("つ農地"), "boosted=\(boosted)")
     }
 
+    // えらーだして→エラー出して(エラー+だし+て の経路が エラー+出して より安く、出して の変種も上限超えで落ちていた。
+    // かな だし の直後の て/た 系を遮断。ユーザ報告 3640)
+    func testRegressionRealLMErrorDashiteNotDashiTe() throws {
+        try prepareRealLMDictionary()
+        for (reading, expected) in [("えらーだして", "エラー出して"), ("えらーだした", "エラー出した"), ("えらーだしてる", "エラー出してる")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "\(reading) multi=\(multi)")
+        }
+        let kemuri = converter.multiClauseCandidates(for: "けむりだして", systemCandidateMode: .surface)
+        XCTAssertTrue(kemuri.prefix(2).contains("煙出して"), "multi=\(kemuri)")
+    }
+
 }

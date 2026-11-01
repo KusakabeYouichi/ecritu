@@ -2777,6 +2777,11 @@ extension KanaKanjiConverter {
     // 名詞直後の 帰って/帰る 系へのボーナス(適用箇所のコメント参照。2880)。派生同士の同点を割る幅
     static let multiClauseKaeruAfterNounBonus = 800
     static let multiClauseBOSParticlePenalty = 2000
+    // かな だし(接続の 〜だし)の直後に立てない て/た 系のかな(適用箇所のコメント参照。3640)。だし+て/た/てる は だして/だした/だしてる
+    // (出して/出した/出してる と、そのかな)の 1 ノードが担う。たぶん/たまに のような副詞の頭は含めない
+    static let multiClauseDashiBannedFollowerReadings: Set<String> = [
+        "て", "た", "てる", "てた", "てない", "ている", "ていた", "てて", "てから", "たら", "たり", "たい"
+    ]
     // 助詞の読みを持つ 1 字漢字(歯=は/煮=に/都=と/二=に…)は、直後が助詞でない位置では
     // 助詞として読むのが正しい(2879、抜き取り検査 64 件)。文頭の「はメンドーサ州の」が
     // 歯メンドーサ州の、「にふくまれる」が 煮含まれる、述語直後の「〜だとされています」が
@@ -3637,6 +3642,7 @@ extension KanaKanjiConverter {
         static let そい = MultiClauseSymbols.id("そい")
         static let そう = MultiClauseSymbols.id("そう")
         static let た = MultiClauseSymbols.id("た")
+        static let だし = MultiClauseSymbols.id("だし")
         static let たい = MultiClauseSymbols.id("たい")
         static let ため = MultiClauseSymbols.id("ため")
         static let 性 = MultiClauseSymbols.id("性")
