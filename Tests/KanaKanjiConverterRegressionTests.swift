@@ -26735,4 +26735,14 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "わーい"))
     }
 
+    // かいてんじこく→開店時刻(pair bonus 開店→時刻。回転 が seed 先頭で安く、どちらも 時刻 との bigram が無かった。ユーザ指定 3640)
+    func testRegressionRealLMKaitenJikokuPrefersKaiten() throws {
+        try prepareRealLMDictionary()
+        for (reading, expected) in [("かいてんじこく", "開店時刻"), ("かいてんじこくは", "開店時刻は")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "\(reading) multi=\(multi)")
+            XCTAssertTrue(multi.prefix(2).contains(expected.replacingOccurrences(of: "開店", with: "回転")), "\(reading) multi=\(multi)")
+        }
+    }
+
 }
