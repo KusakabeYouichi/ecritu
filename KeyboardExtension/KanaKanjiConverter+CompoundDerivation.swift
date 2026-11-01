@@ -774,6 +774,8 @@ extension KanaKanjiConverter {
         // 2かいから は 階から(ユーザ指定 3537)。seed かいから(回から/会から/貝殻)が助数詞+かな末尾の合成を止めるので
         // 数字文脈ではここで前置する(seed にも 階から を足して候補自体を供給)
         "かいから": ["階から", "回から"],
+        // 3+つのうち は つのうち、つの内 の順(連文節は つの家 を 2 番めに置く。ユーザ指定 3640)
+        "つのうち": ["つのうち", "つの内"],
         // 数量+後(1年後/2週間後/3か月後/5日後/2時間後/10分後/30秒後。ユーザ報告 3589)。1ねんご が 年呉、2しゅうかんご が
         // 周かんご になっていた。助数詞の表に ねんご を足すと 年ごとに(ねんご+とに)のような ごと 系の合成が 年後とに になり、
         // 序数の語幹の字(後)も増えるので、数字直後の別表にする。か月は表記の設定(か/カ/ヶ/ヵ/箇)の順に合わせる
@@ -917,10 +919,13 @@ extension KanaKanjiConverter {
         // 〜つ(数え)+動詞(4+つかうか→4つ買うか/4つ買うだけで。3604、ユーザ報告)。読みの先頭 つか が助数詞 束(つか)や
         // 使う/遣う の語として先に立つので、数字直後では つ+末尾の変換形(買うか)を先頭に供給する。末尾は 3 かな以上・
         // 変換形が漢字で始まるものだけ(つ+くる 等の短い末尾や、つ+かな のままの形は対象外)
+        // 変換形は送りがな(かな)を含むこと。全部漢字の変換形は動詞でなく名詞(3+つのうち で のうち→農地 が つ農地 を先頭に
+        // 供給していた。ユーザ報告 3640)
         if reading.hasPrefix("つ"), reading.count >= 4, let tailConversion {
             let tail = String(reading.dropFirst())
             if let converted = tailConversion(tail), converted != tail,
                 let first = converted.first, containsKanjiCandidate(String(first)),
+                converted.contains(where: { ("ぁ"..."ゖ").contains($0) }),
                 !suppressedCandidates.contains("つ" + converted) {
                 boosted.append("つ" + converted)
             }

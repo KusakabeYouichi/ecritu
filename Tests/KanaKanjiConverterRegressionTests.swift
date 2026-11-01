@@ -26745,4 +26745,17 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3+つのうち: 数字直後の つ+動詞 の供給(3604)が のうち→農地 を動詞扱いして つ農地 を先頭に置いていた。変換形に送りがなが要る。
+    // 数字直後の つのうち は つのうち、つの内 の順(ユーザ報告 3640)
+    func testRegressionRealLMDigitTsuNoUchi() throws {
+        try prepareRealLMDictionary()
+        let bare = converter.candidates(for: "つのうち", limit: 12, systemCandidateMode: .surface)
+        let boosted = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+            bare, reading: "つのうち", precedingCharacter: "3", suppressedCandidates: [],
+            tailConversion: { [converter] in converter!.counterTailConversion($0) }
+        )
+        XCTAssertEqual(Array(boosted.prefix(2)), ["つのうち", "つの内"], "boosted=\(boosted)")
+        XCTAssertFalse(boosted.contains("つ農地"), "boosted=\(boosted)")
+    }
+
 }
