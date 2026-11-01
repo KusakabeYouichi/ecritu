@@ -4845,6 +4845,10 @@ extension KanaKanjiConverter {
             if leadBestIdx >= 0, leadBestIdx != pathLeadIdx,
                 !nodes[leadBestIdx].isKanaIdentity,
                 nodes[leadBestIdx].start == nodes[pathLeadIdx].start,
+                // 助詞の直前が述語(辞書形/派生)なら差し替えない。名詞+助詞(感じ+の)の整合が目的で、述語+と(条件の 押すと)を
+                // 「名詞+EOS の方が安い」という理由で名詞に替えると ぷらすおすと が プラス雄と になっていた(ユーザ報告 3640)
+                !((nodes[pathLeadIdx].isDictionaryFormPredicate || nodes[pathLeadIdx].isInflectionDerived)
+                    && !(nodes[leadBestIdx].isDictionaryFormPredicate || nodes[leadBestIdx].isInflectionDerived)),
                 Self.multiClauseConversationalTemporalNounUnigramCaps[nodes[leadBestIdx].surface] == nil,
                 Self.multiClauseConversationalTemporalNounUnigramCaps[nodes[pathLeadIdx].surface] == nil,
                 bigramCosts["\(nodes[leadBestIdx].surface)\t\(tailChar)"] != nil,

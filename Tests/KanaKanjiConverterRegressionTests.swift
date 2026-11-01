@@ -26770,4 +26770,14 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(kemuri.prefix(2).contains("煙出して"), "multi=\(kemuri)")
     }
 
+    // ぷらすおすと→プラス押すと(末尾助詞の前を「先頭だけで最良」に揃える 3424 の規則が、述語 押す を名詞 雄(名詞+EOS が安い)に
+    // 差し替えていた。述語+と は差し替えない。ユーザ報告 3640)。いい感じの(3424 の本来の対象)は維持
+    func testRegressionRealLMPlusOsutoKeepsVerb() throws {
+        try prepareRealLMDictionary()
+        for (reading, expected) in [("ぷらすおすと", "プラス押すと"), ("ぼたんおすと", "ボタン押すと"), ("いいかんじの", "いい感じの")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "\(reading) multi=\(multi)")
+        }
+    }
+
 }
