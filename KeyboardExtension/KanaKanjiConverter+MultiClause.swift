@@ -2312,9 +2312,13 @@ extension KanaKanjiConverter {
                 // ただし辞書形述語(活用表に載る動詞。向く wc10699/uni6325)は人手選別済みの実在語なので
                 // 読みの長さを問わない(さかなにむく→魚に無垢 が先頭で 魚に向く が変種にも無かった。2839)
                 // 漢字の行政地名(堺市/上尾市)は読み 4 字から認める(定数コメント参照。2886)
+                // 漢字 3 字以上の全部漢字(思想家/歴史家/武道家)も読み 4 字から認める: 〜家/〜者 の複合は Sudachi が
+                // 収穫底値(wc10000)でも LM にはよく出る(思想家 uni5382)。床 9500 のままだと 思想+か(9446)に負けて
+                // 思想か/歴史科 が先頭だった(一括検査 3640b)。2 字の表層(熱田)は従来どおり 5 字から
                 let isOwnMainReadingWellKnownCompound: Bool = {
                     guard reading.count >= 5 || isDictionaryFormPredicate
-                        || (reading.count >= 4 && Self.isKanjiPlaceNameSurface(surface)),
+                        || (reading.count >= 4 && Self.isKanjiPlaceNameSurface(surface))
+                        || (reading.count >= 4 && surface.count >= 3 && Self.isAllKanjiSurface(surface)),
                         let wordCost, let unigram = unigramCostByID[surfaceID],
                         unigram < Self.multiClauseDictUnknownCost,
                         let minWordCost = surfaceMinWordCostValue() else {

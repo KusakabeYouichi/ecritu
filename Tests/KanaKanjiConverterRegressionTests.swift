@@ -26884,4 +26884,19 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertFalse(single("かかん").contains("日間"), "\(single("かかん"))")
     }
 
+    // 一括検査 3640b(ユーザ指定 3641)。連文節のロジック: 収穫底値の床 9500 を漢字 3 字以上は読み 4 字から免除(思想家/歴史家/武道家)、
+    // (同点のかな→漢字の規則は seed/curated の かな 1 位 の設計と衝突して 40 件退行したので撤回)
+    func testRegressionRealLMAudit3640bMultiClauseFixes() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ r: String) -> [String] {
+            let m = converter.multiClauseCandidates(for: r, systemCandidateMode: .surface)
+            return m.isEmpty ? converter.candidates(for: r, limit: 8, systemCandidateMode: .surface) : m
+        }
+        XCTAssertEqual(multi("しそうか").first, "思想家")
+        XCTAssertEqual(multi("れきしか").first, "歴史家")
+        XCTAssertEqual(multi("ぶどうか").first, "武道家")
+        XCTAssertEqual(multi("あったが").first, "あったが", "2 字の表層(熱田)は免除しない")
+    }
+
 }
