@@ -145,7 +145,9 @@ extension KanaKanjiConverter {
     // 無助詞接続の減点(同/道/銅+やる)が掛からなかった。読む(活用派生)では掛かって どう読むか になる
     // なし(無し/ない の文語終止形。口語の「〜なしか」「〜なしよね」): 述語扱いにしないと直後の か が素通り(3565+500)で、
     // どうがもなしか が 動画も名しか(名→しか の bigram)に負けていた(ユーザ報告 3225)
-    static let multiClauseKanaPredicateIdentities: Set<String> = ["ある", "する", "かかる", "やる", "なし"]
+    // やめる を追加(3639): seed をかな先頭にしても、述語判定されないかな やめる は文末(EOS)が 止める より 35 高く
+    // かいしゃをやめる が 会社を止める のままだった
+    static let multiClauseKanaPredicateIdentities: Set<String> = ["ある", "する", "かかる", "やる", "なし", "やめる"]
 
     // 同音異義 あう の出し分け(best-effort): 前の名詞が人物なら 会う、それ以外は 合う を優先。
     // 辞書に動物性タグが無く助詞跨ぎ bigram も無いため、名詞の人物性を語彙+敬称接尾で近似する。
@@ -1267,7 +1269,7 @@ extension KanaKanjiConverter {
     // 縁(へり の seed 2 番目、strict で 100)と同点にして文節位置の早い方を先に出す(ユーザ指定)
     // かかる(3633、ユーザ報告: いくらぐらいかかるんですか が 係るんですか 先頭): 最良経路は かな かかる で、漢字の変種は
     // LM unigram(係る 6467 < 掛かる 6803。法律文の 〜に係る)の順になっていた。seed {掛かる, 罹る, 係る, かかる} の順に
-    static let multiClauseSeedOrderVariantKanaLeadReadings: Set<String> = ["かかる", "いない", "いまだ", "さすが", "たいして", "いそう", "とか", "えー", "うーむ", "あとあと", "たとえて", "であっても", "すみません", "おしい", "みずみずしさ", "みずみずしい", "おすすめ", "かけないで", "こつ", "なくし", "にんにく", "やめとけ", "にんじん"]  // やめとけ/にんじん(3638。にんじん は 任じん を 人参 の後ろに)
+    static let multiClauseSeedOrderVariantKanaLeadReadings: Set<String> = ["かかる", "いない", "いまだ", "さすが", "たいして", "いそう", "とか", "えー", "うーむ", "あとあと", "たとえて", "であっても", "すみません", "おしい", "みずみずしさ", "みずみずしい", "おすすめ", "かけないで", "こつ", "なくし", "にんにく", "やめとけ", "にんじん", "やめる"]  // やめとけ/にんじん(3638。にんじん は 任じん を 人参 の後ろに)、やめる(3639)
     // seed 順を変種の差分にそのまま使う(min でなく置換)読みの opt-in(2804)。派生同士は OOV 定額で同点になり、
     // min 方式では seed 2 番目のかな(たとえて)を同点 0 の 喩えて より前に出せない
     // おしい も seed 順(惜しい→おしい→押井)をそのまま変種順に使う。かな おしい を
@@ -1292,7 +1294,7 @@ extension KanaKanjiConverter {
     // 銭湯7396/戦闘6515/先頭6776 で 先頭 は 3 番手。日常の文章では 先頭 の方が出るので seed 順をノードコストへ
     // きょく(3262): LM は 局 4384 < 曲 4543、局→で 1560 < 曲→で 1580 で、きょくでためす が 局で試す だった(ユーザ報告)
     // やめとけ(3638): 派生同士(やめとけ/止めとけ/辞めとけ)は定額で同点になり列挙順で 止めとけ が先頭。seed 順(かな先頭)をノードコストへ
-    static let multiClauseSeedFirstLMOverrideReadings: Set<String> = ["せいかい", "よういち", "かじ", "たんにん", "しんせん", "きゅうりょう", "じゅうそう", "はんせい", "だったん", "せんとう", "とうぶん", "きょく", "おすすめ", "かけないで", "なんだか", "やめとけ"]
+    static let multiClauseSeedFirstLMOverrideReadings: Set<String> = ["せいかい", "よういち", "かじ", "たんにん", "しんせん", "きゅうりょう", "じゅうそう", "はんせい", "だったん", "せんとう", "とうぶん", "きょく", "おすすめ", "かけないで", "なんだか", "やめとけ", "やめる"]  // やめる(辞書形。かいしゃをやめる が 会社を止める だった。3639)
     // 接頭辞「お」(かな)直後の そい(添い/沿い 等)は おそい(遅い)の誤分割(お+そい)であることが
     // ほとんど。N-best 変種(お添いよね/お沿いよね)から落とすため減点する。寄り添い等の複合
     // (prev≠お)や お茶/お金(reading≠そい)は無傷。
@@ -3334,6 +3336,12 @@ extension KanaKanjiConverter {
         if !node.isInflectionDerived, let kanji = multiClauseAdverbKanaFirstKanjiByReading[node.reading] {
             return kanji
         }
+        // seed がかな先頭で、seed 順をノードコストへ写す opt-in の読み(やめる)のかなも、seed 2 番めの漢字(止める)の出口 bigram を
+        // 借りる。入口は seed の救済で 1 点勝つが、出口(文末 1817 対 1781、な 3394 対 1698)で負けて 会社を止める のままだった(3639)
+        if !node.isInflectionDerived, node.surface == node.reading,
+            let kanji = multiClauseSeedKanaLeadOverrideKanjiByReading[node.reading] {
+            return kanji
+        }
         guard let tail = inflectionAuxTail(of: node.surface) else {
             return nil
         }
@@ -3752,6 +3760,16 @@ extension KanaKanjiConverter {
     static let multiClauseRenyouAuxKanaSurfacesID = MultiClauseIDSet(multiClauseRenyouAuxKanaSurfaces)
     static let multiClauseSeedFirstLMOverrideReadingsID = MultiClauseIDSet(multiClauseSeedFirstLMOverrideReadings)
     static let multiClauseSeedKanaLeadReadingsID = MultiClauseIDSet(multiClauseSeedKanaLeadReadings)
+    // seed 順をノードコストへ写す opt-in のうち、seed がかな先頭の読み → seed 2 番めの漢字(やめる → 止める)。かなの出口 bigram の借用先(3639)
+    static let multiClauseSeedKanaLeadOverrideKanjiByReading: [String: String] = {
+        var map: [String: String] = [:]
+        for reading in multiClauseSeedFirstLMOverrideReadings {
+            if let list = KanaKanjiSeedDictionary.seed[reading], list.first == reading, list.count >= 2 {
+                map[reading] = list[1]
+            }
+        }
+        return map
+    }()
     static let multiClauseSentenceFinalAllKanjiPenaltyReadingsID = MultiClauseIDSet(multiClauseSentenceFinalAllKanjiPenaltyReadings)
     static let multiClauseSentenceFinalKanaParticlesID = MultiClauseIDSet(multiClauseSentenceFinalKanaParticles)
     static let multiClauseSentenceInitialKotoParticleSurfacesID = MultiClauseIDSet(multiClauseSentenceInitialKotoParticleSurfaces)

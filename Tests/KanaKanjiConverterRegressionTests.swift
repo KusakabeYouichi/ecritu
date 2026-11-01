@@ -7008,8 +7008,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         converter.store.addUserEntry(reading: "べし", candidate: "べし")
 
         let multi = converter.multiClauseCandidates(for: "やめるべし", systemCandidateMode: .surface)
-        XCTAssertEqual(multi.first, "止めるべし", "multi=\(multi)")
-        XCTAssertTrue(multi.contains("やめるべし"), "multi=\(multi)")
+        // 3639: やめ 系はかな先頭(ユーザ指定)。止めるべし は 2 番め
+        XCTAssertEqual(Array(multi.prefix(2)), ["やめるべし", "止めるべし"], "multi=\(multi)")
         if let kanaIndex = multi.firstIndex(of: "やめるべし"),
             let mochikoIndex = multi.firstIndex(where: { $0.contains("餅子") }) {
             XCTAssertLessThan(kanaIndex, mochikoIndex, "multi=\(multi)")

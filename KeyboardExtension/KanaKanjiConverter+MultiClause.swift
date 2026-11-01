@@ -2211,9 +2211,11 @@ extension KanaKanjiConverter {
                 let directBigram = bigramCostByIDPair[bigramPairKey] {
                 // 副詞(漢字も残す)のかな識別(とくに)は、直接の観測(とくに→お)があっても漢字(特に→お)の方が安ければそちらを
                 // 使う(同じ語の別表記。auxTailForBigramBorrow の代用と対。とくにお願いします が 特に のままだった。3633)
+                // かな先頭 seed の opt-in(やめる→止める。3639)も同じ代用
                 var bigram = directBigram
                 if let prevAuxTailID, let prevReading, let prevAuxTail,
-                    Self.multiClauseAdverbKanaFirstKanjiByReading[prevReading] == prevAuxTail,
+                    Self.multiClauseAdverbKanaFirstKanjiByReading[prevReading] == prevAuxTail
+                        || Self.multiClauseSeedKanaLeadOverrideKanjiByReading[prevReading] == prevAuxTail,
                     let aliasBigram = bigramCostByIDPair[MultiClauseSymbols.pairKey(prevAuxTailID, surfaceID)] {
                     bigram = min(bigram, aliasBigram)
                 }
@@ -5489,7 +5491,8 @@ extension KanaKanjiConverter {
                         reading: "",
                         isDictWord: true,
                         isCurated: false,
-                        isInflectionDerived: false
+                        isInflectionDerived: false,
+                        prevReading: node.reading
                     )
                     // curated ノードは EOS 遷移を上限クランプ(定数コメント参照)。
                     if node.isCurated {
