@@ -6,6 +6,7 @@
 
 	<!-- ■ 誤エントリ: 辞書の誤った読み・存在しない表記(学習でも古語でもなく明確な誤り) -->
 	<dict><key>phrase</key><string>不・思・議</string><key>shortcut</key><string>ふしぎ</string></dict>	<!-- Sudachi small_lex の中黒入り装飾表記(不思議)。合成(不・思・議だね)に出ていた(ユーザ報告 3715) -->
+	<dict><key>phrase</key><string>北</string><key>shortcut</key><string>きたの</string><key>pos</key><string>名詞</string></dict>	<!-- 北(きたの): 読みと表記が合わない(北野 の揺れ)。きたのみさいる が 北ミサイル になり の が消えた(一括検査 3640b、ユーザ指定 3641) -->
 	<dict><key>phrase</key><string>喰る</string><key>shortcut</key><string>くえる</string><key>pos</key><string>名詞</string></dict>	<!-- 喰る(くえる): Sudachi の誤エントリ(読みと表記が合わない)。くえる の先頭に出ていた。食る はその字形の置き換え(ユーザ報告 3741) -->
 	<dict><key>phrase</key><string>食る</string><key>shortcut</key><string>くえる</string><key>pos</key><string>名詞</string></dict>
 	<dict><key>phrase</key><string>忙がしい</string><key>shortcut</key><string>いそがしい</string><key>pos</key><string>名詞</string></dict>	<!-- 忙しい の非標準送り仮名。急がしい/多忙がしい は誤表記(ユーザ指定 3711)。活用の語幹まで抑制すると お忙しい が消えるので この語だけ(pos=名詞) -->
@@ -185,6 +186,9 @@
 	<dict><key>phrase</key><string>見谷</string><key>shortcut</key><string>みたに</string></dict>
 
 	<!-- ■ 収穫ノイズ: レア語・レア読み(実在するが日常入力では雑音) -->
+	<dict><key>phrase</key><string>日間</string><key>shortcut</key><string>かかん</string><key>pos</key><string>名詞</string></dict>	<!-- 日間(かかん): 日間 の読みは にちかん/にっかん で かかん は雑音。可換代数/果敢に が 日間代数/日間に だった(一括検査 3640b、ユーザ指定 3641) -->
+	<dict><key>phrase</key><string>睡る</string><key>shortcut</key><string>ねむる</string></dict>
+	<dict><key>phrase</key><string>睡れる</string><key>shortcut</key><string>ねむれる</string><key>pos</key><string>名詞</string></dict>	<!-- 睡れる は 睡る の活用でなく ねむれる の辞書の直接エントリ(rank0)なので別に抑制する -->	<!-- 睡る(ねむる): 眠る の稀な表記。LM が 睡れる 7590<眠れる 8139 で 眠れる宇宙の王女 が 睡れる だった(一括検査 3640b、ユーザ指定 3641) -->
 	<dict><key>phrase</key><string>毛拉</string><key>shortcut</key><string>もうら</string><key>pos</key><string>名詞</string></dict>	<!-- 毛拉(もうら): 中国語の音訳(ムッラー)。もうらないとね の単文節で 網羅ないとね の次に 毛拉ないとね が出ていた(ユーザ報告 3640)。生浦/茂浦/真浦/藻浦 は姓・地名なので残す -->
 	<dict><key>phrase</key><string>佚</string><key>shortcut</key><string>いつ</string></dict>	<!-- 佚(いつ): 逸 の古い字。単独では使わず、いつくうの が 佚空の に合成された(ユーザ報告 3630) -->
 	<dict><key>phrase</key><string>稲氷</string><key>shortcut</key><string>いないの</string><key>pos</key><string>名詞</string></dict>	<!-- 稲氷(いないの): Sudachi のレア語(LM 未収録)。いないのかな の単文節の先頭が 稲氷かな になり、候補欄の 2 番めに割り込んでいた(ユーザ報告 3754) -->
@@ -526,6 +530,9 @@
 	<!-- ※ リョウガ/リョウ: りょうが/りょう のカタカナ人名収穫(レア)。量が/凌駕 等の正規候補の前に並ぶ -->
 	<!-- ※ イく/イク: いく のカタカナ交ぜ書き・カタカナ表記(デキる/イタめる/ヤる 族)。godan-ku の活用クラス付きで収穫されており、イかなくて/イきます 等のジャンク派生を正規活用として作る -->
 	<dict><key>phrase</key><string>晨</string><key>shortcut</key><string>あした</string></dict>
+	<dict><key>phrase</key><string>剋する</string><key>shortcut</key><string>こくする</string></dict>	<!-- 剋する/哭する/刻する(こくする): 単漢字サ変の派生 1 ノード(剋しなくなりました)が 地+剋 で 遅刻しなくなりました を乗っ取っていた。日常語は 相剋/刻む(一括検査 3640b、ユーザ指定 3641) -->
+	<dict><key>phrase</key><string>哭する</string><key>shortcut</key><string>こくする</string></dict>
+	<dict><key>phrase</key><string>刻する</string><key>shortcut</key><string>こくする</string></dict>
 	<dict><key>phrase</key><string>忘る</string><key>shortcut</key><string>わすれる</string></dict>	<!-- 忘る(わすれる): 文語の「忘る」が inflection_classes で一段活用として登録されており、 語幹「忘」から 忘て/忘てる/忘た のような送り仮名を欠いた活用形を派生させていた (とりわすれてる→取り忘てる)。現代語は 忘れる(一段)のみなので基底ごと抑制する -->
 	<dict><key>phrase</key><string>速る</string><key>shortcut</key><string>はやる</string></dict>	<!-- 速る(はやる): 速い(はやい)の形容詞を動詞化した非標準表記。逸る/早る は実在だが 速る は標準では使わない。早る は温存 -->
 

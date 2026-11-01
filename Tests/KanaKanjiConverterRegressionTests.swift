@@ -22624,7 +22624,7 @@ extension KanaKanjiConverterRegressionTests {
             ("じょうほう", ["情報", "上方", "定法"], ["常法"]),
             ("ばんち", ["番地"], ["蕃地", "蛮地"]),
             ("かいてん", ["回転", "開店", "回天"], ["廻転", "開展", "廻天", "海天"]),
-            ("かかん", ["日間", "果敢", "可換", "花冠"], ["加冠", "火浣", "火管"]),
+            ("かかん", ["果敢", "可換", "花冠"], ["加冠", "火浣", "火管"]),  // 日間(かかん)は 3641 で抑制
             ("せいたん", ["西端", "生誕", "西単"], ["成端", "聖誕", "聖譚"]),
             ("せんせん", ["戦線", "宣戦"], ["戦々", "潺々", "先占", "戦戦", "沾々"]),
             ("はいせん", ["配線", "廃線", "敗戦"], ["杯洗", "廃船", "盃洗", "配船"]),
@@ -26867,6 +26867,21 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(multi("おしのこ").contains("推しの子"), "\(multi("おしのこ"))")
         XCTAssertEqual(single("おし").first, "押し", "押し は先頭のまま、推し は seed で供給")
         XCTAssertTrue(single("おし").contains("推し"), "\(single("おし"))")
+    }
+
+    // 一括検査 3640b(ユーザ指定 3641)。優先順の是正(唱題)と抑制(北(きたの)/日間(かかん)/睡る・睡れる/剋する・哭する・刻する)
+    func testRegressionRealLMAudit3640bOrderFixes() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        func single(_ r: String) -> [String] { converter.candidates(for: r, limit: 8, systemCandidateMode: .surface) }
+        XCTAssertEqual(multi("ちこくしなくなりました").first, "遅刻しなくなりました")
+        XCTAssertEqual(multi("だいもくのしょうだい").first, "題目の唱題")
+        XCTAssertEqual(multi("ねむれるうちゅうのおうじょ").first, "眠れる宇宙の王女")
+        XCTAssertFalse(single("ねむれる").contains("睡れる"), "\(single("ねむれる"))")
+        XCTAssertEqual(multi("きたのみさいる").first, "北のミサイル", "北(きたの)の誤エントリを抑制")
+        XCTAssertEqual(multi("かかんにていこうしたおとうと").first, "果敢に抵抗した弟", "日間(かかん)を抑制")
+        XCTAssertFalse(single("かかん").contains("日間"), "\(single("かかん"))")
     }
 
 }
