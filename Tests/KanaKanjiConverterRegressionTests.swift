@@ -26567,4 +26567,16 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(tsukuranakute.first, "作らなくてよかった", "\(tsukuranakute)")
         XCTAssertEqual(multi("かかなくてよかった").first, "書かなくてよかった")
     }
+
+    // 本気/本機(3634): ほんきになる は 本+気になる(床)の経路が 本気 に見えていただけで、床を外すと Wikipedia バイアスの
+    // 本機(6193 < 本気 6228)が先頭になった。unigram キャップ(6100)と 本気を(本機を 973 < 本気を 1655)の加点で 本気 を先頭に
+    func testRegressionRealLMHonkiBeforeHonkiMachine() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for (reading, expected) in [("ほんきになる", "本気になる"), ("ほんきをだす", "本気を出す")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "\(reading) multi=\(multi)")
+        }
+    }
+
 }
