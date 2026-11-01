@@ -26899,4 +26899,14 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("あったが").first, "あったが", "2 字の表層(熱田)は免除しない")
     }
 
+    // 一括検査 3640b(ユーザ指定 3641)。連語表(references/colloc_sweep/manual.json)に 旅に出る/著書を刊行する/知識を問う/月を周回する を追加
+    func testRegressionRealLMAudit3640bCollocations() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        XCTAssertEqual(multi("たびにでた").first, "旅に出た")
+        XCTAssertEqual(multi("なるちょしょをかんこうし").first, "なる著書を刊行し")
+        XCTAssertEqual(multi("つきをしゅうかいする").first, "月を周回する")
+    }
+
 }
