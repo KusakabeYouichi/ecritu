@@ -1180,8 +1180,18 @@ extension KanaKanjiConverter {
                         if lhsKansai != rhsKansai { return !lhsKansai }
                         return lhs.offset < rhs.offset
                     }
+                    // かなだけのサ変派生(ぜんしんできる: かな語幹 ぜんしん から。漢字の 前進できる は 1 ノードにならない)は、
+                    // 語幹のかなが LM で漢字に劣るなら供給しない。助詞直後の派生割引(5000)で 前進+できる(6549+1500)に勝ち、
+                    // すこしはぜんしんできる が 少しはぜんしんできる だった(定数コメント参照。3638、ユーザ報告)
+                    let skipsKanaOnlySuruDerived = inflected.count == 1 && inflected[0] == segmentReading
+                        && Self.multiClauseSuruDerivedKanaSuffixes.contains(where: { suffix in
+                            guard segmentReading.hasSuffix(suffix), segmentReading.count - suffix.count >= 2 else { return false }
+                            let stem = String(segmentReading.dropLast(suffix.count))
+                            let kanjiStems = store.wordCosts(for: stem).keys.filter { containsKanji($0) }
+                            return !kanjiStems.isEmpty && !isLMKanaPreferred(reading: stem, among: Array(kanjiStems))
+                        })
                     for (offset, surface) in inflectedOrdered {
-                        if surface == segmentReading, offset != 0, !suppliesKanaForOkuAuxiliary {
+                        if surface == segmentReading, offset != 0 || skipsKanaOnlySuruDerived, !suppliesKanaForOkuAuxiliary {
                             continue
                         }
                         add(surface, isDictWord: true, isCurated: false, isInflectionDerived: true)
