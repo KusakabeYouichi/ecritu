@@ -23057,8 +23057,13 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(tokuniKita.first, "とくに来た客", "multi=\(tokuniKita)")
         let kite = converter.multiClauseCandidates(for: "ぜひきてください", systemCandidateMode: .surface)
         XCTAssertEqual(kite.first, "ぜひ来てください", "multi=\(kite)")
+        // 問う は seed で供給(とう の供給上限 14 件から漏れていた。ユーザ報告 3634)
         let noun = converter.multiClauseCandidates(for: "そのぜひをとう", systemCandidateMode: .surface)
-        XCTAssertTrue(noun.first?.hasPrefix("その是非を") ?? false, "名詞の 是非 multi=\(noun)")
+        XCTAssertEqual(noun.first, "その是非を問う", "名詞の 是非 multi=\(noun)")
+        let iken = converter.multiClauseCandidates(for: "せきにんをとう", systemCandidateMode: .surface)
+        XCTAssertEqual(iken.first, "責任を問う", "multi=\(iken)")
+        let tou = converter.candidates(for: "とう", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(tou.first, "とう", "single=\(tou)")
     }
 
     // のです/のだ/のに を単独で打ったとき(断片)、かな識別を末尾に回さない(3634、ユーザ報告: 乃です が先頭に見えていた)
