@@ -2402,8 +2402,9 @@ extension KanaKanjiConverter {
             // かな識別と seed順ボーナス持ち(おとく 等、既に人手調整済み)は対象外
             // LM 収録済みの表層にも効かせるのは opt-in の読みだけ(2677 で無条件にしたら
             // 位置から/占いしか/東京中 等7件が退行した。大域変更は revert して scoped 機構へ)
+            // かな識別は原則対象外だが、opt-in の読み(やめる: seed がかな先頭)はかなも対象(かいしゃをやめる が 会社を止める だった。3639)
             if isDictWord,
-                !isKanaIdentity,
+                !isKanaIdentity || Self.multiClauseSeedFirstLMOverrideReadingsID.contains(readingID),
                 base == Self.multiClauseDictUnknownCost
                     || Self.multiClauseSeedFirstLMOverrideReadingsID.contains(readingID),
                 Self.multiClauseSeedOrderNounBonusesByReadingByID[readingID] == nil,
@@ -2784,7 +2785,7 @@ extension KanaKanjiConverter {
             // (連体修飾)になっていた(ユーザ報告 2820)。上/左/右 は動詞に割れないので元から通る
             if Self.multiClauseDirectionalPrefixSurfacesID.contains(prevID),
                 // 接頭辞用法の読みのときだけ(定数コメント参照。2876)
-                prevReading.map { Self.multiClauseDirectionalPrefixReadingsByID[prevID]?.contains($0) ?? false } ?? false,
+                prevReading.map({ Self.multiClauseDirectionalPrefixReadingsByID[prevID]?.contains($0) ?? false }) ?? false,
                 reading.count >= 3, Self.isKatakanaString(surface) {
                 penalty -= Self.multiClauseDirectionalPrefixKatakanaCompoundBonus
             }
@@ -4712,7 +4713,8 @@ extension KanaKanjiConverter {
                     surfaceMinWordCost: nil,
                     isDictWord: true,
                     isCurated: false,
-                    isInflectionDerived: false
+                    isInflectionDerived: false,
+                    prevReading: nodes[idx].reading   // 出口 bigram の別表記代用(やめる→止める)に要る(3639)
                 )
                 // curated ノードは EOS 遷移を上限クランプ(定数コメント参照)。
                 if nodes[idx].isCurated {
@@ -4824,7 +4826,8 @@ extension KanaKanjiConverter {
                     surfaceMinWordCost: nil,
                     isDictWord: true,
                     isCurated: false,
-                    isInflectionDerived: false
+                    isInflectionDerived: false,
+                    prevReading: nodes[idx].reading
                 )
                 if best[idx] + eosCost < leadBestTotal {
                     leadBestTotal = best[idx] + eosCost
