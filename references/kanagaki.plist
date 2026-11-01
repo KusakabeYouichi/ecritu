@@ -521,5 +521,7 @@
 	<dict><key>phrase</key><string>実に</string><key>shortcut</key><string>げに</string></dict>
 	<!-- ぜひ: 単文節は 3602 で表示層がかなを先頭にしていたが、連文節(ぜひ買ってみて)は 是非 のままだった(ユーザ報告 3633)。名詞の 是非(是非を問う)は残す -->
 	<dict><key>phrase</key><string>是非</string><key>shortcut</key><string>ぜひ</string></dict>
+	<!-- ひさしぶり: かなを先頭に、久しぶり/久し振り は残す(ユーザ指定 3634。ひさしぶりに も同じ) -->
+	<dict><key>phrase</key><string>久しぶり</string><key>shortcut</key><string>ひさしぶり</string></dict>
 </array>
 </plist>

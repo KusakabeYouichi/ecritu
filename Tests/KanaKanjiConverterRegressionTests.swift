@@ -7718,16 +7718,20 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(multi.contains(where: { $0.contains("瑠求") || $0.contains("留求") || $0.contains("流求") }), "multi=\(multi)")
     }
 
-    // 実LM回帰: ひさしぶり→久しぶり。dict は 久し振り rank0 だが LM は 久しぶり のみ収録
-    // (現代の主流表記)。seed で先頭固定(連文節 ひさしぶりに にも効く)。
+    // 実LM回帰: ひさしぶり→ひさしぶり、久しぶり の順(ユーザ指定 3634。かなで書く言葉+seed)。dict は 久し振り rank0 だが
+    // LM は 久しぶり のみ収録(現代の主流表記)なので漢字は 久しぶり が先。連文節 ひさしぶりに も かな が先頭。
     func testRegressionRealLMHisashiburiPrefersBuri() throws {
         try prepareRealLMDictionary()
 
         let single = converter.candidates(for: "ひさしぶり", limit: 6, systemCandidateMode: .surface)
-        XCTAssertEqual(single.first, "久しぶり", "single=\(single)")
+        XCTAssertEqual(Array(single.prefix(2)), ["ひさしぶり", "久しぶり"], "single=\(single)")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "ひさしぶり"))
 
+        // あった のかな先頭は従来どおり(久しぶりにあった が先頭だった)。先頭の語だけを見る
         let multi = converter.multiClauseCandidates(for: "ひさしぶりにあった", systemCandidateMode: .surface)
-        XCTAssertTrue(multi.first?.hasPrefix("久しぶりに") == true, "multi=\(multi)")
+        XCTAssertEqual(Array(multi.prefix(3)), ["ひさしぶりにあった", "ひさしぶりに会った", "久しぶりにあった"], "multi=\(multi)")
+        let multiNi = converter.multiClauseCandidates(for: "ひさしぶりに", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(multiNi.prefix(2)), ["ひさしぶりに", "久しぶりに"], "multi=\(multiNi)")
     }
 
     // 実LM回帰: してるな→してるな。して が LM 未収録で弱く、してるな だけが して+ルナ
@@ -20383,12 +20387,14 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertFalse(multi.contains { $0.hasSuffix("尼") }, "\(multi.prefix(4))")
     }
 
-    // 3250: とうぶん は seed 順(糖分 先頭)を連文節にも効かせ、当分の間 は bigram で保つ
+    // 3250: とうぶん は seed 順(糖分 先頭)を連文節にも効かせ、当分の間 は bigram で保つ。
+    // 3634: かな とうぶん は LM に無く、副詞(漢字も残す)のかな先頭が連文節で効いていなかった。ひさしぶりに と同じく かな を 当分 のすぐ上に
     func testToubunSeedOrderInMultiClause() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
         XCTAssertEqual(converter.multiClauseCandidates(for: "とうぶんのうど", systemCandidateMode: .surface).first, "糖分濃度")
-        XCTAssertEqual(converter.multiClauseCandidates(for: "とうぶんのあいだ", systemCandidateMode: .surface).first, "当分の間")
+        let aida = converter.multiClauseCandidates(for: "とうぶんのあいだ", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(aida.prefix(2)), ["とうぶんの間", "当分の間"], "\(aida)")
         XCTAssertEqual(Array(converter.candidates(for: "とうぶん", limit: 3, systemCandidateMode: .surface)), ["糖分", "とうぶん", "当分"])  // 当分 は 副詞(漢字も残す): かなを当分のすぐ上に(3552)
     }
 
