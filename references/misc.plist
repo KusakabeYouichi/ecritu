@@ -135,6 +135,7 @@
 	<dict><key>phrase</key><string>役に立つ</string><key>shortcut</key><string>やくにたつ</string><key>pos</key><string>五段</string></dict>
 	<dict><key>phrase</key><string>気がある</string><key>shortcut</key><string>きがある</string><key>pos</key><string>五段</string></dict>
 	<dict><key>phrase</key><string>気が利く</string><key>shortcut</key><string>きがきく</string><key>pos</key><string>五段</string></dict>
+	<dict><key>phrase</key><string>勇気づける</string><key>shortcut</key><string>ゆうきづける</string><key>pos</key><string>一段</string></dict>	<!-- Sudachi/LM とも未収録で 有機+付ける に割れていた(ユーザ報告 3636) -->
 	<dict><key>phrase</key><string>気の利く</string><key>shortcut</key><string>きのきく</string><key>pos</key><string>五段</string></dict>
 	<dict><key>phrase</key><string>気が散る</string><key>shortcut</key><string>きがちる</string><key>pos</key><string>五段</string></dict>
 	<dict><key>phrase</key><string>気がつく</string><key>shortcut</key><string>きがつく</string><key>pos</key><string>五段</string></dict>

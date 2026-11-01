@@ -26597,6 +26597,19 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("かかなくてよかった").first, "書かなくてよかった")
     }
 
+    // ゆうきづける→勇気づける(misc に一段で登録。Sudachi/LM とも未収録で 有機+付ける に割れていた。ユーザ報告 3636)。
+    // 読み全体が登録語・その活用のときは連文節が空(単文節に任せる)なので単文節で見る
+    func testRegressionRealLMYuukizukeru() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let multi = converter.multiClauseCandidates(for: "ゆうきづけるひと", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "勇気づける人", "multi=\(multi)")
+        for (reading, expected) in [("ゆうきづける", "勇気づける"), ("ゆうきづけられた", "勇気づけられた"), ("ゆうきづけて", "勇気づけて")] {
+            let single = converter.candidates(for: reading, limit: 4, systemCandidateMode: .surface)
+            XCTAssertEqual(single.first, expected, "\(reading) single=\(single)")
+        }
+    }
+
     // 本気/本機(3634): ほんきになる は 本+気になる(床)の経路が 本気 に見えていただけで、床を外すと Wikipedia バイアスの
     // 本機(6193 < 本気 6228)が先頭になった。unigram キャップ(6100)と 本気を(本機を 973 < 本気を 1655)の加点で 本気 を先頭に
     func testRegressionRealLMHonkiBeforeHonkiMachine() throws {
