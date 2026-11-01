@@ -70,10 +70,9 @@ extension KeyboardRootView {
     }
 
     func commitEmojiKaomojiSymbolText(_ text: String) {
-        // 履歴に足すかどうかの規則はモデル側(3243)。顔文字の分類がショートカットかどうかだけ渡す
+        // ショートカット語彙の先頭へ足すかどうかの規則はモデル側(3243。⚡️ 自身からの確定も先頭へ 3634)
         inputState.commitEmojiKaomojiSymbolText(
             text,
-            isKaomojiShortcutCategory: kaomojiPanelState.isShortcutCategorySelected,
             onShortcutCandidateCommitted: onShortcutCandidateCommitted,
             onTextInput: onTextInput
         )

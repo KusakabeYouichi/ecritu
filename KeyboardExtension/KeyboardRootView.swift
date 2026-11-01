@@ -23,7 +23,7 @@ struct KeyboardRootView: View {
     var onMemoryDebugDisplayRefreshRequested: (String) -> Void = { _ in }
     var onFormattedNumberCategoryChanged: () -> Void = {}
     // 絵文字/顔文字パネルで確定した文字列をショートカット語彙の先頭へ足す(3243。ユーザ指定)。
-    // ショートカット・カテゴリー自身からの確定は対象外(手で並べた順を崩さない)
+    // ショートカット・カテゴリー自身からの確定も先頭へ(3634)。足すか否かは設定[récents en premier](受け手で判定)
     var onShortcutCandidateCommitted: (String) -> Void = { _ in }
     let showsNextKeyboardKey: Bool
     // キーボードビューのウィンドウ座標の枠(KeyboardViewController が view.convert で測る)。

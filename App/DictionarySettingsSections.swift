@@ -722,7 +722,7 @@ struct ShortcutDictionarySettingsSection: View {
             Toggle(isOn: $recentsFirst) {
                 Text("récents en premier")
             }
-            Text("オンの場合、絵文字パネル・顔文字パネルで確定した文字をこの一覧の先頭に自動で足します(最近使ったものほど手前に)。オフにすると、一覧は[並べ替え]で決めた順のまま変わりません。初期設定はオンです。")
+            Text("オンの場合、絵文字パネル・顔文字パネルで確定した文字をこの一覧の先頭に自動で足します(最近使ったものほど手前に)。[ショートカット]カテゴリー(⚡️)から選んだものも先頭へ動きます。オフにすると、一覧は[並べ替え]で決めた順のまま変わりません。初期設定はオンです。")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }

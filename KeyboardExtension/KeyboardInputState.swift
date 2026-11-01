@@ -217,23 +217,18 @@ final class KeyboardInputState {
         )
     }
 
-    // 絵文字・顔文字・記号の面からの確定。絵文字と顔文字はショートカットの履歴の先頭へ足す(3243)。
-    // 顔文字のショートカット分類から選んだとき、記号面、それ以外の面からは足さない。
-    // 顔文字の分類の選択は別のモデル(KaomojiPanelState)にあるので、ショートカット分類かどうかを Bool で受け取る
+    // 絵文字・顔文字・記号の面からの確定。絵文字と顔文字はショートカット語彙の先頭へ足す(3243)。記号面、それ以外の面からは足さない。
+    // ショートカット分類(⚡️)自身から選んだときも先頭へ動かす(3634、ユーザ報告: 初期の語彙を選んでも並びが変わらず
+    // [récents en premier]が効いていないように見えた)。足すか否かの設定は呼び出し側(onShortcutCandidateCommitted)が見る
     func commitEmojiKaomojiSymbolText(
         _ text: String,
-        isKaomojiShortcutCategory: Bool,
         onShortcutCandidateCommitted: (String) -> Void,
         onTextInput: (String) -> Void
     ) {
         if inputMode == .emoji {
             switch emojiInputSubmode {
-            case .emoji:
+            case .emoji, .kaomoji:
                 onShortcutCandidateCommitted(text)
-            case .kaomoji:
-                if !isKaomojiShortcutCategory {
-                    onShortcutCandidateCommitted(text)
-                }
             default:
                 break
             }

@@ -1012,12 +1012,10 @@ final class KeyboardCommitRulesTests: XCTestCase {
     private func commitFromPanel(
         _ text: String,
         on state: KeyboardInputState,
-        isKaomojiShortcutCategory: Bool = false,
         recorder: Recorder
     ) {
         state.commitEmojiKaomojiSymbolText(
             text,
-            isKaomojiShortcutCategory: isKaomojiShortcutCategory,
             onShortcutCandidateCommitted: { recorder.events.append(.history($0)) },
             onTextInput: { recorder.events.append(.text($0)) }
         )
@@ -1172,22 +1170,14 @@ final class KeyboardCommitRulesTests: XCTestCase {
         XCTAssertEqual(state.inputMode, .emoji)
     }
 
-    func testKaomojiCommitOutsideShortcutCategoryAddsToHistory() {
+    // 顔文字パネルからの確定は分類を問わず先頭へ(⚡️ 自身から選んだときも。3634)。足すか否かは受け手が設定で判断する
+    func testKaomojiCommitAddsToHistoryRegardlessOfCategory() {
         let state = emojiState(submode: .kaomoji)
         let recorder = Recorder()
 
-        commitFromPanel("(^_^)", on: state, isKaomojiShortcutCategory: false, recorder: recorder)
+        commitFromPanel("(^_^)", on: state, recorder: recorder)
 
         XCTAssertEqual(recorder.events, [.history("(^_^)"), .text("(^_^)")])
-    }
-
-    func testKaomojiCommitFromShortcutCategoryDoesNotAddToHistory() {
-        let state = emojiState(submode: .kaomoji)
-        let recorder = Recorder()
-
-        commitFromPanel("(^_^)", on: state, isKaomojiShortcutCategory: true, recorder: recorder)
-
-        XCTAssertEqual(recorder.events, [.text("(^_^)")])
     }
 
     func testSymbolCommitDoesNotAddToHistory() {
