@@ -3486,11 +3486,13 @@ extension KanaKanjiConverter {
             }
             // 副詞(漢字も残す)を抑制しないとき、かな識別を同じ読みの漢字(特に 4238)のすぐ上に置く加点(とくに 5744 → 4038)。
             // 文頭(特に気をつけて)にも効かせるため transitionCost の中に置く(3552)
-            // かなが LM に無い(ひさしぶり: 久しぶり 6763 のみ収録)ときは、ここまでの基礎コスト(未収録 8700)を
-            // かなの unigram の代わりにして同じ式で漢字のすぐ上に置く(ひさしぶりに が 久しぶりに のままだった。3634)
+            // かなが LM に無い(ひさしぶり: 久しぶり 6763 のみ収録)ときは、opt-in の読みに限りここまでの基礎コスト(未収録 8700)を
+            // かなの unigram の代わりにして同じ式で漢字のすぐ上に置く(ひさしぶりに が 久しぶりに のままだった。3634)。
+            // 一律にすると とうぶんのあいだ が とうぶんの間 になる(当分の間 を保つ。ユーザ指定 3635)
             if isKanaIdentity, !kanaGakiSuppressed.contains(.adverbKanaFirst),
-                let entries = KanaGakiTable.categoryByReadingAndSurface[reading] {
-                let kanaUni = unigramCosts[surface] ?? base
+                let entries = KanaGakiTable.categoryByReadingAndSurface[reading],
+                let kanaUni = unigramCosts[surface]
+                    ?? (Self.multiClauseKanaGakiKanaFirstNoUnigramReadings.contains(reading) ? base : nil) {
                 let kanjiUni = entries.compactMap { $0.value == .adverbKanaFirst ? unigramCosts[$0.key] : nil }.min()
                 if let kanjiUni, kanaUni + Self.multiClauseKanaGakiKanaFirstMargin > kanjiUni {
                     penalty -= kanaUni + Self.multiClauseKanaGakiKanaFirstMargin - kanjiUni

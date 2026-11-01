@@ -20389,13 +20389,13 @@ extension KanaKanjiConverterRegressionTests {
     }
 
     // 3250: とうぶん は seed 順(糖分 先頭)を連文節にも効かせ、当分の間 は bigram で保つ。
-    // 3634: かな とうぶん は LM に無く、副詞(漢字も残す)のかな先頭が連文節で効いていなかった。ひさしぶりに と同じく かな を 当分 のすぐ上に
+    // 3634-3635: かな とうぶん は LM に無い。ひさしぶり と違い 当分の間 は漢字のまま(ユーザ指定。かな先頭の opt-in に入れない)
     func testToubunSeedOrderInMultiClause() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
         XCTAssertEqual(converter.multiClauseCandidates(for: "とうぶんのうど", systemCandidateMode: .surface).first, "糖分濃度")
         let aida = converter.multiClauseCandidates(for: "とうぶんのあいだ", systemCandidateMode: .surface)
-        XCTAssertEqual(Array(aida.prefix(2)), ["とうぶんの間", "当分の間"], "\(aida)")
+        XCTAssertEqual(aida.first, "当分の間", "\(aida)")
         XCTAssertEqual(Array(converter.candidates(for: "とうぶん", limit: 3, systemCandidateMode: .surface)), ["糖分", "とうぶん", "当分"])  // 当分 は 副詞(漢字も残す): かなを当分のすぐ上に(3552)
     }
 

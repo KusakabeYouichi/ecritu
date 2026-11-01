@@ -2395,6 +2395,9 @@ extension KanaKanjiConverter {
     static let multiClauseKanaGakiKanaFirstPenalty = 1500
     // 副詞(漢字も残す)を抑制しないとき、かな識別を同じ読みの漢字の unigram のすぐ上に置く余白(3552)。漢字側は下げない
     static let multiClauseKanaGakiKanaFirstMargin = 200
+    // 副詞(漢字も残す)のかなが LM に無いときも連文節で漢字のすぐ上に置く読み(opt-in。3634-3635)。ひさしぶり(久しぶり のみ収録)。
+    // 一律にすると とうぶん(当分 のみ収録)も かな先頭になり 当分の間 が とうぶんの間 になる(ユーザ指定で漢字のまま)
+    static let multiClauseKanaGakiKanaFirstNoUnigramReadings: Set<String> = ["ひさしぶり"]
     // 同じ減点を当てる かな 1 語(名詞の直後には単独で来ない接尾辞の読み)。こう は 港/工/高 の接尾で、七類こう/日本こう が
     // 七類港/日本港 を抜いていた(かな こう 4590 < 港 5079、地名→港 の bigram が無い。ユーザ報告 3397)
     static let multiClauseKanaSuffixAfterNounSurfaces: Set<String> = ["せい", "こう"]
