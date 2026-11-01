@@ -2001,6 +2001,9 @@ enum KanaKanjiSeedDictionary {
         // かな ひさしぶり を先頭に(ユーザ指定 3634。かなで書く言葉にも登録)、漢字は 久しぶり を 久し振り より先に
         // (dict は 久し振り rank0/久しぶり rank1 だが、LM は 久しぶり のみ収録=現代の主流表記。ひさしぶりに 等の連文節にも効く)
         "ひさしぶり": ["ひさしぶり", "久しぶり"],
+        // やめとけ(命令形 とけ=ておけ の縮約)は かな を先頭に、止め/辞め の順(ユーザ指定 3638)。
+        // 連文節は multiClauseSeedFirstLMOverrideReadings/multiClauseSeedOrderVariantKanaLeadReadings で同じ順
+        "やめとけ": ["やめとけ", "止めとけ", "辞めとけ"],
         // 琉球 を先頭固定(歴史文書表記の 瑠求/留求/流求 は exactReadingOnlySeed 側=
         // 完全一致時のみ末尾に供給。ryukyu.plist からは撤去済み)
         "りゅうきゅう": ["琉球"],

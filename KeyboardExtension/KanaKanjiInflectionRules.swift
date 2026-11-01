@@ -523,6 +523,7 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "といた", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "といて", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "とけば", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "とけ", baseReadingSuffix: "る", allowedClasses: .ichidan),   // 命令形 やめとけ(3638、ユーザ報告)
         InflectionRule(readingSuffix: "とかない", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "とかなかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "ときます", baseReadingSuffix: "る", allowedClasses: .ichidan),
@@ -848,8 +849,10 @@ extension KanaKanjiConverter {
             suffixes.append(contractionStem + "ときます")
             suffixes.append(contractionStem + "ときました")
             suffixes.append(contractionStem + "ときません")
-            // 縮約仮定形(言っとけば=言っておけば)。命令形 とけ は 解け と衝突するため追加しない
+            // 縮約仮定形(言っとけば=言っておけば)と命令形(言っとけ)。命令形は 解け との衝突を避けて外していたが、
+            // やめとけ が 已め+解け の合成になっていた(3638、ユーザ報告)
             suffixes.append(contractionStem + "とけば")
+            suffixes.append(contractionStem + "とけ")
             suffixes.append(contentsOf: taiAdjectiveFamilyInflectionSuffixes(for: contractionStem + "とき"))
         } else if teForm.hasSuffix("で") {
             let contractionStem = String(teForm.dropLast())
@@ -861,8 +864,9 @@ extension KanaKanjiConverter {
             suffixes.append(contractionStem + "どきます")
             suffixes.append(contractionStem + "どきました")
             suffixes.append(contractionStem + "どきません")
-            // 縮約仮定形(読んどけば=読んでおけば)
+            // 縮約仮定形(読んどけば=読んでおけば)と命令形(読んどけ)
             suffixes.append(contractionStem + "どけば")
+            suffixes.append(contractionStem + "どけ")
             suffixes.append(contentsOf: taiAdjectiveFamilyInflectionSuffixes(for: contractionStem + "どき"))
         }
 
