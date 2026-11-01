@@ -26570,6 +26570,44 @@ extension KanaKanjiConverterRegressionTests {
         print("SWEEP_COLLOC done \(out.count)")
     }
 
+    // 一括検査(3640): 文章から取り出した断片(tools/conversion_audit/extract.py の TSV: 読み\t期待の表記\t文番号\t印)を変換し、
+    // 候補バーの先頭(読み 4 字以上は連文節の最良、それ以外は単文節の先頭)が期待の表記と一致するかを書き出す。
+    // 出力: 入力の列 + 先頭の候補 \t 一致(ok/ng) \t 期待の表記が候補列(連文節+単文節 30 件)に有るか(yes/no) \t 上位 6 件
+    func testDiagnosticConversionAudit() throws {
+        guard let input = ProcessInfo.processInfo.environment["AUDIT_IN"],
+            let output = ProcessInfo.processInfo.environment["AUDIT_OUT"] else {
+            throw XCTSkip("TEST_RUNNER_AUDIT_IN/AUDIT_OUT のときだけ実行")
+        }
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let tsv = try String(contentsOf: URL(fileURLWithPath: input), encoding: .utf8)
+        var out: [String] = []
+        var okCount = 0
+        for line in tsv.split(separator: "\n") {
+            let cols = line.split(separator: "\t", omittingEmptySubsequences: false)
+            guard cols.count >= 2 else { continue }
+            let reading = String(cols[0])
+            let expected = String(cols[1])
+            converter.invalidateCandidateCache()
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            let single = converter.candidates(for: reading, limit: 30, systemCandidateMode: .surface)
+            var shown = reading.count >= 4 ? multi : []
+            if let top = single.first, !shown.contains(top) {
+                shown.insert(top, at: min(1, shown.count))
+            }
+            for candidate in single.dropFirst() where !shown.contains(candidate) {
+                shown.append(candidate)
+            }
+            let first = shown.first ?? ""
+            let ok = first == expected
+            if ok { okCount += 1 }
+            let found = shown.contains(expected) ? "yes" : "no"
+            out.append(line + "\t" + first + "\t" + (ok ? "ok" : "ng") + "\t" + found + "\t" + shown.prefix(6).joined(separator: "|"))
+        }
+        try out.joined(separator: "\n").write(toFile: output, atomically: true, encoding: .utf8)
+        print("AUDIT done \(out.count) ok=\(okCount)")
+    }
+
     // 2026-10-25 のユーザ報告(edition 3569)
     // にくが: 接尾辞の語幹 難(にく、〜難い)が単独の語として入り 難が が出ていた → 辞書ツールで除外。肉が を先頭、かなは末尾(seed)
     // くり/くりも: 久里 が先頭 → 栗 を先頭、クリ は末尾寄り(seed)。あかって: 名詞+って を単文節で組む(赤って)

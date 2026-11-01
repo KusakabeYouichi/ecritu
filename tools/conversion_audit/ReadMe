@@ -1,0 +1,14 @@
+変換の一括検査(3640〜)。文章から断片を取り出し、読みを推定して変換し、候補バーの先頭が元の表記に戻るかを調べる。
+調べるだけで直さない。結果は references/conversion_audit/<edition>/ に保存する。
+
+1. 断片の抽出: .venv/bin/python -I tools/conversion_audit/extract.py tmp/corpus/jawiki_p1.txt tmp/audit_in.tsv --sample-sentences 6000 --limit 2500 --seed 2
+   (句点・読点・括弧・記号で区切り、漢字かカタカナを含む 3〜18 字の断片。読みは Sudachi。大きな文章は先に文を無作為に選ぶ)
+2. 変換: TEST_RUNNER_AUDIT_IN=<絶対パス>/tmp/audit_in.tsv TEST_RUNNER_AUDIT_OUT=<絶対パス>/tmp/audit_out.tsv で
+   testDiagnosticConversionAudit(KanaKanjiConverterRegressionTests)。2,500 件で約 10 分。追加語彙・抑制を実機と同じに読み込む。
+   候補バーの先頭 = 読み 4 字以上は連文節の最良、それ以外は単文節の先頭(表示層の細かな規則は模していない)
+3. 分類: python3 -I tools/conversion_audit/classify.py tmp/audit_out.tsv references/conversion_audit/<edition>/
+   c_ok(一致)/c_policy(かなで書く言葉の方針の範囲)/c_style(書き手がかな書き)/a_register(期待の表記が候補に無い)/b_logic(有るが先頭でない)
+   a/b の 段階 1=直すべし 2=できたら直すべし 3=直さなくていい は機械的な目安(classify.py 冒頭)。最終判断は目視
+注意: 語 LM の学習元が Wikipedia なので Wikipedia の文は有利に出る(実際の入力より一致率が高く見える)。
+      読みは Sudachi の推定(この他=このた/日本=にっぽん 等の違いは a に混ざる)。カタカナ語に候補が無いのは
+      設計どおり(かなチップの長押しでカタカナ確定)で、辞書に足すかは語ごとに判断する。
