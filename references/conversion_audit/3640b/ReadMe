@@ -1,0 +1,4 @@
+3640 の一括検査(2 本め): tmp/corpus/jawiki_p1.txt から文 6,000 本を無作為に選び(seed 2)、2,500 断片。記事の偏りが 1 本めより小さい。
+fragments.tsv=入力、result.tsv=変換結果、c_ok/c_policy/c_style/a_register/b_logic.tsv=分類(tools/conversion_audit/ReadMe)。
+合計 2,500: 一致 1,681、方針の範囲 10、書き手のかな書き 39、登録が要る見込み 555(段階 1=34/2=231/3=290)、
+並びのロジック 215(段階 1=77/2=55/3=83)。
