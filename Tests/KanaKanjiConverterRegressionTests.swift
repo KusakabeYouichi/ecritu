@@ -26727,4 +26727,12 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // わーい はかなを先頭に(seed。ワーイ、わーい の順だった。ユーザ指定 3640)
+    func testRegressionRealLMWaaiKanaFirst() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "わーい", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(2)), ["わーい", "ワーイ"], "single=\(single)")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "わーい"))
+    }
+
 }
