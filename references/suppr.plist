@@ -185,6 +185,7 @@
 	<dict><key>phrase</key><string>見谷</string><key>shortcut</key><string>みたに</string></dict>
 
 	<!-- ■ 収穫ノイズ: レア語・レア読み(実在するが日常入力では雑音) -->
+	<dict><key>phrase</key><string>毛拉</string><key>shortcut</key><string>もうら</string><key>pos</key><string>名詞</string></dict>	<!-- 毛拉(もうら): 中国語の音訳(ムッラー)。もうらないとね の単文節で 網羅ないとね の次に 毛拉ないとね が出ていた(ユーザ報告 3640)。生浦/茂浦/真浦/藻浦 は姓・地名なので残す -->
 	<dict><key>phrase</key><string>佚</string><key>shortcut</key><string>いつ</string></dict>	<!-- 佚(いつ): 逸 の古い字。単独では使わず、いつくうの が 佚空の に合成された(ユーザ報告 3630) -->
 	<dict><key>phrase</key><string>稲氷</string><key>shortcut</key><string>いないの</string><key>pos</key><string>名詞</string></dict>	<!-- 稲氷(いないの): Sudachi のレア語(LM 未収録)。いないのかな の単文節の先頭が 稲氷かな になり、候補欄の 2 番めに割り込んでいた(ユーザ報告 3754) -->
 	<dict><key>phrase</key><string>可</string><key>shortcut</key><string>かなり</string></dict>	<!-- 可なり の縮約(Sudachi rank0)。副詞 かなり の変換で 可 が先頭に出てストレス源(ユーザ指定 2736) -->

@@ -26780,4 +26780,21 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // もうらないとね→も売らないとね(文頭助詞の跨ぎ減点の払い戻しに とね/とな を足した。網羅ないとね が先頭だった。ユーザ指定 3640)。
+    // 毛拉(中国語の音訳)は抑制、姓の 生浦/茂浦 は残す
+    func testRegressionRealLMMouranaitonePrefersUranai() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for reading in ["もうらないとね", "もうらないと"] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, "も売らない" + String(reading.dropFirst(5)), "\(reading) multi=\(multi)")
+        }
+        let single = converter.candidates(for: "もうらないとね", limit: 8, systemCandidateMode: .surface)
+        XCTAssertFalse(single.contains("毛拉ないとね"), "single=\(single)")
+        XCTAssertTrue(single.contains("生浦ないとね"), "single=\(single)")
+        // 網膜(もうまく)の守り(2819)は維持
+        let moumaku = converter.candidates(for: "もうまく", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(moumaku.first, "網膜", "single=\(moumaku)")
+    }
+
 }
