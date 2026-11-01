@@ -159,6 +159,17 @@ classes.forEach(([c, label]) => { const o = document.createElement('option'); o.
 const selSample = document.getElementById('sample');
 samples.forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; selSample.appendChild(o); });
 const list = document.getElementById('list');
+const PAGE = 150;
+let limit = PAGE;
+const FILTER_IDS = ['cls', 'stage', 'sample', 'q', 'hide-ok', 'hide-decided'];
+function filterValue(id) { const el = document.getElementById(id); return el.type === 'checkbox' ? el.checked : el.value; }
+function saveFilters() { try { localStorage.setItem('audit-filters', JSON.stringify(Object.fromEntries(FILTER_IDS.map(id => [id, filterValue(id)])))); } catch (e) {} }
+function restoreFilters() {
+  let saved = null;
+  try { saved = JSON.parse(localStorage.getItem('audit-filters') || 'null'); } catch (e) {}
+  if (!saved) { saved = { stage: '1', sample: samples.includes('3640b') ? '3640b' : 'all' }; }
+  FILTER_IDS.forEach(id => { if (!(id in saved)) return; const el = document.getElementById(id); if (el.type === 'checkbox') el.checked = !!saved[id]; else el.value = saved[id]; if (el.tagName === 'SELECT' && el.value !== saved[id]) el.value = 'all'; });
+}
 function render() {
   const cls = selCls.value, stage = document.getElementById('stage').value, sample = selSample.value;
   const q = document.getElementById('q').value.trim();
@@ -175,6 +186,7 @@ function render() {
     if (hideOk && s.mark === 'ok') return;
     if (hideDecided && s.mark) return;
     shown++;
+    if (shown > limit) return;
     const group = r.cls + '/' + r.stage;
     if (group !== currentGroup) {
       currentGroup = group;
@@ -218,13 +230,19 @@ function render() {
     d.appendChild(txt); card.appendChild(d);
     list.appendChild(card);
   });
+  if (shown > limit) {
+    const more = document.createElement('button'); more.type = 'button'; more.id = 'more';
+    more.textContent = '次の ' + Math.min(PAGE, shown - limit) + ' 件を表示(残り ' + (shown - limit) + ' 件)';
+    more.addEventListener('click', () => { limit += PAGE; render(); });
+    list.appendChild(more);
+  }
   updateCount(shown);
 }
 let lastShown = 0;
 function updateCount(shown) {
   if (shown !== undefined) lastShown = shown;
   const decided = rows.filter(r => (state[r.id] || {}).mark).length;
-  document.getElementById('count').textContent = '表示 ' + lastShown + ' / ' + rows.length + ' 件・未入力 ' + (rows.length - decided) + ' 件';
+  document.getElementById('count').textContent = '絞り込み ' + lastShown + ' / 全 ' + rows.length + ' 件・未入力 ' + (rows.length - decided) + ' 件';
 }
 function updateOut() {
   const lines = [];
@@ -236,8 +254,10 @@ function updateOut() {
   document.getElementById('out').value = lines.join('\\n');
   updateCount();
 }
-['cls', 'stage', 'sample', 'hide-ok', 'hide-decided'].forEach(id => document.getElementById(id).addEventListener('change', render));
-document.getElementById('q').addEventListener('input', render);
+function onFilter() { limit = PAGE; saveFilters(); render(); }
+['cls', 'stage', 'sample', 'hide-ok', 'hide-decided'].forEach(id => document.getElementById(id).addEventListener('change', onFilter));
+document.getElementById('q').addEventListener('input', onFilter);
+restoreFilters();
 document.getElementById('copy').addEventListener('click', () => {
   const out = document.getElementById('out'); const msg = document.getElementById('copied');
   navigator.clipboard.writeText(out.value).then(() => { msg.textContent = 'コピーしました'; })
