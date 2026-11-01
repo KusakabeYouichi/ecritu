@@ -204,6 +204,7 @@
 	<dict><key>phrase</key><string>うちなんか</string><key>shortcut</key><string>うちなんか</string></dict>	<!-- うちなんか: うち何か が先頭だった -->
 	<dict><key>phrase</key><string>こうはならない</string><key>shortcut</key><string>こうはならない</string></dict>	<!-- こうはならない/こうはいかない: 港はならない が先頭だった。こうは 単独だと 後輩(こうはい)等を割るので句で登録 -->
 	<dict><key>phrase</key><string>こうはいかない</string><key>shortcut</key><string>こうはいかない</string></dict>
+	<dict><key>phrase</key><string>どうしよう</string><key>shortcut</key><string>どうしよう</string></dict>	<!-- どうしよう: 連文節で かな しよう が立たず 同+仕様 が先頭だった(ユーザ報告 3639)。どうしようか/どうしようもない も句で勝たせる -->
 	<dict><key>phrase</key><string>もしかして</string><key>shortcut</key><string>もしかして</string></dict>	<!-- もしかして/もしかすると/もしかしたら: 辞書に 1 語で無く もし+か+し+て に割れ、末尾の て→細菌 の連接で もしかしてさいきん→もしかして細菌 になっていた。かな正書の副詞(ユーザ報告 3335) -->
 	<dict><key>phrase</key><string>もしかすると</string><key>shortcut</key><string>もしかすると</string></dict>
 	<dict><key>phrase</key><string>どういう</string><key>shortcut</key><string>どういう</string></dict>	<!-- どういう(連体詞、かなが正書): どういうとき が どう+言う+とき だった(ユーザ報告 3765) -->

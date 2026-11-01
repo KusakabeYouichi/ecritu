@@ -429,6 +429,17 @@ extension KanaKanjiConverter {
         }
     }
 
+    // 指示副詞のかな読み(こう/そう/どう/ああ/もう)は seed がかな先頭で、漢字(同/堂/童/港/盲、何う/如何)の語幹に接尾を付けた合成
+    // (同しよう/堂しよう/盲やめる/何うしよう/如何しよう)はゴミ。かな以外の語幹は後置合成に使わない(どうしよう。ユーザ報告 3639)。
+    // 雨は/酒を のような名詞のかな先頭 seed は対象外(読みを 5 つに限る)
+    static let postfixKanaAdverbStemReadings: Set<String> = ["こう", "そう", "どう", "ああ", "もう"]
+    func filterKanjiStemsForKanaAdverbReading(_ candidates: [String], stemReading: String) -> [String] {
+        guard Self.postfixKanaAdverbStemReadings.contains(stemReading) else {
+            return candidates
+        }
+        return candidates.filter { $0 == stemReading }
+    }
+
     func filterNonVerbalCandidatesForVerbalPostfix(
         _ candidates: [String],
         stemReading: String,

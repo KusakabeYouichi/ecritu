@@ -18845,8 +18845,9 @@ extension KanaKanjiConverterRegressionTests {
                     expected, "\(label) reading=\(reading)")
                 XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: reading), "\(label) reading=\(reading)")
             }
+            // 3639: 指示副詞のかなの直後がかなのとき、漢字への差し替え変種(銅かな/何うかな/如何かな)は出さない(ユーザ指定)
             let doukana = converter.multiClauseCandidates(for: "どうかな", systemCandidateMode: mode)
-            XCTAssertTrue(doukana.contains("銅かな"), "\(label) list=\(doukana)")
+            XCTAssertEqual(doukana, ["どうかな"], "\(label) list=\(doukana)")
         }
     }
 

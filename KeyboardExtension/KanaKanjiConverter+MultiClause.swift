@@ -5540,6 +5540,16 @@ extension KanaKanjiConverter {
                     variantSkipTrace("終助詞の非かな")
                     continue
                 }
+                // 指示副詞のかな(どう/そう/こう/ああ/もう)を best が選び、直後がかな(した/する/やめる/かな)のとき、
+                // 漢字(銅/胴/堂/盲、何う/如何)への差し替え変種は出さない(どうした→銅した、もうやめる→盲やめる、どうかな→何うかな。
+                // 単文節の後置合成と同じ判定。ユーザ報告 3639)
+                if chosen.surface == chosen.reading,
+                    Self.postfixKanaAdverbStemReadings.contains(chosen.reading),
+                    alt.surface != alt.reading,
+                    nextNode.map({ $0.surface == $0.reading }) ?? true {
+                    variantSkipTrace("指示副詞の漢字")
+                    continue
+                }
                 // 敬称区間(さん/さま)の漢字表層(三/讃/様 等)も変種として出さない。
                 // 数字直後(だい3 等)と地域接尾直後の 産(愛知県産)は従来どおり許す(2410)。
                 if Self.multiClauseHonorificSuffixReadings.contains(alt.reading),

@@ -174,7 +174,7 @@ extension KanaKanjiConverter {
             let filteredStemCandidates = filterConjugableStemsForNegativeAuxiliaryPostfix(
                 filterGodanEDanStemsForCaseParticle(
                     filterNonVerbalCandidatesForVerbalPostfix(
-                        nEndingFiltered,
+                        filterKanjiStemsForKanaAdverbReading(nEndingFiltered, stemReading: stem),
                         stemReading: stem,
                         nextSuffix: passthrough
                     ),
@@ -365,7 +365,7 @@ extension KanaKanjiConverter {
                     let filteredStemCandidates = filterConjugableStemsForNegativeAuxiliaryPostfix(
                         filterGodanEDanStemsForCaseParticle(
                             filterNonVerbalCandidatesForVerbalPostfix(
-                                nEndingFiltered,
+                                filterKanjiStemsForKanaAdverbReading(nEndingFiltered, stemReading: nextStem),
                                 stemReading: nextStem,
                                 nextSuffix: nextSuffix
                             ),
