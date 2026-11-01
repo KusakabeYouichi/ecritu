@@ -26608,4 +26608,15 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+
+    // ゆうきがわく→勇気が湧く(連語表 manual.json に 湧く の主語。同音の名詞 枠 に が→枠 5851 < が→湧く 5962 で負けていた。ユーザ報告 3636)
+    func testRegressionRealLMYuukiGaWaku() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for (reading, expected) in [("ゆうきがわく", "勇気が湧く"), ("きょうみがわく", "興味が湧く")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "\(reading) multi=\(multi)")
+        }
+    }
+
 }
