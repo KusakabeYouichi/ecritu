@@ -20397,6 +20397,11 @@ extension KanaKanjiConverterRegressionTests {
         // とうぶんの間 は 2 番め(ユーザ指定 3636。かなを 当分 の 50 下に。seed 順の兄弟 糖分/等分 の刻み 100 より手前)
         let aida = converter.multiClauseCandidates(for: "とうぶんのあいだ", systemCandidateMode: .surface)
         XCTAssertEqual(Array(aida.prefix(2)), ["当分の間", "とうぶんの間"], "\(aida)")
+        // とうぶんは は 当分は(糖分は が先頭だった。3637、ユーザ報告)。当分→は の加点
+        for reading in ["とうぶんはいそがしい", "とうぶんはむり", "とうぶんはこない"] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertTrue(multi.first?.hasPrefix("当分は") == true, "\(reading) \(multi)")
+        }
         XCTAssertEqual(Array(converter.candidates(for: "とうぶん", limit: 3, systemCandidateMode: .surface)), ["糖分", "とうぶん", "当分"])  // 当分 は 副詞(漢字も残す): かなを当分のすぐ上に(3552)
     }
 
