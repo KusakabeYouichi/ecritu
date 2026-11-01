@@ -1,0 +1,2 @@
+3640b と同じ標本(references/conversion_audit/3640b/fragments.tsv、記事を無作為に選んだ 2,500 件)を、段階 1 の判定(3640b/decisions.json)を
+反映した edition 3641 で再実行した結果。一致 1,681→1,702(+21)、以前は一致していて崩れたもの 0。
