@@ -1393,6 +1393,13 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.candidates(for: "けいさつけん", limit: 4, systemCandidateMode: .surface).first, "警察犬")
     }
 
+    // 断片の なんだが はかなが先頭(ユーザ指定 3649)
+    func testRegressionRealLMNandaga() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        XCTAssertEqual(converter.candidates(for: "なんだが", limit: 4, systemCandidateMode: .surface).first, "なんだが")
+    }
+
     // 京風味 は辞書に無く 今日風味/恐怖海の だった(misc 登録。ユーザ指定 3647)
     func testRegressionRealLMKyouFuumi() throws {
         try prepareRealLMDictionary()
