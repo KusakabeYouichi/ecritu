@@ -1537,6 +1537,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.candidates(for: "ていうか", limit: 4, systemCandidateMode: .surface).first, "ていうか")
     }
 
+    // 重さ/体重+計る(助詞なし。おもさはかって が 重さは勝って だった。ユーザ指定 3654)
+    func testRegressionRealLMOmosaHakatte() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        XCTAssertEqual(converter.multiClauseCandidates(for: "おもさはかって", systemCandidateMode: .surface).first, "重さ計って")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "おもさはかわらない", systemCandidateMode: .surface).first, "重さは変わらない")
+    }
+
     // 京風味 は辞書に無く 今日風味/恐怖海の だった(misc 登録。ユーザ指定 3647)
     func testRegressionRealLMKyouFuumi() throws {
         try prepareRealLMDictionary()
