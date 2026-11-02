@@ -1295,6 +1295,16 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(ban.prefix(2)), ["番", "晩"], "list=\(ban)")
     }
 
+    // かいとう は 回答/解答/解凍 の順、かいとうがわ は 回答側/解答側(ユーザ指定 3647)
+    func testRegressionRealLMKaitouOrder() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        XCTAssertEqual(Array(converter.candidates(for: "かいとう", limit: 6, systemCandidateMode: .surface).prefix(3)),
+                       ["回答", "解答", "解凍"])
+        let multi = converter.multiClauseCandidates(for: "かいとうがわ", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(multi.prefix(2)), ["回答側", "解答側"], "\(multi.prefix(4))")
+    }
+
     // 動詞と同じ読みの名(守/まもる)は敬称が続かなければ動詞の後ろ(ユーザ指定 3646: しっかりまもるには が しっかり守には)
     func testRegressionRealLMVerbHomographGivenName() throws {
         try prepareRealLMDictionary()
