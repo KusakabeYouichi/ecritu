@@ -304,6 +304,11 @@
 	<dict><key>phrase</key><string>後悔注</string><key>shortcut</key><string>こうかいちゅう</string></dict>	<!-- 名詞+注 の合成。〜中(ちゅう)の取り違えで使えない(ユーザ報告 3778) -->
 	<dict><key>phrase</key><string>航海注</string><key>shortcut</key><string>こうかいちゅう</string></dict>
 	<!-- □ 活用形でだけ出さない合成(ユーザ判定 3772: サ変動詞化しない名詞・読み違い・送り仮名のカタカナ・お+動詞 等) -->
+	<dict><key>phrase</key><string>抽象する</string><key>shortcut</key><string>ちゅうしょうする</string><key>pos</key><string>名詞</string></dict>	<!-- 抽象 はサ変動詞化しない(抽象化する)。中傷する と同点で辞書順の 抽象する が先頭だった(一括検査 3640b、ユーザ指定 3642) -->
+	<dict><key>phrase</key><string>抽象した</string><key>shortcut</key><string>ちゅうしょうした</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>抽象して</string><key>shortcut</key><string>ちゅうしょうして</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>抽象され</string><key>shortcut</key><string>ちゅうしょうされ</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>抽象される</string><key>shortcut</key><string>ちゅうしょうされる</string><key>pos</key><string>名詞</string></dict>
 	<dict><key>phrase</key><string>開明しない</string><key>shortcut</key><string>かいめいしない</string><key>pos</key><string>名詞</string></dict>
 	<dict><key>phrase</key><string>各藩しない</string><key>shortcut</key><string>かくはんしない</string><key>pos</key><string>名詞</string></dict>
 	<dict><key>phrase</key><string>幾何しない</string><key>shortcut</key><string>きかしない</string><key>pos</key><string>名詞</string></dict>
