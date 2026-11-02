@@ -1322,6 +1322,15 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(list.prefix(5)), ["柵", "作", "裂く", "策", "冊"], "\(list)")
     }
 
+    // 写真も きれいに とれて が 取れて だった。連語 写真+撮る に 撮れる と も を足し、間の様子の副詞を読み飛ばす(ユーザ指定 3649)
+    func testRegressionRealLMShashinTorete() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let multi = converter.multiClauseCandidates(for: "しゃしんもきれいにとれてますね", systemCandidateMode: .surface)
+        XCTAssertTrue(multi.first?.contains("撮れて") ?? false, "\(multi.prefix(4))")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "よごれがきれいにとれた", systemCandidateMode: .surface).first, "汚れがきれいに取れた")
+    }
+
     // 京風味 は辞書に無く 今日風味/恐怖海の だった(misc 登録。ユーザ指定 3647)
     func testRegressionRealLMKyouFuumi() throws {
         try prepareRealLMDictionary()

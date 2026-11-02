@@ -828,7 +828,12 @@ extension KanaKanjiConverter {
                 // 名詞の読みが長い辞書語の末尾に埋まっているとき(げんさく の さく、もじ の じ)は発火しない
                 if end + 1 < n, let objectEntries = Self.multiClauseObjectVerbCollocations[segmentReading] {
                     let particle = chars[end]
-                    let verbStart = end + 1
+                    // 助詞と動詞の間の様子の副詞 1 つは読み飛ばす(写真も きれいに 撮れて。定数コメント参照。3649)
+                    let afterParticle = Self.spanString(chars, (end + 1)..<n)
+                    let skippedAdverb = Self.multiClauseObjectVerbSkippableAdverbs.first(where: {
+                        afterParticle.count > $0.count && afterParticle.hasPrefix($0)
+                    })
+                    let verbStart = end + 1 + (skippedAdverb?.count ?? 0)
                     if collocationPreferredVerbSurfacePrefixesByStart[verbStart] == nil,
                         objectEntries.contains(where: { $0.particle == particle }) {
                         let rest = Self.spanString(chars, verbStart..<n)
