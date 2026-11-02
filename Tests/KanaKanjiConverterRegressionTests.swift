@@ -1331,6 +1331,13 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.multiClauseCandidates(for: "よごれがきれいにとれた", systemCandidateMode: .surface).first, "汚れがきれいに取れた")
     }
 
+    // ひっくりかえる は ひっくり返る を先頭に(活用形も。ユーザ指定 3649)
+    func testRegressionRealLMHikkurikaeru() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        XCTAssertEqual(converter.candidates(for: "ひっくりかえりそう", limit: 4, systemCandidateMode: .surface).first, "ひっくり返りそう")
+    }
+
     // 京風味 は辞書に無く 今日風味/恐怖海の だった(misc 登録。ユーザ指定 3647)
     func testRegressionRealLMKyouFuumi() throws {
         try prepareRealLMDictionary()
