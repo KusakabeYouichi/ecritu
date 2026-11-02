@@ -1563,6 +1563,16 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.multiClauseCandidates(for: "そのかたに", systemCandidateMode: .surface).first, "その方に")
     }
 
+    // きせん の並び(輝線 先頭)。貴賎→貴賤(略字)/汽舩→汽船(異体字)は字体の設定で出し入れ(ユーザ指定 3654)
+    func testRegressionRealLMKisen() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let list = converter.candidates(for: "きせん", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(4)), ["輝線", "基線", "饋線", "貴賤"], "\(list)")
+        XCTAssertFalse(list.contains("貴賎") || list.contains("汽舩"), "\(list)")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "きせんを", systemCandidateMode: .surface).first, "輝線を")
+    }
+
     // 京風味 は辞書に無く 今日風味/恐怖海の だった(misc 登録。ユーザ指定 3647)
     func testRegressionRealLMKyouFuumi() throws {
         try prepareRealLMDictionary()
@@ -23833,7 +23843,7 @@ extension KanaKanjiConverterRegressionTests {
             ("そうこ", ["倉庫", "荘子", "奏子"], ["蒼枯", "操觚", "蒼古", "巣湖"]),
             ("はんそく", ["反則", "販促"], ["蕃息", "反側", "犯則", "半側", "半足", "半速"]),
             ("かいぶん", ["回文", "灰分", "回分"], ["廻文", "怪聞", "海文", "怪文"]),
-            ("きせん", ["汽船", "貴賎", "輝線", "基線"], ["饋線", "帰船", "汽舩", "貴賤", "亀船"]),
+            // きせん は 3654 でユーザ指定の並び(輝線/基線/饋線/貴賤…)に変えたので testRegressionRealLMKisen へ移した
             ("きんかい", ["近海", "金塊", "菌界", "金海"], ["襟懐", "謹解", "欣快", "禁戒"]),
             ("けっかい", ["決壊", "結界"], ["血海", "欠壊", "決潰", "決会", "結解"]),
             ("さんぎ", ["参議", "三岐"], ["三宜", "桟木", "算木", "三義"]),

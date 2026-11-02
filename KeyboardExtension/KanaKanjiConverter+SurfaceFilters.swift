@@ -876,8 +876,10 @@ extension KanaKanjiConverter {
         "揭": .init("掲", .itaiji), "溪": .init("渓", .itaiji), "恆": .init("恒", .itaiji), "絲": .init("糸", .itaiji), "緖": .init("緒", .itaiji), "奬": .init("奨", .itaiji), "敕": .init("勅", .itaiji), "祕": .init("秘", .itaiji),
         "舖": .init("舗", .itaiji), "步": .init("歩", .itaiji), "夛": .init("多", .itaiji), "沒": .init("没", .itaiji), "飜": .init("翻", .itaiji), "每": .init("毎", .itaiji), "晚": .init("晩", .itaiji), "顏": .init("顔", .itaiji), "卽": .init("即", .itaiji),
         "狀": .init("状", .itaiji), "戝": .init("財", .itaiji),
+        "舩": .init("船", .itaiji),  // 汽舩→汽船(ユーザ指定 3654)
         // 略字
         "仝": .init("同", .ryakuji), "卆": .init("卒", .ryakuji),
+        "賎": .init("賤", .ryakuji),  // 貴賎→貴賤(賎 は 賤 の略字。ユーザ指定 3654)
         // 紛らわしい別字
         "聯": .init("連", .confusable), "聨": .init("連", .confusable),
         // 見分けにくい字形(旧字体・異体字のうち候補欄で標準字体と区別できないもの。3343)。旧字体/異体字の区分を
