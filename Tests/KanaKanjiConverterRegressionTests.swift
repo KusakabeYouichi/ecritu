@@ -1573,6 +1573,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.multiClauseCandidates(for: "きせんを", systemCandidateMode: .surface).first, "輝線を")
     }
 
+    // あひる/あひるまーく/まし/のり はかなを先頭に(ユーザ指定 3655)
+    func testRegressionRealLMKanaFirstAhiruMashiNori() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for (reading, expected) in [("あひる", ["あひる", "アヒル", "家鴨"]), ("あひるまーく", ["あひるまーく", "アヒルまーく", "家鴨まーく"]),
+                                    ("のり", ["のり", "ノリ", "乗り"])] {
+            let list = converter.candidates(for: reading, limit: 6, systemCandidateMode: .surface)
+            XCTAssertEqual(Array(list.prefix(3)), expected, "\(reading): \(list)")
+        }
+        XCTAssertEqual(converter.candidates(for: "ましだけど", limit: 4, systemCandidateMode: .surface).first, "ましだけど")
+        XCTAssertEqual(converter.candidates(for: "のりまき", limit: 4, systemCandidateMode: .surface).first, "海苔巻き")
+    }
+
     // 京風味 は辞書に無く 今日風味/恐怖海の だった(misc 登録。ユーザ指定 3647)
     func testRegressionRealLMKyouFuumi() throws {
         try prepareRealLMDictionary()
