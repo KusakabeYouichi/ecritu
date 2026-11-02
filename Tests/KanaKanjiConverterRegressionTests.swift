@@ -1305,6 +1305,15 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(multi.prefix(2)), ["回答側", "解答側"], "\(multi.prefix(4))")
     }
 
+    // 断片の のは は かなが先頭(野波/饒波 の上。ユーザ指定 3647)
+    func testRegressionRealLMNohaKanaFirst() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        XCTAssertEqual(converter.candidates(for: "のは", limit: 4, systemCandidateMode: .surface).first, "のは")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "みるのは", systemCandidateMode: .surface).first, "見るのは")
+        XCTAssertEqual(converter.candidates(for: "のはら", limit: 4, systemCandidateMode: .surface).first, "野原")
+    }
+
     // 動詞と同じ読みの名(守/まもる)は敬称が続かなければ動詞の後ろ(ユーザ指定 3646: しっかりまもるには が しっかり守には)
     func testRegressionRealLMVerbHomographGivenName() throws {
         try prepareRealLMDictionary()
