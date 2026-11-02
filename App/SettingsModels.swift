@@ -372,28 +372,29 @@ enum ComposingTextStyleOption: String, CaseIterable, Identifiable {
 // 候補の文字(V.5。3644、ユーザ指定)。拡張側の CandidateFontStyle と同じ rawValue。
 // apple は純正のかなキーボードと同じ regular で iOS の文字サイズに追従(標準 19pt、最大 25pt)。tokushima 方式では選べない
 enum CandidateFontStyleOption: String, CaseIterable, Identifiable {
-    case apple
-    case semibold17_5
+    // 画面の並び(allCases)は 16pt/17.5pt/Apple と同じ(ユーザ指定 3649)。rawValue は保存値なので変えない
     case semibold16
+    case semibold17_5
+    case apple
 
     var id: String { rawValue }
 
     var title: String {
         switch self {
-        case .apple: return "Apple と同じ"
-        case .semibold17_5: return "17.5pt"
         case .semibold16: return "16pt"
+        case .semibold17_5: return "17.5pt"
+        case .apple: return "Apple と同じ"
         }
     }
 
     var summary: String {
         switch self {
-        case .apple:
-            return "Apple と同じ: 純正の日本語キーボードと同じ太さ(標準の太さ)で、iOS の[文字を拡大]に合わせて 19pt から 25pt まで大きくなります。候補欄の高さを全部候補に使います。tokushima式では使えません。"
-        case .semibold17_5:
-            return "17.5pt: 少し太い文字で 17.5pt に固定します。tokushima式では、候補欄の上に出る未確定の文字と重なります。"
         case .semibold16:
             return "16pt: 少し太い文字で 16pt に固定します。tokushima式でも重なりません。"
+        case .semibold17_5:
+            return "17.5pt: 少し太い文字で 17.5pt に固定します。tokushima式では、候補欄の上に出る未確定の文字と重なります。"
+        case .apple:
+            return "Apple と同じ: 純正の日本語キーボードと同じ太さ(標準の太さ)で、iOS の[文字を拡大]に合わせて 19pt から 25pt まで大きくなります。候補欄の高さを全部候補に使います。tokushima式では使えません。"
         }
     }
 
