@@ -1371,6 +1371,13 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.multiClauseCandidates(for: "かおうね", systemCandidateMode: .surface).first, "買おうね")
     }
 
+    // どんなじ が どんな時 だった(ユーザ指定 3649)
+    func testRegressionRealLMDonnaJi() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        XCTAssertEqual(converter.multiClauseCandidates(for: "どんなじ", systemCandidateMode: .surface).first, "どんな字")
+    }
+
     // 京風味 は辞書に無く 今日風味/恐怖海の だった(misc 登録。ユーザ指定 3647)
     func testRegressionRealLMKyouFuumi() throws {
         try prepareRealLMDictionary()
