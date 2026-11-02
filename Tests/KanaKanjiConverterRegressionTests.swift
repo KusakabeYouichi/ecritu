@@ -1434,6 +1434,15 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.multiClauseCandidates(for: "うでがすぐれる", systemCandidateMode: .surface).first, "腕が優れる")
     }
 
+    // かねをもうける が 金を設ける だった(連語 金+を+儲ける。ユーザ指定 3649)
+    func testRegressionRealLMKaneWoMoukeru() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for (reading, expected) in [("かねをもうける", "金を儲ける"), ("おかねをもうける", "お金を儲ける")] {
+            XCTAssertEqual(converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).first, expected)
+        }
+    }
+
     // 京風味 は辞書に無く 今日風味/恐怖海の だった(misc 登録。ユーザ指定 3647)
     func testRegressionRealLMKyouFuumi() throws {
         try prepareRealLMDictionary()
