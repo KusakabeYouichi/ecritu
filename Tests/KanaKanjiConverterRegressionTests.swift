@@ -1407,6 +1407,15 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.candidates(for: "かいじょけん", limit: 4, systemCandidateMode: .surface).first, "介助犬")
     }
 
+    // 麻薬探知犬/麻薬捜査犬/聴導犬 を登録(ユーザ指定 3649)
+    func testRegressionRealLMWorkingDogs() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for (reading, expected) in [("まやくたんちけん", "麻薬探知犬"), ("まやくそうさけん", "麻薬捜査犬"), ("ちょうどうけん", "聴導犬")] {
+            XCTAssertEqual(converter.candidates(for: reading, limit: 4, systemCandidateMode: .surface).first, expected)
+        }
+    }
+
     // 京風味 は辞書に無く 今日風味/恐怖海の だった(misc 登録。ユーザ指定 3647)
     func testRegressionRealLMKyouFuumi() throws {
         try prepareRealLMDictionary()
