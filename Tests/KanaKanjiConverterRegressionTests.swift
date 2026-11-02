@@ -1295,6 +1295,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(ban.prefix(2)), ["番", "晩"], "list=\(ban)")
     }
 
+    // 動詞と同じ読みの名(守/まもる)は敬称が続かなければ動詞の後ろ(ユーザ指定 3646: しっかりまもるには が しっかり守には)
+    func testRegressionRealLMVerbHomographGivenName() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+
+        for (reading, expected) in [("しっかりまもるには", "しっかり守るには"), ("まもるには", "守るには"),
+                                    ("くにをまもるために", "国を守るために")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "\(reading): \(multi.prefix(4))")
+        }
+    }
+
     // 助数詞 とう に 頭 が無く、いっとう→一頭、3+とう→頭、なんとう→何頭 が出なかった(ユーザ指定 3645)。並びは 頭/棟/等。
     // とう は数字文脈限定の表なので、かな数詞の合成(さんとう→3頭)は作らない(山東 等を汚さない)
     func testRegressionRealLMCounterTouHead() throws {

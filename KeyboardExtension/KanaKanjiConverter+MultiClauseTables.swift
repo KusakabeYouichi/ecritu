@@ -3261,6 +3261,11 @@ extension KanaKanjiConverter {
     // (2) 収穫底値(wc≥10000)の人名は、漢字/カタカナの断片(非かな・非人名・非 curated)の直後には立たない。いつもまんせきな が
     //     マン+昔奈(姓 せきな、wc10000)で 満席+な を押し出していた(な の名詞直後減点 9394 より 昔奈 9500 が僅差で安い)
     static let multiClausePersonNameHonorificReadings: Set<String> = ["さん", "さま", "くん", "ちゃん"]
+    // 動詞の終止形と同じ読みの名(守/まもる と 守る、茂/しげる と 茂る、忍/しのぶ と 忍ぶ)。同じ区間に 名の表層+読みの末尾 1 字 の
+    // 辞書語(送り仮名つきの動詞)があり、敬称が続かないときだけ名を下げる。しっかりまもるには が しっかり守には だった
+    // (守→には 2636 が 守る→には 3144 より安い。ユーザ指定 3646)。敬称つき(まもるさん)と単文節の並びには効かない
+    static let multiClauseVerbHomographGivenNamePenalty = 1200
+    static let multiClauseVerbEndingKana: Set<Character> = ["う", "く", "ぐ", "す", "つ", "ぬ", "ぶ", "む", "る"]
     static let multiClausePersonNameBeforeHonorificBonus = 1500
     // の/姓 の直後で、敬称が続く かなの名(person_names に かなの表記で載る名)は かなのまま人名として読む(3610、ユーザ指定)。
     // らーめんのりんさん/いちのせりんさん が リン酸(1 語)に負けていた(一ノ瀬+リン酸 13977 < 一ノ瀬+りん+さん 約 19000)。

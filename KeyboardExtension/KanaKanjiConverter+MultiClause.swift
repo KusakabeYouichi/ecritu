@@ -1995,6 +1995,26 @@ extension KanaKanjiConverter {
                 kanaGivenNameBeforeHonorificNodeKeys.insert(node.key)
             }
         }
+        // 動詞と同じ読みの名(守/まもる=守る、茂/しげる=茂る)は、敬称が続かなければ動詞の後ろへ(定数コメント参照。3646)
+        do {
+            var nodeKeysBySpanSurface: [String: String] = [:]
+            for node in nodes where node.isDictWord && !node.isKanaIdentity {
+                nodeKeysBySpanSurface[node.spanKey + "-" + node.surface] = node.key
+            }
+            for node in nodes where personNameKindByNodeKey[node.key] == "名" && node.surface.count < node.reading.count {
+                guard let tail = node.reading.last, Self.multiClauseVerbEndingKana.contains(tail),
+                    nodeKeysBySpanSurface[node.spanKey + "-" + node.surface + String(tail)] != nil else {
+                    continue
+                }
+                if node.end < n {
+                    let rest = Self.spanString(chars, node.end..<n)
+                    if Self.multiClausePersonNameHonorificReadings.contains(where: { rest.hasPrefix($0) }) {
+                        continue
+                    }
+                }
+                seedOrderNounNodeBonuses[node.key, default: 0] -= Self.multiClauseVerbHomographGivenNamePenalty
+            }
+        }
         // 人名でない辞書語が立つ区間(3440 の「人名が末尾の助詞を飲み込む」判定に使う。やつ が立つ区間)
         var nonPersonDictWordSpanKeys = Set<String>()
         for node in nodes where node.isDictWord && !node.isKanaIdentity && personNameKindByNodeKey[node.key] == nil {
