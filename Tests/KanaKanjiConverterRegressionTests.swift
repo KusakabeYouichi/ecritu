@@ -1500,6 +1500,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // はまる はかなを先頭に(はまった も。ユーザ指定 3653)
+    func testRegressionRealLMHamaru() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let list = converter.candidates(for: "はまった", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(3)), ["はまった", "ハマった", "嵌った"], "\(list)")
+    }
+
     // 京風味 は辞書に無く 今日風味/恐怖海の だった(misc 登録。ユーザ指定 3647)
     func testRegressionRealLMKyouFuumi() throws {
         try prepareRealLMDictionary()
