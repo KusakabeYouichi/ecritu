@@ -1526,6 +1526,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.candidates(for: "なんでだ", limit: 4, systemCandidateMode: .surface).first, "なんでだ")
     }
 
+    // 接続助詞 て は文頭に立たない(てまだな が て+まだ+な だった。ユーザ指定 3654)。ていうか/てゆうか は seed で守る
+    func testRegressionRealLMSentenceInitialTe() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for (reading, expected) in [("てまだな", "手間だな"), ("てまだね", "手間だね")] {
+            XCTAssertEqual(converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).first, expected)
+        }
+        XCTAssertEqual(converter.candidates(for: "てゆうか", limit: 4, systemCandidateMode: .surface).first, "てゆうか")
+        XCTAssertEqual(converter.candidates(for: "ていうか", limit: 4, systemCandidateMode: .surface).first, "ていうか")
+    }
+
     // 京風味 は辞書に無く 今日風味/恐怖海の だった(misc 登録。ユーザ指定 3647)
     func testRegressionRealLMKyouFuumi() throws {
         try prepareRealLMDictionary()
