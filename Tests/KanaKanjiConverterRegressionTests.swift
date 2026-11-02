@@ -1469,6 +1469,15 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.multiClauseCandidates(for: "けいさつけんがほえる", systemCandidateMode: .surface).first, "警察犬が吠える")
     }
 
+    // いっとう の先頭を 一頭 にしたあとの文中(一等賞 は登録、一頭の牛 は対で。3649)
+    func testRegressionRealLMIttouInSentence() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        XCTAssertEqual(converter.candidates(for: "いっとうしょう", limit: 4, systemCandidateMode: .surface).first, "一等賞")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "いっとうのうし", systemCandidateMode: .surface).first, "一頭の牛")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "いっとうちにすむ", systemCandidateMode: .surface).first, "一等地に住む")
+    }
+
     // 京風味 は辞書に無く 今日風味/恐怖海の だった(misc 登録。ユーザ指定 3647)
     func testRegressionRealLMKyouFuumi() throws {
         try prepareRealLMDictionary()
