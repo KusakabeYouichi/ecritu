@@ -1755,17 +1755,19 @@ extension KeyboardRootView {
 // apple: 純正のかなキーボードと同じ regular。iOS の文字サイズに追従し、標準 19pt・最大 25pt(純正の実測。2026-11-02、iPhone 15)。
 //        縦画面の候補欄の未確定の行(8pt)を取らずに、35pt(ホームインジケーターの機種は 31pt)を全部チップに使う。
 //        tokushima 方式では未確定の行が要るので使えない(16pt に落とす。アプリ側の設定は灰色)
-// semibold17_5: 17.5pt semibold 固定。未確定の行は tokushima 方式のときだけ取る(重なるのは承知のうえ。ユーザ指定)
+// semibold17_5: 17.5pt semibold 固定。未確定の行を取らない。tokushima 方式では使えない(16pt に落とす)。
+//        未確定の行と 17.5pt のチップは候補欄に入りきらず、候補欄が 17pt 押し広げられてキーボード全体が高くなった
+//        (実機 3649、iPhone 15。ユーザ指定で 16pt に落とす)
 // semibold16: 16pt semibold 固定(3643 までと同じ)。未確定の行を常に取る
 enum CandidateFontStyle: String, Equatable {
     case apple
     case semibold17_5
     case semibold16
 
-    // tokushima 方式なら apple を 16pt に落とす。値が無い端末(この設定より前から使っている人)は 16pt(見た目を変えない)
+    // tokushima 方式なら 16pt 以外を 16pt に落とす。値が無い端末(この設定より前から使っている人)は 16pt(見た目を変えない)
     static func effective(rawValue: String?, usesInternalCompositionPreview: Bool) -> CandidateFontStyle {
         let style = rawValue.flatMap(CandidateFontStyle.init(rawValue:)) ?? .semibold16
-        if usesInternalCompositionPreview && style == .apple {
+        if usesInternalCompositionPreview {
             return .semibold16
         }
         return style
@@ -1775,7 +1777,7 @@ enum CandidateFontStyle: String, Equatable {
         self == .apple ? .regular : .semibold
     }
 
-    // 縦画面の候補欄の先頭に未確定の行を取るか。16pt は常に(3643 までと同じ位置)、ほかは tokushima のときだけ
+    // 縦画面の候補欄の先頭に未確定の行を取るか。16pt は常に(3643 までと同じ位置)。tokushima のときは effective で 16pt になる
     func reservesCompositionRow(usesInternalCompositionPreview: Bool) -> Bool {
         self == .semibold16 || usesInternalCompositionPreview
     }

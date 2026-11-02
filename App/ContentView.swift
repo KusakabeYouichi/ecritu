@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20261102170859"
+    private static let editionUpdatedAtRaw: String = "20261102173957"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -1309,6 +1309,13 @@ struct ContentView: View {
         )
 
         ComposingTextStyleSettingsSection(rawValue: $composingTextStyleRawValue)
+            // tokushima式では V.5 は 16pt しか使えないので、切り替えたら V.5 も 16pt にそろえる(画面と表示を食い違わせない。3650)
+            .onChange(of: composingTextStyleRawValue) { _, newValue in
+                if newValue == ComposingTextStyleOption.tokushima.rawValue,
+                    candidateFontStyleRawValue != CandidateFontStyleOption.semibold16.rawValue {
+                    candidateFontStyleRawValue = CandidateFontStyleOption.semibold16.rawValue
+                }
+            }
 
         KanaModeSwitcherAssignmentSection(
             numberKeyRightFlickSelection: leftModeSwitchNumberKeyRightFlickActionSelection,

@@ -227,7 +227,7 @@ struct FlickGuideDisplaySettingsSection: View {
     }
 }
 
-// V.5 候補の文字(3644、ユーザ指定)。tokushima式のときは Apple と同じ を灰色にして選べなくする
+// V.5 候補の文字(3644、ユーザ指定)。tokushima式のときは 17.5pt と Apple と同じ を灰色にして選べなくする(3649)
 struct CandidateFontStyleSettingsSection: View {
     @Binding var rawValue: String
     let composingTextStyleRawValue: String
@@ -278,11 +278,6 @@ struct CandidateFontStyleSettingsSection: View {
                 ForEach(CandidateFontStyleOption.allCases) { option in
                     SettingsOptionNote.text(option.summary)
                         .font(.footnote)
-                }
-                if composingTextStyle == .tokushima && selection == .apple {
-                    Text("いまは tokushima式なので、16pt で表示しています。")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
                 }
                 Text("初期設定は 17.5pt です(戦略的初期設定は 16pt、保守的初期設定は Apple と同じ)。")
                     .font(.footnote)
