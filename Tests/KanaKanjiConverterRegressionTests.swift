@@ -1356,6 +1356,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(boosted.first, "候補", "\(boosted)")
     }
 
+    // 大阪王将 を登録(おおさかおうしょうがない が 大阪王しょうがない。ユーザ指定 3649)
+    func testRegressionRealLMOsakaOushou() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        XCTAssertEqual(converter.multiClauseCandidates(for: "おおさかおうしょうがない", systemCandidateMode: .surface).first, "大阪王将がない")
+        XCTAssertEqual(converter.candidates(for: "しょうがない", limit: 4, systemCandidateMode: .surface).first, "しょうがない")
+    }
+
     // 京風味 は辞書に無く 今日風味/恐怖海の だった(misc 登録。ユーザ指定 3647)
     func testRegressionRealLMKyouFuumi() throws {
         try prepareRealLMDictionary()
