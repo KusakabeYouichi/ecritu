@@ -1478,6 +1478,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.multiClauseCandidates(for: "いっとうちにすむ", systemCandidateMode: .surface).first, "一等地に住む")
     }
 
+    // お年寄り を登録(辞書の おとしより は 御年寄 だけで、おとしよりにも が 御年寄にも だった。ユーザ指定 3652)
+    func testRegressionRealLMOtoshiyori() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        XCTAssertEqual(converter.candidates(for: "おとしより", limit: 4, systemCandidateMode: .surface).first, "お年寄り")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "おとしよりにも", systemCandidateMode: .surface).first, "お年寄りにも")
+    }
+
     // 京風味 は辞書に無く 今日風味/恐怖海の だった(misc 登録。ユーザ指定 3647)
     func testRegressionRealLMKyouFuumi() throws {
         try prepareRealLMDictionary()

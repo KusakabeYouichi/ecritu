@@ -643,6 +643,7 @@
 	<dict><key>phrase</key><string>テルミット</string><key>shortcut</key><string>てるみっと</string><key>pos</key><string>名詞</string></dict>	<!-- テルミット(反応): てるみっと だった -->
 	<dict><key>phrase</key><string>タンドラ</string><key>shortcut</key><string>たんどら</string><key>pos</key><string>名詞</string></dict>	<!-- タンドラ(トヨタの車種): 端ドラ だった -->
 	<!-- 一括検査 3640(1 本めの標本)の段階 1 の判定(ユーザ指定 3643)。辞書に無い語 -->
+	<dict><key>phrase</key><string>お年寄り</string><key>shortcut</key><string>おとしより</string><key>pos</key><string>名詞</string></dict>	<!-- お年寄り: 辞書の おとしより は 御年寄(大奥の役職)だけで、おとしよりにも が 御年寄にも だった(ユーザ指定 3652) -->
 	<dict><key>phrase</key><string>一等賞</string><key>shortcut</key><string>いっとうしょう</string><key>pos</key><string>名詞</string></dict>	<!-- 一等賞: 辞書に無く、いっとう の先頭を 一頭 にしたら 一頭章 になった(3649) -->
 	<dict><key>phrase</key><string>大阪王将</string><key>shortcut</key><string>おおさかおうしょう</string><key>pos</key><string>名詞</string></dict>	<!-- 大阪王将(餃子の店): おおさかおうしょうがない が 大阪王しょうがない だった(ユーザ指定 3649) -->
 	<dict><key>phrase</key><string>麻薬探知犬</string><key>shortcut</key><string>まやくたんちけん</string><key>pos</key><string>名詞</string></dict>	<!-- 辞書に無かった(ユーザ指定 3649) -->
