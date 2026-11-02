@@ -1595,6 +1595,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi.first, "列めを", "\(multi.prefix(4))")
     }
 
+    // かいせい の並び(ユーザ指定 3655)
+    func testRegressionRealLMKaisei() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let list = converter.candidates(for: "かいせい", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(4)), ["改正", "開成", "快晴", "回生"], "\(list)")
+    }
+
     // 京風味 は辞書に無く 今日風味/恐怖海の だった(misc 登録。ユーザ指定 3647)
     func testRegressionRealLMKyouFuumi() throws {
         try prepareRealLMDictionary()
