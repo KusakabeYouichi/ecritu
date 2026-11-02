@@ -1314,6 +1314,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.candidates(for: "のはら", limit: 4, systemCandidateMode: .surface).first, "野原")
     }
 
+    // 京風味 は辞書に無く 今日風味/恐怖海の だった(misc 登録。ユーザ指定 3647)
+    func testRegressionRealLMKyouFuumi() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        XCTAssertEqual(converter.candidates(for: "きょうふうみ", limit: 4, systemCandidateMode: .surface).first, "京風味")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "きょうふうみの", systemCandidateMode: .surface).first, "京風味の")
+    }
+
     // 動詞と同じ読みの名(守/まもる)は敬称が続かなければ動詞の後ろ(ユーザ指定 3646: しっかりまもるには が しっかり守には)
     func testRegressionRealLMVerbHomographGivenName() throws {
         try prepareRealLMDictionary()

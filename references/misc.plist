@@ -643,6 +643,7 @@
 	<dict><key>phrase</key><string>テルミット</string><key>shortcut</key><string>てるみっと</string><key>pos</key><string>名詞</string></dict>	<!-- テルミット(反応): てるみっと だった -->
 	<dict><key>phrase</key><string>タンドラ</string><key>shortcut</key><string>たんどら</string><key>pos</key><string>名詞</string></dict>	<!-- タンドラ(トヨタの車種): 端ドラ だった -->
 	<!-- 一括検査 3640(1 本めの標本)の段階 1 の判定(ユーザ指定 3643)。辞書に無い語 -->
+	<dict><key>phrase</key><string>京風味</string><key>shortcut</key><string>きょうふうみ</string><key>pos</key><string>名詞</string></dict>	<!-- 京風味: 辞書に無く 今日風味 が先頭、きょうふうみの では 京風味の が出なかった(ユーザ指定 3647) -->
 	<dict><key>phrase</key><string>市外局番</string><key>shortcut</key><string>しがいきょくばん</string><key>pos</key><string>名詞</string></dict>	<!-- 市外局番: し外局番 だった -->
 	<dict><key>phrase</key><string>豆麹</string><key>shortcut</key><string>まめこうじ</string><key>pos</key><string>名詞</string></dict>	<!-- 豆麹: 豆工事 だった -->
 	<dict><key>phrase</key><string>指定外</string><key>shortcut</key><string>していがい</string><key>pos</key><string>名詞</string></dict>	<!-- 指定外: して以外 だった -->
