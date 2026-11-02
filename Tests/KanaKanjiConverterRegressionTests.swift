@@ -1426,6 +1426,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // 連語の副詞の読み飛ばしは 席を立つ の個別連語にも効かせ、助詞の直後で連語が成り立つときは読み飛ばさない(ユーザ指定 3649)
+    func testRegressionRealLMCollocationAdverbSkipSekiWoTatsu() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        XCTAssertEqual(converter.multiClauseCandidates(for: "せきをすぐにたつ", systemCandidateMode: .surface).first, "席をすぐに立つ")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "うでがすぐれる", systemCandidateMode: .surface).first, "腕が優れる")
+    }
+
     // 京風味 は辞書に無く 今日風味/恐怖海の だった(misc 登録。ユーザ指定 3647)
     func testRegressionRealLMKyouFuumi() throws {
         try prepareRealLMDictionary()

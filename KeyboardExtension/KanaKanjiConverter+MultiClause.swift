@@ -808,7 +808,16 @@ extension KanaKanjiConverter {
                         afterIdx += 1
                     }
                     if afterIdx < n {
-                        let rest = Self.spanString(chars, afterIdx..<n)
+                        var rest = Self.spanString(chars, afterIdx..<n)
+                        // 助詞の後の様子の副詞 1 つは読み飛ばす(せきをすぐにたつ が 背気をすぐに立つ だった。3649)
+                        if !collocation.verbPrefixes.contains(where: { rest.hasPrefix($0) }),
+                            let adverb = Self.multiClauseObjectVerbSkippableAdverbs.first(where: { rest.count > $0.count && rest.hasPrefix($0) }) {
+                            let skipped = String(rest.dropFirst(adverb.count))
+                            if collocation.verbPrefixes.contains(where: { skipped.hasPrefix($0) }) {
+                                afterIdx += adverb.count
+                                rest = skipped
+                            }
+                        }
                         if collocation.verbPrefixes.contains(where: { rest.hasPrefix($0) }) {
                             collocationPreferredKanaNodeKeys.insert("\(start)-\(end)-\(collocation.surface)")
                             collocationNounSpans.insert(spanKeyByStart[start][end])
@@ -828,9 +837,13 @@ extension KanaKanjiConverter {
                 // 名詞の読みが長い辞書語の末尾に埋まっているとき(げんさく の さく、もじ の じ)は発火しない
                 if end + 1 < n, let objectEntries = Self.multiClauseObjectVerbCollocations[segmentReading] {
                     let particle = chars[end]
-                    // 助詞と動詞の間の様子の副詞 1 つは読み飛ばす(写真も きれいに 撮れて。定数コメント参照。3649)
+                    // 助詞と動詞の間の様子の副詞 1 つは読み飛ばす(写真も きれいに 撮れて。定数コメント参照。3649)。
+                    // 助詞の直後で連語が成り立つときは読み飛ばさない(すぐれる/もうける の頭を副詞と取り違えない)
                     let afterParticle = Self.spanString(chars, (end + 1)..<n)
-                    let skippedAdverb = Self.multiClauseObjectVerbSkippableAdverbs.first(where: {
+                    let adjacentHit = objectEntries.contains(where: { entry in
+                        entry.particle == particle && entry.prefixes.contains(where: { afterParticle.hasPrefix($0) })
+                    })
+                    let skippedAdverb = adjacentHit ? nil : Self.multiClauseObjectVerbSkippableAdverbs.first(where: {
                         afterParticle.count > $0.count && afterParticle.hasPrefix($0)
                     })
                     let verbStart = end + 1 + (skippedAdverb?.count ?? 0)

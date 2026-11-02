@@ -3271,7 +3271,8 @@ extension KanaKanjiConverter {
     // 目的語+助詞+動詞の連語(+ObjectVerbCollocations)で、助詞と動詞の間に挟まっても連語として扱う様子の副詞。
     // 写真も きれいに とれてますね が 取れて だった(写真+撮る の連語が隣接の形しか見ていなかった。ユーザ指定 3649)
     static let multiClauseObjectVerbSkippableAdverbs: [String] = [
-        "きれいに", "うまく", "じょうずに", "ちゃんと", "しっかり", "すぐに", "すぐ", "よく", "もう"
+        // もう は もうける/もうしこむ の頭と紛れるので入れない(3649)
+        "きれいに", "うまく", "じょうずに", "ちゃんと", "しっかり", "すぐに", "すぐ", "よく"
     ]
     static let multiClausePersonNameHonorificReadings: Set<String> = ["さん", "さま", "くん", "ちゃん"]
     // 動詞の終止形と同じ読みの名(守/まもる と 守る、茂/しげる と 茂る、忍/しのぶ と 忍ぶ)。同じ区間に 名の表層+読みの末尾 1 字 の
