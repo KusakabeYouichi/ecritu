@@ -1338,6 +1338,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.candidates(for: "ひっくりかえりそう", limit: 4, systemCandidateMode: .surface).first, "ひっくり返りそう")
     }
 
+    // あまりおさないなあ が あまり幼いなあ だった(ユーザ指定 3649)
+    func testRegressionRealLMAmariOsanai() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        XCTAssertEqual(converter.multiClauseCandidates(for: "あまりおさないなあ", systemCandidateMode: .surface).first, "あまり押さないなあ")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "おさないこども", systemCandidateMode: .surface).first, "幼い子供")
+    }
+
     // 京風味 は辞書に無く 今日風味/恐怖海の だった(misc 登録。ユーザ指定 3647)
     func testRegressionRealLMKyouFuumi() throws {
         try prepareRealLMDictionary()
