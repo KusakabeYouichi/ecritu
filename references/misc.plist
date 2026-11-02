@@ -125,6 +125,7 @@
 	<dict><key>phrase</key><string>飲みに来る</string><key>shortcut</key><string>のみにくる</string><key>pos</key><string>カ変</string></dict>	<!-- 飲みに来る: 見に来る の登録で のみにくる が の+見に来る になったので、同じ強さで 1 語にして文節の少ない区切りを勝たせる -->
 
 	<!-- ■ 頻出活用形の直接登録(活用エンジンでは届かない形を表層のまま入れる) -->
+	<dict><key>phrase</key><string>庇い</string><key>shortcut</key><string>かばい</string></dict>	<!-- 庇い(中止法の連用形): 活用供給は助動詞付きの形だけで、単独の 庇い が格子に立たず 子供を庇い が 子供を樺井 だった(一括検査 3640、ユーザ指定 3643) -->
 	<dict><key>phrase</key><string>気がした</string><key>shortcut</key><string>きがした</string></dict>	<!-- 頻出形の直接登録(いただきました と同じ方式)。派生供給だけだとサ変推論の 帰臥した/起臥した がルール順で先に立つ -->
 	<dict><key>phrase</key><string>気がして</string><key>shortcut</key><string>きがして</string></dict>
 	<dict><key>phrase</key><string>気がします</string><key>shortcut</key><string>きがします</string></dict>
@@ -641,6 +642,11 @@
 	<dict><key>phrase</key><string>クラスタ</string><key>shortcut</key><string>くらすた</string><key>pos</key><string>名詞</string></dict>	<!-- クラスタ: クラスた だった(クラスター は辞書に有る) -->
 	<dict><key>phrase</key><string>テルミット</string><key>shortcut</key><string>てるみっと</string><key>pos</key><string>名詞</string></dict>	<!-- テルミット(反応): てるみっと だった -->
 	<dict><key>phrase</key><string>タンドラ</string><key>shortcut</key><string>たんどら</string><key>pos</key><string>名詞</string></dict>	<!-- タンドラ(トヨタの車種): 端ドラ だった -->
+	<!-- 一括検査 3640(1 本めの標本)の段階 1 の判定(ユーザ指定 3643)。辞書に無い語 -->
+	<dict><key>phrase</key><string>市外局番</string><key>shortcut</key><string>しがいきょくばん</string><key>pos</key><string>名詞</string></dict>	<!-- 市外局番: し外局番 だった -->
+	<dict><key>phrase</key><string>豆麹</string><key>shortcut</key><string>まめこうじ</string><key>pos</key><string>名詞</string></dict>	<!-- 豆麹: 豆工事 だった -->
+	<dict><key>phrase</key><string>指定外</string><key>shortcut</key><string>していがい</string><key>pos</key><string>名詞</string></dict>	<!-- 指定外: して以外 だった -->
+	<dict><key>phrase</key><string>パンの耳</string><key>shortcut</key><string>ぱんのみみ</string></dict>	<!-- パンの耳: パンのみ見 だった -->
 	<!-- 一括検査 3640b の段階 2 の判定で候補に無かったカタカナ語(人名・作品名・用語。vin/ryukyu と同じく追加語彙で供給。ユーザ指定 3642)。読みが日常の句と重なる クンヤ(行くんや)/オウイエ(王家)/ネムキ(眠気)/アカイオス(赤いオス) は入れない -->
 	<dict><key>phrase</key><string>ツェティニェ</string><key>shortcut</key><string>つぇてぃにぇ</string><key>pos</key><string>名詞</string></dict>
 	<dict><key>phrase</key><string>アパップ</string><key>shortcut</key><string>あぱっぷ</string><key>pos</key><string>名詞</string></dict>
@@ -785,7 +791,15 @@
 	<dict><key>phrase</key><string>怪我</string><key>shortcut</key><string>けが</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 怪我: けがした が 汚した/瀆した/穢した(けがす の活用)の後ろで 怪我した が 5 番めだった。サ変で登録して 怪我した/怪我して を先頭に(ユーザ指定 3640) -->	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>完治</string><key>shortcut</key><string>かんち</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 完治: かんちした が辞書順の 感知した 先頭だった。会話では 完治した が優勢(ユーザ指定 3640) -->	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>半角カナ</string><key>shortcut</key><string>はんかくかな</string><key>pos</key><string>名詞</string></dict>	<!-- 半角カナ: 辞書に有るが 半角+かな(文末の かな が安い)に負けていた(一括検査 3640b、ユーザ指定 3642) -->	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>一分野</string><key>shortcut</key><string>いちぶんや</string><key>pos</key><string>名詞</string></dict>	<!-- 一分野: の の直後で 位置分野(の→位置 の bigram)が勝ち、国際法の一分野/人文地理学の一分野 が 位置分野 だった(一括検査 3640b、ユーザ指定 3642) -->
+	<dict><key>phrase</key><string>一分野</string><key>shortcut</key><string>いちぶんや</string><key>pos</key><string>名詞</string></dict>
+	<!-- 一括検査 3640(1 本めの標本)の段階 1 の判定(ユーザ指定 3643)。辞書 rank0 だが連文節で断片に負ける語 -->
+	<dict><key>phrase</key><string>都市圏</string><key>shortcut</key><string>としけん</string><key>pos</key><string>名詞</string></dict>	<!-- 都市圏: と時化ん だった -->	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>都市雇用圏</string><key>shortcut</key><string>としこようけん</string><key>pos</key><string>名詞</string></dict>	<!-- 都市雇用圏: 都市雇用県 だった -->
+	<dict><key>phrase</key><string>木炭</string><key>shortcut</key><string>もくたん</string><key>pos</key><string>名詞</string></dict>	<!-- 木炭: 成形木炭 が 成形も久丹 だった -->	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>反体制派</string><key>shortcut</key><string>はんたいせいは</string><key>pos</key><string>名詞</string></dict>	<!-- 反体制派: 藩体制派 だった。反体制 だけを curated にすると 派 が助詞の は に負けて 反体制はが になるので 派 まで -->
+	<dict><key>phrase</key><string>高脂血症</string><key>shortcut</key><string>こうしけっしょう</string><key>pos</key><string>名詞</string></dict>	<!-- 高脂血症: こうし血症 だった -->	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>変成岩</string><key>shortcut</key><string>へんせいがん</string><key>pos</key><string>名詞</string></dict>	<!-- 変成岩: 非変成岩 が 日変成岩 だった -->	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>非変成岩</string><key>shortcut</key><string>ひへんせいがん</string><key>pos</key><string>名詞</string></dict>	<!-- 非変成岩: 変成岩 を curated にしても 1 字の 日 が 非 に勝つので語ごと -->	<!-- 一分野: の の直後で 位置分野(の→位置 の bigram)が勝ち、国際法の一分野/人文地理学の一分野 が 位置分野 だった(一括検査 3640b、ユーザ指定 3642) -->
 	<dict><key>phrase</key><string>唱題</string><key>shortcut</key><string>しょうだい</string><key>pos</key><string>名詞</string></dict>	<!-- 唱題(題目を唱えること): 辞書 rank1 だが LM unigram 7649 で 章+第 に負け 題目の章第 だった(一括検査 3640b、ユーザ指定 3641) -->	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>連れて</string><key>shortcut</key><string>つれて</string></dict>	<!-- つれる は word_costs で 釣れる(8201)が最安で 連れる(8837)が2位。つれてくる 等の複合で基底順が波及するため 連れて をcurated供給 -->
 	<dict><key>phrase</key><string>貼って</string><key>shortcut</key><string>はって</string></dict>	<!-- はって は基底列挙で はう(這う/匍う/匐う)が はる(貼る/張る)より先に並び、はってある が 這ってある 等になる(てある は他動詞専用で 這う に付かない)。貼って/張って をcurated供給 -->

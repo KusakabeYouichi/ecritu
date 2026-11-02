@@ -26976,4 +26976,39 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("じっせんにとうにゅうされることはなかった").first, "実戦に投入されることはなかった")
     }
 
+    // 一括検査 3640(1 本めの標本)の段階 1 の判定(ユーザ指定 3643)。名詞+局 の対の加点、と+対峙、一説には、砂糖なし、催促が、
+    // seed(一説/各省/山猫)、臥せる の抑制、登録(市外局番/豆麹/指定外/パンの耳/都市圏/都市雇用圏/木炭/反体制派/高脂血症/変成岩/庇い)。
+    // ほぼ確証 は sacoche の 角正(curated)が勝つので対象外、過去と逃げずに対峙し は直前が に なので対象外
+    func testRegressionRealLMAudit3640Stage1() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ r: String) -> [String] {
+            let m = converter.multiClauseCandidates(for: r, systemCandidateMode: .surface)
+            return m.isEmpty ? converter.candidates(for: r, limit: 8, systemCandidateMode: .surface) : m
+        }
+        XCTAssertEqual(multi("かんきょうせいさくきょく").first, "環境政策局")
+        XCTAssertEqual(multi("ぎょうざいせいきょく").first, "行財政局")
+        XCTAssertEqual(multi("そうごうきかくきょく").first, "総合企画局")
+        XCTAssertEqual(multi("ぶんかしみんきょく").first, "文化市民局")
+        XCTAssertEqual(multi("このきょくがすき").first, "この曲が好き", "曲 は従来どおり")
+        XCTAssertEqual(multi("ぷるーとぅとたいじし").first, "プルートゥと対峙し")
+        XCTAssertEqual(multi("おにをたいじした").first, "鬼を退治した", "を なら 退治")
+        XCTAssertEqual(multi("いっせつには").first, "一説には")
+        XCTAssertEqual(multi("さとうなしでのむ").first, "砂糖なしで飲む")
+        XCTAssertEqual(multi("さいそくがきていた").first, "催促が来ていた")
+        XCTAssertEqual(multi("じかんのけいかはふせられ").first, "時間の経過は伏せられ", "臥せる を抑制")
+        XCTAssertEqual(multi("めをふせる").first, "目を伏せる")
+        XCTAssertEqual(multi("やまねこのゆいごん").first, "山猫の遺言")
+        XCTAssertEqual(multi("しがいきょくばんは").first, "市外局番は")
+        XCTAssertEqual(multi("まめこうじのため").first, "豆麹のため")
+        XCTAssertEqual(multi("していがいくかん").first, "指定外区間")
+        XCTAssertEqual(multi("ぱんのみみ").first, "パンの耳")
+        XCTAssertEqual(multi("としけん").first, "都市圏")
+        XCTAssertEqual(multi("としこようけんのきじゅんでは").first, "都市雇用圏の基準では")
+        XCTAssertEqual(multi("せいけいもくたん").first, "成形木炭")
+        XCTAssertEqual(multi("はんたいせいはがしゅくせいされた").first, "反体制派が粛清された")
+        XCTAssertEqual(multi("こうしけっしょう").first, "高脂血症")
+        XCTAssertEqual(multi("ひへんせいがん").first, "非変成岩")
+    }
+
 }
