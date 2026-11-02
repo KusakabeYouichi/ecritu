@@ -4084,6 +4084,16 @@ extension KanaKanjiConverter {
                                 cost += Self.multiClauseFormalNounKanjiPenalty
                             }
                         }
+                        // 述語(活用派生)+の+だけど/です 等の のだ 文は述語側を上げる(定数コメント参照。3653)
+                        // の 単独のほか、のだけど/のです のような 1 ノードのかなも見る
+                        if node.isKanaIdentity, node.reading.first == "の",
+                            prevNode.isInflectionDerived || prevNode.isDictionaryFormPredicate {
+                            let tail = String(node.reading.dropFirst())
+                                + (node.end < n && node.reading.count <= 3 ? Self.spanString(chars, node.end..<n) : "")
+                            if tail == "だ" || Self.multiClauseNodaTails.contains(where: { tail.hasPrefix($0) }) {
+                                cost -= Self.multiClausePredicateNodaBonus
+                            }
+                        }
                         // 述語直後の当為 べき/べし/べく は助動詞=かな(冪/可き の漢字化を減点。定数コメント参照)
                         if Self.multiClauseBekiReadingsID.contains(node.readingID), !node.isKanaIdentity,
                             prevNode.isDictionaryFormPredicate || prevNode.isInflectionDerived

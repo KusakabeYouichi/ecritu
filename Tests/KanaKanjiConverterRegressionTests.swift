@@ -1508,6 +1508,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(list.prefix(3)), ["はまった", "ハマった", "嵌った"], "\(list)")
     }
 
+    // 述語+のだけど は述語側を上げる(いらんのだけど が イランのだけど だった。ユーザ指定 3653)
+    func testRegressionRealLMPredicateNoda() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for (reading, expected) in [("いらんのだけど", "いらんのだけど"), ("かくのだけど", "書くのだけど"),
+                                    ("いらんのだいとうりょう", "イランの大統領"), ("わたしのだけど", "私のだけど")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "\(reading): \(multi.prefix(4))")
+        }
+    }
+
     // 京風味 は辞書に無く 今日風味/恐怖海の だった(misc 登録。ユーザ指定 3647)
     func testRegressionRealLMKyouFuumi() throws {
         try prepareRealLMDictionary()
