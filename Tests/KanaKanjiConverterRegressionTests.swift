@@ -1378,6 +1378,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.multiClauseCandidates(for: "どんなじ", systemCandidateMode: .surface).first, "どんな字")
     }
 
+    // とちをかこう に 囲う が無かった(連語 土地+を+囲う。ユーザ指定 3649)
+    func testRegressionRealLMTochiWoKakou() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        XCTAssertEqual(converter.multiClauseCandidates(for: "とちをかこう", systemCandidateMode: .surface).first, "土地を囲う")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "とちをかこうする", systemCandidateMode: .surface).first, "土地を加工する")
+    }
+
     // 京風味 は辞書に無く 今日風味/恐怖海の だった(misc 登録。ユーザ指定 3647)
     func testRegressionRealLMKyouFuumi() throws {
         try prepareRealLMDictionary()
