@@ -1618,6 +1618,16 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.candidates(for: "いじれる", limit: 4, systemCandidateMode: .surface).first, "いじれる")
     }
 
+    // 降り出す を登録(あめがふりだした が 雨が振り出した)。手形を振り出す は連語で守り、単独は 振り出す が先(ユーザ指定 3656)
+    func testRegressionRealLMFuridasu() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for (reading, expected) in [("あめがふりだした", "雨が降り出した"), ("てがたをふりだす", "手形を振り出す")] {
+            XCTAssertEqual(converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).first, expected)
+        }
+        XCTAssertEqual(converter.candidates(for: "ふりだす", limit: 4, systemCandidateMode: .surface).first, "振り出す")
+    }
+
     // 京風味 は辞書に無く 今日風味/恐怖海の だった(misc 登録。ユーザ指定 3647)
     func testRegressionRealLMKyouFuumi() throws {
         try prepareRealLMDictionary()
