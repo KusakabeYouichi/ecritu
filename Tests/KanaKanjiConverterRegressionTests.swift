@@ -1314,6 +1314,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.candidates(for: "のはら", limit: 4, systemCandidateMode: .surface).first, "野原")
     }
 
+    // さく に 冊 が無かった。並びは 柵/作/裂く/策/冊(ユーザ指定 3648)
+    func testRegressionRealLMSakuOrder() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let list = converter.candidates(for: "さく", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(5)), ["柵", "作", "裂く", "策", "冊"], "\(list)")
+    }
+
     // 京風味 は辞書に無く 今日風味/恐怖海の だった(misc 登録。ユーザ指定 3647)
     func testRegressionRealLMKyouFuumi() throws {
         try prepareRealLMDictionary()

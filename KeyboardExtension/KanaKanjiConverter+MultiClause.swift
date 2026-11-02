@@ -2309,6 +2309,10 @@ extension KanaKanjiConverter {
                             // 副詞(漢字も残す)も漢字を下げないので外さない
                             && !Self.isKanaGakiAlwaysKanaReading(reading)) {
                     base = max(base, wordCost)
+                } else if wordCost == nil,
+                    Self.multiClauseRareReadingFloorForcedSurfacesByReadingByID[readingID]?.contains(surface) ?? false {
+                    // 読み別コストの無い seed 供給(冊(さく))は未知語と同じ値まで床上げする(3648)
+                    base = max(base, Self.multiClauseDictUnknownCost)
                 }
                 // 会話的時相名詞の unigram キャップ(定数コメント参照)。観測 bigram
                 // (機能→が/細菌→が 等)には及ばない水準なので が 文脈は同音側が保たれる。

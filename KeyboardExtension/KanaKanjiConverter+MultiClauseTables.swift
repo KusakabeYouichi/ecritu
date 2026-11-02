@@ -279,7 +279,9 @@ extension KanaKanjiConverter {
     // LM unigram 4954・界→の 827 は 世界/業界 の接辞用法(かい)の統計で、さかいの が 界の 先頭だった(ユーザ報告)
     static let multiClauseRareReadingFloorForcedSurfacesByReading: [String: Set<String>] = [
         "える": ["得る"],
-        "さかい": ["界"]
+        "さかい": ["界"],
+        // 冊(さく)は seed で単文節に供給しただけで、unigram は さつ の統計。名詞+さく の 対処策 が 対処冊 になった(3648)
+        "さく": ["冊"]
     ]
 
     static let multiClauseRareReadingFloorExemptSurfacesByReading: [String: Set<String>] = [
