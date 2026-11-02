@@ -538,6 +538,8 @@
 	<dict><key>phrase</key><string>剋する</string><key>shortcut</key><string>こくする</string></dict>	<!-- 剋する/哭する/刻する(こくする): 単漢字サ変の派生 1 ノード(剋しなくなりました)が 地+剋 で 遅刻しなくなりました を乗っ取っていた。日常語は 相剋/刻む(一括検査 3640b、ユーザ指定 3641) -->
 	<dict><key>phrase</key><string>哭する</string><key>shortcut</key><string>こくする</string></dict>
 	<dict><key>phrase</key><string>刻する</string><key>shortcut</key><string>こくする</string></dict>
+	<dict><key>phrase</key><string>臥せる</string><key>shortcut</key><string>ふせる</string></dict>
+	<dict><key>phrase</key><string>臥る</string><key>shortcut</key><string>ふせる</string></dict>	<!-- 臥る(ふせる): 同上(臥せる を抑制すると次に 臥られ が出た) -->	<!-- 臥せる(ふせる): 伏せる の稀な表記(病に臥せる は 臥す/伏せる)。辞書順が 臥せる 先頭で、派生ノードの同点も辞書順のため 時間の経過は伏せられ が 臥せられ だった(一括検査 3640、ユーザ指定 3643) -->
 	<dict><key>phrase</key><string>忘る</string><key>shortcut</key><string>わすれる</string></dict>	<!-- 忘る(わすれる): 文語の「忘る」が inflection_classes で一段活用として登録されており、 語幹「忘」から 忘て/忘てる/忘た のような送り仮名を欠いた活用形を派生させていた (とりわすれてる→取り忘てる)。現代語は 忘れる(一段)のみなので基底ごと抑制する -->
 	<dict><key>phrase</key><string>速る</string><key>shortcut</key><string>はやる</string></dict>	<!-- 速る(はやる): 速い(はやい)の形容詞を動詞化した非標準表記。逸る/早る は実在だが 速る は標準では使わない。早る は温存 -->
 
