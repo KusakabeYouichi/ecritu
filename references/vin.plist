@@ -662,7 +662,7 @@
 	<dict><key>phrase</key><string>Chianti Classico</string><key>shortcut</key><string>きあんてぃくらっしこ</string></dict>
 	<dict><key>phrase</key><string>Cinque Terre</string><key>shortcut</key><string>ちんくえてっれ</string></dict>
 	<dict><key>phrase</key><string>Cinque Terre Sciacchetrà</string><key>shortcut</key><string>ちんくえてっれしゃっけとら</string></dict>
-	<dict><key>phrase</key><string>CirÒ</string><key>shortcut</key><string>ちろ</string></dict>
+	<dict><key>phrase</key><string>Cirò</string><key>shortcut</key><string>ちろ</string></dict>
 	<dict><key>phrase</key><string>Colli Bolognesi Pignoletto</string><key>shortcut</key><string>こっりぼろにぇーじぴにょれっと</string></dict>
 	<dict><key>phrase</key><string>Colli di Conegliano</string><key>shortcut</key><string>こっりでぃこねりあーの</string></dict>
 	<dict><key>phrase</key><string>Colli di Luni</string><key>shortcut</key><string>こっりでぃるーに</string></dict>
@@ -673,7 +673,7 @@
 	<dict><key>phrase</key><string>Collio Goriziano</string><key>shortcut</key><string>こっりおごりつぃあーの</string></dict>
 	<dict><key>phrase</key><string>Conegliano Valdobbiadene-Prosecco</string><key>shortcut</key><string>こねりあーのゔぁるどっびあーでねぷろせっこ</string></dict>
 	<dict><key>phrase</key><string>Conegliano-Prosecco</string><key>shortcut</key><string>こねりあーのぷろせっこ</string></dict>
-	<dict><key>phrase</key><string>CÒnero</string><key>shortcut</key><string>こーねろ</string></dict>
+	<dict><key>phrase</key><string>Cònero</string><key>shortcut</key><string>こーねろ</string></dict>
 	<dict><key>phrase</key><string>Cortese di Gavi</string><key>shortcut</key><string>こるてーぜでぃがゔぃ</string></dict>
 	<dict><key>phrase</key><string>Coste della Sesia</string><key>shortcut</key><string>こすてでっらせーじあ</string></dict>
 	<dict><key>phrase</key><string>Dogliani</string><key>shortcut</key><string>どりあーに</string></dict>
@@ -709,7 +709,7 @@
 	<dict><key>phrase</key><string>Morellino di Scansano</string><key>shortcut</key><string>もれっりーのでぃすかんさーの</string></dict>
 	<dict><key>phrase</key><string>Nizza</string><key>shortcut</key><string>にっつぁ</string></dict>
 	<dict><key>phrase</key><string>Offida</string><key>shortcut</key><string>おっふぃーだ</string></dict>
-	<dict><key>phrase</key><string>OltrepÒ Pavese</string><key>shortcut</key><string>おるとれぽーぱゔぇーぜ</string></dict>
+	<dict><key>phrase</key><string>Oltrepò Pavese</string><key>shortcut</key><string>おるとれぽーぱゔぇーぜ</string></dict>
 	<dict><key>phrase</key><string>Orvieto</string><key>shortcut</key><string>おるゔぃえと</string></dict>
 	<dict><key>phrase</key><string>Pantelleria</string><key>shortcut</key><string>ぱんてっれりあ</string></dict>
 	<dict><key>phrase</key><string>Piave</string><key>shortcut</key><string>ぴあーゔぇ</string></dict>
