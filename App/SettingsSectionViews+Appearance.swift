@@ -276,9 +276,8 @@ struct CandidateFontStyleSettingsSection: View {
 
             VStack(alignment: .leading, spacing: 6) {
                 ForEach(CandidateFontStyleOption.allCases) { option in
-                    Text(option.summary)
+                    SettingsOptionNote.text(option.summary)
                         .font(.footnote)
-                        .foregroundStyle(.secondary)
                 }
                 if composingTextStyle == .tokushima && selection == .apple {
                     Text("いまは tokushima式なので、16pt で表示しています。")

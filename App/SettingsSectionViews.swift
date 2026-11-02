@@ -167,9 +167,8 @@ struct ComposingTextStyleSettingsSection: View {
 
             VStack(alignment: .leading, spacing: 6) {
                 ForEach(ComposingTextStyleOption.allCases) { option in
-                    Text(option.summary)
+                    SettingsOptionNote.text(option.summary)
                         .font(.footnote)
-                        .foregroundStyle(.secondary)
                 }
                 Text("初期設定は écritu です。")
                     .font(.footnote)

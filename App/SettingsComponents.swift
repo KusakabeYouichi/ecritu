@@ -126,6 +126,17 @@ struct SettingsModifiedMark: View {
     }
 }
 
+// 選択肢の説明文(『名前: 説明』)。名前の部分を本文の色にして、説明との区切りを見やすくする(ユーザ指定 3649)
+enum SettingsOptionNote {
+    static func text(_ note: String) -> Text {
+        guard let range = note.range(of: ": ") else {
+            return Text(note).foregroundColor(.secondary)
+        }
+        return Text(String(note[..<range.upperBound])).foregroundColor(.primary)
+            + Text(String(note[range.upperBound...])).foregroundColor(.secondary)
+    }
+}
+
 // 項目の見出し(太字)と変更済みの印(3432)
 struct SettingsCardHeadline: View {
     let title: String

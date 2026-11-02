@@ -240,14 +240,12 @@ struct FormatNumeriqueSettingsSection: View {
                 }
                 .pickerStyle(.segmented)
 
-                Text(
-                    "単位ドラムのリットルに使う字形です。接頭辞と組み合わせた h\u{2113}・c\u{2113}・m\u{2113} にも反映されます。初期設定は l です。\n・"
-                    + LitreSymbolOption.small.standardNote
-                    + "\n・" + LitreSymbolOption.capital.standardNote
-                    + "\n・" + LitreSymbolOption.script.standardNote
-                )
+                (Text("単位ドラムのリットルに使う字形です。接頭辞と組み合わせた h\u{2113}・c\u{2113}・m\u{2113} にも反映されます。初期設定は l です。\n・")
+                    .foregroundColor(.secondary)
+                    + SettingsOptionNote.text(LitreSymbolOption.small.standardNote)
+                    + Text("\n・").foregroundColor(.secondary) + SettingsOptionNote.text(LitreSymbolOption.capital.standardNote)
+                    + Text("\n・").foregroundColor(.secondary) + SettingsOptionNote.text(LitreSymbolOption.script.standardNote))
                 .font(.footnote)
-                .foregroundStyle(.secondary)
             }
         }
         .settingsCardStyle()
