@@ -1416,6 +1416,16 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // 動詞と同じ読みの名は、直後が敬称か が/を/は なら名を上げる(まもるさんがきた が 守るさん。ユーザ指定 3649)
+    func testRegressionRealLMVerbHomographGivenNameContext() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for (reading, expected) in [("まもるさんがきた", "守さんが来た"), ("まもるがきた", "守が来た"), ("しっかりまもるには", "しっかり守るには")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "\(reading): \(multi.prefix(4))")
+        }
+    }
+
     // 京風味 は辞書に無く 今日風味/恐怖海の だった(misc 登録。ユーザ指定 3647)
     func testRegressionRealLMKyouFuumi() throws {
         try prepareRealLMDictionary()

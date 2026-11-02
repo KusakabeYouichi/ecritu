@@ -3278,6 +3278,10 @@ extension KanaKanjiConverter {
     // 辞書語(送り仮名つきの動詞)があり、敬称が続かないときだけ名を下げる。しっかりまもるには が しっかり守には だった
     // (守→には 2636 が 守る→には 3144 より安い。ユーザ指定 3646)。敬称つき(まもるさん)と単文節の並びには効かない
     static let multiClauseVerbHomographGivenNamePenalty = 1200
+    // 直後が敬称か が/を/は(動詞の終止形には付きにくい)なら逆に名を上げる。まもるさんがきた/まもるがきた が
+    // 守るさん/守るが だった(ユーザ指定 3649)。も は 守るも攻めるも、に/と は 守るに値する/守ると があるので入れない
+    static let multiClauseVerbHomographGivenNameContextBonus = 3000
+    static let multiClauseVerbHomographGivenNameParticles: Set<Character> = ["が", "を", "は"]
     static let multiClauseVerbEndingKana: Set<Character> = ["う", "く", "ぐ", "す", "つ", "ぬ", "ぶ", "む", "る"]
     static let multiClausePersonNameBeforeHonorificBonus = 1500
     // の/姓 の直後で、敬称が続く かなの名(person_names に かなの表記で載る名)は かなのまま人名として読む(3610、ユーザ指定)。

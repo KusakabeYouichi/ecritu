@@ -2000,24 +2000,36 @@ extension KanaKanjiConverter {
                 kanaGivenNameBeforeHonorificNodeKeys.insert(node.key)
             }
         }
-        // 動詞と同じ読みの名(守/まもる=守る、茂/しげる=茂る)は、敬称が続かなければ動詞の後ろへ(定数コメント参照。3646)
+        // 動詞と同じ読みの名(守/まもる=守る、茂/しげる=茂る)は、直後が敬称か が/を/は なら名を上げ、
+        // それ以外(には/ために 等)は動詞の後ろへ(定数コメント参照。3646、3649)
         do {
-            var nodeKeysBySpanSurface: [String: String] = [:]
-            for node in nodes where node.isDictWord && !node.isKanaIdentity {
-                nodeKeysBySpanSurface[node.spanKey + "-" + node.surface] = node.key
+            // 名の区間だけを見る(全ノードの表を作らない。打鍵ごとの確保を増やさない)
+            let givenNameNodes = nodes.filter {
+                $0.surface.count < $0.reading.count && personNameKindByNodeKey[$0.key] == "名"
+                    && Self.multiClauseVerbEndingKana.contains($0.reading.last!)
             }
-            for node in nodes where personNameKindByNodeKey[node.key] == "名" && node.surface.count < node.reading.count {
-                guard let tail = node.reading.last, Self.multiClauseVerbEndingKana.contains(tail),
-                    nodeKeysBySpanSurface[node.spanKey + "-" + node.surface + String(tail)] != nil else {
-                    continue
+            if !givenNameNodes.isEmpty {
+                let spans = Set(givenNameNodes.map(\.spanKey))
+                var surfacesBySpan: [String: Set<String>] = [:]
+                for node in nodes where node.isDictWord && !node.isKanaIdentity && spans.contains(node.spanKey) {
+                    surfacesBySpan[node.spanKey, default: []].insert(node.surface)
                 }
-                if node.end < n {
-                    let rest = Self.spanString(chars, node.end..<n)
-                    if Self.multiClausePersonNameHonorificReadings.contains(where: { rest.hasPrefix($0) }) {
+                for node in givenNameNodes {
+                    guard surfacesBySpan[node.spanKey]?.contains(node.surface + String(node.reading.last!)) ?? false else {
                         continue
                     }
+                    let nameContext: Bool
+                    if node.end < n {
+                        let rest = Self.spanString(chars, node.end..<n)
+                        nameContext = Self.multiClausePersonNameHonorificReadings.contains(where: { rest.hasPrefix($0) })
+                            || Self.multiClauseVerbHomographGivenNameParticles.contains(chars[node.end])
+                    } else {
+                        nameContext = false
+                    }
+                    seedOrderNounNodeBonuses[node.key, default: 0] += nameContext
+                        ? Self.multiClauseVerbHomographGivenNameContextBonus
+                        : -Self.multiClauseVerbHomographGivenNamePenalty
                 }
-                seedOrderNounNodeBonuses[node.key, default: 0] -= Self.multiClauseVerbHomographGivenNamePenalty
             }
         }
         // 人名でない辞書語が立つ区間(3440 の「人名が末尾の助詞を飲み込む」判定に使う。やつ が立つ区間)
