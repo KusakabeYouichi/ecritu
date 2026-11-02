@@ -737,9 +737,9 @@ enum ContactCandidateDisplayModeOption: String, CaseIterable, Identifiable {
     var subtitle: String {
         switch self {
         case .off:
-            return "連絡先由来の候補を表示しません。(初期設定)"
+            return "連絡先由来の候補を表示しません(戦略的初期設定)。"
         case .namesOnly:
-            return "姓・名・ニックネームなど、一致した項目のみ表示します。選ぶと連絡先へのアクセス許可を求めます(名前は端末内だけで使い、外部には送りません)。"
+            return "姓・名・ニックネームなど、一致した項目のみ表示します。選ぶと連絡先へのアクセス許可を求めます(名前は端末内だけで使い、外部には送りません)。現代的初期設定と保守的初期設定はこれです。"
         case .namesPlusFullName:
             return "姓または名が一致したときにフルネームも表示します。"
         }

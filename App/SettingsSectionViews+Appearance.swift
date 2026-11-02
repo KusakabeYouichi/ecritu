@@ -13,7 +13,7 @@ struct BasicSymbolOrderSettingsSection: View {
             selection: $selection,
             options: Array(BasicSymbolOrderOption.allCases),
             optionTitle: { $0.title },
-            footnote: "記号モードの『基本記号』カテゴリーの並び順を切り替えます。初期設定は ASCII 順です。"
+            footnote: "記号モードの『基本記号』カテゴリーの並び順を切り替えます。現代的初期設定と保守的初期設定は ANSI 順、戦略的初期設定は ASCII 順です。"
         )
     }
 }
@@ -279,7 +279,7 @@ struct CandidateFontStyleSettingsSection: View {
                     SettingsOptionNote.text(option.summary)
                         .font(.footnote)
                 }
-                Text("初期設定は 17.5pt です(戦略的初期設定は 16pt、保守的初期設定は Apple と同じ)。")
+                Text("現代的初期設定は 17.5pt、戦略的初期設定は 16pt、保守的初期設定は Apple と同じです。")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }

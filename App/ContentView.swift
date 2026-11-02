@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20261102173957"
+    private static let editionUpdatedAtRaw: String = "20261102182417"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -1423,13 +1423,13 @@ struct ContentView: View {
         ScriptVariantModeSettingsSection(
             title: "X.5 カタカナ強調表記の候補",
             selectionRawValue: $katakanaEmphasisCandidateModeRawValue,
-            footnote: "辞書が収穫した『ウマイ/コレ/ばかリ』のような読みのカタカナ化表記の扱いです。抑制=候補に出さない(初期設定)、リスト後方=候補の末尾に回す、同列に使う=通常の順位。パンやアンケートのような外来語のカタカナは対象外です。"
+            footnote: "辞書が収穫した『ウマイ/コレ/ばかリ』のような読みのカタカナ化表記の扱いです。抑制=候補に出さない(3つの初期設定とも)、リスト後方=候補の末尾に回す、同列に使う=通常の順位。パンやアンケートのような外来語のカタカナは対象外です。"
         )
 
         ScriptVariantModeSettingsSection(
             title: "X.6 交ぜ書きの候補",
             selectionRawValue: $mazegakiCandidateModeRawValue,
-            footnote: "『まん延(蔓延)』『作ひん(作品)』のような、漢字の一部をかなに開いた交ぜ書き表記の扱いです。抑制=候補に出さない(初期設定)、リスト後方=候補の末尾に回す、同列に使う=通常の順位。『子ども』など定着した表記は対象外です。"
+            footnote: "『まん延(蔓延)』『作ひん(作品)』のような、漢字の一部をかなに開いた交ぜ書き表記の扱いです。抑制=候補に出さない(3つの初期設定とも)、リスト後方=候補の末尾に回す、同列に使う=通常の順位。『子ども』など定着した表記は対象外です。"
         )
 
         ScriptVariantSuppressionSettingsSection(

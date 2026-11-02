@@ -53,7 +53,7 @@ struct KeyRepeatSettingsSection: View {
                         .tint(Color.orange)
 
                     HStack {
-                        Text("初期設定: \(RepeatSettings.initialDelayDefault.formatted(.number.precision(.fractionLength(2)))) 秒")
+                        Text("初期設定(3つとも): \(RepeatSettings.initialDelayDefault.formatted(.number.precision(.fractionLength(2)))) 秒")
                             .font(.caption)
                             .foregroundStyle(.secondary)
 
@@ -99,7 +99,7 @@ struct KeyRepeatSettingsSection: View {
                         .tint(Color.orange)
 
                     HStack {
-                        Text("初期設定: \(RepeatSettings.intervalDefault.formatted(.number.precision(.fractionLength(2)))) 秒")
+                        Text("初期設定(3つとも): \(RepeatSettings.intervalDefault.formatted(.number.precision(.fractionLength(2)))) 秒")
                             .font(.caption)
                             .foregroundStyle(.secondary)
 
@@ -170,7 +170,7 @@ struct ComposingTextStyleSettingsSection: View {
                     SettingsOptionNote.text(option.summary)
                         .font(.footnote)
                 }
-                Text("初期設定は écritu です。")
+                Text("初期設定は3つとも écritu です。")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
@@ -221,7 +221,7 @@ struct IdleCommitSettingsSection: View {
                         .tint(Color.orange)
 
                     HStack {
-                        Text("初期設定: \(IdleCommitSettings.intervalDefault.formatted(.number.precision(.fractionLength(1)))) 秒")
+                        Text("初期設定(3つとも): \(IdleCommitSettings.intervalDefault.formatted(.number.precision(.fractionLength(1)))) 秒")
                             .font(.caption)
                             .foregroundStyle(.secondary)
 
@@ -382,7 +382,7 @@ struct ConversionCacheSettingsSection: View {
             Toggle("キーボードが閉じたときにメモリを整理", isOn: $suspendMemorySlimmingEnabled)
                 .toggleStyle(.switch)
 
-            Text("キーボードが画面から消えるたびに、変換キャッシュの破棄と使い終わったメモリのシステムへの返却を行ないます。長時間使い続けたときにキーボードがシステムに強制終了されて標準キーボードに切り替わってしまう問題を抑えます。次回表示時のキャッシュ再構築ぶんだけ、最初の変換がわずかに遅くなることがあります。初期設定はオンです。")
+            Text("キーボードが画面から消えるたびに、変換キャッシュの破棄と使い終わったメモリのシステムへの返却を行ないます。長時間使い続けたときにキーボードがシステムに強制終了されて標準キーボードに切り替わってしまう問題を抑えます。次回表示時のキャッシュ再構築ぶんだけ、最初の変換がわずかに遅くなることがあります。初期設定は3つともオンです。")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
 

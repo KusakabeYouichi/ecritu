@@ -170,7 +170,7 @@ struct DegreSettingsSection: View {
         }
         let ownReadings = prefersFahrenheit ? "かし・ふぁーれんはいと" : "せっし・せるしうす"
         text += "ここで選んだ字形は、数値入力モードの単位ドラムと、変換候補(" + ownReadings + "、数字のあとの『ど』)の両方に使われます。"
-        text += "初期設定は " + (prefersFahrenheit ? "°F (U+00B0+F)" : "°C (U+00B0+C)") + " です。\n"
+        text += "現代的初期設定と保守的初期設定は " + (prefersFahrenheit ? "℉ (U+2109)" : "℃ (U+2103)") + "、戦略的初期設定は " + (prefersFahrenheit ? "°F (U+00B0+F)" : "°C (U+00B0+C)") + " です。\n"
         text += otherScaleNote
         return text
     }
@@ -240,7 +240,7 @@ struct FormatNumeriqueSettingsSection: View {
                 }
                 .pickerStyle(.segmented)
 
-                (Text("単位ドラムのリットルに使う字形です。接頭辞と組み合わせた h\u{2113}・c\u{2113}・m\u{2113} にも反映されます。初期設定は l です。\n・")
+                (Text("単位ドラムのリットルに使う字形です。接頭辞と組み合わせた h\u{2113}・c\u{2113}・m\u{2113} にも反映されます。初期設定は3つとも l です。\n・")
                     .foregroundColor(.secondary)
                     + SettingsOptionNote.text(LitreSymbolOption.small.standardNote)
                     + Text("\n・").foregroundColor(.secondary) + SettingsOptionNote.text(LitreSymbolOption.capital.standardNote)
