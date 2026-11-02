@@ -1486,6 +1486,20 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.multiClauseCandidates(for: "おとしよりにも", systemCandidateMode: .surface).first, "お年寄りにも")
     }
 
+    // 補助形容詞 やすい/にくい の活用のかなを 1 ノードで供給し、連用形の送り仮名の直後で上げる。酸く は下げる
+    // (みやすくなった が 宮酸くなった、よみやすくなった が 読み安くなった だった。ユーザ報告 3653)
+    func testRegressionRealLMAuxiliaryAdjectiveYasuku() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for (reading, expected) in [("みやすくなった", "見やすくなった"), ("よみやすくなった", "読みやすくなった"),
+                                    ("わかりやすくなった", "分かりやすくなった"), ("よみにくくなった", "読みにくくなった"),
+                                    ("ねだんがやすくなった", "値段が安くなった"), ("すごくやすかった", "すごく安かった"),
+                                    ("かかくをやすくした", "価格を安くした")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "\(reading): \(multi.prefix(4))")
+        }
+    }
+
     // 京風味 は辞書に無く 今日風味/恐怖海の だった(misc 登録。ユーザ指定 3647)
     func testRegressionRealLMKyouFuumi() throws {
         try prepareRealLMDictionary()

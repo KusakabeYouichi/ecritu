@@ -1186,6 +1186,9 @@ extension KanaKanjiConverter {
                     // かなも供給する(変種に ゆで時間 が並ぶ)。長い語幹(まちがえられ 等の受身)まで広げると
                     // まちがえられ過ぎ が 間違えられすぎ を変種から押し出すので 3 かな以下に限る
                     let suppliesKanaForOkuAuxiliary = Self.isOkuAuxiliaryReading(segmentReading)
+                        // 補助形容詞 やすい/にくい/づらい の活用(やすくなった 等)はかなも 1 ノードで供給する。無いと
+                        // みやすくなった が 見+やすく+なった で割高になり 宮+酸くなった に負けた(定数コメント参照。3653)
+                        || Self.isAuxiliaryAdjectiveKanaInflectionReading(segmentReading)
                         || (KanaKanjiSeedDictionary.seed[segmentReading]?.contains(segmentReading) ?? false)
                         || (len <= 3 && Self.ichidanRenyouSuppliedForEmptyStem(segmentReading, wordCostsAreNegligible: { Self.wordCostsAreNegligible(costMap) }))
                     // 関西方言の ている→とる 縮約形(騙しとった/欺しとった/瞞しとった)は標準形の後ろに回してから
@@ -2044,6 +2047,11 @@ extension KanaKanjiConverter {
                         : -Self.multiClauseVerbHomographGivenNamePenalty
                 }
             }
+        }
+        // ほとんど使わない形容詞の活用(酸く/酸かった)を下げる(定数コメント参照。3653)
+        for node in nodes where node.isInflectionDerived && node.surface.first == "酸"
+            && Self.multiClauseRareAdjectiveInflectionPrefixes.contains(where: { node.surface.hasPrefix($0) }) {
+            seedOrderNounNodeBonuses[node.key, default: 0] -= Self.multiClauseRareAdjectiveInflectionPenalty
         }
         // 人名でない辞書語が立つ区間(3440 の「人名が末尾の助詞を飲み込む」判定に使う。やつ が立つ区間)
         var nonPersonDictWordSpanKeys = Set<String>()
@@ -2949,10 +2957,18 @@ extension KanaKanjiConverter {
             // 補助形容詞のかな(やすい/にくい/づらい)は連用形にしか付かない(定数コメント参照。2872)。
             // 文頭も対象にするため DP のループでなく遷移コスト側に置く(BOS は別の呼び出し口を通る)
             if isKanaIdentity,
-                Self.multiClauseAuxiliaryAdjectiveKanaReadingsID.contains(readingID),
-                !prevIsInflectionDerived,
-                !(prev.last.map { Self.multiClausePredicateTailCharacters.contains($0) } ?? false) {
-                penalty += Self.multiClauseAuxiliaryAdjectiveKanaAfterNonRenyouPenalty
+                Self.multiClauseAuxiliaryAdjectiveKanaReadingsID.contains(readingID)
+                    || (Self.multiClauseAuxiliaryAdjectiveKanaHeads.contains(reading.first ?? " ")
+                        && Self.isAuxiliaryAdjectiveKanaInflectionReading(reading)) {
+                // 読み/分かり/使い のような連用形の送り仮名(い段・え段のかな)で終わる語の直後は連用形とみなして上げる
+                // (辞書の名詞 読み は活用派生でないので減点されていた。格助詞 に は除く。3653)
+                if !prevIsBOS, let last = prev.last, Self.multiClauseRenyouOkuriganaTails.contains(last),
+                    !Self.multiClauseCaseParticleSurfacesID.contains(prevID) {
+                    penalty -= Self.multiClauseAuxiliaryAdjectiveKanaAfterRenyouKanaBonus
+                } else if !prevIsInflectionDerived,
+                    !(prev.last.map { Self.multiClausePredicateTailCharacters.contains($0) } ?? false) {
+                    penalty += Self.multiClauseAuxiliaryAdjectiveKanaAfterNonRenyouPenalty
+                }
             }
             // 格助詞の直後の裸のかな1字(定数コメント参照。2868)
             if isKanaIdentity, reading.count == 1,

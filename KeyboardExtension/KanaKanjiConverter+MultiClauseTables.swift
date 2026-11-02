@@ -434,6 +434,26 @@ extension KanaKanjiConverter {
     // 読みと違うので対象外
     static let multiClauseAuxiliaryAdjectiveKanaReadings: Set<String> = ["やすい", "にくい", "づらい"]
     static let multiClauseAuxiliaryAdjectiveKanaAfterNonRenyouPenalty = 2000
+    // 補助形容詞の活用のかな 1 ノード(やすくなった/にくかった/づらければ 等。3653)。連文節は 安くなった/易くなった の
+    // 漢字の 1 ノードしか持たず、かなは やすく+なった に割れて割高で、みやすくなった が 宮+酸くなった、
+    // よみやすくなった が 読み安くなった だった(ユーザ報告)。上の減点と同じく連用形以外の直後では下げる(値段が安くなった)
+    static let multiClauseAuxiliaryAdjectiveKanaHeads: Set<Character> = ["や", "に", "づ"]
+    // 連用形の送り仮名(い段・え段)。この字で終わる語(読み/分かり/使い/食べ)の直後の補助形容詞のかなは上げる。
+    // よみにくくなった が よ+醜くなった(12516)に 読み+にくくなった(12956)が負けたので減点の取り消しに加えて 1000
+    static let multiClauseRenyouOkuriganaTails: Set<Character> = [
+        "い", "き", "ぎ", "し", "じ", "ち", "に", "ひ", "び", "み", "り",
+        "え", "け", "げ", "せ", "ぜ", "て", "で", "ね", "へ", "べ", "め", "れ"
+    ]
+    static let multiClauseAuxiliaryAdjectiveKanaAfterRenyouKanaBonus = 1000
+    static let multiClauseAuxiliaryAdjectiveKanaInflectionPrefixes: [String] = [
+        "やすく", "やすかっ", "やすけれ", "にくく", "にくかっ", "にくけれ", "づらく", "づらかっ", "づらけれ"
+    ]
+    static func isAuxiliaryAdjectiveKanaInflectionReading(_ reading: String) -> Bool {
+        multiClauseAuxiliaryAdjectiveKanaInflectionPrefixes.contains(where: { reading.hasPrefix($0) })
+    }
+    // ほとんど使わない形容詞 酸い の活用(酸く/酸かった)。宮+酸くなった のような断片連結を作るので下げる(ユーザ報告 3653)
+    static let multiClauseRareAdjectiveInflectionPrefixes: [String] = ["酸く", "酸かっ", "酸けれ"]
+    static let multiClauseRareAdjectiveInflectionPenalty = 3000
     // 連体の な(大きな/小さな/静かな 等、漢字含み・2字以上・な終わり)の直後は名詞が続く。辞書形述語
     // (足る)や活用派生が続くのは非文なので減点し、おおきなたる→大きな足る を 大きな樽 に(2731)。
     // かなの な終わり(みんな 等の名詞)は対象外
