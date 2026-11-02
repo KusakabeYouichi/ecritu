@@ -1295,6 +1295,24 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(ban.prefix(2)), ["番", "晩"], "list=\(ban)")
     }
 
+    // 助数詞 とう に 頭 が無く、いっとう→一頭、3+とう→頭、なんとう→何頭 が出なかった(ユーザ指定 3645)。並びは 頭/棟/等。
+    // とう は数字文脈限定の表なので、かな数詞の合成(さんとう→3頭)は作らない(山東 等を汚さない)
+    func testRegressionRealLMCounterTouHead() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+
+        XCTAssertEqual(Array(converter.candidates(for: "いっとう", limit: 6, systemCandidateMode: .surface).prefix(3)),
+                       ["一頭", "一棟", "一等"])
+        let boosted = KanaKanjiConverter.digitContextCounterBoostedCandidates([], reading: "とう", precedingCharacter: "3")
+        XCTAssertEqual(Array(boosted.prefix(3)), ["頭", "棟", "等"], "\(boosted)")
+        for (reading, expected) in [("なんとう", "何頭"), ("すうとう", "数頭")] {
+            let list = converter.candidates(for: reading, limit: 40, systemCandidateMode: .surface)
+            XCTAssertTrue(list.contains(expected), "reading=\(reading) list=\(list)")
+        }
+        let santou = converter.candidates(for: "さんとう", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(santou.first, "山東", "\(santou)")
+    }
+
     // 「数詞に付く助数詞は大抵『何』にも付く」(ユーザ指摘 2597)。個別対応ではなく生成規則に
     // する。なんもん→何問 が出なかったのは japaneseNumberReadingValue が なん を数詞と
     // 見ないため。序数接頭とも両立させる(だいなんもん→第何問)。スコアは数詞複合(360)なので
