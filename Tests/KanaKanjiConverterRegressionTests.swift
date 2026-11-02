@@ -1545,6 +1545,13 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.multiClauseCandidates(for: "おもさはかわらない", systemCandidateMode: .surface).first, "重さは変わらない")
     }
 
+    // 用じる(今は使わない)を抑制(ようじないの が 用じないの だった。ユーザ報告 3654)
+    func testRegressionRealLMYoujiNaino() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.multiClauseCandidates(for: "ようじないの", systemCandidateMode: .surface).first, "用事ないの")
+    }
+
     // 京風味 は辞書に無く 今日風味/恐怖海の だった(misc 登録。ユーザ指定 3647)
     func testRegressionRealLMKyouFuumi() throws {
         try prepareRealLMDictionary()
