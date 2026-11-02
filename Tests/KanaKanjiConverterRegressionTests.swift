@@ -1603,6 +1603,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(list.prefix(4)), ["改正", "開成", "快晴", "回生"], "\(list)")
     }
 
+    // すこしふりだ が 少し振りだ だった(ユーザ指定 3655)
+    func testRegressionRealLMSukoshiFurida() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        XCTAssertEqual(converter.multiClauseCandidates(for: "すこしふりだ", systemCandidateMode: .surface).first, "少し不利だ")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "すこしふりかえる", systemCandidateMode: .surface).first, "少し振り返る")
+    }
+
     // 京風味 は辞書に無く 今日風味/恐怖海の だった(misc 登録。ユーザ指定 3647)
     func testRegressionRealLMKyouFuumi() throws {
         try prepareRealLMDictionary()
