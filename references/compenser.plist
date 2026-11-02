@@ -624,6 +624,7 @@
 	        <dict><key>phrase</key><string>Christofle</string><key>shortcut</key><string>くりすとふる</string></dict>
 	        <dict><key>phrase</key><string>ラギオール</string><key>shortcut</key><string>らぎおーる</string></dict>
 	        <dict><key>phrase</key><string>ライヨール</string><key>shortcut</key><string>らいよーる</string></dict>
+	        <dict><key>phrase</key><string>アイラップ</string><key>shortcut</key><string>あいらっぷ</string></dict>
 	<!-- グラス (オーストリア)-->
 	        <dict><key>phrase</key><string>RIEDEL</string><key>shortcut</key><string>りーでる</string></dict>
 	        <dict><key>phrase</key><string>リーデル</string><key>shortcut</key><string>りーでる</string></dict>
