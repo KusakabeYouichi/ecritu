@@ -26961,4 +26961,19 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(single("たんどら").first, "タンドラ")
     }
 
+    // 一括検査 3640b の段階 2 の判定(ユーザ指定 3642)。連語表に 殺生を禁止する/映画を薦める/対応が遅れる/特性を活かす/弾を発射する/
+    // エンジンに点火する/白紙に戻る/実戦に投入する を追加
+    func testRegressionRealLMAudit3640bStage2Collocations() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        XCTAssertEqual(multi("それらはどれもせっしょうをきんししており").first, "それらはどれも殺生を禁止しており")
+        XCTAssertEqual(multi("ちぇんのえいがをすすめられて").first, "チェンの映画を薦められて")
+        XCTAssertEqual(multi("こうそくこうつうへのたいおうはおくれた").first, "高速交通への対応は遅れた")
+        XCTAssertEqual(multi("はなびのようにたまをはっしゃしてくる").first, "花火のように弾を発射してくる")
+        XCTAssertEqual(multi("えんじんにてんかされると").first, "エンジンに点火されると")
+        XCTAssertEqual(multi("はくしにもどってあたらしいぱーくのかいはつにちゃくしゅ").first, "白紙に戻って新しいパークの開発に着手")
+        XCTAssertEqual(multi("じっせんにとうにゅうされることはなかった").first, "実戦に投入されることはなかった")
+    }
+
 }
