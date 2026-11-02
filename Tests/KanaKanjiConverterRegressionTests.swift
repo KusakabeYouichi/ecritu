@@ -26929,4 +26929,36 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(multi("ちゅうしょうかする").contains("抽象化する"), "\(multi("ちゅうしょうかする"))")
     }
 
+    // 一括検査 3640b の段階 2 の判定(ユーザ指定 3642)。登録(misc/seed)
+    func testRegressionRealLMAudit3640bStage2Registrations() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ r: String) -> [String] {
+            let m = converter.multiClauseCandidates(for: r, systemCandidateMode: .surface)
+            return m.isEmpty ? converter.candidates(for: r, limit: 8, systemCandidateMode: .surface) : m
+        }
+        func single(_ r: String) -> [String] { converter.candidates(for: r, limit: 8, systemCandidateMode: .surface) }
+        XCTAssertEqual(multi("はんかくかな").first, "半角カナ")
+        XCTAssertEqual(multi("こくさいほうのいちぶんやをいい").first, "国際法の一分野をいい")
+        XCTAssertEqual(single("がちゃ").first, "ガチャ")
+        XCTAssertEqual(single("ぶーん").first, "ブーン")
+        XCTAssertTrue(multi("ちょきがひとりのばあいには").first?.hasPrefix("チョキが") ?? false, "\(multi("ちょきがひとりのばあいには"))")
+        XCTAssertEqual(Array(single("じんぎ").prefix(2)), ["神器", "仁義"])
+        XCTAssertTrue(multi("わかめとあわびのようしょくで").first?.hasPrefix("ワカメと") ?? false, "\(multi("わかめとあわびのようしょくで"))")
+        XCTAssertEqual(single("はんと").first, "ハント")
+        XCTAssertEqual(multi("またやせいしゅであるえどひがんは").first, "また野生種である江戸彼岸は")
+        XCTAssertTrue(multi("かきとうはけっかぼしせい").first?.hasSuffix("結果母枝性") ?? false, "\(multi("かきとうはけっかぼしせい"))")
+        XCTAssertEqual(single("ゆりうすび").first, "ユリウス日")
+        XCTAssertEqual(multi("うるつこうなど").first, "ウルツ鉱など")
+        XCTAssertEqual(multi("ふじのやまい").first, "不治の病")
+        XCTAssertNotEqual(single("ふじ").first, "不治", "ふじ の単独は従来どおり(フジ/藤)")
+        XCTAssertEqual(multi("おおくはちゅうしんぶがめんじょうでたすうのしゅしをふくむ").first, "多くは中心部が綿状で多数の種子を含む")
+        XCTAssertEqual(single("だいにちがたけ").first, "大日ヶ岳")
+        XCTAssertEqual(single("ことばんく").first, "コトバンク")
+        XCTAssertEqual(multi("がいなっくすのしゃいんから").first, "ガイナックスの社員から")
+        XCTAssertEqual(multi("おもなくらすたそふと").first, "主なクラスタソフト")
+        XCTAssertEqual(multi("てるみっとはんのうは").first, "テルミット反応は")
+        XCTAssertEqual(single("たんどら").first, "タンドラ")
+    }
+
 }

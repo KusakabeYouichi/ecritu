@@ -627,6 +627,108 @@
 	<dict><key>phrase</key><string>その他</string><key>shortcut</key><string>そのた</string></dict>	<!-- その他(そのた): 読み そのほか は有るが そのた には無く、彫刻その他 が 彫刻そのた だった -->
 	<dict><key>phrase</key><string>切妻造</string><key>shortcut</key><string>きりづまづくり</string><key>pos</key><string>名詞</string></dict>	<!-- 切妻造(建築): 切妻作り だった。読みは づくり と つくり の両方(入母屋造 と同じ) -->
 	<dict><key>phrase</key><string>切妻造</string><key>shortcut</key><string>きりづまつくり</string><key>pos</key><string>名詞</string></dict>
+	<!-- 一括検査 3640b の段階 2 の判定(ユーザ指定 3642) -->
+	<dict><key>phrase</key><string>江戸彼岸</string><key>shortcut</key><string>えどひがん</string><key>pos</key><string>名詞</string></dict>	<!-- 江戸彼岸(桜の品種): 江戸悲願 だった -->
+	<dict><key>phrase</key><string>結果母枝性</string><key>shortcut</key><string>けっかぼしせい</string><key>pos</key><string>名詞</string></dict>	<!-- 結果母枝性(果樹): 結果母枝製 だった。1 語で登録(ユーザ指定) -->
+	<dict><key>phrase</key><string>ユリウス日</string><key>shortcut</key><string>ゆりうすび</string><key>pos</key><string>名詞</string></dict>	<!-- ユリウス日/リリウス日(暦): リリ臼日 だった -->
+	<dict><key>phrase</key><string>リリウス日</string><key>shortcut</key><string>りりうすび</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>ウルツ鉱</string><key>shortcut</key><string>うるつこう</string><key>pos</key><string>名詞</string></dict>	<!-- ウルツ鉱(結晶構造): 読みは うるつこう(ユーザ指定) -->
+	<dict><key>phrase</key><string>不治の病</string><key>shortcut</key><string>ふじのやまい</string></dict>	<!-- 不治の病: 藤野病 だった。ふじ は 藤/富士 が先頭のままにし、句で登録 -->
+	<dict><key>phrase</key><string>綿状</string><key>shortcut</key><string>めんじょう</string><key>pos</key><string>名詞</string></dict>	<!-- 綿状: 辞書に無く が綿状で が 画面上で だった -->
+	<dict><key>phrase</key><string>大日ヶ岳</string><key>shortcut</key><string>だいにちがたけ</string><key>pos</key><string>名詞</string></dict>	<!-- 大日ヶ岳(岐阜): 大日が炊け だった -->
+	<dict><key>phrase</key><string>コトバンク</string><key>shortcut</key><string>ことばんく</string><key>pos</key><string>名詞</string></dict>	<!-- コトバンク(辞書サイト): 事バンク だった -->
+	<dict><key>phrase</key><string>ガイナックス</string><key>shortcut</key><string>がいなっくす</string><key>pos</key><string>名詞</string></dict>	<!-- ガイナックス(社名): 買いナックス だった -->
+	<dict><key>phrase</key><string>クラスタ</string><key>shortcut</key><string>くらすた</string><key>pos</key><string>名詞</string></dict>	<!-- クラスタ: クラスた だった(クラスター は辞書に有る) -->
+	<dict><key>phrase</key><string>テルミット</string><key>shortcut</key><string>てるみっと</string><key>pos</key><string>名詞</string></dict>	<!-- テルミット(反応): てるみっと だった -->
+	<dict><key>phrase</key><string>タンドラ</string><key>shortcut</key><string>たんどら</string><key>pos</key><string>名詞</string></dict>	<!-- タンドラ(トヨタの車種): 端ドラ だった -->
+	<!-- 一括検査 3640b の段階 2 の判定で候補に無かったカタカナ語(人名・作品名・用語。vin/ryukyu と同じく追加語彙で供給。ユーザ指定 3642)。読みが日常の句と重なる クンヤ(行くんや)/オウイエ(王家)/ネムキ(眠気)/アカイオス(赤いオス) は入れない -->
+	<dict><key>phrase</key><string>ツェティニェ</string><key>shortcut</key><string>つぇてぃにぇ</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>アパップ</string><key>shortcut</key><string>あぱっぷ</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>アフプアア</string><key>shortcut</key><string>あふぷああ</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>アブリコソフ</string><key>shortcut</key><string>あぶりこそふ</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>アンハイザー</string><key>shortcut</key><string>あんはいざー</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>アーバックル</string><key>shortcut</key><string>あーばっくる</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>イェームス</string><key>shortcut</key><string>いぇーむす</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>イスメル</string><key>shortcut</key><string>いすめる</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>イスレタ</string><key>shortcut</key><string>いすれた</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>ヴォイタ</string><key>shortcut</key><string>ゔぉいた</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>イッテルビー</string><key>shortcut</key><string>いってるびー</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>ウィングス</string><key>shortcut</key><string>うぃんぐす</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>エルロイ</string><key>shortcut</key><string>えるろい</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>エッドア</string><key>shortcut</key><string>えっどあ</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>エミーラ</string><key>shortcut</key><string>えみーら</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>オスターン</string><key>shortcut</key><string>おすたーん</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>オーリエ</string><key>shortcut</key><string>おーりえ</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>マラカイ</string><key>shortcut</key><string>まらかい</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>カサブブ</string><key>shortcut</key><string>かさぶぶ</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>ロコンガ</string><key>shortcut</key><string>ろこんが</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>クヴァピル</string><key>shortcut</key><string>くゔぁぴる</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>ゲガール</string><key>shortcut</key><string>げがーる</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>コマンチ</string><key>shortcut</key><string>こまんち</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>サイゾンビー</string><key>shortcut</key><string>さいぞんびー</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>ザンクト</string><key>shortcut</key><string>ざんくと</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>アムシャ</string><key>shortcut</key><string>あむしゃ</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>シュトウツ</string><key>shortcut</key><string>しゅとうつ</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>ショーエンワイス</string><key>shortcut</key><string>しょーえんわいす</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>ジムノペディ</string><key>shortcut</key><string>じむのぺでぃ</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>ジャガーン</string><key>shortcut</key><string>じゃがーん</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>ハインリッヒス</string><key>shortcut</key><string>はいんりっひす</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>スポーティング</string><key>shortcut</key><string>すぽーてぃんぐ</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>シナトラズ</string><key>shortcut</key><string>しなとらず</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>ナックルズ</string><key>shortcut</key><string>なっくるず</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>ゼネフェルダー</string><key>shortcut</key><string>ぜねふぇるだー</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>ソアカチノ</string><key>shortcut</key><string>そあかちの</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>レアルタシティ</string><key>shortcut</key><string>れあるたしてぃ</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>タブー</string><key>shortcut</key><string>たぶー</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>タルバーグ</string><key>shortcut</key><string>たるばーぐ</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>トマジウス</string><key>shortcut</key><string>とまじうす</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>トラメル</string><key>shortcut</key><string>とらめる</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>ドーロス</string><key>shortcut</key><string>どーろす</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>ギュンタード</string><key>shortcut</key><string>ぎゅんたーど</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>マテリアライズド</string><key>shortcut</key><string>まてりあらいずど</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>ドイチュ</string><key>shortcut</key><string>どいちゅ</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>ドゥラ</string><key>shortcut</key><string>どぅら</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>ナータ</string><key>shortcut</key><string>なーた</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>エルナニ</string><key>shortcut</key><string>えるなに</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>ファッブリーニ</string><key>shortcut</key><string>ふぁっぶりーに</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>メソニクス</string><key>shortcut</key><string>めそにくす</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>ニュンペー</string><key>shortcut</key><string>にゅんぺー</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>ラフォンティーヌ</string><key>shortcut</key><string>らふぉんてぃーぬ</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>ネッスス</string><key>shortcut</key><string>ねっすす</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>ルミネッセンス</string><key>shortcut</key><string>るみねっせんす</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>プロノエー</string><key>shortcut</key><string>ぷろのえー</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>ハンケ</string><key>shortcut</key><string>はんけ</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>グッドバイ</string><key>shortcut</key><string>ぐっどばい</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>バトル</string><key>shortcut</key><string>ばとる</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>バルビローリ</string><key>shortcut</key><string>ばるびろーり</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>パールシー</string><key>shortcut</key><string>ぱーるしー</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>フィルヒナー</string><key>shortcut</key><string>ふぃるひなー</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>フロカティサーカス</string><key>shortcut</key><string>ふろかてぃさーかす</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>ヘイダル</string><key>shortcut</key><string>へいだる</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>ヘットナー</string><key>shortcut</key><string>へっとなー</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>ヘヴェリウス</string><key>shortcut</key><string>へゔぇりうす</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>ペルシダー</string><key>shortcut</key><string>ぺるしだー</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>ホセファ</string><key>shortcut</key><string>ほせふぁ</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>マイニンテンドー</string><key>shortcut</key><string>まいにんてんどー</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>マゴメダリ</string><key>shortcut</key><string>まごめだり</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>ミラーマン</string><key>shortcut</key><string>みらーまん</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>スーミン</string><key>shortcut</key><string>すーみん</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>ミンテ</string><key>shortcut</key><string>みんて</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>ムッソ</string><key>shortcut</key><string>むっそ</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>モイヤー</string><key>shortcut</key><string>もいやー</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>ダイアモンズ</string><key>shortcut</key><string>だいあもんず</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>ヤマヒコノリ</string><key>shortcut</key><string>やまひこのり</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>ランソン</string><key>shortcut</key><string>らんそん</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>フリーリ</string><key>shortcut</key><string>ふりーり</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>アロマリエ</string><key>shortcut</key><string>あろまりえ</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>クレイル</string><key>shortcut</key><string>くれいる</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>ルーチョ</string><key>shortcut</key><string>るーちょ</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>ヴァスティ</string><key>shortcut</key><string>ゔぁすてぃ</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>ヴィアン</string><key>shortcut</key><string>ゔぃあん</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>ヴィントガッセン</string><key>shortcut</key><string>ゔぃんとがっせん</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>ヴェルスバッハ</string><key>shortcut</key><string>ゔぇるすばっは</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>チョキ</string><key>shortcut</key><string>ちょき</string><key>pos</key><string>名詞</string></dict>	<!-- チョキ(じゃんけん): seed では 猪木が1人 に勝てなかった -->
+	<dict><key>phrase</key><string>ワカメ</string><key>shortcut</key><string>わかめ</string><key>pos</key><string>名詞</string></dict>	<!-- ワカメ: seed では 少め(少+め の合成)に勝てなかった -->
 
 	<!-- ■ 分割・断片に負ける語の救済(連文節の区切りを勝たせる固定句) -->
 	<dict><key>phrase</key><string>身に覚え</string><key>shortcut</key><string>みにおぼえ</string></dict>	<!-- 慣用句 身に覚え(がない/がある)。LM に 身に覚え が無く、文頭の 身 6730 と ミニ 6155 の差を に→覚え の bigram で埋めきれず(111 差)みにおぼえがない→ミニ覚えがない だった(ユーザ報告 3556) -->
@@ -682,6 +784,8 @@
 	<dict><key>phrase</key><string>平気</string><key>shortcut</key><string>へいき</string></dict>	<!-- へいき は Wikipedia LM で 兵器(5259)<平気(6911)の系統バイアスがあり、へいきなんだろう が 兵器何だろう になる。会話頻度優先で 平気 を先頭化 -->	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>怪我</string><key>shortcut</key><string>けが</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 怪我: けがした が 汚した/瀆した/穢した(けがす の活用)の後ろで 怪我した が 5 番めだった。サ変で登録して 怪我した/怪我して を先頭に(ユーザ指定 3640) -->	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>完治</string><key>shortcut</key><string>かんち</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 完治: かんちした が辞書順の 感知した 先頭だった。会話では 完治した が優勢(ユーザ指定 3640) -->	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>半角カナ</string><key>shortcut</key><string>はんかくかな</string><key>pos</key><string>名詞</string></dict>	<!-- 半角カナ: 辞書に有るが 半角+かな(文末の かな が安い)に負けていた(一括検査 3640b、ユーザ指定 3642) -->	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>一分野</string><key>shortcut</key><string>いちぶんや</string><key>pos</key><string>名詞</string></dict>	<!-- 一分野: の の直後で 位置分野(の→位置 の bigram)が勝ち、国際法の一分野/人文地理学の一分野 が 位置分野 だった(一括検査 3640b、ユーザ指定 3642) -->
 	<dict><key>phrase</key><string>唱題</string><key>shortcut</key><string>しょうだい</string><key>pos</key><string>名詞</string></dict>	<!-- 唱題(題目を唱えること): 辞書 rank1 だが LM unigram 7649 で 章+第 に負け 題目の章第 だった(一括検査 3640b、ユーザ指定 3641) -->	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>連れて</string><key>shortcut</key><string>つれて</string></dict>	<!-- つれる は word_costs で 釣れる(8201)が最安で 連れる(8837)が2位。つれてくる 等の複合で基底順が波及するため 連れて をcurated供給 -->
 	<dict><key>phrase</key><string>貼って</string><key>shortcut</key><string>はって</string></dict>	<!-- はって は基底列挙で はう(這う/匍う/匐う)が はる(貼る/張る)より先に並び、はってある が 這ってある 等になる(てある は他動詞専用で 這う に付かない)。貼って/張って をcurated供給 -->
