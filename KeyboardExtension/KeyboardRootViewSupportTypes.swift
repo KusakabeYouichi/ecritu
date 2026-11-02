@@ -1028,6 +1028,9 @@ extension KeyboardRootView {
         let conversionStateColor: Color
         let candidateStateFontSize: CGFloat
         let candidateTextFontSize: CGFloat
+        // 候補の文字の太さと、未確定の行を取るか(V.5。3644)
+        var candidateTextFontWeight: Font.Weight = .semibold
+        var reservesCompositionRow: Bool = true
         let canTapComposingTextToCommit: Bool
         let showsKatakanaCommitFeedback: Bool
         let accentColor: Color
@@ -1068,13 +1071,13 @@ extension KeyboardRootView {
                             HStack(spacing: 0) {
                                 Text("(")
                                     .foregroundStyle(isSelected ? Color.white : accentColor)
-                                CandidateGlyphText(candidate, fontSize: candidateTextFontSize, color: isSelected ? Color.white : keyLabelColor)
+                                CandidateGlyphText(candidate, fontSize: candidateTextFontSize, weight: candidateTextFontWeight, color: isSelected ? Color.white : keyLabelColor)
                                 Text(")")
                                     .foregroundStyle(isSelected ? Color.white : accentColor)
                             }
-                            .font(.system(size: candidateTextFontSize, weight: .semibold))
+                            .font(.system(size: candidateTextFontSize, weight: candidateTextFontWeight))
                         } else {
-                            CandidateGlyphText(candidate, fontSize: candidateTextFontSize, color: isSelected ? Color.white : keyLabelColor)
+                            CandidateGlyphText(candidate, fontSize: candidateTextFontSize, weight: candidateTextFontWeight, color: isSelected ? Color.white : keyLabelColor)
                         }
                     }
                     .lineLimit(1)
@@ -1117,7 +1120,7 @@ extension KeyboardRootView {
         // ロングタップでカタカナ確定。カタカナ確定フィードバック時はハイライト。
         @ViewBuilder private func composingKanaChip(_ text: String) -> some View {
             Text(text)
-                .font(.system(size: candidateTextFontSize, weight: .semibold))
+                .font(.system(size: candidateTextFontSize, weight: candidateTextFontWeight))
                 .foregroundStyle(showsKatakanaCommitFeedback ? Color.white : keyLabelColor)
                 .lineLimit(1)
                 .padding(.horizontal, 8)
@@ -1174,7 +1177,9 @@ extension KeyboardRootView {
             // スワイプで手動スクロールしていると気づけない。選択が変わったら追従させる。
             ScrollViewReader { proxy in
             VStack(alignment: .leading, spacing: 0) {
-            // 未確定の行は方式に関わらず常に確保する(定数コメント参照。3216)。tokushima だけ文字を出す
+            // 未確定の行は方式に関わらず常に確保する(定数コメント参照。3216)。tokushima だけ文字を出す。
+            // 候補の文字が apple/17.5pt で tokushima でないときは取らず、候補欄の高さを全部チップに使う(V.5。3644)
+            if reservesCompositionRow {
             HStack(spacing: 6) {
                 Color.clear
                     .frame(width: Self.conversionStateCapsuleFixedWidth, height: 1)
@@ -1195,6 +1200,7 @@ extension KeyboardRootView {
             }
             .frame(height: KeyboardRootView.candidateHeaderCompositionRowHeight, alignment: .top)
             .padding(.horizontal, 2)
+            }
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 6) {
                     let showsWrapperOnly = showsParenthesesWrapper && composingText.isEmpty
@@ -1238,9 +1244,10 @@ extension KeyboardRootView {
 
                 }
                 .padding(.horizontal, 2)
-                .padding(.top, kanaCandidateHeaderTopPadding)
+                .padding(.top, reservesCompositionRow ? kanaCandidateHeaderTopPadding : 0)
                 .padding(.bottom, 0)
-                .frame(maxHeight: .infinity, alignment: .top)
+                // 未確定の行を取らないとき(V.5)は大きな文字のチップを候補欄の上下中央に置く
+                .frame(maxHeight: .infinity, alignment: reservesCompositionRow ? .top : .center)
             }
             }
             .onChange(of: selectedConversionCandidateIndex) { _, index in
@@ -1260,6 +1267,8 @@ extension KeyboardRootView {
     struct KeyboardRootLatinSuggestionHeaderView: View {
         let latinSuggestions: [String]
         let candidateTextFontSize: CGFloat
+        var candidateTextFontWeight: Font.Weight = .semibold
+        var reservesCompositionRow: Bool = true
         let keyLabelColor: Color
         let kanaCandidateHeaderTopPadding: CGFloat
         let onSelectConversionCandidate: (Int) -> Void
@@ -1286,7 +1295,7 @@ extension KeyboardRootView {
                             onSelectConversionCandidate(index)
                         } label: {
                             Text(candidate)
-                                .font(.system(size: candidateTextFontSize, weight: .semibold))
+                                .font(.system(size: candidateTextFontSize, weight: candidateTextFontWeight))
                                 .foregroundStyle(keyLabelColor)
                                 .lineLimit(1)
                                 .padding(.horizontal, 8)
@@ -1306,9 +1315,9 @@ extension KeyboardRootView {
                 }
                 .padding(.horizontal, 2)
                 // かな側の未確定の行(3216)と同じだけ下げて、面の切り替えでチップの位置が動かないようにする
-                .padding(.top, kanaCandidateHeaderTopPadding + KeyboardRootView.candidateHeaderCompositionRowHeight)
+                .padding(.top, reservesCompositionRow ? kanaCandidateHeaderTopPadding + KeyboardRootView.candidateHeaderCompositionRowHeight : 0)
                 .padding(.bottom, 0)
-                .frame(maxHeight: .infinity, alignment: .top)
+                .frame(maxHeight: .infinity, alignment: reservesCompositionRow ? .top : .center)
             }
             // かな側(3095)と同じく iOS 26 以降のスクロール縁のぼかしを切る。欧文面だけ残っていた(ユーザ報告 3119、iOS 27)
             .modifier(KeyboardScrollEdgeEffectHiddenModifier())

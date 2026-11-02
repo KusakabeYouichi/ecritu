@@ -357,7 +357,7 @@ extension KeyboardRootView {
                                     : accentColor
                             )
                     }
-                    .font(.system(size: candidateTextFontSize, weight: .semibold))
+                    .font(.system(size: candidateTextFontSize, weight: candidateTextFontWeight))
                     .lineLimit(1)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, 8)
@@ -372,7 +372,7 @@ extension KeyboardRootView {
                     )
                 } else {
                     Text(composingText)
-                        .font(.system(size: candidateTextFontSize, weight: .semibold))
+                        .font(.system(size: candidateTextFontSize, weight: candidateTextFontWeight))
                         .foregroundStyle(
                             showsKatakanaCommitFeedback
                                 ? Color.white
@@ -500,11 +500,11 @@ extension KeyboardRootView {
                 HStack(spacing: 0) {
                     Text("(")
                         .foregroundStyle(isSelected ? Color.white : accentColor)
-                    CandidateGlyphText(candidate, fontSize: candidateTextFontSize, color: isSelected ? Color.white : keyLabelColor)
+                    CandidateGlyphText(candidate, fontSize: candidateTextFontSize, weight: candidateTextFontWeight, color: isSelected ? Color.white : keyLabelColor)
                     Text(")")
                         .foregroundStyle(isSelected ? Color.white : accentColor)
                 }
-                .font(.system(size: candidateTextFontSize, weight: .semibold))
+                .font(.system(size: candidateTextFontSize, weight: candidateTextFontWeight))
                 .lineLimit(1)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 8)
@@ -518,7 +518,7 @@ extension KeyboardRootView {
                         )
                 )
             } else {
-                CandidateGlyphText(candidate, fontSize: candidateTextFontSize, color: isSelected ? Color.white : keyLabelColor)
+                CandidateGlyphText(candidate, fontSize: candidateTextFontSize, weight: candidateTextFontWeight, color: isSelected ? Color.white : keyLabelColor)
                     .lineLimit(1)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, 8)
@@ -651,7 +651,7 @@ extension KeyboardRootView {
             onSelectConversionCandidate(index)
         } label: {
             Text(candidate)
-                .font(.system(size: candidateTextFontSize, weight: .semibold))
+                .font(.system(size: candidateTextFontSize, weight: candidateTextFontWeight))
                 .foregroundStyle(keyLabelColor)
                 .lineLimit(1)
                 .frame(maxWidth: .infinity, alignment: .leading)

@@ -79,6 +79,8 @@ enum SettingsKeys {
     static let idleCommitInterval = "idleCommitInterval"
     // 未確定の方式(3209): écritu(下線) / mountain view(本文に確定文字) / tokushima(キーボード内)
     static let composingTextStyle = "composingTextStyle"
+    // 候補の文字(V.5。CandidateFontStyleOption の rawValue。3644)。拡張側の SharedDefaultsKeys と同じ文字列
+    static let candidateFontStyle = "candidateFontStyle"
     // E.5 モード切り替えキーの割り当て(3618 で上 3 段の右フリックと最下段の右フリックを追加)。
     // 値は KanaModeSwitcherActionOption.rawValue。拡張側の SharedDefaultsKeys と同じ文字列
     static let leftModeSwitchNumberKeyRightFlickAction = "leftModeSwitchNumberKeyRightFlickAction"
@@ -364,6 +366,39 @@ enum ComposingTextStyleOption: String, CaseIterable, Identifiable {
         case .tokushima:
             return "tokushima式: 入力中の文字をキーボードの中(縦画面は候補の上、横画面は候補列の一番上)に下線付きで表示し、確定したときだけ本文へ入れます。本文のカーソル位置には入力中の文字が出ません。タップや送信で未確定が消えることはありません。"
         }
+    }
+}
+
+// 候補の文字(V.5。3644、ユーザ指定)。拡張側の CandidateFontStyle と同じ rawValue。
+// apple は純正のかなキーボードと同じ regular で iOS の文字サイズに追従(標準 19pt、最大 25pt)。tokushima 方式では選べない
+enum CandidateFontStyleOption: String, CaseIterable, Identifiable {
+    case apple
+    case semibold17_5
+    case semibold16
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .apple: return "Apple と同じ"
+        case .semibold17_5: return "17.5pt"
+        case .semibold16: return "16pt"
+        }
+    }
+
+    var summary: String {
+        switch self {
+        case .apple:
+            return "Apple と同じ: 純正の日本語キーボードと同じ太さ(標準の太さ)で、iOS の[文字を拡大]に合わせて 19pt から 25pt まで大きくなります。候補欄の高さを全部候補に使います。tokushima式では使えません。"
+        case .semibold17_5:
+            return "17.5pt: 少し太い文字で 17.5pt に固定します。tokushima式では、候補欄の上に出る未確定の文字と重なります。"
+        case .semibold16:
+            return "16pt: 少し太い文字で 16pt に固定します。tokushima式でも重なりません。"
+        }
+    }
+
+    func isAvailable(composingTextStyle: ComposingTextStyleOption) -> Bool {
+        !(self == .apple && composingTextStyle == .tokushima)
     }
 }
 

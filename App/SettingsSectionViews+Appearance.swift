@@ -226,3 +226,70 @@ struct FlickGuideDisplaySettingsSection: View {
         .settingsCardStyle()
     }
 }
+
+// V.5 候補の文字(3644、ユーザ指定)。tokushima式のときは Apple と同じ を灰色にして選べなくする
+struct CandidateFontStyleSettingsSection: View {
+    @Binding var rawValue: String
+    let composingTextStyleRawValue: String
+
+    private var composingTextStyle: ComposingTextStyleOption {
+        ComposingTextStyleOption(rawValue: composingTextStyleRawValue) ?? .ecritu
+    }
+
+    private var selection: CandidateFontStyleOption {
+        CandidateFontStyleOption(rawValue: rawValue) ?? .semibold16
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            SettingsCardHeadline("V.5 候補の文字")
+
+            HStack(spacing: 8) {
+                ForEach(CandidateFontStyleOption.allCases) { option in
+                    let isSelected = option == selection
+                    let isAvailable = option.isAvailable(composingTextStyle: composingTextStyle)
+                    Button {
+                        rawValue = option.rawValue
+                    } label: {
+                        Text(option.title)
+                            .font(.subheadline.weight(isSelected ? .semibold : .regular))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.8)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 8)
+                            .background(
+                                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                    .fill(isSelected ? Color.accentColor.opacity(0.18) : Color.secondary.opacity(0.08))
+                            )
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                    .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: 1)
+                            )
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(isAvailable ? Color.primary : Color.secondary)
+                    .opacity(isAvailable ? 1 : 0.45)
+                    .disabled(!isAvailable)
+                    .accessibilityLabel(option.title)
+                }
+            }
+
+            VStack(alignment: .leading, spacing: 6) {
+                ForEach(CandidateFontStyleOption.allCases) { option in
+                    Text(option.summary)
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+                if composingTextStyle == .tokushima && selection == .apple {
+                    Text("いまは tokushima式なので、16pt で表示しています。")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+                Text("初期設定は 17.5pt です(戦略的初期設定は 16pt、保守的初期設定は Apple と同じ)。")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .settingsCardStyle()
+    }
+}

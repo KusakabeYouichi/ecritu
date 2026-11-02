@@ -84,6 +84,8 @@ extension KeyboardRootView {
             conversionStateColor: conversionStateColor,
             candidateStateFontSize: candidateStateFontSize,
             candidateTextFontSize: candidateTextFontSize,
+            candidateTextFontWeight: candidateTextFontWeight,
+            reservesCompositionRow: reservesCandidateCompositionRow,
             canTapComposingTextToCommit: canTapComposingTextToCommit,
             showsKatakanaCommitFeedback: isShowingKatakanaCommitFeedback(for: composingText),
             accentColor: accentColor,
@@ -101,6 +103,8 @@ extension KeyboardRootView {
         KeyboardRootLatinSuggestionHeaderView(
             latinSuggestions: latinSuggestions,
             candidateTextFontSize: candidateTextFontSize,
+            candidateTextFontWeight: candidateTextFontWeight,
+            reservesCompositionRow: reservesCandidateCompositionRow,
             keyLabelColor: keyLabelColor,
             kanaCandidateHeaderTopPadding: kanaCandidateHeaderTopPadding,
             onSelectConversionCandidate: onSelectConversionCandidate

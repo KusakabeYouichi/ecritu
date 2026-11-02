@@ -16,6 +16,9 @@ extension KeyboardViewController {
         let isSystemDictionaryFallback: Bool
         let hasFullAccess: Bool
         let keyboardBackgroundThemeRawValue: String
+        // 候補の文字(V.5)。tokushima 方式で apple を選んでいたら 16pt に落としたあとの値
+        let candidateFontStyle: CandidateFontStyle
+        let reservesCandidateCompositionRow: Bool
         let basicSymbolOrderRawValue: String
         let temperatureUnitRawValue: String
         let radicalStrokeCountStyleRawValue: String
@@ -213,6 +216,10 @@ extension KeyboardViewController {
             key: SharedDefaultsKeys.keyboardBackgroundTheme,
             fallback: "bleu"
         )
+        let candidateFontStyle = CandidateFontStyle.effective(
+            rawValue: sharedDefaults?.string(forKey: SharedDefaultsKeys.candidateFontStyle),
+            usesInternalCompositionPreview: usesInternalCompositionPreview
+        )
         let basicSymbolOrderRawValue = sharedStringValue(
             from: sharedDefaults,
             key: SharedDefaultsKeys.basicSymbolOrder,
@@ -361,6 +368,10 @@ extension KeyboardViewController {
             isSystemDictionaryFallback: kanaKanjiStore.isSystemDictionaryFallback(),
             hasFullAccess: hasFullAccess,
             keyboardBackgroundThemeRawValue: keyboardBackgroundThemeRawValue,
+            candidateFontStyle: candidateFontStyle,
+            reservesCandidateCompositionRow: candidateFontStyle.reservesCompositionRow(
+                usesInternalCompositionPreview: usesInternalCompositionPreview
+            ),
             basicSymbolOrderRawValue: basicSymbolOrderRawValue,
             temperatureUnitRawValue: temperatureUnitRawValue,
             radicalStrokeCountStyleRawValue: radicalStrokeCountStyleRawValue,
@@ -641,6 +652,8 @@ extension KeyboardViewController {
         rootView.replacedLandscapeBottomInset = configuration.replacedLandscapeBottomInset
         rootView.faceHeight = configuration.faceHeight
         rootView.isFoldablePhone = configuration.isFoldablePhone
+        rootView.candidateFontStyle = configuration.candidateFontStyle
+        rootView.reservesCandidateCompositionRow = configuration.reservesCandidateCompositionRow
         // 絵文字/顔文字の確定をショートカット語彙の先頭へ(3243)。保存は共有領域、表示側はキャッシュ破棄で次の描画から反映。
         // 設定[récents en premier]がオフなら足さない(一覧は[並べ替え]の順のまま。3636)
         let shortcutVocabularyRecentsFirst = configuration.shortcutVocabularyRecentsFirst

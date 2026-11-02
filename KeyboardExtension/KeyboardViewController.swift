@@ -443,6 +443,8 @@ final class KeyboardViewController: UIInputViewController {
         static let idleCommitInterval = "idleCommitInterval"
         // 未確定の方式(3209)。値は écritu / mountain view / tokushima。拡張側の分岐は方式の実装時に足す
         static let composingTextStyle = "composingTextStyle"
+        // 候補の文字(V.5。3644)。値は CandidateFontStyle の rawValue
+        static let candidateFontStyle = "candidateFontStyle"
         // 左端のモード切り替え列の割り当て(E.5。3618)。値は KanaModeSwitcherAction の rawValue
         static let leftModeSwitchNumberKeyRightFlickAction = "leftModeSwitchNumberKeyRightFlickAction"
         static let leftModeSwitchLatinKeyRightFlickAction = "leftModeSwitchLatinKeyRightFlickAction"

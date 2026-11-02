@@ -271,7 +271,13 @@ struct KeyboardRootView: View {
     // 3228 で 7→5: 純正より 2pt 高かったぶん(動画の画素比較)をここから出す
     static let portraitBottomGapOverHomeIndicator: CGFloat = 5
     let candidateStateFontSize: CGFloat = 15
-    let candidateTextFontSize: CGFloat = 16
+    // 候補の文字(V.5。3644)。生成後に代入する
+    var candidateFontStyle: CandidateFontStyle = .semibold16
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    var candidateTextFontSize: CGFloat { candidateFontStyle.pointSize(for: dynamicTypeSize) }
+    var candidateTextFontWeight: Font.Weight { candidateFontStyle.weight }
+    // 縦画面の候補欄の先頭に未確定の行(8pt)を取るか。apple/17.5pt で tokushima でなければ取らずにチップに回す(生成後に代入)
+    var reservesCandidateCompositionRow = true
     var compactActionKeyHeight: CGFloat { frameMetrics.actionKeyHeight }
     private let compactModeSwitchKeyWidth: CGFloat = 32
     private let wideModeSwitchKeyWidth: CGFloat = 58
@@ -1741,6 +1747,54 @@ extension KeyboardRootView {
                 face += "/\(signal.emojiInputSubmode)"
             }
             onMemoryDebugDisplayRefreshRequested(face)
+        }
+    }
+}
+
+// 候補の文字の大きさと太さ(V.5。3644、ユーザ指定)。
+// apple: 純正のかなキーボードと同じ regular。iOS の文字サイズに追従し、標準 19pt・最大 25pt(純正の実測。2026-11-02、iPhone 15)。
+//        縦画面の候補欄の未確定の行(8pt)を取らずに、35pt(ホームインジケーターの機種は 31pt)を全部チップに使う。
+//        tokushima 方式では未確定の行が要るので使えない(16pt に落とす。アプリ側の設定は灰色)
+// semibold17_5: 17.5pt semibold 固定。未確定の行は tokushima 方式のときだけ取る(重なるのは承知のうえ。ユーザ指定)
+// semibold16: 16pt semibold 固定(3643 までと同じ)。未確定の行を常に取る
+enum CandidateFontStyle: String, Equatable {
+    case apple
+    case semibold17_5
+    case semibold16
+
+    // tokushima 方式なら apple を 16pt に落とす。値が無い端末(この設定より前から使っている人)は 16pt(見た目を変えない)
+    static func effective(rawValue: String?, usesInternalCompositionPreview: Bool) -> CandidateFontStyle {
+        let style = rawValue.flatMap(CandidateFontStyle.init(rawValue:)) ?? .semibold16
+        if usesInternalCompositionPreview && style == .apple {
+            return .semibold16
+        }
+        return style
+    }
+
+    var weight: Font.Weight {
+        self == .apple ? .regular : .semibold
+    }
+
+    // 縦画面の候補欄の先頭に未確定の行を取るか。16pt は常に(3643 までと同じ位置)、ほかは tokushima のときだけ
+    func reservesCompositionRow(usesInternalCompositionPreview: Bool) -> Bool {
+        self == .semibold16 || usesInternalCompositionPreview
+    }
+
+    func pointSize(for dynamicTypeSize: DynamicTypeSize) -> CGFloat {
+        switch self {
+        case .semibold16: return 16
+        case .semibold17_5: return 17.5
+        case .apple:
+            switch dynamicTypeSize {
+            case .xSmall: return 17
+            case .small: return 18
+            case .medium: return 18.5
+            case .large: return 19
+            case .xLarge: return 20.5
+            case .xxLarge: return 22
+            case .xxxLarge: return 23.5
+            default: return 25   // accessibility1〜5(さらに大きな文字)
+            }
         }
     }
 }

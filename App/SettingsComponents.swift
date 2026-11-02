@@ -51,6 +51,7 @@ enum SettingsCardKeys {
         "V.2": [SettingsKeys.landscapeNumberPaneSide],
         "V.3": [SettingsKeys.accentPalette],
         "V.4": [SettingsKeys.keyboardBackgroundTheme],
+        "V.5": [SettingsKeys.candidateFontStyle],
         "X.1": [SettingsKeys.delimiterAutoCommitCandidate],
         "X.2": [SettingsKeys.kanaKanjiCandidateSourceMode],
         "X.3": [SettingsKeys.historicalKanaCandidatesEnabled],

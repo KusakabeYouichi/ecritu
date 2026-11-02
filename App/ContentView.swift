@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20261102113809"
+    private static let editionUpdatedAtRaw: String = "20261102123217"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -180,6 +180,10 @@ struct ContentView: View {
         store: Self.sharedDefaults
     )
     private var keyboardBackgroundThemeRawValue: String = KeyboardBackgroundThemeOption.bleu.rawValue
+
+    // 候補の文字(V.5。3644)。組み込みの標準値は 16pt(戦略的と同じ。この設定より前の見た目)
+    @AppStorage(SettingsKeys.candidateFontStyle, store: Self.sharedDefaults)
+    private var candidateFontStyleRawValue: String = CandidateFontStyleOption.semibold16.rawValue
 
     @AppStorage(
         SettingsKeys.kanaFlickGuideDisplayMode,
@@ -659,6 +663,7 @@ struct ContentView: View {
             basicSymbolOrderRawValue,
             accentPaletteRawValue,
             keyboardBackgroundThemeRawValue,
+            candidateFontStyleRawValue,
             kanaFlickGuideDisplayModeRawValue,
             latinFlickGuideDisplayModeRawValue,
             numberFlickGuideDisplayModeRawValue,
@@ -799,6 +804,7 @@ struct ContentView: View {
         str(SettingsKeys.landscapeNumberPaneSide, landscapeNumberPaneSideRawValue, "数字ペイン配列 (horizontal)")
         str(SettingsKeys.accentPalette, accentPaletteRawValue, "アクセントカラー")
         str(SettingsKeys.keyboardBackgroundTheme, keyboardBackgroundThemeRawValue, "テーマカラー")
+        str(SettingsKeys.candidateFontStyle, candidateFontStyleRawValue, "候補の文字: apple(Apple と同じ)/semibold17_5(17.5pt)/semibold16(16pt)")
 
         group("変換")
         str(SettingsKeys.delimiterAutoCommitCandidate, delimiterAutoCommitCandidateRawValue, "句読点入力時の自動確定候補")
@@ -1358,6 +1364,11 @@ struct ContentView: View {
         AccentColorSettingsSection(selection: accentPaletteSelection)
 
         ThemeColorSettingsSection(selection: keyboardBackgroundThemeSelection)
+
+        CandidateFontStyleSettingsSection(
+            rawValue: $candidateFontStyleRawValue,
+            composingTextStyleRawValue: composingTextStyleRawValue
+        )
     }
 
     // 書式(数値・温度・カレンダー)。入力の挙動ではなく「出力の書き方」を決める設定なので

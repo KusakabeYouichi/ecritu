@@ -258,7 +258,7 @@ extension ContentView {
         SettingsKeys.kanaFlickGuideDisplayMode, SettingsKeys.latinFlickGuideDisplayMode,
         SettingsKeys.numberFlickGuideDisplayMode, SettingsKeys.modifierFlickGuideDisplayMode,
         SettingsKeys.landscapeLatinSuggestionMode, SettingsKeys.landscapeCandidateSide, SettingsKeys.landscapeNumberPaneSide,
-        SettingsKeys.accentPalette, SettingsKeys.keyboardBackgroundTheme,
+        SettingsKeys.accentPalette, SettingsKeys.keyboardBackgroundTheme, SettingsKeys.candidateFontStyle,
         SettingsKeys.delimiterAutoCommitCandidate, SettingsKeys.kanaKanjiCandidateSourceMode,
         SettingsKeys.historicalKanaCandidatesEnabled, SettingsKeys.iterationMarkCandidatesEnabled,
         SettingsKeys.katakanaEmphasisCandidateMode, SettingsKeys.mazegakiCandidateMode,
@@ -336,6 +336,7 @@ extension ContentView {
         SettingsKeys.landscapeNumberPaneSide: LandscapeCandidateSideOption.left.rawValue,
         SettingsKeys.accentPalette: AccentColorOption.emeraude.rawValue,
         SettingsKeys.keyboardBackgroundTheme: KeyboardBackgroundThemeOption.bleu.rawValue,
+        SettingsKeys.candidateFontStyle: CandidateFontStyleOption.semibold16.rawValue,   // 戦略的=16pt(ユーザ指定 3644)
         SettingsKeys.delimiterAutoCommitCandidate: DelimiterAutoCommitCandidateOption.one.rawValue,
         SettingsKeys.kanaKanjiCandidateSourceMode: KanaKanjiCandidateSourceModeOption.surface.rawValue,
         SettingsKeys.historicalKanaCandidatesEnabled: false,
@@ -424,6 +425,7 @@ extension ContentView {
         SettingsKeys.landscapeNumberPaneSide: LandscapeCandidateSideOption.left.rawValue,
         SettingsKeys.accentPalette: AccentColorOption.emeraude.rawValue,
         SettingsKeys.keyboardBackgroundTheme: KeyboardBackgroundThemeOption.chartreuse.rawValue,   // 保守的=vert chartreuse(ユーザ指定 3612。戦略的=bleu、現代的=sakura)
+        SettingsKeys.candidateFontStyle: CandidateFontStyleOption.apple.rawValue,   // 保守的=Apple と同じ(ユーザ指定 3644)
         SettingsKeys.delimiterAutoCommitCandidate: DelimiterAutoCommitCandidateOption.zero.rawValue,   // 保守的=句読点での自動確定は未変換かな(ユーザ指定 3718。戦略的・現代的は先頭の変換候補)
         SettingsKeys.kanaKanjiCandidateSourceMode: KanaKanjiCandidateSourceModeOption.surface.rawValue,
         SettingsKeys.historicalKanaCandidatesEnabled: false,
@@ -514,6 +516,7 @@ extension ContentView {
         SettingsKeys.landscapeNumberPaneSide: LandscapeCandidateSideOption.left.rawValue,
         SettingsKeys.accentPalette: AccentColorOption.emeraude.rawValue,
         SettingsKeys.keyboardBackgroundTheme: KeyboardBackgroundThemeOption.sakura.rawValue,   // 現代的=sakura(ユーザ指定 3612)
+        SettingsKeys.candidateFontStyle: CandidateFontStyleOption.semibold17_5.rawValue,   // 現代的=17.5pt(ユーザ指定 3644)
         SettingsKeys.delimiterAutoCommitCandidate: DelimiterAutoCommitCandidateOption.one.rawValue,
         SettingsKeys.kanaKanjiCandidateSourceMode: KanaKanjiCandidateSourceModeOption.surface.rawValue,
         SettingsKeys.historicalKanaCandidatesEnabled: false,
