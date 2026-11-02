@@ -1450,6 +1450,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.candidates(for: "ひっくりかえす", limit: 4, systemCandidateMode: .surface).first, "ひっくり返す")
     }
 
+    // とう(頭)を かな数詞の複合にも(よんとう/ごとう に 四頭/五頭 が無かった。ユーザ指定 3649)。辞書語の先頭は動かさない
+    func testRegressionRealLMCounterTouKanjiNumeral() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for (reading, expected) in [("よんとう", "四頭"), ("ごとう", "五頭"), ("にとう", "二頭"), ("じゅっとう", "十頭")] {
+            let list = converter.candidates(for: reading, limit: 40, systemCandidateMode: .surface)
+            XCTAssertTrue(list.contains(expected), "\(reading): \(list)")
+        }
+        XCTAssertEqual(converter.candidates(for: "ごとう", limit: 4, systemCandidateMode: .surface).first, "後藤")
+    }
+
     // 京風味 は辞書に無く 今日風味/恐怖海の だった(misc 登録。ユーザ指定 3647)
     func testRegressionRealLMKyouFuumi() throws {
         try prepareRealLMDictionary()
