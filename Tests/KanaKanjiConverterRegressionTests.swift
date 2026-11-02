@@ -27011,4 +27011,15 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("ひへんせいがん").first, "非変成岩")
     }
 
+    // 一括検査 3640(1 本めの標本)の段階 1 の判定(ユーザ指定 3643)。連語表に 制度を敷く/胃炎を悪化させる/国を追う/子供を庇う を追加
+    func testRegressionRealLMAudit3640Stage1Collocations() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        XCTAssertEqual(multi("ぜったいくんしゅせいがしかれ").first, "絶対君主制が敷かれ")
+        XCTAssertEqual(multi("いえんをあっかさせる").first, "胃炎を悪化させる")
+        XCTAssertEqual(multi("くにをおわれた").first, "国を追われた")
+        XCTAssertEqual(multi("にげおくれたこどもをかばい").first, "逃げ遅れた子供を庇い")
+    }
+
 }
