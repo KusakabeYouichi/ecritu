@@ -1346,6 +1346,16 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.multiClauseCandidates(for: "おさないこども", systemCandidateMode: .surface).first, "幼い子供")
     }
 
+    // 2+こうほ が 個宇保 だった。候補 を数字文脈の助数詞に(ユーザ指定 3649)
+    func testRegressionDigitContextKouho() throws {
+        try prepareRealLMDictionary()
+        let base = converter.candidates(for: "こうほ", limit: 10, systemCandidateMode: .surface)
+        let boosted = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+            base, reading: "こうほ", precedingCharacter: "2",
+            tailConversion: { [converter] tail in converter!.counterTailConversion(tail) })
+        XCTAssertEqual(boosted.first, "候補", "\(boosted)")
+    }
+
     // 京風味 は辞書に無く 今日風味/恐怖海の だった(misc 登録。ユーザ指定 3647)
     func testRegressionRealLMKyouFuumi() throws {
         try prepareRealLMDictionary()
