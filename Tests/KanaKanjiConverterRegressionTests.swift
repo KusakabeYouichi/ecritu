@@ -1552,6 +1552,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.multiClauseCandidates(for: "ようじないの", systemCandidateMode: .surface).first, "用事ないの")
     }
 
+    // かた の並びと がた の 型(連濁の読みで落ちていた)。肩ァ は抑制(ユーザ指定 3654)
+    func testRegressionRealLMKataGata() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let kata = converter.candidates(for: "かた", limit: 20, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(kata.prefix(4)), ["かた", "型", "形", "方"], "\(kata)")
+        XCTAssertFalse(kata.contains("肩ァ"), "\(kata)")
+        XCTAssertTrue(converter.candidates(for: "がた", limit: 6, systemCandidateMode: .surface).contains("型"))
+        XCTAssertEqual(converter.multiClauseCandidates(for: "そのかたに", systemCandidateMode: .surface).first, "その方に")
+    }
+
     // 京風味 は辞書に無く 今日風味/恐怖海の だった(misc 登録。ユーザ指定 3647)
     func testRegressionRealLMKyouFuumi() throws {
         try prepareRealLMDictionary()
