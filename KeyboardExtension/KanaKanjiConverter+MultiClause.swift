@@ -3735,6 +3735,10 @@ extension KanaKanjiConverter {
                             !Self.isToIttaFollowedByPredicateTail(chars: chars, from: node.end, n: n) {
                             cost = min(cost, Self.multiClauseEnumerationToIttaKanaCost)
                         }
+                        // 文頭の 付き(定数コメント参照。一括検査 3640b)
+                        if node.surfaceID == SID.付き, node.readingID == SID.つき {
+                            cost += Self.multiClauseTsukiSuffixWithoutHostPenalty
+                        }
                         // 受け身・尊敬の される が付かない サ変名詞+される(3483)。文頭の 1 ノード
                         if Self.isNonPassivizableSuruForm(node.surface) {
                             cost += Self.multiClauseNonPassivizableSuruPenalty
@@ -4671,6 +4675,18 @@ extension KanaKanjiConverter {
                             prevNode.surfaceID == SID.と, prevNode.readingID == SID.と, backPointer[prevIdx] >= 0,
                             nodes[backPointer[prevIdx]].reading.hasSuffix("ない") {
                             cost -= Self.multiClauseKanaIkeAfterNegativeToBonus
+                        }
+                        // 格助詞の直後の 付き(定数コメント参照。一括検査 3640b)
+                        if node.surfaceID == SID.付き, node.readingID == SID.つき, prevNode.isKanaIdentity,
+                            Self.multiClauseCaseParticleSurfacesID.contains(prevNode.surfaceID) {
+                            cost += Self.multiClauseTsukiSuffixWithoutHostPenalty
+                        }
+                        // かなの未然形+かな れ/れる/れた(定数コメント参照。一括検査 3640b)
+                        if node.isKanaIdentity, prevNode.isKanaIdentity, !prevNode.isCurated,
+                            prevNode.end - prevNode.start >= 2,
+                            Self.multiClauseKanaPassiveHeadReadingsID.contains(node.readingID),
+                            Self.isKanaMizenStemReading(prevNode.reading) {
+                            cost += Self.multiClauseKanaMizenStemBeforePassivePenalty
                         }
                         #if DEBUG
                         // 時限トレース(2803): MULTI_TRACE_EDGES=1 で全遷移の累積コストを吐く(最良以外の prev も見える)

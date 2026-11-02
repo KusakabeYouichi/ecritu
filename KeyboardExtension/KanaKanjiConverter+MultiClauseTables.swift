@@ -456,6 +456,24 @@ extension KanaKanjiConverter {
     static let multiClausePluralSuffixKanaReadings: Set<String> = ["たち"]
     static let multiClauseSentenceFinalYoReadings: Set<String> = ["よ", "よね", "よな"]
     static let multiClauseKanaIkeAfterNegativeToBonus = 8000
+    // 付き(つき)は名詞の直後にしか付かない接尾(保証付き)。文頭・格助詞の直後では 月(つき)より LM の 付き→の(1071)が
+    // 安く、つきをしゅうかいする→付きを周回する、むじんきでつきのつち→で付きの土 だった(一括検査 3640b)。
+    // 文頭と格助詞直後の 付き に減点
+    static let multiClauseTsukiSuffixWithoutHostPenalty = 2500
+    static let multiClauseTsukiSuffixSymbols: Set<String> = ["付き", "つき"]  // SID.付き/つき の記号表登録用
+    // かなの未然形(よば/とわ/おこなわ。LM にかな書きのトークンとして有る)+かな れ/れる/れた は、
+    // 活用派生の 1 ノード(呼ばれる 5000)より かな断片の連鎖(よば 3636+れる 140)が安く、
+    // と呼ばれる→とよばれる、行なわれている→おこなわれている だった(一括検査 3640b)。
+    // かな断片の側に減点(漢字の派生ノードは触らない)
+    static let multiClauseKanaMizenStemBeforePassivePenalty = 3000
+    static let multiClauseKanaPassiveHeadReadings: Set<String> = ["れ", "れる", "れた", "れて", "れない", "れている", "れていた", "れます", "れず", "れぬ"]
+    static let multiClauseKanaPassiveHeadReadingsID = MultiClauseIDSet(multiClauseKanaPassiveHeadReadings)
+    // 遷移ごとに呼ぶので文字列の長さを数えない(呼び出し側で span の長さを見る)。末尾 1 スカラーだけ見る
+    static let multiClauseMizenTailScalars: Set<Unicode.Scalar> = Set("あかさたなはまらがざだばぱわ".unicodeScalars)
+    static func isKanaMizenStemReading(_ reading: String) -> Bool {
+        guard let last = reading.unicodeScalars.last else { return false }
+        return multiClauseMizenTailScalars.contains(last)
+    }
     static let multiClauseColorTintStemBeforeGakaruBonus = 2500
     // かなの のか(疑問・説明の終端)の直後に漢字名詞は続かない(講習のか日 の か+日 断片。2736)。述語(食べる 等)や
     // 活用派生、かな表層は対象外。単独の か(赤か青 の「または」)は正当な用法が多いので対象にしない
@@ -3534,6 +3552,8 @@ extension KanaKanjiConverter {
             for s in KanaKanjiConverter.multiClausePlaceNameTerritoryReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseSugiSuffixSurfaces.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseTeOruAuxiliaryReadings.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseKanaPassiveHeadReadings.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseTsukiSuffixSymbols.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseBigramBorrowDeniedReadingsBySurface.keys.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseBigramPrefixPairBonusesByPrev.keys.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseConstellationStandardSurfacesByReading.keys.sorted() { add(s) }
@@ -3645,6 +3665,8 @@ extension KanaKanjiConverter {
         static let そう = MultiClauseSymbols.id("そう")
         static let た = MultiClauseSymbols.id("た")
         static let だし = MultiClauseSymbols.id("だし")
+        static let 付き = MultiClauseSymbols.id("付き")
+        static let つき = MultiClauseSymbols.id("つき")
         static let たい = MultiClauseSymbols.id("たい")
         static let ため = MultiClauseSymbols.id("ため")
         static let 性 = MultiClauseSymbols.id("性")

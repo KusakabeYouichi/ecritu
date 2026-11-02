@@ -26909,4 +26909,24 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("つきをしゅうかいする").first, "月を周回する")
     }
 
+    // 一括検査 3640b の段階 2 の判定(ユーザ指定 3642)。連文節の規則: 文頭・格助詞直後の 付き に減点(月 を通す)、
+    // かなの未然形+かな れ/れる に減点(と呼ばれる/行なわれている)、抽象 のサ変形を抑制(中傷する と同点だった)
+    func testRegressionRealLMAudit3640bStage2Rules() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ r: String) -> [String] {
+            let m = converter.multiClauseCandidates(for: r, systemCandidateMode: .surface)
+            return m.isEmpty ? converter.candidates(for: r, limit: 8, systemCandidateMode: .surface) : m
+        }
+        XCTAssertEqual(multi("でんあつのくべつをせずにこうりゅうとよばれる").first, "電圧の区別をせずに交流と呼ばれる")
+        XCTAssertEqual(multi("きんせいにはいまりやきとよばれた").first, "近世には伊万里焼と呼ばれた")
+        XCTAssertEqual(multi("あとらすとよばれる").first, "アトラスと呼ばれる")
+        XCTAssertEqual(multi("しじょうさいだいのそすうのたんきゅうがおこなわれている").first, "史上最大の素数の探求が行なわれている")
+        XCTAssertEqual(multi("むじんきでつきのつちをかいしゅうしたさいしょのれい").first, "無人機で月の土を回収した最初の例")
+        XCTAssertEqual(multi("つきのうらがわ").first, "月の裏側")
+        XCTAssertEqual(multi("ほしょうつきのちゅうこしゃ").first, "保証付きの中古車", "名詞の直後の 付き は従来どおり")
+        XCTAssertEqual(multi("ないようはひとやくにをちゅうしょうするひょうげん").first, "内容は人や国を中傷する表現")
+        XCTAssertTrue(multi("ちゅうしょうかする").contains("抽象化する"), "\(multi("ちゅうしょうかする"))")
+    }
+
 }
