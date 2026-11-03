@@ -992,6 +992,11 @@ final class KanaKanjiConverter {
             let maxOther = scores.filter { $0.key != context.reading }.values.max() ?? 0
             scores[context.reading] = max(identity, maxOther + 1)
         }
+        applyPlaceNameSanPreference(
+            for: context.reading,
+            learned: Set(context.learningScoresForReading.filter { $0.value > 0 }.keys),
+            to: &scores
+        )
     }
 
     // ステージ4: 抑制語彙(直接+脱活用)と装飾表記の除去。

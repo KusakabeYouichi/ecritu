@@ -1602,6 +1602,49 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(KanaKanjiConverter.promoteKatakanaCounterpartOfLatinTop(["出る", "でる", "デル"]), ["出る", "でる", "デル"])
     }
 
+    // 2026-11-04 のユーザ報告(edition 3661)
+    func testRegressionRealLMUserReports3661() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        func single(_ reading: String) -> [String] { converter.candidates(for: reading, limit: 30, systemCandidateMode: .surface) }
+        // 連文節が空の読み(単文節の一語)は単文節の並び
+        func multi(_ reading: String) -> [String] {
+            let list = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            return list.isEmpty ? single(reading) : list
+        }
+        XCTAssertEqual(multi("ですませるけいこうあり").first, "で済ませる傾向あり")
+        XCTAssertEqual(multi("にすませる").first, "に住ませる")
+        XCTAssertEqual(Array(multi("まちのなかの").prefix(1)), ["街の中の"])
+        XCTAssertEqual(multi("とんかつていしょく").first, "とんかつ定食")
+        XCTAssertEqual(single("ていしょく").first, "定食")
+        XCTAssertEqual(Array(single("くま").prefix(3)), ["熊", "球磨", "隈"])
+        XCTAssertEqual(Array(multi("くまも").prefix(3)), ["熊も", "球磨も", "隈も"])
+        XCTAssertEqual(Array(single("えんじん").prefix(3)), ["エンジン", "猿人", "円陣"])
+        XCTAssertEqual(multi("ながいき").first, "長生き")
+        XCTAssertEqual(multi("らーめんじろうみたほんてん").first, "ラーメン二郎三田本店")
+        XCTAssertEqual(Array(multi("おふろにおゆためながら").prefix(2)), ["お風呂にお湯ためながら", "お風呂にお湯溜めながら"])
+        XCTAssertEqual(multi("なんだけど").first, "なんだけど")
+        XCTAssertEqual(multi("なんだけどな").first, "なんだけどな")
+        // 地名の読み+さん: 地名+産 を 2 番目(姓として さん の実績がある 田中 などは 4 番目まで)、無理な合成・混ぜ書きは出さない
+        let osaka = multi("おおさかさん")
+        XCTAssertEqual(Array(osaka.prefix(3)), ["大坂さん", "大阪産", "大阪さん"])
+        for bad in ["大坂サン", "オオサカ産", "おおおさかさん"] {
+            XCTAssertFalse(osaka.contains(bad) || single("おおさかさん").contains(bad), bad)
+        }
+        XCTAssertEqual(Array(multi("おかやまさん").prefix(2)), ["岡山さん", "岡山産"])
+        XCTAssertEqual(Array(multi("ながのさん").prefix(2)), ["長野さん", "長野産"])
+        XCTAssertEqual(single("ながのさん").prefix(2).last, "長野産")
+        XCTAssertEqual(multi("ふらんすさん").first, "フランス産")
+        XCTAssertEqual(single("たなかさん").first, "田中さん")
+        // 連用形+っぱなし(つキッパなし/や立派なし だった。キッパ は抑制、単独の きっぱ だけ末尾に)
+        XCTAssertEqual(multi("つきっぱなし").first, "つきっぱなし")
+        XCTAssertEqual(multi("やりっぱなし").first, "やりっぱなし")
+        XCTAssertEqual(multi("しっぱなし").first, "しっぱなし")
+        XCTAssertEqual(single("きっぱ"), ["キッパ"])
+        // こなした はかなが先(連文節でも)
+        XCTAssertEqual(multi("ごせんもこなした").first, "五千もこなした")
+    }
+
     // learningBOX 検査 3658 の備考つきの指摘(正しい読みで)
     func testRegressionRealLMLearningBoxNotes3658() throws {
         try prepareRealLMDictionary()
@@ -23918,7 +23961,7 @@ extension KanaKanjiConverterRegressionTests {
             ("せいりん", ["青林", "西隣"], ["西鄰", "成林", "星林"]),
             ("まいこ", ["舞子", "舞妓", "麻衣子"], ["毎戸"]),
             ("いなば", ["稲葉", "因幡"], ["稲羽"]),
-            ("えんじん", ["円陣", "猿人", "炎神"], ["円腎", "厭人", "煙塵"]),
+            ("えんじん", ["猿人", "円陣", "炎神"], ["円腎", "厭人", "煙塵"]),
             ("きおう", ["既往", "棋王", "鬼王"], ["気負う", "奇応", "気勢う", "期央", "岐王"]),
             ("たとえ", ["例え", "喩え", "譬え"], ["仮令", "譬", "縦令"]),
             ("ないかい", ["内科医", "内海"], ["内塊", "内界"]),
@@ -27035,7 +27078,8 @@ extension KanaKanjiConverterRegressionTests {
             converter.invalidateCandidateCache()
             let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
             let single = converter.candidates(for: reading, limit: 30, systemCandidateMode: .surface)
-            var shown = reading.count >= 4 ? multi : []
+            if ProcessInfo.processInfo.environment["AUDIT_MULTI_ONLY"] != nil { print("AUDITMULTI \(reading) \(multi.prefix(10))") }
+            var shown = reading.count >= 4 && ProcessInfo.processInfo.environment["AUDIT_SINGLE"] == nil ? multi : []
             if let top = single.first, !shown.contains(top) {
                 shown.insert(top, at: min(1, shown.count))
             }
@@ -27046,7 +27090,7 @@ extension KanaKanjiConverterRegressionTests {
             let ok = first == expected
             if ok { okCount += 1 }
             let found = shown.contains(expected) ? "yes" : "no"
-            out.append(line + "\t" + first + "\t" + (ok ? "ok" : "ng") + "\t" + found + "\t" + shown.prefix(6).joined(separator: "|"))
+            out.append(line + "\t" + first + "\t" + (ok ? "ok" : "ng") + "\t" + found + "\t" + shown.prefix(Int(ProcessInfo.processInfo.environment["AUDIT_SHOW"] ?? "") ?? 6).joined(separator: "|"))
         }
         try out.joined(separator: "\n").write(toFile: output, atomically: true, encoding: .utf8)
         print("AUDIT done \(out.count) ok=\(okCount)")

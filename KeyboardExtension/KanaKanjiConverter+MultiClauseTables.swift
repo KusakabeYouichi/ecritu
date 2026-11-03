@@ -672,6 +672,8 @@ extension KanaKanjiConverter {
         // 赤い粘土の土壌/硬い粘土の岩盤/粘土を含む が 年度 だった。最南+に+位置する(災難に位置する だった)。
         // 沈澱した滓を取り除く(おりを だった)
         "粘土\t土壌": 3000, "粘土\t岩盤": 3000, "粘土\t層": 3000, "粘土\t含": 3000,
+        // 街の中(まちのなかの が 町の中の だった。3661、ユーザ指定)
+        "街\t中": 3000,
         "最南\t位置": 5000, "滓\t取り除": 3000, "澱\t取り除": 3000,
         // 節間が広がる/多品種の混植/糖蜜はラム/酵母による(同じ検査。石棺/混色/東密/公募 だった)
         "節間\t広": 3000, "品種\t混植": 3000, "糖蜜\tラム": 3000, "酵母\tよる": 3000,
@@ -1323,7 +1325,7 @@ extension KanaKanjiConverter {
     // 縁(へり の seed 2 番目、strict で 100)と同点にして文節位置の早い方を先に出す(ユーザ指定)
     // かかる(3633、ユーザ報告: いくらぐらいかかるんですか が 係るんですか 先頭): 最良経路は かな かかる で、漢字の変種は
     // LM unigram(係る 6467 < 掛かる 6803。法律文の 〜に係る)の順になっていた。seed {掛かる, 罹る, 係る, かかる} の順に
-    static let multiClauseSeedOrderVariantKanaLeadReadings: Set<String> = ["かかる", "いない", "いまだ", "さすが", "たいして", "いそう", "とか", "えー", "うーむ", "あとあと", "たとえて", "であっても", "すみません", "おしい", "みずみずしさ", "みずみずしい", "おすすめ", "かけないで", "こつ", "なくし", "にんにく", "やめとけ", "にんじん", "やめる"]  // やめとけ/にんじん(3638。にんじん は 任じん を 人参 の後ろに)、やめる(3639)
+    static let multiClauseSeedOrderVariantKanaLeadReadings: Set<String> = ["かかる", "いない", "いまだ", "さすが", "たいして", "いそう", "とか", "えー", "うーむ", "あとあと", "たとえて", "であっても", "すみません", "おしい", "みずみずしさ", "みずみずしい", "おすすめ", "かけないで", "こつ", "なくし", "にんにく", "やめとけ", "にんじん", "やめる", "こなす", "こなした", "こなして", "こなし"]  // こなす(3661)、やめとけ/にんじん(3638。にんじん は 任じん を 人参 の後ろに)、やめる(3639)
     // seed 順を変種の差分にそのまま使う(min でなく置換)読みの opt-in(2804)。派生同士は OOV 定額で同点になり、
     // min 方式では seed 2 番目のかな(たとえて)を同点 0 の 喩えて より前に出せない
     // おしい も seed 順(惜しい→おしい→押井)をそのまま変種順に使う。かな おしい を
@@ -1974,6 +1976,21 @@ extension KanaKanjiConverter {
         "少し\t不利": 2000,
         // あっぱくかんのあるせき が 圧迫感のアル籍(アル→籍 17596 が ある→席 17965 に勝つ。ユーザ指定 3656)
         "ある\t席": 1500,
+        // ですませる が で住ませる(ユーザ指定 3661)。で の後は 済ませる(に の後は 住ませる のまま)
+        "で\t済ませる": 6000, "で\t済ませ": 6000, "で\t済ませた": 6000, "で\t済ませて": 6000, "で\t済ます": 6000, "で\t済まし": 6000,
+        // 傾向あり(傾向有り が先頭だった。3661)
+        "傾向\tあり": 2000,
+        // とんかつ定食(とんかつ抵触 だった。3661)。料理名+定食
+        "とんかつ\t定食": 4000, "トンカツ\t定食": 4000, "豚カツ\t定食": 4000, "カツ\t定食": 4000, "唐揚げ\t定食": 4000,
+        "からあげ\t定食": 4000, "唐揚\t定食": 4000, "焼き魚\t定食": 4000, "刺身\t定食": 4000, "生姜焼き\t定食": 4000,
+        "ハンバーグ\t定食": 4000, "天ぷら\t定食": 4000, "日替わり\t定食": 4000, "焼肉\t定食": 4000, "焼き肉\t定食": 4000,
+        "サバ\t定食": 4000, "鯖\t定食": 4000, "エビフライ\t定食": 4000, "コロッケ\t定食": 4000, "餃子\t定食": 4000,
+        // ラーメン二郎三田本店(見た本店 だった。3661)
+        "三田\t本店": 3000, "二郎\t三田": 3000,
+        // お湯ためながら(オユ は抑制。ため はかなを先に、2 番目は 溜め。3661)
+        "お湯\tため": 2500, "お湯\tためる": 2500, "お湯\tためて": 2500,
+        // やくよりも は 役よりも の次に 焼くよりも(ユーザ指定 3661)
+        "焼く\tよりも": 800,
         // なはのけいさつけん が 那覇の警察権(の→警察権 6157 の Wikipedia 実績。ユーザ指定 3649)
         "の\t警察犬": 1500,
         // いっとう の seed 先頭を 一頭 にしたので文中の 一等になった/一頭の牛 を対で支える(3649)
@@ -2594,6 +2611,12 @@ extension KanaKanjiConverter {
     static let multiClausePlaceNameTerritoryBonus = 1500
     static let multiClausePlaceNameTerritoryReadings: Set<String> = ["りょう"]
     static let multiClausePlaceNameTerritoryReadingsID = MultiClauseIDSet(multiClausePlaceNameTerritoryReadings)
+    // 連用形+っぱなし(つきっぱなし/やりっぱなし/しっぱなし)の加点(ユーザ報告 3661)。つ+キッパ+なし/や+立派+なし/しっぱ+無し に
+    // 割れていた。直前が用言の連用形(い段・え段で終わる読み)のときだけ
+    static let multiClausePpanashiBonus = 3000
+    static let multiClausePpanashiReadings: Set<String> = ["っぱなし", "っぱなしで", "っぱなしの", "っぱなしだ"]
+    static let multiClausePpanashiReadingsID = MultiClauseIDSet(multiClausePpanashiReadings)
+    static let multiClausePpanashiPrevTailCharacters: Set<Character> = Set("いきぎしじちにひびぴみりえけげせぜてでねへべぺめれ")
     // 文末の「る+終助詞」を飲み込む 2 字の語(ルネ 5922 等。名前の収穫)。直前+る に用言が立つ(つき+る=尽きる)なら、
     // 用言+終助詞(尽きる+ね)に勝たせる(ユーザ報告 3472: それにつきるね → それにつきルネ)
     static let multiClauseVerbEndingSwallowedFinalParticles: Set<Character> = ["ね", "よ", "な", "わ", "ぞ", "さ", "か"]
@@ -3704,6 +3727,7 @@ extension KanaKanjiConverter {
             for s in KanaKanjiConverter.multiClauseKanaNounReadingsBeforeFinalParticle.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseKudasaiReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClausePlaceNameTerritoryReadings.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClausePpanashiReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseSugiSuffixSurfaces.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseTeOruAuxiliaryReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseKanaPassiveHeadReadings.sorted() { add(s) }

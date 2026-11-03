@@ -282,6 +282,22 @@ extension KanaKanjiConverter {
                 + candidates.filter { Self.containsNonPassivizableSuruForm($0) }
         }
         candidates = Self.promoteKatakanaCounterpartOfLatinTop(candidates)
+        candidates = placeNameSanOrdered(reading: reading, candidates: candidates, systemCandidateMode: systemCandidateMode)
+        // 名詞+っぱなし(沖っぱなし/槍っぱなし/山車っぱなし)は後ろへ。経路は 連用形+っぱなし でも、区間の兄弟表記の差し替えで
+        // 名詞が先頭に来ていた(3661)。直前が送り仮名のない漢字の候補(見/寝/出/居/着 の一字動詞は除く)
+        if candidates.count >= 2, candidates.contains(where: { $0.contains("っぱなし") || $0.contains("っ放し") }) {
+            func isNounPpanashi(_ candidate: String) -> Bool {
+                for marker in ["っぱなし", "っ放し"] {
+                    guard let range = candidate.range(of: marker), range.lowerBound > candidate.startIndex else { continue }
+                    let before = candidate[candidate.index(before: range.lowerBound)]
+                    if before.unicodeScalars.allSatisfy({ (0x4E00...0x9FFF).contains($0.value) }), !"見寝出居着".contains(before) {
+                        return true
+                    }
+                }
+                return false
+            }
+            candidates = candidates.filter { !isNounPpanashi($0) } + candidates.filter(isNounPpanashi)
+        }
         // X.10 の組(臆測/憶測)はその設定で(3570)
         let (preference, lateStandardized) = withStateLock { (kakikaePreference, lateStandardizedRewritePreference) }
         guard preference != nil || lateStandardized != nil, !candidates.isEmpty else {
@@ -319,6 +335,71 @@ extension KanaKanjiConverter {
         var result = candidates
         let katakana = result.remove(at: index)
         result.insert(katakana, at: 1)
+        return result
+    }
+
+    // 地名の読み+さん の連文節の並び(単文節の applyPlaceNameSanPreference と同じ方針。3661、ユーザ指定)。
+    // おかやまさん が 丘やまさん、おおさかさん に 大坂サン が出て、地名+産 は単文節の後ろにしか無かった
+    func placeNameSanOrdered(reading: String, candidates: [String], systemCandidateMode: KanaKanjiCandidateSourceMode) -> [String] {
+        let normalized = KanaTextNormalizer.normalizedReading(reading)
+        guard candidates.count >= 2, normalized.count >= 4, normalized.hasSuffix("さん") else {
+            return candidates
+        }
+        let places = Set(store.placeNameKinds(for: String(normalized.dropLast(2))).keys.filter {
+            containsKanji($0) || Self.isKatakanaString($0)
+        })
+        guard places.contains(where: { containsKanji($0) }),
+            // 読み全体が辞書の一語(たくさん=沢山/けいさん=計算)なら触らない
+            !store.wordCosts(for: normalized).keys.contains(where: { !$0.hasSuffix("さん") && !$0.hasSuffix("産") && !$0.hasSuffix("サン") }) else {
+            return candidates
+        }
+        let learned = Set(store.learnedDictionary()[normalized] ?? [])
+        func stem(of candidate: String) -> String? {
+            if candidate.hasSuffix("さん") { return String(candidate.dropLast(2)) }
+            if candidate.hasSuffix("産") { return String(candidate.dropLast()) }
+            return nil
+        }
+        func isRemoved(_ candidate: String) -> Bool {
+            guard !learned.contains(candidate) else { return false }
+            if candidate.hasSuffix("サン"), containsKanji(String(candidate.dropLast(2))) { return true }
+            return candidate.hasSuffix("産") && Self.isKatakanaString(String(candidate.dropLast()))
+                && !places.contains(String(candidate.dropLast()))
+        }
+        func isJunk(_ candidate: String) -> Bool {
+            guard !learned.contains(candidate), let stem = stem(of: candidate) else { return false }
+            return !places.contains(stem) && containsKanji(stem) && stem.contains(where: { ("ぁ"..."ゖ").contains($0) })
+        }
+        let kept = candidates.filter { !isRemoved($0) }
+        var result = kept.filter { !isJunk($0) } + kept.filter(isJunk)
+        var singleCache: [String]?
+        func single() -> [String] {
+            if let singleCache { return singleCache }
+            let list = self.candidates(for: reading, limit: 10, systemCandidateMode: systemCandidateMode)
+            singleCache = list
+            return list
+        }
+        // 先頭の語幹が地名でなく(丘山さん)、地名+さん(岡山さん)が後ろか単文節にあれば先頭へ
+        let isPlaceSan: (String) -> Bool = { $0.hasSuffix("さん") && places.contains(String($0.dropLast(2))) && self.containsKanji($0) }
+        if let top = result.first, !learned.contains(top), let topStem = stem(of: top), containsKanji(topStem), !places.contains(topStem),
+            let placeSan = result.first(where: isPlaceSan) ?? single().first(where: isPlaceSan) {
+            result.removeAll { $0 == placeSan }
+            result.insert(placeSan, at: 0)
+        }
+        guard let top = result.first, !top.hasSuffix("産") else {
+            return result
+        }
+        let isPlaceProduce: (String) -> Bool = { $0.hasSuffix("産") && places.contains(String($0.dropLast())) }
+        let produce = result.first(where: isPlaceProduce) ?? single().first(where: isPlaceProduce)
+        guard let produce else {
+            return result
+        }
+        // 姓として さん が続く実績のある語幹(田中)は 4 番目、それ以外は 2 番目(単文節と同じ)
+        let rank = store.wordLMBigramCost(prev: String(produce.dropLast()), cur: "さん") == nil ? 1 : 3
+        if let current = result.firstIndex(of: produce), current <= rank {
+            return result
+        }
+        result.removeAll { $0 == produce }
+        result.insert(produce, at: min(rank, result.count))
         return result
     }
 
@@ -3338,6 +3419,9 @@ extension KanaKanjiConverter {
                     // っぽい族(名詞接尾)も正当な っ 始まり(赤+っぽく。2650)
                     isForbiddenInitialExempt = Self.multiClauseForbiddenInitialExemptReadingsID.contains(readingID)
                         || Self.multiClausePpoiFamilySurfacesID.contains(readingID)
+                        // 連用形+っぱなし(つけ+っぱなし/やり+っぱなし/し+っぱなし。3661)。直前の読みが い段・え段 のときだけ
+                        || (Self.multiClausePpanashiReadingsID.contains(readingID)
+                            && (prevReading?.last.map { Self.multiClausePpanashiPrevTailCharacters.contains($0) } ?? false))
                 }
                 if !isForbiddenInitialExempt {
                     penalty += Self.multiClauseForbiddenPenaltyCost
@@ -3981,6 +4065,16 @@ extension KanaKanjiConverter {
                             node.surface == "領",
                             placeNameKindByNodeKey[prevNode.key] != nil {
                             cost -= Self.multiClausePlaceNameTerritoryBonus
+                        }
+                        // 連用形+っぱなし(定数コメント参照。3661)
+                        if Self.multiClausePpanashiReadingsID.contains(node.readingID),
+                            let last = prevNode.reading.last, Self.multiClausePpanashiPrevTailCharacters.contains(last) {
+                            // 動詞の連用形(活用派生/かな)の後だけ加点し、名詞(槍/月)の後は減点(槍っぱなし/月っぱなし だった)
+                            if prevNode.isInflectionDerived || prevNode.isKanaIdentity {
+                                cost -= Self.multiClausePpanashiBonus
+                            } else {
+                                cost += Self.multiClausePpanashiBonus
+                            }
                         }
                         // 述語の直後の人名が末尾の助詞を飲み込む形(しゃべれる+八束=やつ+か。定数コメント参照。3440)
                         if personNameKindByNodeKey[nodeKeySV] != nil, !node.isCurated,

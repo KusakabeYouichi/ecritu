@@ -100,6 +100,86 @@ extension KanaKanjiConverter {
         }
     }
 
+    // 地名の読み+さん(ながのさん/おかやまさん/おおさかさん)の並び(ユーザ指定 3661)。読みの語幹が地名(place_names)のとき:
+    // - 地名+産(長野産)を 2 番目へ上げる(先頭が 産 ならそのまま。フランス産)。長野産 は 26 番目で、学習もできなかった。
+    //   姓として さん が続く実績のある語幹(田中/宮崎)は 4 番目
+    // - 語幹が地名でない漢字+ひらがなの合成(丘やまさん/大佐かさん/那賀のさん/多さかさん)は全部の後ろへ
+    // - カタカナ語幹+産(オオサカ産。地名の表にあるカタカナ フランス は残す)と 漢字+サン(大坂サン)の混ぜ書きは出さない
+    // 学習済みの表記は動かさない
+    func applyPlaceNameSanPreference(
+        for reading: String,
+        learned: Set<String>,
+        to scores: inout [String: Int]
+    ) {
+        guard reading.count >= 4, reading.hasSuffix("さん") else {
+            return
+        }
+        let stemReading = String(reading.dropLast(2))
+        let places = Set(store.placeNameKinds(for: stemReading).keys.filter { containsKanji($0) || Self.isKatakanaString($0) })
+        guard places.contains(where: { containsKanji($0) }) else {
+            return
+        }
+        // 読み全体が辞書の一語(たくさん=沢山/けいさん=計算)なら触らない(多久さん/奎産 を上げない)
+        guard !store.wordCosts(for: reading).keys.contains(where: { !$0.hasSuffix("さん") && !$0.hasSuffix("産") && !$0.hasSuffix("サン") }) else {
+            return
+        }
+        func isHiraganaChar(_ c: Character) -> Bool { ("ぁ"..."ゖ").contains(c) }
+        var junk: [String] = []
+        for candidate in Array(scores.keys) where !learned.contains(candidate) {
+            if candidate.hasSuffix("サン"), containsKanji(String(candidate.dropLast(2))) {
+                scores.removeValue(forKey: candidate)
+                continue
+            }
+            if candidate.hasSuffix("産"), Self.isKatakanaString(String(candidate.dropLast())),
+                !places.contains(String(candidate.dropLast())) {
+                scores.removeValue(forKey: candidate)
+                continue
+            }
+            let stem: String
+            if candidate.hasSuffix("さん") {
+                stem = String(candidate.dropLast(2))
+            } else if candidate.hasSuffix("産") {
+                stem = String(candidate.dropLast())
+            } else {
+                continue
+            }
+            if !places.contains(stem), containsKanji(stem), stem.contains(where: isHiraganaChar) {
+                junk.append(candidate)
+            }
+        }
+        if let floor = scores.filter({ !junk.contains($0.key) }).values.min() {
+            for candidate in junk {
+                if let score = scores[candidate] {
+                    scores[candidate] = min(score, floor - 1) - 1000
+                }
+            }
+        }
+        // 先頭の語幹が地名でなく(丘山さん)、地名+さん(岡山さん)があればそれを先頭へ
+        if let top = scores.max(by: { $0.value < $1.value }), !learned.contains(top.key),
+            top.key.hasSuffix("さん"), containsKanji(String(top.key.dropLast(2))), !places.contains(String(top.key.dropLast(2))),
+            let placeSan = scores.filter({ $0.key.hasSuffix("さん") && places.contains(String($0.key.dropLast(2))) && containsKanji($0.key) })
+                .max(by: { $0.value < $1.value }) {
+            scores[placeSan.key] = top.value + 1
+        }
+        let produce = scores.filter { $0.key.hasSuffix("産") && places.contains(String($0.key.dropLast())) }
+        guard let best = produce.max(by: { $0.value < $1.value }) else {
+            return
+        }
+        // 姓として さん が続く実績(LM の 田中→さん)がある語幹は 4 番目に(田中産 を 2 番目にしない)。無ければ 2 番目
+        let stem = String(best.key.dropLast())
+        let rank = store.wordLMBigramCost(prev: stem, cur: "さん") == nil ? 1 : 3
+        let ordered = scores.filter { $0.key != best.key }.sorted { $0.value > $1.value }
+        guard ordered.count > rank - 1, best.value < ordered[rank - 1].value else {
+            return
+        }
+        scores[best.key] = ordered[rank - 1].value - 1
+        if ordered.count > rank, ordered[rank].value >= ordered[rank - 1].value - 1 {
+            for index in rank..<ordered.count where (scores[ordered[index].key] ?? 0) >= ordered[rank - 1].value - 1 {
+                scores[ordered[index].key] = ordered[rank - 1].value - 2
+            }
+        }
+    }
+
     // あった/あって に助詞・接続(が/し/ら/り/て/から/けど 等)が続くだけの読み(あった/あったが/あったり/あったら/あって/あってさ)
     static func isStandaloneAttaReading(_ reading: String) -> Bool {
         for head in ["あった", "あって"] where reading.hasPrefix(head) {
