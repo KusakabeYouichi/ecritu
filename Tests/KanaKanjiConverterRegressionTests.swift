@@ -1655,8 +1655,11 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // 3663 のユーザ報告
         XCTAssertEqual(Array(multi("つきっぱなし").prefix(3)), ["つきっぱなし", "点きっぱなし", "つきっ放し"])
         XCTAssertEqual(Array(multi("やくよりも").prefix(3)), ["役よりも", "焼くよりも", "訳よりも"])
-        let mokonashita = converter.multiClauseCandidates(for: "もこなした", systemCandidateMode: .surface, precedingCharacter: "0")
-        XCTAssertEqual(Array(mokonashita.prefix(2)), ["もこなした", "も熟した"], "熟した も 2 番目に残す(3664)")
+        // も+こなし は 読み全体の seed で 熟し を 2 番目に(3665 まで モコナし が 2 番目だった。ユーザ報告)
+        XCTAssertEqual(Array(single("もこなした").prefix(2)), ["もこなした", "も熟した"], "熟した も 2 番目に残す(3664)")
+        XCTAssertEqual(Array(single("もこなし").prefix(2)), ["もこなし", "も熟し"])
+        XCTAssertEqual(Array(single("もこなして").prefix(2)), ["もこなして", "も熟して"])
+        XCTAssertEqual(multi("ごせんもこなし").first, "五千もこなし")
         XCTAssertEqual(multi("しゃしんはむきを").first, "写真は向きを")
         XCTAssertEqual(Array(multi("かねがなくて").prefix(2)), ["金がなくて", "金が無くて"])
         XCTAssertEqual(multi("しごとをこなした").first, "仕事をこなした")
