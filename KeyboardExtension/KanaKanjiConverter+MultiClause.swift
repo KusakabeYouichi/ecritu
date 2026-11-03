@@ -256,6 +256,21 @@ extension KanaKanjiConverter {
             }
         }
         candidates = singleTopLeadBeforeParticle(reading: reading, candidates: candidates, systemCandidateMode: systemCandidateMode)
+        // 読み全体が補助語彙(vin 等)の一語で、単文節の先頭もその語なら、連文節でも先頭に(learningBOX 検査 3658)。
+        // めるろー が メル+ろー の メルろー、ゆめのか が 夢のか、ぐりゅなーゔぇるとりーなー が 具リュなー… だった。
+        // 単文節の先頭は補助語彙の昇格判定(同読みに LM 実在の一般語があれば昇格しない)を通っている
+        if let top = candidates.first {
+            let normalized = KanaTextNormalizer.normalizedReading(reading)
+            let wholeWords = store.loadSupplementalSystemDictionary().candidates(for: normalized)
+            if !wholeWords.isEmpty, !wholeWords.contains(top) {
+                // 単文節の先頭から続く補助語彙の語をまとめて先頭へ(Erzeugerabfüllung の次に エアツォイガーアプフュルング)
+                let single = self.candidates(for: reading, limit: 3, systemCandidateMode: systemCandidateMode)
+                let lead = Array(single.prefix { wholeWords.contains($0) })
+                if !lead.isEmpty {
+                    candidates = lead + candidates.filter { !lead.contains($0) }
+                }
+            }
+        }
         if !withStateLock({ ordinalMeKanjiPreferred }) {
             candidates = Self.applyOrdinalMeKanaFirst(to: candidates, digitPrefixed: precedingCharacter.map(Self.isCounterBoostDigit) ?? false)
         }

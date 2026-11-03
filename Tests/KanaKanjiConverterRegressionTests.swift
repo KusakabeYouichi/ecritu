@@ -1602,6 +1602,32 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(KanaKanjiConverter.promoteKatakanaCounterpartOfLatinTop(["出る", "でる", "デル"]), ["出る", "でる", "デル"])
     }
 
+    // learningBOX 検査 3658 の備考つきの指摘(正しい読みで)
+    func testRegressionRealLMLearningBoxNotes3658() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        func multiTop(_ reading: String) -> String? { converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).first }
+        // 読み全体が補助語彙の一語なら連文節でも先頭(メルろー/夢のか/具リュなー… だった)
+        XCTAssertEqual(multiTop("めるろー"), "メルロー")
+        XCTAssertEqual(multiTop("ゆめのか"), "夢の香")
+        XCTAssertEqual(multiTop("ぐりゅなーゔぇるとりーなー"), "グリュナーヴェルトリーナー")
+        XCTAssertEqual(Array(converter.multiClauseCandidates(for: "えあつぉいがーあぷふゅるんぐ", systemCandidateMode: .surface).prefix(2)),
+            ["Erzeugerabfüllung", "エアツォイガーアプフュルング"])
+        // 粘土 は 土壌/岩盤/含む と呼応したときだけ(普段は 年度)
+        XCTAssertEqual(multiTop("あかいねんどのどじょう"), "赤い粘土の土壌")
+        XCTAssertEqual(multiTop("かたいねんどのがんばんがある"), "硬い粘土の岩盤がある")
+        XCTAssertEqual(converter.candidates(for: "ねんど", limit: 3, systemCandidateMode: .surface).first, "年度")
+        // 与え(能え は抑制)、発泡酒、補助語彙・misc の登録
+        XCTAssertEqual(multiTop("とくゆうのにがみやかおりをあたえ")?.hasSuffix("香りを与え"), true)
+        XCTAssertEqual(converter.candidates(for: "はっぽうしゅ", limit: 3, systemCandidateMode: .surface).first, "発泡酒")
+        XCTAssertEqual(multiTop("みいらかさせます"), "ミイラ化させます")
+        XCTAssertEqual(multiTop("とつぜんへんいしやすく"), "突然変異しやすく")
+        XCTAssertEqual(multiTop("さいなんにいちするちくをえらんでください"), "最南に位置する地区を選んでください")
+        XCTAssertEqual(converter.candidates(for: "さいなん", limit: 3, systemCandidateMode: .surface).first, "災難")
+        XCTAssertEqual(multiTop("せっかんがひろがってしまう"), "節間が広がってしまう")
+        XCTAssertEqual(multiTop("とうみつはらむのげんりょうです"), "糖蜜はラムの原料です")
+    }
+
     // あっぱくかんのあるせき が 圧迫感のアル籍 だった(アル→籍 が ある→席 に勝つ。ユーザ指定 3656)
     func testRegressionRealLMAppakukanNoAruSeki() throws {
         try prepareRealLMDictionary()
