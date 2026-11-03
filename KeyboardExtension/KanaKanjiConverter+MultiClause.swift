@@ -4066,6 +4066,13 @@ extension KanaKanjiConverter {
                             placeNameKindByNodeKey[prevNode.key] != nil {
                             cost -= Self.multiClausePlaceNameTerritoryBonus
                         }
+                        // カタカナ語+種/州(定数コメント参照。3662)
+                        // 整数 ID の判定を先に(遷移ごとの文字列走査を避ける。変換速度の予算)
+                        let katakanaSuffixPreferred = Self.multiClauseKatakanaSuffixPreferredSurfacesID.contains(node.surfaceID)
+                        if katakanaSuffixPreferred || Self.multiClauseKatakanaSuffixDemotedSurfacesID.contains(node.surfaceID),
+                            !prevNode.isKanaIdentity, Self.isKatakanaString(prevNode.surface) {
+                            cost += katakanaSuffixPreferred ? -Self.multiClauseKatakanaSuffixPreferenceBonus : Self.multiClauseKatakanaSuffixPreferenceBonus
+                        }
                         // 連用形+っぱなし(定数コメント参照。3661)
                         if Self.multiClausePpanashiReadingsID.contains(node.readingID),
                             let last = prevNode.reading.last, Self.multiClausePpanashiPrevTailCharacters.contains(last) {

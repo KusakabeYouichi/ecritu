@@ -25745,7 +25745,7 @@ extension KanaKanjiConverterRegressionTests {
     func testRegressionGamayKatakanaWithinTopThree() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
-        XCTAssertEqual(Array(converter.candidates(for: "がめい", limit: 4, systemCandidateMode: .surface)), ["画名", "雅名", "ガメイ", "Gamay"])
+        XCTAssertEqual(Array(converter.candidates(for: "がめい", limit: 4, systemCandidateMode: .surface)), ["Gamay", "ガメイ", "雅名", "画名"])
         let multi = converter.multiClauseCandidates(for: "がめいわすれたら", systemCandidateMode: .surface)
         XCTAssertTrue(multi.prefix(3).contains("ガメイ忘れたら"), "\(multi.prefix(4))")
         // 和語のカタカナ化(コメ/ネコ)の降格は従来どおり

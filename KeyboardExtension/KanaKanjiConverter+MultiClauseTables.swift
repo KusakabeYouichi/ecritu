@@ -676,6 +676,8 @@ extension KanaKanjiConverter {
         "街\t中": 3000,
         // 辛口の白/ぶどうの果皮(城/可否 だった。learningBOX 検査 3661)
         "辛口\t白": 3000, "甘口\t白": 3000, "半甘口\t白": 3000, "中辛口\t白": 3000, "極辛口\t白": 3000,
+        // 胡椒の香り/ぶどうの虫害/色が濃い・色の濃さ(故障/中外/恋/こさ だった。同じ検査)
+        "胡椒\t香り": 3000, "ぶどう\t虫害": 3000, "色\t濃": 3000, "発泡性\t白": 3000, "色\t白": 3000,
         "ぶどう\t果皮": 3000, "ブドウ\t果皮": 3000, "葡萄\t果皮": 3000, "オレンジ\t果皮": 3000, "色\t果皮": 3000,
         "最南\t位置": 5000, "滓\t取り除": 3000, "澱\t取り除": 3000,
         // 節間が広がる/多品種の混植/糖蜜はラム/酵母による(同じ検査。石棺/混色/東密/公募 だった)
@@ -2001,6 +2003,17 @@ extension KanaKanjiConverter {
         // とともに(と共に だった)、Cru/クリュ+助詞(くりゅが だった。learningBOX 検査 3661)
         "と\tともに": 3000, "Cru\tが": 3000, "Cru\tで": 3000, "Cru\tの": 3000, "Cru\tは": 3000, "Cru\tを": 3000,
         "よる\t香り": 2000, "広がる\t香り": 2000, "現れる\t香り": 2000, "する\t香り": 2000, "立つ\t香り": 2000,
+        // ワインの語彙(vin)にあるが連文節で LM の一般語に負ける語+助詞(浦東/自今/根性/戦果/原産/終了/寄付/整地 だった。learningBOX 検査 3662)
+        "補糖\tが": 3000, "補糖\tの": 3000, "補糖\tは": 3000, "補糖\tを": 3000, "補糖\tです": 3000,
+        "自根\tで": 3000, "自根\tの": 3000, "自根\tが": 3000,
+        "混醸\tが": 3000, "混醸\tは": 3000, "混醸\tし": 3000, "混醸\tを": 3000, "混醸\tで": 3000, "混植\t混醸": 3000,
+        "選果\tが": 3000, "選果\tを": 3000, "選果\tは": 3000,
+        "減酸\tは": 3000, "減酸\tが": 3000, "減酸\tを": 3000, "減酸\t不可": 3000, "減酸\t以外": 3000,
+        "収量\tが": 3000, "収量\tは": 3000, "収量\tを": 3000, "収量\t多め": 3000, "収量\t少なめ": 3000,
+        "貴腐\tぶどう": 3000, "貴腐\tワイン": 3000, "貴腐\tの": 3000, "貴腐\tと": 3000,
+        "時間\t静置": 3000, "静置\tし": 3000, "静置\tする": 3000,
+        // と呼ばれ が と喚ばれ だった(同じ検査)。生産地域名呼称/産地呼称
+        "と\t呼ばれ": 3000, "とも\t呼ばれ": 3000, "と\t呼ばれる": 3000, "名\t呼称": 3000, "産地\t呼称": 3000,
         // なはのけいさつけん が 那覇の警察権(の→警察権 6157 の Wikipedia 実績。ユーザ指定 3649)
         "の\t警察犬": 1500,
         // いっとう の seed 先頭を 一頭 にしたので文中の 一等になった/一頭の牛 を対で支える(3649)
@@ -2624,6 +2637,12 @@ extension KanaKanjiConverter {
     // 連用形+っぱなし(つきっぱなし/やりっぱなし/しっぱなし)の加点(ユーザ報告 3661)。つ+キッパ+なし/や+立派+なし/しっぱ+無し に
     // 割れていた。直前が用言の連用形(い段・え段で終わる読み)のときだけ
     static let multiClausePpanashiBonus = 3000
+    // カタカナ語+しゅ/しゅう は 種/州(ラブルスカ種/マンチャ州)。酒/集 だった(learningBOX 検査 3662)。ラム酒 などは一語で辞書にある
+    static let multiClauseKatakanaSuffixPreferenceBonus = 2000
+    static let multiClauseKatakanaSuffixPreferredSurfaces: Set<String> = ["種", "州"]
+    static let multiClauseKatakanaSuffixPreferredSurfacesID = MultiClauseIDSet(multiClauseKatakanaSuffixPreferredSurfaces)
+    static let multiClauseKatakanaSuffixDemotedSurfaces: Set<String> = ["酒", "集", "衆"]
+    static let multiClauseKatakanaSuffixDemotedSurfacesID = MultiClauseIDSet(multiClauseKatakanaSuffixDemotedSurfaces)
     static let multiClausePpanashiReadings: Set<String> = ["っぱなし", "っぱなしで", "っぱなしの", "っぱなしだ"]
     static let multiClausePpanashiReadingsID = MultiClauseIDSet(multiClausePpanashiReadings)
     static let multiClausePpanashiPrevTailCharacters: Set<Character> = Set("いきぎしじちにひびぴみりえけげせぜてでねへべぺめれ")
@@ -3738,6 +3757,8 @@ extension KanaKanjiConverter {
             for s in KanaKanjiConverter.multiClauseKudasaiReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClausePlaceNameTerritoryReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClausePpanashiReadings.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseKatakanaSuffixPreferredSurfaces.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseKatakanaSuffixDemotedSurfaces.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseSugiSuffixSurfaces.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseTeOruAuxiliaryReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseKanaPassiveHeadReadings.sorted() { add(s) }
