@@ -1586,6 +1586,22 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.candidates(for: "のりまき", limit: 4, systemCandidateMode: .surface).first, "海苔巻き")
     }
 
+    // ラテン文字とカタカナの両方があればラテン文字が先、カタカナが 2 位(ユーザ指定 3658)。連文節は全部カタカナの形を 2 番目へ
+    func testRegressionRealLMLatinTopKatakanaSecond() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for (reading, latin, katakana) in [("かしす", "Cassis", "カシス"), ("ぐろろー", "Grolleau", "グロロー")] {
+            XCTAssertEqual(Array(converter.candidates(for: reading, limit: 10, systemCandidateMode: .surface).prefix(2)), [latin, katakana])
+        }
+        let multi = converter.multiClauseCandidates(for: "かーねろすはなぱ", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(multi.prefix(2)), ["CarnerosはNapa", "カーネロスはナパ"], "\(multi.prefix(4))")
+        XCTAssertEqual(
+            KanaKanjiConverter.promoteKatakanaCounterpartOfLatinTop(["Napaのワイン", "ナパの和院", "Napaの和院", "ナパのワイン"]),
+            ["Napaのワイン", "ナパのワイン", "ナパの和院", "Napaの和院"]
+        )
+        XCTAssertEqual(KanaKanjiConverter.promoteKatakanaCounterpartOfLatinTop(["出る", "でる", "デル"]), ["出る", "でる", "デル"])
+    }
+
     // あっぱくかんのあるせき が 圧迫感のアル籍 だった(アル→籍 が ある→席 に勝つ。ユーザ指定 3656)
     func testRegressionRealLMAppakukanNoAruSeki() throws {
         try prepareRealLMDictionary()
@@ -13864,7 +13880,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         try prepareRealLMDictionary()
         try clearUserSuppressionVocabulary()
         let result = converter.multiClauseCandidates(for: "さすがあっぷる", systemCandidateMode: .surface)
-        XCTAssertEqual(Array(result.prefix(2)), ["さすがApple", "流石Apple"], "\(result)")
+        // ラテン文字の先頭の次は全部カタカナの形(3658 ユーザ指定)。流石Apple はその後ろ
+        XCTAssertEqual(Array(result.prefix(3)), ["さすがApple", "さすがアップル", "流石Apple"], "\(result)")
         let sore = converter.multiClauseCandidates(for: "さすがにそれは", systemCandidateMode: .surface)
         XCTAssertEqual(Array(sore.prefix(2)), ["さすがにそれは", "流石にそれは"], "\(sore)")
     }
@@ -21670,7 +21687,9 @@ extension KanaKanjiConverterRegressionTests {
         converter.learn(reading: "あいふぉん", candidate: "iPhone")
         converter.store.waitForPendingLearningPersists()
         let duo = multi("あいふぉんでゅお")
-        XCTAssertEqual(Array(duo.prefix(2)), ["iPhone Duo", "iPhoneデュオ"], "\(duo)")
+        // 2 番目は全部カタカナの形(3658 ユーザ指定)。合成の iPhoneデュオ は別解として残る
+        XCTAssertEqual(Array(duo.prefix(2)), ["iPhone Duo", "アイフォンデュオ"], "\(duo)")
+        XCTAssertTrue(duo.contains("iPhoneデュオ"), "\(duo)")
         XCTAssertEqual(single("あいふぉんでゅお").first, "iPhone Duo", "\(single("あいふぉんでゅお"))")
         XCTAssertEqual(multi("あいふぉんが").first, "iPhoneが", "\(multi("あいふぉんが"))")
     }

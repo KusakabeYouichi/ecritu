@@ -266,6 +266,7 @@ extension KanaKanjiConverter {
             candidates = candidates.filter { !Self.containsNonPassivizableSuruForm($0) }
                 + candidates.filter { Self.containsNonPassivizableSuruForm($0) }
         }
+        candidates = Self.promoteKatakanaCounterpartOfLatinTop(candidates)
         // X.10 の組(臆測/憶測)はその設定で(3570)
         let (preference, lateStandardized) = withStateLock { (kakikaePreference, lateStandardizedRewritePreference) }
         guard preference != nil || lateStandardized != nil, !candidates.isEmpty else {
@@ -277,6 +278,42 @@ extension KanaKanjiConverter {
             toMultiClauseCandidates: candidates,
             everydayException: withStateLock { kakikaeEverydayException }
         )
+    }
+
+    // 先頭にラテン文字の表記があるとき、そのラテン文字を全部カタカナにした形を 2 番目へ(ユーザ指定 3658:
+    // ラテン文字とカタカナの両方があればラテン文字が先、カタカナが 2 位)。かーねろすはなぱ で CarnerosはNapa の次が
+    // カーネロスはNapa/Carnerosはナパ の混ぜ書きで、カーネロスはナパ は 4 番目だった。
+    // 対応の判定は、ラテン文字もカタカナも除いた残り(助詞・漢字)が先頭と同じで、ラテン文字を含まない候補
+    static func promoteKatakanaCounterpartOfLatinTop(_ candidates: [String]) -> [String] {
+        guard candidates.count > 2, let top = candidates.first,
+            top.unicodeScalars.contains(where: isLatinLetterScalar) else {
+            return candidates
+        }
+        func isKatakana(_ c: Character) -> Bool { ("ァ"..."ヺ").contains(c) || c == "ー" || c == "・" }
+        func isLatinRunCharacter(_ c: Character) -> Bool {
+            c.unicodeScalars.allSatisfy { isLatinLetterScalar($0) || " '’-.&®!".unicodeScalars.contains($0) }
+        }
+        let topRest = String(top.filter { !isLatinRunCharacter($0) && !isKatakana($0) })
+        guard let index = candidates.dropFirst(2).firstIndex(where: { candidate in
+            !candidate.unicodeScalars.contains(where: isLatinLetterScalar)
+                && candidate.contains(where: isKatakana)
+                && String(candidate.filter { !isKatakana($0) }) == topRest
+        }) else {
+            return candidates
+        }
+        var result = candidates
+        let katakana = result.remove(at: index)
+        result.insert(katakana, at: 1)
+        return result
+    }
+
+    static func isLatinLetterScalar(_ scalar: Unicode.Scalar) -> Bool {
+        switch scalar.value {
+        case 0x41...0x5A, 0x61...0x7A, 0xC0...0x24F:
+            return scalar.value != 0xD7 && scalar.value != 0xF7
+        default:
+            return false
+        }
     }
 
     // X.14(序数の め)が『ひらがなが先』のとき、連文節の 助数詞+目(10日目の)を 日め に差し替え、目 の形をその後ろに並べる(3750)。
