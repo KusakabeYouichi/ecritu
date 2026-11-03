@@ -1626,6 +1626,11 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.candidates(for: "さいなん", limit: 3, systemCandidateMode: .surface).first, "災難")
         XCTAssertEqual(multiTop("せっかんがひろがってしまう"), "節間が広がってしまう")
         XCTAssertEqual(multiTop("とうみつはらむのげんりょうです"), "糖蜜はラムの原料です")
+        // さまざま はかなで書く言葉(副詞)
+        XCTAssertEqual(converter.candidates(for: "さまざま", limit: 3, systemCandidateMode: .surface).first, "さまざま")
+        XCTAssertEqual(multiTop("べりーなどさまざまなくだものからつくられ")?.contains("さまざまな"), true)
+        // 追加語彙の 行なう は文の中でも本則の 行う より先(送り仮名の設定は本則だけ)
+        XCTAssertEqual(multiTop("あかわいんはしゅはっこうごにあっさくをおこない"), "赤ワインは主醗酵後に圧搾を行ない")
     }
 
     // あっぱくかんのあるせき が 圧迫感のアル籍 だった(アル→籍 が ある→席 に勝つ。ユーザ指定 3656)

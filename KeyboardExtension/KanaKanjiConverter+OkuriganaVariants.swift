@@ -170,7 +170,7 @@ extension KanaKanjiConverter {
             guard !skeleton.isEmpty else { continue }
             buckets[skeleton, default: []].append(index)
         }
-        let candidateBuckets = buckets.values.filter { $0.count >= 2 }
+        var candidateBuckets = buckets.values.filter { $0.count >= 2 }
         guard !candidateBuckets.isEmpty else {
             return candidates
         }
@@ -200,6 +200,34 @@ extension KanaKanjiConverter {
         func isProtected(_ candidate: String) -> Bool {
             protected.contains(candidate) || protectedStems.contains(where: { candidate.contains($0) })
         }
+        // 守る表記(追加語彙の 行なう 等)と送り仮名だけが違う候補が前にあれば、守る表記をその位置へ上げる(3658、ユーザ指定)。
+        // 守るだけでは順位は変わらず、圧搾を行ない が 圧搾を行い(連文節の最良)の 4 番目だった。単文節は seed で 行ない が先
+        var candidates = candidates
+        let bucketMembers = candidateBuckets.map { $0.map { candidates[$0] } }
+        for members in bucketMembers {
+            for i in members.indices {
+                for j in members.indices where j > i {
+                    let earlier = members[i], later = members[j]
+                    guard isProtected(later), !isProtected(earlier),
+                        Self.okuriganaVariantRelation(earlier, later) != nil,
+                        let from = candidates.firstIndex(of: later), let to = candidates.firstIndex(of: earlier), from > to else {
+                        continue
+                    }
+                    candidates.remove(at: from)
+                    candidates.insert(later, at: to)
+                }
+            }
+        }
+        if candidates.count != Set(candidates).count {
+            candidates = uniqueCandidates(from: candidates)
+        }
+        buckets = [:]
+        for (index, candidate) in candidates.enumerated() {
+            let skeleton = String(candidate.filter { !Self.isHiragana($0) })
+            guard !skeleton.isEmpty else { continue }
+            buckets[skeleton, default: []].append(index)
+        }
+        candidateBuckets = buckets.values.filter { $0.count >= 2 }
 
         // 許容形 → (本則, グループ)。本則は連鎖(取り扱い→取扱い→取扱)の根へ辿る
         var relationByVariant: [String: OkuriganaVariantRelation] = [:]
