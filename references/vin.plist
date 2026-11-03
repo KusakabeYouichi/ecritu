@@ -6746,6 +6746,8 @@
 	<dict><key>phrase</key><string>1次加工</string><key>shortcut</key><string>いちじかこう</string></dict>
 	<dict><key>phrase</key><string>Enology</string><key>shortcut</key><string>えのろじー</string></dict>
 	<dict><key>phrase</key><string>ロシオ</string><key>shortcut</key><string>ろしお</string></dict>
+	<dict><key>phrase</key><string>フォルムラ</string><key>shortcut</key><string>ふぉるむら</string></dict>
+	<dict><key>phrase</key><string>Formulae</string><key>shortcut</key><string>ふぉるむら</string></dict>
 
 	<!-- ■ ワイン (メドック格付け61シャトー -->
 	<dict><key>phrase</key><string>Château Batailley</string><key>shortcut</key><string>しゃとーばたいえ</string></dict>

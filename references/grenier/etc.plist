@@ -2370,8 +2370,6 @@
 	<dict><key>phrase</key><string>フェアトレード</string><key>shortcut</key><string>ふぇあとれーど</string></dict>	<!-- 元: vin.plist -->
 	<dict><key>phrase</key><string>フェアトレードワイン</string><key>shortcut</key><string>ふぇあとれーどわいん</string></dict>	<!-- 元: vin.plist -->
 	<dict><key>phrase</key><string>フェニキア人</string><key>shortcut</key><string>ふぇにきあじん</string></dict>
-	<dict><key>phrase</key><string>フォルムラ</string><key>shortcut</key><string>ふぉるむら</string></dict>
-	<dict><key>phrase</key><string>Formulae</string><key>shortcut</key><string>ふぉーみゅれー</string></dict>
 	<dict><key>phrase</key><string>普及活動者</string><key>shortcut</key><string>ふきゅうかつどうしゃ</string></dict>
 	<dict><key>phrase</key><string>複数選ぶ</string><key>shortcut</key><string>ふくすうえらぶ</string></dict>
 	<dict><key>phrase</key><string>複数地域</string><key>shortcut</key><string>ふくすうちいき</string></dict>	<!-- 元: vin.plist 未分類 -->
