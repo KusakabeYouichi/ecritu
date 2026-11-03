@@ -5,6 +5,7 @@
 	<!-- 変換抑制の語彙(キーボードが直接読む。アプリの抑制語彙UIには非表示)。『■ 』で始まる行がグループ見出し(直前に空行)。エントリ行の後ろのコメントはその語の個別理由。『※ 』で始まる行は、対応するエントリが今は無い補足メモ。 -->
 
 	<!-- ■ 誤エントリ: 辞書の誤った読み・存在しない表記(学習でも古語でもなく明確な誤り) -->
+	<dict><key>phrase</key><string>おおお</string><key>shortcut</key><string>おお</string></dict>	<!-- Sudachi の伸ばし表記(おおお)を おお の読みで持つ項目(rank8)。おおさかさん に おお+おさかさん の おおおさかさん が出ていた(ユーザ報告 3661) -->
 	<dict><key>phrase</key><string>不・思・議</string><key>shortcut</key><string>ふしぎ</string></dict>	<!-- Sudachi small_lex の中黒入り装飾表記(不思議)。合成(不・思・議だね)に出ていた(ユーザ報告 3715) -->
 	<dict><key>phrase</key><string>北</string><key>shortcut</key><string>きたの</string><key>pos</key><string>名詞</string></dict>	<!-- 北(きたの): 読みと表記が合わない(北野 の揺れ)。きたのみさいる が 北ミサイル になり の が消えた(一括検査 3640b、ユーザ指定 3641) -->
 	<dict><key>phrase</key><string>喰る</string><key>shortcut</key><string>くえる</string><key>pos</key><string>名詞</string></dict>	<!-- 喰る(くえる): Sudachi の誤エントリ(読みと表記が合わない)。くえる の先頭に出ていた。食る はその字形の置き換え(ユーザ報告 3741) -->
@@ -187,6 +188,8 @@
 	<dict><key>phrase</key><string>見谷</string><key>shortcut</key><string>みたに</string></dict>
 
 	<!-- ■ 収穫ノイズ: レア語・レア読み(実在するが日常入力では雑音) -->
+	<dict><key>phrase</key><string>オユ</string><key>shortcut</key><string>おゆ</string></dict>	<!-- Sudachi の オユ(語コスト 5496 と安い)。お風呂にお湯ためながら が お風呂にオユ溜めながら だった(ユーザ報告 3661) -->
+	<dict><key>phrase</key><string>二六</string><key>shortcut</key><string>ふろ</string></dict>	<!-- 二六(ふろ、語呂合わせの読み)。お風呂に が お二六に だった(ユーザ報告 3661)。にろく の 二六 は残る -->
 	<dict><key>phrase</key><string>日間</string><key>shortcut</key><string>かかん</string><key>pos</key><string>名詞</string></dict>	<!-- 日間(かかん): 日間 の読みは にちかん/にっかん で かかん は雑音。可換代数/果敢に が 日間代数/日間に だった(一括検査 3640b、ユーザ指定 3641) -->
 	<dict><key>phrase</key><string>睡る</string><key>shortcut</key><string>ねむる</string></dict>
 	<dict><key>phrase</key><string>睡れる</string><key>shortcut</key><string>ねむれる</string><key>pos</key><string>名詞</string></dict>	<!-- 睡れる は 睡る の活用でなく ねむれる の辞書の直接エントリ(rank0)なので別に抑制する -->	<!-- 睡る(ねむる): 眠る の稀な表記。LM が 睡れる 7590<眠れる 8139 で 眠れる宇宙の王女 が 睡れる だった(一括検査 3640b、ユーザ指定 3641) -->
@@ -635,6 +638,7 @@
 	<dict><key>phrase</key><string>スタ</string><key>shortcut</key><string>すた</string></dict>	<!-- スタ(すた): SudachiDict small の普通名詞(語コスト 3527)だが意味は不明。LM の連接(前: Ks/鳥栖/味/Q/N/E、後: 改修)から、鳥栖スタ(鳥栖スタジアム)や Ks スタ(Ks スタジアム)など スタジアム の略か断片の収穫と推測する(確定ではない)。単独の頻度は 6307 と低いのに辞書コストが安く、すたばで→スタ場で のように スタバ を割る(ユーザ指定 3605) -->
 
 	<!-- ■ 完全一致で再供給する二段構え(抑制しつつ exactReadingOnlySeed で末尾に出す) -->
+	<dict><key>phrase</key><string>キッパ</string><key>shortcut</key><string>きっぱ</string></dict>	<!-- キッパ(ユダヤ教徒の小さな帽子)。語コスト 2148 と異常に安く、つきっぱなし が つキッパなし だった(ユーザ報告 3661)。きっぱ 単独のときだけ末尾に再供給 -->
 	<dict><key>phrase</key><string>樫琥良</string><key>shortcut</key><string>かっこいい</string></dict>	<!-- 樫琥良(泡盛の銘柄、ryukyu): もっとかっこいい が もっと樫琥良 になっていた。かっこいい 単独のときだけ末尾に再供給(ユーザ指定 3743) -->
 	<dict><key>phrase</key><string>イル</string><key>shortcut</key><string>いる</string></dict>	<!-- exactReadingOnlySeed との二段構え(抑制→完全一致時のみ末尾再供給)。クラス抑制(強調/交ぜ書き)からは免除される -->
 	<dict><key>phrase</key><string>サンガ</string><key>shortcut</key><string>さんが</string></dict>

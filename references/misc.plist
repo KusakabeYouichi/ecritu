@@ -441,6 +441,7 @@
 	<dict><key>phrase</key><string>日較差</string><key>shortcut</key><string>にっかくさ</string><key>pos</key><string>名詞</string></dict>	<!-- 気温の日較差: 辞書の読みは にちかくさ/にっこうさ だけで、よく使う にっかくさ では 日覚さ だった(learningBOX 検査 3657) -->
 	<dict><key>phrase</key><string>ミイラ化</string><key>shortcut</key><string>みいらか</string><key>pos</key><string>サ変名詞</string></dict>	<!-- ミイラ化させます が ミイラ課させます だった(learningBOX 検査 3658) -->
 	<dict><key>phrase</key><string>突然変異</string><key>shortcut</key><string>とつぜんへんい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 突然変異しやすく が とつぜん変異しやすく だった(learningBOX 検査 3658) -->
+	<dict><key>phrase</key><string>お湯</string><key>shortcut</key><string>おゆ</string><key>pos</key><string>名詞</string></dict>	<!-- 辞書の おゆ は オユ(抑制)だけで、お湯 は丁寧接頭の合成でしか出ず、連文節で 御湯 だった(お風呂にお湯ためながら。ユーザ報告 3661) -->
 	<!-- écritu 自身の語彙の呼称(LM 未収録で 追加+後位 の分割が先頭だった。ユーザ報告 3703) -->
 	<dict><key>phrase</key><string>追加語彙</string><key>shortcut</key><string>ついかごい</string></dict>
 	<dict><key>phrase</key><string>学習語彙</string><key>shortcut</key><string>がくしゅうごい</string></dict>
