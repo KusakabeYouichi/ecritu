@@ -405,8 +405,6 @@ extension KeyboardRootView {
 
     var landscapeKanaCandidateSidebar: some View {
         VStack(alignment: .leading, spacing: 4) {
-            let showsWrapperOnly = showsParenthesesWrapper && composingText.isEmpty
-
             // tokushima(3211): 候補列の一番上を 1 行使って未確定を下線付きで出す(ScrollView 側が 1 行ぶん縮む)。
             // 状態カプセル(鉛筆/循環矢印)も同じ行の左に置き、消費する行を 1 つで済ませる(3212、ユーザ指定)
             if !internalCompositionPreviewText.isEmpty {
