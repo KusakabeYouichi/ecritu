@@ -2004,6 +2004,9 @@
 	<dict><key>phrase</key><string>ワインベルト</string><key>shortcut</key><string>わいんべると</string></dict>
 
 	<!-- □ 不明(国の判定に自信なし) -->
+	<dict><key>phrase</key><string>アガラス</string><key>shortcut</key><string>あがらす</string></dict>	<!-- あガラス だった(learningBOX 検査 3662)。分類に自信なし -->
+	<dict><key>phrase</key><string>アレーニア</string><key>shortcut</key><string>あれーにあ</string></dict>	<!-- あレーニア だった(learningBOX 検査 3662)。分類に自信なし -->
+	<dict><key>phrase</key><string>スパリュア</string><key>shortcut</key><string>すぱりゅあ</string></dict>	<!-- スパリュあ だった(learningBOX 検査 3662)。分類に自信なし -->
 	<dict><key>phrase</key><string>サン・パブロ</string><key>shortcut</key><string>さんぱぶろ</string></dict>
 
 	<!-- ■ G.I. -->
@@ -2402,6 +2405,7 @@
 	<dict><key>phrase</key><string>新潟砂丘</string><key>shortcut</key><string>にいがたさきゅう</string></dict>
 
 	<!-- ■ 地名(川) -->
+	<dict><key>phrase</key><string>アラザニ</string><key>shortcut</key><string>あらざに</string></dict>	<!-- ジョージアの川(アラザニ川 が あら座に川 だった。learningBOX 検査 3662) -->
 	<dict><key>phrase</key><string>Douro川</string><key>shortcut</key><string>どうろがわ</string></dict>
 	<dict><key>phrase</key><string>Tejo川</string><key>shortcut</key><string>てーじょがわ</string></dict>
 	<dict><key>phrase</key><string>アール川</string><key>shortcut</key><string>あーるがわ</string></dict>
@@ -4347,6 +4351,7 @@
 	<dict><key>phrase</key><string>à vin</string><key>shortcut</key><string>あゔぁん</string></dict>
 
 	<!-- ■ ワイン用ぶどう品種名 / セパージュ -->
+	<dict><key>phrase</key><string>セルヴァドゥ</string><key>shortcut</key><string>せるゔぁどぅ</string></dict>	<!-- セルヴァどぅ だった(learningBOX 検査 3662) -->
 	<dict><key>phrase</key><string>グリューナー</string><key>shortcut</key><string>ぐりゅーなー</string></dict>	<!-- グリューナー・ヴェルトリーナーの略(いずれもグリューナー が いずれモグリューなー だった。learningBOX 検査 3658) -->
 	<dict><key>phrase</key><string>アンダナ</string><key>shortcut</key><string>あんだな</string></dict>
 	<dict><key>phrase</key><string>オセアニカ</string><key>shortcut</key><string>おせあにか</string></dict>
@@ -6021,6 +6026,7 @@
 	<dict><key>phrase</key><string>カリカタ</string><key>shortcut</key><string>かりかた</string></dict>
 
 	<!-- ■ 栽培技術、剪定・仕立て -->
+	<dict><key>phrase</key><string>花振い</string><key>shortcut</key><string>はなぶるい</string></dict>	<!-- 結実不良(花古い だった。learningBOX 検査 3662) -->
 	<dict><key>phrase</key><string>節間</string><key>shortcut</key><string>せっかん</string></dict>	<!-- 節と節の間(節間が広がる が 石棺が だった。learningBOX 検査 3658) -->
 	<dict><key>phrase</key><string>混植</string><key>shortcut</key><string>こんしょく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 多品種の混植 が 混色 だった(learningBOX 検査 3658) -->
 	<dict><key>phrase</key><string>テン・バイ・ファイブ</string><key>shortcut</key><string>てんばいふぁいぶ</string></dict>
