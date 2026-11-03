@@ -1573,11 +1573,11 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.multiClauseCandidates(for: "きせんを", systemCandidateMode: .surface).first, "輝線を")
     }
 
-    // あひる/あひるまーく/まし/のり はかなを先頭に(ユーザ指定 3655)
+    // あひる/まし/のり はかなを先頭に(ユーザ指定 3655)。あひるまーく は あひるマーク/アヒルマーク/家鴨マーク/あひるまーく の順(3656)
     func testRegressionRealLMKanaFirstAhiruMashiNori() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
-        for (reading, expected) in [("あひる", ["あひる", "アヒル", "家鴨"]), ("あひるまーく", ["あひるまーく", "アヒルまーく", "家鴨まーく"]),
+        for (reading, expected) in [("あひる", ["あひる", "アヒル", "家鴨"]), ("あひるまーく", ["あひるマーク", "アヒルマーク", "家鴨マーク"]),
                                     ("のり", ["のり", "ノリ", "乗り"])] {
             let list = converter.candidates(for: reading, limit: 6, systemCandidateMode: .surface)
             XCTAssertEqual(Array(list.prefix(3)), expected, "\(reading): \(list)")
