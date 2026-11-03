@@ -50,6 +50,7 @@
 	<dict><key>phrase</key><string>様々</string><key>shortcut</key><string>さまざま</string></dict>	<!-- 様々な果物 が 様々 先頭だった(learningBOX 検査 3658、ユーザ指定: 副詞・接続詞と同じくかな書き) -->
 	<dict><key>phrase</key><string>様様</string><key>shortcut</key><string>さまざま</string></dict>
 	<dict><key>phrase</key><string>様ざま</string><key>shortcut</key><string>さまざま</string></dict>
+	<dict><key>phrase</key><string>共に</string><key>shortcut</key><string>ともに</string></dict>	<!-- とともに が と共に だった(learningBOX 検査 3661) -->
 	<dict><key>phrase</key><string>然も</string><key>shortcut</key><string>さも</string></dict>
 	<dict><key>phrase</key><string>強いて</string><key>shortcut</key><string>しいて</string></dict>
 	<dict><key>phrase</key><string>強か</string><key>shortcut</key><string>したたか</string></dict>
