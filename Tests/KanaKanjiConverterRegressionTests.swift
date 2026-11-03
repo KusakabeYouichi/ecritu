@@ -1643,6 +1643,15 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single("きっぱ"), ["キッパ"])
         // こなした はかなが先(連文節でも)
         XCTAssertEqual(multi("ごせんもこなした").first, "五千もこなした")
+        // learningBOX 検査の備考なしの指摘(3661): 酒の目的語+造る、酸化/呼称+動詞、辛口の白、ぶどうの果皮、が+占める、樽+助詞
+        XCTAssertEqual(multi("あかわいんをつくるかていで").first, "赤ワインを造る過程で")
+        XCTAssertEqual(multi("ぱんをつくる").first, "パンを作る")
+        XCTAssertEqual(multi("さんかをふせぐため").first, "酸化を防ぐため")
+        XCTAssertEqual(multi("こしょうをしようできます").first, "呼称を使用できます")
+        XCTAssertEqual(multi("からくちのしろ").first, "辛口の白")
+        XCTAssertEqual(multi("ぶどうのかひ").first, "ぶどうの果皮")
+        XCTAssertEqual(multi("わいんがしめています").first, "ワインが占めています")
+        XCTAssertEqual(multi("たるからのせいぶんちゅうしゅつ").first, "樽からの成分抽出")
     }
 
     // learningBOX 検査 3658 の備考つきの指摘(正しい読みで)
