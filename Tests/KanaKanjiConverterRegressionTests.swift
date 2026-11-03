@@ -1631,6 +1631,11 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multiTop("べりーなどさまざまなくだものからつくられ")?.contains("さまざまな"), true)
         // 追加語彙の 行なう は文の中でも本則の 行う より先(送り仮名の設定は本則だけ)
         XCTAssertEqual(multiTop("あかわいんはしゅはっこうごにあっさくをおこない"), "赤ワインは主醗酵後に圧搾を行ない")
+        // 補酒 は酒の文脈だけ(ユーザ指定 3659)
+        XCTAssertEqual(multiTop("たるにほしゅをする"), "樽に補酒をする")
+        XCTAssertEqual(multiTop("わいんのほしゅ"), "ワインの補酒")
+        XCTAssertEqual(multiTop("しすてむのほしゅ"), "システムの保守")
+        XCTAssertEqual(converter.candidates(for: "ほしゅ", limit: 3, systemCandidateMode: .surface).first, "保守")
     }
 
     // あっぱくかんのあるせき が 圧迫感のアル籍 だった(アル→籍 が ある→席 に勝つ。ユーザ指定 3656)
