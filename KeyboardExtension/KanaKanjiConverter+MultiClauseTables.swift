@@ -42,6 +42,10 @@ extension KanaKanjiConverter {
     // seed がかなを先頭に置く読み(にんじん/ぜひ 等)。その読みの、seed に無い漢字の活用派生(任じん=任じ+ん の関西弁否定)には
     // 上の割引を与えない。こっちがにんじん が が→任じん(5000)でかな にんじん(5302)に 302 勝っていた(3638、ユーザ報告)。
     // seed に並ぶ派生(無くて)まで外すと かねがなくて の 2 番めが 鐘がなくて になる(全網 1 件)
+    // seed がかな先頭で、seed に並ぶ漢字の派生(熟した)にも割引を与えない読み(5000もこなした が も熟した だった。ユーザ報告 3664)。
+    // 既定では seed に並ぶ派生は割引を受ける(かねがなくて の 金が無くて を 2 番めに保つため)
+    static let multiClauseSeedKanaLeadStrictReadings: Set<String> = ["こなした", "こなして", "こなし"]
+    static let multiClauseSeedKanaLeadStrictReadingsID = MultiClauseIDSet(multiClauseSeedKanaLeadStrictReadings)
     static let multiClauseSeedKanaLeadReadings: Set<String> = Set(KanaKanjiSeedDictionary.seed.compactMap { $0.value.first == $0.key ? $0.key : nil })
     // サ変の派生のうち、かなの語幹から作った かな派生(ぜんしんできる)だけが立つときの判定に使う接尾(3638)。
     // 語幹のかな(ぜんしん 8139)が LM で漢字(前身 5238/前進 6049)に劣るなら供給しない。漢字側は 前進+できる の 2 ノードが担う
@@ -2014,6 +2018,8 @@ extension KanaKanjiConverter {
         "時間\t静置": 3000, "静置\tし": 3000, "静置\tする": 3000,
         // と呼ばれ が と喚ばれ だった(同じ検査)。生産地域名呼称/産地呼称
         // 5000もこなした(も熟した/モコナした だった。ユーザ報告 3663)
+        // 写真は向きを(写真は+無+気を だった。ユーザ報告 3664)
+        "向き\tを": 2000, "は\t向き": 1500, "が\t向き": 1500, "も\t向き": 1500,
         "も\tこなした": 3000, "も\tこなし": 3000, "も\tこなして": 3000, "も\tこなす": 3000,
         "と\t呼ばれ": 3000, "とも\t呼ばれ": 3000, "と\t呼ばれる": 3000, "名\t呼称": 3000, "産地\t呼称": 3000,
         // なはのけいさつけん が 那覇の警察権(の→警察権 6157 の Wikipedia 実績。ユーザ指定 3649)
@@ -3759,6 +3765,7 @@ extension KanaKanjiConverter {
             for s in KanaKanjiConverter.multiClauseKudasaiReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClausePlaceNameTerritoryReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClausePpanashiReadings.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseSeedKanaLeadStrictReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseKatakanaSuffixPreferredSurfaces.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseKatakanaSuffixDemotedSurfaces.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseSugiSuffixSurfaces.sorted() { add(s) }

@@ -2573,7 +2573,8 @@ extension KanaKanjiConverter {
                     || Self.isParticleTailedAdverbialSurface(prev, reading: prevReading)
                 // seed がかなを先頭に置く読み(にんじん)の、seed に無い漢字派生(任じん)には割引を与えない(定数コメント参照。3638)。
                 // seed に並ぶ派生(なくて/無くて)は従来どおり(かねがなくて の 2 番め 金が無くて を保つ)
-                let seedLeadsWithKana = !isKanaIdentity && Self.multiClauseSeedKanaLeadReadingsID.contains(readingID) && !isSeedListedValue()
+                let seedLeadsWithKana = !isKanaIdentity && Self.multiClauseSeedKanaLeadReadingsID.contains(readingID)
+                    && (!isSeedListedValue() || Self.multiClauseSeedKanaLeadStrictReadingsID.contains(readingID))
                 base = prevAllowsInflectionDiscount && !seedLeadsWithKana
                     ? Self.multiClauseInflectionAfterParticleCost
                     : Self.multiClauseInflectionDerivedOOVCost
@@ -2636,7 +2637,8 @@ extension KanaKanjiConverter {
                     || Self.multiClauseInflectionDiscountConjunctiveParticlesID.contains(prevID)
                     || Self.isParticleTailedAdverbialSurface(prev, reading: prevReading)
                 // seed がかなを先頭に置く読みの漢字派生(任じん)には割引を与えない(定数コメント参照。3638)。上の基礎コストと同じ除外
-                let capSeedLeadsWithKana = !isKanaIdentity && Self.multiClauseSeedKanaLeadReadingsID.contains(readingID) && !isSeedListedValue()
+                let capSeedLeadsWithKana = !isKanaIdentity && Self.multiClauseSeedKanaLeadReadingsID.contains(readingID)
+                    && (!isSeedListedValue() || Self.multiClauseSeedKanaLeadStrictReadingsID.contains(readingID))
                 var cap = prevAllowsInflectionDiscount && !capSeedLeadsWithKana
                     ? Self.multiClauseInflectionAfterParticleCost
                     : Self.multiClauseInflectionDerivedOOVCost
