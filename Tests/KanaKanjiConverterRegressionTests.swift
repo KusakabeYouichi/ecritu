@@ -1652,6 +1652,15 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("ぶどうのかひ").first, "ぶどうの果皮")
         XCTAssertEqual(multi("わいんがしめています").first, "ワインが占めています")
         XCTAssertEqual(multi("たるからのせいぶんちゅうしゅつ").first, "樽からの成分抽出")
+        // 3663 のユーザ報告
+        XCTAssertEqual(Array(multi("つきっぱなし").prefix(3)), ["つきっぱなし", "点きっぱなし", "つきっ放し"])
+        XCTAssertEqual(Array(multi("やくよりも").prefix(3)), ["役よりも", "焼くよりも", "訳よりも"])
+        XCTAssertEqual(converter.multiClauseCandidates(for: "もこなした", systemCandidateMode: .surface, precedingCharacter: "0").first, "もこなした")
+        XCTAssertEqual(multi("しごとをこなした").first, "仕事をこなした")
+        XCTAssertEqual(Array(multi("とんかつていしょく").prefix(2)), ["とんかつ定食", "豚カツ定食"])
+        XCTAssertFalse(multi("とんかつていしょく").contains("とんかつ抵触"))
+        XCTAssertEqual(multi("めんどくさがらずに").first, "めんどくさがらずに")
+        XCTAssertEqual(Array(multi("がめいなど").prefix(2)), ["Gamayなど", "ガメイなど"])
     }
 
     // learningBOX 検査 3658 の備考つきの指摘(正しい読みで)
