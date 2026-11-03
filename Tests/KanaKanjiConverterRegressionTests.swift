@@ -1586,6 +1586,15 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.candidates(for: "のりまき", limit: 4, systemCandidateMode: .surface).first, "海苔巻き")
     }
 
+    // あっぱくかんのあるせき が 圧迫感のアル籍 だった(アル→籍 が ある→席 に勝つ。ユーザ指定 3656)
+    func testRegressionRealLMAppakukanNoAruSeki() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let multi = converter.multiClauseCandidates(for: "あっぱくかんのあるせき", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "圧迫感のある席", "\(multi.prefix(4))")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "こせきのある", systemCandidateMode: .surface).first, "戸籍のある")
+    }
+
     // 数字の後の れつめを も X.14 の め に従う(列 が助数詞の表に無かった。ユーザ報告 3655)
     func testRegressionRealLMDigitRetsumeWo() throws {
         try prepareRealLMDictionary()
