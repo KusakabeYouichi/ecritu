@@ -438,6 +438,7 @@
 	<dict><key>phrase</key><string>ブレ</string><key>shortcut</key><string>ぶれ</string><key>pos</key><string>名詞</string></dict>	<!-- 味にブレが/手ブレ の ブレ。LM に無くカタカナ化の減点(+100000)で消え、あじにぶれが→味に触れが/味鈍れが だった(ユーザ報告 3778) -->
 	<dict><key>phrase</key><string>サイドブレイキ</string><key>shortcut</key><string>さいどぶれいき</string><key>pos</key><string>名詞</string></dict>	<!-- サイド+ブレイキ の合成は 再度ブレイキ が先頭だった(ユーザ指定 3778) -->
 	<dict><key>phrase</key><string>ブレイキ</string><key>shortcut</key><string>ぶれいき</string><key>pos</key><string>名詞</string></dict>	<!-- ブレーキ の -エイ- 表記(グラデイション/アップデイト と同じ書き方)。部励起/部冷気 だった(ユーザ指定 3778) -->
+	<dict><key>phrase</key><string>日較差</string><key>shortcut</key><string>にっかくさ</string><key>pos</key><string>名詞</string></dict>	<!-- 気温の日較差: 辞書の読みは にちかくさ/にっこうさ だけで、よく使う にっかくさ では 日覚さ だった(learningBOX 検査 3657) -->
 	<!-- écritu 自身の語彙の呼称(LM 未収録で 追加+後位 の分割が先頭だった。ユーザ報告 3703) -->
 	<dict><key>phrase</key><string>追加語彙</string><key>shortcut</key><string>ついかごい</string></dict>
 	<dict><key>phrase</key><string>学習語彙</string><key>shortcut</key><string>がくしゅうごい</string></dict>
