@@ -4347,6 +4347,7 @@
 	<dict><key>phrase</key><string>à vin</string><key>shortcut</key><string>あゔぁん</string></dict>
 
 	<!-- ■ ワイン用ぶどう品種名 / セパージュ -->
+	<dict><key>phrase</key><string>グリューナー</string><key>shortcut</key><string>ぐりゅーなー</string></dict>	<!-- グリューナー・ヴェルトリーナーの略(いずれもグリューナー が いずれモグリューなー だった。learningBOX 検査 3658) -->
 	<dict><key>phrase</key><string>アンダナ</string><key>shortcut</key><string>あんだな</string></dict>
 	<dict><key>phrase</key><string>オセアニカ</string><key>shortcut</key><string>おせあにか</string></dict>
 	<dict><key>phrase</key><string>カラマン</string><key>shortcut</key><string>からまん</string></dict>
@@ -5266,6 +5267,7 @@
 	<dict><key>phrase</key><string>清見</string><key>shortcut</key><string>きよみ</string></dict>	<!-- Sudachiにもある -->
 
 	<!-- ■ 米の品種・芋の品種 -->
+	<dict><key>phrase</key><string>夢の香</string><key>shortcut</key><string>ゆめのか</string></dict>	<!-- 福島の酒米(learningBOX 検査 3658、作者確認。銘柄の 夢の香(ゆめのかおり)は sake.plist) -->
 	<dict><key>phrase</key><string>黄金千貫</string><key>shortcut</key><string>こがねせんがん</string></dict>
 	<dict><key>phrase</key><string>M310</string><key>shortcut</key><string>えむさんいちぜろ</string></dict>
 	<dict><key>phrase</key><string>雄町</string><key>shortcut</key><string>おまち</string></dict>	<!-- Sudachiにもある -->
@@ -6019,6 +6021,8 @@
 	<dict><key>phrase</key><string>カリカタ</string><key>shortcut</key><string>かりかた</string></dict>
 
 	<!-- ■ 栽培技術、剪定・仕立て -->
+	<dict><key>phrase</key><string>節間</string><key>shortcut</key><string>せっかん</string></dict>	<!-- 節と節の間(節間が広がる が 石棺が だった。learningBOX 検査 3658) -->
+	<dict><key>phrase</key><string>混植</string><key>shortcut</key><string>こんしょく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 多品種の混植 が 混色 だった(learningBOX 検査 3658) -->
 	<dict><key>phrase</key><string>テン・バイ・ファイブ</string><key>shortcut</key><string>てんばいふぁいぶ</string></dict>
 	<dict><key>phrase</key><string>Y字型</string><key>shortcut</key><string>わいじがた</string></dict>
 	<dict><key>phrase</key><string>果房</string><key>shortcut</key><string>かぼう</string></dict>
@@ -6087,6 +6091,7 @@
 	<dict><key>phrase</key><string>改良スマート仕立て</string><key>shortcut</key><string>かいりょうすまーとじたて</string></dict>
 
 	<!-- ■ 醸造技術 -->
+	<dict><key>phrase</key><string>濾紙</string><key>shortcut</key><string>ろし</string></dict>	<!-- フィルターや濾紙など が ろ市 だった(learningBOX 検査 3658) -->
 	<dict><key>phrase</key><string>Crush</string><key>shortcut</key><string>くらっしゅ</string></dict>
 	<dict><key>phrase</key><string>チュリ</string><key>shortcut</key><string>ちゅり</string></dict>
 	<dict><key>phrase</key><string>STELVIN</string><key>shortcut</key><string>すてるゔぁん</string></dict>
@@ -7630,6 +7635,8 @@
 
 
 	<!-- ■ 物質 -->
+	<dict><key>phrase</key><string>糖蜜</string><key>shortcut</key><string>とうみつ</string></dict>	<!-- ラムの原料(糖蜜は が 東密は だった。learningBOX 検査 3658) -->
+	<dict><key>phrase</key><string>残存糖分</string><key>shortcut</key><string>ざんぞんとうぶん</string></dict>	<!-- 残存当分 だった(learningBOX 検査 3658) -->
 	<dict><key>phrase</key><string>ALDH</string><key>shortcut</key><string>えーえるでぃーえいち</string></dict>
 	<dict><key>phrase</key><string>ADH</string><key>shortcut</key><string>えーでぃーえいち</string></dict>
 	<dict><key>phrase</key><string>3MH</string><key>shortcut</key><string>さんえむえいち</string></dict>
