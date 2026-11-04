@@ -1666,6 +1666,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(multi("とんかつていしょく").prefix(2)), ["とんかつ定食", "豚カツ定食"])
         XCTAssertFalse(multi("とんかつていしょく").contains("とんかつ抵触"))
         XCTAssertEqual(multi("めんどくさがらずに").first, "めんどくさがらずに")
+        // 名詞化の送り仮名を補う(色付/軟水寄/寒冷地向/レーズン入 が先頭だった。learningBOX 検査 3666)。固定の形は補わない
+        XCTAssertEqual(single("いろつき").first, "色付き")
+        XCTAssertEqual(multi("なんすいよりで").first, "軟水寄りで")
+        XCTAssertEqual(multi("かんれいちむけにかいはつされた").first, "寒冷地向けに開発された")
+        XCTAssertEqual(multi("れーずんいりぶりおっしゅ").first, "レーズン入りブリオッシュ")
+        XCTAssertEqual(single("ひづけ").first, "日付")
+        XCTAssertTrue(single("うけつけ").contains("受付"))
+        XCTAssertEqual(single("いりぐち").first, "入口")
+        XCTAssertNil(KanaKanjiConverter.nominalizedOkuriganaRestored("寄付金", reading: "きふきん"))
+        XCTAssertNil(KanaKanjiConverter.nominalizedOkuriganaRestored("気付", reading: "きつけ"))
+        XCTAssertEqual(KanaKanjiConverter.nominalizedOkuriganaRestored("表記付テーブル", reading: "ひょうきつきてーぶる"), "表記付きテーブル")
         XCTAssertEqual(Array(multi("がめいなど").prefix(2)), ["Gamayなど", "ガメイなど"])
     }
 

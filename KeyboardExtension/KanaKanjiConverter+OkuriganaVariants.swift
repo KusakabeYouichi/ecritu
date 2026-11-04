@@ -161,7 +161,129 @@ extension KanaKanjiConverter {
         return nil
     }
 
-    func applyOkuriganaVariantPreference(reading: String, to candidates: [String]) -> [String] {
+    // 名詞化のリスト語(付き/向け/寄り/狩り …)の読みのかなを省いた表記に、送り仮名を補った形。
+    // 色付/軟水寄/寒冷地向/鷹狩/レーズン入 は辞書の 1 語(または連文節の 1 ノード)で、本則の形が候補に無いため
+    // 下の組分けでは並べ替えられなかった(learningBOX 検査 3666)。候補の漢字・カタカナの塊を読みに対応づけ、
+    // 塊の末尾の字がリスト語の漢字で、その塊の読みがリスト語の読み(つき/むけ …)で終わり、後ろに送り仮名が続かないときだけ補う。
+    // 受付/気付/番付 などの固定の形は補わない
+    private static let okuriganaNominalizedKanaReadings: [Character: [(kana: Character, readings: [String])]] = [
+        "付": [("き", ["つき", "づき"]), ("け", ["つけ", "づけ"])],
+        "向": [("き", ["むき"]), ("け", ["むけ"])],
+        "入": [("り", ["いり"])],
+        "寄": [("り", ["より"])],
+        "狩": [("り", ["かり", "がり"])],
+        "届": [("け", ["とどけ"])],
+        "願": [("い", ["ねがい"])],
+        "答": [("え", ["こたえ"])],
+        "問": [("い", ["とい"])],
+        "祭": [("り", ["まつり"])],
+        "群": [("れ", ["むれ"])]
+    ]
+
+    static func nominalizedOkuriganaRestored(_ candidate: String, reading: String) -> String? {
+        let characters = Array(candidate)
+        guard characters.contains(where: { okuriganaNominalizedKanaReadings[$0] != nil }) else { return nil }
+        // 塊(ひらがなの連続/それ以外の連続)に分ける
+        // 漢字とカタカナの境目でも分ける(表記付テーブルワイン/レーズン入ブリオッシュ の 付・入 を塊の末尾にする)
+        var runs: [(isHiragana: Bool, start: Int, end: Int)] = []
+        var lastClass = -1
+        for (index, character) in characters.enumerated() {
+            let hiragana = isHiragana(character)
+            let characterClass = hiragana ? 0 : (isKanji(character) ? 1 : 2)
+            defer { lastClass = characterClass }
+            if let last = runs.last, last.isHiragana == hiragana, hiragana || lastClass != 1 || characterClass == 1 {
+                runs[runs.count - 1].end = index + 1
+            } else {
+                runs.append((hiragana, index, index + 1))
+            }
+        }
+        let readingCharacters = Array(reading)
+        // ひらがなの塊とカタカナだけの塊は読みと一字一字一致させる(カタカナはひらがなに直す)。それ以外は 1 字以上
+        let literals: [[Character]?] = runs.map { run in
+            let slice = characters[run.start..<run.end]
+            if run.isHiragana { return Array(slice) }
+            var converted: [Character] = []
+            for character in slice {
+                guard let scalar = character.unicodeScalars.first, character.unicodeScalars.count == 1 else { return nil }
+                if (0x30A1...0x30F6).contains(scalar.value), let hiragana = Unicode.Scalar(scalar.value - 0x60) {
+                    converted.append(Character(hiragana))
+                } else if scalar.value == 0x30FC {
+                    converted.append(character)
+                } else {
+                    return nil
+                }
+            }
+            return converted
+        }
+        // 各塊が読みのどこからどこまでかを求める
+        var failed = Set<Int>()
+        var spans: [Range<Int>] = []
+        func align(_ runIndex: Int, _ position: Int) -> Bool {
+            if runIndex == runs.count { return position == readingCharacters.count }
+            let key = runIndex * 1024 + position
+            if failed.contains(key) { return false }
+            if let literal = literals[runIndex] {
+                let length = literal.count
+                if position + length <= readingCharacters.count,
+                    Array(readingCharacters[position..<(position + length)]) == literal {
+                    spans.append(position..<(position + length))
+                    if align(runIndex + 1, position + length) { return true }
+                    spans.removeLast()
+                }
+            } else if position < readingCharacters.count {
+                for end in (position + 1)...readingCharacters.count {
+                    spans.append(position..<end)
+                    if align(runIndex + 1, end) { return true }
+                    spans.removeLast()
+                }
+            }
+            failed.insert(key)
+            return false
+        }
+        guard readingCharacters.count < 1024, align(0, 0) else { return nil }
+        var result = characters
+        var inserted = 0
+        for (runIndex, run) in runs.enumerated() where !run.isHiragana && run.end - run.start >= 2 {
+            let last = characters[run.end - 1]
+            guard let options = okuriganaNominalizedKanaReadings[last] else { continue }
+            let runReading = String(readingCharacters[spans[runIndex]])
+            let matches = options.filter { option in option.readings.contains(where: { runReading.hasSuffix($0) }) }
+            guard matches.count == 1, let kana = matches.first?.kana else { continue }
+            if runIndex + 1 < runs.count, characters[runs[runIndex + 1].start] == kana { continue }
+            let head = String(characters[run.start..<run.end])
+            if okuriganaFixedShortForms.contains(where: { head.hasSuffix($0) }) { continue }
+            result.insert(kana, at: run.end + inserted)
+            inserted += 1
+        }
+        return inserted > 0 ? String(result) : nil
+    }
+
+    // 名詞化の省略形に本則の形を補う。並びは 名詞化 の設定に従う(本則だけ=置き換え、本則を先に/許容を先に=両方)。
+    // 学習済みの表記は補わない(ユーザが選んだ形)
+    private func restoringNominalizedOkurigana(reading: String, in candidates: [String]) -> [String] {
+        let normalizedReading = KanaTextNormalizer.normalizedReading(reading)
+        let learned = Set(store.learnedDictionary()[normalizedReading] ?? [])
+        let mode = okuriganaVariantPreference.mode(for: .nominalized)
+        var result: [String] = []
+        var changed = false
+        for candidate in candidates {
+            guard !learned.contains(candidate),
+                let restored = Self.nominalizedOkuriganaRestored(candidate, reading: normalizedReading) else {
+                result.append(candidate)
+                continue
+            }
+            changed = true
+            switch mode {
+            case .standardOnly: result.append(restored)
+            case .standardFirst: result.append(contentsOf: [restored, candidate])
+            case .permittedFirst: result.append(contentsOf: [candidate, restored])
+            }
+        }
+        return changed ? uniqueCandidates(from: result) : candidates
+    }
+
+    func applyOkuriganaVariantPreference(reading: String, to inputCandidates: [String]) -> [String] {
+        var candidates = restoringNominalizedOkurigana(reading: reading, in: inputCandidates)
         guard candidates.count >= 2 else {
             return candidates
         }
@@ -205,7 +327,7 @@ extension KanaKanjiConverter {
         }
         // 守る表記(追加語彙の 行なう 等)と送り仮名だけが違う候補が前にあれば、守る表記をその位置へ上げる(3658、ユーザ指定)。
         // 守るだけでは順位は変わらず、圧搾を行ない が 圧搾を行い(連文節の最良)の 4 番目だった。単文節は seed で 行ない が先
-        var candidates = candidates
+        // (candidates は先頭で var にした)
         let bucketMembers = candidateBuckets.map { $0.map { candidates[$0] } }
         for members in bucketMembers {
             for i in members.indices {
