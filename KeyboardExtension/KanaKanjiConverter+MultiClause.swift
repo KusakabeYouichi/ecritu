@@ -285,6 +285,7 @@ extension KanaKanjiConverter {
             KanaKanjiSeedDictionary.seed[reading]?.contains(katakana) == true || store.wordCosts(for: reading)[katakana] != nil
         }
         candidates = placeNameSanOrdered(reading: reading, candidates: candidates, systemCandidateMode: systemCandidateMode)
+        candidates = Self.liquorCategoryOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         // 名詞+っぱなし(沖っぱなし/槍っぱなし/山車っぱなし)は後ろへ。経路は 連用形+っぱなし でも、区間の兄弟表記の差し替えで
         // 名詞が先頭に来ていた(3661)。直前が送り仮名のない漢字の候補(見/寝/出/居/着 の一字動詞は除く)
         if candidates.count >= 2, candidates.contains(where: { $0.contains("っぱなし") || $0.contains("っ放し") }) {
@@ -375,6 +376,21 @@ extension KanaKanjiConverter {
             return result
         }
         return candidates
+    }
+
+    // 酒税の分類の話(発泡性酒類/醸造酒類/酒税法による酒類/酒類ごとのアルコール分)では しゅるい を 酒類 に(ユーザ指定 3669)。
+    // 一般の文は 種類 が先(ワインの種類 は 種類 のまま。酒類 は元から 2 番目)。読みに分類の語があるときだけ、
+    // 先頭の候補の 種類 を 酒類 に替えた形を先頭に置く
+    static let liquorCategoryContextReadings: [String] = [
+        "しゅぜい", "はっぽうせい", "じょうぞうしゅ", "じょうりゅうしゅ", "こんせいしゅ", "あるこーるぶん"
+    ]
+    static func liquorCategoryOrdered(reading: String, candidates: [String]) -> [String] {
+        guard reading.contains("しゅるい"), let top = candidates.first, top.contains("種類"),
+            liquorCategoryContextReadings.contains(where: { reading.contains($0) }) else {
+            return candidates
+        }
+        let replaced = top.replacingOccurrences(of: "種類", with: "酒類")
+        return [replaced] + candidates.filter { $0 != replaced }
     }
 
     // 地名の読み+さん の連文節の並び(単文節の applyPlaceNameSanPreference と同じ方針。3661、ユーザ指定)。
@@ -1720,6 +1736,12 @@ extension KanaKanjiConverter {
                     // 名詞区間の検出(連語キー登録)は動詞区間のノード生成より必ず先に済んでいる。
                     if let preferredVerbPrefixes = collocationPreferredVerbSurfacePrefixesByStart[start],
                         surfaceMatchesCollocationVerb(surface, start: start, prefixes: preferredVerbPrefixes) {
+                        collocationPreferredVerbNodeKeys.insert(spanKeyByStart[start][end] + "-" + surface)
+                    } else if surface == segmentReading,
+                        let preferredVerbPrefixes = collocationPreferredVerbSurfacePrefixesByStart[start],
+                        preferredVerbPrefixes.contains(where: { $0 == "有" || $0 == "在" }) {
+                        // 存在の ある は かな が先(必要がある。ユーザ指定 3669)。表(3774)の 有/在 は 有る と 在る の選び分けなので、
+                        // かな は対抗にせず同じ選好にして LM の順(あり 3422 < 有り 6316)に任せる。必要が有ります が先頭だった
                         collocationPreferredVerbNodeKeys.insert(spanKeyByStart[start][end] + "-" + surface)
                     } else if objectVerbSpanIsRival {
                         // 表(3774)の動詞位置で優先表記に当たらない同じ区間のノード(挙げる 対 上げる、得 対 解く)は下げる。
