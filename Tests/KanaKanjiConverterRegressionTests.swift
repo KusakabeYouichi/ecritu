@@ -1795,6 +1795,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("せいてんりつがたかいひでもあります").first, "晴天率が高い日でもあります")
         XCTAssertEqual(multi("せいてんのへきれき").first, "晴天の霹靂")
         XCTAssertEqual(multi("ひでんのたれ").first, "秘伝のたれ")
+        // 3682(ユーザ報告): ことよね はかな
+        XCTAssertEqual(multi("ことよね").first, "ことよね")
+        XCTAssertEqual(multi("のことよね").first, "のことよね")
         // 3676(ユーザ指定): ワインや酒の話は 造る、せんか は 選果 先頭、りょう の並び
         XCTAssertEqual(multi("わいんはぶどうからつくられます").first, "ワインはぶどうから造られます")
         XCTAssertEqual(multi("ぱんをつくる").first, "パンを作る")
