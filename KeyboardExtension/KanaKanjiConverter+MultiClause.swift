@@ -289,6 +289,7 @@ extension KanaKanjiConverter {
         candidates = Self.yokuOrthographyOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.sweetnessOrthographyOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.kanaSecondVariantOrdered(candidates)
+        candidates = Self.brewingMakeOrthographyOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         // 名詞+っぱなし(沖っぱなし/槍っぱなし/山車っぱなし)は後ろへ。経路は 連用形+っぱなし でも、区間の兄弟表記の差し替えで
         // 名詞が先頭に来ていた(3661)。直前が送り仮名のない漢字の候補(見/寝/出/居/着 の一字動詞は除く)
         if candidates.count >= 2, candidates.contains(where: { $0.contains("っぱなし") || $0.contains("っ放し") }) {
@@ -465,6 +466,30 @@ extension KanaKanjiConverter {
             rewritten = result + rest
         }
         guard rewritten != top else { return candidates }
+        return [rewritten] + candidates.filter { $0 != rewritten }
+    }
+
+    // ワインや酒の話では つくる を 造る に(ユーザ指定 3675)。目的語の名詞が無い文(ブランから作るアイス/から作られます)は
+    // 連語表(酒の目的語+造る)が効かないので、読みに酒の語があれば先頭の候補の 作+活用語尾 を 造 に替える。
+    // 作品/作業/作家 のように 作 の後ろが漢字の語は触らない
+    static let brewingContextReadings: [String] = [
+        "わいん", "さけ", "にほんしゅ", "せいしゅ", "しゅぞう", "じょうぞう", "びーる", "しょうちゅう", "ういすきー",
+        "ぶらんでー", "りきゅーる", "すぴりっつ", "しぇりー", "しゃんぱーにゅ", "ぶどう", "もろみ", "しゅぼ"
+    ]
+    static func brewingMakeOrthographyOrdered(reading: String, candidates: [String]) -> [String] {
+        guard reading.contains("つく"), let top = candidates.first, top.contains("作"),
+            brewingContextReadings.contains(where: { reading.contains($0) }) else {
+            return candidates
+        }
+        var characters = Array(top)
+        var changed = false
+        for index in characters.indices where characters[index] == "作" && index + 1 < characters.count
+            && "らりるれろっ".contains(characters[index + 1]) {
+            characters[index] = "造"
+            changed = true
+        }
+        guard changed else { return candidates }
+        let rewritten = String(characters)
         return [rewritten] + candidates.filter { $0 != rewritten }
     }
 

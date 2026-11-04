@@ -1757,6 +1757,13 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("せいかいはおどりです").first, "正解は踊りです")
         XCTAssertEqual(multi("せいさんかのうしょくはしろのみ").first, "生産可能色は白のみ")
         XCTAssertEqual(Array(multi("くりゅには").prefix(2)), ["Cruには", "クリュには"])
+        // 3676(ユーザ指定): ワインや酒の話は 造る、せんか は 選果 先頭、りょう の並び
+        XCTAssertEqual(multi("わいんはぶどうからつくられます").first, "ワインはぶどうから造られます")
+        XCTAssertEqual(multi("ぱんをつくる").first, "パンを作る")
+        XCTAssertEqual(multi("せいかいはせんかです").first, "正解は選果です")
+        XCTAssertEqual(Array(single("せんか").prefix(5)), ["選果", "専科", "戦果", "戦禍", "戦火"])
+        XCTAssertEqual(Array(single("りょう").prefix(6)), ["量", "漁", "猟", "寮", "両", "良"])
+        XCTAssertEqual(multi("りょうじんえい").first ?? single("りょうじんえい").first, "両陣営")
         XCTAssertEqual(KanaKanjiConverter.sweetnessOrthographyOrdered(reading: "あまみおおしまのわいん", candidates: ["奄美大島のワイン"]), ["奄美大島のワイン"])
         XCTAssertNil(KanaKanjiConverter.nominalizedOkuriganaRestored("寄付金", reading: "きふきん"))
         XCTAssertNil(KanaKanjiConverter.nominalizedOkuriganaRestored("気付", reading: "きつけ"))
@@ -23981,7 +23988,7 @@ extension KanaKanjiConverterRegressionTests {
             ("けんきゅう", ["研究", "建久"], ["硏究", "腱弓"]),
             ("こちょう", ["誇張", "胡蝶", "戸長", "小町"], ["蝴蝶", "鼓腸", "胡趙"]),
             ("すいにん", ["推任", "垂仁"], ["推認"]),
-            ("せんか", ["選果", "専科", "戦果", "戦火", "戦禍", "宣化"], ["仙花", "選歌"]),
+            ("せんか", ["選果", "専科", "戦果", "戦禍", "戦火", "宣化"], ["仙花", "選歌"]),  // 戦禍/戦火 の順(ユーザ指定 3676)
             ("せんれい", ["先例", "洗礼"], ["船齢", "鮮麗", "船令"]),
             ("ていか", ["低下", "定価", "定家"], ["逓下", "逓加", "低価", "禎嘉"]),
             ("のりこ", ["紀子", "典子", "規子", "教子", "範子"], ["乗り子"]),
