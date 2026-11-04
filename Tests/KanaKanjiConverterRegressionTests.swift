@@ -1817,6 +1817,11 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("どれくらいのかな").first, "どれくらいのかな")
         XCTAssertEqual(multi("すこしくらいなら").first, "少しくらいなら")
         XCTAssertEqual(multi("いちじかんくらい").first, "一時間くらい")
+        // 3685(learningBOX 検査 3684 の退行): カード(凝乳)を醗酵させる
+        XCTAssertEqual(multi("たいせきしたかーどをはっこうさせたあと").first, "堆積したカードを醗酵させた後")
+        XCTAssertEqual(multi("かーどをはっこうする").first, "カードを発行する")
+        XCTAssertEqual(multi("かーどのさいはっこう").first, "カードの再発行")
+        XCTAssertEqual(multi("しょうめいしょをはっこうさせる").first, "証明書を発行させる")
         // 3676(ユーザ指定): ワインや酒の話は 造る、せんか は 選果 先頭、りょう の並び
         XCTAssertEqual(multi("わいんはぶどうからつくられます").first, "ワインはぶどうから造られます")
         XCTAssertEqual(multi("ぱんをつくる").first, "パンを作る")
