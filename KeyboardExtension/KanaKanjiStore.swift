@@ -1507,6 +1507,10 @@ final class KanaKanjiStore {
         for (reading, candidates) in hiddenNounSuppressionDictionary() {
             decodedDictionary[reading, default: []].append(contentsOf: candidates)
         }
+        // 辞書の「の込み」読み(みなもとの=源、たちばなの=橘 …)。ちょうどその読みのときだけ末尾に再供給する(3678)
+        for (reading, candidates) in GenitiveReadingTable.suppressed {
+            decodedDictionary[reading, default: []].append(contentsOf: candidates)
+        }
 
         guard !decodedDictionary.isEmpty else {
             withCacheLock { cachedSuppressedCandidatesByReading = [:] }

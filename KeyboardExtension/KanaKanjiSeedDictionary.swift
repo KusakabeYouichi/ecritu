@@ -4721,7 +4721,12 @@ enum KanaKanjiSeedDictionary {
         "たかそう": ["高そう", "高価そう"]
     ]
 
-    static let exactReadingOnlySeed: [String: [String]] = [
+    // 手で書いた表に、辞書の「の込み」読みの表(GenitiveReadingTable、生成)を合流させる(3678)
+    static let exactReadingOnlySeed: [String: [String]] = manualExactReadingOnlySeed.merging(GenitiveReadingTable.resupplied) { manual, generated in
+        manual + generated.filter { !manual.contains($0) }
+    }
+
+    private static let manualExactReadingOnlySeed: [String: [String]] = [
         // キッパ: 語コストが異常に安く つきっぱなし を割っていたので抑制し、単独の きっぱ だけ末尾に(3661)
         "きっぱ": ["キッパ"],
         // 日付の 五日: 辞書に無く出なかった。いつか(いつの日か)の先頭は守り、完全一致時のみ末尾供給(ユーザ指定 3612)
