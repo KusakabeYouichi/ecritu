@@ -177,7 +177,9 @@ extension KanaKanjiConverter {
         "答": [("え", ["こたえ"])],
         "問": [("い", ["とい"])],
         "祭": [("り", ["まつり"])],
-        "群": [("れ", ["むれ"])]
+        "群": [("れ", ["むれ"])],
+        // 和え(レモン果汁和/胡麻和 だった。learningBOX 検査 3671)
+        "和": [("え", ["あえ"])]
     ]
 
     static func nominalizedOkuriganaRestored(_ candidate: String, reading: String) -> String? {
