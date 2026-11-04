@@ -2216,6 +2216,15 @@ final class KeyboardViewController: UIInputViewController {
             let state = "view=\(Int(self.view.bounds.width))x\(Int(self.view.bounds.height)) alpha=\(self.view.alpha)"
                 + " 面=\(hostingView.map { "\(Int($0.frame.width))x\(Int($0.frame.height)) alpha=\($0.alpha) hidden=\($0.isHidden) superview=\($0.superview != nil)" } ?? "なし")"
                 + " ゲート=\(gateWasOpen ? "開" : "閉") 描画設定=\(self.lastRenderConfiguration != nil)"
+                + " 窓=\(self.view.window.map { "hidden=\($0.isHidden) alpha=\($0.alpha) key=\($0.isKeyWindow) 層=\($0.layer.sublayers?.count ?? 0)" } ?? "なし")"
+                + " 面の層=\(hostingView?.layer.sublayers?.count ?? -1)"
+                // 2 回とも、前の個体が viewWillDisappear を通らないまま差し替えられた直後に真っ白(3678 の調べ)。
+                // 同じプロセスで窓に付いたままの他の個体があれば、その状態も残す(上に重なって中身が捨てられていないか)
+                + Self.liveControllerCensus.allObjects.filter { $0 !== self && $0.isViewLoaded && $0.view.window != nil }.map { other in
+                    " 他の個体(\(other.diagnosticsState.diagnosticsControllerID.prefix(8)))="
+                        + "alpha=\(other.view.alpha) 面=\(other.hostingController?.view.alpha ?? -1) 面の層=\(other.hostingController?.view.layer.sublayers?.count ?? -1)"
+                        + " 同じ窓=\(other.view.window === self.view.window)"
+                }.joined()
             if hidden || !gateWasOpen {
                 self.isAwaitingInitialHeightSettle = false
                 self.view.alpha = 1
