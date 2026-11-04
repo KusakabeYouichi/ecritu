@@ -550,7 +550,7 @@ extension ContentView {
         SettingsKeys.suspendMemorySlimmingEnabled: true,
         SettingsKeys.shortcutVocabularyRecentsFirst: true,
         SettingsKeys.kaomojiCandidateDisplayEnabled: true,
-        SettingsKeys.contactCandidateDisplayMode: ContactCandidateDisplayModeOption.namesOnly.rawValue,  // 保守的=連絡先の名前を使う設定。選択操作起点なので許可要求は 5.1.1 上問題なし
+        SettingsKeys.contactCandidateDisplayMode: ContactCandidateDisplayModeOption.namesPlusFullName.rawValue,  // 現代的=フルネイムも(ユーザ指定 3679)。選択操作起点なので許可要求は 5.1.1 上問題なし
         SettingsKeys.userDictionaryCandidateDisplayMode: UserDictionaryCandidateDisplayModeOption.on.rawValue
     ]
 

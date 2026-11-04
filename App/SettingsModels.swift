@@ -728,9 +728,9 @@ enum ContactCandidateDisplayModeOption: String, CaseIterable, Identifiable {
         case .off:
             return "連絡先候補を使わない"
         case .namesOnly:
-            return "一致した名前だけ候補にする"
+            return "姓と名を別々に候補にする"
         case .namesPlusFullName:
-            return "姓/名一致でフルネームも候補にする"
+            return "フルネイムも候補にする"
         }
     }
 
@@ -739,9 +739,9 @@ enum ContactCandidateDisplayModeOption: String, CaseIterable, Identifiable {
         case .off:
             return "連絡先由来の候補を表示しません(戦略的初期設定)。"
         case .namesOnly:
-            return "姓・名・ニックネームなど、一致した項目のみ表示します。選ぶと連絡先へのアクセス許可を求めます(名前は端末内だけで使い、外部には送りません)。現代的初期設定と保守的初期設定はこれです。"
+            return "姓のふりがなで姓を、名のふりがなで名を表示します(うつみ → 内海、えみこ → えみこ)。会社名もふりがなで表示します。表記とふりがなの片方しかない項目は使いません。選ぶと連絡先へのアクセス許可を求めます(名前は端末内だけで使い、外部には送りません)。保守的初期設定はこれです。"
         case .namesPlusFullName:
-            return "姓または名が一致したときにフルネームも表示します。"
+            return "上に加えて、姓・名・姓名を続けたふりがなのどれでもフルネイムを表示します(うつみ/えみこ/うつみえみこ → 内海えみこ)。フルネイムを出すのは、姓と名のどちらも表記とふりがながそろっている連絡先だけです。選ぶと連絡先へのアクセス許可を求めます。現代的初期設定はこれです。"
         }
     }
 }

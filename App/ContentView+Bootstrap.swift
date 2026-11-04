@@ -23,24 +23,29 @@ extension ContentView {
         return "\(yearPart)-\(month)-\(day)"
     }
 
+    // 連絡先のふりがなを読みに直す(カタカナはひらがなに)。かな・長音以外の文字が混ざっていれば読みとして使わない(空を返す)。
+    // 空白と中黒は読みの区切りとして読み飛ばす。以前はかな以外の文字を黙って捨てており、表記を読みにする予備の経路で
+    // フルネイム「内海えみこ」が読み「えみこ」になり、「一致した名前だけ」の設定でも えみこ → 内海えみこ が出ていた(ユーザ報告 3679)
     static func normalizedContactReading(_ text: String) -> String {
         var normalized = ""
 
-        for character in text {
-            let source = String(character).precomposedStringWithCanonicalMapping
+        for character in text.precomposedStringWithCanonicalMapping {
+            if character.isWhitespace || character == "・" {
+                continue
+            }
+            // ひらがなに対応する字の無い小書きの ヵ/ヶ は か/け に(ふりがなはひらがなでもカタカナでも、混ざっていてもよい。3679)
+            if character == "ヵ" || character == "ヶ" {
+                normalized.append(character == "ヵ" ? "か" : "け")
+                continue
+            }
+            let source = String(character)
             let converted = source.applyingTransform(.hiraganaToKatakana, reverse: true) ?? source
 
             guard converted.count == 1,
-                let scalar = converted.unicodeScalars.first else {
-                continue
-            }
-
-            let isHiragana = (0x3040...0x309F).contains(scalar.value)
-            let isLongVowelMark = scalar.value == 0x30FC
-
-            guard isHiragana || isLongVowelMark,
+                let scalar = converted.unicodeScalars.first,
+                (0x3040...0x309F).contains(scalar.value) || scalar.value == 0x30FC,
                 let normalizedCharacter = converted.first else {
-                continue
+                return ""
             }
 
             normalized.append(normalizedCharacter)
@@ -49,31 +54,55 @@ extension ContentView {
         return normalized
     }
 
-    static func contactNameCandidates(
-        primaryName: String,
-        fullName: String,
-        includeFullName: Bool
-    ) -> [String] {
-        guard !primaryName.isEmpty else {
-            return []
-        }
+    // 連絡先 1 件の項目から 読み→候補 の組を作る(3679、ユーザ指定)。読みは iOS の連絡先の「ふりがな」の項目だけを使い、
+    // 表記とふりがながそろっている項目だけ組にする(どちらか片方しかない項目は使わない。表記を読みにする予備の経路は廃止)。
+    // ・姓/名/ミドルネーム/会社名: その項目のふりがな → その項目の表記(どの設定でも)
+    // ・フルネイム(includeFullName = [フルネイムも候補にする]のとき): 姓と名のどちらも表記とふりがながそろい、ミドルネームは
+    //   あるなら表記とふりがながそろっているときだけ。姓/名/ミドルネームそれぞれのふりがなと、続けたふりがなで フルネイムを出す
+    // ・ニックネームは iOS にふりがなの項目が無いので使わない
+    struct ContactNameFields {
+        var familyName = "", phoneticFamilyName = ""
+        var givenName = "", phoneticGivenName = ""
+        var middleName = "", phoneticMiddleName = ""
+        var organizationName = "", phoneticOrganizationName = ""
+    }
 
-        guard includeFullName,
-            !fullName.isEmpty,
-            fullName != primaryName else {
-            return [primaryName]
+    static func contactReadingPairs(_ fields: ContactNameFields, includeFullName: Bool) -> [(reading: String, candidates: [String])] {
+        func pair(_ surface: String, _ phonetic: String) -> (surface: String, reading: String)? {
+            let surface = surface.trimmingCharacters(in: .whitespacesAndNewlines)
+            let reading = normalizedContactReading(phonetic)
+            guard !surface.isEmpty, !reading.isEmpty else { return nil }
+            return (surface, reading)
         }
+        let family = pair(fields.familyName, fields.phoneticFamilyName)
+        let given = pair(fields.givenName, fields.phoneticGivenName)
+        let middle = pair(fields.middleName, fields.phoneticMiddleName)
+        let organization = pair(fields.organizationName, fields.phoneticOrganizationName)
+        let middleIsConsistent = middle != nil
+            || (fields.middleName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                && normalizedContactReading(fields.phoneticMiddleName).isEmpty)
 
-        return [primaryName, fullName]
+        var pairs: [(reading: String, candidates: [String])] = []
+        for part in [family, given, middle, organization].compactMap({ $0 }) {
+            pairs.append((part.reading, [part.surface]))
+        }
+        if includeFullName, let family, let given, middleIsConsistent {
+            let parts = [family, given] + (middle.map { [$0] } ?? [])
+            let fullName = parts.map(\.surface).joined()
+            let fullReading = parts.map(\.reading).joined()
+            for part in parts {
+                pairs.append((part.reading, [fullName]))
+            }
+            pairs.append((fullReading, [fullName]))
+        }
+        return pairs
     }
 
     static func appendContactCandidates(
         _ candidates: [String],
-        forReadingText readingText: String,
+        forReading normalizedReading: String,
         to dictionary: inout [String: [String]]
     ) {
-        let normalizedReading = normalizedContactReading(readingText)
-
         guard !normalizedReading.isEmpty else {
             return
         }
@@ -96,123 +125,24 @@ extension ContentView {
         }
     }
 
-    static func shouldUseOrganizationNameReadingFallback(_ organizationName: String) -> Bool {
-        let source = organizationName.trimmingCharacters(in: .whitespacesAndNewlines)
-
-        guard !source.isEmpty else {
-            return false
-        }
-
-        var hasKana = false
-
-        for scalar in source.precomposedStringWithCanonicalMapping.unicodeScalars {
-            if CharacterSet.whitespacesAndNewlines.contains(scalar) {
-                continue
-            }
-
-            if scalar.value == 0x30FB || scalar.value == 0xFF65 {
-                continue
-            }
-
-            let normalized = normalizedContactReading(String(scalar))
-
-            if !normalized.isEmpty {
-                hasKana = true
-                continue
-            }
-
-            return false
-        }
-
-        return hasKana
-    }
-
     static func buildContactCandidatesByReading(
         displayMode: ContactCandidateDisplayModeOption
     ) -> [String: [String]] {
-        let includeFullNameForNameMatches = displayMode == .namesPlusFullName
+        let includeFullName = displayMode == .namesPlusFullName
         let store = CNContactStore()
         let request = CNContactFetchRequest(keysToFetch: contactFetchKeys)
         var dictionary: [String: [String]] = [:]
 
         do {
             try store.enumerateContacts(with: request) { contact, _ in
-                let familyName = contact.familyName.trimmingCharacters(in: .whitespacesAndNewlines)
-                let givenName = contact.givenName.trimmingCharacters(in: .whitespacesAndNewlines)
-                let middleName = contact.middleName.trimmingCharacters(in: .whitespacesAndNewlines)
-                let nickname = contact.nickname.trimmingCharacters(in: .whitespacesAndNewlines)
-                let organizationName = contact.organizationName.trimmingCharacters(in: .whitespacesAndNewlines)
-                let phoneticOrganizationName = contact.phoneticOrganizationName.trimmingCharacters(in: .whitespacesAndNewlines)
-                let fullName = [familyName, givenName, middleName]
-                    .filter { !$0.isEmpty }
-                    .joined()
-
-                let phoneticFamily = contact.phoneticFamilyName.trimmingCharacters(in: .whitespacesAndNewlines)
-                let phoneticGiven = contact.phoneticGivenName.trimmingCharacters(in: .whitespacesAndNewlines)
-                let phoneticMiddle = contact.phoneticMiddleName.trimmingCharacters(in: .whitespacesAndNewlines)
-                let fullNamePhonetic = [phoneticFamily, phoneticGiven, phoneticMiddle].joined()
-
-                var readingCandidates: [(String, [String])] = [
-                    (
-                        phoneticFamily,
-                        contactNameCandidates(
-                            primaryName: familyName,
-                            fullName: fullName,
-                            includeFullName: includeFullNameForNameMatches
-                        )
-                    ),
-                    (
-                        phoneticGiven,
-                        contactNameCandidates(
-                            primaryName: givenName,
-                            fullName: fullName,
-                            includeFullName: includeFullNameForNameMatches
-                        )
-                    ),
-                    (
-                        phoneticMiddle,
-                        contactNameCandidates(
-                            primaryName: middleName,
-                            fullName: fullName,
-                            includeFullName: includeFullNameForNameMatches
-                        )
-                    ),
-                    (fullNamePhonetic, [fullName]),
-                    (
-                        familyName,
-                        contactNameCandidates(
-                            primaryName: familyName,
-                            fullName: fullName,
-                            includeFullName: includeFullNameForNameMatches
-                        )
-                    ),
-                    (
-                        givenName,
-                        contactNameCandidates(
-                            primaryName: givenName,
-                            fullName: fullName,
-                            includeFullName: includeFullNameForNameMatches
-                        )
-                    ),
-                    (
-                        middleName,
-                        contactNameCandidates(
-                            primaryName: middleName,
-                            fullName: fullName,
-                            includeFullName: includeFullNameForNameMatches
-                        )
-                    ),
-                    (fullName, [fullName]),
-                    (nickname, [nickname]),
-                    (phoneticOrganizationName, [organizationName])
-                ]
-
-                if shouldUseOrganizationNameReadingFallback(organizationName) {
-                    readingCandidates.append((organizationName, [organizationName]))
-                }
-
-                for (readingText, candidates) in readingCandidates {
-                    appendContactCandidates(candidates, forReadingText: readingText, to: &dictionary)
+                let fields = ContactNameFields(
+                    familyName: contact.familyName, phoneticFamilyName: contact.phoneticFamilyName,
+                    givenName: contact.givenName, phoneticGivenName: contact.phoneticGivenName,
+                    middleName: contact.middleName, phoneticMiddleName: contact.phoneticMiddleName,
+                    organizationName: contact.organizationName, phoneticOrganizationName: contact.phoneticOrganizationName
+                )
+                for (reading, candidates) in contactReadingPairs(fields, includeFullName: includeFullName) {
+                    appendContactCandidates(candidates, forReading: reading, to: &dictionary)
                 }
             }
         } catch {
