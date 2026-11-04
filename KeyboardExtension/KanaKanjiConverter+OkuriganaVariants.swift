@@ -179,10 +179,32 @@ extension KanaKanjiConverter {
         "祭": [("り", ["まつり"])],
         "群": [("れ", ["むれ"])],
         // 和え(レモン果汁和/胡麻和 だった。learningBOX 検査 3671)
-        "和": [("え", ["あえ"])]
+        "和": [("え", ["あえ"])],
+        // 木桶仕込み/生産者直詰め/蔵出し/抽出度合い/花振い(learningBOX 検査 3677、ユーザ判定)
+        "込": [("み", ["こみ", "ごみ"])],
+        "詰": [("め", ["つめ", "づめ"])],
+        "出": [("し", ["だし"])],
+        "合": [("い", ["あい"])],
+        "振": [("い", ["ふるい", "ぶるい"])],
+        "取": [("り", ["とり", "どり"])]
+    ]
+    // 補わない語(本則が送らない形、地名)。字ごとの条件は okuriganaNominalizedRestrictedHeads
+    private static let okuriganaNominalizedExcludedHeads: [String] = ["具合", "缶詰", "鳥取", "橋詰", "手合"]
+    // 字によっては補う語を限る(取 は 板目取/柾目取/木取 だけ。名取/香取 などの地名・人名を巻き込まない)
+    private static let okuriganaNominalizedRestrictedHeads: [Character: [String]] = ["取": ["板目取", "柾目取", "木取"]]
+    // 語の途中で送り仮名が省かれる複合語(運送人渡条件/運賃込条件)。読みにその部分の読みがあるときだけ補う
+    private static let okuriganaInnerRestorations: [(short: String, long: String, reading: String)] = [
+        ("渡条件", "渡し条件", "わたしじょうけん"), ("込条件", "込み条件", "こみじょうけん")
     ]
 
     static func nominalizedOkuriganaRestored(_ candidate: String, reading: String) -> String? {
+        var innerRestored = candidate
+        for entry in okuriganaInnerRestorations where innerRestored.contains(entry.short) && reading.contains(entry.reading) {
+            innerRestored = innerRestored.replacingOccurrences(of: entry.short, with: entry.long)
+        }
+        if innerRestored != candidate {
+            return nominalizedOkuriganaRestored(innerRestored, reading: reading) ?? innerRestored
+        }
         let characters = Array(candidate)
         guard characters.contains(where: { okuriganaNominalizedKanaReadings[$0] != nil }) else { return nil }
         // 塊(ひらがなの連続/それ以外の連続)に分ける
@@ -254,6 +276,8 @@ extension KanaKanjiConverter {
             if runIndex + 1 < runs.count, characters[runs[runIndex + 1].start] == kana { continue }
             let head = String(characters[run.start..<run.end])
             if okuriganaFixedShortForms.contains(where: { head.hasSuffix($0) }) { continue }
+            if okuriganaNominalizedExcludedHeads.contains(where: { head.hasSuffix($0) }) { continue }
+            if let allowed = okuriganaNominalizedRestrictedHeads[last], !allowed.contains(where: { head.hasSuffix($0) }) { continue }
             result.insert(kana, at: run.end + inserted)
             inserted += 1
         }

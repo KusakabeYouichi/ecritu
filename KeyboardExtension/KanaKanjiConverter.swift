@@ -501,6 +501,8 @@ final class KanaKanjiConverter {
         finalCandidates = potentialVerbBaseCandidatesAlignedToGodan(finalCandidates, reading: normalizedReading)
         // 送り仮名の許容形(終る/届)を設定に従って並べ替え・除去(2820)
         finalCandidates = applyOkuriganaVariantPreference(reading: normalizedReading, to: finalCandidates)
+        // カタカナだけ/ラテン文字だけの先頭には、もう一方の文字の候補を 2 番目に(ユーザ指定 3677: Ice/アイス、Kona/コナ)
+        finalCandidates = Self.scriptCounterpartSecond(finalCandidates)
         // 同音の漢字による書きかえの組(聯想/連想)は、両方を出す設定のとき隣り合わせに並べる(間の語を割り込ませない。3644)
         // X.10 の組(臆測/憶測)はその設定で(3570)
         let (kakikae, lateStandardized) = withStateLock { (kakikaePreference, lateStandardizedRewritePreference) }

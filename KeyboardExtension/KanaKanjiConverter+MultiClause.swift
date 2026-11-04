@@ -282,7 +282,10 @@ extension KanaKanjiConverter {
                 + candidates.filter { Self.containsNonPassivizableSuruForm($0) }
         }
         candidates = Self.promoteKatakanaCounterpartOfLatinTop(candidates) { reading, katakana in
-            KanaKanjiSeedDictionary.seed[reading]?.contains(katakana) == true || store.wordCosts(for: reading)[katakana] != nil
+            scriptCounterpartSurface(for: reading, wantsLatin: false, plainKatakana: katakana)
+        }
+        candidates = Self.latinCounterpartOfKatakanaTop(candidates) { reading in
+            scriptCounterpartSurface(for: reading, wantsLatin: true, plainKatakana: nil)
         }
         candidates = placeNameSanOrdered(reading: reading, candidates: candidates, systemCandidateMode: systemCandidateMode)
         candidates = Self.liquorCategoryOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
@@ -322,8 +325,100 @@ extension KanaKanjiConverter {
     // ラテン文字とカタカナの両方があればラテン文字が先、カタカナが 2 位)。かーねろすはなぱ で CarnerosはNapa の次が
     // カーネロスはNapa/Carnerosはナパ の混ぜ書きで、カーネロスはナパ は 4 番目だった。
     // 対応の判定は、ラテン文字もカタカナも除いた残り(助詞・漢字)が先頭と同じで、ラテン文字を含まない候補
+    // 読みに対する ラテン文字だけ/カタカナだけ の表記(seed → 補助語彙 → 辞書 の順)。カタカナは語彙の表記(グラン・クリュ の中黒)を優先し、
+    // 無ければ plainKatakana(かなをそのままカタカナにしたもの)が辞書・seed にあるときだけそれを返す(3677)
+    func scriptCounterpartSurface(for reading: String, wantsLatin: Bool, plainKatakana: String?) -> String? {
+        func matches(_ surface: String) -> Bool {
+            if wantsLatin {
+                return surface.unicodeScalars.contains(where: Self.isLatinLetterScalar)
+                    && !surface.contains(where: { ("ぁ"..."ゖ").contains($0) || ("ァ"..."ヺ").contains($0) || Self.isKanjiCharacter($0) })
+            }
+            return !surface.isEmpty && surface.allSatisfy { ("ァ"..."ヺ").contains($0) || $0 == "ー" || $0 == "・" }
+        }
+        let pools: [[String]] = [
+            KanaKanjiSeedDictionary.seed[reading] ?? [],
+            store.loadSupplementalSystemDictionary().candidates(for: reading),
+            store.wordCosts(for: reading).sorted { $0.value < $1.value }.map(\.key)
+        ]
+        // カタカナは中黒つきの語彙の表記(グラン・クリュ)を中黒なし(グランクリュ)より先に
+        if !wantsLatin, let dotted = pools.lazy.compactMap({ $0.first(where: { matches($0) && $0.contains("・") }) }).first {
+            return dotted
+        }
+        for pool in pools {
+            if let hit = pool.first(where: matches) { return hit }
+        }
+        return nil
+    }
+
+    // 先頭の候補のカタカナの語に語彙でラテン文字の表記があれば、ラテン文字に替えた形を 2 番目に(ユーザ指定 3677:
+    // 正解はバーデンです → 正解はBadenです を 2 番目に)。既に 2 番目までにラテン文字の形があれば触らない
+    static func latinCounterpartOfKatakanaTop(_ candidates: [String], latinFor: (_ reading: String) -> String?) -> [String] {
+        guard let top = candidates.first, top.contains(where: { ("ァ"..."ヺ").contains($0) }) else { return candidates }
+        if candidates.prefix(2).contains(where: { $0.unicodeScalars.contains(where: isLatinLetterScalar) }) { return candidates }
+        let characters = Array(top)
+        var index = 0
+        while index < characters.count {
+            guard ("ァ"..."ヺ").contains(characters[index]) else { index += 1; continue }
+            var end = index
+            while end < characters.count, ("ァ"..."ヺ").contains(characters[end]) || characters[end] == "ー" || characters[end] == "・" { end += 1 }
+            let run = characters[index..<end].filter { $0 != "・" }
+            // 前後が漢字の語の中のカタカナ(赤ワイン用/タイ料理)は 1 語の一部なので作らない(赤Wine用/Tai料理 になっていた)
+            let kanjiBefore = index > 0 && isKanjiCharacter(characters[index - 1])
+            let kanjiAfter = end < characters.count && isKanjiCharacter(characters[end])
+            if run.count >= 2, !kanjiBefore, !kanjiAfter {
+                let reading = String(run.map { character -> Character in
+                    guard character != "ー", let scalar = character.unicodeScalars.first, let hiragana = Unicode.Scalar(scalar.value - 0x60) else {
+                        return character
+                    }
+                    return Character(hiragana)
+                })
+                if let latin = latinFor(reading) {
+                    let variant = String(characters[..<index]) + latin + String(characters[end...])
+                    var result = candidates.filter { $0 != variant }
+                    result.insert(variant, at: min(1, result.count))
+                    return result
+                }
+            }
+            index = end
+        }
+        return candidates
+    }
+
+    // 単文節: 先頭がカタカナだけならラテン文字だけの候補を、ラテン文字だけならカタカナだけの候補を 2 番目に(3677)
+    static func scriptCounterpartSecond(_ candidates: [String]) -> [String] {
+        guard candidates.count >= 3, let top = candidates.first else { return candidates }
+        func isKatakanaOnly(_ s: String) -> Bool { !s.isEmpty && s.allSatisfy { ("ァ"..."ヺ").contains($0) || $0 == "ー" || $0 == "・" } }
+        func isLatinOnly(_ s: String) -> Bool {
+            s.unicodeScalars.contains(where: isLatinLetterScalar)
+                && s.unicodeScalars.allSatisfy { isLatinLetterScalar($0) || " '’-.&".unicodeScalars.contains($0) || ("0"..."9").contains(Character($0)) }
+        }
+        let wanted: (String) -> Bool
+        let alreadyMixed: (String) -> Bool
+        if isKatakanaOnly(top) {
+            wanted = isLatinOnly
+            alreadyMixed = { $0.unicodeScalars.contains(where: isLatinLetterScalar) }
+        } else if isLatinOnly(top) {
+            wanted = isKatakanaOnly
+            alreadyMixed = { $0.contains(where: { ("ァ"..."ヺ").contains($0) }) }
+        } else {
+            return candidates
+        }
+        // 2 番目がもう一方の文字を含んでいれば触らない(ベライヒSaar/マスカット・ベイリーA を別の書き方で押し出さない)。
+        // 2 番目が先頭の大文字・®/™ 違いだけ(VINOTERAS/ジップロック®)のときも、指定の並び(3289/2698)を守る
+        let second = candidates[1]
+        let strippedSecond = second.replacingOccurrences(of: "®", with: "").replacingOccurrences(of: "™", with: "")
+        if wanted(second) || alreadyMixed(second) || strippedSecond == top || second.uppercased() == top.uppercased() {
+            return candidates
+        }
+        guard let index = candidates.indices.dropFirst(2).first(where: { wanted(candidates[$0]) }) else { return candidates }
+        var result = candidates
+        let moved = result.remove(at: index)
+        result.insert(moved, at: 1)
+        return result
+    }
+
     static func promoteKatakanaCounterpartOfLatinTop(
-        _ candidates: [String], isKnownKatakana: (_ reading: String, _ katakana: String) -> Bool = { _, _ in false }
+        _ candidates: [String], isKnownKatakana: (_ reading: String, _ katakana: String) -> String? = { _, _ in nil }
     ) -> [String] {
         guard candidates.count > 2, let top = candidates.first,
             top.unicodeScalars.contains(where: isLatinLetterScalar) else {
@@ -334,11 +429,17 @@ extension KanaKanjiConverter {
             c.unicodeScalars.allSatisfy { isLatinLetterScalar($0) || " '’-.&®!".unicodeScalars.contains($0) }
         }
         let topRest = String(top.filter { !isLatinRunCharacter($0) && !isKatakana($0) })
-        guard let index = candidates.dropFirst(2).firstIndex(where: { candidate in
+        func isCounterpart(_ candidate: String) -> Bool {
             !candidate.unicodeScalars.contains(where: isLatinLetterScalar)
                 && candidate.contains(where: isKatakana)
                 && String(candidate.filter { !isKatakana($0) }) == topRest
-        }) else {
+        }
+        // 中黒つき(グラン・クリュは)が候補にあれば中黒なし(グランクリュは)より先に選ぶ(3677)
+        let dottedIndex = candidates.dropFirst(1).firstIndex(where: { isCounterpart($0) && $0.contains("・") })
+        if dottedIndex == 1 {
+            return candidates
+        }
+        guard let index = dottedIndex ?? candidates.dropFirst(2).firstIndex(where: isCounterpart) else {
             return synthesizedKatakanaCounterpartOfLatinTop(
                 candidates, isKatakana: isKatakana, isLatinRunCharacter: isLatinRunCharacter, isKnownKatakana: isKnownKatakana)
         }
@@ -352,7 +453,7 @@ extension KanaKanjiConverter {
     // カタカナの形(クリュが集中している)を作って 2 番目に置く(learningBOX 検査 3667。Crus が 2 番目で クリュ が無かった)
     private static func synthesizedKatakanaCounterpartOfLatinTop(
         _ candidates: [String], isKatakana: (Character) -> Bool, isLatinRunCharacter: (Character) -> Bool,
-        isKnownKatakana: (_ reading: String, _ katakana: String) -> Bool
+        isKnownKatakana: (_ reading: String, _ katakana: String) -> String?
     ) -> [String] {
         guard let top = candidates.first else { return candidates }
         let topCharacters = Array(top)
@@ -372,9 +473,9 @@ extension KanaKanjiConverter {
                     let converted = Unicode.Scalar(scalar.value + 0x60) else { return character }
                 return Character(converted)
             }
-            // 辞書・seed にあるカタカナ語だけ(macOS⇔まっくおーえす から マックオーエス を作らない)
-            guard isKnownKatakana(String(kanaPart), String(katakanaPart)) else { continue }
-            let synthesized = String(topCharacters[..<prefix]) + String(katakanaPart) + String(topCharacters[(topCharacters.count - suffix)...])
+            // 辞書・seed・補助語彙にあるカタカナ語だけ(macOS⇔まっくおーえす から マックオーエス を作らない)。語彙の表記(グラン・クリュ)を使う
+            guard let known = isKnownKatakana(String(kanaPart), String(katakanaPart)) else { continue }
+            let synthesized = String(topCharacters[..<prefix]) + known + String(topCharacters[(topCharacters.count - suffix)...])
             var result = candidates.filter { $0 != synthesized }
             result.insert(synthesized, at: 1)
             return result

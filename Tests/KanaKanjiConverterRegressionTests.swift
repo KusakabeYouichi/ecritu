@@ -1780,7 +1780,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // 3673 から メル+ろー の区切りが立たず、連文節は空(単文節の メルロー が出る)
         XCTAssertTrue([nil, "メルロー"].contains(multiTop("めるろー")), "\(String(describing: multiTop("めるろー")))")
         XCTAssertEqual(converter.candidates(for: "めるろー", limit: 5, systemCandidateMode: .surface).first, "メルロー")
-        XCTAssertEqual(multiTop("ゆめのか"), "夢の香")
+        // 夢の香 の読みは ゆめのかおり(ユーザ修正 3677。ゆめのか はいちごの品種)
+        XCTAssertEqual(multiTop("ゆめのかおり") ?? converter.candidates(for: "ゆめのかおり", limit: 3, systemCandidateMode: .surface).first, "夢の香")
         XCTAssertEqual(multiTop("ぐりゅなーゔぇるとりーなー"), "グリュナーヴェルトリーナー")
         XCTAssertEqual(Array(converter.multiClauseCandidates(for: "えあつぉいがーあぷふゅるんぐ", systemCandidateMode: .surface).prefix(2)),
             ["Erzeugerabfüllung", "エアツォイガーアプフュルング"])
@@ -2069,7 +2070,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         try prepareRealLMDictionary()
 
         let tai = converter.candidates(for: "たい", limit: 16, systemCandidateMode: .surface)
-        XCTAssertEqual(Array(tai.prefix(6)), ["タイ", "鯛", "他意", "Tai", "🇹🇭", "対"], "list=\(tai)")
+        // Tai は 2 番目(カタカナ⇔ラテン文字は 2 位以内。ユーザ指定 3677)
+        XCTAssertEqual(Array(tai.prefix(6)), ["タイ", "Tai", "鯛", "他意", "🇹🇭", "対"], "list=\(tai)")
         let taiIndex = tai.firstIndex(of: "たい") ?? Int.max
         let objIndex = tai.firstIndex(of: "對") ?? Int.max
         XCTAssertGreaterThan(taiIndex, 10, "list=\(tai)")
