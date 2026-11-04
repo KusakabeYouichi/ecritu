@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """一括検査の a/b(と c_policy/c_style)を 1 枚の確認表(Artifact)にする。
-使い方: python3 -I tools/conversion_audit/html.py <out.html> <items.json> <結果ディレクトリ>...
+使い方: python3 -I tools/conversion_audit/html.py [--previous <decisions.json>]... <out.html> <items.json> <結果ディレクトリ>...
+  --previous: 前回の確認表の判定(decisions.py export の出力)。期待の表記が同じ行に「前回: 直す/このままでよい・備考」を添える(3676)
   結果ディレクトリは references/conversion_audit/<edition>/(a_register.tsv 等が有る所)。複数なら読み+期待が同じ行は 1 つにまとめる。
   items.json は decisions.py export が doc id(v-NNNN)と行を突き合わせるのに使う(並びは html と同じ)。
 Artifact は capabilities db+user、collection "audit"。判定は fix(直す)/ok(このままでよい)、備考は自由記入。
@@ -43,10 +44,22 @@ def load_dir(d, rows):
 
 
 def main():
-    out_html, out_items, dirs = sys.argv[1], sys.argv[2], sys.argv[3:]
+    args = sys.argv[1:]
+    previous = {}
+    while args and args[0] == "--previous":
+        for x in json.load(open(args[1], encoding="utf-8")):
+            if x.get("mark") or x.get("note"):
+                previous[x["expected"]] = {"mark": x.get("mark", ""), "note": x.get("note", "")}
+        args = args[2:]
+    out_html, out_items, dirs = args[0], args[1], args[2:]
     rows = {}
     for d in dirs:
         load_dir(d, rows)
+    for r in rows.values():
+        p = previous.get(r["expected"])
+        if p:
+            label = {"fix": "直す", "ok": "このままでよい"}.get(p["mark"], "")
+            r["prev"] = "前回: " + label + (" ・ " + p["note"] if p["note"] else "")
     cls_order = {c: i for i, (c, _) in enumerate(CLASSES)}
     data = sorted(rows.values(), key=lambda r: (cls_order[r["cls"]], r["stage"] or "9", r["diff"], r["reading"]))
     for i, r in enumerate(data):
@@ -112,7 +125,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 
 <div class="wrap">
   <h1>変換の一括検査</h1>
-  <p class="lede">Wikipedia の文を句点・読点・記号で区切った断片の読みを推定して変換し、候補バーの先頭が元の表記(『期待』)に戻らなかったものを並べています。『先頭』は今の écritu の先頭、その下は候補の上位 6 件(期待が候補に有れば緑の枠)。段階は機械的な目安です。</p>
+  <p class="lede">文章を句点・読点・記号で区切った断片の読みを推定して変換し、候補バーの先頭が元の表記(『期待』)に戻らなかったものを並べています。『先頭』は今の écritu の先頭、その下は候補の上位 6 件(期待が候補に有れば緑の枠)。段階は機械的な目安です。</p>
   <div class="bar">
     <label>分類 <select id="cls"><option value="all">すべて</option></select></label>
     <label>段階 <select id="stage"><option value="all">すべて</option><option value="1">1 直すべし</option><option value="2">2 できたら直す</option><option value="3">3 直さなくていい</option></select></label>
@@ -210,6 +223,7 @@ function render() {
       if (!t) return; const tag = document.createElement('span'); tag.className = 'tag'; tag.textContent = t; head.appendChild(tag);
     });
     card.appendChild(head);
+    if (r.prev) { const pv = document.createElement('div'); pv.className = 'note'; pv.textContent = r.prev; card.appendChild(pv); }
     const cd = document.createElement('div'); cd.className = 'cands';
     r.cands.forEach(c => { const sp = document.createElement('span'); sp.textContent = c; if (c === r.expected) sp.className = 'hit'; cd.appendChild(sp); });
     if (!r.cands.length) { const sp = document.createElement('span'); sp.textContent = '候補なし'; cd.appendChild(sp); }
