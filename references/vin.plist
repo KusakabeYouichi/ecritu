@@ -1633,6 +1633,7 @@
 	<dict><key>phrase</key><string>Lontué Valley</string><key>shortcut</key><string>ろんとぅえゔぁれー</string></dict>
 	<dict><key>phrase</key><string>Maipo Valley</string><key>shortcut</key><string>まいぽゔぁれー</string></dict>
 	<dict><key>phrase</key><string>Malleco Valley</string><key>shortcut</key><string>まじぇこゔぁれー</string></dict>
+	<dict><key>phrase</key><string>Maule</string><key>shortcut</key><string>まうれ</string></dict>
 	<dict><key>phrase</key><string>Maule Valley</string><key>shortcut</key><string>まうれゔぁれー</string></dict>
 	<dict><key>phrase</key><string>Osorno Valley</string><key>shortcut</key><string>おそるのゔぁれー</string></dict>
 	<dict><key>phrase</key><string>Rapel Valley</string><key>shortcut</key><string>らぺるゔぁれー</string></dict>
@@ -1640,6 +1641,7 @@
 	<dict><key>phrase</key><string>Secano Interior</string><key>shortcut</key><string>せかーのいんてりおーる</string></dict>
 	<dict><key>phrase</key><string>Talagante</string><key>shortcut</key><string>たらがんて</string></dict>
 	<dict><key>phrase</key><string>Tutuvén Valley</string><key>shortcut</key><string>とぅとぅべんゔぁれー</string></dict>
+	<dict><key>phrase</key><string>Valparaíso</string><key>shortcut</key><string>ばるぱらいそ</string></dict>
 	<dict><key>phrase</key><string>Vignadores de Carignan</string><key>shortcut</key><string>ゔぃにゃどれすでかりにゃん</string></dict>
 	<dict><key>phrase</key><string>アコンカグア</string><key>shortcut</key><string>あこんかぐあ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>アタカマ</string><key>shortcut</key><string>あたかま</string></dict>	<!-- Sudachiにもある -->
@@ -1716,6 +1718,7 @@
 	<dict><key>phrase</key><string>Canelones</string><key>shortcut</key><string>かねろねす</string></dict>
 	<dict><key>phrase</key><string>Colonia</string><key>shortcut</key><string>ころにあ</string></dict>
 	<dict><key>phrase</key><string>Maldonado</string><key>shortcut</key><string>まるどなーど</string></dict>
+	<dict><key>phrase</key><string>Metropolitana</string><key>shortcut</key><string>めとろぽりたーな</string></dict>
 	<dict><key>phrase</key><string>Montevideo</string><key>shortcut</key><string>もんてびでお</string></dict>
 	<dict><key>phrase</key><string>Paysandú</string><key>shortcut</key><string>ぱいさんどぅー</string></dict>
 	<dict><key>phrase</key><string>Rivera</string><key>shortcut</key><string>りべら</string></dict>

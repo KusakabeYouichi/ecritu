@@ -175,7 +175,6 @@
 	<dict><key>phrase</key><string>Baja California</string><key>shortcut</key><string>ばはかりふぉるにあ</string></dict>	<!-- バハ・カリフォルニア -->
 	<dict><key>phrase</key><string>Barcelona</string><key>shortcut</key><string>ばるせろな</string></dict>	<!-- バルセロナ -->
 	<dict><key>phrase</key><string>Valdeorras</string><key>shortcut</key><string>ばるでおらす</string></dict>	<!-- バルデオラス -->
-	<dict><key>phrase</key><string>Valparaíso</string><key>shortcut</key><string>ばるぱらいそ</string></dict>	<!-- バルパライソ -->
 	<dict><key>phrase</key><string>Baleares</string><key>shortcut</key><string>ばれあれす</string></dict>	<!-- バレアレス -->
 	<dict><key>phrase</key><string>Vancouver</string><key>shortcut</key><string>ばんくーばー</string></dict>	<!-- バンクーバー -->
 	<dict><key>phrase</key><string>Paysandú</string><key>shortcut</key><string>ぱいさんどぅ</string></dict>	<!-- パイサンドゥ -->
@@ -232,7 +231,6 @@
 	<dict><key>phrase</key><string>Portland</string><key>shortcut</key><string>ぽーとらんど</string></dict>	<!-- ポートランド -->
 	<dict><key>phrase</key><string>Polish Hill River</string><key>shortcut</key><string>ぽーりっしゅひるりゔぁー</string></dict>	<!-- ポーリッシュ・ヒル・リヴァー -->
 	<dict><key>phrase</key><string>Mainviereck</string><key>shortcut</key><string>まいんふぃあえっく</string></dict>	<!-- マインフィアエック -->
-	<dict><key>phrase</key><string>Maule</string><key>shortcut</key><string>まうれ</string></dict>	<!-- マウレ -->
 	<dict><key>phrase</key><string>Mount Lofty Ranges</string><key>shortcut</key><string>まうんとろふてぃーれんじず</string></dict>	<!-- マウント・ロフティー・レンジズ -->
 	<dict><key>phrase</key><string>McLaren Vale</string><key>shortcut</key><string>まくらーれんゔぇーる</string></dict>	<!-- マクラーレン・ヴェール -->
 	<dict><key>phrase</key><string>Macedon Ranges</string><key>shortcut</key><string>ませどんれーんじず</string></dict>	<!-- マセドン・レーンジズ -->
@@ -254,7 +252,6 @@
 	<dict><key>phrase</key><string>Moulis-en-Médoc</string><key>shortcut</key><string>むーりすあんめどっく</string></dict>	<!-- ムーリス・アン・メドック -->
 	<dict><key>phrase</key><string>Metz</string><key>shortcut</key><string>めす</string></dict>	<!-- メス -->
 	<dict><key>phrase</key><string>Meseta</string><key>shortcut</key><string>めせた</string></dict>	<!-- メセタ -->
-	<dict><key>phrase</key><string>Metropolitana</string><key>shortcut</key><string>めとろぽりたーな</string></dict>	<!-- メトロポリターナ -->
 	<dict><key>phrase</key><string>Melbourne</string><key>shortcut</key><string>めるぼるん</string></dict>	<!-- メルボルン -->
 	<dict><key>phrase</key><string>Moscato d'Asti</string><key>shortcut</key><string>もすかーとだすてぃ</string></dict>	<!-- モスカート・ダスティ -->
 	<dict><key>phrase</key><string>Morges</string><key>shortcut</key><string>もるじゅ</string></dict>	<!-- モルジュ -->
