@@ -1752,6 +1752,11 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single("うけつけ").first, "受付")
         XCTAssertFalse(single("うけつけ").contains("受け付"))
         XCTAssertFalse(single("まっくおーえす").contains("マックオーエス"))
+        // 3675: 山岳帯、踊り(躍り)、生産可能色は白、Cruに
+        XCTAssertEqual(multi("せいぶさんがくたい").first, "西部山岳帯")
+        XCTAssertEqual(multi("せいかいはおどりです").first, "正解は踊りです")
+        XCTAssertEqual(multi("せいさんかのうしょくはしろのみ").first, "生産可能色は白のみ")
+        XCTAssertEqual(Array(multi("くりゅには").prefix(2)), ["Cruには", "クリュには"])
         XCTAssertEqual(KanaKanjiConverter.sweetnessOrthographyOrdered(reading: "あまみおおしまのわいん", candidates: ["奄美大島のワイン"]), ["奄美大島のワイン"])
         XCTAssertNil(KanaKanjiConverter.nominalizedOkuriganaRestored("寄付金", reading: "きふきん"))
         XCTAssertNil(KanaKanjiConverter.nominalizedOkuriganaRestored("気付", reading: "きつけ"))
