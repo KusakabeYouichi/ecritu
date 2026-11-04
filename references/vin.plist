@@ -204,6 +204,7 @@
 	<dict><key>phrase</key><string>Côtes de</string><key>shortcut</key><string>こーとど</string></dict>
 	<dict><key>phrase</key><string>Côtes de Bergerac</string><key>shortcut</key><string>こーとどべるじゅらっく</string></dict>
 	<dict><key>phrase</key><string>Côtes de Blaye</string><key>shortcut</key><string>こーとどぶらい</string></dict>
+	<dict><key>phrase</key><string>Côtes de Bordeaux</string><key>shortcut</key><string>こーとどぼるどー</string></dict>
 	<dict><key>phrase</key><string>Côtes de Bordeaux Saint-Macaire</string><key>shortcut</key><string>こーとどぼるどーさんまけーる</string></dict>
 	<dict><key>phrase</key><string>Côtes de Bourg</string><key>shortcut</key><string>こーとどぶーる</string></dict>
 	<dict><key>phrase</key><string>Côtes de Meuse</string><key>shortcut</key><string>こーとどむーず</string></dict>
@@ -1614,28 +1615,37 @@
 	<dict><key>phrase</key><string>Aconcagua Valley</string><key>shortcut</key><string>あこんかぐあゔぁれー</string></dict>
 	<dict><key>phrase</key><string>Atacama</string><key>shortcut</key><string>あたかま</string></dict>
 	<dict><key>phrase</key><string>Austral</string><key>shortcut</key><string>あうすとらる</string></dict>
+	<dict><key>phrase</key><string>Biobío</string><key>shortcut</key><string>びおびお</string></dict>
 	<dict><key>phrase</key><string>Bío Bío Valley</string><key>shortcut</key><string>びおびおゔぁれー</string></dict>
+	<dict><key>phrase</key><string>Cachapoal</string><key>shortcut</key><string>かちゃぽある</string></dict>
 	<dict><key>phrase</key><string>Cachapoal Valley</string><key>shortcut</key><string>かちゃぽあるゔぁれー</string></dict>
+	<dict><key>phrase</key><string>Casablanca</string><key>shortcut</key><string>かさぶらんか</string></dict>
 	<dict><key>phrase</key><string>Casablanca Valley</string><key>shortcut</key><string>かさぶらんかゔぁれー</string></dict>
 	<dict><key>phrase</key><string>Cautin Valley</string><key>shortcut</key><string>かうてぃんゔぁれー</string></dict>
 	<dict><key>phrase</key><string>Central Valley</string><key>shortcut</key><string>せんとらるゔぁれー</string></dict>
 	<dict><key>phrase</key><string>Choapa Valley</string><key>shortcut</key><string>ちょあぱゔぁれー</string></dict>
+	<dict><key>phrase</key><string>Colchagua</string><key>shortcut</key><string>こるちゃぐあ</string></dict>
 	<dict><key>phrase</key><string>Colchagua Valley</string><key>shortcut</key><string>こるちゃぐあゔぁれー</string></dict>
 	<dict><key>phrase</key><string>Copiapó Valley</string><key>shortcut</key><string>こぴあぽゔぁれー</string></dict>
 	<dict><key>phrase</key><string>Coquimbo</string><key>shortcut</key><string>こきんぼ</string></dict>
 	<dict><key>phrase</key><string>Curicó Valley</string><key>shortcut</key><string>くりこゔぁれー</string></dict>
+	<dict><key>phrase</key><string>Elqui</string><key>shortcut</key><string>えるき</string></dict>
 	<dict><key>phrase</key><string>Elqui Valley</string><key>shortcut</key><string>えるきゔぁれー</string></dict>
 	<dict><key>phrase</key><string>Entre Cordilleras</string><key>shortcut</key><string>えんとれこるでぃじぇらす</string></dict>
 	<dict><key>phrase</key><string>Huasco Valley</string><key>shortcut</key><string>うあすこゔぁれー</string></dict>
 	<dict><key>phrase</key><string>Itata Valley</string><key>shortcut</key><string>いたたゔぁれー</string></dict>
+	<dict><key>phrase</key><string>Leyda</string><key>shortcut</key><string>れいだ</string></dict>
 	<dict><key>phrase</key><string>Leyda Valley</string><key>shortcut</key><string>れいだゔぁれー</string></dict>
+	<dict><key>phrase</key><string>Limarí</string><key>shortcut</key><string>りまり</string></dict>
 	<dict><key>phrase</key><string>Limarí Valley</string><key>shortcut</key><string>りまりゔぁれー</string></dict>
 	<dict><key>phrase</key><string>Lontué Valley</string><key>shortcut</key><string>ろんとぅえゔぁれー</string></dict>
+	<dict><key>phrase</key><string>Maipo</string><key>shortcut</key><string>まいぽ</string></dict>
 	<dict><key>phrase</key><string>Maipo Valley</string><key>shortcut</key><string>まいぽゔぁれー</string></dict>
 	<dict><key>phrase</key><string>Malleco Valley</string><key>shortcut</key><string>まじぇこゔぁれー</string></dict>
 	<dict><key>phrase</key><string>Maule</string><key>shortcut</key><string>まうれ</string></dict>
 	<dict><key>phrase</key><string>Maule Valley</string><key>shortcut</key><string>まうれゔぁれー</string></dict>
 	<dict><key>phrase</key><string>Osorno Valley</string><key>shortcut</key><string>おそるのゔぁれー</string></dict>
+	<dict><key>phrase</key><string>Rapel</string><key>shortcut</key><string>らぺる</string></dict>
 	<dict><key>phrase</key><string>Rapel Valley</string><key>shortcut</key><string>らぺるゔぁれー</string></dict>
 	<dict><key>phrase</key><string>San Antonio Valley</string><key>shortcut</key><string>さんあんとにおゔぁれー</string></dict>
 	<dict><key>phrase</key><string>Secano Interior</string><key>shortcut</key><string>せかーのいんてりおーる</string></dict>
@@ -1651,14 +1661,18 @@
 	<dict><key>phrase</key><string>イタタ</string><key>shortcut</key><string>いたた</string></dict>
 	<dict><key>phrase</key><string>イタタ・ヴァレー</string><key>shortcut</key><string>いたたゔぁれー</string></dict>
 	<dict><key>phrase</key><string>ウアスコ・ヴァレー</string><key>shortcut</key><string>うあすこゔぁれー</string></dict>
+	<dict><key>phrase</key><string>エルキ</string><key>shortcut</key><string>えるき</string></dict>
 	<dict><key>phrase</key><string>エルキ・ヴァレー</string><key>shortcut</key><string>えるきゔぁれー</string></dict>
 	<dict><key>phrase</key><string>エントレ・コルディリェラス</string><key>shortcut</key><string>えんとれこるでぃりぇらす</string></dict>
 	<dict><key>phrase</key><string>オソルノ</string><key>shortcut</key><string>おそるの</string></dict>
 	<dict><key>phrase</key><string>オソルノ・ヴァレー</string><key>shortcut</key><string>おそるのゔぁれー</string></dict>
 	<dict><key>phrase</key><string>カウケネス</string><key>shortcut</key><string>かうけねす</string></dict>
+	<dict><key>phrase</key><string>カサブランカ</string><key>shortcut</key><string>かさぶらんか</string></dict>
+	<dict><key>phrase</key><string>カチャポアル</string><key>shortcut</key><string>かちゃぽある</string></dict>
 	<dict><key>phrase</key><string>カチャポアル・ヴァレー</string><key>shortcut</key><string>かちゃぽあるゔぁれー</string></dict>
 	<dict><key>phrase</key><string>クリコ</string><key>shortcut</key><string>くりこ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>コキンボ</string><key>shortcut</key><string>こきんぼ</string></dict>
+	<dict><key>phrase</key><string>コルチャグア</string><key>shortcut</key><string>こるちゃぐあ</string></dict>
 	<dict><key>phrase</key><string>コルチャグア・ヴァレー</string><key>shortcut</key><string>こるちゃぐあゔぁれー</string></dict>
 	<dict><key>phrase</key><string>コンセプシオン</string><key>shortcut</key><string>こんせぷしおん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>サンタクルス</string><key>shortcut</key><string>さんたくるす</string></dict>	<!-- Sudachiにもある -->
@@ -1672,10 +1686,14 @@
 	<dict><key>phrase</key><string>バルパライソ</string><key>shortcut</key><string>ばるぱらいそ</string></dict>
 	<dict><key>phrase</key><string>ビオ・ビオ</string><key>shortcut</key><string>びおびお</string></dict>
 	<dict><key>phrase</key><string>プエンテ・アルト</string><key>shortcut</key><string>ぷえんてあると</string></dict>
+	<dict><key>phrase</key><string>マイポ</string><key>shortcut</key><string>まいぽ</string></dict>
 	<dict><key>phrase</key><string>マイポ・ヴァレー</string><key>shortcut</key><string>まいぽゔぁれー</string></dict>
 	<dict><key>phrase</key><string>マウレ</string><key>shortcut</key><string>まうれ</string></dict>
 	<dict><key>phrase</key><string>マウレ・ヴァレー</string><key>shortcut</key><string>まうれゔぁれー</string></dict>
 	<dict><key>phrase</key><string>マジェコ・ヴァレー</string><key>shortcut</key><string>まじぇこゔぁれー</string></dict>
+	<dict><key>phrase</key><string>ラペル</string><key>shortcut</key><string>らぺる</string></dict>
+	<dict><key>phrase</key><string>リマリ</string><key>shortcut</key><string>りまり</string></dict>
+	<dict><key>phrase</key><string>レイダ</string><key>shortcut</key><string>れいだ</string></dict>
 	<dict><key>phrase</key><string>リージョンAconcagua</string><key>shortcut</key><string>りーじょんあこんかぐあ</string></dict>
 
 	<!-- □ アルゼンチン -->
@@ -10516,6 +10534,7 @@
 	<dict><key>phrase</key><string>コート・デュ・ヴィヴァレ</string><key>shortcut</key><string>こーとでゅゔぃゔぁれ</string></dict>
 	<dict><key>phrase</key><string>コート・ド・トゥール</string><key>shortcut</key><string>こーとどとぅーる</string></dict>
 	<dict><key>phrase</key><string>コート・ド・ブール</string><key>shortcut</key><string>こーとどぶーる</string></dict>
+	<dict><key>phrase</key><string>コート・ド・ボルドー</string><key>shortcut</key><string>こーとどぼるどー</string></dict>
 	<dict><key>phrase</key><string>コート・ド・プロヴァンス・サント・ヴィクトワール</string><key>shortcut</key><string>こーとどぷろゔぁんすさんとゔぃくとわーる</string></dict>
 	<dict><key>phrase</key><string>コート・ド・プロヴァンス・ピエルフ</string><key>shortcut</key><string>こーとどぷろゔぁんすぴえるふ</string></dict>
 	<dict><key>phrase</key><string>コート・ド・プロヴァンス・フレジュス</string><key>shortcut</key><string>こーとどぷろゔぁんすふれじゅす</string></dict>
