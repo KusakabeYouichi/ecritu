@@ -364,7 +364,10 @@ extension KanaKanjiConverter {
             let run = characters[index..<end].filter { $0 != "・" }
             // 前後が漢字の語の中のカタカナ(赤ワイン用/タイ料理)は 1 語の一部なので作らない(赤Wine用/Tai料理 になっていた)
             let kanjiBefore = index > 0 && isKanjiCharacter(characters[index - 1])
+            // 後ろの漢字が 等/種/地方/地区/地域 なら語の切れ目(ソーヴィニヨン等/ミッション種/プロヴァンス地方)なので作る
+            let rest = String(characters[end...])
             let kanjiAfter = end < characters.count && isKanjiCharacter(characters[end])
+                && !Self.latinCounterpartAllowedKanjiFollowers.contains(where: { rest.hasPrefix($0) })
             if run.count >= 2, !kanjiBefore, !kanjiAfter {
                 let reading = String(run.map { character -> Character in
                     guard character != "ー", let scalar = character.unicodeScalars.first, let hiragana = Unicode.Scalar(scalar.value - 0x60) else {
@@ -383,6 +386,8 @@ extension KanaKanjiConverter {
         }
         return candidates
     }
+
+    static let latinCounterpartAllowedKanjiFollowers: [String] = ["等", "種", "地方", "地区", "地域"]
 
     // 単文節: 先頭がカタカナだけならラテン文字だけの候補を、ラテン文字だけならカタカナだけの候補を 2 番目に(3677)
     static func scriptCounterpartSecond(_ candidates: [String]) -> [String] {
@@ -407,7 +412,9 @@ extension KanaKanjiConverter {
         // 2 番目が先頭の大文字・®/™ 違いだけ(VINOTERAS/ジップロック®)のときも、指定の並び(3289/2698)を守る
         let second = candidates[1]
         let strippedSecond = second.replacingOccurrences(of: "®", with: "").replacingOccurrences(of: "™", with: "")
-        if wanted(second) || alreadyMixed(second) || strippedSecond == top || second.uppercased() == top.uppercased() {
+        // 大文字・小文字の違いは、全部大文字の商標の書き方(VINOTERAS)だけ同じ語とみなす(Méthode ancestrale/seasoning は別扱い)
+        let isAllCapsVariant = second == second.uppercased() && second != top && second.uppercased() == top.uppercased()
+        if wanted(second) || alreadyMixed(second) || strippedSecond == top || isAllCapsVariant {
             return candidates
         }
         guard let index = candidates.indices.dropFirst(2).first(where: { wanted(candidates[$0]) }) else { return candidates }

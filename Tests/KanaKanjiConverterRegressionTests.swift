@@ -1757,6 +1757,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("せいかいはおどりです").first, "正解は踊りです")
         XCTAssertEqual(multi("せいさんかのうしょくはしろのみ").first, "生産可能色は白のみ")
         XCTAssertEqual(Array(multi("くりゅには").prefix(2)), ["Cruには", "クリュには"])
+        // 3678: 辞書の「の込み」読み(たちばなの=橘/橘ノ、あきの=秋 …)は部品にせず、ちょうどその読みのときだけ末尾に(ユーザ指定)
+        XCTAssertEqual(GenitiveReadingTable.suppressed["たちばなの"], ["橘", "橘ノ"])
+        XCTAssertEqual(GenitiveReadingTable.resupplied["たちばなの"], ["橘"])
+        XCTAssertNotEqual(single("たちばなの").first, "橘")
+        XCTAssertNotEqual(single("たちばなの").first, "橘ノ")
+        XCTAssertTrue(converter.candidates(for: "たちばなの", limit: 60, systemCandidateMode: .surface).contains("橘"), "末尾に再供給")
+        XCTAssertEqual(multi("あきのそら").first, "秋の空")
+        XCTAssertEqual(multi("いずのくに").first, "伊豆の国")
+        // 3678: カタカナ語の後ろが 等/種/地方 ならラテン文字の形も 2 番目に。大文字小文字だけの違いは全部大文字のときだけ同じ語
+        XCTAssertEqual(Array(multi("みっしょんしゅがもちこまれました").prefix(2)), ["ミッション種が持ち込まれました", "Mission種が持ち込まれました"])
+        XCTAssertEqual(Array(single("しーずにんぐ").prefix(2)), ["Seasoning", "シーズニング"])
         // 3676(ユーザ指定): ワインや酒の話は 造る、せんか は 選果 先頭、りょう の並び
         XCTAssertEqual(multi("わいんはぶどうからつくられます").first, "ワインはぶどうから造られます")
         XCTAssertEqual(multi("ぱんをつくる").first, "パンを作る")
