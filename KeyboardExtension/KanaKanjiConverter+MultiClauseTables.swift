@@ -2702,6 +2702,9 @@ extension KanaKanjiConverter {
     static let multiClauseNaiKanjiAfterTeFormPenalty = 2500
     // カタカナ語の途中で切れた かな の長音の塊(メル+ろー+です。メルロー が先頭でなかった。ユーザ報告 3672)
     static let multiClauseKanaLongVowelAfterKatakanaPenalty = 5000
+    // 終助詞の表の ろー(すごいだろー)は入力の末尾だけ述語の直後の 1200 に抑える。文中で効くと
+    // 正解は+嵌める+ろー+です/メル+ろー+です のように述語(る で終わる読み)の後ろで断片を作っていた(ユーザ指摘 3674)
+    static let multiClauseRoLongReadingID = MultiClauseSymbols.id("ろー")
     static let multiClauseKaraKanjiSurfaces: Set<String> = ["唐"]
     static let multiClauseKaraKanjiSurfacesID = MultiClauseIDSet(multiClauseKaraKanjiSurfaces)
     static let multiClauseKaraReadingID = MultiClauseSymbols.id("から")

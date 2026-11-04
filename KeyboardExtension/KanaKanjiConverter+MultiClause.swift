@@ -3638,6 +3638,8 @@ extension KanaKanjiConverter {
             if isKanaIdentity, reading.count >= 2,
                 !isQuestionKaAfterERowDerived,
                 Self.multiClauseFinalParticleReadingsID.contains(readingID),
+                // ろー は入力の末尾だけ(DP 側で扱う。定数コメント参照。3674)
+                readingID != Self.multiClauseRoLongReadingID,
                 !Self.multiClauseExplanatoryFinalSurfacesID.contains(readingID),
                 !prevIsBOS,
                 (prevIsInflectionDerived || prevIsDictionaryFormPredicate
@@ -4791,6 +4793,11 @@ extension KanaKanjiConverter {
                         if prevNode.isInflectionDerived, prevNode.surface.hasSuffix("くて"), prevNode.reading.hasSuffix("くて"),
                             node.isDictionaryFormPredicate, node.surface.hasSuffix("い"), !node.isKanaIdentity {
                             cost -= Self.multiClauseAdjectiveAfterKuteBonus
+                        }
+                        // 終助詞 ろー(すごいだろー)は入力の末尾だけ述語の直後の 1200 に(定数コメント参照。3674)
+                        if node.readingID == Self.multiClauseRoLongReadingID, node.isKanaIdentity, node.end == n,
+                            prevNode.isInflectionDerived || prevNode.isDictionaryFormPredicate || prevNode.surfaceID == SID.だ {
+                            cost = min(cost, prevCost + Self.multiClauseFinalParticleAfterPredicateCost)
                         }
                         // 文末の長音 ー は述語の引き伸ばし(送りましたー。定数コメント参照。2898)
                         if node.surfaceID == SID.ー, node.readingID == SID.ー, node.end == n,
