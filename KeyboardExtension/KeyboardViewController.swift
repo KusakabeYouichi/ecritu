@@ -1027,6 +1027,7 @@ final class KeyboardViewController: UIInputViewController {
         setNeedsUpdateOfScreenEdgesDeferringSystemGestures()
         updateKeyboardDiagnosticsHeartbeat(event: "viewDidAppear", appendLog: true)
         recordFullAccessConfirmationIfNeeded()
+        scheduleVisibleStateCheckAfterAppear()
         // ホスト接続が確立した後に地球儀キーの要否を 1 回だけ読む(定義コメント参照。2824)。変わっていれば再描画
         let needsSwitchKey = needsInputModeSwitchKey
         if needsSwitchKey != cachedNeedsInputModeSwitchKey {
@@ -2200,6 +2201,34 @@ final class KeyboardViewController: UIInputViewController {
         backgroundGradientLayer.colors = stops.map { UIColor($0.color).cgColor }
         backgroundGradientLayer.locations = stops.map { NSNumber(value: Double($0.location)) }
         CATransaction.commit()
+    }
+
+    // 表示 1 秒後の見た目の状態を 1 行残し、表示ゲート(高さ落ち着き待ち)が閉じたまま残っていたら開く(3677)。
+    // 2026-11-04 17:55、メモ帳でキーボードの欄が真っ白(落ちていない・起動処理は完了)。iOS 更新後の 2 週間で数回。
+    // ゲートは viewDidLayoutSubviews でしか確かめ直さないので、高さが落ち着いた後にレイアウトが来ないと alpha=0 のまま残りうる。
+    // 原因がゲートでなければ、この行の値(面の有無・大きさ・窓)で次の手を決める
+    private func scheduleVisibleStateCheckAfterAppear() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+            guard let self, self.view.window != nil else { return }
+            let hostingView = self.hostingController?.view
+            let gateWasOpen = !self.isAwaitingInitialHeightSettle
+            let hidden = self.view.alpha < 0.99 || (hostingView?.alpha ?? 1) < 0.99 || hostingView?.isHidden == true
+            let state = "view=\(Int(self.view.bounds.width))x\(Int(self.view.bounds.height)) alpha=\(self.view.alpha)"
+                + " 面=\(hostingView.map { "\(Int($0.frame.width))x\(Int($0.frame.height)) alpha=\($0.alpha) hidden=\($0.isHidden) superview=\($0.superview != nil)" } ?? "なし")"
+                + " ゲート=\(gateWasOpen ? "開" : "閉") 描画設定=\(self.lastRenderConfiguration != nil)"
+            if hidden || !gateWasOpen {
+                self.isAwaitingInitialHeightSettle = false
+                self.view.alpha = 1
+                hostingView?.alpha = 1
+                hostingView?.isHidden = false
+                self.appendKeyboardDiagnosticsLog(
+                    "表示1秒後に隠れたままだったので見せた \(state)",
+                    critical: true, file: #fileID, line: #line, function: #function
+                )
+            } else {
+                self.appendKeyboardDiagnosticsLog("表示1秒後の状態 \(state)", file: #fileID, line: #line, function: #function)
+            }
+        }
     }
 
     private func prepareKeyboardVisualForTransition() {
