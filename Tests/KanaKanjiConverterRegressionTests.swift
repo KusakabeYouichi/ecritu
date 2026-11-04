@@ -1808,6 +1808,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // 3682(ユーザ報告): ふむふむ はかな
         XCTAssertEqual(multi("ふむふむ").first, "ふむふむ")
         XCTAssertEqual(multi("じめんをふむ").first, "地面を踏む")
+        // 3683(ユーザ指定): たちばなの+名詞 は 橘 先頭、橘花 2 番目
+        XCTAssertEqual(Array(multi("たちばなのはず").prefix(2)), ["橘のはず", "橘花のはず"])
+        XCTAssertEqual(multi("たちばなさん").first, "橘さん")
         // 3676(ユーザ指定): ワインや酒の話は 造る、せんか は 選果 先頭、りょう の並び
         XCTAssertEqual(multi("わいんはぶどうからつくられます").first, "ワインはぶどうから造られます")
         XCTAssertEqual(multi("ぱんをつくる").first, "パンを作る")
