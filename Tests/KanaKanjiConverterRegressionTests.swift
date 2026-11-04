@@ -1798,6 +1798,13 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // 3682(ユーザ報告): ことよね はかな
         XCTAssertEqual(multi("ことよね").first, "ことよね")
         XCTAssertEqual(multi("のことよね").first, "のことよね")
+        // 3682(ユーザ指定): さいはっこう/はっこう はカード・書類なら 発行、醸すものなら 醗酵、法律・条約なら 発効
+        XCTAssertEqual(multi("かーどのさいはっこう").first, "カードの再発行")
+        XCTAssertEqual(multi("かーどさいはっこう").first, "カード再発行")
+        XCTAssertEqual(multi("しょうめいしょのはっこう").first, "証明書の発行")
+        XCTAssertEqual(multi("わいんのさいはっこう").first, "ワインの再醗酵")
+        XCTAssertEqual(multi("こめのはっこう").first, "米の醗酵")
+        XCTAssertEqual(multi("ほうりつがはっこうする").first, "法律が発効する")
         // 3682(ユーザ報告): ふむふむ はかな
         XCTAssertEqual(multi("ふむふむ").first, "ふむふむ")
         XCTAssertEqual(multi("じめんをふむ").first, "地面を踏む")
