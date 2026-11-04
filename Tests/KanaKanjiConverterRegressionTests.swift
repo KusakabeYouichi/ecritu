@@ -1822,6 +1822,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("かーどをはっこうする").first, "カードを発行する")
         XCTAssertEqual(multi("かーどのさいはっこう").first, "カードの再発行")
         XCTAssertEqual(multi("しょうめいしょをはっこうさせる").first, "証明書を発行させる")
+        // 3685(同上): ラテン文字の次は語彙のカタカナ(チンクエ・テッレ。辞書の チンクェ・テッレ が 2 番目だった)
+        XCTAssertEqual(Array(multi("ちんくえてっれとは").prefix(2)), ["Cinque Terreとは", "チンクエ・テッレとは"])
         // 3676(ユーザ指定): ワインや酒の話は 造る、せんか は 選果 先頭、りょう の並び
         XCTAssertEqual(multi("わいんはぶどうからつくられます").first, "ワインはぶどうから造られます")
         XCTAssertEqual(multi("ぱんをつくる").first, "パンを作る")

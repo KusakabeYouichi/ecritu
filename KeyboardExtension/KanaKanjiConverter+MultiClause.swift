@@ -442,7 +442,22 @@ extension KanaKanjiConverter {
                 && String(candidate.filter { !isKatakana($0) }) == topRest
         }
         // 中黒つき(グラン・クリュは)が候補にあれば中黒なし(グランクリュは)より先に選ぶ(3677)
-        let dottedIndex = candidates.dropFirst(1).firstIndex(where: { isCounterpart($0) && $0.contains("・") })
+        let dottedIndices = candidates.indices.dropFirst(1).filter { isCounterpart(candidates[$0]) && candidates[$0].contains("・") }
+        // 中黒つきが 2 つ以上あれば、カタカナの部分が語彙の表記と同じものを先に(learningBOX 検査 3684: Cinque Terreとは の
+        // 2 番目が辞書の チンクェ・テッレとは で、語彙の チンクエ・テッレとは は 3 番目だった)
+        func isVocabularySpelling(_ candidate: String) -> Bool {
+            let run = String(candidate.filter(isKatakana))
+            let reading = String(run.filter { $0 != "・" }.map { character -> Character in
+                guard character != "ー", let scalar = character.unicodeScalars.first, let hiragana = Unicode.Scalar(scalar.value - 0x60) else {
+                    return character
+                }
+                return Character(hiragana)
+            })
+            return isKnownKatakana(reading, run) == run
+        }
+        let dottedIndex = dottedIndices.count >= 2
+            ? (dottedIndices.first(where: { isVocabularySpelling(candidates[$0]) }) ?? dottedIndices.first)
+            : dottedIndices.first
         if dottedIndex == 1 {
             return candidates
         }
