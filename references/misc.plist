@@ -213,6 +213,7 @@
 	<dict><key>phrase</key><string>だったんで</string><key>shortcut</key><string>だったんで</string></dict>	<!-- だったんで/だったんです/だったんだ: だった+ん(説明)+で。だったん が 韃靼/達陀/脱炭 の 1 語に吸われ、すごい規模韃靼で になっていた(ユーザ報告 3735) -->
 	<dict><key>phrase</key><string>だったんです</string><key>shortcut</key><string>だったんです</string></dict>
 	<dict><key>phrase</key><string>だったんだ</string><key>shortcut</key><string>だったんだ</string></dict>
+	<dict><key>phrase</key><string>ふむふむ</string><key>shortcut</key><string>ふむふむ</string></dict>	<!-- ふむふむ(相づちの感動詞、かなが正書): 辞書に無く 踏む+踏む の合成が先頭だった(ユーザ報告 3681) -->
 	<dict><key>phrase</key><string>だったんだけど</string><key>shortcut</key><string>だったんだけど</string></dict>
 	<dict><key>phrase</key><string>だったんですけど</string><key>shortcut</key><string>だったんですけど</string></dict>
 	<dict><key>phrase</key><string>どうなるか</string><key>shortcut</key><string>どうなるか</string></dict>	<!-- どうなるか/どうなる/どうなった/どうなって: 〜は どうなるか の断片が 波動+なるか(1 語の 波動 が文頭の助詞 は より 1400 安い)になっていた(ユーザ報告 3731) -->
