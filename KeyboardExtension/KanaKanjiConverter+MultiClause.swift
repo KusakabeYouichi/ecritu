@@ -4119,6 +4119,11 @@ extension KanaKanjiConverter {
                             !node.isKanaIdentity, let first = node.surface.first, Self.isAllKanjiSurface(String(first)) {
                             cost -= Self.multiClauseErroneousAttributiveBonus
                         }
+                        // 表外読みの 喚ぶ/称ぶ の活用形(定数コメント参照。3668)
+                        if node.isInflectionDerived, node.reading.first == "よ", let head = node.surface.first,
+                            Self.multiClauseRareYobuStemCharacters.contains(head) {
+                            cost += Self.multiClauseRareYobuDerivedPenalty
+                        }
                         // かな せい(所為)+漢字・カタカナの語/敬称(定数コメント参照。3667)
                         if prevNode.surfaceID == SID.せい, prevNode.readingID == SID.せい,
                             !node.isKanaIdentity || Self.multiClauseHonorificSuffixReadingsID.contains(node.readingID) {

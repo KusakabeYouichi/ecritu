@@ -2009,6 +2009,8 @@ extension KanaKanjiConverter {
         // とともに(と共に だった)、Cru/クリュ+助詞(くりゅが だった。learningBOX 検査 3661)
         // とともに は と+とも+に に分かれ 共+に が勝っていた(ともに のノードが無い。3667)。かな とも+に だけ加点
         "とも\tに": 2000,
+        // 由来のかおりです が 由来+のか+おり+です だった(香り→です の bigram が無い。learningBOX 検査 3668)
+        "香り\tです": 1500, "のか\tおり": -3000,
         // Cru+です/と/数(くりゅです/くりゅとぷるみえ/くりゅすう が かな だった。3667)
         "Cru\tです": 3000, "Cru\tと": 3000, "Cru\t数": 3000,
         "と\tともに": 3000, "Cru\tが": 3000, "Cru\tで": 3000, "Cru\tの": 3000, "Cru\tは": 3000, "Cru\tを": 3000,
@@ -2657,12 +2659,16 @@ extension KanaKanjiConverter {
     static let multiClauseKatakanaSuffixPreferredSurfacesID = MultiClauseIDSet(multiClauseKatakanaSuffixPreferredSurfaces)
     static let multiClauseKatakanaSuffixDemotedSurfaces: Set<String> = ["酒", "集", "衆", "朱", "主"]
     // 名詞の前の あやまった は 誤った(謝った と同点で 謝った説明/謝った組み合わせ だった。learningBOX 検査 3667)
-    static let multiClauseErroneousAttributiveSurfaces: Set<String> = ["誤った"]
+    static let multiClauseErroneousAttributiveSurfaces: Set<String> = ["誤った", "誤っている", "誤っていた"]
     static let multiClauseErroneousAttributiveSurfacesID = MultiClauseIDSet(multiClauseErroneousAttributiveSurfaces)
     static let multiClauseErroneousAttributiveBonus = 1500
     // 理由の かな せい(所為)の直後に漢字・カタカナの語や敬称の さん は来ない(〜のせいで/のせいだ/のせいか)。
     // コルクのせいさん/赤ワインのせいさんが(生産)が せい+さん、せい+三 だった(learningBOX 検査 3667)
     static let multiClauseKanaSeiFollowedByContentPenalty = 6000
+    // 表外読みの よぶ(喚ぶ/称ぶ)の活用形は、活用派生の下限に当たって 呼ばれ(LM の実績)より安くなる
+    // (クローンと呼ばれ が 喚ばれ/称ばれ の後ろだった。learningBOX 検査 3668)。連文節だけ下げ、単文節には残す
+    static let multiClauseRareYobuStemCharacters: Set<Character> = ["喚", "称"]
+    static let multiClauseRareYobuDerivedPenalty = 1500
     static let multiClauseKatakanaSuffixDemotedSurfacesID = MultiClauseIDSet(multiClauseKatakanaSuffixDemotedSurfaces)
     static let multiClausePpanashiReadings: Set<String> = ["っぱなし", "っぱなしで", "っぱなしの", "っぱなしだ"]
     static let multiClausePpanashiReadingsID = MultiClauseIDSet(multiClausePpanashiReadings)

@@ -1687,6 +1687,11 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("まっくおーえすで").first, "macOSで")
         XCTAssertFalse(multi("まっくおーえすで").contains("マックオーエスで"))
         XCTAssertEqual(multi("あいすとともにまぜあわせる").first, "アイスとともに混ぜ合わせる")
+        // 3668: と呼ばれ(喚ばれ/称ばれ だった)、由来の香り(由来+のか+おり だった)、誤っている+名詞
+        XCTAssertEqual(multi("くろーんとよばれ").first, "クローンと呼ばれ")
+        XCTAssertEqual(multi("じゅくせいゆらいのかおりです").first, "熟成由来の香りです")
+        XCTAssertEqual(multi("あやまっているせつめいをえらんでください").first, "誤っている説明を選んでください")
+        XCTAssertEqual(single("よばれる").first, "呼ばれる")
         XCTAssertNil(KanaKanjiConverter.nominalizedOkuriganaRestored("寄付金", reading: "きふきん"))
         XCTAssertNil(KanaKanjiConverter.nominalizedOkuriganaRestored("気付", reading: "きつけ"))
         XCTAssertEqual(KanaKanjiConverter.nominalizedOkuriganaRestored("表記付テーブル", reading: "ひょうきつきてーぶる"), "表記付きテーブル")
