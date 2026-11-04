@@ -66,6 +66,18 @@ def katakana_run(s):
     return best
 
 
+def is_latin_run(s):
+    return bool(s) and all(c.isascii() and (c.isalpha() or c in " '.-&") or "À" <= c <= "ÿ" or c in "Œœ" for c in s)
+
+
+def latin_katakana_only_difference(a, b):
+    """違う部分が カタカナ⇔ラテン文字 だけか(クリュ⇔Cru)"""
+    core = diff_core(a, b)
+    exp_part, got_part = core.split("→", 1)
+    return (is_katakana(exp_part.replace("・", "")) and is_latin_run(got_part)) or (
+        is_latin_run(exp_part) and is_katakana(got_part.replace("・", "")))
+
+
 def diff_core(a, b):
     """共通の前後を落として違う部分だけを 期待→先頭 の形にする"""
     i = 0
@@ -89,7 +101,11 @@ def main():
         if len(cols) < 8:
             continue
         reading, expected, sent_no, flags, first, ok, found, top = cols[:8]
-        if ok == "ok":
+        if ok == "ok" or expected.replace("・", "") == first.replace("・", ""):
+            buckets["c_ok"].append([reading, expected, first, top])
+            continue
+        # ラテン文字とカタカナの違いだけなら 2 番目までに入っていれば一致(ユーザ指定 3657。ラテン文字が先、カタカナが 2 番目)
+        if expected in top.split("|")[:2] and latin_katakana_only_difference(expected, first):
             buckets["c_ok"].append([reading, expected, first, top])
             continue
         if policy_normalize(expected) == policy_normalize(first) or policy_normalize(expected) == first:
