@@ -8,6 +8,7 @@
 --reading-overrides <plist>(複数可): écritu の語彙の 表記→読み で Sudachi の読みを上書きする。ラテン文字の部分はここに載っているものだけ読みが付く。
 Sudachi の読みが取れない形態素(未知語)を含む断片は捨てる。同じ断片は 1 回だけ。
 """
+import os
 import random
 import re
 import sys
@@ -70,7 +71,16 @@ def load_reading_overrides(paths):
             for surface, reading in PLIST_ENTRY.findall(line):
                 if len(surface) >= 2 and HAS_TARGET.search(surface) and HIRA.match(reading):
                     readings.setdefault(surface, set()).add(reading)
-    return {s: next(iter(r)) for s, r in readings.items() if len(r) == 1}
+    merged = {s: next(iter(r)) for s, r in readings.items() if len(r) == 1}
+    # 1 字の語・読みが 2 つある語は reading_fixes.tsv で決める(樽=たる、日較差=にっかくさ)。語彙より優先
+    fixes_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "reading_fixes.tsv")
+    if os.path.exists(fixes_path):
+        for line in open(fixes_path, encoding="utf-8"):
+            if line.startswith("#") or "\t" not in line:
+                continue
+            surface, reading = line.rstrip("\n").split("\t", 1)
+            merged[surface] = reading
+    return merged
 
 
 def apply_reading_overrides(morphemes, overrides):

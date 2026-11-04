@@ -3,9 +3,10 @@
 使い方: python3 -I tools/conversion_audit/html.py [--previous <decisions.json>]... <out.html> <items.json> <結果ディレクトリ>...
   --previous: 前回の確認表の判定(decisions.py export の出力)。期待の表記が同じ行に「前回: 直す/このままでよい・備考」を添える(3676)
   結果ディレクトリは references/conversion_audit/<edition>/(a_register.tsv 等が有る所)。複数なら読み+期待が同じ行は 1 つにまとめる。
-  items.json は decisions.py export が doc id(v-NNNN)と行を突き合わせるのに使う(並びは html と同じ)。
+  items.json は decisions.py export が doc id(k-<読み+期待の sha1>)と行を突き合わせるのに使う(並びは html と同じ)。
 Artifact は capabilities db+user、collection "audit"。判定は fix(直す)/ok(このままでよい)、備考は自由記入。
 """
+import hashlib
 import json
 import os
 import sys
@@ -62,9 +63,10 @@ def main():
             r["prev"] = "前回: " + label + (" ・ " + p["note"] if p["note"] else "")
     cls_order = {c: i for i, (c, _) in enumerate(CLASSES)}
     data = sorted(rows.values(), key=lambda r: (cls_order[r["cls"]], r["stage"] or "9", r["diff"], r["reading"]))
-    for i, r in enumerate(data):
-        r["id"] = "v-%04d" % i
+    for r in data:
         r["key"] = r["reading"] + "\t" + r["expected"]
+        # doc id は 読み+期待 から作る(作り直しても同じ行は同じ id。並び順の番号だと入力済みの判定が別の行に付く。3676)
+        r["id"] = "k-" + hashlib.sha1(r["key"].encode("utf-8")).hexdigest()[:20]
     json.dump(data, open(out_items, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     samples = sorted({s for r in data for s in r["samples"]})
     html = TEMPLATE.replace("__DATA__", json.dumps(data, ensure_ascii=False).replace("</", "<\\/"))
@@ -153,6 +155,7 @@ const classes = JSON.parse(document.getElementById('classes').textContent);
 const stageLabel = JSON.parse(document.getElementById('stages').textContent);
 const samples = JSON.parse(document.getElementById('samples').textContent);
 const clsLabel = Object.fromEntries(classes);
+const idByKey = Object.fromEntries(rows.map(r => [r.key, r.id]));
 let state = {};
 let decisions = null;
 const saveTimers = {};
@@ -286,7 +289,8 @@ setStatus('保存先に接続しています…');
   let first = true;
   decisions.onSnapshot(snap => {
     const next = {};
-    snap.docs.forEach(doc => { const v = doc.data() || {}; next[doc.id] = { mark: v.mark || '', note: v.note || '' }; });
+    // 保存された key(読み+期待)で行を探す。古い番号の id(v-NNNN)の判定も行に付く
+    snap.docs.forEach(doc => { const v = doc.data() || {}; const id = (v.key && idByKey[v.key]) || doc.id; next[id] = { mark: v.mark || '', note: v.note || '' }; });
     const active = document.activeElement;
     state = Object.assign({}, state, next);
     if (first || !(active && active.tagName === 'INPUT' && active.type === 'text')) { render(); }

@@ -15,7 +15,7 @@
 
 目視の確認表(連語スキャンと同じ型):
 4. python3 -I tools/conversion_audit/html.py tmp/audit_check/audit_check.html tmp/audit_check/items.json references/conversion_audit/<edition>...
-   を Artifact として公開(capabilities db+user、collection "audit"、doc id v-NNNN は items.json の並び)。
+   を Artifact として公開(capabilities db+user、collection "audit"、doc id は k-<読み+期待の sha1>。作り直しても同じ行は同じ id)。
    a/b に加えて c_policy/c_style も載せる(分類が誤っていればユーザが[直す]にできる)。判定は 直す/このままでよい+備考
 5. 回答の保存: ArtifactData list を out_dir に落としてから
    python3 -I tools/conversion_audit/decisions.py export <out_dir>/audit tmp/audit_check/items.json references/conversion_audit/<edition>/decisions.json
