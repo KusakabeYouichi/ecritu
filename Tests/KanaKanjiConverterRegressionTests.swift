@@ -1674,6 +1674,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single("ひづけ").first, "日付")
         XCTAssertTrue(single("うけつけ").contains("受付"))
         XCTAssertEqual(single("いりぐち").first, "入口")
+        // learningBOX 検査 3667: 所為の せい+語、名詞の前の 誤った、白ぶどう+品種、カタカナ語+種、Cru の次に クリュ、とともに
+        XCTAssertEqual(multi("こるくのせいさん").first, "コルクの生産")
+        XCTAssertEqual(multi("かぜのせいで").first, "風のせいで")
+        XCTAssertEqual(multi("これはあなたのせいです").first, "これはあなたのせいです")
+        XCTAssertEqual(multi("あやまったせつめいをえらんでください").first, "誤った説明を選んでください")
+        XCTAssertEqual(multi("かれはあやまった").prefix(2).contains("彼は謝った"), true)
+        XCTAssertEqual(multi("どちゃくのしろぶどうひんしゅです").first, "土着の白ぶどう品種です")
+        XCTAssertEqual(multi("だゔぃでぃしゅ").first, "ダヴィディ種")
+        XCTAssertEqual(Array(multi("くりゅがそんざいします").prefix(2)), ["Cruが存在します", "クリュが存在します"])
+        XCTAssertEqual(Array(multi("くりゅです").prefix(2)), ["Cruです", "クリュです"])
+        XCTAssertEqual(multi("まっくおーえすで").first, "macOSで")
+        XCTAssertFalse(multi("まっくおーえすで").contains("マックオーエスで"))
+        XCTAssertEqual(multi("あいすとともにまぜあわせる").first, "アイスとともに混ぜ合わせる")
         XCTAssertNil(KanaKanjiConverter.nominalizedOkuriganaRestored("寄付金", reading: "きふきん"))
         XCTAssertNil(KanaKanjiConverter.nominalizedOkuriganaRestored("気付", reading: "きつけ"))
         XCTAssertEqual(KanaKanjiConverter.nominalizedOkuriganaRestored("表記付テーブル", reading: "ひょうきつきてーぶる"), "表記付きテーブル")
@@ -17164,7 +17177,7 @@ extension KanaKanjiConverterRegressionTests {
         for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
             for (reading, expected) in [
                 ("こうみのばらんすがよく", "香味のバランスがよく"),
-                ("かじゅうとともに", "果汁と共に"),
+                ("かじゅうとともに", "果汁とともに"),  // 共に はかな書き優先(3661 ユーザ指定、3667 で連文節にも)
                 ("とうせいほしょうげんさんち", "統制保証原産地"),
                 ("しゃかいほしょうせいど", "社会保障制度"),
                 ("ぶどうのしぼりかすをじょうりゅうした", "ぶどうの絞りかすを蒸溜した"),

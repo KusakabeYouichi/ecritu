@@ -281,7 +281,9 @@ extension KanaKanjiConverter {
             candidates = candidates.filter { !Self.containsNonPassivizableSuruForm($0) }
                 + candidates.filter { Self.containsNonPassivizableSuruForm($0) }
         }
-        candidates = Self.promoteKatakanaCounterpartOfLatinTop(candidates)
+        candidates = Self.promoteKatakanaCounterpartOfLatinTop(candidates) { reading, katakana in
+            KanaKanjiSeedDictionary.seed[reading]?.contains(katakana) == true || store.wordCosts(for: reading)[katakana] != nil
+        }
         candidates = placeNameSanOrdered(reading: reading, candidates: candidates, systemCandidateMode: systemCandidateMode)
         // 名詞+っぱなし(沖っぱなし/槍っぱなし/山車っぱなし)は後ろへ。経路は 連用形+っぱなし でも、区間の兄弟表記の差し替えで
         // 名詞が先頭に来ていた(3661)。直前が送り仮名のない漢字の候補(見/寝/出/居/着 の一字動詞は除く)
@@ -315,7 +317,9 @@ extension KanaKanjiConverter {
     // ラテン文字とカタカナの両方があればラテン文字が先、カタカナが 2 位)。かーねろすはなぱ で CarnerosはNapa の次が
     // カーネロスはNapa/Carnerosはナパ の混ぜ書きで、カーネロスはナパ は 4 番目だった。
     // 対応の判定は、ラテン文字もカタカナも除いた残り(助詞・漢字)が先頭と同じで、ラテン文字を含まない候補
-    static func promoteKatakanaCounterpartOfLatinTop(_ candidates: [String]) -> [String] {
+    static func promoteKatakanaCounterpartOfLatinTop(
+        _ candidates: [String], isKnownKatakana: (_ reading: String, _ katakana: String) -> Bool = { _, _ in false }
+    ) -> [String] {
         guard candidates.count > 2, let top = candidates.first,
             top.unicodeScalars.contains(where: isLatinLetterScalar) else {
             return candidates
@@ -330,12 +334,47 @@ extension KanaKanjiConverter {
                 && candidate.contains(where: isKatakana)
                 && String(candidate.filter { !isKatakana($0) }) == topRest
         }) else {
-            return candidates
+            return synthesizedKatakanaCounterpartOfLatinTop(
+                candidates, isKatakana: isKatakana, isLatinRunCharacter: isLatinRunCharacter, isKnownKatakana: isKnownKatakana)
         }
         var result = candidates
         let katakana = result.remove(at: index)
         result.insert(katakana, at: 1)
         return result
+    }
+
+    // カタカナの形が候補に無いとき、ラテン文字の部分だけがひらがなの候補(Cruが集中している ⇔ くりゅが集中している)から
+    // カタカナの形(クリュが集中している)を作って 2 番目に置く(learningBOX 検査 3667。Crus が 2 番目で クリュ が無かった)
+    private static func synthesizedKatakanaCounterpartOfLatinTop(
+        _ candidates: [String], isKatakana: (Character) -> Bool, isLatinRunCharacter: (Character) -> Bool,
+        isKnownKatakana: (_ reading: String, _ katakana: String) -> Bool
+    ) -> [String] {
+        guard let top = candidates.first else { return candidates }
+        let topCharacters = Array(top)
+        for candidate in candidates.dropFirst() where !candidate.unicodeScalars.contains(where: isLatinLetterScalar) {
+            let other = Array(candidate)
+            var prefix = 0
+            while prefix < min(topCharacters.count, other.count), topCharacters[prefix] == other[prefix] { prefix += 1 }
+            var suffix = 0
+            while suffix < min(topCharacters.count, other.count) - prefix,
+                topCharacters[topCharacters.count - 1 - suffix] == other[other.count - 1 - suffix] { suffix += 1 }
+            let latinPart = topCharacters[prefix..<(topCharacters.count - suffix)]
+            let kanaPart = other[prefix..<(other.count - suffix)]
+            guard !latinPart.isEmpty, !kanaPart.isEmpty, latinPart.allSatisfy(isLatinRunCharacter),
+                kanaPart.allSatisfy({ ("ぁ"..."ゖ").contains($0) || $0 == "ー" }) else { continue }
+            let katakanaPart = kanaPart.map { character -> Character in
+                guard let scalar = character.unicodeScalars.first, ("ぁ"..."ゖ").contains(character),
+                    let converted = Unicode.Scalar(scalar.value + 0x60) else { return character }
+                return Character(converted)
+            }
+            // 辞書・seed にあるカタカナ語だけ(macOS⇔まっくおーえす から マックオーエス を作らない)
+            guard isKnownKatakana(String(kanaPart), String(katakanaPart)) else { continue }
+            let synthesized = String(topCharacters[..<prefix]) + String(katakanaPart) + String(topCharacters[(topCharacters.count - suffix)...])
+            var result = candidates.filter { $0 != synthesized }
+            result.insert(synthesized, at: 1)
+            return result
+        }
+        return candidates
     }
 
     // 地名の読み+さん の連文節の並び(単文節の applyPlaceNameSanPreference と同じ方針。3661、ユーザ指定)。
@@ -4074,6 +4113,16 @@ extension KanaKanjiConverter {
                         if katakanaSuffixPreferred || Self.multiClauseKatakanaSuffixDemotedSurfacesID.contains(node.surfaceID),
                             !prevNode.isKanaIdentity, Self.isKatakanaString(prevNode.surface) {
                             cost += katakanaSuffixPreferred ? -Self.multiClauseKatakanaSuffixPreferenceBonus : Self.multiClauseKatakanaSuffixPreferenceBonus
+                        }
+                        // 名詞の前の 誤った(定数コメント参照。3667)。整数 ID を先に見る
+                        if Self.multiClauseErroneousAttributiveSurfacesID.contains(prevNode.surfaceID),
+                            !node.isKanaIdentity, let first = node.surface.first, Self.isAllKanjiSurface(String(first)) {
+                            cost -= Self.multiClauseErroneousAttributiveBonus
+                        }
+                        // かな せい(所為)+漢字・カタカナの語/敬称(定数コメント参照。3667)
+                        if prevNode.surfaceID == SID.せい, prevNode.readingID == SID.せい,
+                            !node.isKanaIdentity || Self.multiClauseHonorificSuffixReadingsID.contains(node.readingID) {
+                            cost += Self.multiClauseKanaSeiFollowedByContentPenalty
                         }
                         // 連用形+っぱなし(定数コメント参照。3661)
                         if Self.multiClausePpanashiReadingsID.contains(node.readingID),
