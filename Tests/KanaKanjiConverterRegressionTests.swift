@@ -1785,6 +1785,10 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("こうどはたかめです").first, "硬度は高めです")
         XCTAssertEqual(multi("ざっきんのせいいくをおさえる").first, "雑菌の生育を抑える")
         XCTAssertEqual(multi("こうじきんのきんし").first, "麹菌の菌糸")
+        // 3679(ユーザ指定): 人+に+すすめる は 薦める→勧める→進める。計画を進める は崩さない
+        XCTAssertEqual(Array(multi("かぞくにすすめる").prefix(3)), ["家族に薦める", "家族に勧める", "家族に進める"])
+        XCTAssertEqual(multi("けいかくをすすめる").first, "計画を進める")
+        XCTAssertEqual(multi("まえにすすめる").first, "前に進める")
         // 3676(ユーザ指定): ワインや酒の話は 造る、せんか は 選果 先頭、りょう の並び
         XCTAssertEqual(multi("わいんはぶどうからつくられます").first, "ワインはぶどうから造られます")
         XCTAssertEqual(multi("ぱんをつくる").first, "パンを作る")

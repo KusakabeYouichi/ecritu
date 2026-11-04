@@ -603,7 +603,9 @@ extension KanaKanjiConverter {
 
     // 先頭の候補の語をかなに替えた形を 2 番目に置く語(先ほどの設定が → さきほどの設定が を 2 番目、先程 は 3 番目。
     // ユーザ指定 3672)。変種の並びは LM 順(先程 7649 < さきほど 7792)で、seed の順の表は漢字先頭の seed に効かない
-    static let kanaSecondVariantSurfaces: [String: String] = ["先ほど": "さきほど"]
+    // 薦め→勧め: 人+に+すすめる は 薦める→勧める→進める の順(ユーザ指定 3679)。連語表は同じ読みの動詞を 1 つしか上げられず、
+    // 勧める は対抗として 進める と一緒に下がるので、先頭に 薦め があれば 勧め に替えた形を 2 番目に置く
+    static let kanaSecondVariantSurfaces: [String: String] = ["先ほど": "さきほど", "薦め": "勧め"]
     static func kanaSecondVariantOrdered(_ candidates: [String]) -> [String] {
         guard candidates.count >= 2, let top = candidates.first else { return candidates }
         for (kanji, kana) in kanaSecondVariantSurfaces where top.contains(kanji) {
