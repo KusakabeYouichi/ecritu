@@ -388,6 +388,8 @@
 	<dict><key>phrase</key><string>Pouilly sur Loire</string><key>shortcut</key><string>ぷいぃしゅーるろわーる</string></dict>
 	<dict><key>phrase</key><string>Pouilly-Fuissé</string><key>shortcut</key><string>ぷいぃふゅいっせ</string></dict>
 	<dict><key>phrase</key><string>Pouilly-Fumé</string><key>shortcut</key><string>ぷいぃふゅめ</string></dict>
+	<dict><key>phrase</key><string>Pouilly-Loché</string><key>shortcut</key><string>ぷいぃろしぇ</string></dict>	<!-- ブルゴーニュの村名 A.O.C.(ユーザ指定 3678) -->
+	<dict><key>phrase</key><string>Pouilly-Vinzelles</string><key>shortcut</key><string>ぷいぃゔぁんぜる</string></dict>	<!-- 同上 -->
 	<dict><key>phrase</key><string>Preignac</string><key>shortcut</key><string>ぷれにゃっく</string></dict>
 	<dict><key>phrase</key><string>Preuses</string><key>shortcut</key><string>ぷりゅーず</string></dict>
 	<dict><key>phrase</key><string>Provence-Corse</string><key>shortcut</key><string>ぷろゔぁんすこるす</string></dict>
@@ -1820,6 +1822,7 @@
 	<dict><key>phrase</key><string>Gimblett Gravels District</string><key>shortcut</key><string>ぎむれっとぐらゔぇるずでぃすとりくと</string></dict>
 	<dict><key>phrase</key><string>Gisborne</string><key>shortcut</key><string>ぎずぼーん</string></dict>
 	<dict><key>phrase</key><string>Givry</string><key>shortcut</key><string>じぶり</string></dict>
+	<dict><key>phrase</key><string>Givry</string><key>shortcut</key><string>じゔり</string></dict>	<!-- ジヴリ の読みでも(ユーザ指定 3678) -->
 	<dict><key>phrase</key><string>Hawke's Bay</string><key>shortcut</key><string>ほーくすべい</string></dict>
 	<dict><key>phrase</key><string>Kerikeri</string><key>shortcut</key><string>けりけり</string></dict>
 	<dict><key>phrase</key><string>Kumeu</string><key>shortcut</key><string>くめう</string></dict>
@@ -11528,6 +11531,7 @@
 	<dict><key>phrase</key><string>ジスクール</string><key>shortcut</key><string>じすくーる</string></dict>
 	<dict><key>phrase</key><string>ジビッボ</string><key>shortcut</key><string>じびっぼ</string></dict>
 	<dict><key>phrase</key><string>ジブリ</string><key>shortcut</key><string>じぶり</string></dict>
+	<dict><key>phrase</key><string>ジヴリ</string><key>shortcut</key><string>じゔり</string></dict>	<!-- Givry のもう一つの書き方(ユーザ指定 3678) -->
 	<dict><key>phrase</key><string>ジャエン</string><key>shortcut</key><string>じゃえん</string></dict>
 	<dict><key>phrase</key><string>ジャニエール</string><key>shortcut</key><string>じゃにえーる</string></dict>
 	<dict><key>phrase</key><string>ジャポン</string><key>shortcut</key><string>じゃぽん</string></dict>
