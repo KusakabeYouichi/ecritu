@@ -869,6 +869,8 @@ extension KanaKanjiConverter {
         // かおり: seed 先頭 香り を連文節にも通す(3570、ユーザ報告: かおりはうつしても→薫は写しても)。文中では 薫(5647)が
         // 香り(5985)より安く 338 差で人名が先頭になった。単文節と かおりは 単独は 香りは が先頭。幅は 338 を越える値
         "かおり": 400,
+        // さきほど: seed 先頭 先ほど を連文節にも(先程の設定が だった。ユーザ報告 3672)
+        "さきほど": 1500,
         // びんづめ: seed 先頭 ビン詰め を連文節にも(ユーザ指定 3670)。ビン詰め は LM に無く 瓶詰め 7334 に負ける
         "びんづめ": 2000,
         // うる: seed 先頭 売る を連文節でも通す。LM は 得る4907 ≪ 売る6203 で、うるとしたら→
@@ -2028,6 +2030,8 @@ extension KanaKanjiConverter {
         // 丸い石(丸井医師)、低亜硫酸(貞)。learningBOX 検査 3671
         "を\t保ち": 3000, "を\t知り": 3000, "に\t面し": 3000, "に\t詰め": 3000, "を\t加え": 3000,
         "丸い\t石": 3000, "低\t亜硫酸": 3000,
+        // 筋肉食っても(菌+に+括っても だった。助詞直後の派生の定額に負ける。ユーザ報告 3672)
+        "筋肉\t食って": 2500, "筋肉\t食っ": 2500,
         "生産量\t最少": 3000, "人口\t最少": 3000, "柾目\t取り": 3000, "板目\t取り": 3000,
         // ワインの専門語の隣接の組(learningBOX 検査 3669。前後の語で決まる場合だけ)
         "数時間\t静置": 3000, "交配\t品種": 3000, "呼ばれる\t呼称": 3000, "還元\tによる": 2000, "暑く\t乾燥": 2000,
@@ -2690,10 +2694,14 @@ extension KanaKanjiConverter {
     // 表外読みの活用形(喚ぶ/称ぶ/勁い/靭い/圧える)は、活用派生の下限に当たって LM の実績のある常用の字
     // (呼ばれ/強め/押さえ)より安くなる(クローンと喚ばれ、香りが勁め だった。learningBOX 検査 3668・3670)。
     // 字 → その表外読みの頭。連文節だけ下げ、単文節には残す
-    static let multiClauseRareReadingDerivedStems: [Character: String] = ["喚": "よ", "称": "よ", "勁": "つよ", "靭": "つよ", "圧": "おさ"]
+    static let multiClauseRareReadingDerivedStems: [Character: String] = ["喚": "よ", "称": "よ", "勁": "つよ", "靭": "つよ", "圧": "おさ", "堕": "だ"]
     static let multiClauseRareReadingDerivedPenalty = 1500
     // 助詞 から の位置に立つ 1 字の 唐(南からの→南唐の、西側から吹く→西側唐服)。文頭(唐の都)は残す(3670)
     static let multiClauseKaraKanjiAfterWordPenalty = 2500
+    // て形の後ろの補助の ない は かな(使ってなくて/していない。使って無くて だった。ユーザ報告 3672)。存在の 無い(お金が無い)は別
+    static let multiClauseNaiKanjiAfterTeFormPenalty = 2500
+    // カタカナ語の途中で切れた かな の長音の塊(メル+ろー+です。メルロー が先頭でなかった。ユーザ報告 3672)
+    static let multiClauseKanaLongVowelAfterKatakanaPenalty = 5000
     static let multiClauseKaraKanjiSurfaces: Set<String> = ["唐"]
     static let multiClauseKaraKanjiSurfacesID = MultiClauseIDSet(multiClauseKaraKanjiSurfaces)
     static let multiClauseKaraReadingID = MultiClauseSymbols.id("から")

@@ -288,6 +288,7 @@ extension KanaKanjiConverter {
         candidates = Self.liquorCategoryOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.yokuOrthographyOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.sweetnessOrthographyOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
+        candidates = Self.kanaSecondVariantOrdered(candidates)
         // 名詞+っぱなし(沖っぱなし/槍っぱなし/山車っぱなし)は後ろへ。経路は 連用形+っぱなし でも、区間の兄弟表記の差し替えで
         // 名詞が先頭に来ていた(3661)。直前が送り仮名のない漢字の候補(見/寝/出/居/着 の一字動詞は除く)
         if candidates.count >= 2, candidates.contains(where: { $0.contains("っぱなし") || $0.contains("っ放し") }) {
@@ -465,6 +466,21 @@ extension KanaKanjiConverter {
         }
         guard rewritten != top else { return candidates }
         return [rewritten] + candidates.filter { $0 != rewritten }
+    }
+
+    // 先頭の候補の語をかなに替えた形を 2 番目に置く語(先ほどの設定が → さきほどの設定が を 2 番目、先程 は 3 番目。
+    // ユーザ指定 3672)。変種の並びは LM 順(先程 7649 < さきほど 7792)で、seed の順の表は漢字先頭の seed に効かない
+    static let kanaSecondVariantSurfaces: [String: String] = ["先ほど": "さきほど"]
+    static func kanaSecondVariantOrdered(_ candidates: [String]) -> [String] {
+        guard candidates.count >= 2, let top = candidates.first else { return candidates }
+        for (kanji, kana) in kanaSecondVariantSurfaces where top.contains(kanji) {
+            let variant = top.replacingOccurrences(of: kanji, with: kana)
+            guard variant != top else { continue }
+            var result = candidates.filter { $0 != variant }
+            result.insert(variant, at: 1)
+            return result
+        }
+        return candidates
     }
 
     // 地名の読み+さん の連文節の並び(単文節の applyPlaceNameSanPreference と同じ方針。3661、ユーザ指定)。
@@ -4219,6 +4235,14 @@ extension KanaKanjiConverter {
                         if node.isInflectionDerived, let head = node.surface.first,
                             let readingHead = Self.multiClauseRareReadingDerivedStems[head], node.reading.hasPrefix(readingHead) {
                             cost += Self.multiClauseRareReadingDerivedPenalty
+                        }
+                        // て形の後ろの 無(くて/い/かった)、カタカナ語の直後の かな の長音の塊(定数コメント参照。3672)
+                        if node.surface.first == "無", node.reading.first == "な", prevNode.isInflectionDerived,
+                            let tail = prevNode.surface.last, tail == "て" || tail == "で" {
+                            cost += Self.multiClauseNaiKanjiAfterTeFormPenalty
+                        }
+                        if node.isKanaIdentity, node.reading.dropFirst().first == "ー", Self.isKatakanaString(prevNode.surface) {
+                            cost += Self.multiClauseKanaLongVowelAfterKatakanaPenalty
                         }
                         // 助詞 から の位置の 唐、名詞の直後の かな たい、恋+名詞(定数コメント参照。3670)
                         if Self.multiClauseKaraKanjiSurfacesID.contains(node.surfaceID), node.readingID == Self.multiClauseKaraReadingID,

@@ -1733,6 +1733,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("ぎょかいるいのれもんかじゅうあえ").first, "魚介類のレモン果汁和え")
         XCTAssertEqual(single("はっぽうせいしゅるい").first, "発泡性酒類")
         XCTAssertEqual(multi("おおきなまるいいし").first, "大きな丸い石")
+        // 3673(ユーザ報告): 先ほど/さきほど/先程、済んでいれば、に出さなかった(ら)、不使用、使ってなくて、メルローです、筋肉食っても
+        XCTAssertEqual(Array(multi("さきほどのせっていが").prefix(3)), ["先ほどの設定が", "さきほどの設定が", "先程の設定が"])
+        XCTAssertEqual(Array(single("さきほど").prefix(3)), ["先ほど", "さきほど", "先程"])
+        XCTAssertEqual(single("すんでいれば").first, "済んでいれば")
+        XCTAssertEqual(Array(single("にださなかった").prefix(3)), ["に出さなかった", "煮出さなかった", "煮ださなかった"])
+        XCTAssertEqual(single("にださなかったら").first, "に出さなかったら")
+        XCTAssertEqual(single("ふしよう").first, "不使用")
+        XCTAssertEqual(multi("つかってなくて").first, "使ってなくて")
+        XCTAssertEqual(multi("おかねがなくて").first, "お金がなくて")
+        XCTAssertEqual(multi("めるろーです").first, "メルローです")
+        XCTAssertEqual(multi("きんにくくっても").first, "筋肉食っても")
         XCTAssertEqual(KanaKanjiConverter.sweetnessOrthographyOrdered(reading: "あまみおおしまのわいん", candidates: ["奄美大島のワイン"]), ["奄美大島のワイン"])
         XCTAssertNil(KanaKanjiConverter.nominalizedOkuriganaRestored("寄付金", reading: "きふきん"))
         XCTAssertNil(KanaKanjiConverter.nominalizedOkuriganaRestored("気付", reading: "きつけ"))
@@ -1746,7 +1757,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         try loadDeviceAddedVocabulary()
         func multiTop(_ reading: String) -> String? { converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).first }
         // 読み全体が補助語彙の一語なら連文節でも先頭(メルろー/夢のか/具リュなー… だった)
-        XCTAssertEqual(multiTop("めるろー"), "メルロー")
+        // 3673 から メル+ろー の区切りが立たず、連文節は空(単文節の メルロー が出る)
+        XCTAssertTrue([nil, "メルロー"].contains(multiTop("めるろー")), "\(String(describing: multiTop("めるろー")))")
+        XCTAssertEqual(converter.candidates(for: "めるろー", limit: 5, systemCandidateMode: .surface).first, "メルロー")
         XCTAssertEqual(multiTop("ゆめのか"), "夢の香")
         XCTAssertEqual(multiTop("ぐりゅなーゔぇるとりーなー"), "グリュナーヴェルトリーナー")
         XCTAssertEqual(Array(converter.multiClauseCandidates(for: "えあつぉいがーあぷふゅるんぐ", systemCandidateMode: .surface).prefix(2)),
