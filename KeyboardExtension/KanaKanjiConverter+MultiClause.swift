@@ -286,6 +286,8 @@ extension KanaKanjiConverter {
         }
         candidates = placeNameSanOrdered(reading: reading, candidates: candidates, systemCandidateMode: systemCandidateMode)
         candidates = Self.liquorCategoryOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
+        candidates = Self.yokuOrthographyOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
+        candidates = Self.sweetnessOrthographyOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         // 名詞+っぱなし(沖っぱなし/槍っぱなし/山車っぱなし)は後ろへ。経路は 連用形+っぱなし でも、区間の兄弟表記の差し替えで
         // 名詞が先頭に来ていた(3661)。直前が送り仮名のない漢字の候補(見/寝/出/居/着 の一字動詞は除く)
         if candidates.count >= 2, candidates.contains(where: { $0.contains("っぱなし") || $0.contains("っ放し") }) {
@@ -391,6 +393,78 @@ extension KanaKanjiConverter {
         }
         let replaced = top.replacingOccurrences(of: "種類", with: "酒類")
         return [replaced] + candidates.filter { $0 != replaced }
+    }
+
+    // 良く/よく(ユーザ指定 3670): 「悪く」に置き換えられる所は 良く、それ以外(よく知られている/よく見る)は よく。
+    // 置き換えられるかは前後の字で近似する: 直後が する/なる/ない の類(良くする/良くなる/良くない)、
+    // または直前が が/は/も で直後が文の終わりか て/、(日当たりが良く/相性が良く、)。
+    // 直前が助詞(が/は/も/を)か文頭のときだけ見る(程よく/仲良く/心地よく/バランスよく は触らない)
+    static let yokuGoodFollowers: [String] = [
+        "する", "して", "した", "しま", "しな", "しよ", "すれ", "させ", "され", "さな",
+        "なる", "なり", "なっ", "なれ", "なろ", "ない", "なかっ", "なく", "なけ"
+    ]
+    static func yokuOrthographyOrdered(reading: String, candidates: [String]) -> [String] {
+        guard reading.contains("よく"), let top = candidates.first, top.contains("よく") || top.contains("良く") else {
+            return candidates
+        }
+        var characters = Array(top)
+        var index = 0
+        var changed = false
+        while index + 1 < characters.count {
+            let isKana = characters[index] == "よ" && characters[index + 1] == "く"
+            let isKanji = characters[index] == "良" && characters[index + 1] == "く"
+            guard isKana || isKanji else { index += 1; continue }
+            let previous: Character? = index > 0 ? characters[index - 1] : nil
+            let after = String(characters[(index + 2)...])
+            guard previous == nil || "がはもを".contains(previous!), !after.hasPrefix("よく"),
+                !(index >= 2 && characters[index - 2] == "よ" && characters[index - 1] == "く") else {
+                index += 2
+                continue
+            }
+            let good = yokuGoodFollowers.contains(where: { after.hasPrefix($0) })
+                || (previous.map { "がはも".contains($0) } ?? false
+                    && (after.isEmpty || after.hasPrefix("て") || after.hasPrefix("、") || after.hasPrefix("。")))
+            if good != isKanji {
+                characters[index] = good ? "良" : "よ"
+                changed = true
+            }
+            index += 2
+        }
+        guard changed else { return candidates }
+        let rewritten = String(characters)
+        return [rewritten] + candidates.filter { $0 != rewritten }
+    }
+
+    // 甘味/甘み(ユーザ指定 3670): テイスティング用語やスイーツの話では 甘味、それ以外は 甘み。
+    // 読みに味わい・ワイン・菓子の語があれば先頭の候補の 甘み/奄美 を 甘味 に、無ければ 甘味 を 甘み に替える。
+    // 甘味料/甘味処(かんみ)は触らない
+    static let sweetnessTastingContextReadings: [String] = [
+        "さんみ", "にがみ", "しぶみ", "うまみ", "えぐみ", "わいん", "てーすてぃんぐ", "あじわい", "ざんとう", "かじつみ",
+        "ぼでぃ", "すいーつ", "わがし", "ようがし", "でざーと", "けーき"
+    ]
+    static func sweetnessOrthographyOrdered(reading: String, candidates: [String]) -> [String] {
+        guard reading.contains("あまみ"), let top = candidates.first else { return candidates }
+        let tasting = sweetnessTastingContextReadings.contains(where: { reading.contains($0) })
+        var rewritten = top
+        if tasting {
+            rewritten = rewritten.replacingOccurrences(of: "甘み", with: "甘味")
+            // 地名の 奄美(奄美大島/奄美群島/奄美市)は残す
+            if !["奄美大島", "奄美群島", "奄美諸島", "奄美市"].contains(where: { rewritten.contains($0) }) {
+                rewritten = rewritten.replacingOccurrences(of: "奄美", with: "甘味")
+            }
+        } else {
+            var result = ""
+            var rest = Substring(rewritten)
+            while let range = rest.range(of: "甘味") {
+                result += rest[..<range.lowerBound]
+                let tail = rest[range.upperBound...]
+                result += (tail.hasPrefix("料") || tail.hasPrefix("処")) ? "甘味" : "甘み"
+                rest = tail
+            }
+            rewritten = result + rest
+        }
+        guard rewritten != top else { return candidates }
+        return [rewritten] + candidates.filter { $0 != rewritten }
     }
 
     // 地名の読み+さん の連文節の並び(単文節の applyPlaceNameSanPreference と同じ方針。3661、ユーザ指定)。
@@ -4141,10 +4215,24 @@ extension KanaKanjiConverter {
                             !node.isKanaIdentity, let first = node.surface.first, Self.isAllKanjiSurface(String(first)) {
                             cost -= Self.multiClauseErroneousAttributiveBonus
                         }
-                        // 表外読みの 喚ぶ/称ぶ の活用形(定数コメント参照。3668)
-                        if node.isInflectionDerived, node.reading.first == "よ", let head = node.surface.first,
-                            Self.multiClauseRareYobuStemCharacters.contains(head) {
-                            cost += Self.multiClauseRareYobuDerivedPenalty
+                        // 表外読みの活用形(定数コメント参照。3668・3670)
+                        if node.isInflectionDerived, let head = node.surface.first,
+                            let readingHead = Self.multiClauseRareReadingDerivedStems[head], node.reading.hasPrefix(readingHead) {
+                            cost += Self.multiClauseRareReadingDerivedPenalty
+                        }
+                        // 助詞 から の位置の 唐、名詞の直後の かな たい、恋+名詞(定数コメント参照。3670)
+                        if Self.multiClauseKaraKanjiSurfacesID.contains(node.surfaceID), node.readingID == Self.multiClauseKaraReadingID,
+                            prevNode.surfaceID != SID.BOS, !prevNode.isKanaIdentity {
+                            cost += Self.multiClauseKaraKanjiAfterWordPenalty
+                        }
+                        if node.readingID == SID.たい, node.isKanaIdentity, prevNode.surface.count >= 2,
+                            !prevNode.isInflectionDerived, !prevNode.isKanaIdentity, Self.isAllKanjiSurface(prevNode.surface) {
+                            cost += Self.multiClauseKanaTaiAfterNounPenalty
+                        }
+                        if Self.multiClauseKoiReadingsID.contains(prevNode.readingID), Self.multiClauseKoiFollowedByNounSurfacesID.contains(prevNode.surfaceID),
+                            !node.isKanaIdentity, let first = node.surface.first,
+                            Self.isAllKanjiSurface(String(first)) || Self.isKatakanaString(String(first)) {
+                            cost += Self.multiClauseKoiFollowedByNounPenalty
                         }
                         // かな せい(所為)+漢字・カタカナの語/敬称(定数コメント参照。3667)
                         if prevNode.surfaceID == SID.せい, prevNode.readingID == SID.せい,

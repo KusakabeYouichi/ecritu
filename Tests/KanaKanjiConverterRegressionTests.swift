@@ -1701,6 +1701,30 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("わいんのしゅるい").first, "ワインの種類")
         XCTAssertEqual(multi("こうぼをぞうしょくさせる").first, "酵母を増殖させる")
         XCTAssertEqual(multi("ふゆのそうがいをふせぐ").first, "冬の霜害を防ぐ")
+        // 3670: か選んで、からの(唐)、濃い+名詞(恋)、強め(勁め)、問わず、抜き取る工程、山羊の乳
+        XCTAssertEqual(multi("どのさんちのだんたいかえらんでください").first, "どの産地の団体か選んでください")
+        XCTAssertEqual(multi("みなみからのこっかいのえいきょうで").first, "南からの黒海の影響で")
+        XCTAssertEqual(multi("しきそのこいかじゅう").first, "色素の濃い果汁")
+        XCTAssertEqual(multi("こいをする").first, "恋をする")
+        XCTAssertEqual(multi("つよめにする").first, "強めにする")
+        XCTAssertEqual(multi("ひんしゅをとわず").first, "品種を問わず")
+        XCTAssertEqual(multi("わいんをぬきとるこうていです").first, "ワインを抜き取る工程です")
+        XCTAssertEqual(multi("やぎのちちをげんりょうとする").first, "山羊の乳を原料とする")
+        XCTAssertEqual(multi("からあげをたべる").first, "唐揚げを食べる")
+        // 3670(ユーザ指定): ビン詰め、特に(漢字)、良く/よく(悪く に置き換えられる所は 良く)、甘味/甘み(味わい・菓子の話は 甘味)
+        XCTAssertEqual(single("びんづめ").first, "ビン詰め")
+        XCTAssertEqual(multi("わいんをびんづめして").first, "ワインをビン詰めして")
+        XCTAssertEqual(single("とくに").first, "特に")
+        XCTAssertEqual(multi("ひあたりがよく").first, "日当たりが良く")
+        XCTAssertEqual(multi("あじはよくない").first, "味は良くない")
+        XCTAssertEqual(multi("けいきがよくなる").first, "景気が良くなる")
+        XCTAssertEqual(multi("こるくのさんちとしてもよくしられている").first, "コルクの産地としてもよく知られている")
+        XCTAssertEqual(multi("よくみるえいが").first, "よく見る映画")
+        XCTAssertEqual(multi("かれはよくしゃべる").first, "彼はよく喋る")
+        XCTAssertEqual(multi("ばらんすよくたべる").first, "バランスよく食べる")
+        XCTAssertEqual(multi("あまみとさんみ").first, "甘味と酸味")
+        XCTAssertEqual(multi("あまみをかんじる").first, "甘みを感じる")
+        XCTAssertEqual(KanaKanjiConverter.sweetnessOrthographyOrdered(reading: "あまみおおしまのわいん", candidates: ["奄美大島のワイン"]), ["奄美大島のワイン"])
         XCTAssertNil(KanaKanjiConverter.nominalizedOkuriganaRestored("寄付金", reading: "きふきん"))
         XCTAssertNil(KanaKanjiConverter.nominalizedOkuriganaRestored("気付", reading: "きつけ"))
         XCTAssertEqual(KanaKanjiConverter.nominalizedOkuriganaRestored("表記付テーブル", reading: "ひょうきつきてーぶる"), "表記付きテーブル")
@@ -17190,7 +17214,7 @@ extension KanaKanjiConverterRegressionTests {
 
         for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
             for (reading, expected) in [
-                ("こうみのばらんすがよく", "香味のバランスがよく"),
+                ("こうみのばらんすがよく", "香味のバランスが良く"),  // 悪く に置き換えられる所は 良く(ユーザ指定 3670)
                 ("かじゅうとともに", "果汁とともに"),  // 共に はかな書き優先(3661 ユーザ指定、3667 で連文節にも)
                 ("とうせいほしょうげんさんち", "統制保証原産地"),
                 ("しゃかいほしょうせいど", "社会保障制度"),
@@ -23579,7 +23603,9 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertFalse(KanaGakiCategory.adverbKanaFirst.suppressedByDefault)
         XCTAssertTrue(KanaGakiCategory.adverb.suppressedByDefault)
         XCTAssertEqual(KanaGakiTable.categoryByReadingAndSurface["かなり"]?["可成"], .adverb)
-        XCTAssertEqual(KanaGakiTable.categoryByReadingAndSurface["とくに"]?["特に"], .adverbKanaFirst)
+        XCTAssertEqual(KanaGakiTable.categoryByReadingAndSurface["けっして"]?["決して"], .adverbKanaFirst)
+        // 特に は漢字で書くことが多いので外した(ユーザ指定 3670)
+        XCTAssertNil(KanaGakiTable.categoryByReadingAndSurface["とくに"]?["特に"])
         XCTAssertNil(KanaGakiTable.categoryByReadingAndSurface["しぜん"]?["自然"], "名詞と同形の語は入れない")
         // 初期設定(副詞は抑制、副詞(漢字も残す)は抑制しない)
         converter.setKanaGakiSuppressedCategories(Set(KanaGakiCategory.allCases.filter(\.suppressedByDefault)))
@@ -23588,15 +23614,16 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(kanari.first, "かなり", "single=\(kanari)")
         XCTAssertFalse(kanari.contains("可成"), "single=\(kanari)")
         let tokuni = converter.candidates(for: "とくに", limit: 6, systemCandidateMode: .surface)
-        XCTAssertEqual(Array(tokuni.prefix(2)), ["とくに", "特に"], "single=\(tokuni)")
+        XCTAssertEqual(Array(tokuni.prefix(2)), ["特に", "とくに"], "single=\(tokuni)")
         let shizen = converter.candidates(for: "しぜん", limit: 3, systemCandidateMode: .surface)
         XCTAssertEqual(shizen.first, "自然", "single=\(shizen)")
         let issou = converter.candidates(for: "いっそう", limit: 8, systemCandidateMode: .surface)
         XCTAssertEqual(issou.first, "いっそう", "single=\(issou)")
         XCTAssertFalse(issou.contains("一そう"), "交ぜ書きは suppr single=\(issou)")
-        // 連文節でも かな先頭(抑制しない仲間)
+        // 連文節でも 特に が先頭(3670 から。かな とくに は 2 番目以降に残る)
         let multi = converter.multiClauseCandidates(for: "とくにきをつけて", systemCandidateMode: .surface)
-        XCTAssertEqual(multi.first, "とくに気をつけて", "multi=\(multi)")
+        XCTAssertEqual(multi.first, "特に気をつけて", "multi=\(multi)")
+        XCTAssertTrue(multi.contains("とくに気をつけて"), "multi=\(multi)")
     }
 
     // ぜひ を 副詞(漢字も残す)に(3633、ユーザ報告: ぜひかってみて が 是非買ってみて)。連文節でかなを先頭に、是非 は残す。
@@ -23615,9 +23642,9 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(onegai.first, "ぜひお願いします", "multi=\(onegai)")
         // 直接の観測(とくに→お)があっても漢字(特に→お)の方が安ければそちら。助詞付き副詞の派生割引も漢字で判定
         let tokuni = converter.multiClauseCandidates(for: "とくにおねがいします", systemCandidateMode: .surface)
-        XCTAssertEqual(tokuni.first, "とくにお願いします", "multi=\(tokuni)")
+        XCTAssertEqual(tokuni.first, "特にお願いします", "特に は漢字(ユーザ指定 3670) multi=\(tokuni)")
         let tokuniKita = converter.multiClauseCandidates(for: "とくにきたきゃく", systemCandidateMode: .surface)
-        XCTAssertEqual(tokuniKita.first, "とくに来た客", "multi=\(tokuniKita)")
+        XCTAssertEqual(tokuniKita.first, "特に来た客", "特に は漢字(ユーザ指定 3670) multi=\(tokuniKita)")
         let kite = converter.multiClauseCandidates(for: "ぜひきてください", systemCandidateMode: .surface)
         XCTAssertEqual(kite.first, "ぜひ来てください", "multi=\(kite)")
         // 問う は seed で供給(とう の供給上限 14 件から漏れていた。ユーザ報告 3634)

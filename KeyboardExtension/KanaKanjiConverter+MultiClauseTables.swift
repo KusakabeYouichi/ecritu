@@ -782,7 +782,7 @@ extension KanaKanjiConverter {
         "酒石\t析出": 3000, "霜害\t防": 3000, "霜害\t起こ": 3000, "高温\t乾燥": 3000, "風\t乾燥": 2000, "コルク\t乾燥": 3000,
         "ボラ\t卵巣": 3000, "緯度\t割": 3000, "緯度\t高": 3000, "黒海\t影響": 3000, "ワイン\t粘性": 3000,
         "果皮\t持": 3000, "ぶどう\t萌芽": 3000, "萌芽\t時期": 3000, "亜硫酸\t添加": 3000, "スピリッツ\t添加": 3000,
-        "アルコール\t添加": 3000, "ぶどう樹\t剪定": 3000, "樹\t剪定": 2000, "胡椒\tソース": 3000, "低温\t多雨": 3000,
+        "アルコール\t添加": 3000, "山羊\t乳": 3000, "ヤギ\t乳": 3000, "羊\t乳": 3000, "牛\t乳": 3000, "使用量\t多": 2000, "ぶどう樹\t剪定": 3000, "樹\t剪定": 2000, "胡椒\tソース": 3000, "低温\t多雨": 3000,
         "空き\tある": 3600, "空き\tあり": 3600, "空き\tあっ": 3600, "空き\tない": 3600, "空き\tなし": 3600, "空き\t無": 3600,
     ]
     // 連語の後段は表層の前方一致で引く(解けて/解けてきます 等の活用派生ノードにも効かせる。2739)
@@ -869,6 +869,8 @@ extension KanaKanjiConverter {
         // かおり: seed 先頭 香り を連文節にも通す(3570、ユーザ報告: かおりはうつしても→薫は写しても)。文中では 薫(5647)が
         // 香り(5985)より安く 338 差で人名が先頭になった。単文節と かおりは 単独は 香りは が先頭。幅は 338 を越える値
         "かおり": 400,
+        // びんづめ: seed 先頭 ビン詰め を連文節にも(ユーザ指定 3670)。ビン詰め は LM に無く 瓶詰め 7334 に負ける
+        "びんづめ": 2000,
         // うる: seed 先頭 売る を連文節でも通す。LM は 得る4907 ≪ 売る6203 で、うるとしたら→
         // 得るとしたら / とちをうる→土地を得る になっていた。文語の 得る(うる)も現代語だが
         // 単独の うる は 売る が主(ユーザ指定 2925)。脱活用スパン用の opt-in 表(800)は
@@ -2019,6 +2021,10 @@ extension KanaKanjiConverter {
         "とも\tに": 2000,
         // 由来のかおりです が 由来+のか+おり+です だった(香り→です の bigram が無い。learningBOX 検査 3668)
         "香り\tです": 1500, "のか\tおり": -3000,
+        // 〜か選んでください(団体+帰らん+で+ください だった)、樽熟成による香り(薫)、問いの条件(刀伊)、
+        // 生産量最少/人口最少(最小)、柾目取り(柾目鳥)。learningBOX 検査 3670
+        "か\t選んで": 2000, "か\t選ん": 2000, "か\t選び": 2000, "選んで\tください": 2000, "による\t香り": 1500, "問い\tの": 1500,
+        "生産量\t最少": 3000, "人口\t最少": 3000, "柾目\t取り": 3000, "板目\t取り": 3000,
         // ワインの専門語の隣接の組(learningBOX 検査 3669。前後の語で決まる場合だけ)
         "数時間\t静置": 3000, "交配\t品種": 3000, "呼ばれる\t呼称": 3000, "還元\tによる": 2000, "暑く\t乾燥": 2000,
         "ぶどう\t果粒": 3000, "ブドウ\t果粒": 3000, "による\t虫害": 2000, "リキュール\t添加": 3000,
@@ -2669,7 +2675,7 @@ extension KanaKanjiConverter {
     static let multiClauseKatakanaSuffixPreferenceBonus = 2000
     static let multiClauseKatakanaSuffixPreferredSurfaces: Set<String> = ["種", "州"]
     static let multiClauseKatakanaSuffixPreferredSurfacesID = MultiClauseIDSet(multiClauseKatakanaSuffixPreferredSurfaces)
-    static let multiClauseKatakanaSuffixDemotedSurfaces: Set<String> = ["酒", "集", "衆", "朱", "主"]
+    static let multiClauseKatakanaSuffixDemotedSurfaces: Set<String> = ["酒", "集", "衆", "朱", "主", "巣"]
     // 名詞の前の あやまった は 誤った(謝った と同点で 謝った説明/謝った組み合わせ だった。learningBOX 検査 3667)
     static let multiClauseErroneousAttributiveSurfaces: Set<String> = ["誤った", "誤っている", "誤っていた"]
     static let multiClauseErroneousAttributiveSurfacesID = MultiClauseIDSet(multiClauseErroneousAttributiveSurfaces)
@@ -2677,10 +2683,24 @@ extension KanaKanjiConverter {
     // 理由の かな せい(所為)の直後に漢字・カタカナの語や敬称の さん は来ない(〜のせいで/のせいだ/のせいか)。
     // コルクのせいさん/赤ワインのせいさんが(生産)が せい+さん、せい+三 だった(learningBOX 検査 3667)
     static let multiClauseKanaSeiFollowedByContentPenalty = 6000
-    // 表外読みの よぶ(喚ぶ/称ぶ)の活用形は、活用派生の下限に当たって 呼ばれ(LM の実績)より安くなる
-    // (クローンと呼ばれ が 喚ばれ/称ばれ の後ろだった。learningBOX 検査 3668)。連文節だけ下げ、単文節には残す
-    static let multiClauseRareYobuStemCharacters: Set<Character> = ["喚", "称"]
-    static let multiClauseRareYobuDerivedPenalty = 1500
+    // 表外読みの活用形(喚ぶ/称ぶ/勁い/靭い/圧える)は、活用派生の下限に当たって LM の実績のある常用の字
+    // (呼ばれ/強め/押さえ)より安くなる(クローンと喚ばれ、香りが勁め だった。learningBOX 検査 3668・3670)。
+    // 字 → その表外読みの頭。連文節だけ下げ、単文節には残す
+    static let multiClauseRareReadingDerivedStems: [Character: String] = ["喚": "よ", "称": "よ", "勁": "つよ", "靭": "つよ", "圧": "おさ"]
+    static let multiClauseRareReadingDerivedPenalty = 1500
+    // 助詞 から の位置に立つ 1 字の 唐(南からの→南唐の、西側から吹く→西側唐服)。文頭(唐の都)は残す(3670)
+    static let multiClauseKaraKanjiAfterWordPenalty = 2500
+    static let multiClauseKaraKanjiSurfaces: Set<String> = ["唐"]
+    static let multiClauseKaraKanjiSurfacesID = MultiClauseIDSet(multiClauseKaraKanjiSurfaces)
+    static let multiClauseKaraReadingID = MultiClauseSymbols.id("から")
+    // 名詞の直後の かな たい(西部山岳帯→西部山岳たい)。願望の たい は連用形の後ろ(3670)
+    static let multiClauseKanaTaiAfterNounPenalty = 2000
+    // 恋/鯉/来い の直後に漢字・カタカナの語(濃い黄金色→恋黄金色、濃い果汁→恋果汁)。恋人/恋心 は 1 語(3670)
+    static let multiClauseKoiFollowedByNounSurfaces: Set<String> = ["恋", "鯉", "来い"]
+    static let multiClauseKoiFollowedByNounPenalty = 1500
+    static let multiClauseKoiFollowedByNounSurfacesID = MultiClauseIDSet(multiClauseKoiFollowedByNounSurfaces)
+    static let multiClauseKoiReadings: Set<String> = ["こい"]
+    static let multiClauseKoiReadingsID = MultiClauseIDSet(multiClauseKoiReadings)
     static let multiClauseKatakanaSuffixDemotedSurfacesID = MultiClauseIDSet(multiClauseKatakanaSuffixDemotedSurfaces)
     static let multiClausePpanashiReadings: Set<String> = ["っぱなし", "っぱなしで", "っぱなしの", "っぱなしだ"]
     static let multiClausePpanashiReadingsID = MultiClauseIDSet(multiClausePpanashiReadings)
@@ -3293,7 +3313,8 @@ extension KanaKanjiConverter {
     // 述語の連体修飾(思う/思った+名詞)を受ける同音名詞の選好(ユーザ報告 2887 とおもうかんせい→と思う完成)。
     // 完成/慣性/管制 のような事象・術語名詞は動詞の連体形に修飾されにくく、感性(〜と思う感性)が自然。
     // 単文節や の/な の後(計画の完成)は動かさない
-    static let multiClausePrenominalVerbNounPreferences: [String: String] = ["かんせい": "感性"]
+    // こうてい: 抜き取る工程/潰す工程(皇帝 だった。learningBOX 検査 3670)
+    static let multiClausePrenominalVerbNounPreferences: [String: String] = ["かんせい": "感性", "こうてい": "工程"]
     static let multiClausePrenominalVerbNounBonus = 2500
     // 漢字の行政地名(〜市/町/村/区/郡/県)。Sudachi の市名は 4 かな読みでも収穫コスト(堺市 11165、上尾市 11548 …
     // 450 語)で床 8700 に落ち、稀な動詞の 連用形+に(境す→境しに、定額 7200)や断片連鎖に負ける
@@ -3800,6 +3821,10 @@ extension KanaKanjiConverter {
             for s in KanaKanjiConverter.multiClauseKatakanaSuffixPreferredSurfaces.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseKatakanaSuffixDemotedSurfaces.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseErroneousAttributiveSurfaces.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseKaraKanjiSurfaces.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseKoiFollowedByNounSurfaces.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseKoiReadings.sorted() { add(s) }
+            add("から")
             for s in KanaKanjiConverter.multiClauseSugiSuffixSurfaces.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseTeOruAuxiliaryReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseKanaPassiveHeadReadings.sorted() { add(s) }
