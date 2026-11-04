@@ -223,7 +223,7 @@
 	<dict><key>phrase</key><string>1番</string><key>shortcut</key><string>いちばん</string></dict>
 	<dict><key>phrase</key><string>一倍</string><key>shortcut</key><string>いちばい</string></dict>
 	<dict><key>phrase</key><string>勝手に</string><key>shortcut</key><string>かってに</string></dict>
-	<dict><key>phrase</key><string>特に</string><key>shortcut</key><string>とくに</string></dict>
+	<!-- 特に(とくに)は副詞の中でも漢字で書くことが多いので外した(ユーザ指定 3670) -->
 	<dict><key>phrase</key><string>一旦</string><key>shortcut</key><string>いったん</string></dict>
 	<dict><key>phrase</key><string>一躍</string><key>shortcut</key><string>いちやく</string></dict>
 	<dict><key>phrase</key><string>決して</string><key>shortcut</key><string>けっして</string></dict>
