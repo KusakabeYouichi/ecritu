@@ -834,6 +834,7 @@
 	<dict><key>phrase</key><string>ロマーニャ・アルバーナ</string><key>shortcut</key><string>ろまーにゃあるばーな</string></dict>
 	<dict><key>phrase</key><string>ロレート</string><key>shortcut</key><string>ろれーと</string></dict>
 	<dict><key>phrase</key><string>ロンバルディア</string><key>shortcut</key><string>ろんばるでぃあ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>フォルムラ</string><key>shortcut</key><string>ふぉるむら</string></dict>
 
 	<!-- □ スペイン -->
 	<dict><key>phrase</key><string>Abona</string><key>shortcut</key><string>あぼな</string></dict>
@@ -971,7 +972,9 @@
 	<dict><key>phrase</key><string>Lafões</string><key>shortcut</key><string>らふぉいんしゅ</string></dict>
 	<dict><key>phrase</key><string>Lisboa</string><key>shortcut</key><string>りすぼあ</string></dict>
 	<dict><key>phrase</key><string>Madeira</string><key>shortcut</key><string>までいら</string></dict>
+	<dict><key>phrase</key><string>Madeira</string><key>shortcut</key><string>までら</string></dict>
 	<dict><key>phrase</key><string>Madère</string><key>shortcut</key><string>までーる</string></dict>
+	<dict><key>phrase</key><string>Madère</string><key>shortcut</key><string>までら</string></dict>
 	<dict><key>phrase</key><string>Minho</string><key>shortcut</key><string>みーにょ</string></dict>
 	<dict><key>phrase</key><string>Moscatel de Setúbal</string><key>shortcut</key><string>もすかてるでせとぅーばる</string></dict>
 	<dict><key>phrase</key><string>Palmela</string><key>shortcut</key><string>ぱるめら</string></dict>
@@ -4349,6 +4352,7 @@
 	<dict><key>phrase</key><string>Wine</string><key>shortcut</key><string>わいん</string></dict>
 	<dict><key>phrase</key><string>vin</string><key>shortcut</key><string>ゔぁん</string></dict>
 	<dict><key>phrase</key><string>à vin</string><key>shortcut</key><string>あゔぁん</string></dict>
+	<dict><key>phrase</key><string>A.P.Nr.</string><key>shortcut</key><string>あーぺーぬまー</string></dict>
 
 	<!-- ■ ワイン用ぶどう品種名 / セパージュ -->
 	<dict><key>phrase</key><string>セルヴァドゥ</string><key>shortcut</key><string>せるゔぁどぅ</string></dict>	<!-- セルヴァどぅ だった(learningBOX 検査 3662) -->
@@ -4709,7 +4713,6 @@
 	<dict><key>phrase</key><string>Seibel 6905</string><key>shortcut</key><string>せいべる</string></dict>
 	<dict><key>phrase</key><string>Seibel 9110</string><key>shortcut</key><string>せいべる</string></dict>
 	<dict><key>phrase</key><string>Seibel</string><key>shortcut</key><string>せいべる</string></dict>
-	<dict><key>phrase</key><string>Semillon</string><key>shortcut</key><string>せみよん</string></dict>
 	<dict><key>phrase</key><string>Sercial</string><key>shortcut</key><string>せるしある</string></dict>
 	<dict><key>phrase</key><string>Seyval Blanc</string><key>shortcut</key><string>せいゔぁるぶらん</string></dict>
 	<dict><key>phrase</key><string>Shiraz</string><key>shortcut</key><string>しらーず</string></dict>
@@ -5272,7 +5275,7 @@
 	<dict><key>phrase</key><string>清見</string><key>shortcut</key><string>きよみ</string></dict>	<!-- Sudachiにもある -->
 
 	<!-- ■ 米の品種・芋の品種 -->
-	<dict><key>phrase</key><string>夢の香</string><key>shortcut</key><string>ゆめのか</string></dict>	<!-- 福島の酒米(learningBOX 検査 3658、作者確認。銘柄の 夢の香(ゆめのかおり)は sake.plist) -->
+	<dict><key>phrase</key><string>夢の香</string><key>shortcut</key><string>ゆめのかおり</string></dict>	<!-- 福島の酒米(learningBOX 検査 3658、作者確認。銘柄の 夢の香(ゆめのかおり)は sake.plist) -->
 	<dict><key>phrase</key><string>黄金千貫</string><key>shortcut</key><string>こがねせんがん</string></dict>
 	<dict><key>phrase</key><string>M310</string><key>shortcut</key><string>えむさんいちぜろ</string></dict>
 	<dict><key>phrase</key><string>雄町</string><key>shortcut</key><string>おまち</string></dict>	<!-- Sudachiにもある -->
@@ -5398,6 +5401,7 @@
 	<dict><key>phrase</key><string>フリードリヒ2世</string><key>shortcut</key><string>ふりーどりひにせい</string></dict>
 	<dict><key>phrase</key><string>ヘルマン・ミュラー博士</string><key>shortcut</key><string>へるまんみゅらーはかせ</string></dict>
 	<dict><key>phrase</key><string>ヘンリー2世</string><key>shortcut</key><string>へんりーにせい</string></dict>
+	<dict><key>phrase</key><string>ベッティーノ・リカーゾリ</string><key>shortcut</key><string>べってぃーのりかーぞり</string></dict>
 	<dict><key>phrase</key><string>ベッティーノ・リカーゾリ男爵</string><key>shortcut</key><string>べってぃーのりかーぞりだんしゃく</string></dict>
 	<dict><key>phrase</key><string>ヨハネス22世</string><key>shortcut</key><string>よはねすにじゅうにせい</string></dict>
 	<dict><key>phrase</key><string>ヨーゼフ2世</string><key>shortcut</key><string>よーぜふにせい</string></dict>
@@ -5656,7 +5660,6 @@
 	<dict><key>phrase</key><string>Biodiversity</string><key>shortcut</key><string>ばいおだいゔぁーしてぃ</string></dict>
 	<dict><key>phrase</key><string>Biodynamie</string><key>shortcut</key><string>びおでぃなみー</string></dict>
 	<dict><key>phrase</key><string>Bloom</string><key>shortcut</key><string>ぶるーむ</string></dict>
-	<dict><key>phrase</key><string>Bourgeon</string><key>shortcut</key><string>ぶるじょん</string></dict>
 	<dict><key>phrase</key><string>Buttage</string><key>shortcut</key><string>びゅたーじゅ</string></dict>
 	<dict><key>phrase</key><string>Coulure</string><key>shortcut</key><string>くりゅーる</string></dict>
 	<dict><key>phrase</key><string>Curl</string><key>shortcut</key><string>かーる</string></dict>
@@ -5693,7 +5696,6 @@
 	<dict><key>phrase</key><string>Stem</string><key>shortcut</key><string>すてむ</string></dict>
 	<dict><key>phrase</key><string>Sustainable in Progress</string><key>shortcut</key><string>さすてなぶるいんぷろぐれす</string></dict>
 	<dict><key>phrase</key><string>Vendange</string><key>shortcut</key><string>ゔぁんだんじゅ</string></dict>
-	<dict><key>phrase</key><string>Veraison</string><key>shortcut</key><string>ゔぇれぞん</string></dict>
 	<dict><key>phrase</key><string>Véraison</string><key>shortcut</key><string>ゔぇれぞん</string></dict>
 	<dict><key>phrase</key><string>アンチ・グラニソ</string><key>shortcut</key><string>あんちぐらにそ</string></dict>
 	<dict><key>phrase</key><string>カビ除け</string><key>shortcut</key><string>かびよけ</string></dict>
@@ -5757,6 +5759,8 @@
 	<dict><key>phrase</key><string>Currais</string><key>shortcut</key><string>くらいす</string></dict>
 
 	<!-- ■ 栽培技術、気候 -->
+	<dict><key>phrase</key><string>Bourgeon</string><key>shortcut</key><string>ぶるじょん</string></dict>
+	<dict><key>phrase</key><string>Bourgeon à fleurs</string><key>shortcut</key><string>ぶるじょんあふるーる</string></dict>
 	<dict><key>phrase</key><string>盆地気候</string><key>shortcut</key><string>ぼんちきこう</string></dict>
 	<dict><key>phrase</key><string>山岳気候</string><key>shortcut</key><string>さんがくきこう</string></dict>
 	<dict><key>phrase</key><string>高山性気候</string><key>shortcut</key><string>こうざんせいきこう</string></dict>
@@ -6495,7 +6499,7 @@
 	<dict><key>phrase</key><string>Sobretabla</string><key>shortcut</key><string>そぶれたぶら</string></dict>
 	<dict><key>phrase</key><string>Sorting</string><key>shortcut</key><string>そーてぃんぐ</string></dict>
 	<dict><key>phrase</key><string>Soutirage</string><key>shortcut</key><string>すーてぃらーじゅ</string></dict>
-	<dict><key>phrase</key><string>Stir</string><key>shortcut</key><string>すたー</string></dict>
+	<dict><key>phrase</key><string>Stir</string><key>shortcut</key><string>すてあ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>Sur Lie</string><key>shortcut</key><string>しゅーるりー</string></dict>
 	<dict><key>phrase</key><string>Sur lie</string><key>shortcut</key><string>しゅーるりー</string></dict>
 	<dict><key>phrase</key><string>Séchage naturel</string><key>shortcut</key><string>せしゃーじゅなちゅれる</string></dict>
@@ -8522,7 +8526,6 @@
 	<dict><key>phrase</key><string>コルシカ風ブイヤベース</string><key>shortcut</key><string>こるしかふうぶいやべーす</string></dict>
 	<dict><key>phrase</key><string>サトウキビ汁</string><key>shortcut</key><string>さとうきびじる</string></dict>
 	<dict><key>phrase</key><string>サン・ダニエーレ産プロシュート</string><key>shortcut</key><string>さんだにえーれさんぷろしゅーと</string></dict>
-	<dict><key>phrase</key><string>ザウアークラウト…</string><key>shortcut</key><string>ざうあーくらうと</string></dict>
 	<dict><key>phrase</key><string>ジゴ・ダニョー・アン・クルット</string><key>shortcut</key><string>じごだにょーあんくるっと</string></dict>
 	<dict><key>phrase</key><string>ジロール</string><key>shortcut</key><string>じろーる</string></dict>
 	<dict><key>phrase</key><string>スップリ・ディ・リーゾ</string><key>shortcut</key><string>すっぷりでぃりーぞ</string></dict>
@@ -8535,7 +8538,6 @@
 	<dict><key>phrase</key><string>トマト煮</string><key>shortcut</key><string>とまとに</string></dict>
 	<dict><key>phrase</key><string>ニュルンベルガー・ブラートヴルスト</string><key>shortcut</key><string>にゅるんべるがーぶらーとゔるすと</string></dict>
 	<dict><key>phrase</key><string>ニース風サラダ</string><key>shortcut</key><string>にーすふうさらだ</string></dict>
-	<dict><key>phrase</key><string>バッサーノ・デル・グラッパ名産</string><key>shortcut</key><string>ばっさーのでるぐらっぱめいさん</string></dict>
 	<dict><key>phrase</key><string>バルサミコ酢</string><key>shortcut</key><string>ばるさみこす</string></dict>
 	<dict><key>phrase</key><string>バーニャ・カウダ</string><key>shortcut</key><string>ばーにゃかうだ</string></dict>
 	<dict><key>phrase</key><string>パイ包み</string><key>shortcut</key><string>ぱいづつみ</string></dict>
@@ -9697,7 +9699,7 @@
 	<dict><key>phrase</key><string>スクリューキャップ</string><key>shortcut</key><string>すくりゅーきゃっぷ</string></dict>
 	<dict><key>phrase</key><string>スクリュー・キャップ</string><key>shortcut</key><string>すくりゅーきゃっぷ</string></dict>
 	<dict><key>phrase</key><string>スクリュー先端</string><key>shortcut</key><string>すくりゅーせんたん</string></dict>
-	<dict><key>phrase</key><string>ステア</string><key>shortcut</key><string>すてあ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>ステア</string><key>shortcut</key><string>すてあ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ソムリエ・ナイフ</string><key>shortcut</key><string>そむりえないふ</string></dict>
 	<dict><key>phrase</key><string>ディアム</string><key>shortcut</key><string>でぃあむ</string></dict>
 	<dict><key>phrase</key><string>デカンター</string><key>shortcut</key><string>でかんたー</string></dict>	<!-- Sudachiにもある -->
@@ -11924,6 +11926,7 @@
 	<dict><key>phrase</key><string>マチュリテ</string><key>shortcut</key><string>まちゅりて</string></dict>
 	<dict><key>phrase</key><string>マテュザレム</string><key>shortcut</key><string>まてゅざれむ</string></dict>
 	<dict><key>phrase</key><string>マデイラ</string><key>shortcut</key><string>までいら</string></dict>
+	<dict><key>phrase</key><string>マデラ</string><key>shortcut</key><string>までら</string></dict>
 	<dict><key>phrase</key><string>マデール</string><key>shortcut</key><string>までーる</string></dict>
 	<dict><key>phrase</key><string>マドリッド</string><key>shortcut</key><string>まどりっど</string></dict>
 	<dict><key>phrase</key><string>マホガニー</string><key>shortcut</key><string>まほがにー</string></dict>
