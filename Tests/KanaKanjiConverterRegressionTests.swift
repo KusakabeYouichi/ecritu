@@ -27254,6 +27254,10 @@ extension KanaKanjiConverterRegressionTests {
         }
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
+        // AUDIT_KAKIKAE=afterOnly 等で X.9 の設定を変えて検査する(3683)
+        if let raw = ProcessInfo.processInfo.environment["AUDIT_KAKIKAE"], let preference = KakikaePreference(rawValue: raw) {
+            converter.setKakikaePreference(preference)
+        }
         let tsv = try String(contentsOf: URL(fileURLWithPath: input), encoding: .utf8)
         var out: [String] = []
         var okCount = 0
