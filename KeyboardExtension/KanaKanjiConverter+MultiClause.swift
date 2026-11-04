@@ -4371,6 +4371,11 @@ extension KanaKanjiConverter {
                             let readingHead = Self.multiClauseRareReadingDerivedStems[head], node.reading.hasPrefix(readingHead) {
                             cost += Self.multiClauseRareReadingDerivedPenalty
                         }
+                        if node.isInflectionDerived, node.surface.first == "高", node.surface.count >= 3,
+                            let readingHead = Self.multiClauseRareReadingDerivedTwoCharStems[String(node.surface.prefix(2))],
+                            node.reading.hasPrefix(readingHead) {
+                            cost += Self.multiClauseRareReadingDerivedPenalty
+                        }
                         // て形の後ろの 無(くて/い/かった)、カタカナ語の直後の かな の長音の塊(定数コメント参照。3672)
                         if node.surface.first == "無", node.reading.first == "な", prevNode.isInflectionDerived,
                             let tail = prevNode.surface.last, tail == "て" || tail == "で" {

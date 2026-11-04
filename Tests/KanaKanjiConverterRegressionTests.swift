@@ -1768,6 +1768,23 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // 3678: カタカナ語の後ろが 等/種/地方 ならラテン文字の形も 2 番目に。大文字小文字だけの違いは全部大文字のときだけ同じ語
         XCTAssertEqual(Array(multi("みっしょんしゅがもちこまれました").prefix(2)), ["ミッション種が持ち込まれました", "Mission種が持ち込まれました"])
         XCTAssertEqual(Array(single("しーずにんぐ").prefix(2)), ["Seasoning", "シーズニング"])
+        // 3678(ユーザ指定・報告): ではない(日傅 は Sudachi の読み誤り、では無い は出さない)、きおけじこみ、えみこ、か、確認表の語
+        XCTAssertEqual(single("ではない").first, "ではない")
+        XCTAssertFalse(single("ではない").contains("日傅"))
+        XCTAssertEqual(multi("そうではない").first, "そうではない")
+        XCTAssertEqual(multi("きおけじこみ").first ?? single("きおけじこみ").first, "木桶仕込み")
+        // えみこ の並びは表示層の先頭そろえ(連文節に響かないように)
+        XCTAssertEqual(Array(SupplementaryCandidateMerger.promotingPresentationOrderSeed(single("えみこ"), reading: "えみこ").prefix(4)), ["笑子", "恵美子", "絵美子", "咲子"])
+        XCTAssertNotEqual(multi("えみこさん").first, "咲子さん")
+        XCTAssertTrue(single("たかそう").contains("高価そう"), "高価い は抑制しない(3611 のユーザ指定)")
+        XCTAssertEqual(KanaKanjiSeedDictionary.presentationOrderSeed["か"], ["か"])
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "か"), "かな か を変換の候補の先頭に残す根拠")
+        XCTAssertEqual(single("たまねぎ").first, "玉ねぎ")
+        XCTAssertEqual(single("きのこ").first, "キノコ")
+        XCTAssertEqual(multi("かげぼしぶどうをはっこうご").first, "陰干しぶどうを醗酵後")
+        XCTAssertEqual(multi("こうどはたかめです").first, "硬度は高めです")
+        XCTAssertEqual(multi("ざっきんのせいいくをおさえる").first, "雑菌の生育を抑える")
+        XCTAssertEqual(multi("こうじきんのきんし").first, "麹菌の菌糸")
         // 3676(ユーザ指定): ワインや酒の話は 造る、せんか は 選果 先頭、りょう の並び
         XCTAssertEqual(multi("わいんはぶどうからつくられます").first, "ワインはぶどうから造られます")
         XCTAssertEqual(multi("ぱんをつくる").first, "パンを作る")
