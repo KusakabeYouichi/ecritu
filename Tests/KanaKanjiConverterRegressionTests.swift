@@ -1845,6 +1845,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "かってなかった"))
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "やってなかった"))
         XCTAssertEqual(Array(single("ひろし").prefix(5)), ["弘", "博", "浩", "宏", "寛"])
+        // 3691(ユーザ指定): ヒロシ はこの読みだけカタカナ強調の抑制から外し、ひろし の 1 つ前
+        XCTAssertEqual(Array(single("ひろし").dropFirst(13).prefix(3)), ["弘志", "ヒロシ", "ひろし"])
         XCTAssertEqual(multi("あっぷるのかぶかってなかった").first, "Appleの株買ってなかった")
         // 3687(ユーザ指定): 異体字 輛→輌/儛→舞、仏教の語は同じ読みの一般の語を崩さない(肉髻 は にっけい ちょうどのときだけ末尾)
         XCTAssertFalse(single("しゃりょう").contains("車輛"))
