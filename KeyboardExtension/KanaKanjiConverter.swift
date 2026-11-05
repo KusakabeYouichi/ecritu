@@ -49,11 +49,13 @@ final class KanaKanjiConverter {
     var kanaIdentityLeadingCache: [String: Bool] = [:]
     let kanaIdentityLeadingCacheLimit = 256
     // 直近の単文節 finalize の点数内訳(DEBUG の実機トレース用。stateLock 保護。2732)
-    var lastScoreTraceForDiagnostics: String = ""
+    // 読みごとに残す(3688)。1 本だけだと、表示の読みの後に部分の読み(連文節の区間)の finalize が走って上書きされ、
+    // 実機の記録に点数が載らなかった(かってなかった)。件数は scoreTraceByReadingLimit まで
+    var scoreTraceByReadingForDiagnostics: [String: String] = [:]
+    let scoreTraceByReadingLimit = 64
     var scoreLedgerForDiagnostics: [String: [Int]] = [:]
     func scoreTraceForDiagnostics(reading: String) -> String? {
-        let trace = withStateLock { lastScoreTraceForDiagnostics }
-        return trace.hasPrefix(reading + ": ") ? String(trace.dropFirst(reading.count + 2)) : nil
+        withStateLock { scoreTraceByReadingForDiagnostics[reading] }
     }
 
     // applyScriptVariantCandidateModes へ活用派生集合を渡すための一時置き場(candidates() 内のみ使用)
@@ -1547,7 +1549,11 @@ final class KanaKanjiConverter {
             return "\(candidate)=\(scores[candidate, default: 0])[\(paths)]"
         }.joined(separator: " ")
         withStateLock {
-            lastScoreTraceForDiagnostics = "\(context.reading): \(scoreTrace)"
+            if scoreTraceByReadingForDiagnostics.count >= scoreTraceByReadingLimit {
+                scoreTraceByReadingForDiagnostics.removeAll(keepingCapacity: true)
+            }
+            // 同点のときかなを後ろに回したか(かな正書の判定で外れたか)も残す
+            scoreTraceByReadingForDiagnostics[context.reading] = scoreTrace + " 同点かな後置=\(demotesReadingOnTie ? 1 : 0)"
             scoreLedgerForDiagnostics.removeAll(keepingCapacity: true)
         }
         #endif

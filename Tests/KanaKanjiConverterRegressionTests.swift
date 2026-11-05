@@ -1841,6 +1841,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("かってなかった").first, "買ってなかった")
         // 3688: 単文節で かな と 買って が同点のとき かな が文字コード順で先頭だった(連文節が間に合わない回だけ出た)。株+(助詞なし)+買う
         XCTAssertEqual(single("かってなかった").first, "買ってなかった")
+        // 実機では misc の なかった(かな正書)が根拠になり かな先頭の判定が立っていた。て形+否定 は活用形として外す(3688)
+        XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "かってなかった"))
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "やってなかった"))
         XCTAssertEqual(Array(single("ひろし").prefix(5)), ["弘", "博", "浩", "宏", "寛"])
         XCTAssertEqual(multi("あっぷるのかぶかってなかった").first, "Appleの株買ってなかった")
         // 3687(ユーザ指定): 異体字 輛→輌/儛→舞、仏教の語は同じ読みの一般の語を崩さない(肉髻 は にっけい ちょうどのときだけ末尾)
@@ -27329,6 +27332,10 @@ extension KanaKanjiConverterRegressionTests {
         if let raw = ProcessInfo.processInfo.environment["AUDIT_KAKIKAE"], let preference = KakikaePreference(rawValue: raw) {
             converter.setKakikaePreference(preference)
         }
+        // AUDIT_KANAGAKI=adverb,conjunction,… で X.8 かなで書く言葉 の分類を実機と揃える(3688)
+        if let raw = ProcessInfo.processInfo.environment["AUDIT_KANAGAKI"] {
+            converter.setKanaGakiSuppressedCategories(Set(raw.split(separator: ",").compactMap { KanaGakiCategory(rawValue: String($0)) }))
+        }
         let tsv = try String(contentsOf: URL(fileURLWithPath: input), encoding: .utf8)
         var out: [String] = []
         var okCount = 0
@@ -27339,7 +27346,8 @@ extension KanaKanjiConverterRegressionTests {
             let expected = String(cols[1])
             converter.invalidateCandidateCache()
             let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
-            let single = converter.candidates(for: reading, limit: 30, systemCandidateMode: .surface)
+            // AUDIT_LIMIT=48 で実機の候補欄と同じ上限にする(上限で点数の経路が変わることがある。3688)
+            let single = converter.candidates(for: reading, limit: Int(ProcessInfo.processInfo.environment["AUDIT_LIMIT"] ?? "") ?? 30, systemCandidateMode: .surface)
             if ProcessInfo.processInfo.environment["AUDIT_MULTI_ONLY"] != nil { print("AUDITMULTI \(reading) \(multi.prefix(10))") }
             var shown = reading.count >= 4 && ProcessInfo.processInfo.environment["AUDIT_SINGLE"] == nil ? multi : []
             if let top = single.first, !shown.contains(top) {

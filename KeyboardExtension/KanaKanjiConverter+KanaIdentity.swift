@@ -623,6 +623,15 @@ extension KanaKanjiConverter {
                     continue
                 }
                 let prefix = String(normalized.dropLast(suffixLength))
+                // て形+否定(かって+なかった=買って(い)なかった の縮約)も活用形。読み全体は脱活用で辿れないので、
+                // 前半の て/で 形が用言へ辿れるなら根拠にしない。前半がかな正書の登録語(やって)なら従来どおり根拠
+                // (実機で かってなかった のかなが先頭だった。misc の なかった が根拠になっていた。ユーザ報告 3688)
+                if Self.kanaNegativeAuxiliaryCuratedSuffixes.contains(suffix),
+                    prefix.hasSuffix("て") || prefix.hasSuffix("で"),
+                    !((initialDictionary[prefix] ?? []).contains(prefix) || (manualDictionary[prefix] ?? []).contains(prefix)),
+                    deinflectsToDictionaryPredicate(prefix) {
+                    continue
+                }
                 if prefix.count >= 2,
                     systemCandidates(for: prefix, mode: .lesDeux).contains(prefix)
                         || store.wordCosts(for: prefix)[prefix] != nil {
