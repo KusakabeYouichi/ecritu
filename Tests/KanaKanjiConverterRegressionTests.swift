@@ -1845,6 +1845,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // learningBOX 検査 3692 の退行(3684 の 名\t中 の加点が そん+名+の+中 に漏れた): 加点を撤去
         XCTAssertEqual(multi("つぎのぶるごーにゅちほうのそんめいのなかから").first, "次のブルゴーニュ地方の村名の中から")
         XCTAssertEqual(multi("ちほうのそんめいのなかから").first, "地方の村名の中から")
+        // learningBOX 検査 3684 の [直す]: H字(辞書の 1 語)+型 にも 字\t型 と同じ加点(3692 まで 叡智字型 が先頭だった)
+        XCTAssertEqual(multi("えいちじがたたんしょうせんていは").first, "H字型短梢剪定は")
+        XCTAssertEqual(multi("せいかいはえいちじがたたんしょうせんていです").first, "正解はH字型短梢剪定です")
         XCTAssertEqual(single("みどり").first, "緑")
         // 3687(ユーザ指定): かぶ は 株/カブ/蕪/下部 の順、文の中でも 株(画面の下部 は崩さない)、先頭のラテン文字の語の次はそのカタカナの形
         XCTAssertEqual(Array(single("かぶ").prefix(4)), ["株", "カブ", "蕪", "下部"])
