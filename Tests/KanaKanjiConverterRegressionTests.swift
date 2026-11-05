@@ -1862,6 +1862,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("とうをたてる").first, "塔を建てる")
         XCTAssertNil(KanaKanjiConverter.nominalizedOkuriganaRestored("気付", reading: "きつけ"))
         XCTAssertEqual(KanaKanjiConverter.nominalizedOkuriganaRestored("表記付テーブル", reading: "ひょうきつきてーぶる"), "表記付きテーブル")
+        // 3686(ユーザ報告): にんにく食った(任に括った だった)。にんにく→ニンニク→大蒜 の順
+        XCTAssertEqual(Array(multi("にんにくくった").prefix(3)), ["にんにく食った", "ニンニク食った", "大蒜食った"])
+        XCTAssertEqual(multi("ひとにくくった").first, "人に括った")
         XCTAssertEqual(Array(multi("がめいなど").prefix(2)), ["Gamayなど", "ガメイなど"])
     }
 
