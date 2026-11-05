@@ -417,8 +417,8 @@
 	<dict><key>phrase</key><string>Saint-Aubin</string><key>shortcut</key><string>さんとーばん</string></dict>
 	<dict><key>phrase</key><string>Saint-Bris</string><key>shortcut</key><string>さんぶり</string></dict>
 	<dict><key>phrase</key><string>Saint-Chinian</string><key>shortcut</key><string>さんしにあん</string></dict>
+	<dict><key>phrase</key><string>Saint-Émilion</string><key>shortcut</key><string>さんてみりおん</string></dict>	<!-- アクセント付きを先に(learningBOX 検査 3684、ユーザ指定) -->
 	<dict><key>phrase</key><string>Saint-Emilion</string><key>shortcut</key><string>さんてみりおん</string></dict>
-	<dict><key>phrase</key><string>Saint-Émilion</string><key>shortcut</key><string>さんてみりおん</string></dict>
 	<dict><key>phrase</key><string>Saint-Émilion Grand Cru</string><key>shortcut</key><string>さんてみりおんぐらんくりゅ</string></dict>
 	<dict><key>phrase</key><string>Saint-Estèphe</string><key>shortcut</key><string>さんてすてふ</string></dict>
 	<dict><key>phrase</key><string>Saint-Georges Saint-Émilion</string><key>shortcut</key><string>さんじょるじゅさんてみりおん</string></dict>
@@ -2520,8 +2520,8 @@
 	<dict><key>phrase</key><string>Elbe</string><key>shortcut</key><string>えるべ</string></dict>
 	<dict><key>phrase</key><string>Havel</string><key>shortcut</key><string>はーふぇる</string></dict>
 	<dict><key>phrase</key><string>Rhin</string><key>shortcut</key><string>らん</string></dict>
+	<dict><key>phrase</key><string>Río Oja</string><key>shortcut</key><string>りおおは</string></dict>	<!-- アクセント付きを先に(learningBOX 検査 3684、ユーザ指定) -->
 	<dict><key>phrase</key><string>Rio Oja</string><key>shortcut</key><string>りおおは</string></dict>
-	<dict><key>phrase</key><string>Río Oja</string><key>shortcut</key><string>りおおは</string></dict>
 	<dict><key>phrase</key><string>Saale</string><key>shortcut</key><string>ざーれ</string></dict>
 	<dict><key>phrase</key><string>Unstrut</string><key>shortcut</key><string>うんすとるーと</string></dict>
 	<dict><key>phrase</key><string>ドナウ</string><key>shortcut</key><string>どなう</string></dict>	<!-- Sudachiにもある -->
@@ -3098,10 +3098,10 @@
 	<dict><key>phrase</key><string>Sant Sadurní d'Anoia</string><key>shortcut</key><string>さんとさどぅるにだのいあ</string></dict>
 	<dict><key>phrase</key><string>Trieste</string><key>shortcut</key><string>とりえすて</string></dict>
 	<dict><key>phrase</key><string>Venezia</string><key>shortcut</key><string>ゔぇねつぃあ</string></dict>
-	<dict><key>phrase</key><string>Vienna</string><key>shortcut</key><string>うぃーん</string></dict>
 	<dict><key>phrase</key><string>Vila Nova de Gaia</string><key>shortcut</key><string>ゔぃらのーゔぁでがいあ</string></dict>
 	<dict><key>phrase</key><string>Viseu</string><key>shortcut</key><string>ゔぃぜう</string></dict>
 	<dict><key>phrase</key><string>Wien</string><key>shortcut</key><string>うぃーん</string></dict>
+	<dict><key>phrase</key><string>Vienna</string><key>shortcut</key><string>うぃーん</string></dict>	<!-- 現地語の Wien を先に(learningBOX 検査 3684、ユーザ指定) -->
 	<dict><key>phrase</key><string>Zürich</string><key>shortcut</key><string>ちゅーりっひ</string></dict>
 	<dict><key>phrase</key><string>アスコリ・ピチェーノ</string><key>shortcut</key><string>あすこりぴちぇーの</string></dict>
 	<dict><key>phrase</key><string>サンティアゴ・デ・コンポステーラ</string><key>shortcut</key><string>さんてぃあごでこんぽすてーら</string></dict>
