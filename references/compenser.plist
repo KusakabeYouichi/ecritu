@@ -955,5 +955,12 @@
 	        <dict><key>phrase</key><string>ピカール</string><key>shortcut</key><string>ぴかーる</string></dict>
 	        <dict><key>phrase</key><string>NASDAQ</string><key>shortcut</key><string>なすだっく</string></dict>
 	        <dict><key>phrase</key><string>JASDAQ</string><key>shortcut</key><string>じゃすだっく</string></dict>
+	<!-- 仏教 -->
+	        <dict><key>phrase</key><string>盧舎那仏</string><key>shortcut</key><string>るしゃなぶつ</string></dict>
+	        <dict><key>phrase</key><string>毘盧遮那仏</string><key>shortcut</key><string>びるしゃなぶつ</string></dict>
+	        <dict><key>phrase</key><string>遮那仏</string><key>shortcut</key><string>しゃなぶつ</string></dict>
+	        <dict><key>phrase</key><string>印相</string><key>shortcut</key><string>いんぞう</string></dict>
+	        <dict><key>phrase</key><string>Vairocana</string><key>shortcut</key><string>ゔぁいろーちゃな</string></dict>
+	        <dict><key>phrase</key><string>ヴァイローチャナ</string><key>shortcut</key><string>ゔぁいろーちゃな</string></dict>
 </array>
 </plist>
