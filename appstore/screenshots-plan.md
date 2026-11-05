@@ -188,3 +188,24 @@ take 6 で使った種(iPhone 17 Pro Max、`B907C0B8-0540-436D-9D10-2E5747498716
   旧記録(take 5): `(0,1630)-(1206,2446)` を切り抜いた。
   App Store の 6.9 インチは iPhone 17 Pro Max(1320×2868)なので別のシミュレーターで撮る
 
+
+## iPhone Duo(未撮影。2026-11-05 に試して中断)
+
+App Store Connect に「iPhone Duo」の欄があり、出すと商品ページに「iPhone Duo に最適化」のバッジが付く(Apple の説明)。
+寸法は外画面 1398×2034 / 内画面 2007×2853(横向きはそれぞれ逆。Apple のページの要約から拾った数字なので提出時に ASC で照合)。
+2027 年 4 月から必須(ニュースは「提出されるすべてのアプリ」、仕様のページは「iOS 27.1 SDK 以降」と書き方が違う)。
+
+**撮り方(分かっていること)**
+- 機体は iPhone Duo / iOS 27.1(`82E22FD6-0449-4D9E-9F72-85862A7DF894`)。web クリップ「メモ」とキーボードの有効化は済み
+- 画面が 2 つあり `simctl io … screenshot` は `--display=1`(外画面 1398×2034)/ `--display=3`(内画面 2007×2853)の指定が要る
+- 開閉は `simctl` ではできない(`screenConfig power` は効かない)。**DeviceHub**(`/Applications/Xcode.app/Contents/Applications/DeviceHub.app`)の
+  下のツールバーで Closed / Book / Open を選び、回転のボタンで縦向きにする(手で操作してもらう)
+- DeviceHub は機体につなぐたびに外付けキーボードをつなぎ、画面のキーボードが ⌃⌄✓ の帯だけになる。
+  DeviceHub の設定(⌘,)で「Simulate hardware keyboard by default」をオフにし、停止中に機体の
+  `com.apple.keyboard.preferences.plist` の `HardwareKeyboardLastSeen=false` と `AutomaticMinimizationEnabled=false` を書く
+  (2026-10-26 は ⌘Q で DeviceHub を終了→再起動でキーボードが出た)。⌘K は「Capturing Keyboard」(Mac の打鍵を送る)で別物
+- `shoot-screenshot.sh` の `simctl bootstatus -b` は Duo で返ってこないことがある(固定の待ち時間で代える)
+
+**中断の理由**: iOS 27 のシミュレーターは中の常駐プロセス(intelligencetasksd ほか)が落ち続け、Mac の load average が
+400〜600 になってホーム画面も描かれない。iOS 27.2 の Duo(iPhone19-4 の実行環境)は Safari の初回案内が閉じられず不可。
+Xcode/シミュレーターの更新で負荷が直ってから撮る。
