@@ -27349,6 +27349,12 @@ extension KanaKanjiConverterRegressionTests {
             // AUDIT_LIMIT=48 で実機の候補欄と同じ上限にする(上限で点数の経路が変わることがある。3688)
             let single = converter.candidates(for: reading, limit: Int(ProcessInfo.processInfo.environment["AUDIT_LIMIT"] ?? "") ?? 30, systemCandidateMode: .surface)
             if ProcessInfo.processInfo.environment["AUDIT_MULTI_ONLY"] != nil { print("AUDITMULTI \(reading) \(multi.prefix(10))") }
+            // AUDIT_KEEPKANA=1: 提示層の かな先頭を保つ判定 も行ごとに出す(実機との食い違いの切り分け。3689)
+            if ProcessInfo.processInfo.environment["AUDIT_KEEPKANA"] != nil {
+                print("AUDITKEEPKANA \(reading) \(converter.shouldKeepKanaIdentityLeading(for: reading)) \(converter.scoreTraceForDiagnostics(reading: reading) ?? "")")
+                for base in (ProcessInfo.processInfo.environment["AUDIT_KEEPKANA_BASES"] ?? "").split(separator: ",") {
+                    print("AUDITKEEPKANA base \(base) \(converter.systemCandidates(for: String(base), mode: .lesDeux).prefix(4))")
+                }
             var shown = reading.count >= 4 && ProcessInfo.processInfo.environment["AUDIT_SINGLE"] == nil ? multi : []
             if let top = single.first, !shown.contains(top) {
                 shown.insert(top, at: shown.count >= 2 && KanaKanjiConverter.isScriptCounterpartPair(shown[0], shown[1]) ? 2 : min(1, shown.count))

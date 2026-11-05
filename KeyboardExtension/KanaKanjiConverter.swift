@@ -48,6 +48,9 @@ final class KanaKanjiConverter {
     // クエリが走っていた)。学習・抑制・設定変更で invalidateCandidateCache と一緒に消える。
     var kanaIdentityLeadingCache: [String: Bool] = [:]
     let kanaIdentityLeadingCacheLimit = 256
+    // かな先頭を保つ判定が立った根拠のラベル(KanaIdentity の行番号。空=立たなかった、cache=キャッシュ命中。3689)
+    var lastKanaIdentityGroundForDiagnostics: String = ""
+    var kanaIdentityGroundByReadingForDiagnostics: [String: String] = [:]
     // 直近の単文節 finalize の点数内訳(DEBUG の実機トレース用。stateLock 保護。2732)
     // 読みごとに残す(3688)。1 本だけだと、表示の読みの後に部分の読み(連文節の区間)の finalize が走って上書きされ、
     // 実機の記録に点数が載らなかった(かってなかった)。件数は scoreTraceByReadingLimit まで
@@ -1510,7 +1513,11 @@ final class KanaKanjiConverter {
         scores: [String: Int]
     ) -> [String] {
         // 同点のときかなを後ろに回すのは、かな正書の根拠が無い読みだけ(やめない 等の かな先頭 の指定は守る)
-        let demotesReadingOnTie = scores[context.reading] != nil && !shouldKeepKanaIdentityLeading(for: context.reading)
+        let keepsKanaLeading = shouldKeepKanaIdentityLeading(for: context.reading)
+        let kanaLeadingGround = withStateLock {
+            kanaIdentityGroundByReadingForDiagnostics[KanaTextNormalizer.normalizedReading(context.reading)] ?? "?"
+        }
+        let demotesReadingOnTie = scores[context.reading] != nil && !keepsKanaLeading
         let sortedCandidates = scores.keys.sorted { lhs, rhs in
             let lhsScore = scores[lhs, default: 0]
             let rhsScore = scores[rhs, default: 0]
@@ -1553,7 +1560,8 @@ final class KanaKanjiConverter {
                 scoreTraceByReadingForDiagnostics.removeAll(keepingCapacity: true)
             }
             // 同点のときかなを後ろに回したか(かな正書の判定で外れたか)も残す
-            scoreTraceByReadingForDiagnostics[context.reading] = scoreTrace + " 同点かな後置=\(demotesReadingOnTie ? 1 : 0)"
+            scoreTraceByReadingForDiagnostics[context.reading] = scoreTrace
+                + " 同点かな後置=\(demotesReadingOnTie ? 1 : 0) かな先頭=\(keepsKanaLeading ? 1 : 0)[\(kanaLeadingGround)]"
             scoreLedgerForDiagnostics.removeAll(keepingCapacity: true)
         }
         #endif

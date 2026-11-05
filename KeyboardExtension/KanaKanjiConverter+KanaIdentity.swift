@@ -60,12 +60,15 @@ extension KanaKanjiConverter {
         if let cached = withStateLock({ kanaIdentityLeadingCache[normalized] }) {
             return cached
         }
+        withStateLock { lastKanaIdentityGroundForDiagnostics = "" }
         let result = computeShouldKeepKanaIdentityLeading(normalized: normalized)
         withStateLock {
             if kanaIdentityLeadingCache.count >= kanaIdentityLeadingCacheLimit {
                 kanaIdentityLeadingCache.removeAll(keepingCapacity: true)
+                kanaIdentityGroundByReadingForDiagnostics.removeAll(keepingCapacity: true)
             }
             kanaIdentityLeadingCache[normalized] = result
+            kanaIdentityGroundByReadingForDiagnostics[normalized] = lastKanaIdentityGroundForDiagnostics
         }
         return result
     }
@@ -102,9 +105,17 @@ extension KanaKanjiConverter {
         return systemCandidates(for: stem, mode: .lesDeux).contains(stem)
     }
 
+    // どの根拠で かな先頭 が立ったかを残す(実機の変換トレース「かな先頭=1[L123]」。Mac と実機で判定が食い違った
+    // かってなかった の切り分け。3689)。ラベルは付けた時点(3689)のこのファイルの行番号で、以後ずれても付け替えない。
+    // 読むときは grep keepKanaGround("L960") のようにラベルで引く(再帰では最後に立った根拠が残る)
+    func keepKanaGround(_ label: String) -> Bool {
+        withStateLock { lastKanaIdentityGroundForDiagnostics = label }
+        return true
+    }
+
     func computeShouldKeepKanaIdentityLeading(normalized: String) -> Bool {
         if hasLearnedKanaIdentity(for: normalized) || hasCuratedKanaIdentity(for: normalized) {
-            return true
+            return keepKanaGround("L107")
         }
         // 漢字正書の名詞のかな収穫(ひつよう/ほけん。定数コメント参照。2902)。辞書にかな表層があるだけの根拠
         // (systemCandidates.contains)や活用形解釈(ほけ+ん→ほける)で立つのを、学習・curated の直後で止める
@@ -115,12 +126,12 @@ extension KanaKanjiConverter {
         // 単独で打ったとき(断片として使う)、かなが唯一の正書なのに根拠が無く、表示層が かな を末尾へ回して 乃です が
         // 先頭に見えていた(ユーザ報告 3633。ので は seed、のですが は か/が の剥がしで既に真)
         if Self.multiClausePredicateFollowingFunctionReadings.contains(normalized) {
-            return true
+            return keepKanaGround("L118")
         }
         // 比較の より(は/も)+まし(ないよりはましだ)はかなが正書。連文節はかな最良を返すが、根拠が無いと全かなエコー抑制で
         // 落ちて 増しだ/倍田 の変種だけが残る(ユーザ報告 2898)
         for phrase in ["よりはまし", "よりもまし", "よりまし"] where normalized.contains(phrase) {
-            return true
+            return keepKanaGround("L123")
         }
         // 口語の否定コピュラ・断定(じゃない/じゃん/だろう/でしょ 等)で終わる読みは、かなが
         // 正書の話し言葉(そうじゃないか/きれいじゃない 等)。連文節は全語彙経路として これらを
@@ -131,13 +142,13 @@ extension KanaKanjiConverter {
         for suffix in ["じゃない", "じゃないか", "じゃん", "だろう", "でしょう", "でしょ", "じゃないの",
                        "ではない", "ではないか", "ではないの"]
         where normalized.count > suffix.count && normalized.hasSuffix(suffix) {
-            return true
+            return keepKanaGround("L134")
         }
         // 助詞のかな+比況の みたい*(までみたいよ/のみたいだ)はかなが正書(3717、ユーザ報告: 迄みたいよ が先頭だった)。
         // 連文節は全かなエコー抑制で空を返すので、提示層が根拠を持つ
         for particle in ["まで", "で", "の", "と", "か", "だ"] where normalized.count > particle.count && normalized.hasPrefix(particle) {
             if Self.multiClauseMitaiAuxiliaryReadings.contains(String(normalized.dropFirst(particle.count))) {
-                return true
+                return keepKanaGround("L140")
             }
         }
         // 形式名詞「とき」(〜するとき/〜というとき/〜のとき)はかなが正書(2690)。
@@ -148,7 +159,7 @@ extension KanaKanjiConverter {
         // ときだけ根拠にする — 名詞直後(たとえばの時)や単独の とき は対象外
         // 単独の ときには もかな先頭(ユーザ指定 3537。misc の curated かな ときには と対)
         if normalized == "ときには" {
-            return true
+            return keepKanaGround("L151")
         }
         for tail in ["とき", "ときに", "ときは", "ときの", "ときも", "ときには"]
         where normalized.count > tail.count + 1 && normalized.hasSuffix(tail) {
@@ -157,7 +168,7 @@ extension KanaKanjiConverter {
             // 連体修飾の目印: 用言の連体形語尾(る/た/だ/い/な)か「という/の」
             if stem.hasSuffix("という") || stem.hasSuffix("の")
                 || "るたないだいくうつむぶぬすぐぐ".contains(last) {
-                return true
+                return keepKanaGround("L160")
             }
         }
         // 話し言葉の形式名詞 もん(=物。うまいもん/やすいもん/そんなもん)はかなが正書(ユーザ報告 3108)。
@@ -170,7 +181,7 @@ extension KanaKanjiConverter {
             guard let last = stem.last else { continue }
             if stem.hasSuffix("そんな") || stem.hasSuffix("こんな") || stem.hasSuffix("あんな") || stem.hasSuffix("どんな")
                 || stem.hasSuffix("の") || "るたないだいくうつむぶぬすぐ".contains(last) {
-                return true
+                return keepKanaGround("L173")
             }
         }
         // かな正書の語+助詞1字+かな正書の語(2683): いまだとまだ が keepKana=false で提示層に
@@ -194,7 +205,7 @@ extension KanaKanjiConverter {
                 }
                 if computeShouldKeepKanaIdentityLeading(normalized: head),
                     computeShouldKeepKanaIdentityLeading(normalized: tail) {
-                    return true
+                    return keepKanaGround("L197")
                 }
             }
         }
@@ -204,7 +215,7 @@ extension KanaKanjiConverter {
         for suffix in ["はない", "もない", "はなかった", "もなかった", "はなく", "もなく", "はないよ", "もないよ",
                        "はないね", "もないね", "はないな", "もないな", "はないし", "もないし"]
         where normalized.count > suffix.count + 1 && normalized.hasSuffix(suffix) {
-            return true
+            return keepKanaGround("L207")
         }
         // 逆接の接続助詞・接続詞(だけど/けど/けれど/けれども)で終わる読みは、かなが正書
         // (だけど 単独/行くけど 等)。ダけど/打けど 等の漢字混じり誤変換が繰り上がるのを防ぐ。
@@ -214,7 +225,7 @@ extension KanaKanjiConverter {
         for suffix in ["だけど", "だけれど", "けれども", "けれど", "けど",
                        "けどね", "けどねー", "けどな", "けどなー", "けどなあ", "けどさ", "けどよ"]
         where normalized.hasSuffix(suffix) {
-            return true
+            return keepKanaGround("L217")
         }
         // ていかれる 縮約の受身かなクラスタ(おいてかれてる/もってかれた 等)。
         // 連文節はかな最良を返すが根拠が無いと提示層が退避して 甥てかれてる 等が
@@ -223,7 +234,7 @@ extension KanaKanjiConverter {
         for suffix in ["てかれてる", "てかれた", "てかれる", "てかれて", "てかれない",
                        "でかれてる", "でかれた", "でかれる", "でかれて", "でかれない"]
         where normalized.count > suffix.count && normalized.hasSuffix(suffix) {
-            return true
+            return keepKanaGround("L226")
         }
         // 説明・疑問の終止クラスタ(こうなるのか/どうなるのかな/いいのかも 等)で終わる読みは、
         // かなが正書の話し言葉。連文節は こうなるのか をかな最良に選ぶが根拠が無いと提示層が
@@ -231,17 +242,17 @@ extension KanaKanjiConverter {
         // 表示=公なるのか先頭 の食い違いを確認、2669)。維持のみで昇格しない。
         for suffix in ["のか", "のかな", "のかなー", "のかも", "のかしら", "のかね", "のかよ", "のかい"]
         where normalized.count > suffix.count + 1 && normalized.hasSuffix(suffix) {
-            return true
+            return keepKanaGround("L234")
         }
         // 複合助詞(では/には/とは/でも 等)そのものはかなが正書。デは/出は/手は 等の漢字混じり
         // 誤変換が提示層で繰り上がるのを防ぐ(単独入力=複合助詞の話題断片)。
         if Self.multiClauseCompoundParticles.contains(normalized) {
-            return true
+            return keepKanaGround("L239")
         }
         // 長音化した終助詞クラスタそのもの(かなー/よねー/なー 等、会話の詠嘆・疑問)はかなが正書。
         // か(過/花/夏…)+なー 等の1字漢字合成が提示層で繰り上がるのを防ぐ。
         if normalized.hasSuffix("ー"), Self.multiClauseFinalParticleReadings.contains(normalized) {
-            return true
+            return keepKanaGround("L244")
         }
         // 補助動詞 〜て/でもらう(してもらった/よんでもらう 等)はかなが正書。converter は
         // seed(もらう=かな先頭)により かな最良を返すが、この根拠が無いと提示層が退避して
@@ -252,14 +263,14 @@ extension KanaKanjiConverter {
                        "でもらう", "でもらった", "でもらって", "でもらい", "でもらいます", "でもらいました",
                        "でもらえる", "でもらえば", "でもらえ", "でもらおう"]
         where normalized.count > suffix.count && normalized.hasSuffix(suffix) {
-            return true
+            return keepKanaGround("L255")
         }
         // 丁寧の ます(常にかな。マス/升/増す 等の漢字・カタカナ化は不自然)+終助詞/助動詞
         // (ね/よ/か/ました…)で終わる読み。ますね→マスね 等の繰り上がりを防ぐ。
         for suffix in ["ますね", "ますよ", "ますか", "ますが", "ますし", "ますよね", "ますねー", "ますよー",
                        "ました", "まして", "ませんか", "ません", "ましょう", "ましょ", "ます"]
         where normalized.hasSuffix(suffix) {
-            return true
+            return keepKanaGround("L262")
         }
         // 終助詞(よ/ね/な/わ/ぞ/さ)を1つ剥がした語幹が「辞書のかな語そのもの」(いい/だめ/やだ/むり 等)
         // なら根拠あり(いいよ→いい: 良いよ/イイよ/唯々よ の繰り上がりを防ぐ)。※systemCandidates 直接判定に
@@ -275,13 +286,13 @@ extension KanaKanjiConverter {
         where normalized.count > particle.count && normalized.hasSuffix(particle) {
             let stem = String(normalized.dropLast(particle.count))
             if stem.count >= 2, systemCandidates(for: stem, mode: .lesDeux).contains(stem) {
-                return true
+                return keepKanaGround("L278")
             }
             // 語幹自身に根拠があれば終助詞付きも同格(もったいないよ/よね: もったいない は
             // dictionary_entries に行が無く上の辞書判定に掛からないが、単独では根拠が立って
             // かな先頭で出る。終助詞を付けた途端 勿体無いよ が繰り上がっていた。2659)
             if stem.count >= 3, computeShouldKeepKanaIdentityLeading(normalized: stem) {
-                return true
+                return keepKanaGround("L284")
             }
             // curated かな識別(misc の だっけ 等=かな正書の明示登録)も語幹の根拠と認める。
             // ダッケ suppr 後の だっけ は辞書エントリが空で systemCandidates では拾えず、
@@ -289,12 +300,12 @@ extension KanaKanjiConverter {
             if stem.count >= 2,
                 (store.initialAjoutVocabulary()[stem] ?? []).contains(stem)
                     || (store.ajoutVocabulary()[stem] ?? []).contains(stem) {
-                return true
+                return keepKanaGround("L292")
             }
             // かな機能語クラスタ(のに/のは 等の準体助詞+助詞)も語幹の根拠(のになあ→のに。
             // 辞書にエントリが無く systemCandidates では拾えない。2535)
             if Self.multiClauseNominalizerSurfaces.contains(stem) {
-                return true
+                return keepKanaGround("L297")
             }
             // 助詞1字+かな正書語の語幹(はうまい/がすごい 等)も根拠あり(2647):
             // 実機トレースでエンジンは はうまいなあ かな先頭なのに、根拠が立たず提示層が
@@ -306,7 +317,7 @@ extension KanaKanjiConverter {
                 // かな表層が辞書に在るだけ(でる=出る のかな収穫)では根拠にしない。LM でかなが漢字に迫る語(うまい)だけ
                 // (もでるよー で かな もでるよー が 2 番めに残っていた。3722、ユーザ指定: かなは末尾でいい)
                 if systemCandidates(for: rest, mode: .lesDeux).contains(rest), isKanaOrthographyStem(rest) {
-                    return true
+                    return keepKanaGround("L309")
                 }
             }
             // い形容詞のかな過去(よかった/すごかった 等)は活用形なので辞書エントリでは拾えない。
@@ -316,7 +327,7 @@ extension KanaKanjiConverter {
             if stem.count >= 4, stem.hasSuffix("かった") {
                 let adjectiveBase = String(stem.dropLast(3)) + "い"
                 if systemCandidates(for: adjectiveBase, mode: .lesDeux).contains(adjectiveBase) {
-                    return true
+                    return keepKanaGround("L319")
                 }
             }
         }
@@ -333,7 +344,7 @@ extension KanaKanjiConverter {
                 break
             }
             if stem.count >= 2, computeShouldKeepKanaIdentityLeading(normalized: stem) {
-                return true
+                return keepKanaGround("L336")
             }
         }
         // 準体助詞クラスタ(のに/のは/のが/のを/のも)で終わる読みは、剥がした語幹がかな正書の
@@ -347,7 +358,7 @@ extension KanaKanjiConverter {
         where normalized.count > cluster.count + 1 && normalized.hasSuffix(cluster) {
             let stem = String(normalized.dropLast(cluster.count))
             if stem.count >= 2, computeShouldKeepKanaIdentityLeading(normalized: stem) {
-                return true
+                return keepKanaGround("L350")
             }
         }
         // 連体の「の」で始まる断片(のときは/のときのは 等、文中から打ち始めた形)は、
@@ -355,7 +366,7 @@ extension KanaKanjiConverter {
         if normalized.count > 3, normalized.hasPrefix("の") {
             let remainder = String(normalized.dropFirst())
             if computeShouldKeepKanaIdentityLeading(normalized: remainder) {
-                return true
+                return keepKanaGround("L358")
             }
         }
         // 補助形容詞 やすい/にくい/づらい(+任意の ので)を剥がし、連用形の基底動詞が
@@ -374,7 +385,7 @@ extension KanaKanjiConverter {
                 guard renyou.count >= 2 else { continue }
                 for base in [renyou + "る", renyou + "う", renyou + "く"]
                 where KanaKanjiSeedDictionary.seed[base]?.first == base {
-                    return true
+                    return keepKanaGround("L377")
                 }
             }
         }
@@ -390,7 +401,7 @@ extension KanaKanjiConverter {
                 guard !stem.isEmpty else { continue }
                 let baseReading = String(stem) + rule.baseReadingSuffix
                 if KanaKanjiSeedDictionary.seed[baseReading]?.first == baseReading {
-                    return true
+                    return keepKanaGround("L393")
                 }
             }
         }
@@ -402,7 +413,7 @@ extension KanaKanjiConverter {
             let stem = String(normalized.dropLast(quotation.count))
             if Self.kanaOrthographyQuotationStems.contains(stem)
                 || Self.kanaOrthographyQuotationStems.contains(where: { stem.hasSuffix($0) }) {
-                return true
+                return keepKanaGround("L405")
             }
         }
         // 接尾の補助動詞 まくり/まくる(〜しまくり/読みまくる)はかなが正書。辞書の まくり は
@@ -410,7 +421,7 @@ extension KanaKanjiConverter {
         // し捲り に繰り上げられていた(2505)。
         for auxiliary in ["まくり", "まくる", "まくった", "まくって", "まくれ"]
         where normalized.count > auxiliary.count && normalized.hasSuffix(auxiliary) {
-            return true
+            return keepKanaGround("L413")
         }
         // やる の活用形で始まる全かなの読み(やってみようかな/やっておく/やりきる 等)は
         // かなが正書。やる は seed でかな先頭に固定してあり、当て表記(演る/犯る/飲る/行る/
@@ -425,7 +436,7 @@ extension KanaKanjiConverter {
             normalized.unicodeScalars.allSatisfy({ (0x3041...0x3096).contains($0.value) }) {
             let second = normalized[normalized.index(normalized.startIndex, offsetBy: 1)]
             if SupplementaryCandidateMerger.yaruInflectionHeads.contains(second) {
-                return true
+                return keepKanaGround("L428")
             }
         }
         // 末尾を長音で引き伸ばした形(なるほどー/なるほどーー)は辞書に無く、合成の
@@ -438,7 +449,7 @@ extension KanaKanjiConverter {
                 stem = String(stem.dropLast())
             }
             if stem.count >= 2, computeShouldKeepKanaIdentityLeading(normalized: stem) {
-                return true
+                return keepKanaGround("L441")
             }
         }
         // 語中に長音を挟んだ強調形(すごーい/たかーい/ながーい)も同じ扱い。末尾長音の
@@ -452,7 +463,7 @@ extension KanaKanjiConverter {
             if stem.count >= 2, stem != normalized,
                 stem.unicodeScalars.allSatisfy({ (0x3041...0x3096).contains($0.value) }),
                 computeShouldKeepKanaIdentityLeading(normalized: stem) {
-                return true
+                return keepKanaGround("L455")
             }
         }
         // 指示代名詞(それ/これ 等)始まりの句は、続く副助詞(ぐらい/だけ 等、任意)を剥がした
@@ -467,7 +478,7 @@ extension KanaKanjiConverter {
                 break
             }
             if remainder.count >= 2, computeShouldKeepKanaIdentityLeading(normalized: remainder) {
-                return true
+                return keepKanaGround("L470")
             }
         }
         // 丁寧のです系末尾(ですもんね/ですかね 等)を剥がした残りがかな正書の根拠を
@@ -477,7 +488,7 @@ extension KanaKanjiConverter {
         where normalized.count > tail.count + 1 && normalized.hasSuffix(tail) {
             let remainder = String(normalized.dropLast(tail.count))
             if computeShouldKeepKanaIdentityLeading(normalized: remainder) {
-                return true
+                return keepKanaGround("L480")
             }
             break
         }
@@ -490,7 +501,7 @@ extension KanaKanjiConverter {
             where normalized.count > particle.count && normalized.hasSuffix(particle) {
                 let stem = String(normalized.dropLast(particle.count))
                 if KanaKanjiSeedDictionary.seed[stem]?.first == stem {
-                    return true
+                    return keepKanaGround("L493")
                 }
             }
         }
@@ -503,7 +514,7 @@ extension KanaKanjiConverter {
                 computeShouldKeepKanaIdentityLeading(normalized: remainder)
                     || KanaKanjiConverter.kanaOrthographyDemonstrativePronounStems
                         .contains(where: { remainder.hasPrefix($0) }) {
-                return true
+                return keepKanaGround("L506")
             }
         }
         // 形式名詞(こと/とき/もの/ため)+格助詞1字はかなが正書(ことで/ときに/ものを。
@@ -513,7 +524,7 @@ extension KanaKanjiConverter {
             let last = normalized.last,
             "でにをがはもとへ".contains(last),
             ["こと", "とき", "もの", "ため"].contains(String(normalized.dropLast())) {
-            return true
+            return keepKanaGround("L516")
         }
         // かな正書の副詞(たまに 等=multiClauseKanaAdverbReadings)+助詞1字も同型
         // (たまには→玉には の繰り上がり対策。2540)。語幹は明示集合限定なので巻き込みなし。
@@ -521,14 +532,14 @@ extension KanaKanjiConverter {
             let last = normalized.last,
             "でにをがはもとへ".contains(last),
             KanaKanjiConverter.multiClauseKanaAdverbReadings.contains(String(normalized.dropLast())) {
-            return true
+            return keepKanaGround("L524")
         }
         // 否定の連用 なく を剥がして再帰(ことでもなく→ことでも)。なく は seed かな先頭の
         // 頻出かな(2442)。漢字正書の語幹に発火しても keepKana は維持のみで実害なし。
         if normalized.count > 2, normalized.hasSuffix("なく") {
             let stem = String(normalized.dropLast(2))
             if stem.count >= 2, computeShouldKeepKanaIdentityLeading(normalized: stem) {
-                return true
+                return keepKanaGround("L531")
             }
         }
         // 複合助詞(でも/では/には 等)を1つ剥がして再帰(ことでも→こと)。
@@ -537,7 +548,7 @@ extension KanaKanjiConverter {
         where normalized.count > particle.count && normalized.hasSuffix(particle) {
             let stem = String(normalized.dropLast(particle.count))
             if stem.count >= 2, computeShouldKeepKanaIdentityLeading(normalized: stem) {
-                return true
+                return keepKanaGround("L540")
             }
         }
         // 存在・進行の かな動詞(ある/いる)を剥がして再帰(やつにはある→やつには→(は/に 剥がし)→やつ)。
@@ -549,10 +560,10 @@ extension KanaKanjiConverter {
             // 接続助詞のて形+係助詞(ても/でも/ては/では)は用言に続く純かな語幹なので明示許可
             // (てもある→ても有る の退避対策。2517)
             if ["ても", "でも", "ては", "では", "とも"].contains(stem) {
-                return true
+                return keepKanaGround("L552")
             }
             if stem.count >= 2, computeShouldKeepKanaIdentityLeading(normalized: stem) {
-                return true
+                return keepKanaGround("L555")
             }
         }
         // 形式名詞(こと/とき/もの/ため/だけ)で終わる名詞化節は かな が正書(することがある→
@@ -582,7 +593,7 @@ extension KanaKanjiConverter {
         where formalNounProbe.count > noun.count && formalNounProbe.hasSuffix(noun) {
             let stem = String(formalNounProbe.dropLast(noun.count))
             if stem.count >= 2 {
-                return true
+                return keepKanaGround("L585")
             }
         }
         // て形+授受補助動詞で終わる読み(してくれて/教えてあげて/してくれてるのね 等)は
@@ -591,16 +602,16 @@ extension KanaKanjiConverter {
         // 終助詞クラスタが何であっても根拠あり(列挙リストは くれてる 等の漏れが続いたため廃止)。
         // かな最良が提示層で退避され して暮れてるのね 等が繰り上がるのを防ぐ(維持のみで昇格しない)。
         if Self.hasTeBenefactiveKanaTail(normalized) {
-            return true
+            return keepKanaGround("L594")
         }
         // 疑問・説明の のか に長音 ー が付く読み(なのかー/そうなのかー 等)は口語終端で
         // かなが正書。名詞漢字+のかー(名/菜+のかー 等)の無意味分割より かな全文を先頭へ。
         // 長音なしの なのか(=七日)は辞書語を守るため対象外(ー 付きに限定)。
         if normalized.count > 3, normalized.hasSuffix("のかー") {
-            return true
+            return keepKanaGround("L600")
         }
         if (store.initialAjoutVocabulary()[normalized] ?? []).contains(normalized) {
-            return true
+            return keepKanaGround("L603")
         }
         // curated かな識別(やって/やってみる 等の misc 登録)で終わり、前半が辞書のかな語
         // (とにかく 等)なら根拠あり(とにかくやってみる)。前半+curated末尾 の全かな句は
@@ -635,7 +646,7 @@ extension KanaKanjiConverter {
                 if prefix.count >= 2,
                     systemCandidates(for: prefix, mode: .lesDeux).contains(prefix)
                         || store.wordCosts(for: prefix)[prefix] != nil {
-                    return true
+                    return keepKanaGround("L638")
                 }
             }
         }
@@ -664,7 +675,7 @@ extension KanaKanjiConverter {
                     !computeShouldKeepKanaIdentityLeading(normalized: prefix) {
                     continue
                 }
-                return true
+                return keepKanaGround("L667")
             }
         }
         // seed でかなを 2 番目までに置き、連文節でも seed 順(かな込み)を使う読み(こつ: コツ→こつ→骨)で終わる句は、
@@ -673,15 +684,15 @@ extension KanaKanjiConverter {
             for suffix in Self.multiClauseSeedOrderVariantKanaLeadReadings
             where normalized.count - suffix.count >= 2 && normalized.hasSuffix(suffix) {
                 if KanaKanjiSeedDictionary.seed[suffix]?.prefix(2).contains(suffix) == true {
-                    return true
+                    return keepKanaGround("L676")
                 }
             }
         }
         if (store.ajoutVocabulary()[normalized] ?? []).contains(normalized) {
-            return true
+            return keepKanaGround("L681")
         }
         if systemCandidates(for: normalized, mode: .lesDeux).contains(normalized) {
-            return true
+            return keepKanaGround("L684")
         }
         // 形容詞化の ない 系を剥がした語幹が「辞書のかな語」かつ「LM でかな優位」なら
         // かなが正書(もったいない: もったい 7272<勿体 7715。読み全体は辞書/LM に無い)。
@@ -696,7 +707,7 @@ extension KanaKanjiConverter {
             guard stemCandidates.contains(stem) else { continue }
             let kanjiOthers = stemCandidates.filter { $0 != stem && Self.containsKanjiCandidate($0) }
             if !kanjiOthers.isEmpty, isLMKanaPreferred(reading: stem, among: kanjiOthers) {
-                return true
+                return keepKanaGround("L699")
             }
         }
         // 辞書に読みエントリが無い派生専用のかな語(もったいない 等=勿体+ない の合成のみ)は、
@@ -706,7 +717,7 @@ extension KanaKanjiConverter {
         if normalized.count >= 4,
             store.wordCosts(for: normalized).isEmpty,
             store.wordLMUnigramCosts(for: [normalized])[normalized] != nil {
-            return true
+            return keepKanaGround("L709")
         }
         // 理由の ので 付きの読みは、剥がした語幹が seed でかな先頭に固定された正書のかな語
         // (ある/いる 等)のときだけ根拠ありとする(いるので/あるので: かなを #2 位置維持で残す)。
@@ -717,7 +728,7 @@ extension KanaKanjiConverter {
             let stem = String(normalized.dropLast(2))
             if stem.count >= 2,
                 (KanaKanjiSeedDictionary.seed[stem]?.first == stem || hasLearnedKanaIdentity(for: stem)) {
-                return true
+                return keepKanaGround("L720")
             }
         }
         // 理由のコピュラ だから を剥がした語幹が辞書のかな語(ばかり=副助詞 等)なら根拠あり
@@ -729,7 +740,7 @@ extension KanaKanjiConverter {
             if stem.count >= 2,
                 systemCandidates(for: stem, mode: .lesDeux).contains(stem)
                     || store.wordCosts(for: stem)[stem] != nil {
-                return true
+                return keepKanaGround("L732")
             }
         }
         // 言いさし終止の から を剥がして再帰(じゃないから→じゃない: コピュラ否定末尾で true)。
@@ -738,7 +749,7 @@ extension KanaKanjiConverter {
         if normalized.count > 3, normalized.hasSuffix("から") {
             let stem = String(normalized.dropLast(2))
             if stem.count >= 2, computeShouldKeepKanaIdentityLeading(normalized: stem) {
-                return true
+                return keepKanaGround("L741")
             }
         }
         // 疑問・推量の終端(かなあ/かも/かな/かと/か)を剥がした語幹が「辞書のかな語そのもの」
@@ -755,41 +766,41 @@ extension KanaKanjiConverter {
             // かな在りで keepKana が立ち、ちかくか が 近くか の前に出ていた。seed 宣言があればかな先頭のときだけ、
             // 無ければ LM でかなが漢字に迫るとき(isKanaOrthographyStem)だけ根拠にする
             if isKanaPreferredStem(stem) {
-                return true
+                return keepKanaGround("L758")
             }
             for verb in ["ある", "いる"]
             where stem.count > verb.count && stem.hasSuffix(verb) {
                 let subStem = String(stem.dropLast(verb.count))
                 if subStem.count >= 2, systemCandidates(for: subStem, mode: .lesDeux).contains(subStem) {
-                    return true
+                    return keepKanaGround("L764")
                 }
             }
             // コピュラ推量末尾(どこだろうか→どこだろう、そうでしょうかも 等)も根拠あり
             // (先頭のコピュラ末尾規則と同じ語彙。か 等が付くと届かないのをここで補う)
             for cop in ["だろう", "でしょう", "でしょ", "じゃない", "じゃん"]
             where stem.count > cop.count && stem.hasSuffix(cop) {
-                return true
+                return keepKanaGround("L771")
             }
         }
         // コピュラ否定(じゃない/じゃなくて/じゃなかった)で終わる全かな句はかなが正書
         // (じゃ+無かった 等の分割漢字化より かな全文)。keepKana は維持のみで昇格しないため、
         // 名詞部が漢字正書の句(嘘じゃない=エンジンが漢字先頭)に発火しても実害はない。
         for tail in ["じゃなかった", "じゃなかったか", "じゃなかったの", "じゃなくて", "じゃない", "じゃないので", "じゃないんで"] where normalized.hasSuffix(tail) {
-            return true
+            return keepKanaGround("L778")
         }
         // コピュラ だ+終助詞(だよ/だね…)と でしょ(でしょう縮約)もかなが正書。終助詞剥がし規則は
         // 語幹2文字以上を要求するため単独 だ では発火しない — 明示末尾で補う。
         for tail in ["だよ", "だね", "だな", "だわ", "だぞ", "だぜ", "だっけ", "でしょ"] where normalized.hasSuffix(tail) {
-            return true
+            return keepKanaGround("L783")
         }
         // なる系縮約(〜なってる/〜なっちゃう)で終わる読みはかなが正書(成ってる/為ってる/
         // 綯ってる の漢字化は不自然)。misc curated なってる/なっちゃう と対の提示層維持。
         for tail in ["なってる", "なっちゃう"] where normalized.count > tail.count && normalized.hasSuffix(tail) {
-            return true
+            return keepKanaGround("L788")
         }
         // 〜でいい(これでいい/それでいい/ままでいい)の いい はかなが正書(良い は suppr 済みの方針)。
         if normalized.count > 3, normalized.hasSuffix("でいい") {
-            return true
+            return keepKanaGround("L792")
         }
         // コピュラ だ(+活用尾 だった/だったら/だし/だって)を剥がした語幹のかな識別が辞書先頭
         // (どう/そう 等のかな正書語)なら根拠あり(どうだ→どう=rank0かな、そうだった→そう)。
@@ -801,7 +812,7 @@ extension KanaKanjiConverter {
             if stem.count >= 2,
                 systemCandidates(for: stem, mode: .lesDeux)
                     .first(where: { !KanaKanjiConverter.isPureKatakanaCandidate($0) }) == stem {
-                return true
+                return keepKanaGround("L804")
             }
         }
         // 説明の んで(=ので 縮約)付きで、語幹が存在動詞のかな過去(あった/いた)の読みはかなが正書
@@ -809,7 +820,7 @@ extension KanaKanjiConverter {
         // かな降格が false のままだと先頭かなが末尾チップへ退避され実機だけ 会ったんで 先頭になる。
         if normalized.hasSuffix("んで"),
             KanaKanjiConverter.multiClauseClauseInitialKanaExistentialPasts.contains(String(normalized.dropLast(2))) {
-            return true
+            return keepKanaGround("L812")
         }
         // 名詞化節(のは/のが 等)・説明の のね/のよ 付きの読みは、剥がした語幹が辞書の
         // かな語(ひらがな/ある 等)なら根拠ありとする(ひらがなのは/あるのね: 合成でかな
@@ -825,11 +836,11 @@ extension KanaKanjiConverter {
             if stem.count >= 3, stem.hasSuffix("な") {
                 let withoutCopula = String(stem.dropLast())
                 if isKanaOrthographyStem(withoutCopula) {
-                    return true
+                    return keepKanaGround("L828")
                 }
             }
             if stem.count >= 2, isKanaOrthographyStem(stem) {
-                return true
+                return keepKanaGround("L832")
             }
             // 五段る動詞の過去(なった 等)は活用形なので辞書エントリでは拾えない。った→基底 る に
             // 脱活用して基底が辞書のかな語なら根拠あり(なったのは→なった→なる=rank0かな)。
@@ -837,7 +848,7 @@ extension KanaKanjiConverter {
             if stem.count >= 3, stem.hasSuffix("った") {
                 let ruBase = String(stem.dropLast(2)) + "る"
                 if systemCandidates(for: ruBase, mode: .lesDeux).first == ruBase {
-                    return true
+                    return keepKanaGround("L840")
                 }
             }
         }
@@ -848,7 +859,7 @@ extension KanaKanjiConverter {
         where normalized.count > particle.count && normalized.hasSuffix(particle) {
             let stem = String(normalized.dropLast(particle.count))
             if stem.count >= 2, computeShouldKeepKanaIdentityLeading(normalized: stem) {
-                return true
+                return keepKanaGround("L851")
             }
         }
         // 準体助詞 の+かな正書の名詞(のやつ/のこと/のため)。の を外した残りが seed でかな先頭の語なら、かなのまま
@@ -856,7 +867,7 @@ extension KanaKanjiConverter {
         if normalized.count >= 3, normalized.hasPrefix("の") {
             let rest = String(normalized.dropFirst())
             if let seed = KanaKanjiSeedDictionary.seed[rest], seed.first == rest {
-                return true
+                return keepKanaGround("L859")
             }
         }
         // 副助詞+で(までで/ほどで/だけで)。で の一般剥がしは名詞+で(ずかんで)を巻き込むので、剥がした残りが
@@ -865,7 +876,7 @@ extension KanaKanjiConverter {
             let stem = String(normalized.dropLast())
             if Self.kanaOrthographyAdverbialParticlesBeforeDe.contains(where: { stem.hasSuffix($0) }),
                 computeShouldKeepKanaIdentityLeading(normalized: stem) {
-                return true
+                return keepKanaGround("L868")
             }
         }
         // 指示代名詞+助詞(これで/ここまで/そこから 等)はかなが正書。助詞の一般剥がしは
@@ -876,7 +887,7 @@ extension KanaKanjiConverter {
         where normalized.count > particle.count && normalized.hasSuffix(particle) {
             if KanaKanjiConverter.kanaOrthographyDemonstrativePronounStems
                 .contains(String(normalized.dropLast(particle.count))) {
-                return true
+                return keepKanaGround("L879")
             }
         }
         // かな/カタカナ正書を持つ形容動詞語幹(いや 等)+ 活用語尾。で の一般剥がしは上と同じ
@@ -887,7 +898,7 @@ extension KanaKanjiConverter {
             let tail = String(normalized.dropFirst(stem.count))
             if KanaKanjiConverter.naAdjectiveInflectionTails.contains(tail),
                 computeShouldKeepKanaIdentityLeading(normalized: stem) {
-                return true
+                return keepKanaGround("L890")
             }
         }
         // 指示代名詞+助詞 を「先頭から」剥がした残り(それは+いくつ 等)がかな正書の識別なら
@@ -901,7 +912,7 @@ extension KanaKanjiConverter {
             where afterStem.hasPrefix(particle) {
                 let remainder = String(afterStem.dropFirst(particle.count))
                 if remainder.count >= 2, computeShouldKeepKanaIdentityLeading(normalized: remainder) {
-                    return true
+                    return keepKanaGround("L904")
                 }
             }
             break
@@ -913,7 +924,7 @@ extension KanaKanjiConverter {
         where normalized.count > demonstrative.count && normalized.hasSuffix(demonstrative) {
             let stem = String(normalized.dropLast(demonstrative.count))
             if stem.count >= 2, computeShouldKeepKanaIdentityLeading(normalized: stem) {
-                return true
+                return keepKanaGround("L916")
             }
         }
         // 文末のかな終助詞クラスタのうち長音化(ー付き=話し言葉)のもの(かなー/よねー/なー 等)を
@@ -924,7 +935,7 @@ extension KanaKanjiConverter {
         where suffix.hasSuffix("ー") && normalized.count > suffix.count && normalized.hasSuffix(suffix) {
             let stem = String(normalized.dropLast(suffix.count))
             if stem.count >= 2, computeShouldKeepKanaIdentityLeading(normalized: stem) {
-                return true
+                return keepKanaGround("L927")
             }
         }
         // かな正書の副詞(いまだ/まだ)で終わる読みは、末尾クラスタがかな正書(これはいまだ/
@@ -933,11 +944,11 @@ extension KanaKanjiConverter {
         for tail in Self.kanaOrthographyAdverbTails
         where normalized.hasSuffix(tail) {
             if normalized == tail {
-                return true
+                return keepKanaGround("L936")
             }
             let before = normalized.dropLast(tail.count).last
             if let before, Self.kanaOrthographyAdverbBoundaryParticles.contains(before) {
-                return true
+                return keepKanaGround("L940")
             }
         }
         // 活用形の読み(やってそうな 等)は、脱活用した基本形の辞書先頭(抑制適用後)が
@@ -957,7 +968,7 @@ extension KanaKanjiConverter {
             let first = systemCandidates(for: baseReading, mode: .lesDeux)
                 .first { !suppressed.contains($0) }
             if first == baseReading {
-                return true
+                return keepKanaGround("L960")
             }
         }
         return false
