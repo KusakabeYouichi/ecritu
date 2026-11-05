@@ -1854,6 +1854,10 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("なんじゃないのか").first, "なんじゃないのか")
         XCTAssertEqual(single("なんじゃないのか").first, "なんじゃないのか")
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "なんじゃないのか"))
+        // 3691(ユーザ報告): 簡単→化 の bigram(簡単化 の A 単位分割)が 簡単→か より安く 簡単化難しいか になっていた。
+        // 接尾辞の 化(か)の直後に形容詞(辞書形)は助詞なしで続かない
+        XCTAssertEqual(multi("かんたんかむずかしいか").first, "簡単か難しいか")
+        XCTAssertEqual(multi("かんたんかできる").first, "簡単化できる")
         XCTAssertEqual(multi("あっぷるのかぶかってなかった").first, "Appleの株買ってなかった")
         // 3687(ユーザ指定): 異体字 輛→輌/儛→舞、仏教の語は同じ読みの一般の語を崩さない(肉髻 は にっけい ちょうどのときだけ末尾)
         XCTAssertFalse(single("しゃりょう").contains("車輛"))

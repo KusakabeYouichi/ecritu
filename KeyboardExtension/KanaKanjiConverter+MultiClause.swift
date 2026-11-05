@@ -5262,6 +5262,13 @@ extension KanaKanjiConverter {
                             Self.isPredicateLikePrevForConditional(prevNode) {
                             cost += Self.multiClauseForbiddenPenaltyCost
                         }
+                        // 接尾辞の 化(か)の直後に形容詞(辞書形)は助詞なしで続かない(かんたんかむずかしいか が 簡単化難しいか:
+                        // 簡単→化 の bigram(簡単化 の A 単位分割)が 簡単→か より安かった。ユーザ報告 3691)。
+                        // 動詞(簡単化できる/する)は続くので形容詞だけ。判定は 化(か)の直後だけなので表引きは稀
+                        if prevNode.surfaceID == SID.化, prevNode.readingID == SID.か,
+                            store.isDictionaryFormIAdjective(reading: node.reading, candidate: node.surface) {
+                            cost += Self.multiClauseForbiddenPenaltyCost
+                        }
                         // 連体詞直後の かんじ→漢字 に小減点(定数コメント参照。こんな感じ を最良に)。
                         if node.readingID == SID.かんじ,
                             node.surfaceID == SID.漢字,

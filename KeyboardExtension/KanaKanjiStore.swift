@@ -447,6 +447,11 @@ final class KanaKanjiStore {
         inflectionClassMapCached(reading: reading)[candidate] != nil
     }
 
+    // その表層が形容詞(い形容詞)の辞書形として登録されているか(連文節の 化(か)+形容詞 の接続判定。3691)
+    func isDictionaryFormIAdjective(reading: String, candidate: String) -> Bool {
+        inflectionClassMapCached(reading: reading)[candidate] == "adjective-i"  // InflectionClass.adjectiveI の rawValue
+    }
+
     // その読みが動詞・形容詞(サ変名詞を除く活用の分類)として登録されているか。かなのままの語(いる)が述語かを見る(3615)
     func hasPredicateInflectionClass(reading: String) -> Bool {
         inflectionClassMapCached(reading: reading).values.contains { $0 != "suru" }  // InflectionClass.suru(変換層の定義。ストアからは見えない)
