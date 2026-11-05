@@ -1842,6 +1842,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("せいかいはいちもんじがたたんしょうせんていです").first, "正解は一文字型短梢剪定です")
         XCTAssertEqual(multi("せいかいはいちもんじがた").first, "正解は一文字型")
         XCTAssertEqual(multi("だいいちもんは").first, "第1問は", "数詞複合そのものは崩さない")
+        // learningBOX 検査 3692 の退行(3684 の 名\t中 の加点が そん+名+の+中 に漏れた): 加点を撤去
+        XCTAssertEqual(multi("つぎのぶるごーにゅちほうのそんめいのなかから").first, "次のブルゴーニュ地方の村名の中から")
+        XCTAssertEqual(multi("ちほうのそんめいのなかから").first, "地方の村名の中から")
         XCTAssertEqual(single("みどり").first, "緑")
         // 3687(ユーザ指定): かぶ は 株/カブ/蕪/下部 の順、文の中でも 株(画面の下部 は崩さない)、先頭のラテン文字の語の次はそのカタカナの形
         XCTAssertEqual(Array(single("かぶ").prefix(4)), ["株", "カブ", "蕪", "下部"])
