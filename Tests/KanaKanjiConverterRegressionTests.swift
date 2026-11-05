@@ -1851,6 +1851,10 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // 3676(ユーザ指定): ワインや酒の話は 造る、せんか は 選果 先頭、りょう の並び
         XCTAssertEqual(multi("わいんはぶどうからつくられます").first, "ワインはぶどうから造られます")
         XCTAssertEqual(multi("ぱんをつくる").first, "パンを作る")
+        // 3686(ユーザ報告): もっとまともな(もっと的もな だった)
+        XCTAssertEqual(multi("もっとまともな").first, "もっとまともな")
+        XCTAssertEqual(multi("まともな").first, "まともな")
+        XCTAssertEqual(multi("まとをいる").first, "的を射る")
         XCTAssertEqual(multi("せいかいはせんかです").first, "正解は選果です")
         XCTAssertEqual(Array(single("せんか").prefix(5)), ["選果", "専科", "戦果", "戦禍", "戦火"])
         XCTAssertEqual(Array(single("りょう").prefix(6)), ["量", "漁", "猟", "寮", "両", "良"])
