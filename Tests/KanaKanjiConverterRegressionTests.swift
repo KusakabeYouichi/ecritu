@@ -1833,6 +1833,11 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(single("さんてみりおん").prefix(2).contains("Saint-Émilion"))
         XCTAssertEqual(single("せっこ").first, "Secco")
         XCTAssertEqual(Array(single("こな").prefix(2)), ["粉", "Kona"])
+        // 2026-11-06(ユーザ指定): こな は 粉 が先のまま、コーヒーの文脈(こなこーひー)だけ Kona を先に(vin.plist に登録)。
+        // Castilla La Mancha はハイフン無しを先に(ハイフン付きが西語の正式だが候補はハイフン無し→付き の順)
+        XCTAssertEqual(Array(multi("こなこーひー").prefix(2)), ["Konaコーヒー", "コナコーヒー"])
+        XCTAssertEqual(Array(single("こなこーひー").prefix(2)), ["Konaコーヒー", "コナコーヒー"])
+        XCTAssertEqual(Array(single("かすてぃーりゃらまんちゃ").prefix(3)), ["カスティーリャ・ラ・マンチャ", "Castilla La Mancha", "Castilla-La Mancha"])
         XCTAssertEqual(single("みどり").first, "緑")
         // 3687(ユーザ指定): かぶ は 株/カブ/蕪/下部 の順、文の中でも 株(画面の下部 は崩さない)、先頭のラテン文字の語の次はそのカタカナの形
         XCTAssertEqual(Array(single("かぶ").prefix(4)), ["株", "カブ", "蕪", "下部"])
