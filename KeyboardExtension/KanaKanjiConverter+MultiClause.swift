@@ -610,7 +610,7 @@ extension KanaKanjiConverter {
     // 甘味料/甘味処(かんみ)は触らない
     static let sweetnessTastingContextReadings: [String] = [
         "さんみ", "にがみ", "しぶみ", "うまみ", "えぐみ", "わいん", "てーすてぃんぐ", "あじわい", "ざんとう", "かじつみ",
-        "ぼでぃ", "すいーつ", "わがし", "ようがし", "でざーと", "けーき"
+        "ぼでぃ", "すいーつ", "わがし", "ようがし", "でざーと", "けーき", "あつみ"
     ]
     static func sweetnessOrthographyOrdered(reading: String, candidates: [String]) -> [String] {
         guard reading.contains("あまみ"), let top = candidates.first else { return candidates }
