@@ -1857,6 +1857,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("りょうじんえい").first ?? single("りょうじんえい").first, "両陣営")
         XCTAssertEqual(KanaKanjiConverter.sweetnessOrthographyOrdered(reading: "あまみおおしまのわいん", candidates: ["奄美大島のワイン"]), ["奄美大島のワイン"])
         XCTAssertNil(KanaKanjiConverter.nominalizedOkuriganaRestored("寄付金", reading: "きふきん"))
+        // 3686(ユーザ報告): 党を作る(等を作るしか だった)、塔を建てる
+        XCTAssertEqual(multi("とうをつくるしか").first, "党を作るしか")
+        XCTAssertEqual(multi("とうをたてる").first, "塔を建てる")
         XCTAssertNil(KanaKanjiConverter.nominalizedOkuriganaRestored("気付", reading: "きつけ"))
         XCTAssertEqual(KanaKanjiConverter.nominalizedOkuriganaRestored("表記付テーブル", reading: "ひょうきつきてーぶる"), "表記付きテーブル")
         XCTAssertEqual(Array(multi("がめいなど").prefix(2)), ["Gamayなど", "ガメイなど"])
