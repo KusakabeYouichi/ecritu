@@ -26253,12 +26253,15 @@ extension KanaKanjiConverterRegressionTests {
     func testRegressionTeFormShimattaKeepKanaNeedsStemEvidence() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
-        for reading in ["しんでしまった", "たべてしまった", "よんでしまった"] {
+        // みてしまった は 3690 から false: 以前は みつ(辞書の rank 0 がかな)に戻せることを根拠にしていたが、本命の基本形は
+        // 見る(seed 先頭が漢字)。活用形に基本形が複数あるときは語 LM で最も安い先頭表記の基本形で決める(かってなかった と同じ)
+        for reading in ["しんでしまった", "たべてしまった", "よんでしまった", "みてしまった"] {
             XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: reading), reading)
         }
-        for reading in ["やってしまった", "してしまった", "みてしまった"] {
+        for reading in ["やってしまった", "してしまった"] {
             XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: reading), reading)
         }
+        XCTAssertEqual(converter.candidates(for: "みてしまった", limit: 3, systemCandidateMode: .surface).first, "見てしまった")
         XCTAssertEqual(converter.candidates(for: "しんでしまった", limit: 3, systemCandidateMode: .surface).first, "死んでしまった")
     }
 
@@ -27355,6 +27358,7 @@ extension KanaKanjiConverterRegressionTests {
                 for base in (ProcessInfo.processInfo.environment["AUDIT_KEEPKANA_BASES"] ?? "").split(separator: ",") {
                     print("AUDITKEEPKANA base \(base) \(converter.systemCandidates(for: String(base), mode: .lesDeux).prefix(4))")
                 }
+            }
             var shown = reading.count >= 4 && ProcessInfo.processInfo.environment["AUDIT_SINGLE"] == nil ? multi : []
             if let top = single.first, !shown.contains(top) {
                 shown.insert(top, at: shown.count >= 2 && KanaKanjiConverter.isScriptCounterpartPair(shown[0], shown[1]) ? 2 : min(1, shown.count))

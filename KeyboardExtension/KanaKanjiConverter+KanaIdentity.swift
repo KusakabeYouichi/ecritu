@@ -954,20 +954,32 @@ extension KanaKanjiConverter {
         // 活用形の読み(やってそうな 等)は、脱活用した基本形の辞書先頭(抑制適用後)が
         // かな identity(やる 等「かなが正書」の動詞)なら根拠ありとする。
         // かう→買う のように漢字が先頭の基本形は対象外(かってみようかな は末尾のまま)。
+        // 同じ活用形に基本形が複数ある読み(かって=かう/かつ/かる)は、語 LM で最も安い先頭表記を持つ基本形で決める。
+        // 以前はどれか 1 つの基本形の辞書先頭がかな(かる=辞書の rank 0 がかな収穫)なら立っていて、買う が本命の
+        // かってなかった までかな先頭になっていた(実機と Mac の両方。ユーザ報告 3689)。基本形の先頭は seed があれば
+        // seed の並び(かう=買う 先頭)で見る
         let suppressedByReading = store.suppressedCandidatesByReading()
         let candidateRuleIndices = normalized.last
             .flatMap { Self.deinflectionRulesByReadingLastCharacter[$0] } ?? []
+        var baseFirsts: [(baseReading: String, first: String)] = []
         for index in candidateRuleIndices {
             let rule = Self.allInflectionRules[index]
             guard normalized.hasSuffix(rule.readingSuffix), !rule.readingSuffix.isEmpty else { continue }
             let stem = String(normalized.dropLast(rule.readingSuffix.count))
             guard !stem.isEmpty else { continue }
             let baseReading = stem + rule.baseReadingSuffix
-            guard baseReading != normalized else { continue }
+            guard baseReading != normalized, !baseFirsts.contains(where: { $0.baseReading == baseReading }) else { continue }
             let suppressed = suppressedByReading[baseReading] ?? []
-            let first = systemCandidates(for: baseReading, mode: .lesDeux)
-                .first { !suppressed.contains($0) }
-            if first == baseReading {
+            guard let first = KanaKanjiSeedDictionary.seed[baseReading]?.first
+                ?? systemCandidates(for: baseReading, mode: .lesDeux).first(where: { !suppressed.contains($0) }) else { continue }
+            baseFirsts.append((baseReading, first))
+        }
+        if !baseFirsts.isEmpty {
+            let uni = store.wordLMUnigramCosts(for: baseFirsts.map(\.first))
+            let dominant = baseFirsts.min { lhs, rhs in
+                (uni[lhs.first] ?? Int.max) < (uni[rhs.first] ?? Int.max)
+            }
+            if let dominant, dominant.first == dominant.baseReading {
                 return keepKanaGround("L960")
             }
         }
