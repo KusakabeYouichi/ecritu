@@ -1839,6 +1839,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(multi("あっぷるのかぶ").prefix(2)), ["Appleの株", "アップルの株"])
         XCTAssertEqual(multi("がめんのかぶ").first, "画面の下部")
         XCTAssertEqual(multi("かってなかった").first, "買ってなかった")
+        // 3688: 単文節で かな と 買って が同点のとき かな が文字コード順で先頭だった(連文節が間に合わない回だけ出た)。株+(助詞なし)+買う
+        XCTAssertEqual(single("かってなかった").first, "買ってなかった")
+        XCTAssertEqual(multi("あっぷるのかぶかってなかった").first, "Appleの株買ってなかった")
         // 3687(ユーザ指定): 異体字 輛→輌/儛→舞、仏教の語は同じ読みの一般の語を崩さない(肉髻 は にっけい ちょうどのときだけ末尾)
         XCTAssertFalse(single("しゃりょう").contains("車輛"))
         XCTAssertFalse(single("かぶ").contains("歌儛"))

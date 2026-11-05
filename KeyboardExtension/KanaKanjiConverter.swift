@@ -1507,12 +1507,22 @@ final class KanaKanjiConverter {
         _ context: CandidateGenerationContext,
         scores: [String: Int]
     ) -> [String] {
+        // 同点のときかなを後ろに回すのは、かな正書の根拠が無い読みだけ(やめない 等の かな先頭 の指定は守る)
+        let demotesReadingOnTie = scores[context.reading] != nil && !shouldKeepKanaIdentityLeading(for: context.reading)
         let sortedCandidates = scores.keys.sorted { lhs, rhs in
             let lhsScore = scores[lhs, default: 0]
             let rhsScore = scores[rhs, default: 0]
 
             if lhsScore != rhsScore {
                 return lhsScore > rhsScore
+            }
+
+            // 同点なら読みそのままのかなを後ろに(かってなかった=2518 と 買ってなかった=2518 が同点で、文字数も同じなので
+            // 文字コード順で かな が先頭になっていた。連文節が間に合わない回だけこの並びが出て、先頭が入れ替わって見えた。ユーザ報告 3688)
+            let lhsIsReading = lhs == context.reading
+            let rhsIsReading = rhs == context.reading
+            if demotesReadingOnTie, lhsIsReading != rhsIsReading {
+                return rhsIsReading
             }
 
             if lhs.count != rhs.count {
