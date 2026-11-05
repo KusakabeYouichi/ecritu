@@ -592,6 +592,12 @@ extension KeyboardViewController {
                 || kanaKanjiConverter.shouldKeepKanaIdentityLeading(for: composingReading) {
             return candidates
         }
+        // かなを変換候補の列の seed の位置に残す読み(かぶ: 株/カブ/蕪/下部/かぶ/🫜 の順。ユーザ指定 3688)。
+        // seed が 2 番目以降にかなを並べている読みは 454 あるので、一律にはせず名指しの読みだけ
+        if Self.kanaKeptAtSeedPositionReadings.contains(composingReading), isKanaOnlyText(composingText),
+            KanaKanjiSeedDictionary.seed[composingReading]?.dropFirst().contains(composingText) == true {
+            return candidates
+        }
         if kanaKanjiConverter.shouldKeepKanaIdentityLeading(for: composingReading) {
             // かな正書の根拠があり、かつ合流後の上位(3位以内=ひらがなのは/あったが 等、
             // 会った/合った 等の妥当な漢字候補の直後に置きたいかな)に居るかな識別は位置維持。
@@ -616,6 +622,8 @@ extension KeyboardViewController {
             !(candidate == composingText && isKanaOnlyText(candidate))
         }
     }
+
+    static let kanaKeptAtSeedPositionReadings: Set<String> = ["かぶ"]
 
     func isKanaOnlyText(_ text: String) -> Bool {
         guard !text.isEmpty else {
