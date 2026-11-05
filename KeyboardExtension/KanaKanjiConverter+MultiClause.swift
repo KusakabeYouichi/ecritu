@@ -288,6 +288,7 @@ extension KanaKanjiConverter {
         candidates = Self.latinCounterpartOfKatakanaTop(candidates) { reading in
             scriptCounterpartSurface(for: reading, wantsLatin: true, plainKatakana: nil)
         }
+        candidates = leadingLatinKatakanaCounterpart(reading: reading, candidates: candidates)
         candidates = placeNameSanOrdered(reading: reading, candidates: candidates, systemCandidateMode: systemCandidateMode)
         candidates = Self.liquorCategoryOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.yokuOrthographyOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
@@ -389,6 +390,40 @@ extension KanaKanjiConverter {
     }
 
     static let latinCounterpartAllowedKanjiFollowers: [String] = ["等", "種", "地方", "地区", "地域"]
+
+    // 先頭がラテン文字の語で始まり(Appleの株)、2 番目がそのカタカナの形でないとき、読みの頭からその語を引いて
+    // カタカナの表記に替えた形(アップルの株)を 2 番目に置く(ユーザ報告 3687: あっぷるのかぶ が Appleの株、Appleのカブ で、
+    // アップルの株 は別解の上位に入っていなかった)。カタカナは語彙の表記(scriptCounterpartSurface)だけを使う
+    func leadingLatinKatakanaCounterpart(reading: String, candidates: [String]) -> [String] {
+        guard let top = candidates.first,
+            top.unicodeScalars.first.map(Self.isLatinLetterScalar) == true else { return candidates }
+        if candidates.count >= 2, Self.isScriptCounterpartPair(top, candidates[1]) { return candidates }
+        let characters = Array(top)
+        var end = 0
+        while end < characters.count,
+            characters[end].unicodeScalars.allSatisfy({ Self.isLatinLetterScalar($0) || " '’-.&".unicodeScalars.contains($0) }) {
+            end += 1
+        }
+        guard end < characters.count else { return candidates }
+        let latin = String(characters[..<end]).trimmingCharacters(in: .whitespaces)
+        let normalized = Array(KanaTextNormalizer.normalizedReading(reading))
+        let supplemental = store.loadSupplementalSystemDictionary()
+        for length in stride(from: min(normalized.count - 1, 24), through: 2, by: -1) {
+            let prefix = String(normalized[..<length])
+            guard supplemental.candidates(for: prefix).contains(latin)
+                || (KanaKanjiSeedDictionary.seed[prefix]?.contains(latin) ?? false) else { continue }
+            // 抑制した表記(まっくおーえす→マックオーエス)は作らない
+            guard let katakana = scriptCounterpartSurface(for: prefix, wantsLatin: false, plainKatakana: nil),
+                !(store.suppressedCandidatesByReading()[prefix]?.contains(katakana) ?? false) else {
+                return candidates
+            }
+            let variant = katakana + String(characters[end...])
+            var result = candidates.filter { $0 != variant }
+            result.insert(variant, at: min(1, result.count))
+            return result
+        }
+        return candidates
+    }
 
     // 先頭がカタカナとラテン文字の混ぜ書き(シェリーがApera/ビンゲンはRheinhessen)で、候補に全部ラテン文字の形があれば先頭へ
     // (このあと promoteKatakanaCounterpartOfLatinTop が全部カタカナの形を 2 番目に置く。learningBOX 検査 3684、ユーザ指定:
