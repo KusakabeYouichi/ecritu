@@ -666,6 +666,13 @@ extension KanaKanjiConverter {
     // 薦め→勧め: 人+に+すすめる は 薦める→勧める→進める の順(ユーザ指定 3679)。連語表は同じ読みの動詞を 1 つしか上げられず、
     // 勧める は対抗として 進める と一緒に下がるので、先頭に 薦め があれば 勧め に替えた形を 2 番目に置く
     static let kanaSecondVariantSurfaces: [String: String] = ["先ほど": "さきほど", "薦め": "勧め"]
+    // 連文節のラティスで使う seed。単文節の並びだけを決める短い読み(い の 胃/意/威…。ユーザ指定 3686)は除く:
+    // 連文節で seed を使うと 居た/いた のような動詞の い の並びまで変わる(そこにいたね が そこに居たね になった)
+    static let singleClauseOnlySeedReadings: Set<String> = ["い"]
+    static func multiClauseSeed(_ reading: String) -> [String]? {
+        singleClauseOnlySeedReadings.contains(reading) ? nil : KanaKanjiSeedDictionary.seed[reading]
+    }
+
     static func kanaSecondVariantOrdered(_ candidates: [String]) -> [String] {
         guard candidates.count >= 2, let top = candidates.first else { return candidates }
         for (kanji, kana) in kanaSecondVariantSurfaces where top.contains(kanji) {
@@ -1157,7 +1164,7 @@ extension KanaKanjiConverter {
                         !surfaces[index].isInflectionDerived,
                         surfaces[index].wordCost == nil,
                         containsKanji(surface),
-                        KanaKanjiSeedDictionary.seed[segmentReading]?.first == surface {
+                        Self.multiClauseSeed(segmentReading)?.first == surface {
                         // 活用形そのものの seed の先頭(つきました=着きました)が a2 で先着すると、b2 の活用派生コピーが
                         // dedupe で死に、助詞直後の派生割引(5000)を失って派生の兄弟(尽きました)に負ける。
                         // 2514 と同族: 派生フラグを合流させる(3252)。対象は seed 先頭・漢字・Sudachi に無い表層に限る
@@ -1380,7 +1387,7 @@ extension KanaKanjiConverter {
                     // (掛ける 2≪描ける 18)のままだと 描けん が取得 6 件にも入らず、a2 の seed 供給
                     // (派生扱いでないので +3700)だけになって まともに描けんのか が 掛けん/欠けん の
                     // 後ろに沈む(2799)。seed 持ちの読みは少数なので取得幅拡大のコストは限定的
-                    let seedOrder = KanaKanjiSeedDictionary.seed[segmentReading]
+                    let seedOrder = Self.multiClauseSeed(segmentReading)
                     var inflected = inflectionCandidates(
                         for: segmentReading,
                         ajoutVocabulary: manualAjoutVocabulary,
@@ -1410,7 +1417,7 @@ extension KanaKanjiConverter {
                 //      (中の/柚花 等)を連文節でも組めるようにし、コスト同値帯
                 //      (名前群は一律 dictUnknown/wc10000 等)のタイブレークを seed 順で
                 //      押さえる(ノード列挙順が同 delta 変種の表示順になるため)。
-                for surface in KanaKanjiSeedDictionary.seed[segmentReading] ?? [] {
+                for surface in Self.multiClauseSeed(segmentReading) ?? [] {
                     if segmentEndsWithSokuon, containsKanji(surface) {
                         continue
                     }
@@ -1465,14 +1472,14 @@ extension KanaKanjiConverter {
                     // 名詞 seed 順の opt-in(にほん→日本 等)は先頭候補ノードにボーナスを与え、
                     // 数量詞複合(2本/二本)や分割に連文節でも勝たせる(値は読み別)。
                     if let bonus = Self.multiClauseSeedOrderNounBonusesByReading[segmentReading],
-                        surface == KanaKanjiSeedDictionary.seed[segmentReading]?.first {
+                        surface == Self.multiClauseSeed(segmentReading)?.first {
                         seedOrderNounNodeBonuses[spanKeyByStart[start][end] + "-" + surface] = bonus
                     }
                     // 漢字が seed 先頭の読みのカタカナ兄弟(コメ/ネコ)は容認するが推奨しない(ユーザ方針 3537)。bigram だけで
                     // 漢字(米)を抜かないよう定額で下げる(こめかってた→コメ買ってた)。seed 先頭がカタカナの語(コツ)は対象外
                     // 補助語彙(vin 等)のカタカナ(ガメイ)は外来の固有名で、コメ/ネコ のような和語のカタカナ化ではないので対象外(3693)
                     if Self.isKatakanaString(surface),
-                        let seedFirst = KanaKanjiSeedDictionary.seed[segmentReading]?.first,
+                        let seedFirst = Self.multiClauseSeed(segmentReading)?.first,
                         seedFirst != surface, containsKanji(seedFirst),
                         !supplementalSystemDictionary.contains(reading: segmentReading, surface: surface) {
                         seedOrderNounNodeBonuses[spanKeyByStart[start][end] + "-" + surface, default: 0] -= Self.multiClauseKatakanaSeedSiblingDemotion
@@ -1662,7 +1669,7 @@ extension KanaKanjiConverter {
                         // 補助形容詞 やすい/にくい/づらい の活用(やすくなった 等)はかなも 1 ノードで供給する。無いと
                         // みやすくなった が 見+やすく+なった で割高になり 宮+酸くなった に負けた(定数コメント参照。3653)
                         || Self.isAuxiliaryAdjectiveKanaInflectionReading(segmentReading)
-                        || (KanaKanjiSeedDictionary.seed[segmentReading]?.contains(segmentReading) ?? false)
+                        || (Self.multiClauseSeed(segmentReading)?.contains(segmentReading) ?? false)
                         || (len <= 3 && Self.ichidanRenyouSuppliedForEmptyStem(segmentReading, wordCostsAreNegligible: { Self.wordCostsAreNegligible(costMap) }))
                     // 関西方言の ている→とる 縮約形(騙しとった/欺しとった/瞞しとった)は標準形の後ろに回してから
                     // topK を採る。surface モードは 欺す/瞞す の異体が残るため縮約形だけで枠が埋まり、
