@@ -281,6 +281,7 @@ extension KanaKanjiConverter {
             candidates = candidates.filter { !Self.containsNonPassivizableSuruForm($0) }
                 + candidates.filter { Self.containsNonPassivizableSuruForm($0) }
         }
+        candidates = Self.allLatinOverMixedTop(candidates)
         candidates = Self.promoteKatakanaCounterpartOfLatinTop(candidates) { reading, katakana in
             scriptCounterpartSurface(for: reading, wantsLatin: false, plainKatakana: katakana)
         }
@@ -388,6 +389,50 @@ extension KanaKanjiConverter {
     }
 
     static let latinCounterpartAllowedKanjiFollowers: [String] = ["等", "種", "地方", "地区", "地域"]
+
+    // 先頭がカタカナとラテン文字の混ぜ書き(シェリーがApera/ビンゲンはRheinhessen)で、候補に全部ラテン文字の形があれば先頭へ
+    // (このあと promoteKatakanaCounterpartOfLatinTop が全部カタカナの形を 2 番目に置く。learningBOX 検査 3684、ユーザ指定:
+    // ラテン文字が先、カタカナが 2 番目)。漢字に続くカタカナ(赤ワイン/タイ料理)は語の一部なので、それがあれば触らない
+    static func allLatinOverMixedTop(_ candidates: [String]) -> [String] {
+        guard candidates.count >= 2, let top = candidates.first,
+            top.unicodeScalars.contains(where: isLatinLetterScalar) else { return candidates }
+        func isKatakana(_ c: Character) -> Bool { ("ァ"..."ヺ").contains(c) || c == "ー" || c == "・" }
+        func isLatin(_ c: Character) -> Bool {
+            c.unicodeScalars.allSatisfy { isLatinLetterScalar($0) || " '’-.&®!".unicodeScalars.contains($0) }
+        }
+        let characters = Array(top)
+        guard characters.contains(where: { ("ァ"..."ヺ").contains($0) }) else { return candidates }
+        for (index, character) in characters.enumerated() where isKatakana(character) {
+            if index > 0, isKanjiCharacter(characters[index - 1]) { return candidates }
+            if index + 1 < characters.count, isKanjiCharacter(characters[index + 1]) { return candidates }
+        }
+        let rest = String(top.filter { !isLatin($0) && !isKatakana($0) })
+        guard let index = candidates.indices.dropFirst().first(where: { index in
+            let candidate = candidates[index]
+            return !candidate.contains(where: isKatakana)
+                && candidate.unicodeScalars.contains(where: isLatinLetterScalar)
+                && String(candidate.filter { !isLatin($0) }) == rest
+        }) else { return candidates }
+        var result = candidates
+        let latin = result.remove(at: index)
+        result.insert(latin, at: 0)
+        return result
+    }
+
+    // 先頭と 2 番目がラテン文字とカタカナの表記違い(Portは/ポートは)か。候補欄で単文節の 1 位を連文節の 2 番目に
+    // 差し込むとき、この組なら 3 番目にする(learningBOX 検査 3684: ぽーとは の Portは が ポーとは に押されて 3 番目だった)
+    static func isScriptCounterpartPair(_ first: String, _ second: String) -> Bool {
+        func isKatakana(_ c: Character) -> Bool { ("ァ"..."ヺ").contains(c) || c == "ー" || c == "・" }
+        func isLatin(_ c: Character) -> Bool {
+            c.unicodeScalars.allSatisfy { isLatinLetterScalar($0) || " '’-.&®!".unicodeScalars.contains($0) }
+        }
+        let firstHasLatin = first.contains(where: { $0.unicodeScalars.contains(where: isLatinLetterScalar) })
+        let secondHasLatin = second.contains(where: { $0.unicodeScalars.contains(where: isLatinLetterScalar) })
+        guard firstHasLatin != secondHasLatin else { return false }
+        let (latinSide, katakanaSide) = firstHasLatin ? (first, second) : (second, first)
+        guard katakanaSide.contains(where: isKatakana) else { return false }
+        return String(latinSide.filter { !isLatin($0) && !isKatakana($0) }) == String(katakanaSide.filter { !isKatakana($0) })
+    }
 
     // 単文節: 先頭がカタカナだけならラテン文字だけの候補を、ラテン文字だけならカタカナだけの候補を 2 番目に(3677)
     static func scriptCounterpartSecond(_ candidates: [String]) -> [String] {

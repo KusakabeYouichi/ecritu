@@ -1824,6 +1824,16 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("しょうめいしょをはっこうさせる").first, "証明書を発行させる")
         // 3685(同上): ラテン文字の次は語彙のカタカナ(チンクエ・テッレ。辞書の チンクェ・テッレ が 2 番目だった)
         XCTAssertEqual(Array(multi("ちんくえてっれとは").prefix(2)), ["Cinque Terreとは", "チンクエ・テッレとは"])
+        // 3686(learningBOX 検査 3684 の [直す]): 表記違いの組は候補欄で 2 番目を譲らない、混ぜ書きの先頭は全部ラテン文字に、ワインの語の単独の読み
+        XCTAssertTrue(KanaKanjiConverter.isScriptCounterpartPair("Portは", "ポートは"))
+        XCTAssertFalse(KanaKanjiConverter.isScriptCounterpartPair("Portは", "ポーとは"))
+        XCTAssertEqual(Array(multi("しぇりーがあぺら").prefix(2)), ["SherryがApera", "シェリーがアペラ"])
+        XCTAssertEqual(multi("わいんはぴののわーる").first, "ワインはPinot Noir")
+        XCTAssertTrue(single("うぃーん").prefix(2).contains("Wien"))
+        XCTAssertTrue(single("さんてみりおん").prefix(2).contains("Saint-Émilion"))
+        XCTAssertEqual(single("せっこ").first, "Secco")
+        XCTAssertEqual(Array(single("こな").prefix(2)), ["粉", "Kona"])
+        XCTAssertEqual(single("みどり").first, "緑")
         // 3676(ユーザ指定): ワインや酒の話は 造る、せんか は 選果 先頭、りょう の並び
         XCTAssertEqual(multi("わいんはぶどうからつくられます").first, "ワインはぶどうから造られます")
         XCTAssertEqual(multi("ぱんをつくる").first, "パンを作る")
@@ -27285,7 +27295,7 @@ extension KanaKanjiConverterRegressionTests {
             if ProcessInfo.processInfo.environment["AUDIT_MULTI_ONLY"] != nil { print("AUDITMULTI \(reading) \(multi.prefix(10))") }
             var shown = reading.count >= 4 && ProcessInfo.processInfo.environment["AUDIT_SINGLE"] == nil ? multi : []
             if let top = single.first, !shown.contains(top) {
-                shown.insert(top, at: min(1, shown.count))
+                shown.insert(top, at: shown.count >= 2 && KanaKanjiConverter.isScriptCounterpartPair(shown[0], shown[1]) ? 2 : min(1, shown.count))
             }
             for candidate in single.dropFirst() where !shown.contains(candidate) {
                 shown.append(candidate)

@@ -337,7 +337,7 @@ extension KeyboardViewController {
                         let insertionIndex = converter.shouldPromoteSingleBestAboveMultiClause(
                             reading: reading,
                             singleBest: first
-                        ) ? 0 : min(1, merged.count)
+                        ) ? 0 : (merged.count >= 2 && KanaKanjiConverter.isScriptCounterpartPair(merged[0], merged[1]) ? 2 : min(1, merged.count))
                         merged.insert(first, at: insertionIndex)
                     }
                     for candidate in converterCandidates where !multiSet.contains(candidate) {
