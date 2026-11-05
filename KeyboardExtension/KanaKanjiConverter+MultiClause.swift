@@ -5269,6 +5269,12 @@ extension KanaKanjiConverter {
                             store.isDictionaryFormIAdjective(reading: node.reading, candidate: node.surface) {
                             cost += Self.multiClauseForbiddenPenaltyCost
                         }
+                        // 数詞+助数詞の複合(1問/第1問)の直後に 字 は続かない(せいかいはいちもんじがた が 正解は1問字型:
+                        // は→1問 の複合価格が は→一文字 より安く、字\t型 の加点(H字型)が 1問+字+型 に漏れた。
+                        // learningBOX 検査 3692)。3字/二千字 のように数字だけの直後は従来どおり
+                        if node.surfaceID == SID.字, Self.isNumericCompoundSurface(prevNode.surface) {
+                            cost += Self.multiClauseForbiddenPenaltyCost
+                        }
                         // 連体詞直後の かんじ→漢字 に小減点(定数コメント参照。こんな感じ を最良に)。
                         if node.readingID == SID.かんじ,
                             node.surfaceID == SID.漢字,

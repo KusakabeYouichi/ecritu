@@ -1838,6 +1838,10 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(multi("こなこーひー").prefix(2)), ["Konaコーヒー", "コナコーヒー"])
         XCTAssertEqual(Array(single("こなこーひー").prefix(2)), ["Konaコーヒー", "コナコーヒー"])
         XCTAssertEqual(Array(single("かすてぃーりゃらまんちゃ").prefix(3)), ["カスティーリャ・ラ・マンチャ", "Castilla La Mancha", "Castilla-La Mancha"])
+        // learningBOX 検査 3692 の退行(3684 の 字\t型 の加点が 1問+字+型 に漏れた): 数詞複合の直後の 字 を禁止
+        XCTAssertEqual(multi("せいかいはいちもんじがたたんしょうせんていです").first, "正解は一文字型短梢剪定です")
+        XCTAssertEqual(multi("せいかいはいちもんじがた").first, "正解は一文字型")
+        XCTAssertEqual(multi("だいいちもんは").first, "第1問は", "数詞複合そのものは崩さない")
         XCTAssertEqual(single("みどり").first, "緑")
         // 3687(ユーザ指定): かぶ は 株/カブ/蕪/下部 の順、文の中でも 株(画面の下部 は崩さない)、先頭のラテン文字の語の次はそのカタカナの形
         XCTAssertEqual(Array(single("かぶ").prefix(4)), ["株", "カブ", "蕪", "下部"])

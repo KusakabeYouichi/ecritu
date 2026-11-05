@@ -3835,6 +3835,8 @@ extension KanaKanjiConverter {
             for s in ["いき", "行き", "です"] { add(s) }
             // 1 字漢字+家(か)の分割を抑える(3203)
             for s in ["家"] { add(s) }
+            // 数詞+助数詞の複合(1問)の直後に 字 は立たない(3692)
+            for s in ["字"] { add(s) }
             // 接尾の 語(ご)は言語名にしか付かない(3322)
             for s in ["語"] { add(s) }
             // 隙(すき)は名詞の直後に立たない(3329)
@@ -4088,6 +4090,7 @@ extension KanaKanjiConverter {
         static let 価値 = MultiClauseSymbols.id("価値")
         static let 化 = MultiClauseSymbols.id("化")
         static let 家 = MultiClauseSymbols.id("家")
+        static let 字 = MultiClauseSymbols.id("字")
         static let 語 = MultiClauseSymbols.id("語")
         static let 隙 = MultiClauseSymbols.id("隙")
         static let すき = MultiClauseSymbols.id("すき")
