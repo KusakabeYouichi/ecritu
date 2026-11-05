@@ -2881,8 +2881,8 @@
 	<dict><key>phrase</key><string>California</string><key>shortcut</key><string>かりふぉるにあ</string></dict>
 	<dict><key>phrase</key><string>Campania</string><key>shortcut</key><string>かんぱーにあ</string></dict>
 	<dict><key>phrase</key><string>Cantabria</string><key>shortcut</key><string>かんたぶりあ</string></dict>	<!-- スペイン17自治州(2026-08-27)。西語綴り -->
-	<dict><key>phrase</key><string>Castilla-La Mancha</string><key>shortcut</key><string>かすてぃーりゃらまんちゃ</string></dict>	<!-- スペイン17自治州(2026-08-27)。西語綴り(ハイフン付きが正式) -->
-	<dict><key>phrase</key><string>Castilla La Mancha</string><key>shortcut</key><string>かすてぃーりゃらまんちゃ</string></dict>
+	<dict><key>phrase</key><string>Castilla La Mancha</string><key>shortcut</key><string>かすてぃーりゃらまんちゃ</string></dict>	<!-- スペイン17自治州(2026-08-27)。西語綴りはハイフン付きが正式だが、ハイフン無しを先に出す(ユーザ指定 2026-11-06) -->
+	<dict><key>phrase</key><string>Castilla-La Mancha</string><key>shortcut</key><string>かすてぃーりゃらまんちゃ</string></dict>
 	<dict><key>phrase</key><string>Castilla y León</string><key>shortcut</key><string>かすてぃーりゃいれおん</string></dict>
 	<dict><key>phrase</key><string>Cataluña</string><key>shortcut</key><string>かたるーにゃ</string></dict>
 	<dict><key>phrase</key><string>Catamarca</string><key>shortcut</key><string>かたまるか</string></dict>
@@ -8169,6 +8169,8 @@
 	<dict><key>phrase</key><string>アカネ科</string><key>shortcut</key><string>あかねか</string></dict>
 	<dict><key>phrase</key><string>Kalosi</string><key>shortcut</key><string>かろし</string></dict>
 	<dict><key>phrase</key><string>Kona</string><key>shortcut</key><string>こな</string></dict>
+	<dict><key>phrase</key><string>Konaコーヒー</string><key>shortcut</key><string>こなこーひー</string></dict>	<!-- こな は 粉 が先、コーヒーの文脈だけ Kona を先に(ユーザ指定 2026-11-06)。連文節の合成だと 粉コーヒー が先頭だった -->
+	<dict><key>phrase</key><string>コナコーヒー</string><key>shortcut</key><string>こなこーひー</string></dict>
 	<dict><key>phrase</key><string>カロシ</string><key>shortcut</key><string>かろし</string></dict>
 	<dict><key>phrase</key><string>ジャマイカ・ブルーマウンテン地区</string><key>shortcut</key><string>じゃまいかぶるーまうんてんちく</string></dict>
 	<dict><key>phrase</key><string>熱帯性低木コーヒー</string><key>shortcut</key><string>ねったいせいていぼくこーひー</string></dict>
