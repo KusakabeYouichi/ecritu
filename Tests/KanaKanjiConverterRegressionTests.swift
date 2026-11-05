@@ -1850,6 +1850,10 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // 3691(ユーザ指定): しょう の並び。祥 は辞書に無く seed で供給
         XCTAssertEqual(Array(single("しょう").prefix(8)), ["小", "尚", "しょう", "章", "ショウ", "商", "証", "省"])
         XCTAssertEqual(Array(single("しょう").dropFirst(12).prefix(2)), ["背負う", "祥"])
+        // 3691(ユーザ指定): なんじゃないのか はかなを先に(なんだけど と同じ seed の型)
+        XCTAssertEqual(multi("なんじゃないのか").first, "なんじゃないのか")
+        XCTAssertEqual(single("なんじゃないのか").first, "なんじゃないのか")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "なんじゃないのか"))
         XCTAssertEqual(multi("あっぷるのかぶかってなかった").first, "Appleの株買ってなかった")
         // 3687(ユーザ指定): 異体字 輛→輌/儛→舞、仏教の語は同じ読みの一般の語を崩さない(肉髻 は にっけい ちょうどのときだけ末尾)
         XCTAssertFalse(single("しゃりょう").contains("車輛"))
