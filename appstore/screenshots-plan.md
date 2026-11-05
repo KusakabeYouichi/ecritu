@@ -196,7 +196,7 @@ App Store Connect に「iPhone Duo」の欄があり、出すと商品ページ�
 2027 年 4 月から必須(ニュースは「提出されるすべてのアプリ」、仕様のページは「iOS 27.1 SDK 以降」と書き方が違う)。
 
 **撮り方(分かっていること)**
-- 機体は iPhone Duo / iOS 27.1(`82E22FD6-0449-4D9E-9F72-85862A7DF894`)。web クリップ「メモ」とキーボードの有効化は済み
+- 機体は iPhone Duo / iOS 27.2(iPhone19-4 の実行環境、`5E8FB98D-5CD3-4CF2-AF76-313F927BBE18`)。キーボードの有効化・撮影の種・アプリは入れ済み、web クリップは無い(Safari で開き、初回案内は DeviceHub で手で閉じる)。27.1 の機体と実行環境は 2026-11-05 に削除
 - 画面が 2 つあり `simctl io … screenshot` は `--display=1`(外画面 1398×2034)/ `--display=3`(内画面 2007×2853)の指定が要る
 - 開閉は `simctl` ではできない(`screenConfig power` は効かない)。**DeviceHub**(`/Applications/Xcode.app/Contents/Applications/DeviceHub.app`)の
   下のツールバーで Closed / Book / Open を選び、回転のボタンで縦向きにする(手で操作してもらう)
