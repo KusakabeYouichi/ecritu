@@ -623,7 +623,7 @@ extension KeyboardViewController {
         }
     }
 
-    static let kanaKeptAtSeedPositionReadings: Set<String> = ["かぶ", "ひろし"]
+    static let kanaKeptAtSeedPositionReadings: Set<String> = ["かぶ", "ひろし", "しょう"]
 
     func isKanaOnlyText(_ text: String) -> Bool {
         guard !text.isEmpty else {

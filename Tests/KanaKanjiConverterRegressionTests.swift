@@ -1847,6 +1847,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(single("ひろし").prefix(5)), ["弘", "博", "浩", "宏", "寛"])
         // 3691(ユーザ指定): ヒロシ はこの読みだけカタカナ強調の抑制から外し、ひろし の 1 つ前
         XCTAssertEqual(Array(single("ひろし").dropFirst(13).prefix(3)), ["弘志", "ヒロシ", "ひろし"])
+        // 3691(ユーザ指定): しょう の並び。祥 は辞書に無く seed で供給
+        XCTAssertEqual(Array(single("しょう").prefix(8)), ["小", "尚", "しょう", "章", "ショウ", "商", "証", "省"])
+        XCTAssertEqual(Array(single("しょう").dropFirst(12).prefix(2)), ["背負う", "祥"])
         XCTAssertEqual(multi("あっぷるのかぶかってなかった").first, "Appleの株買ってなかった")
         // 3687(ユーザ指定): 異体字 輛→輌/儛→舞、仏教の語は同じ読みの一般の語を崩さない(肉髻 は にっけい ちょうどのときだけ末尾)
         XCTAssertFalse(single("しゃりょう").contains("車輛"))
