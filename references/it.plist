@@ -77,6 +77,11 @@
 	<dict><key>phrase</key><string>Magic Keyboard</string><key>shortcut</key><string>まじっくきーぼーど</string></dict>
 	<dict><key>phrase</key><string>Smart Keyboard</string><key>shortcut</key><string>すまーときーぼーど</string></dict>
 	<dict><key>phrase</key><string>Smart Keyboard Folio</string><key>shortcut</key><string>すまーときーぼーどふぉりお</string></dict>
+	<dict><key>phrase</key><string>iPod</string><key>shortcut</key><string>あいぽっど</string></dict>
+	<dict><key>phrase</key><string>iPod touch</string><key>shortcut</key><string>あいぽっどたっち</string></dict>
+	<dict><key>phrase</key><string>iPod shuffle</string><key>shortcut</key><string>あいぽっどしゃっふる</string></dict>
+	<dict><key>phrase</key><string>iPod nano</string><key>shortcut</key><string>あいぽっどなの</string></dict>
+	<dict><key>phrase</key><string>iPod classic</string><key>shortcut</key><string>あいぽっどくらしっく</string></dict>
 
 	<!-- OSや機能 -->
 	<dict><key>phrase</key><string>Rosetta</string><key>shortcut</key><string>ろぜった</string></dict>
@@ -316,5 +321,6 @@
 	<dict><key>phrase</key><string>Nanoleaf</string><key>shortcut</key><string>なのりーふ</string></dict>
 	<dict><key>phrase</key><string>BenQ</string><key>shortcut</key><string>べんきゅー</string></dict>
 	<dict><key>phrase</key><string>Anker</string><key>shortcut</key><string>あんかー</string></dict>
+	<dict><key>phrase</key><string>SSD</string><key>shortcut</key><string>えすえすでぃー</string></dict>
 </array>
 </plist>

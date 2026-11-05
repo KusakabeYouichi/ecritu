@@ -953,5 +953,7 @@
 	        <dict><key>phrase</key><string>サンクスギヴィング</string><key>shortcut</key><string>さんくすぎゔぃんぐ</string></dict>
 	        <dict><key>phrase</key><string>Picard</string><key>shortcut</key><string>ぴかーる</string></dict>
 	        <dict><key>phrase</key><string>ピカール</string><key>shortcut</key><string>ぴかーる</string></dict>
+	        <dict><key>phrase</key><string>NASDAQ</string><key>shortcut</key><string>なすだっく</string></dict>
+	        <dict><key>phrase</key><string>JASDAQ</string><key>shortcut</key><string>じゃすだっく</string></dict>
 </array>
 </plist>
