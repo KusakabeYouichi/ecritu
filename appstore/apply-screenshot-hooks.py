@@ -123,17 +123,24 @@ enum ScreenshotSeed {
     }
 }
 ''')
+# 面の状態は 3583(iPad 版に向けた切り分け)で KeyboardRootView の @State から状態のクラスへ移った(2026-11-05 に追従)
+patch("KaomojiPanelState.swift", [
+    ('    var selectedCategoryID = "existing"',
+     '    var selectedCategoryID = ScreenshotSeed.string("kaomojiCategory") ?? "existing"'),
+    ('    var selectedReadingPrefix: String? = nil',
+     '    var selectedReadingPrefix: String? = ScreenshotSeed.string("kaomojiPrefix")'),
+    ('    var selectedReading: String? = nil',
+     '    var selectedReading: String? = ScreenshotSeed.string("kaomojiReading")'),
+])
+patch("FormattedNumberState.swift", [
+    ('    var buffer: String = ""',
+     '    var buffer: String = ScreenshotSeed.string("numberBuffer") ?? ""'),
+])
+patch("KeyboardInputState.swift", [
+    ('    var selectedEmojiCategory: KeyboardRootView.EmojiCategory = .people',
+     '    var selectedEmojiCategory: KeyboardRootView.EmojiCategory = (ScreenshotSeed.string("emojiCategory") == "flags" ? .flags : .people)'),
+])
 patch("KeyboardRootView.swift", [
-    ('@State var selectedKaomojiCategoryID = "existing"',
-     '@State var selectedKaomojiCategoryID = ScreenshotSeed.string("kaomojiCategory") ?? "existing"'),
-    ('@State var selectedKaomojiReading: String? = nil',
-     '@State var selectedKaomojiReading: String? = ScreenshotSeed.string("kaomojiReading")'),
-    ('@State var selectedKaomojiReadingPrefix: String? = nil',
-     '@State var selectedKaomojiReadingPrefix: String? = ScreenshotSeed.string("kaomojiPrefix")'),
-    ('@State var formattedNumberBuffer: String = ""',
-     '@State var formattedNumberBuffer: String = ScreenshotSeed.string("numberBuffer") ?? ""'),
-    ('@State var selectedEmojiCategory: EmojiCategory = .people',
-     '@State var selectedEmojiCategory: EmojiCategory = (ScreenshotSeed.string("emojiCategory") == "flags" ? .flags : .people)'),
     ("""        .onAppear {
             if inputMode != initialInputMode {
                 inputMode = initialInputMode
@@ -158,15 +165,15 @@ patch("KeyboardRootView+EmojiKaomojiLayouts.swift", [(
                                 HStack(spacing: 8) {
                                     kaomojiSearchPrefixButton(
                                         title: "全",
-                                        isSelected: selectedKaomojiReadingPrefix == nil,
-                                        action: { selectKaomojiReadingPrefix(nil) }
+                                        isSelected: kaomojiPanelState.selectedReadingPrefix == nil,
+                                        action: { kaomojiPanelState.selectReadingPrefix(nil) }
                                     )
 
                                     ForEach(KaomojiCatalog.readingIndexHeadings, id: \\.self) { heading in
                                         kaomojiSearchPrefixButton(
                                             title: heading,
-                                            isSelected: selectedKaomojiReadingPrefix == heading,
-                                            action: { selectKaomojiReadingPrefix(heading) }
+                                            isSelected: kaomojiPanelState.selectedReadingPrefix == heading,
+                                            action: { kaomojiPanelState.selectReadingPrefix(heading) }
                                         )
                                     }
                                 }
@@ -176,15 +183,15 @@ patch("KeyboardRootView+EmojiKaomojiLayouts.swift", [(
                                 HStack(spacing: 8) {
                                     kaomojiSearchPrefixButton(
                                         title: "全",
-                                        isSelected: selectedKaomojiReadingPrefix == nil,
-                                        action: { selectKaomojiReadingPrefix(nil) }
+                                        isSelected: kaomojiPanelState.selectedReadingPrefix == nil,
+                                        action: { kaomojiPanelState.selectReadingPrefix(nil) }
                                     )
 
                                     ForEach(KaomojiCatalog.readingIndexHeadings, id: \\.self) { heading in
                                         kaomojiSearchPrefixButton(
                                             title: heading,
-                                            isSelected: selectedKaomojiReadingPrefix == heading,
-                                            action: { selectKaomojiReadingPrefix(heading) }
+                                            isSelected: kaomojiPanelState.selectedReadingPrefix == heading,
+                                            action: { kaomojiPanelState.selectReadingPrefix(heading) }
                                         )
                                         .id(heading)
                                     }
@@ -246,12 +253,12 @@ patch("KeyboardViewController+Layout.swift", [(
 #    iOS が余白(17pt)を足す表示経路に入りやすかった(take 7 の 03 で 8 回連続)
 patch("KeyboardViewController+Rendering.swift", [(
     """    func preferredInitialInputMode() -> KeyboardInputMode {
-        switch textDocumentProxy.keyboardType {""",
+        Self.initialInputMode(for: textDocumentProxy.keyboardType)""",
     """    func preferredInitialInputMode() -> KeyboardInputMode {
         if let seeded = ScreenshotSeed.inputMode {  // ★撮影用の一時フック(コミットしない)
             return seeded
         }
-        switch textDocumentProxy.keyboardType {""",
+        return Self.initialInputMode(for: textDocumentProxy.keyboardType)""",
 )])
 patch("KeyboardViewController.swift", [(
     """        super.viewDidLoad()
