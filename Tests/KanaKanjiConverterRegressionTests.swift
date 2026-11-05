@@ -1841,6 +1841,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("かってなかった").first, "買ってなかった")
         // 3688: 単文節で かな と 買って が同点のとき かな が文字コード順で先頭だった(連文節が間に合わない回だけ出た)。株+(助詞なし)+買う
         XCTAssertEqual(single("かってなかった").first, "買ってなかった")
+        XCTAssertEqual(Array(single("ひろし").prefix(5)), ["弘", "博", "浩", "宏", "寛"])
         XCTAssertEqual(multi("あっぷるのかぶかってなかった").first, "Appleの株買ってなかった")
         // 3687(ユーザ指定): 異体字 輛→輌/儛→舞、仏教の語は同じ読みの一般の語を崩さない(肉髻 は にっけい ちょうどのときだけ末尾)
         XCTAssertFalse(single("しゃりょう").contains("車輛"))
@@ -4176,7 +4177,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             ("れきしか", ["歴史家", "歴史か"]),
             ("ながらく", ["ながらく", "永らく", "長らく"]),
             ("よこはまし", ["横浜市"]),
-            ("ひろし", ["弘", "寛", "博"]),
+            ("ひろし", ["弘", "博", "浩", "宏", "寛"]),  // ユーザ指定 3688
             ("まい", ["枚", "舞", "マイ", "まい"]),
             ("ほんやくか", ["翻訳家", "翻訳か", "本薬か"]),
             ("かなり", ["かなり", "可なり", "香菜里"]),  // 可 は 2736 で suppr。可成 は 3552 でかな書き(抑制)
