@@ -2254,6 +2254,13 @@ extension KanaKanjiConverter {
     static let multiClauseTeKuruAuxiliaryReadings: Set<String> = [
         "くる", "きた", "きて", "きます", "きました", "きません", "こない", "こなかった", "きたら", "くるの", "きたの", "くるから", "きたから", "きてる", "きている", "きてた"
     ]
+    // 引用の と/とも/とは の直後の 言う は、いいます/いえば/いうか をかなに(learningBOX 検査 3693。教材は
+    // といい 31:と言い 8、といわ 46:と言わ 34、といえ 14:と言え 5)。かな の活用ノードが無い形(いわれる/いえます)もあるので、
+    // 言 だけでなく漢字の述語を同じだけ下げる(言 だけ下げると 癒えます/云われる に流れた)。かな が無ければ並びは変わらない。
+    // 過去の いった は 3459 のユーザ指定(と言ったのに)で漢字のままなので、いっ で始まる形には掛けない
+    static let multiClauseQuotativeToSurfaces: Set<String> = ["と", "とも", "とは"]
+    static let multiClauseQuotativeIuKanaPrefixes: [String] = ["いい", "いわ", "いえ", "いう"]
+    static let multiClauseQuotativeIuKanjiPenalty = 1500
     static func isTeBenefactiveAuxiliaryReading(_ reading: String) -> Bool {
         guard reading.count >= 2, reading.count <= 8,
             reading.hasPrefix("くれ") || reading.hasPrefix("あげ") else {
@@ -3948,6 +3955,7 @@ extension KanaKanjiConverter {
             for s in KanaKanjiConverter.multiClauseBOSParticleBeforePredicateExemptParticles.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseBOSPenalizedParticles.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseBOSPenalizedFinalParticles.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseQuotativeToSurfaces.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseBekiReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseBindingParticleSwallowedAfterCaseParticles.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseCaseParticleEndingPhrases.sorted() { add(s) }
@@ -4210,6 +4218,7 @@ extension KanaKanjiConverter {
     static let multiClauseBOSParticleBeforePredicateExemptParticlesID = MultiClauseIDSet(multiClauseBOSParticleBeforePredicateExemptParticles)
     static let multiClauseBOSPenalizedParticlesID = MultiClauseIDSet(multiClauseBOSPenalizedParticles)
     static let multiClauseBOSPenalizedFinalParticlesID = MultiClauseIDSet(multiClauseBOSPenalizedFinalParticles)
+    static let multiClauseQuotativeToSurfacesID = MultiClauseIDSet(multiClauseQuotativeToSurfaces)
     static let multiClauseBekiReadingsID = MultiClauseIDSet(multiClauseBekiReadings)
     static let multiClauseBindingParticleSwallowedAfterCaseParticlesID = MultiClauseIDSet(multiClauseBindingParticleSwallowedAfterCaseParticles)
     static let multiClauseCaseParticleEndingPhrasesID = MultiClauseIDSet(multiClauseCaseParticleEndingPhrases)

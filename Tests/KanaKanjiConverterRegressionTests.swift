@@ -1683,6 +1683,11 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("りんごのたると").first, "りんごのタルト")
         XCTAssertEqual(single("かかと").first, "かかと")
         XCTAssertEqual(single("きゃしゃ").first, "きゃしゃ")
+        // 引用の と の後の いう 系(かなの活用がある形だけかなに。と言ったのに は 3459 のまま)
+        XCTAssertEqual(multi("ふらんすごではぷるーるといいます").first, "フランス語ではPleursといいます")
+        XCTAssertEqual(multi("ぽるとがるのだいひょうてきなちーずといえば").first, "ポルトガルの代表的なチーズといえば")
+        XCTAssertEqual(multi("がごげんといわれています").first, "が語源といわれています")
+        XCTAssertEqual(multi("といったのに").first, "と言ったのに")
     }
 
     // 2026-11-04 のユーザ報告(edition 3661)
@@ -17107,7 +17112,7 @@ extension KanaKanjiConverterRegressionTests {
             )
             for (reading, expected) in [
                 ("らーめんやにいく", "ラーメン屋に行く"), ("ほんやにいく", "本屋に行く"),
-                ("はなやでかう", "花屋で買う"), ("やおやといえば", "八百屋と言えば")
+                ("はなやでかう", "花屋で買う"), ("やおやといえば", "八百屋といえば")  // といえば は 3693 でかなに
             ] {
                 let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: mode)
                 XCTAssertEqual(multi.first, expected, "mode=\(mode.rawValue) multi=\(multi)")

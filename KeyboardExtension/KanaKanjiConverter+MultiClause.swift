@@ -5287,6 +5287,12 @@ extension KanaKanjiConverter {
                             let head = node.surface.first, Self.multiClauseNiSwallowingVerbHeads.contains(head) {
                             cost += Self.multiClauseNiSwallowingVerbHeadPenalty
                         }
+                        // 引用の と/とも/とは の直後の いう 系の述語は漢字を下げてかなに(定数コメント参照。3693)
+                        if prevNode.isKanaIdentity, Self.multiClauseQuotativeToSurfacesID.contains(prevNode.surfaceID),
+                            !node.isKanaIdentity, node.isInflectionDerived || node.isDictionaryFormPredicate,
+                            Self.multiClauseQuotativeIuKanaPrefixes.contains(where: { node.reading.hasPrefix($0) }) {
+                            cost += Self.multiClauseQuotativeIuKanjiPenalty
+                        }
                         // 連体詞直後の かんじ→漢字 に小減点(定数コメント参照。こんな感じ を最良に)。
                         if node.readingID == SID.かんじ,
                             node.surfaceID == SID.漢字,
