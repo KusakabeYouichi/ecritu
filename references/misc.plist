@@ -25,6 +25,7 @@
 	<dict><key>phrase</key><string>中分する</string><key>shortcut</key><string>ちゅうぶんする</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 中分する: Sudachi の inflection_classes に ちゅうぶん のサ変が無い。名詞 中分 で登録すると ちゅうぶん の単文節で 中文(seed 先頭)の前に出るため辞書形で登録(ユーザ指定 2887) -->
 	<dict><key>phrase</key><string>心配する</string><key>shortcut</key><string>しんぱいする</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>発明する</string><key>shortcut</key><string>はつめいする</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 発明する: Sudachi の品詞が サ変形状詞可能 で suru に入らず(build_sudachi_index は サ変可能 だけを見る)、はつめいされてて→発明されて手 だった(ユーザ報告 3778)。心配する と同じメタデータ穴 -->	<!-- 心配する: Sudachi収穫の inflection_classes が しんぱい に 親拝/進拝 だけを suru 登録し 心配 が未登録(メタデータ穴)。エンジンの推論防御により 心配しなくて 等が導出されず 親拝しなくて が先頭化する。句登録で活用供給 -->
+	<dict><key>phrase</key><string>光合成する</string><key>shortcut</key><string>こうごうせいする</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 光合成する: Sudachi の 光合成 は 普通名詞,一般 で サ変の印が無く、しょくぶつがこうごうせいし が 植物が皇后静止 だった(ユーザ報告 3695)。発明する と同じメタデータ穴 -->
 	<!-- サ変形状詞可能(Sudachi の品詞)の語の サ変(3780、ユーザ判定)。build_sudachi_index は サ変可能 だけを suru にするので、安心する/邪魔する 等の活用が作られなかった。する で使わない語(膨大/妥当/適当 等)は除く -->
 	<dict><key>phrase</key><string>安心する</string><key>shortcut</key><string>あんしんする</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>安定する</string><key>shortcut</key><string>あんていする</string><key>pos</key><string>サ変名詞</string></dict>
