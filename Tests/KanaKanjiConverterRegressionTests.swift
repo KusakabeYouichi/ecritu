@@ -1758,6 +1758,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("とうきには").first, "冬季には")
         XCTAssertEqual(multi("とうきは").first, "陶器は")
         XCTAssertEqual(single("とうき").first, "陶器")
+        // を+保護する
+        XCTAssertEqual(multi("ひんしゅをほごします").first, "品種を保護します")
     }
 
     // 2026-11-06 のユーザ報告(edition 3695 の実機)
