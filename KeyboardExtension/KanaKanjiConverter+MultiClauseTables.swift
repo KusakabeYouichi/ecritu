@@ -133,6 +133,10 @@ extension KanaKanjiConverter {
     // いいの→飯野(人名収穫 wc9141)+に+ー の分割に負ける(2538)。
     static let multiClauseNominalizerSurfaces: Set<String> = ["のが", "のは", "のを", "のも", "のに", "のにー"]
     static let multiClauseNominalizerAfterPredicateCost = 1200
+    // 希望の たい は かなの単独ノード(覚えて+おき+たい)で、辞書の述語でも活用派生でもないため、上のクランプが掛からず
+    // たい→のは が 8700 だった。1 ノードの 起きたい→のは(1200)に負け、おさえておきたいのは が 抑えて起きたいのは に
+    // なっていた(learningBOX 検査 3693)
+    static let multiClauseKanaAuxiliaryPredicateSurfaces: Set<String> = ["たい", "たかった"]
     // 説明・詠嘆の終助詞連結「のね/のよ」。用言の辞書形述語(重い 等、inflection_classes
     // 登録)直後に限り単位ノードとして安価にする(おもいのね→重いのね)。名詞(思い)は
     // 表層末尾が い でも辞書形述語ではないため対象外 — の+ね 分割の従来経路のまま
@@ -3946,6 +3950,7 @@ extension KanaKanjiConverter {
             for s in KanaKanjiConverter.multiClauseKanaSuruNegativeIdentities.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseNominalizerNFinalParticles.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseNominalizerSurfaces.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseKanaAuxiliaryPredicateSurfaces.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseNounCopulaClusterReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseParticleFollowerSurfaces.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseParticleIiSwallowingReadings.sorted() { add(s) }
@@ -4208,6 +4213,7 @@ extension KanaKanjiConverter {
     static let multiClauseKanaSuruNegativeIdentitiesID = MultiClauseIDSet(multiClauseKanaSuruNegativeIdentities)
     static let multiClauseNominalizerNFinalParticlesID = MultiClauseIDSet(multiClauseNominalizerNFinalParticles)
     static let multiClauseNominalizerSurfacesID = MultiClauseIDSet(multiClauseNominalizerSurfaces)
+    static let multiClauseKanaAuxiliaryPredicateSurfacesID = MultiClauseIDSet(multiClauseKanaAuxiliaryPredicateSurfaces)
     static let multiClauseNounCopulaClusterReadingsID = MultiClauseIDSet(multiClauseNounCopulaClusterReadings)
     static let multiClauseParticleFollowerSurfacesID = MultiClauseIDSet(multiClauseParticleFollowerSurfaces)
     static let multiClauseParticleIiSwallowingReadingsID = MultiClauseIDSet(multiClauseParticleIiSwallowingReadings)

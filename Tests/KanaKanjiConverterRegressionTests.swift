@@ -1669,6 +1669,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("ねはえんぶんたいせいがあるため").first, "根は塩分耐性があるため")
         XCTAssertEqual(multi("ねはやさしい").first, "根は優しい")
         XCTAssertEqual(multi("ねむい").first, "眠い")
+        // かな の たい の後の のは
+        XCTAssertEqual(multi("おぼえておきたいのは").first, "覚えておきたいのは")
     }
 
     // 2026-11-04 のユーザ報告(edition 3661)

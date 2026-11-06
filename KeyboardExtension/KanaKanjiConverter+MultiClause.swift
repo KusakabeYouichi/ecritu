@@ -3124,6 +3124,7 @@ extension KanaKanjiConverter {
                 Self.multiClauseNominalizerSurfacesID.contains(surfaceID),
                 prev.last.map({ Self.multiClausePredicateTailCharacters.contains($0) }) ?? false,
                 !prevIsKanaIdentity || prevIsInflectionDerived || prevIsDictionaryFormPredicate
+                    || Self.multiClauseKanaAuxiliaryPredicateSurfacesID.contains(prevID)
                     || store.hasPredicateInflectionClass(reading: prev) {
                 base = min(base, Self.multiClauseNominalizerAfterPredicateCost)
             }
