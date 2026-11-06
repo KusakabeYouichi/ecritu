@@ -7872,6 +7872,7 @@
 	<dict><key>phrase</key><string>残糖量</string><key>shortcut</key><string>ざんとうりょう</string></dict>
 	<dict><key>phrase</key><string>除梗</string><key>shortcut</key><string>じょこう</string></dict>
 	<dict><key>phrase</key><string>除葉</string><key>shortcut</key><string>じょよう</string></dict>
+	<dict><key>phrase</key><string>色沢</string><key>shortcut</key><string>しきたく</string></dict>	<!-- 米・酒の色つや。敷きたく だった(learningBOX 検査 3693) -->
 	<dict><key>phrase</key><string>畝くずし</string><key>shortcut</key><string>うねくずし</string></dict>	<!-- 冬の土寄せを崩す作業(Débuttage)。教材は 31 回とも 畝くずし(learningBOX 検査 3693、畝崩し だった) -->
 	<dict><key>phrase</key><string>新樽</string><key>shortcut</key><string>しんだる</string></dict>
 	<dict><key>phrase</key><string>全房</string><key>shortcut</key><string>ぜんぼう</string></dict>
@@ -9064,6 +9065,7 @@
 	<dict><key>phrase</key><string>ビール消費量</string><key>shortcut</key><string>びーるしょうひりょう</string></dict>
 	<dict><key>phrase</key><string>ピルスナー</string><key>shortcut</key><string>ぴるすなー</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>フルーツビール</string><key>shortcut</key><string>ふるーつびーる</string></dict>
+	<dict><key>phrase</key><string>第三のビール</string><key>shortcut</key><string>だいさんのびーる</string></dict>	<!-- 新ジャンル。台さんのビール だった(learningBOX 検査 3693) -->
 	<dict><key>phrase</key><string>ブラックビール</string><key>shortcut</key><string>ぶらっくびーる</string></dict>
 	<dict><key>phrase</key><string>ホワンチュウ</string><key>shortcut</key><string>ほわんちゅう</string></dict>
 	<dict><key>phrase</key><string>ボック</string><key>shortcut</key><string>ぼっく</string></dict>	<!-- Sudachiにもある -->
