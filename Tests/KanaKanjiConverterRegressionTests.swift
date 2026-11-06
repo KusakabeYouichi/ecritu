@@ -1690,6 +1690,23 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("といったのに").first, "と言ったのに")
     }
 
+    // learningBOX 検査 3693 の確認表の 2 回目の回答(ロジック・登録の節の [直す])
+    func testRegressionLearningBoxAudit3693SecondFixes() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func single(_ reading: String) -> [String] { converter.candidates(for: reading, limit: 30, systemCandidateMode: .surface) }
+        func multi(_ reading: String) -> [String] {
+            let list = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            return list.isEmpty ? single(reading) : list
+        }
+        // 連語表(手で足す組): 面影を留める、強風に耐える、健全度を測る、脂肪を溶かす、枝を配する
+        XCTAssertEqual(multi("いまなおちゅうせいのおもかげをとめています").first, "今なお中世の面影を留めています")
+        XCTAssertEqual(multi("うみからのきょうふうにたえられるように").first, "海からの強風に耐えられるように")
+        XCTAssertEqual(multi("けんぜんどをはかるいみあいがありますが").first, "健全度を測る意味合いがありますが")
+        XCTAssertEqual(multi("しぼうをとかしてしょうかをたすけ").first, "脂肪を溶かして消化を助け")
+        XCTAssertEqual(multi("えいちじのかたちにえだをはいします").first, "H字の形に枝を配します")
+    }
+
     // 2026-11-04 のユーザ報告(edition 3661)
     func testRegressionRealLMUserReports3661() throws {
         try prepareRealLMDictionary()
