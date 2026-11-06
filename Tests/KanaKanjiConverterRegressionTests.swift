@@ -1719,6 +1719,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         converter.setKakikaePreference(.bothBeforeFirst)
         XCTAssertEqual(multi("じょうりゅうしゅであるものをえらんでください").first, "蒸溜酒であるものを選んでください")
         XCTAssertEqual(multi("ぶどうしぼりかすのじょうりゅうしゅ").first, "ぶどう絞りかすの蒸溜酒")
+        // 産出 を先に(教材 54:3)
+        XCTAssertEqual(multi("ろぜわいんをさんしゅつします").first, "ロゼワインを産出します")
+        XCTAssertEqual(single("さんしゅつ").first, "産出")
     }
 
     // 2026-11-04 のユーザ報告(edition 3661)
