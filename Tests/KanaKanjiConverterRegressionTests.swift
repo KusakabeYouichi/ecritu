@@ -1773,6 +1773,15 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("なにがですか").first, "何がですか")
         // 非常+に+暑く
         XCTAssertEqual(multi("ひじょうにあつく").first, "非常に暑く")
+        // 前後の語の読みで決まる専門語(手掛かりの語が無ければ一般の語のまま)
+        XCTAssertEqual(multi("らっかさせるびょうがいです").first, "落果させる病害です")
+        XCTAssertEqual(multi("らっかするびょうがい").first, "落果する病害")
+        XCTAssertEqual(multi("らっかさせる").first, "落下させる")
+        XCTAssertEqual(multi("しゅせきとしてせきしゅつします").first, "酒石として析出します")
+        XCTAssertEqual(multi("ふなづみされたせんめい").first, "船積みされた船名")
+        XCTAssertEqual(multi("とくゆうなほうこう").first, "特有な芳香")
+        XCTAssertEqual(multi("かじゅうとともにかひ").first, "果汁とともに果皮")
+        XCTAssertEqual(multi("けっこんのかひ").first, "結婚の可否")
     }
 
     // 2026-11-06 のユーザ報告(edition 3695 の実機)

@@ -292,6 +292,7 @@ extension KanaKanjiConverter {
         candidates = placeNameSanOrdered(reading: reading, candidates: candidates, systemCandidateMode: systemCandidateMode)
         candidates = Self.liquorCategoryOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.brewingTsukuruOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
+        candidates = Self.contextCuedHomophoneOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.yokuOrthographyOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.sweetnessOrthographyOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.kanaSecondVariantOrdered(candidates)
@@ -646,6 +647,30 @@ extension KanaKanjiConverter {
         }
         guard changed else { return candidates }
         let rewritten = String(characters)
+        return [rewritten] + candidates.filter { $0 != rewritten }
+    }
+
+    // 前後の語の読みで決まる専門語の同音語(3696、learningBOX 検査 3684 の [直す])。読みに手掛かりの語があり、
+    // 置き換える語の読みもあるときだけ、先頭の候補の表記を差し替える(造る と同じ作り。全体の順位は動かさない。
+    // feedback: 専門語は前後の語で)。離れた語の組はラティスの組の加点(隣か 1 字助詞を挟むだけ)では届かない
+    // (落下させる+病害、首席+として+析出、鮮明 と 船積みされた)
+    static let contextCuedHomophoneRewrites: [(cue: String, targetReading: String, from: String, to: String)] = [
+        ("びょうがい", "らっか", "落下", "落果"),
+        ("せきしゅつ", "しゅせき", "首席", "酒石"), ("せきしゅつ", "しゅせき", "主席", "酒石"), ("せきしゅつ", "しゅせき", "酒席", "酒石"),
+        ("ふなづみ", "せんめい", "鮮明", "船名"), ("ふなづみ", "せんめい", "宣明", "船名"),
+        ("とくゆうな", "ほうこう", "方向", "芳香"),
+        ("かじゅう", "かひ", "可否", "果皮"), ("かじゅう", "かひ", "歌碑", "果皮"),
+    ]
+
+    static func contextCuedHomophoneOrdered(reading: String, candidates: [String]) -> [String] {
+        guard var rewritten = candidates.first else { return candidates }
+        for rule in contextCuedHomophoneRewrites
+        where reading.contains(rule.cue) && reading.contains(rule.targetReading) && rewritten.contains(rule.from) {
+            if let range = rewritten.range(of: rule.from) {
+                rewritten.replaceSubrange(range, with: rule.to)
+            }
+        }
+        guard rewritten != candidates.first else { return candidates }
         return [rewritten] + candidates.filter { $0 != rewritten }
     }
 
