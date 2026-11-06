@@ -1777,6 +1777,25 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // 杯(ばい)は数の後ろの連濁だけ(数字の後ろの 3+ばい は testDigitThenHaiIsHaiCounter)
         XCTAssertFalse(multi("ばいになったそうね").prefix(4).contains(where: { $0.hasPrefix("杯") }), "\(multi("ばいになったそうね").prefix(4))")
         XCTAssertFalse(single("ばい").prefix(2).contains("杯"), "\(single("ばい").prefix(4))")
+        // 数字の後ろの 助数詞+終助詞 よ(3+かこくよ→3か国よ。課+こくよ にしない)
+        let kakokuyoList = multi("かこくよ") + single("かこくよ")
+        let kakokuyo = converter.applyKaCounterVariantPreference(
+            reading: "かこくよ",
+            to: KanaKanjiConverter.digitContextCounterBoostedCandidates(
+                kakokuyoList, reading: "かこくよ", precedingCharacter: "3",
+                tailConversion: { [converter] tail in converter!.counterTailConversion(tail) }),
+            precedingCharacter: "3"
+        )
+        XCTAssertEqual(kakokuyo.first, "か国よ", "\(kakokuyo.prefix(6))")
+        XCTAssertFalse(kakokuyo.prefix(5).contains("課こくよ"), "\(kakokuyo.prefix(6))")
+        // 末尾の よ を漢字(世/夜)にした合成を作らない
+        let kaiyo = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+            multi("かいよ") + single("かいよ"), reading: "かいよ", precedingCharacter: "3",
+            tailConversion: { [converter] tail in converter!.counterTailConversion(tail) })
+        XCTAssertEqual(kaiyo.first, "回よ", "\(kaiyo.prefix(6))")
+        // 光合成 のサ変(misc.plist の 光合成する)
+        XCTAssertEqual(multi("しょくぶつがこうごうせいし").first, "植物が光合成し")
+        XCTAssertEqual(multi("こうごうせいしたばあい").first, "光合成した場合")
     }
 
     // 2026-11-04 のユーザ報告(edition 3661)
