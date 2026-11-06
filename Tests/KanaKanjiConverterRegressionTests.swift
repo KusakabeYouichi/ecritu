@@ -1674,6 +1674,15 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // 副助詞 のみ の後の述語
         XCTAssertEqual(multi("わいんにのみつかわれ").first, "ワインにのみ使われ")
         XCTAssertEqual(multi("あかのみとなります").first, "赤のみとなります", "古語 隣る の活用に割引が漏れない")
+        // 教材でかなが多い表記(連文節は減点、単文節は seed)
+        XCTAssertEqual(multi("なめらかなくちあたり").first, "なめらかな口当たり")
+        XCTAssertEqual(multi("もろくくずれやすく").first, "もろく崩れやすく")
+        XCTAssertEqual(multi("わいんのさんみがやわらげられる").first, "ワインの酸味がやわらげられる")
+        XCTAssertEqual(multi("ひじょうにみずはけのよいさんちです").first, "非常に水はけのよい産地です")
+        XCTAssertEqual(multi("もくたんふんがまぶされています").first, "木炭粉がまぶされています")
+        XCTAssertEqual(multi("りんごのたると").first, "りんごのタルト")
+        XCTAssertEqual(single("かかと").first, "かかと")
+        XCTAssertEqual(single("きゃしゃ").first, "きゃしゃ")
     }
 
     // 2026-11-04 のユーザ報告(edition 3661)
@@ -14759,7 +14768,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     func testRegressionRealLMTanninPrefersTannin() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
-        for (reading, expected) in [("なめらかなたんにん", "滑らかなタンニン"), ("しっかりとしたたんにん", "しっかりとしたタンニン"), ("たんにんのせんせい", "担任の先生")] {
+        // なめらか は learningBOX 検査 3693 の [直す] でかなを先に(滑らか は 2 番目)
+        for (reading, expected) in [("なめらかなたんにん", "なめらかなタンニン"), ("しっかりとしたたんにん", "しっかりとしたタンニン"), ("たんにんのせんせい", "担任の先生")] {
             let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
             XCTAssertEqual(multi.first, expected, "\(reading): \(multi)")
         }
@@ -18252,7 +18262,7 @@ extension KanaKanjiConverterRegressionTests {
             for (reading, expected) in [
                 ("さるときに", "去るときに"),
                 ("かえったときに", "帰ったときに"),
-                ("さるのしっぽ", "猿の尻尾")
+                ("さるのしっぽ", "猿のしっぽ")  // しっぽ は learningBOX 検査 3693 の [直す] でかなを先に
             ] {
                 XCTAssertEqual(
                     converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
