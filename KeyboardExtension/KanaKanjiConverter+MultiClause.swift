@@ -291,6 +291,7 @@ extension KanaKanjiConverter {
         candidates = leadingLatinKatakanaCounterpart(reading: reading, candidates: candidates)
         candidates = placeNameSanOrdered(reading: reading, candidates: candidates, systemCandidateMode: systemCandidateMode)
         candidates = Self.liquorCategoryOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
+        candidates = Self.brewingTsukuruOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.yokuOrthographyOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.sweetnessOrthographyOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.kanaSecondVariantOrdered(candidates)
@@ -598,6 +599,54 @@ extension KanaKanjiConverter {
         }
         let replaced = top.replacingOccurrences(of: "種類", with: "酒類")
         return [replaced] + candidates.filter { $0 != replaced }
+    }
+
+    // 醸造の工程・原料の話の つくる も 造る(learningBOX 検査 3693 の [直す] 約 40 行。教材は 造ら 727:作ら 63)。
+    // 酒の語がある文は下の brewingMakeOrthographyOrdered(3675)が受け持つ。ここはそれに無い語を補う:
+    // 蒸溜/醗酵/混醸 は工程そのものなのでどの つくる でも。乳・チーズ・熟成 等は一般の料理(牛乳でプリンを作る/
+    // チーズケーキを作る)があるので、受身(つくられ)か が/で/から/も/は の直後に限る。小麦/果物/ハーブ は
+    // パンやジャム(小麦から作られる)と区別できないので入れない
+    static let brewingProcessContextReadings: [String] = [
+        "じょうりゅう", "はっこう", "こんじょう"
+    ]
+    static let brewingProductContextReadings: [String] = [
+        "じゅくせい", "ぎゅうにゅう", "ようにゅう", "やぎにゅう", "ばくが", "ちーず", "かくてる", "しーどる", "ろぜ",
+        "あまくち", "からくち", "しゃるどね"
+    ]
+    static func brewingTsukuruOrdered(reading: String, candidates: [String]) -> [String] {
+        guard reading.contains("つく"), let top = candidates.first, top.contains("作") else {
+            return candidates
+        }
+        let readingChars = Array(reading)
+        let conjugationTails: Set<Character> = ["ら", "り", "る", "れ", "ろ", "っ"]
+        let strong = brewingProcessContextReadings.contains(where: { reading.contains($0) })
+        let product = brewingProductContextReadings.contains(where: { reading.contains($0) })
+        guard strong || product else { return candidates }
+        var qualifies = strong
+        if !qualifies {
+            var index = 0
+            while index + 2 < readingChars.count {
+                if readingChars[index] == "つ", readingChars[index + 1] == "く", conjugationTails.contains(readingChars[index + 2]) {
+                    let passive = index + 3 < readingChars.count && readingChars[index + 2] == "ら" && readingChars[index + 3] == "れ"
+                    let before = String(readingChars[max(0, index - 2)..<index])
+                    if passive || ["が", "で", "も", "は"].contains(where: { before.hasSuffix($0) }) || before == "から" {
+                        qualifies = true
+                        break
+                    }
+                }
+                index += 1
+            }
+        }
+        guard qualifies else { return candidates }
+        var characters = Array(top)
+        var changed = false
+        for index in characters.indices.dropLast() where characters[index] == "作" && conjugationTails.contains(characters[index + 1]) {
+            characters[index] = "造"
+            changed = true
+        }
+        guard changed else { return candidates }
+        let rewritten = String(characters)
+        return [rewritten] + candidates.filter { $0 != rewritten }
     }
 
     // 良く/よく(ユーザ指定 3670): 「悪く」に置き換えられる所は 良く、それ以外(よく知られている/よく見る)は よく。

@@ -1705,6 +1705,13 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("けんぜんどをはかるいみあいがありますが").first, "健全度を測る意味合いがありますが")
         XCTAssertEqual(multi("しぼうをとかしてしょうかをたすけ").first, "脂肪を溶かして消化を助け")
         XCTAssertEqual(multi("えいちじのかたちにえだをはいします").first, "H字の形に枝を配します")
+        // 醸造の工程・原料の話の 造る(一般の料理の 作る は崩さない)
+        XCTAssertEqual(multi("ぎゅうにゅうからつくられるはんかねつあっさくたいぷです").first, "牛乳から造られる半加熱圧搾タイプです")
+        XCTAssertEqual(multi("でんとうてきにはこんしょくこんじょうでつくられます").first, "伝統的には混植混醸で造られます")
+        XCTAssertEqual(multi("おおがたちーずがつくりにくく").first, "大型チーズが造りにくく")
+        XCTAssertEqual(multi("ぱんをつくる").first, "パンを作る")
+        XCTAssertEqual(multi("ぎゅうにゅうでぷりんをつくる").first, "牛乳でプリンを作る")
+        XCTAssertEqual(multi("ちーずけーきをつくる").first, "チーズケーキを作る")
     }
 
     // 2026-11-04 のユーザ報告(edition 3661)
