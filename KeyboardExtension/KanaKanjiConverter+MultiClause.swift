@@ -906,6 +906,10 @@ extension KanaKanjiConverter {
         }
         let lead = String(normalized.dropLast(tail.count))
         let firstLead = String(first.dropLast(tail.count))
+        // 決まった 語+助詞 では連文節の先頭を残す(とうき+には は 冬季には。単文節の seed 2963 は 陶器 先頭。ユーザ指定 3696)
+        if Self.multiClauseSingleTopLeadKeptTails[lead]?.contains(tail) ?? false {
+            return candidates
+        }
         // 語の読みに seed(人手で決めた並び)があり、連文節の先頭がその seed の表記+助詞なら、ひらがなを含んでも seed の順に
         // 語+助詞 を並べる(よもぎを が 蓬生を 先頭だった。3753、ユーザ指定)。区切りが違う候補はその後ろに残す
         if Self.multiClauseSeedOrderParticleLeadReadings.contains(lead), let seedList = KanaKanjiSeedDictionary.seed[lead], seedList.contains(firstLead) {

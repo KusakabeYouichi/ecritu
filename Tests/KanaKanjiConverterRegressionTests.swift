@@ -1745,6 +1745,21 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("なかでおまちに").first, "中でお待ちに", "2818 の お待ち は崩さない")
     }
 
+    // learningBOX 検査 3684 の確認表で [直す] のまま残っていた行(3694/3695 は新しい回答だけを見ていた。3696)
+    func testRegressionLearningBoxAudit3684Carried() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func single(_ reading: String) -> [String] { converter.candidates(for: reading, limit: 30, systemCandidateMode: .surface) }
+        func multi(_ reading: String) -> [String] {
+            let list = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            return list.isEmpty ? single(reading) : list
+        }
+        // 冬季には(には の前だけ。とうき 単独・とうきは は seed 2963 の 陶器 先頭)
+        XCTAssertEqual(multi("とうきには").first, "冬季には")
+        XCTAssertEqual(multi("とうきは").first, "陶器は")
+        XCTAssertEqual(single("とうき").first, "陶器")
+    }
+
     // 2026-11-06 のユーザ報告(edition 3695 の実機)
     func testRegressionRealLMUserReports3695() throws {
         try prepareRealLMDictionary()
