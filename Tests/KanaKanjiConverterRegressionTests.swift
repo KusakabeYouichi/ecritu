@@ -1784,6 +1784,13 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("けっこんのかひ").first, "結婚の可否")
         // 12 字を超える読みの補助語彙(vin)も 1 語に
         XCTAssertEqual(multi("ばーでぃっしゅろーとごるとは").first, "Badisch Rotgoldは")
+        // seed(山幸/Río Oja/要し)と連語表(糖度を計る/タンクに開ける)
+        XCTAssertTrue(multi("やまさちは").prefix(2).contains("山幸は"), "\(multi("やまさちは").prefix(3))")
+        XCTAssertTrue(multi("すぺいんごでりおおは").prefix(2).contains("スペイン語でRío Oja"), "\(multi("すぺいんごでりおおは").prefix(3))")
+        XCTAssertEqual(multi("せいじゅくにじかんをようし").first, "成熟に時間を要し")
+        XCTAssertEqual(Array(single("ようし").prefix(3)), ["用紙", "養子", "陽子"])
+        XCTAssertEqual(multi("かじゅうとうどをはかるたんい").first, "果汁糖度を計る単位")
+        XCTAssertEqual(multi("かあつかのたんくにあけ").first, "加圧下のタンクに開け")
     }
 
     // 2026-11-06 のユーザ報告(edition 3695 の実機)
