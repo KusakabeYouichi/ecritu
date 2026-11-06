@@ -1602,6 +1602,22 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(KanaKanjiConverter.promoteKatakanaCounterpartOfLatinTop(["出る", "でる", "デル"]), ["出る", "でる", "デル"])
     }
 
+    // learningBOX 検査 3693 の確認表の [直す](c_policy/c_style の節)。誤変換の直しと、教材でかなが多い表記
+    func testRegressionLearningBoxAudit3693Fixes() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func single(_ reading: String) -> [String] { converter.candidates(for: reading, limit: 30, systemCandidateMode: .surface) }
+        func multi(_ reading: String) -> [String] {
+            let list = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            return list.isEmpty ? single(reading) : list
+        }
+        // 連語表(手で足す組): 料理+に+合う、付ける の目的語
+        XCTAssertEqual(multi("りょうりにあうわいん").first, "料理に合うワイン")
+        XCTAssertEqual(multi("せいかいはいろをつけるです").first, "正解は色を付けるです")
+        XCTAssertEqual(multi("いすらむきょうとがまちのなまえにつけた").first, "イスラム教徒が町の名前に付けた")
+        XCTAssertEqual(multi("でんきをつける").first, "電気をつける")
+    }
+
     // 2026-11-04 のユーザ報告(edition 3661)
     func testRegressionRealLMUserReports3661() throws {
         try prepareRealLMDictionary()
