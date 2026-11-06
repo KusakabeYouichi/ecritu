@@ -3631,6 +3631,8 @@ extension KanaKanjiConverter {
     static let multiClauseRyouCounterAfterNounPenalty = 3000
     // 名詞+受身・可能の られる の減点(3695)
     static let multiClauseRareruAfterNounPenalty = 2000
+    // 数以外+杯(ばい/ぱい)の減点(3695)
+    static let multiClauseRendakuHaiAfterNonNumeralPenalty = 3000
     // の+かどこか の減点(3760)。上+の と 上野 の差 870 を越える幅
     static let multiClauseKadokokaAfterNoPenalty = 3000
     // 見てみ〜(見てみたい/見てみる)1 ノードの加点(3758)。み+て+みたい の割れ(6042)と 派生 7200 の差 1158 を越える幅

@@ -1774,6 +1774,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // 文末の伝聞 そう+ね を人名(爽寧/総根)にしない
         XCTAssertEqual(multi("ばいになったそうね").first, "倍になったそうね")
         XCTAssertEqual(multi("なったそうね").first, "なったそうね")
+        // 杯(ばい)は数の後ろの連濁だけ(数字の後ろの 3+ばい は testDigitThenHaiIsHaiCounter)
+        XCTAssertFalse(multi("ばいになったそうね").prefix(4).contains(where: { $0.hasPrefix("杯") }), "\(multi("ばいになったそうね").prefix(4))")
+        XCTAssertFalse(single("ばい").prefix(2).contains("杯"), "\(single("ばい").prefix(4))")
     }
 
     // 2026-11-04 のユーザ報告(edition 3661)
@@ -13324,14 +13327,16 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     }
 
     // ばいぐらいに: 倍(助数詞)が dict rank6 で 杯ぐらいに が先頭だった。seed {倍、杯}(2414)
+    // 3695 から seed は {倍} だけ(杯 を ばい と読むのは数の後ろの連濁だけ。ユーザ指定)
     func testRegressionRealLMBaiGurainiOrder() throws {
         try prepareRealLMDictionary()
         converter.clearSharedDataCaches()
         converter.invalidateCandidateCache()
         let multi = converter.multiClauseCandidates(for: "ばいぐらいに", systemCandidateMode: .surface)
         XCTAssertEqual(multi.first, "倍ぐらいに", "multi=\(multi)")
-        let bai = converter.candidates(for: "ばい", limit: 4, systemCandidateMode: .surface)
-        XCTAssertEqual(Array(bai.prefix(2)), ["倍", "杯"], "bai=\(bai)")
+        let bai = converter.candidates(for: "ばい", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(bai.first, "倍", "bai=\(bai)")
+        XCTAssertFalse(bai.prefix(2).contains("杯"), "bai=\(bai)")
     }
 
     // あいちけんさん: 様(さん)は読みとして誤り(旧 fallback seed 由来。様=さま/よう)で

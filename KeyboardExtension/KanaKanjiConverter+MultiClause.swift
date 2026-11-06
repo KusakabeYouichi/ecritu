@@ -3995,6 +3995,12 @@ extension KanaKanjiConverter {
                 reading.hasPrefix("られ"), prev.count >= 2 {
                 penalty += Self.multiClauseRareruAfterNounPenalty
             }
+            // 杯 を ばい/ぱい と読むのは数の後ろの連濁(3杯/一杯/何杯)だけ。それ以外の ばい は 倍/枚 等で、ばいになったそうね の
+            // 2 番めが 杯になった だった(ユーザ指定 3695)。数字を確定した後の 3+ばい は助数詞の前置(digitContextCounterBoostedCandidates)が受け持つ
+            if surface == "杯", reading == "ばい" || reading == "ぱい",
+                prevIsBOS || !(prev.last.map { $0.isNumber || "一二三四五六七八九十百千何数".contains($0) } ?? false) {
+                penalty += Self.multiClauseRendakuHaiAfterNonNumeralPenalty
+            }
             // 〜かどこか(上野かどこかで)の前は場所の名詞で、準体助詞 の の直後には来ない。上+の+かどこか(上のかどこかで)が
             // 上野+かどこか より安く、上野 が 1 つも出なかった(3760、ユーザ報告)
             if reading.hasPrefix("かどこ"), (prevID == SID.の && prevIsKanaIdentity) || prev.hasSuffix("の") {
