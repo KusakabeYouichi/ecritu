@@ -1616,6 +1616,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("せいかいはいろをつけるです").first, "正解は色を付けるです")
         XCTAssertEqual(multi("いすらむきょうとがまちのなまえにつけた").first, "イスラム教徒が町の名前に付けた")
         XCTAssertEqual(multi("でんきをつける").first, "電気をつける")
+        // 文末の を+し は する の連用中止
+        XCTAssertEqual(multi("しょくぶつがこうごうせいをし").first, "植物が光合成をし")
+        XCTAssertEqual(multi("もくひょうとし").first, "目標とし")
     }
 
     // 2026-11-04 のユーザ報告(edition 3661)

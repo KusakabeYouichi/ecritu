@@ -4650,10 +4650,13 @@ extension KanaKanjiConverter {
                             cost += Self.multiClauseRangeSuffixAfterHitoPenalty
                         }
                         // 文中の格助詞 と 直後の し(〜を目標とし、)は サ変 する の連用形で正文なので除外(2801)。
+                        // を の直後(植物が光合成をし、/貯蔵や運搬をし、)も同じ する の連用中止で、減点すると
+                        // を+師 に負けていた(learningBOX 検査 3693)。
                         // 文頭の と+し は別則(multiClauseSentenceInitialToShiPenalty)で減点する
                         if node.end == n, node.readingID == SID.し, node.surfaceID == SID.し,
                             !(prevNode.surface.last.map { Self.multiClausePredicateTailCharacters.contains($0) } ?? false),
-                            !(prevNode.surfaceID == SID.と && prevNode.readingID == SID.と && prevNode.start > 0) {
+                            !((prevNode.surfaceID == SID.と && prevNode.readingID == SID.と
+                                || prevNode.surfaceID == SID.を && prevNode.readingID == SID.を) && prevNode.start > 0) {
                             cost += Self.multiClauseKanaShiAfterNonPredicatePenalty
                         }
                         // 述語(活用派生・辞書形)直後の形式名詞・副助詞はかな表記が正書
