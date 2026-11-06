@@ -1763,6 +1763,10 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("さかなをにつけたい").first, "魚を煮付けたい")
         // いい+し(依倚し/飯石 を下げる)
         XCTAssertEqual(multi("できてもいいし").first, "できてもいいし")
+        // 中には知らない(中に入って は崩さない)
+        XCTAssertEqual(Array(multi("なかにはしらないきょくも").prefix(2)), ["中には知らない曲も", "中には知らない局も"])
+        XCTAssertEqual(multi("なかにはいって").first, "中に入って")
+        XCTAssertEqual(multi("なかにはいる").first, "中に入る")
     }
 
     // 2026-11-04 のユーザ報告(edition 3661)
