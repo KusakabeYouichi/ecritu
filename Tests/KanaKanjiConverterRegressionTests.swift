@@ -1767,6 +1767,10 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(multi("なかにはしらないきょくも").prefix(2)), ["中には知らない曲も", "中には知らない局も"])
         XCTAssertEqual(multi("なかにはいって").first, "中に入って")
         XCTAssertEqual(multi("なかにはいる").first, "中に入る")
+        // 名詞+られる(人名 カ子ト+られる)を下げる。動詞の 考えられる/見られる は崩さない
+        XCTAssertEqual(Array(multi("かねとられるのかな").prefix(2)), ["金とられるのかな", "金取られるのかな"])
+        XCTAssertEqual(multi("かんがえられる").first, "考えられる")
+        XCTAssertEqual(multi("ひとにみられる").first, "人に見られる")
     }
 
     // 2026-11-04 のユーザ報告(edition 3661)

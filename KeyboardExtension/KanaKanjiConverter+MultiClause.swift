@@ -3988,6 +3988,13 @@ extension KanaKanjiConverter {
                 let head = surface.first, Self.multiClauseNiSwallowingVerbHeads.contains(head) {
                 penalty += Self.multiClauseNiSwallowingVerbHeadPenalty
             }
+            // 受身・可能の られる は動詞の後ろにだけ付き、名詞の直後には来ない。かねとられるのかな が 人名 カ子ト/金戸+られる で、
+            // 金+と+られる(とられる)/金+取られる に 111 差で勝っていた(ユーザ報告 3695)。1 字の名詞(見/来/居/寝/出)は
+            // 動詞の字でもあるので対象外
+            if isKanaIdentity, !prevIsBOS, !prevIsKanaIdentity, !prevIsInflectionDerived,
+                reading.hasPrefix("られ"), prev.count >= 2 {
+                penalty += Self.multiClauseRareruAfterNounPenalty
+            }
             // 〜かどこか(上野かどこかで)の前は場所の名詞で、準体助詞 の の直後には来ない。上+の+かどこか(上のかどこかで)が
             // 上野+かどこか より安く、上野 が 1 つも出なかった(3760、ユーザ報告)
             if reading.hasPrefix("かどこ"), (prevID == SID.の && prevIsKanaIdentity) || prev.hasSuffix("の") {
@@ -6029,6 +6036,32 @@ extension KanaKanjiConverter {
                 pos = runStart - 1
             }
         }
+        // 文中の かなの格助詞+受身・可能の られ…(金+と+られる=かねとられる)の代替(3695): と+られる は 取られる を
+        // かなで書いた形なので、最良経路(金とられるのかな)の次に、同じ区間を 1 ノードの活用派生(取られる)で覆った経路を置く
+        // (ユーザ指定: 金とられるのかな→金取られるのかな の順)。格助詞はかな断片の連鎖(上の 3251)から外しているので、
+        // ここで別に作る。派生が同点で複数あるとき(取られる/撮られる/採られる)はノードの並び(辞書順)の先を採る
+        var particleRareruMergedAlternativeJoined: String? = nil
+        if pathIndices.count >= 2 {
+            for pos in 0..<(pathIndices.count - 1) {
+                let particle = nodes[pathIndices[pos]]
+                let auxiliary = nodes[pathIndices[pos + 1]]
+                guard particle.start > 0, particle.isKanaIdentity, auxiliary.isKanaIdentity,
+                    Self.multiClauseCaseParticleSurfaces.contains(particle.surface),
+                    auxiliary.reading.hasPrefix("られ") else { continue }
+                var chosen: (total: Int, joined: String)? = nil
+                for idx in nodesStartingAt[particle.start]
+                where nodes[idx].end == auxiliary.end && !nodes[idx].isKanaIdentity && nodes[idx].isInflectionDerived {
+                    guard let alternative = solveViterbi(allowedStartNodeIndex: nil, requiredNodeIndices: [idx]),
+                        alternative.bestTotal - bestTotal <= Self.multiClauseSwallowedParticleAlternativeMaxDelta,
+                        alternative.bestTotal < (chosen?.total ?? Int.max) else { continue }
+                    chosen = (alternative.bestTotal, alternative.pathIndices.map { nodes[$0].surface }.joined())
+                }
+                if let chosen, chosen.joined != normalized {
+                    particleRareruMergedAlternativeJoined = chosen.joined
+                }
+                break
+            }
+        }
         #if DEBUG
         // 時限トレース(2642): MULTI_TRACE=1 のときだけ、全ノードの累積コストと選択経路を吐く
         if traceEnabled {
@@ -6626,6 +6659,10 @@ extension KanaKanjiConverter {
         }
         for alternative in kanaRunMergedAlternatives where alternative.joined != joined {
             variants.append((alternative.delta, -2, -1, alternative.joined))
+        }
+        // 格助詞+られ… を 1 ノードで覆う代替(3695)は最良の次に固定する(かなの 金とられる と漢字の 金取られる は同じ語)
+        if let particleRareruMergedAlternativeJoined, particleRareruMergedAlternativeJoined != joined {
+            variants.append((Int.min / 2, -2, -1, particleRareruMergedAlternativeJoined))
         }
         // 文頭助詞に割った代替(定義箇所のコメント参照。3142)は、同スパンの稀な兄弟表記
         // (這入った/侵った)より前に置く
