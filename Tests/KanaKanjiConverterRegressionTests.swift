@@ -1760,6 +1760,10 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single("とうき").first, "陶器")
         // を+保護する
         XCTAssertEqual(multi("ひんしゅをほごします").first, "品種を保護します")
+        // 述語+から+の は非文なので名詞(来たからの→北からの)。から の後が の でなければ 来たから のまま
+        XCTAssertEqual(multi("きたからのつめたいかぜ").first, "北からの冷たい風")
+        XCTAssertEqual(multi("きたからだいじょうぶ").first, "来たから大丈夫")
+        XCTAssertEqual(multi("かえってきたからのことは").first, "帰ってきたからのことは")
     }
 
     // 2026-11-06 のユーザ報告(edition 3695 の実機)

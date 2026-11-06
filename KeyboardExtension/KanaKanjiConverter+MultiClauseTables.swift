@@ -3637,6 +3637,8 @@ extension KanaKanjiConverter {
     // 単文節の先頭(seed)に差し替えない 語の読み → 助詞(singleTopLeadBeforeParticle)。冬季には(季節の には)は
     // 連文節の 冬季 を残す(ユーザ指定 3696。とうき 単独・とうきは 等は seed 2963 の 陶器 先頭のまま)
     static let multiClauseSingleTopLeadKeptTails: [String: Set<String>] = ["とうき": ["には"]]
+    // 述語+接続助詞 から+の(来たからの)は非文。同じ区間の名詞(北)で覆った経路を最良にする差の上限(3696)
+    static let multiClausePredicateKaraNoNounAlternativeMaxDelta = 3000
     // 数以外+杯(ばい/ぱい)の減点(3695)
     static let multiClauseRendakuHaiAfterNonNumeralPenalty = 3000
     // の+かどこか の減点(3760)。上+の と 上野 の差 870 を越える幅

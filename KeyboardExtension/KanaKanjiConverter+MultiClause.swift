@@ -6072,6 +6072,36 @@ extension KanaKanjiConverter {
                 break
             }
         }
+        // 述語+接続助詞 から+の(きたからのつめたいかぜ: 来た+から+の)は非文で、から+の は名詞の後ろにしか来ない(北からの)。
+        // 文頭の 来た が安く(700)、名詞 北 の経路に 629 差で勝っていた。から の最良の前は 1 つしか残らないので DP の辺では
+        // 直せない。同じ区間を漢字の名詞で覆い から/の を残した経路を再最適化し、差が上限内なら最良を差し替える
+        // (learningBOX 検査 3684 の [直す]、3696)
+        if pathIndices.count >= 3 {
+            for pos in 0..<(pathIndices.count - 2) {
+                let predicate = nodes[pathIndices[pos]]
+                let kara = nodes[pathIndices[pos + 1]]
+                let no = nodes[pathIndices[pos + 2]]
+                guard predicate.isInflectionDerived || predicate.isDictionaryFormPredicate,
+                    kara.isKanaIdentity, kara.surface == "から", no.isKanaIdentity, no.surface == "の" else { continue }
+                var chosen: (best: [Int], backPointer: [Int], bestTotal: Int, bestEndIndex: Int, pathIndices: [Int])? = nil
+                for idx in nodesStartingAt[predicate.start]
+                where nodes[idx].end == predicate.end && nodes[idx].isDictWord && !nodes[idx].isInflectionDerived
+                    && !nodes[idx].isDictionaryFormPredicate && containsKanji(nodes[idx].surface) {
+                    guard let alternative = solveViterbi(allowedStartNodeIndex: nil,
+                                                         requiredNodeIndices: [idx, pathIndices[pos + 1], pathIndices[pos + 2]]),
+                        alternative.bestTotal - bestTotal <= Self.multiClausePredicateKaraNoNounAlternativeMaxDelta,
+                        alternative.bestTotal < (chosen?.bestTotal ?? Int.max) else { continue }
+                    chosen = alternative
+                }
+                if let chosen {
+                    best = chosen.best
+                    backPointer = chosen.backPointer
+                    bestTotal = chosen.bestTotal
+                    pathIndices = chosen.pathIndices
+                }
+                break
+            }
+        }
         #if DEBUG
         // 時限トレース(2642): MULTI_TRACE=1 のときだけ、全ノードの累積コストと選択経路を吐く
         if traceEnabled {
