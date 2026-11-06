@@ -1764,6 +1764,10 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("きたからのつめたいかぜ").first, "北からの冷たい風")
         XCTAssertEqual(multi("きたからだいじょうぶ").first, "来たから大丈夫")
         XCTAssertEqual(multi("かえってきたからのことは").first, "帰ってきたからのことは")
+        // まれな語・人名を連文節で下げる(薄伽/絡まん/秀明)、州名 は seed 先頭
+        XCTAssertEqual(multi("ばがはくろぶどうひんしゅです").first, "Bagaは黒ぶどう品種です")
+        XCTAssertEqual(multi("でざれーとからまん").first, "デザレーとCalamin")
+        XCTAssertEqual(multi("しゅうめいではありません").first, "州名ではありません")
     }
 
     // 2026-11-06 のユーザ報告(edition 3695 の実機)
