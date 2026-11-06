@@ -5357,6 +5357,13 @@ extension KanaKanjiConverter {
                         if node.surfaceID == SID.字, Self.isNumericCompoundSurface(prevNode.surface) {
                             cost += Self.multiClauseForbiddenPenaltyCost
                         }
+                        // ほう/方+が+です は非文(比較の ほうが の後に です は来ない)。正解はほうがです が ほう+が+です に割れ、
+                        // 萌芽+です に 362 差で勝っていた(1 ノードの ほうが/方が+です は組の減点。learningBOX 検査 3684 の [直す]、3696)
+                        if node.surfaceID == SID.です, prevNode.surfaceID == SID.が, prevNode.isKanaIdentity,
+                            backPointer[prevIdx] >= 0,
+                            nodes[backPointer[prevIdx]].surface == "ほう" || nodes[backPointer[prevIdx]].surfaceID == SID.方 {
+                            cost += Self.multiClauseHouGaDesuPenalty
+                        }
                         // 引用の と/とも/とは の直後の いう 系の述語は漢字を下げてかなに(定数コメント参照。3693)
                         if prevNode.isKanaIdentity, Self.multiClauseQuotativeToSurfacesID.contains(prevNode.surfaceID),
                             !node.isKanaIdentity, node.isInflectionDerived || node.isDictionaryFormPredicate,

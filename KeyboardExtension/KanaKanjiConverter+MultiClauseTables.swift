@@ -2065,6 +2065,8 @@ extension KanaKanjiConverter {
         // 中には知らない曲も(中+に+走らない に 1400 差で負けていた。ユーザ報告 3695)。中\tには は なかにはいって(中に入って)と
         // 1400 差しか無いので には の後ろの 知らない に付ける
         "には\t知らない": 2000,
+        // ほうが/方が の直後に です は来ない(正解はほうがです が 正解は萌芽です にならなかった。learningBOX 検査 3684 の [直す]、3696)
+        "ほうが\tです": -2000, "方が\tです": -2000,
         // どんなじ が どんな時 だった(時 は どんな の後では とき と読む。ユーザ指定 3649)
         "どんな\t字": 3000,
         // かおうね が 花王ね だった(ユーザ指定 3649)
@@ -3649,6 +3651,8 @@ extension KanaKanjiConverter {
     static let multiClauseSingleTopLeadKeptTails: [String: Set<String>] = ["とうき": ["には"]]
     // 述語+接続助詞 から+の(来たからの)は非文。同じ区間の名詞(北)で覆った経路を最良にする差の上限(3696)
     static let multiClausePredicateKaraNoNounAlternativeMaxDelta = 3000
+    // ほう/方+が+です の減点(3696)
+    static let multiClauseHouGaDesuPenalty = 2000
     // 数以外+杯(ばい/ぱい)の減点(3695)
     static let multiClauseRendakuHaiAfterNonNumeralPenalty = 3000
     // の+かどこか の減点(3760)。上+の と 上野 の差 870 を越える幅

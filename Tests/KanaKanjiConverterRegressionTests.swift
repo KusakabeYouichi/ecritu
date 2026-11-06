@@ -1768,6 +1768,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("ばがはくろぶどうひんしゅです").first, "Bagaは黒ぶどう品種です")
         XCTAssertEqual(multi("でざれーとからまん").first, "デザレーとCalamin")
         XCTAssertEqual(multi("しゅうめいではありません").first, "州名ではありません")
+        // ほう/方+が+です は非文(正解はほうがです→正解は萌芽です)。何がですか は崩さない
+        XCTAssertEqual(multi("せいかいはほうがです").first, "正解は萌芽です")
+        XCTAssertEqual(multi("なにがですか").first, "何がですか")
     }
 
     // 2026-11-06 のユーザ報告(edition 3695 の実機)
