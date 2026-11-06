@@ -3589,7 +3589,6 @@
 	<dict><key>phrase</key><string>álló földrajzi jelzés</string><key>shortcut</key><string>あーろーふぇるどらいじいぇるぜーしゅ</string></dict>
 	<dict><key>phrase</key><string>ゲミシュター・サッツ</string><key>shortcut</key><string>げみしゅたーさっつ</string></dict>
 	<dict><key>phrase</key><string>ゲミシュト</string><key>shortcut</key><string>げみしゅと</string></dict>
-	<dict><key>phrase</key><string>ゲミシュト同様広</string><key>shortcut</key><string>げみしゅとどうようひろ</string></dict>
 	<dict><key>phrase</key><string>サブ・アペレイション</string><key>shortcut</key><string>さぶあぺれいしょん</string></dict>
 	<dict><key>phrase</key><string>サブ・アペレーション</string><key>shortcut</key><string>さぶあぺれーしょん</string></dict>
 	<dict><key>phrase</key><string>ソットゾーナ</string><key>shortcut</key><string>そっとぞーな</string></dict>
@@ -4174,6 +4173,7 @@
 	<dict><key>phrase</key><string>任意記載事項</string><key>shortcut</key><string>にんいきさいじこう</string></dict>
 	<dict><key>phrase</key><string>保存料ラベル表示</string><key>shortcut</key><string>ほぞんりょうらべるひょうじ</string></dict>
 	<dict><key>phrase</key><string>八ヶ岳西麓ワイン特区</string><key>shortcut</key><string>やつがたけせいろくわいんとっく</string></dict>
+	<dict><key>phrase</key><string>かみのやまワイン特区</string><key>shortcut</key><string>かみのやまわいんとっく</string></dict>	<!-- 山形県上山市。特区名はひらがな(learningBOX 検査 3693、上山ワイン特区 だった) -->
 	<dict><key>phrase</key><string>原産国名</string><key>shortcut</key><string>げんさんこくめい</string></dict>
 	<dict><key>phrase</key><string>品種分類</string><key>shortcut</key><string>ひんしゅぶんるい</string></dict>
 	<dict><key>phrase</key><string>品種名</string><key>shortcut</key><string>ひんしゅめい</string></dict>
@@ -6148,7 +6148,7 @@
 	<dict><key>phrase</key><string>アメリカンオーク</string><key>shortcut</key><string>あめりかんおーく</string></dict>
 	<dict><key>phrase</key><string>アメリカン・ホワイト・オーク</string><key>shortcut</key><string>あめりかんほわいとおーく</string></dict>
 	<dict><key>phrase</key><string>オーク</string><key>shortcut</key><string>おーく</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>オーク樽熟成</string><key>shortcut</key><string>おーくだるじゅくせい</string></dict>
+	<dict><key>phrase</key><string>オーク樽熟成</string><key>shortcut</key><string>おーくだるじゅくせい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>Pas Dosé</string><key>shortcut</key><string>ぱどぜ</string></dict>
 	<dict><key>phrase</key><string>カルボニック・マセレイション</string><key>shortcut</key><string>かるぼにっくませれいしょん</string></dict>
 	<dict><key>phrase</key><string>カルボニック・マセレーション</string><key>shortcut</key><string>かるぼにっくませれーしょん</string></dict>
@@ -6288,7 +6288,7 @@
 	<dict><key>phrase</key><string>最低樽熟成期間</string><key>shortcut</key><string>さいていたるじゅくせいきかん</string></dict>
 	<dict><key>phrase</key><string>最低熟成年数</string><key>shortcut</key><string>さいていじゅくせいねんすう</string></dict>
 	<dict><key>phrase</key><string>最低熟成期間</string><key>shortcut</key><string>さいていじゅくせいきかん</string></dict>
-	<dict><key>phrase</key><string>木樽熟成</string><key>shortcut</key><string>きだるじゅくせい</string></dict>
+	<dict><key>phrase</key><string>木樽熟成</string><key>shortcut</key><string>きだるじゅくせい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>木樽熟成中</string><key>shortcut</key><string>きだるじゅくせいちゅう</string></dict>
 	<dict><key>phrase</key><string>未破砕</string><key>shortcut</key><string>みはさい</string></dict>
 	<dict><key>phrase</key><string>未醗酵</string><key>shortcut</key><string>みはっこう</string><key>pos</key><string>サ変名詞</string></dict>
@@ -6303,7 +6303,7 @@
 	<dict><key>phrase</key><string>栽培醸造技術</string><key>shortcut</key><string>さいばいじょうぞうぎじゅつ</string></dict>
 	<dict><key>phrase</key><string>栽培醸造研究所</string><key>shortcut</key><string>さいばいじょうぞうけんきゅうじょ</string></dict>
 	<dict><key>phrase</key><string>樽・タンク育成</string><key>shortcut</key><string>たるたんくいくせい</string></dict>
-	<dict><key>phrase</key><string>樽熟成</string><key>shortcut</key><string>たるじゅくせい</string></dict>
+	<dict><key>phrase</key><string>樽熟成</string><key>shortcut</key><string>たるじゅくせい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 樽熟成した ワイン が 樽熟成下ワイン だった(品詞が無く した が付かない。learningBOX 検査 3693) -->
 	<dict><key>phrase</key><string>樽醗酵</string><key>shortcut</key><string>たるはっこう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>氷果凍結圧搾</string><key>shortcut</key><string>ひょうかとうけつあっさく</string></dict>
 	<dict><key>phrase</key><string>沈澱</string><key>shortcut</key><string>ちんでん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
@@ -7401,6 +7401,7 @@
 	<dict><key>phrase</key><string>ドメーヌナカジマ</string><key>shortcut</key><string>どめーぬなかじま</string></dict>
 	<dict><key>phrase</key><string>ドメーヌ・ド・ラ・ロマネ・コンティ</string><key>shortcut</key><string>どめーぬどらろまねこんてぃ</string></dict>
 	<dict><key>phrase</key><string>タビルク</string><key>shortcut</key><string>たびるく</string></dict>
+	<dict><key>phrase</key><string>まるき葡萄酒</string><key>shortcut</key><string>まるきぶどうしゅ</string></dict>	<!-- 社名はひらがな。カタカナ表記の資料もあるので マルキ葡萄酒 は 2 番目(learningBOX 検査 3693) -->
 	<dict><key>phrase</key><string>マルキ葡萄酒</string><key>shortcut</key><string>まるきぶどうしゅ</string></dict>
 	<dict><key>phrase</key><string>マンズワイン</string><key>shortcut</key><string>まんずわいん</string></dict>
 	<dict><key>phrase</key><string>マンズワイン勝沼ワイナリー</string><key>shortcut</key><string>まんずわいんかつぬまわいなりー</string></dict>
@@ -7482,6 +7483,7 @@
 	<dict><key>phrase</key><string>かみのやまワインの郷プロジェクト協議会</string><key>shortcut</key><string>かみのやまわいんのさとぷろじぇくときょうぎかい</string></dict>
 	<dict><key>phrase</key><string>デメター</string><key>shortcut</key><string>でめたー</string></dict>
 	<dict><key>phrase</key><string>ワインヒルズ推進協議会</string><key>shortcut</key><string>わいんひるずすいしんきょうぎかい</string></dict>
+	<dict><key>phrase</key><string>いわてワインヒルズ推進協議会</string><key>shortcut</key><string>いわてわいんひるずすいしんきょうぎかい</string></dict>	<!-- 岩手県。名称の いわて はひらがな(learningBOX 検査 3693、岩手ワインヒルズ だった) -->
 	<dict><key>phrase</key><string>ヴェーデンスヴィル研究所</string><key>shortcut</key><string>ゔぇーでんすゔぃるけんきゅうしょ</string></dict>
 	<dict><key>phrase</key><string>南アフリカワイン栽培者協同組合連合</string><key>shortcut</key><string>みなみあふりかわいんさいばいしゃきょうどうくみあいれんごう</string></dict>
 	<dict><key>phrase</key><string>大日本山梨葡萄酒会社</string><key>shortcut</key><string>だいにっぽんやまなしぶどうしゅがいしゃ</string></dict>
@@ -7870,6 +7872,7 @@
 	<dict><key>phrase</key><string>残糖量</string><key>shortcut</key><string>ざんとうりょう</string></dict>
 	<dict><key>phrase</key><string>除梗</string><key>shortcut</key><string>じょこう</string></dict>
 	<dict><key>phrase</key><string>除葉</string><key>shortcut</key><string>じょよう</string></dict>
+	<dict><key>phrase</key><string>畝くずし</string><key>shortcut</key><string>うねくずし</string></dict>	<!-- 冬の土寄せを崩す作業(Débuttage)。教材は 31 回とも 畝くずし(learningBOX 検査 3693、畝崩し だった) -->
 	<dict><key>phrase</key><string>新樽</string><key>shortcut</key><string>しんだる</string></dict>
 	<dict><key>phrase</key><string>全房</string><key>shortcut</key><string>ぜんぼう</string></dict>
 	<dict><key>phrase</key><string>全房醗酵</string><key>shortcut</key><string>ぜんぼうはっこう</string><key>pos</key><string>サ変名詞</string></dict>
@@ -8758,6 +8761,7 @@
 	<dict><key>phrase</key><string>草根木皮</string><key>shortcut</key><string>そうこんもくひ</string></dict>
 	<dict><key>phrase</key><string>薬用甘味</string><key>shortcut</key><string>やくようあまみ</string></dict>
 	<dict><key>phrase</key><string>西洋スモモ</string><key>shortcut</key><string>せいようすもも</string></dict>
+	<dict><key>phrase</key><string>西洋ねぎ</string><key>shortcut</key><string>せいようねぎ</string></dict>	<!-- 教材は 西洋ねぎ 5:西洋ネギ 2(learningBOX 検査 3693) -->
 	<dict><key>phrase</key><string>西洋ネギ</string><key>shortcut</key><string>せいようねぎ</string></dict>
 	<dict><key>phrase</key><string>高級メロン</string><key>shortcut</key><string>こうきゅうめろん</string></dict>
 	<dict><key>phrase</key><string>黒スグリ</string><key>shortcut</key><string>くろすぐり</string></dict>
