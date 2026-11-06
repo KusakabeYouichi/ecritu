@@ -1712,6 +1712,13 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("ぱんをつくる").first, "パンを作る")
         XCTAssertEqual(multi("ぎゅうにゅうでぷりんをつくる").first, "牛乳でプリンを作る")
         XCTAssertEqual(multi("ちーずけーきをつくる").first, "チーズケーキを作る")
+        // X.9 を 本来の漢字を先に にしたとき、蒸留酒/蒸留所 のような決まった複合語も 蒸溜 に
+        converter.setKakikaePreference(.bothAfterFirst)
+        XCTAssertEqual(multi("ぶどうしぼりかすのじょうりゅうしゅ").first, "ぶどう絞りかすの蒸留酒")
+        // 以降は実機の設定(両方・本来の漢字を先に)のまま見る
+        converter.setKakikaePreference(.bothBeforeFirst)
+        XCTAssertEqual(multi("じょうりゅうしゅであるものをえらんでください").first, "蒸溜酒であるものを選んでください")
+        XCTAssertEqual(multi("ぶどうしぼりかすのじょうりゅうしゅ").first, "ぶどう絞りかすの蒸溜酒")
     }
 
     // 2026-11-04 のユーザ報告(edition 3661)

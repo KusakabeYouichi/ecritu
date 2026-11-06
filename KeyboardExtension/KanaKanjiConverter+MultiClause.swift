@@ -951,8 +951,10 @@ extension KanaKanjiConverter {
                     let from = toBefore ? pair.after : pair.before
                     let to = toBefore ? pair.before : pair.after
                     let following = rest.dropFirst(from.count).first
-                    // X.10 の組は前→後も語の終わりだけ(肝腎症候群→肝心症候群 にしない。3570)
-                    if (!toBefore && !late) || following.map({ !isKanjiCharacter($0) }) ?? true {
+                    // X.10 の組は前→後も語の終わりだけ(肝腎症候群→肝心症候群 にしない。3570)。
+                    // 決まった複合語の後ろの字(蒸留酒/蒸留所)だけは語の途中でも戻す(定数コメント参照。3695)
+                    if (!toBefore && !late) || following.map({ !isKanjiCharacter($0) }) ?? true
+                        || (toBefore && !late && following.map({ kakikaeCompoundTailsAllowingRewrite[from]?.contains($0) ?? false }) ?? false) {
                         result += to
                         rest = rest.dropFirst(from.count)
                         continue
