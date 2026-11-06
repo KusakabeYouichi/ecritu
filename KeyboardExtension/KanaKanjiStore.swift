@@ -59,7 +59,9 @@ final class KanaKanjiStore {
     private var sqliteIndex: KanaKanjiSQLiteIndex?
     private var didAttemptSQLiteIndexLoad = false
     private var cachedSystemDictionary: [String: [String]]?
-    private var cachedSupplementalSystemDictionary: SupplementalVocabCompactStore?
+    private var cachedSupplementalSystemDictionary: SupplementalVocabCompactStore? {
+        didSet { cachedCuratedLongReadingLengths = nil }
+    }
     // 追加語彙(補助語彙 SecondVocab)由来の欧文サジェスト索引。ビルド時に前計算した
     // LatinSuggestionSupplemental.txt(キーのバイト順ソート済み)を mmap で保持するだけで、
     // 実行時構築(補助語彙 15k 件の走査で fp +8MB のピーク)は無くなった(2770)
@@ -1205,6 +1207,9 @@ final class KanaKanjiStore {
         for key in ajoutVocabulary().keys where key.count > cap {
             lengths.insert(key.count)
         }
+        // 補助語彙(vin 等。12 字を超える読みが約 1,200 語)も同じ(3696)。バーディッシュ・ロートゴルト(13 字)が
+        // 1 ノードに立たず、バーディッシュ+ロート+ゴル+と+は になっていた(learningBOX 検査 3684 の [直す])
+        lengths.formUnion(loadSupplementalSystemDictionary().readingLengths(longerThan: cap))
         withCacheLock { cachedCuratedLongReadingLengths = lengths }
         return lengths
     }

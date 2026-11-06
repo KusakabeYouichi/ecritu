@@ -2205,6 +2205,34 @@ extension KanaKanjiConverter {
                     nodesEndingAt[end].append(index)
                     nodesStartingAt[start].append(index)
                 }
+                // 補助語彙(vin 等)の長い語も辞書語として立てる(3696。バーディッシュ・ロートゴルト は 13 字で 1 ノードに
+                // 立たず、バーディッシュ+ロート+ゴル+と+は になっていた)。追加語彙と違って床は付けない(語コストか辞書外の値段)。
+                // カタカナ表層は (b) の辞書語と同じく「何でもカタカナ化抑止」から免除する
+                let supplementalSurfaces = supplementalSystemDictionary.candidates(for: segmentReading)
+                if !supplementalSurfaces.isEmpty {
+                    let costMap = store.wordCosts(for: segmentReading)
+                    for surface in supplementalSurfaces
+                        where seen.insert(surface).inserted && !(suppressed?.contains(surface) ?? false) {
+                        let index = nodes.count
+                        nodes.append(MultiClauseNode(
+                            start: start,
+                            end: end,
+                            surface: surface,
+                            reading: segmentReading,
+                            isDictWord: true,
+                            isCurated: false,
+                            isInflectionDerived: false,
+                            wordCost: costMap[surface],
+                            isDictionaryFormPredicate: false,
+                            spanKey: spanKeyByStart[start][end]
+                        ))
+                        nodesEndingAt[end].append(index)
+                        nodesStartingAt[start].append(index)
+                        if Self.isKatakanaString(surface) {
+                            supplementalKatakanaExemptNodeKeys.insert(spanKeyByStart[start][end] + "-" + surface)
+                        }
+                    }
+                }
             }
         }
 

@@ -293,4 +293,22 @@ struct SupplementalVocabCompactStore: Equatable {
             return false
         }
     }
+
+    // 読みの文字数が cap を超える語の、その文字数の集合(連文節の 1 区間の上限 12 字を超える語を別に引くため。3696)。
+    // 全読みを 1 回なめるので、呼び出し側(KanaKanjiStore.curatedLongReadingLengths)でキャッシュする
+    func readingLengths(longerThan cap: Int) -> Set<Int> {
+        withCursor { cursor in
+            var lengths = Set<Int>()
+            for index in 0..<readingCount {
+                let bytes = cursor.readingBytes(index)
+                // 1 字は 1 バイト以上なので、バイト数が cap 以下なら文字数も cap 以下
+                guard bytes.count > cap else { continue }
+                let count = String(decoding: bytes, as: UTF8.self).count
+                if count > cap {
+                    lengths.insert(count)
+                }
+            }
+            return lengths
+        }
+    }
 }

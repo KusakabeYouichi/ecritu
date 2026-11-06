@@ -1782,6 +1782,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("とくゆうなほうこう").first, "特有な芳香")
         XCTAssertEqual(multi("かじゅうとともにかひ").first, "果汁とともに果皮")
         XCTAssertEqual(multi("けっこんのかひ").first, "結婚の可否")
+        // 12 字を超える読みの補助語彙(vin)も 1 語に
+        XCTAssertEqual(multi("ばーでぃっしゅろーとごるとは").first, "Badisch Rotgoldは")
     }
 
     // 2026-11-06 のユーザ報告(edition 3695 の実機)
@@ -2173,8 +2175,12 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.candidates(for: "めるろー", limit: 5, systemCandidateMode: .surface).first, "メルロー")
         // 夢の香 の読みは ゆめのかおり(ユーザ修正 3677。ゆめのか はいちごの品種)
         XCTAssertEqual(multiTop("ゆめのかおり") ?? converter.candidates(for: "ゆめのかおり", limit: 3, systemCandidateMode: .surface).first, "夢の香")
-        XCTAssertEqual(multiTop("ぐりゅなーゔぇるとりーなー"), "グリュナーヴェルトリーナー")
-        XCTAssertEqual(Array(converter.multiClauseCandidates(for: "えあつぉいがーあぷふゅるんぐ", systemCandidateMode: .surface).prefix(2)),
+        // 12 字を超える補助語彙も 1 語に立つようになった(3697)ので、読み全体が 1 語なら連文節は空で単文節の先頭が出る
+        XCTAssertEqual(multiTop("ぐりゅなーゔぇるとりーなー")
+            ?? converter.candidates(for: "ぐりゅなーゔぇるとりーなー", limit: 3, systemCandidateMode: .surface).first, "グリュナーヴェルトリーナー")
+        let erzeuger = converter.multiClauseCandidates(for: "えあつぉいがーあぷふゅるんぐ", systemCandidateMode: .surface)
+        XCTAssertEqual(Array((erzeuger.isEmpty
+            ? converter.candidates(for: "えあつぉいがーあぷふゅるんぐ", limit: 3, systemCandidateMode: .surface) : erzeuger).prefix(2)),
             ["Erzeugerabfüllung", "エアツォイガーアプフュルング"])
         // 粘土 は 土壌/岩盤/含む と呼応したときだけ(普段は 年度)
         XCTAssertEqual(multiTop("あかいねんどのどじょう"), "赤い粘土の土壌")
@@ -17659,8 +17665,10 @@ extension KanaKanjiConverterRegressionTests {
                 ("ぶどうのしぼりかすをじょうりゅうした", "ぶどうの絞りかすを蒸溜した"),
                 ("もっともゆうめいな", "もっとも有名な")
             ] {
+                // 12 字を超える補助語彙(統制保証原産地)も 1 語に立つ(3697)。読み全体が 1 語なら連文節は空で単文節の先頭が出る
                 XCTAssertEqual(
-                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first
+                        ?? converter.candidates(for: reading, limit: 3, systemCandidateMode: mode).first,
                     expected,
                     "mode=\(mode.rawValue) reading=\(reading)"
                 )
@@ -18139,8 +18147,10 @@ extension KanaKanjiConverterRegressionTests {
             for (reading, expected) in [
                 ("とうせいほしょうげんさんちさんさいじょうきゅうわいん", "統制保証原産地産最上級ワイン")
             ] {
+                // 12 字を超える補助語彙も 1 語に立つ(3697)。読み全体が 1 語なら連文節は空で単文節の先頭が出る
                 XCTAssertEqual(
-                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first
+                        ?? converter.candidates(for: reading, limit: 3, systemCandidateMode: mode).first,
                     expected,
                     "mode=\(mode.rawValue) reading=\(reading)"
                 )
