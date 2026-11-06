@@ -1619,6 +1619,10 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // 文末の を+し は する の連用中止
         XCTAssertEqual(multi("しょくぶつがこうごうせいをし").first, "植物が光合成をし")
         XCTAssertEqual(multi("もくひょうとし").first, "目標とし")
+        // 名詞+に を飲み込んだ 似/担/荷 の述語
+        XCTAssertEqual(multi("みるくてぃーにあいます").first, "ミルクティーに合います")
+        XCTAssertEqual(multi("はんたいりくせいきこうになっています").first, "半大陸性気候になっています")
+        XCTAssertEqual(multi("せきにんをになう").first, "責任を担う", "を の後の 担う は崩さない")
     }
 
     // 2026-11-04 のユーザ報告(edition 3661)

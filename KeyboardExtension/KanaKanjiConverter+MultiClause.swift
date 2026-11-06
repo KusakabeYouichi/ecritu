@@ -5278,6 +5278,13 @@ extension KanaKanjiConverter {
                         if node.surfaceID == SID.字, Self.isNumericCompoundSurface(prevNode.surface) {
                             cost += Self.multiClauseForbiddenPenaltyCost
                         }
+                        // 名詞の直後で格助詞 に を頭に飲み込んだ述語(似合います/似とって/担っています)の減点(定数コメント参照。3693)
+                        if node.isInflectionDerived || node.isDictionaryFormPredicate, !prevNode.isKanaIdentity,
+                            !prevNode.isInflectionDerived, !prevNode.isDictionaryFormPredicate,
+                            node.reading.first == "に",
+                            let head = node.surface.first, Self.multiClauseNiSwallowingVerbHeads.contains(head) {
+                            cost += Self.multiClauseNiSwallowingVerbHeadPenalty
+                        }
                         // 連体詞直後の かんじ→漢字 に小減点(定数コメント参照。こんな感じ を最良に)。
                         if node.readingID == SID.かんじ,
                             node.surfaceID == SID.漢字,
