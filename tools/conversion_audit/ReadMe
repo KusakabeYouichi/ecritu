@@ -9,6 +9,11 @@
 3. 分類: python3 -I tools/conversion_audit/classify.py tmp/audit_out.tsv references/conversion_audit/<edition>/
    c_ok(一致)/c_policy(かなで書く言葉の方針の範囲)/c_style(書き手がかな書き)/a_register(期待の表記が候補に無い)/b_logic(有るが先頭でない)
    a/b の 段階 1=直すべし 2=できたら直すべし 3=直さなくていい は機械的な目安(classify.py 冒頭)。最終判断は目視
+3b. 区切りの分離(3696、ユーザ指定): b_logic.tsv の 読み<TAB>期待 を入力に、testDiagnosticConversionAudit を
+   TEST_RUNNER_MULTI_TRACE=1 を付けて回し(ログ全体を保存)、
+   python3 -I tools/conversion_audit/segments.py <ログ> references/conversion_audit/<edition>/
+   で b_logic を「並び」(同じ区切りで語の選び方が違う)と b_segment「区切り」(文節の切り方ごと違う)に分ける。
+   判定は格子のノードで先頭と期待の表記が同じ切れ目で作れるか。作れない行(書きかえ等の後処理)は並びに残す
 注意: 語 LM の学習元が Wikipedia なので Wikipedia の文は有利に出る(実際の入力より一致率が高く見える)。
       読みは Sudachi の推定(この他=このた/日本=にっぽん 等の違いは a に混ざる)。カタカナ語に候補が無いのは
       設計どおり(かなチップの長押しでカタカナ確定)で、辞書に足すかは語ごとに判断する。

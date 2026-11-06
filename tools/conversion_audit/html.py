@@ -11,7 +11,8 @@ import json
 import os
 import sys
 
-CLASSES = [("a_register", "a 登録が要る"), ("b_logic", "b 並び・区切り"), ("c_policy", "c かなで書く方針"), ("c_style", "c 書き手がかな書き")]
+# b_segment(区切り)は segments.py が b_logic から分けたもの(3696、ユーザ指定)。分けていない結果ディレクトリでは b_logic に全部入る
+CLASSES = [("a_register", "a 登録が要る"), ("b_segment", "b 区切り"), ("b_logic", "b 並び"), ("c_policy", "c かなで書く方針"), ("c_style", "c 書き手がかな書き")]
 STAGE_LABEL = {"1": "1 直すべし", "2": "2 できたら直す", "3": "3 直さなくていい", "": "段階なし"}
 
 
