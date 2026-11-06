@@ -1771,6 +1771,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(multi("かねとられるのかな").prefix(2)), ["金とられるのかな", "金取られるのかな"])
         XCTAssertEqual(multi("かんがえられる").first, "考えられる")
         XCTAssertEqual(multi("ひとにみられる").first, "人に見られる")
+        // 文末の伝聞 そう+ね を人名(爽寧/総根)にしない
+        XCTAssertEqual(multi("ばいになったそうね").first, "倍になったそうね")
+        XCTAssertEqual(multi("なったそうね").first, "なったそうね")
     }
 
     // 2026-11-04 のユーザ報告(edition 3661)

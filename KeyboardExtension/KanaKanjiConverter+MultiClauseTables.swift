@@ -1346,7 +1346,8 @@ extension KanaKanjiConverter {
     // EOS で勝つのを防ぐ。multiClauseFinalParticleReadings に入れると最長一致ボーナスや
     // 変種の漢字ブロックまで付いてきて に沿う(動詞)が変種からも消えるため、EOS の
     // 全漢字表層減点だけを per-reading で適用する(沿う/添う は う 含みで対象外)。
-    static let multiClauseSentenceFinalAllKanjiPenaltyReadings: Set<String> = ["そう"]
+    // 伝聞の そう+ね も同じ(なったそうね が なった+爽寧/総根(人名)だった。ユーザ報告 3695)
+    static let multiClauseSentenceFinalAllKanjiPenaltyReadings: Set<String> = ["そう", "そうね"]
     // 上の そう に続くかなコピュラ/否定/推量(そうでもない/そうだ/そうじゃない/そうかも)。
     // 文中でも かな そう を全漢字表層(相/層/総)より優先する根拠(適用箇所のコメント参照)
     static let multiClauseSouCopulaFollowerReadings: Set<String> = [
