@@ -27452,6 +27452,19 @@ extension KanaKanjiConverterRegressionTests {
         if let raw = ProcessInfo.processInfo.environment["AUDIT_KAKIKAE"], let preference = KakikaePreference(rawValue: raw) {
             converter.setKakikaePreference(preference)
         }
+        // AUDIT_OKURIGANA=stem:permittedFirst,compound:standardFirst,noun:standardFirst で送り仮名の許容形の設定を実機と揃える
+        // (行なう が出る設定の端末で 行う と出るのは検査側の設定の違いか、を見分ける。3693)
+        if let raw = ProcessInfo.processInfo.environment["AUDIT_OKURIGANA"] {
+            var modes = OkuriganaVariantPreference.default.modes
+            for item in raw.split(separator: ",") {
+                let pair = item.split(separator: ":")
+                if pair.count == 2, let group = OkuriganaVariantGroup(rawValue: String(pair[0])),
+                    let mode = OkuriganaVariantMode(rawValue: String(pair[1])) {
+                    modes[group] = mode
+                }
+            }
+            converter.setOkuriganaVariantPreference(OkuriganaVariantPreference(modes: modes))
+        }
         // AUDIT_KANAGAKI=adverb,conjunction,… で X.8 かなで書く言葉 の分類を実機と揃える(3688)
         if let raw = ProcessInfo.processInfo.environment["AUDIT_KANAGAKI"] {
             converter.setKanaGakiSuppressedCategories(Set(raw.split(separator: ",").compactMap { KanaGakiCategory(rawValue: String($0)) }))
