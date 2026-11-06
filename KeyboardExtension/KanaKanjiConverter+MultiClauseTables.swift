@@ -2573,7 +2573,8 @@ extension KanaKanjiConverter {
     // 似る は に/と を、担う は を を取るので、名詞+似〜/担〜 の無助詞は非文。文頭(にあいます→似合います)と
     // 名詞接尾の 似(母親似)は述語でないので対象外。逃げる/握る 等は 犯人逃げた のような が の省略があるので入れない
     // 荷 は 担う の異体(荷う/荷なう)。担 を減点したら 気候荷っています に流れた
-    static let multiClauseNiSwallowingVerbHeads: Set<Character> = ["似", "担", "荷"]
+    // 煮 は 煮付ける/煮込む。名詞+煮付けたい は を の省略より に+付けたい が普通(マダムにつけたい→マダム煮付けたい。ユーザ報告 3695)
+    static let multiClauseNiSwallowingVerbHeads: Set<Character> = ["似", "担", "荷", "煮"]
     static let multiClauseNiSwallowingVerbHeadPenalty = 2000
     // 補助動詞 ておく(2798)。さくじょしておきながら が 削除して置きながら になっていた: 補助動詞は
     // かなが正書だが、b2 の供給は「かなが第1候補のときだけ」のため かな おきながら ノード自体が無く、

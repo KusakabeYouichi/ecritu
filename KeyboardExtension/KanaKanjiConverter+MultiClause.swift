@@ -3979,6 +3979,15 @@ extension KanaKanjiConverter {
                 let prevLast = prev.last, !prevLast.isNumber, !"一二三四五六七八九十百千何数".contains(prevLast) {
                 penalty += Self.multiClauseRyouCounterAfterNounPenalty
             }
+            // 名詞の直後で格助詞 に を頭に飲み込んだ述語(似合います/似とって/担っています/煮付けたい)の減点(定数コメント参照。3693)。
+            // 3695 で DP の辺の規則からここへ移した(2 番め以降の変種の差分にも効かせる。マダムにつけたい の 2・3 番めが
+            // マダム煮付けたい/マダム煮つけたい だった)。文頭(にあいます→似合います)は対象外
+            if isInflectionDerived || isDictionaryFormPredicate, !prevIsBOS, !prevIsKanaIdentity,
+                !prevIsInflectionDerived, !prevIsDictionaryFormPredicate,
+                reading.first == "に",
+                let head = surface.first, Self.multiClauseNiSwallowingVerbHeads.contains(head) {
+                penalty += Self.multiClauseNiSwallowingVerbHeadPenalty
+            }
             // 〜かどこか(上野かどこかで)の前は場所の名詞で、準体助詞 の の直後には来ない。上+の+かどこか(上のかどこかで)が
             // 上野+かどこか より安く、上野 が 1 つも出なかった(3760、ユーザ報告)
             if reading.hasPrefix("かどこ"), (prevID == SID.の && prevIsKanaIdentity) || prev.hasSuffix("の") {
@@ -5330,13 +5339,6 @@ extension KanaKanjiConverter {
                         // learningBOX 検査 3692)。3字/二千字 のように数字だけの直後は従来どおり
                         if node.surfaceID == SID.字, Self.isNumericCompoundSurface(prevNode.surface) {
                             cost += Self.multiClauseForbiddenPenaltyCost
-                        }
-                        // 名詞の直後で格助詞 に を頭に飲み込んだ述語(似合います/似とって/担っています)の減点(定数コメント参照。3693)
-                        if node.isInflectionDerived || node.isDictionaryFormPredicate, !prevNode.isKanaIdentity,
-                            !prevNode.isInflectionDerived, !prevNode.isDictionaryFormPredicate,
-                            node.reading.first == "に",
-                            let head = node.surface.first, Self.multiClauseNiSwallowingVerbHeads.contains(head) {
-                            cost += Self.multiClauseNiSwallowingVerbHeadPenalty
                         }
                         // 引用の と/とも/とは の直後の いう 系の述語は漢字を下げてかなに(定数コメント参照。3693)
                         if prevNode.isKanaIdentity, Self.multiClauseQuotativeToSurfacesID.contains(prevNode.surfaceID),

@@ -1745,6 +1745,24 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("なかでおまちに").first, "中でお待ちに", "2818 の お待ち は崩さない")
     }
 
+    // 2026-11-06 のユーザ報告(edition 3695 の実機)
+    func testRegressionRealLMUserReports3695() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func single(_ reading: String) -> [String] { converter.candidates(for: reading, limit: 30, systemCandidateMode: .surface) }
+        func multi(_ reading: String) -> [String] {
+            let list = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            return list.isEmpty ? single(reading) : list
+        }
+        // 名詞+煮付けたい より 名詞+に+付けたい(を の後の 煮付けたい は崩さない)。先頭は かな の つけたい でもよい(ユーザ指定)
+        let madame = multi("まだむにつけたい")
+        XCTAssertTrue(["マダムに付けたい", "マダムにつけたい"].contains(madame.first ?? ""), "\(madame.prefix(4))")
+        XCTAssertFalse(madame.prefix(2).contains(where: { $0.hasPrefix("マダム煮") }), "\(madame.prefix(4))")
+        XCTAssertEqual(multi("おまけにつけたい").first, "おまけに付けたい")
+        XCTAssertEqual(multi("てんじょうにつけたい").first, "天井に付けたい")
+        XCTAssertEqual(multi("さかなをにつけたい").first, "魚を煮付けたい")
+    }
+
     // 2026-11-04 のユーザ報告(edition 3661)
     func testRegressionRealLMUserReports3661() throws {
         try prepareRealLMDictionary()
