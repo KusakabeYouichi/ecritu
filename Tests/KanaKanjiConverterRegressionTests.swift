@@ -1671,6 +1671,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("ねむい").first, "眠い")
         // かな の たい の後の のは
         XCTAssertEqual(multi("おぼえておきたいのは").first, "覚えておきたいのは")
+        // 副助詞 のみ の後の述語
+        XCTAssertEqual(multi("わいんにのみつかわれ").first, "ワインにのみ使われ")
+        XCTAssertEqual(multi("あかのみとなります").first, "赤のみとなります", "古語 隣る の活用に割引が漏れない")
     }
 
     // 2026-11-04 のユーザ報告(edition 3661)
