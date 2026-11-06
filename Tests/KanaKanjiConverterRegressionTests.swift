@@ -1665,6 +1665,10 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("ぬのびきおろし").first, "布引おろし")
         XCTAssertEqual(multi("にくのらぐーそーすをかけたり").first, "肉のラグーソースをかけたり")
         XCTAssertEqual(multi("かおりにじゅくせいかんをもたせる").first, "香りに熟成感を持たせる")
+        // 文頭の終助詞 ね
+        XCTAssertEqual(multi("ねはえんぶんたいせいがあるため").first, "根は塩分耐性があるため")
+        XCTAssertEqual(multi("ねはやさしい").first, "根は優しい")
+        XCTAssertEqual(multi("ねむい").first, "眠い")
     }
 
     // 2026-11-04 のユーザ報告(edition 3661)

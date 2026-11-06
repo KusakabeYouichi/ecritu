@@ -3834,7 +3834,8 @@ extension KanaKanjiConverter {
             }
             // 文頭の裸の格助詞/係助詞は非文(定数コメント参照)。禁止ではなく減点で拮抗を覆す。
             if prevIsBOS, isKanaIdentity,
-                Self.multiClauseBOSPenalizedParticlesID.contains(surfaceID) {
+                Self.multiClauseBOSPenalizedParticlesID.contains(surfaceID)
+                    || Self.multiClauseBOSPenalizedFinalParticlesID.contains(surfaceID) {
                 penalty += Self.multiClauseBOSParticlePenalty
             }
             // 単独名詞になれない 1 字漢字(総/想 等)の直後に格助詞/の/文末は立たない(定数コメント参照。2841)

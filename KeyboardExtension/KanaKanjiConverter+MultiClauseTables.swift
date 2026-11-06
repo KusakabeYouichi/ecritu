@@ -3506,6 +3506,9 @@ extension KanaKanjiConverter {
     // て(接続助詞)も文頭には立たない(2806): てでやってた が て(BOS bigram 2591)+で で 手(6932)+で に勝ち、手で が候補に 1 つも出なかった
     // な(連体・終助詞)も文頭には立たない: なにするひと が な+にする(curated 床 1500)+人 で 何する人 を消していた(2840)
     static let multiClauseBOSPenalizedParticles: Set<String> = ["は", "が", "を", "へ", "も", "に", "か", "かね", "て", "な"]
+    // 終助詞 ね も文頭には立たない: ねはえんぶん が ね(BOS 5530)+は で 根(7101)+は に勝っていた(learningBOX 検査 3693)。
+    // 上の表に入れると文頭を助詞に割る別解(multiClauseBOSParticleSplitAlternativeHeads)にも加わるので、減点だけの別表にする
+    static let multiClauseBOSPenalizedFinalParticles: Set<String> = ["ね"]
     // 文頭助詞の減点を、直後が活用派生の述語のときに打ち消す助詞(2818)。がでないのだけど(が+出ない)のように
     // 文の途中から打ち始めた入力では格助詞+述語が自然。か/かね/て(接続助詞・終助詞)は対象外
     static let multiClauseBOSParticleBeforePredicateExemptParticles: Set<String> = ["は", "が", "を", "も", "に"]
@@ -3905,6 +3908,7 @@ extension KanaKanjiConverter {
             for s in KanaKanjiConverter.multiClauseAuxiliaryAdjectiveKanaReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseBOSParticleBeforePredicateExemptParticles.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseBOSPenalizedParticles.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseBOSPenalizedFinalParticles.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseBekiReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseBindingParticleSwallowedAfterCaseParticles.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseCaseParticleEndingPhrases.sorted() { add(s) }
@@ -4165,6 +4169,7 @@ extension KanaKanjiConverter {
     static let multiClauseAuxiliaryAdjectiveKanaReadingsID = MultiClauseIDSet(multiClauseAuxiliaryAdjectiveKanaReadings)
     static let multiClauseBOSParticleBeforePredicateExemptParticlesID = MultiClauseIDSet(multiClauseBOSParticleBeforePredicateExemptParticles)
     static let multiClauseBOSPenalizedParticlesID = MultiClauseIDSet(multiClauseBOSPenalizedParticles)
+    static let multiClauseBOSPenalizedFinalParticlesID = MultiClauseIDSet(multiClauseBOSPenalizedFinalParticles)
     static let multiClauseBekiReadingsID = MultiClauseIDSet(multiClauseBekiReadings)
     static let multiClauseBindingParticleSwallowedAfterCaseParticlesID = MultiClauseIDSet(multiClauseBindingParticleSwallowedAfterCaseParticles)
     static let multiClauseCaseParticleEndingPhrasesID = MultiClauseIDSet(multiClauseCaseParticleEndingPhrases)
