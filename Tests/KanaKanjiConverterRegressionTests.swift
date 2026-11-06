@@ -1761,6 +1761,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("おまけにつけたい").first, "おまけに付けたい")
         XCTAssertEqual(multi("てんじょうにつけたい").first, "天井に付けたい")
         XCTAssertEqual(multi("さかなをにつけたい").first, "魚を煮付けたい")
+        // いい+し(依倚し/飯石 を下げる)
+        XCTAssertEqual(multi("できてもいいし").first, "できてもいいし")
     }
 
     // 2026-11-04 のユーザ報告(edition 3661)
