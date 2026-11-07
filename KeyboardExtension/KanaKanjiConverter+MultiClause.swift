@@ -299,6 +299,7 @@ extension KanaKanjiConverter {
         candidates = Self.yokuOrthographyOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.sweetnessOrthographyOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.kanaSecondVariantOrdered(candidates)
+        candidates = Self.kanaScriptVariantSecond(candidates)
         candidates = Self.brewingMakeOrthographyOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.cocktailMakeOrthographyOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         // 名詞+っぱなし(沖っぱなし/槍っぱなし/山車っぱなし)は後ろへ。経路は 連用形+っぱなし でも、区間の兄弟表記の差し替えで
@@ -480,7 +481,7 @@ extension KanaKanjiConverter {
     // 何回ってや が 2 番目に入り、なんか言ってや が 3 番目だった)
     static let pinnedSecondSubstitutions: [(String, String)] = [("何か", "なんか"), ("のたれ", "のタレ"), ("のたびに", "の度に")]
     static func keepsSecondAgainstSingleBest(_ first: String, _ second: String) -> Bool {
-        isScriptCounterpartPair(first, second) || pinnedSecondSubstitutions.contains {
+        isScriptCounterpartPair(first, second) || isKanaScriptVariantPair(first, second) || pinnedSecondSubstitutions.contains {
             first.contains($0.0) && first.replacingOccurrences(of: $0.0, with: $0.1) == second
         }
     }
@@ -915,6 +916,37 @@ extension KanaKanjiConverter {
     static let singleClauseOnlySeedReadings: Set<String> = ["い"]
     static func multiClauseSeed(_ reading: String) -> [String]? {
         singleClauseOnlySeedReadings.contains(reading) ? nil : KanaKanjiSeedDictionary.seed[reading]
+    }
+
+    // 先頭と表記だけが違う候補(ひらがな↔カタカナ。正解はまるき葡萄酒です/正解はマルキ葡萄酒です)を 2 番目に上げる。
+    // 別の語に替えた候補(政界は…/静海は…)より、同じ語の別の書き方の方が欲しいはず(ユーザ指定 3716)。
+    // 違う所が先頭ではひらがな、候補では 3 字以上のカタカナのときだけ。2 番目がすでに表記違いや固定の組なら触らない
+    static func kanaScriptVariantSecond(_ candidates: [String]) -> [String] {
+        guard candidates.count >= 3, let top = candidates.first,
+            !keepsSecondAgainstSingleBest(top, candidates[1]),
+            let index = candidates.indices.dropFirst(2).prefix(8).first(where: { isKanaScriptVariantPair(top, candidates[$0]) })
+        else { return candidates }
+        var result = candidates
+        let variant = result.remove(at: index)
+        result.insert(variant, at: 1)
+        return result
+    }
+
+    // top のひらがなの所を 3 字以上カタカナにしただけの候補か(まるき葡萄酒/マルキ葡萄酒)。2 字(柚花さん/柚花サン)は
+    // 敬称や助詞のカタカナ化を拾うので除く(ゆずかさん の 2 番めが 柚花サン になった)
+    static func isKanaScriptVariantPair(_ top: String, _ candidate: String) -> Bool {
+        let topCharacters = Array(top)
+        let characters = Array(candidate)
+        guard characters.count == topCharacters.count, candidate != top else { return false }
+        var differing = 0
+        for index in characters.indices where characters[index] != topCharacters[index] {
+            guard ("ァ"..."ヶ").contains(characters[index]), ("ぁ"..."ゖ").contains(topCharacters[index]),
+                characters[index].unicodeScalars.first!.value - 0x60 == topCharacters[index].unicodeScalars.first!.value else {
+                return false
+            }
+            differing += 1
+        }
+        return differing >= 3
     }
 
     static func kanaSecondVariantOrdered(_ candidates: [String]) -> [String] {
