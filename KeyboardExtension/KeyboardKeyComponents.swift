@@ -1654,7 +1654,7 @@ struct EmojiGridCollectionView: UIViewRepresentable {
         layout.minimumInteritemSpacing = itemSpacing
         layout.minimumLineSpacing = itemSpacing
         layout.sectionInset = .zero
-        let view = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        let view = EmojiGridUICollectionView(frame: .zero, collectionViewLayout: layout)
         view.backgroundColor = .clear
         view.showsVerticalScrollIndicator = false
         view.showsHorizontalScrollIndicator = false
@@ -1663,6 +1663,11 @@ struct EmojiGridCollectionView: UIViewRepresentable {
         hideScrollEdgeEffects(view)
         // 国旗の吹き出しが最上段で見切れないようクリップしない(旧 SymbolScrollClipDisabledModifier 相当)
         view.clipsToBounds = false
+        // 位置・窓が変わったら、国旗の吹き出し用の生タッチの枠を登録し直す(3699)
+        view.onPlacementChange = { [weak coordinator = context.coordinator] in
+            coordinator?.updateRawTouchRegistration()
+        }
+        context.coordinator.collectionView = view
         view.register(EmojiGridCell.self, forCellWithReuseIdentifier: EmojiGridCell.reuseIdentifier)
         view.register(
             EmojiGridDividerView.self,
@@ -1691,14 +1696,86 @@ struct EmojiGridCollectionView: UIViewRepresentable {
                 uiView.setContentOffset(.zero, animated: false)
             }
         }
+        coordinator.updateRawTouchRegistration()
+    }
+
+    static func dismantleUIView(_ uiView: UICollectionView, coordinator: Coordinator) {
+        coordinator.hideBubble()
+        coordinator.unregisterRawTouch()
     }
 
     final class Coordinator: NSObject, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
         var parent: EmojiGridCollectionView
         private weak var bubble: UIView?
+        weak var collectionView: UICollectionView?
+        // 国旗の国名の吹き出しは、コレクションビューの強調表示(touchesBegan 待ち)だけでは画面の左端の列で遅れた。
+        // 左端はシステム操作の門番がタッチの配送を握る(下段と同じ。project_bottom_row_touch_gate)。ルートの生タッチ
+        // (RawTouchLongPress、25ms で届く)の触れた瞬間の合図でも出す(ユーザ報告 3698)。強調表示の経路はそのまま残す
+        static let rawTouchKeyID = "emojiGridFlagLabel"
+        private var rawTouchSubscription: AnyCancellable?
 
         init(parent: EmojiGridCollectionView) {
             self.parent = parent
+            super.init()
+            rawTouchSubscription = RawTouchLongPress.events.sink { [weak self] event in
+                self?.handleRawTouch(event)
+            }
+        }
+
+        private var registeredFrame: CGRect?
+
+        // 国旗(吹き出しの文字がある)の一覧を表示中だけ、一覧の見えている枠を触れた瞬間の合図の対象にする。
+        // レイアウトのたびに登録し直す(同じ値なら辞書の上書きだけ)。面の切り替えで新旧の一覧が同居し、古い方の片づけが
+        // 同じ枠の登録を消しても、次のレイアウトで戻る
+        func updateRawTouchRegistration() {
+            guard !parent.longPressLabels.isEmpty,
+                let collectionView, collectionView.window != nil,
+                let coordinateView = RawTouchLongPress.coordinateView else {
+                unregisterRawTouch()
+                return
+            }
+            let frame = collectionView.convert(collectionView.bounds, to: coordinateView)
+            RawTouchLongPress.register(keyID: Self.rawTouchKeyID, frame: frame, firesOnTouchDown: true)
+            registeredFrame = frame
+        }
+
+        // 自分が登録した枠のときだけ外す(別の一覧が登録し直した枠は消さない。削除キーと同じ作法 3525)
+        func unregisterRawTouch() {
+            guard let registeredFrame else {
+                return
+            }
+            RawTouchLongPress.unregister(keyID: Self.rawTouchKeyID, frame: registeredFrame)
+            self.registeredFrame = nil
+        }
+
+        private func handleRawTouch(_ event: RawTouchLongPress.Event) {
+            guard event.keyID == Self.rawTouchKeyID else {
+                return
+            }
+            switch event.kind {
+            case .press:
+                // 慣性で流れている最中の接触は止めるだけ(UIKit も強調表示しない)
+                guard let collectionView, !collectionView.isDecelerating,
+                    let coordinateView = RawTouchLongPress.coordinateView else {
+                    return
+                }
+                let point = collectionView.convert(CGPoint(x: event.globalX, y: event.globalY), from: coordinateView)
+                guard let indexPath = collectionView.indexPathForItem(at: point),
+                    indexPath.section < parent.sections.count,
+                    indexPath.item < parent.sections[indexPath.section].emojis.count else {
+                    return
+                }
+                let emoji = parent.sections[indexPath.section].emojis[indexPath.item]
+                guard let label = parent.longPressLabels[emoji],
+                    let cell = collectionView.cellForItem(at: indexPath) else {
+                    return
+                }
+                showBubble(text: label.text, kind: label.kind, above: cell, in: collectionView)
+            case .end, .cancel:
+                hideBubble()
+            case .activate, .move:
+                break
+            }
         }
 
         func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -1831,6 +1908,22 @@ struct EmojiGridCollectionView: UIViewRepresentable {
             bubble?.removeFromSuperview()
             bubble = nil
         }
+    }
+}
+
+// 国旗の吹き出し用に、レイアウトと窓への出入りを知らせるだけのコレクションビュー(3699)。見えている枠はスクロールでは
+// 変わらないが、layoutSubviews はスクロール中も呼ばれる(登録は辞書の上書きだけなので負担は小さい)
+final class EmojiGridUICollectionView: UICollectionView {
+    var onPlacementChange: (() -> Void)?
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        onPlacementChange?()
+    }
+
+    override func didMoveToWindow() {
+        super.didMoveToWindow()
+        onPlacementChange?()
     }
 }
 

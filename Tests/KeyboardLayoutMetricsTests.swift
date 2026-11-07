@@ -452,6 +452,9 @@ extension KeyboardLayoutMetricsTests {
         }
         XCTAssertEqual(events.map(\.kind), [.press, .end])
         XCTAssertEqual(Set(events.map(\.keyID)), ["⌫"])
+        // 触れた瞬間の合図は指の高さも運ぶ(国旗の一覧が指の下の項目を求める。3699)
+        XCTAssertEqual(events.first?.globalX, 320)
+        XCTAssertEqual(events.first?.globalY, 120)
 
         // 枠を渡した片づけは、別の枠で登録し直されていれば何もしない(面の切り替えで新旧が同居する間の保険)
         RawTouchLongPress.register(keyID: "⌫", frame: CGRect(x: 0, y: 0, width: 50, height: 44), firesOnTouchDown: true)

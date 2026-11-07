@@ -71,11 +71,13 @@ enum RawTouchLongPress {
         let keyID: String
         let globalX: CGFloat
         let kind: Kind
-        // 指の高さ(.move だけ。アクサン候補の盤へ真上に動いたかを見る 3613)
+        // 指の高さ(.move と .press。アクサン候補の盤へ真上に動いたかを見る 3613、国旗の一覧の指の下の項目 3699)
         var globalY: CGFloat = 0
     }
 
     static let events = PassthroughSubject<Event, Never>()
+    // 生タッチの位置の座標系(ホスティングビュー)。UIKit の受け手(国旗の一覧 3699)が自分の座標へ直すのに使う
+    static weak var coordinateView: UIView?
     static let delay: TimeInterval = 0.35
     // 生タッチ側で確定した押しの印は、SwiftUI の判定が届かないまま残っても次の接触で捨てる。念のため期限も置く
     static let consumedLifetime: TimeInterval = 1.5
@@ -150,7 +152,8 @@ enum RawTouchLongPress {
         if touchDownKeyIDs.contains(keyID) {
             // 触れた瞬間に流す(削除キー 3525)。離すまで追跡し、.end/.cancel も同じ keyID へ流す
             activeKeyID = keyID
-            events.send(Event(keyID: keyID, globalX: point.x, kind: .press))
+            // 高さも渡す(国旗の一覧が指の下の項目を求める。3699)
+            events.send(Event(keyID: keyID, globalX: point.x, kind: .press, globalY: point.y))
             return
         }
         #if DEBUG
@@ -339,6 +342,7 @@ final class RawTouchLongPressGestureRecognizer: UIGestureRecognizer {
     static func install(on view: UIView, coordinateView: UIView) {
         let recognizer = RawTouchLongPressGestureRecognizer(target: nil, action: nil)
         recognizer.coordinateView = coordinateView
+        RawTouchLongPress.coordinateView = coordinateView
         recognizer.cancelsTouchesInView = false
         recognizer.delaysTouchesBegan = false
         recognizer.delaysTouchesEnded = false
