@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20261107115910"
+    private static let editionUpdatedAtRaw: String = "20261107121724"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -569,6 +569,8 @@ struct ContentView: View {
     // 題字のウィンドウ上の枠(UIKit で測る)。ツールバーの .global との原点の差で指の位置をウィンドウ座標に直す
     @State var titleMenuTitleWindowFrame: CGRect = .zero
     @State var settingsJumpRequest: SettingsJumpRequest?
+    // 飛び直しの間は一覧を薄くして動きを見せない(3704)
+    @State var settingsJumpFading = false
     // 設定カード群の構築計測(2587)。didRenderInitialFrame を立てた時刻と、カード群の
     // 最後の要素が画面に載った時刻の差が構築コストそのもの。
     // 1起動ぶんの計測断片。bootstrap完了で1行にまとめて履歴キーへ流す。
@@ -1794,6 +1796,8 @@ struct ContentView: View {
                         } // didRenderInitialFrame
                         }
                         .padding(20)
+                        // 題字のメニューで飛ぶ間は薄くする(飛び直しの動きを見せない。3704)
+                        .opacity(settingsJumpFading ? 0 : 1)
                     }
                     .disabled(isBootstrappingInitialData)
                     // ロゴメニューの表示中はスクロールを止める。止めないと指を項目へ下ろした
@@ -1809,7 +1813,7 @@ struct ContentView: View {
                         guard let request else {
                             return
                         }
-                        runSettingsJump(request, proxy: scrollProxy)
+                        startSettingsJump(request, proxy: scrollProxy)
                     }
                 }
             }

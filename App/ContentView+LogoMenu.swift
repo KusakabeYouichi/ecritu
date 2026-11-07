@@ -1221,15 +1221,37 @@ final class SettingsJumpPositions {
     var minY: [String: CGFloat] = [:]
 }
 
+// 飛んで着いたカードを一瞬光らせる(どこへ飛んだかを見せる。ユーザ指定 3704)
+final class SettingsJumpHighlight: ObservableObject {
+    static let shared = SettingsJumpHighlight()
+    @Published var anchorID: String?
+}
+
+struct SettingsJumpHighlightOverlay: ViewModifier {
+    let anchorID: String
+    @ObservedObject private var highlight = SettingsJumpHighlight.shared
+
+    func body(content: Content) -> some View {
+        content.overlay {
+            // カードの角(settingsCardStyle の 14pt)に合わせたアクセントカラーの枠
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .stroke(Color.accentColor, lineWidth: 3)
+                .opacity(highlight.anchorID == anchorID ? 1 : 0)
+                .allowsHitTesting(false)
+        }
+    }
+}
+
 extension View {
     // 題字のメニューの飛び先の目印。.id は LazyVStack の直接の子として一番外に付ける(まだ描いていないカードへ scrollTo するため)
     func settingsJumpAnchor(_ anchorID: String) -> some View {
-        onGeometryChange(for: CGFloat.self) { proxy in
-            proxy.frame(in: .global).minY
-        } action: { minY in
-            SettingsJumpPositions.shared.minY[anchorID] = minY
-        }
-        .id(anchorID)
+        modifier(SettingsJumpHighlightOverlay(anchorID: anchorID))
+            .onGeometryChange(for: CGFloat.self) { proxy in
+                proxy.frame(in: .global).minY
+            } action: { minY in
+                SettingsJumpPositions.shared.minY[anchorID] = minY
+            }
+            .id(anchorID)
     }
 }
 
@@ -1339,7 +1361,18 @@ extension ContentView {
     // 選んだ項目へ飛ぶ。LazyVStack はまだ描いていないカードの高さを見積もるので、1 回の scrollTo では大きく外れる
     // (G.1 を選んで X.10、L.5 を選んで F.1。何度かやると合う。3702 の実機)。描かれるたびに見積もりが正しくなるので、
     // アニメーションなしで飛び直し、目的のカードの上端の位置が前の回と変わらなくなったら止める(最大 12 回、0.06 秒ごと)。
-    // X.14/X.15 は先に X.13 へ 2 回飛んで描かせてから飛ぶ。新しい選択が来たら古い飛び直しはやめる
+    // X.14/X.15 は先に X.13 へ 2 回飛んで描かせてから飛ぶ。新しい選択が来たら古い飛び直しはやめる。
+    // 飛び直しの動きは見せず、一覧を 0.1 秒で薄くしてから飛び、合ったら浮かび上がらせて着いたカードを 0.8 秒光らせる(3704、ユーザ指定)
+    func startSettingsJump(_ request: SettingsJumpRequest, proxy: ScrollViewProxy) {
+        SettingsJumpHighlight.shared.anchorID = nil
+        withAnimation(.easeOut(duration: 0.1)) {
+            settingsJumpFading = true
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            runSettingsJump(request, proxy: proxy)
+        }
+    }
+
     func runSettingsJump(_ request: SettingsJumpRequest, proxy: ScrollViewProxy, attempt: Int = 0, lastMinY: CGFloat? = nil) {
         guard settingsJumpRequest == request else {
             return
@@ -1350,14 +1383,33 @@ extension ContentView {
         let scrollID = usesPreScroll ? SettingsJumpMenu.sectionAnchorID(item.preScrollCardID ?? item.cardID) : targetID
         proxy.scrollTo(scrollID, anchor: .top)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.06) {
+            guard settingsJumpRequest == request else {
+                return
+            }
             let minY = SettingsJumpPositions.shared.minY[targetID]
-            if !usesPreScroll, let minY, let lastMinY, abs(minY - lastMinY) < 1 {
+            let converged = !usesPreScroll && minY != nil && lastMinY != nil && abs((minY ?? 0) - (lastMinY ?? 0)) < 1
+            guard converged || attempt >= 11 else {
+                runSettingsJump(request, proxy: proxy, attempt: attempt + 1, lastMinY: usesPreScroll ? nil : minY)
                 return
             }
-            guard attempt < 11 else {
+            finishSettingsJump(targetID: targetID)
+        }
+    }
+
+    private func finishSettingsJump(targetID: String) {
+        withAnimation(.easeIn(duration: 0.18)) {
+            settingsJumpFading = false
+        }
+        withAnimation(.easeOut(duration: 0.15)) {
+            SettingsJumpHighlight.shared.anchorID = targetID
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+            guard SettingsJumpHighlight.shared.anchorID == targetID else {
                 return
             }
-            runSettingsJump(request, proxy: proxy, attempt: attempt + 1, lastMinY: usesPreScroll ? nil : minY)
+            withAnimation(.easeOut(duration: 0.4)) {
+                SettingsJumpHighlight.shared.anchorID = nil
+            }
         }
     }
 
