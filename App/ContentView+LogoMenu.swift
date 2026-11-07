@@ -1077,8 +1077,9 @@ extension ContentView {
 struct SettingsJumpMenuItem: Equatable {
     let cardID: String
     let title: String
-    // 飛び先の目印にするカード(LazyVStack の直接の子)。X.15 は X.14 と同じ型の中の 2 枚め
-    var sectionCardID: String { cardID == "X.15" ? "X.14" : cardID }
+    // 先に飛んで近くを描かせておくカード。X.14/X.15 は 1 つの型の中の 2 枚で、LazyVStack の直接の子でないことがあるので、
+    // 直接の子である 1 つ上の X.13 へ先に飛ぶ
+    var preScrollCardID: String? { cardID == "X.14" || cardID == "X.15" ? "X.13" : nil }
 }
 
 // serial は同じ項目を続けて選んでも onChange が来るようにするための通し番号
@@ -1117,9 +1118,6 @@ enum SettingsJumpMenu {
         "settings-section-" + cardID
     }
 
-    static func cardAnchorID(_ cardID: String) -> String {
-        "settings-card-" + cardID
-    }
 
     #if DEBUG
     static let showsResetItem = true
@@ -1213,6 +1211,25 @@ enum SettingsJumpMenu {
             }
         }
         return Layout(columns: [all], rowHeight: 13, fontSize: 9, columnWidth: 300)
+    }
+}
+
+// 飛び先のカードの上端の位置(.global)。描かれたカードだけが入る。飛び直しの収束の判定に使うだけなので、
+// 描き直しを起こさないよう @State でなく参照型に置く(メインスレッドだけで読み書き)
+final class SettingsJumpPositions {
+    static let shared = SettingsJumpPositions()
+    var minY: [String: CGFloat] = [:]
+}
+
+extension View {
+    // 題字のメニューの飛び先の目印。.id は LazyVStack の直接の子として一番外に付ける(まだ描いていないカードへ scrollTo するため)
+    func settingsJumpAnchor(_ anchorID: String) -> some View {
+        onGeometryChange(for: CGFloat.self) { proxy in
+            proxy.frame(in: .global).minY
+        } action: { minY in
+            SettingsJumpPositions.shared.minY[anchorID] = minY
+        }
+        .id(anchorID)
     }
 }
 
@@ -1316,6 +1333,31 @@ extension ContentView {
             showSettingsToast("学習をリセットし、変換キャッシュをクリアしました")
         case .item(let item):
             settingsJumpRequest = SettingsJumpRequest(item: item, serial: (settingsJumpRequest?.serial ?? 0) + 1)
+        }
+    }
+
+    // 選んだ項目へ飛ぶ。LazyVStack はまだ描いていないカードの高さを見積もるので、1 回の scrollTo では大きく外れる
+    // (G.1 を選んで X.10、L.5 を選んで F.1。何度かやると合う。3702 の実機)。描かれるたびに見積もりが正しくなるので、
+    // アニメーションなしで飛び直し、目的のカードの上端の位置が前の回と変わらなくなったら止める(最大 12 回、0.06 秒ごと)。
+    // X.14/X.15 は先に X.13 へ 2 回飛んで描かせてから飛ぶ。新しい選択が来たら古い飛び直しはやめる
+    func runSettingsJump(_ request: SettingsJumpRequest, proxy: ScrollViewProxy, attempt: Int = 0, lastMinY: CGFloat? = nil) {
+        guard settingsJumpRequest == request else {
+            return
+        }
+        let item = request.item
+        let targetID = SettingsJumpMenu.sectionAnchorID(item.cardID)
+        let usesPreScroll = item.preScrollCardID != nil && attempt < 2
+        let scrollID = usesPreScroll ? SettingsJumpMenu.sectionAnchorID(item.preScrollCardID ?? item.cardID) : targetID
+        proxy.scrollTo(scrollID, anchor: .top)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.06) {
+            let minY = SettingsJumpPositions.shared.minY[targetID]
+            if !usesPreScroll, let minY, let lastMinY, abs(minY - lastMinY) < 1 {
+                return
+            }
+            guard attempt < 11 else {
+                return
+            }
+            runSettingsJump(request, proxy: proxy, attempt: attempt + 1, lastMinY: usesPreScroll ? nil : minY)
         }
     }
 

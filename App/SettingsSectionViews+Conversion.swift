@@ -222,6 +222,8 @@ struct MeSuffixCandidateSettingsSection: View {
             optionTitle: { $0.title },
             footnote: "助数詞の後に付いて順序を表す『〜目』(二日目/三番目/7回目 など)で、漢字の『目』とひらがなの『め』のどちらを先に出すかを選びます。戦略的初期設定は『目(漢字)が先』、現代的初期設定と保守的初期設定は『め(ひらがな)が先』です。\n\n1973年の内閣告示第2号『送り仮名の付け方』の【通則4】の中に、助数詞の後に付いて順序を表す『二日目』、『三番目』などの言葉の例が挙げられ、『目』と漢字で書かれています。"
         )
+        // 題字のメニューの飛び先の目印(この型は 2 枚のカードを返すので、カードごとに付ける。3699/3703)
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.14"))
 
         VStack(alignment: .leading, spacing: 10) {
             SettingsCardTitle(title: "X.15 形状名詞化suffixe / 傾向派生suffixe – me", subtitle: "un peu …")
@@ -234,8 +236,7 @@ struct MeSuffixCandidateSettingsSection: View {
                 .foregroundStyle(.secondary)
         }
         .settingsCardStyle()
-        // 題字のメニューから X.15 へ飛ぶ目印(X.14 の目印へ飛んで描かせてから、ここへもう一段。3699)
-        .id(SettingsJumpMenu.cardAnchorID("X.15"))
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.15"))
     }
 }
 

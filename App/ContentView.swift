@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20261107113503"
+    private static let editionUpdatedAtRaw: String = "20261107115910"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -1290,40 +1290,40 @@ struct ContentView: View {
     // まだ描いていないカードへ scrollTo で飛べない
     private var layoutSettingsCards: some View {
         KanaLayoutSettingsSection(selection: kanaLayoutSelection)
-            .id(SettingsJumpMenu.sectionAnchorID("L.1"))
+            .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("L.1"))
 
         LatinLayoutSettingsSection(selection: latinLayoutSelection)
-            .id(SettingsJumpMenu.sectionAnchorID("L.2"))
+            .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("L.2"))
 
         NumberLayoutSettingsSection(
             selection: numberLayoutSelection,
             formattedNumberKeypad: formattedNumberKeypadSelection
         )
-        .id(SettingsJumpMenu.sectionAnchorID("L.3"))
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("L.3"))
 
         BasicSymbolOrderSettingsSection(selection: basicSymbolOrderSelection)
-            .id(SettingsJumpMenu.sectionAnchorID("L.4"))
+            .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("L.4"))
 
         KanaModifierSettingsSection(selection: kanaModifierPlacementSelection)
-            .id(SettingsJumpMenu.sectionAnchorID("L.5"))
+            .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("L.5"))
     }
 
     @ViewBuilder
     private var inputSettingsCards: some View {
         DirectionSettingsSection(selection: directionSelection)
-            .id(SettingsJumpMenu.sectionAnchorID("E.1"))
+            .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("E.1"))
 
         KeyRepeatSettingsSection(
             keyRepeatInitialDelay: keyRepeatInitialDelayBinding,
             keyRepeatInterval: keyRepeatIntervalBinding
         )
-        .id(SettingsJumpMenu.sectionAnchorID("E.2"))
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("E.2"))
 
         IdleCommitSettingsSection(
             idleCommitEnabled: $idleCommitEnabled,
             idleCommitInterval: idleCommitIntervalBinding
         )
-        .id(SettingsJumpMenu.sectionAnchorID("E.3"))
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("E.3"))
 
         ComposingTextStyleSettingsSection(rawValue: $composingTextStyleRawValue)
             // tokushima式では V.5 は 16pt しか使えないので、切り替えたら V.5 も 16pt にそろえる(画面と表示を食い違わせない。3650)
@@ -1333,7 +1333,7 @@ struct ContentView: View {
                     candidateFontStyleRawValue = CandidateFontStyleOption.semibold16.rawValue
                 }
             }
-            .id(SettingsJumpMenu.sectionAnchorID("E.4"))
+            .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("E.4"))
 
         KanaModeSwitcherAssignmentSection(
             numberKeyRightFlickSelection: leftModeSwitchNumberKeyRightFlickActionSelection,
@@ -1344,7 +1344,7 @@ struct ContentView: View {
             compactKeyRightFlickSelection: compactKeyboardSwitchKeyRightFlickActionSelection,
             compactKeyUpFlickSelection: compactKeyboardSwitchKeyUpFlickActionSelection
         )
-        .id(SettingsJumpMenu.sectionAnchorID("E.5"))
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("E.5"))
 
         KanaPostModifierEmptyTapAssignmentSection(
             actionSelection: kanaPostModifierEmptyTapActionSelection,
@@ -1352,12 +1352,12 @@ struct ContentView: View {
             emojiCategoryID: $kanaPostModifierEmptyTapEmojiCategoryID,
             symbolCategoryID: $kanaPostModifierEmptyTapSymbolCategoryID
         )
-        .id(SettingsJumpMenu.sectionAnchorID("E.6"))
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("E.6"))
 
         KanaPostModifierFlickDakutenSettingsSection(
             isEnabled: $kanaPostModifierFlickDakutenEnabled
         )
-        .id(SettingsJumpMenu.sectionAnchorID("E.7"))
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("E.7"))
 
         LatinLexiconSettingsSection(
             enablesEnglish: $latinLexiconEnglishEnabled,
@@ -1365,10 +1365,10 @@ struct ContentView: View {
             enablesGerman: $latinLexiconGermanEnabled,
             enablesItalian: $latinLexiconItalianEnabled
         )
-        .id(SettingsJumpMenu.sectionAnchorID("E.8"))
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("E.8"))
 
         KanaYaBracketSettingsSection(selection: kanaYaBracketSelection)
-            .id(SettingsJumpMenu.sectionAnchorID("E.9"))
+            .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("E.9"))
     }
 
     @ViewBuilder
@@ -1380,7 +1380,7 @@ struct ContentView: View {
             modifierSelection: modifierFlickGuideDisplayModeSelection,
             isLatinGuideAvailable: isLatinFlickLayoutSelected
         )
-        .id(SettingsJumpMenu.sectionAnchorID("G.1"))
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("G.1"))
     }
 
     @ViewBuilder
@@ -1389,22 +1389,22 @@ struct ContentView: View {
             selection: landscapeCandidateSideSelection,
             latinSuggestionMode: landscapeLatinSuggestionModeSelection
         )
-        .id(SettingsJumpMenu.sectionAnchorID("V.1"))
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("V.1"))
 
         LandscapeNumberPaneSideSettingsSection(selection: landscapeNumberPaneSideSelection)
-            .id(SettingsJumpMenu.sectionAnchorID("V.2"))
+            .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("V.2"))
 
         AccentColorSettingsSection(selection: accentPaletteSelection)
-            .id(SettingsJumpMenu.sectionAnchorID("V.3"))
+            .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("V.3"))
 
         ThemeColorSettingsSection(selection: keyboardBackgroundThemeSelection)
-            .id(SettingsJumpMenu.sectionAnchorID("V.4"))
+            .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("V.4"))
 
         CandidateFontStyleSettingsSection(
             rawValue: $candidateFontStyleRawValue,
             composingTextStyleRawValue: composingTextStyleRawValue
         )
-        .id(SettingsJumpMenu.sectionAnchorID("V.5"))
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("V.5"))
     }
 
     // 書式(数値・温度・カレンダー)。入力の挙動ではなく「出力の書き方」を決める設定なので
@@ -1418,10 +1418,10 @@ struct ContentView: View {
             unitProductSeparator: numberUnitProductSeparatorSelection,
             litreSymbol: numberLitreSymbolSelection
         )
-        .id(SettingsJumpMenu.sectionAnchorID("F.1"))
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("F.1"))
 
         DegreSettingsSection(degreeSymbol: degreeSymbolSelection)
-            .id(SettingsJumpMenu.sectionAnchorID("F.2"))
+            .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("F.2"))
 
         CalendarSettingsGroupSection(
             weekStart: calendarWeekStartSelection,
@@ -1431,7 +1431,7 @@ struct ContentView: View {
             saturdayColor: calendarSaturdayColorSelection,
             dateFormatStyle: dateFormatStyleSelection
         )
-        .id(SettingsJumpMenu.sectionAnchorID("F.3"))
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("F.3"))
     }
 
     @ViewBuilder
@@ -1439,36 +1439,36 @@ struct ContentView: View {
         DelimiterAutoCommitCandidateSettingsSection(
             selection: delimiterAutoCommitCandidateSelection
         )
-        .id(SettingsJumpMenu.sectionAnchorID("X.1"))
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.1"))
 
         KanaKanjiCandidateSourceModeSettingsSection(
             selection: kanaKanjiCandidateSourceModeSelection
         )
-        .id(SettingsJumpMenu.sectionAnchorID("X.2"))
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.2"))
 
         HistoricalKanaCandidatesSettingsSection(
             isEnabled: $historicalKanaCandidatesEnabled
         )
-        .id(SettingsJumpMenu.sectionAnchorID("X.3"))
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.3"))
 
         IterationMarkCandidatesSettingsSection(
             isEnabled: $iterationMarkCandidatesEnabled
         )
-        .id(SettingsJumpMenu.sectionAnchorID("X.4"))
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.4"))
 
         ScriptVariantModeSettingsSection(
             title: "X.5 カタカナ強調表記の候補",
             selectionRawValue: $katakanaEmphasisCandidateModeRawValue,
             footnote: "辞書が収穫した『ウマイ/コレ/ばかリ』のような読みのカタカナ化表記の扱いです。抑制=候補に出さない(3つの初期設定とも)、リスト後方=候補の末尾に回す、同列に使う=通常の順位。パンやアンケートのような外来語のカタカナは対象外です。"
         )
-        .id(SettingsJumpMenu.sectionAnchorID("X.5"))
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.5"))
 
         ScriptVariantModeSettingsSection(
             title: "X.6 交ぜ書きの候補",
             selectionRawValue: $mazegakiCandidateModeRawValue,
             footnote: "『まん延(蔓延)』『作ひん(作品)』のような、漢字の一部をかなに開いた交ぜ書き表記の扱いです。抑制=候補に出さない(3つの初期設定とも)、リスト後方=候補の末尾に回す、同列に使う=通常の順位。『子ども』など定着した表記は対象外です。"
         )
-        .id(SettingsJumpMenu.sectionAnchorID("X.6"))
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.6"))
 
         ScriptVariantSuppressionSettingsSection(
             kyujitai: $scriptVariantSuppressKyujitai,
@@ -1478,7 +1478,7 @@ struct ContentView: View {
             lookalike: $scriptVariantSuppressLookalike,
             personNameVariant: $scriptVariantSuppressPersonNameVariant
         )
-        .id(SettingsJumpMenu.sectionAnchorID("X.7"))
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.7"))
 
         KanaGakiSettingsSection(
             adverb: $kanaGakiSuppressAdverb,
@@ -1488,50 +1488,49 @@ struct ContentView: View {
             demonstrative: $kanaGakiSuppressDemonstrative,
             adverbKanaFirst: $kanaGakiSuppressAdverbKanaFirst
         )
-        .id(SettingsJumpMenu.sectionAnchorID("X.8"))
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.8"))
 
         KakikaeSettingsSection(rawValue: $kakikaePreferenceRawValue, everydayException: $kakikaeEverydayException)
-            .id(SettingsJumpMenu.sectionAnchorID("X.9"))
+            .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.9"))
 
         LateStandardizedRewriteSettingsSection(rawValue: $lateStandardizedRewritePreferenceRawValue)
-            .id(SettingsJumpMenu.sectionAnchorID("X.10"))
+            .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.10"))
 
         RadicalStrokeCountSettingsSection(
             rawValue: $radicalStrokeCountStyleRawValue
         )
-        .id(SettingsJumpMenu.sectionAnchorID("X.11"))
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.11"))
 
         KaCounterVariantSettingsSection(rawValue: $kaCounterVariantPreferenceRawValue)
-            .id(SettingsJumpMenu.sectionAnchorID("X.12"))
+            .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.12"))
 
         OkuriganaVariantSettingsSection(rawValue: $okuriganaVariantPreferenceRawValue)
-            .id(SettingsJumpMenu.sectionAnchorID("X.13"))
+            .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.13"))
 
-        // X.14 と X.15 は 1 つの型の中の 2 枚。X.15 へはこの目印へ飛んでから中の目印へもう一段飛ぶ
+        // X.14 と X.15 は 1 つの型の中の 2 枚。目印は型の中でそれぞれのカードに付ける(外に付けると X.15 にも X.14 の目印が被さった)
         MeSuffixCandidateSettingsSection(
             ordinalKanjiPreferred: $ordinalMeKanjiPreferred,
             adjectiveKanjiEnabled: $adjectiveMeKanjiCandidatesEnabled
         )
-        .id(SettingsJumpMenu.sectionAnchorID("X.14"))
 
         EmojiKaomojiCandidateSettingsSection(
             enablesEmojiCandidates: $emojiCandidateDisplayEnabled,
             enablesKaomojiCandidates: $kaomojiCandidateDisplayEnabled
         )
-        .id(SettingsJumpMenu.sectionAnchorID("X.16"))
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.16"))
 
         ContactCandidateDisplaySettingsSection(
             selection: contactCandidateDisplayModeSelection
         )
-        .id(SettingsJumpMenu.sectionAnchorID("X.17"))
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.17"))
 
         UserDictionaryCandidateDisplaySettingsSection(
             selection: userDictionaryCandidateDisplayModeSelection
         )
-        .id(SettingsJumpMenu.sectionAnchorID("X.18"))
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.18"))
 
         NumeralStyleSettingsSection(selection: numeralStyleSelection)
-            .id(SettingsJumpMenu.sectionAnchorID("X.19"))
+            .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.19"))
     }
 
     @ViewBuilder
@@ -1805,22 +1804,12 @@ struct ContentView: View {
                             scrollProxy.scrollTo(Self.scrollTopAnchorID, anchor: .top)
                         }
                     }
-                    // 題字のメニューで選んだ項目へ飛ぶ。カード(LazyVStack の直接の子)の目印へ飛び、同じ型の 2 枚め(X.15)は
-                    // 描かれたあとで中の目印へもう一段飛ぶ(3699)
+                    // 題字のメニューで選んだ項目へ飛ぶ(位置が落ち着くまで飛び直す。runSettingsJump。3699/3703)
                     .onChange(of: settingsJumpRequest) { _, request in
-                        guard let item = request?.item else {
+                        guard let request else {
                             return
                         }
-                        withAnimation(.easeOut(duration: 0.3)) {
-                            scrollProxy.scrollTo(SettingsJumpMenu.sectionAnchorID(item.sectionCardID), anchor: .top)
-                        }
-                        if item.sectionCardID != item.cardID {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
-                                withAnimation(.easeOut(duration: 0.25)) {
-                                    scrollProxy.scrollTo(SettingsJumpMenu.cardAnchorID(item.cardID), anchor: .top)
-                                }
-                            }
-                        }
+                        runSettingsJump(request, proxy: scrollProxy)
                     }
                 }
             }
