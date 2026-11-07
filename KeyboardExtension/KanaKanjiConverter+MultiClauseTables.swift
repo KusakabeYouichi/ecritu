@@ -3676,6 +3676,8 @@ extension KanaKanjiConverter {
     // だろう/でしょう の途中で漢字・カタカナの語へ区切る減点(3710)。いるだろうし で 居る+だ+労使 が 居る+だろう+し に 1707 差、
     // 労使 を外すと 居る+だろ+牛 が 164 差で勝っていた
     static let multiClauseSplitDarouPenalty = 3000
+    // サ変名詞+の+旅(たび) の減点(3710)。変換の旅に が 変換のたびに/変換の度に に勝っていた(〜するごとに の たび)
+    static let multiClauseSuruNounNoTabiTravelPenalty = 3000
     // 見てみ〜(見てみたい/見てみる)1 ノードの加点(3758)。み+て+みたい の割れ(6042)と 派生 7200 の差 1158 を越える幅
     static let multiClauseMiteMiruBonus = 2000
     // て形+漢字の述語の加点(3751)。切手(6717)と派生の 切って(7200)の差 483 を越える幅
@@ -4022,8 +4024,8 @@ extension KanaKanjiConverter {
             for s in ["ら", "かた", "方"] { add(s) }
             // 文頭の 事+助詞(3713)
             add("事")
-            // だろう/でしょう の途中で区切らない(3710)
-            for s in ["だろ", "でしょ"] { add(s) }
+            // だろう/でしょう の途中で区切らない、サ変名詞+の+旅(3710)
+            for s in ["だろ", "でしょ", "旅", "たび"] { add(s) }
             // 比況の みたい(3715)
             for s in KanaKanjiConverter.multiClauseMitaiAuxiliaryReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseMitaiPrecedingParticleSurfaces.sorted() { add(s) }
@@ -4245,6 +4247,8 @@ extension KanaKanjiConverter {
         static let だ = MultiClauseSymbols.id("だ")
         static let だろ = MultiClauseSymbols.id("だろ")
         static let でしょ = MultiClauseSymbols.id("でしょ")
+        static let 旅 = MultiClauseSymbols.id("旅")
+        static let たび = MultiClauseSymbols.id("たび")
         static let っけ = MultiClauseSymbols.id("っけ")
         static let であっても = MultiClauseSymbols.id("であっても")
         static let でも = MultiClauseSymbols.id("でも")

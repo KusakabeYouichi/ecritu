@@ -293,6 +293,7 @@ extension KanaKanjiConverter {
         candidates = Self.liquorCategoryOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.brewingTsukuruOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.contextCuedHomophoneOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
+        candidates = Self.suruNounTabiOrdered(candidates)
         candidates = Self.nankaKanaSecondOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.yokuOrthographyOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.sweetnessOrthographyOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
@@ -676,6 +677,27 @@ extension KanaKanjiConverter {
         }
         guard rewritten != candidates.first else { return candidates }
         return [rewritten] + candidates.filter { $0 != rewritten }
+    }
+
+    // サ変名詞+の+たびに(3710): 先頭が 〜のたびに/〜の度に で 〜の旅に の変種も並ぶとき(DP がサ変名詞の後ろの たび と判断した。
+    // multiClauseSuruNounNoTabiTravelPenalty)、〜のたびに・〜の度に を 1・2 番めに置き、旅 はその後ろへ(ユーザ指定)。
+    // 変種の評価は DP の辺の規則を見ないので LM の の→旅 の強さで 旅 が前に来て、変種の枠(3 件、1 巡めは文節の位置ごとに 1 件)の
+    // たびの位置を 旅 が取り、変換のたびに が枠から落ちていた
+    static func suruNounTabiOrdered(_ candidates: [String]) -> [String] {
+        // のたびに と の度に が両方ある先頭(〜のたびに…の度に)は、どちらに揃えても先頭と一致せず先頭が消えるので触らない
+        guard let top = candidates.first, !top.contains("の旅に"),
+            top.contains("のたびに") != top.contains("の度に"),
+            candidates.contains(where: { $0.contains("の旅に") }) else {
+            return candidates
+        }
+        let kana = top.replacingOccurrences(of: "の度に", with: "のたびに")
+        let kanji = top.replacingOccurrences(of: "のたびに", with: "の度に")
+        var rest = candidates.filter { $0 != kana && $0 != kanji }
+        let travel = rest.filter { $0.contains("の旅に") }
+        rest.removeAll { $0.contains("の旅に") }
+        let lastTabi = rest.lastIndex(where: { $0.contains("のたびに") || $0.contains("の度に") }).map { $0 + 1 } ?? 0
+        rest.insert(contentsOf: travel, at: lastTabi)
+        return [kana, kanji] + rest
     }
 
     // なんか と読んだ 何か(3710): 先頭が 何か なら、なんか の形を 2 番めに置く(ユーザ指定: なんかいってや は 何か言ってや・なんか言ってや)。
@@ -4793,6 +4815,18 @@ extension KanaKanjiConverter {
                                 let gaBigram = store.wordLMBigramCost(prev: prevNode.surface, cur: "が"),
                                 gaBigram < Self.multiClauseGaDropNaiMaxGaBigram {
                                 cost += Self.multiClauseGaDropNaiBonus
+                            }
+                        }
+                        // サ変名詞+の+たび は「〜するごとに」の たび(度)で、旅 ではない(変換のたびに/更新のたびに/旅行のたびに)。
+                        // LM の の→旅 が強く、へんかんのたびに が 変換の旅に だった(ユーザ報告 3710)。世界の旅 等のサ変でない名詞は対象外。
+                        // 2 番め以降の変種は suruNounTabiOrdered で並べ直す(変種の評価はこの辺の規則を見ない)
+                        if node.surfaceID == SID.旅, node.readingID == SID.たび,
+                            prevNode.surfaceID == SID.の, prevNode.isKanaIdentity,
+                            backPointer[prevIdx] >= 0 {
+                            let prevPrev = nodes[backPointer[prevIdx]]
+                            if !prevPrev.isKanaIdentity, containsKanji(prevPrev.surface),
+                                store.isSuruNoun(reading: prevPrev.reading, candidate: prevPrev.surface) {
+                                cost += Self.multiClauseSuruNounNoTabiTravelPenalty
                             }
                         }
                         // に/と の直後の かな であっても は 出会っても の場面(定数コメント参照。2818)

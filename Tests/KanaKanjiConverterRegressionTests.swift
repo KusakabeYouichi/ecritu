@@ -1878,6 +1878,10 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(multi("もうできたから").prefix(2)), ["もうできたから", "もう出来たから"])
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "もうできたから"))
         XCTAssertEqual(multi("はつもうでにいく").first, "初詣に行く")
+        // サ変名詞+の+たびに は たび/度(旅 は後ろ)。サ変でない名詞の 旅 は崩さない
+        XCTAssertEqual(Array(multi("へんかんのたびに").prefix(2)), ["変換のたびに", "変換の度に"])
+        XCTAssertEqual(Array(multi("かいぎのたびに").prefix(2)), ["会議のたびに", "会議の度に"])
+        XCTAssertEqual(multi("せかいのたびにでる").first, "世界の旅に出る")
     }
 
     // 2026-11-04 のユーザ報告(edition 3661)
