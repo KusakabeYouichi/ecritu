@@ -1551,7 +1551,7 @@ extension ContentView {
             Spacer(minLength: 4)
             if isGroupStart, let groupName = SettingsJumpMenu.groupNames[entry.group] {
                 // 区分の名前と番号の頭の文字(キー配列 (L)。ユーザ指定 3701)
-                Text("\(groupName) (\(entry.group))")
+                Text("\(groupName) (\(String(entry.group)))")
                     .font(.system(size: max(8, layout.fontSize - 2), weight: .semibold))
                     .foregroundStyle(isHighlighted ? Color.white : Color.accentColor)
                     .lineLimit(1)
