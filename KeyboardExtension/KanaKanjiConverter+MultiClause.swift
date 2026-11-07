@@ -295,6 +295,7 @@ extension KanaKanjiConverter {
         candidates = Self.contextCuedHomophoneOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.suruNounTabiOrdered(candidates)
         candidates = Self.nankaKanaSecondOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
+        candidates = Self.tareSauceSecondOrdered(candidates)
         candidates = Self.yokuOrthographyOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.sweetnessOrthographyOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.kanaSecondVariantOrdered(candidates)
@@ -698,6 +699,24 @@ extension KanaKanjiConverter {
         let lastTabi = rest.lastIndex(where: { $0.contains("のたびに") || $0.contains("の度に") }).map { $0 + 1 } ?? 0
         rest.insert(contentsOf: travel, at: lastTabi)
         return [kana, kanji] + rest
+    }
+
+    // 調味料の たれ(3710): 先頭に 名詞+の+たれ(助詞か文末が続く)があれば、タレ の形を 2 番めに置く(ユーザ指定: 焼鳥のたれがない・
+    // 焼鳥のタレがない の順。変種は 焼き鳥 の形と同点で並びが定まらない)。動詞 垂れる の活用(水のたれる音/目のたれた犬)は
+    // たれ の直後が助詞でないので触らない
+    static let tareSauceFollowers: Set<Character> = ["が", "を", "は", "も", "に", "で", "と", "の", "や", "、", "。"]
+    static func tareSauceSecondOrdered(_ candidates: [String]) -> [String] {
+        guard let top = candidates.first, let range = top.range(of: "のたれ") else {
+            return candidates
+        }
+        let after = top[range.upperBound...].first
+        guard after == nil || tareSauceFollowers.contains(after!) else {
+            return candidates
+        }
+        let sauce = top.replacingCharacters(in: range, with: "のタレ")
+        var result = candidates.filter { $0 != sauce }
+        result.insert(sauce, at: min(1, result.count))
+        return result
     }
 
     // なんか と読んだ 何か(3710): 先頭が 何か なら、なんか の形を 2 番めに置く(ユーザ指定: なんかいってや は 何か言ってや・なんか言ってや)。

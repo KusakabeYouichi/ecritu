@@ -1882,6 +1882,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(multi("へんかんのたびに").prefix(2)), ["変換のたびに", "変換の度に"])
         XCTAssertEqual(Array(multi("かいぎのたびに").prefix(2)), ["会議のたびに", "会議の度に"])
         XCTAssertEqual(multi("せかいのたびにでる").first, "世界の旅に出る")
+        // 焼鳥 を連文節でも先に。誰(たれ)・足れ は古語なので出さない。のたれ は タレ を 2 番めに
+        XCTAssertEqual(Array(multi("やきとりのたれがない").prefix(2)), ["焼鳥のたれがない", "焼鳥のタレがない"])
+        XCTAssertFalse(multi("やきとりのたれがない").contains(where: { $0.contains("誰") || $0.contains("足れ") }))
+        XCTAssertFalse(single("たれ").contains("誰"), "\(single("たれ"))")
+        XCTAssertEqual(Array(single("たれ").prefix(2)), ["たれ", "タレ"])
+        XCTAssertTrue(single("だれ").contains("誰"))
+        // 動詞 垂れる の活用には タレ の形を作らない
+        XCTAssertFalse(multi("みずのたれるおと").prefix(4).contains(where: { $0.contains("タレる") }), "\(multi("みずのたれるおと").prefix(4))")
     }
 
     // 2026-11-04 のユーザ報告(edition 3661)
