@@ -1861,6 +1861,12 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // 何か+言う(南海ってや/難解ってや にしない)。読みが なんか なら かな の形を 2 番めに
         XCTAssertEqual(Array(multi("なんかいってや").prefix(2)), ["何か言ってや", "なんか言ってや"])
         XCTAssertEqual(Array(multi("なんかいった").prefix(2)), ["何か言った", "なんか言った"])
+        // だろう/でしょう を途中で区切らない(居るだ労使/居るだろ牛 にしない)
+        let darou = multi("いるだろうし")
+        XCTAssertTrue(["いるだろうし", "居るだろうし"].contains(darou.first ?? ""), "\(darou.prefix(4))")
+        XCTAssertFalse(darou.prefix(6).contains(where: { $0.contains("労使") || $0.contains("老子") || $0.contains("牛") }), "\(darou.prefix(6))")
+        XCTAssertTrue(multi("こまるひとがいるだろうし").first?.hasSuffix("だろうし") ?? false, "\(multi("こまるひとがいるだろうし").prefix(4))")
+        XCTAssertEqual(multi("でしょうし").first, "でしょうし")
     }
 
     // 2026-11-04 のユーザ報告(edition 3661)

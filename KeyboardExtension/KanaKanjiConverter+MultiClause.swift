@@ -4076,6 +4076,12 @@ extension KanaKanjiConverter {
                 prevIsBOS || !(prev.last.map { $0.isNumber || "一二三四五六七八九十百千何数".contains($0) } ?? false) {
                 penalty += Self.multiClauseRendakuHaiAfterNonNumeralPenalty
             }
+            // だろう/でしょう を途中で漢字・カタカナの語へ区切らない(だ+労使/だろ+牛/でしょ+宇)。いるだろうし が 居るだ労使 だった
+            // (ユーザ報告 3710)。かなのまま続く形(読んだ+ろう の口語)は対象外。ID の比較で絞ってから読みを見る
+            if !isKanaIdentity, prevIsKanaIdentity, prevID == SID.だ || prevID == SID.だろ || prevID == SID.でしょ,
+                reading.hasPrefix(prevID == SID.だ ? "ろう" : "う") {
+                penalty += Self.multiClauseSplitDarouPenalty
+            }
             // 〜かどこか(上野かどこかで)の前は場所の名詞で、準体助詞 の の直後には来ない。上+の+かどこか(上のかどこかで)が
             // 上野+かどこか より安く、上野 が 1 つも出なかった(3760、ユーザ報告)
             if reading.hasPrefix("かどこ"), (prevID == SID.の && prevIsKanaIdentity) || prev.hasSuffix("の") {
