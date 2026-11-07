@@ -7204,6 +7204,7 @@
 	<dict><key>phrase</key><string>静岡吟醸</string><key>shortcut</key><string>しずおかぎんじょう</string></dict>
 	<dict><key>phrase</key><string>静岡酵母</string><key>shortcut</key><string>しずおかこうぼ</string></dict>
 	<dict><key>phrase</key><string>全麹仕込</string><key>shortcut</key><string>ぜんこうじじこみ</string></dict>
+	<dict><key>phrase</key><string>全麹</string><key>shortcut</key><string>ぜんこうじ</string></dict>	<!-- 全麹仕込み(善光寺仕込み だった。learningBOX 検査 3697 の確認表) -->
 	<dict><key>phrase</key><string>速醸系酒母</string><key>shortcut</key><string>そくじょうけいしゅぼ</string></dict>
 	<dict><key>phrase</key><string>速醸系酒母造り</string><key>shortcut</key><string>そくじょうけいしゅぼづくり</string></dict>
 	<dict><key>phrase</key><string>村米制度</string><key>shortcut</key><string>むらまいせいど</string></dict>
