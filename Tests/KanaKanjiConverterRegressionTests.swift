@@ -1862,6 +1862,30 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(KanaKanjiConverter.keepsSecondAgainstSingleBest("なんか言ってや", "何か言ってや"))
     }
 
+    // 送り仮名をカタカナで書いた形(凡テ/殆ド/始メテ 等)は出さない(3714、ユーザ指定。suppr の □ 送り仮名をカタカナで書いた形)。
+    // ふつうの書き方は残る
+    func testRegressionRealLMKatakanaOkuriganaSuppressed() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, banned, kept) in [
+            ("すべて", ["凡テ", "都テ"], "凡て"),
+            ("ほとんど", ["殆ド"], "殆んど"),
+            ("はじめて", ["始メテ"], "初めて"),
+            ("とても", ["迚モ"], "とても"),
+            ("おおむね", ["概ネ"], "おおむね"),
+            ("すなわち", ["即チ"], "則ち"),
+            ("いわく", ["曰ク"], "曰く"),
+            ("せつない", ["切ナイ"], "切ない"),
+            ("かならず", ["必ズ"], "かならず"),
+        ] {
+            let single = converter.candidates(for: reading, limit: 30, systemCandidateMode: .surface)
+            for word in banned {
+                XCTAssertFalse(single.contains(word), "\(reading) single=\(single)")
+            }
+            XCTAssertTrue(single.contains(kept), "\(reading) single=\(single)")
+        }
+    }
+
     func testRegressionRealLMUserReports3710() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
