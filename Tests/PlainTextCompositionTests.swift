@@ -33,6 +33,16 @@ final class PlainTextCompositionTests: XCTestCase {
         XCTAssertEqual(plan, .init(moveCursorToEndFirst: 0, deleteCount: 1, insertText: "", cursorOffsetAfter: 2))
     }
 
+    // カーソルが途中で、その左の 1 字を置き換える(濁点の後置 ほ|くは → ぼ|くは。テスター報告 3697):
+    // 1 字消して 1 字差し込み、カーソルは同じ位置のまま(末尾へ飛ばない)
+    func testPlanReplacesCharacterBeforeCursorInsideComposition() {
+        let plan = PlainTextComposition.plan(old: "ほくは", new: "ぼくは", cursorOffset: 1)
+        XCTAssertEqual(plan, .init(moveCursorToEndFirst: 0, deleteCount: 1, insertText: "ぼ", cursorOffsetAfter: 1))
+        // 左の途中の字(か|ん|じ の ん の左までは同じ)だけが変わるときも、共通の先頭は残す
+        let middle = PlainTextComposition.plan(old: "かんしへんかん", new: "かんじへんかん", cursorOffset: 3)
+        XCTAssertEqual(middle, .init(moveCursorToEndFirst: 0, deleteCount: 1, insertText: "じ", cursorOffsetAfter: 3))
+    }
+
     // カーソルが途中で全置換が要る変更: 末尾へ送ってから全部入れ替え、カーソルは末尾
     func testPlanFallsBackToWholeReplaceWhenChangeIsNotAtCursor() {
         let plan = PlainTextComposition.plan(old: "かんじへんかん", new: "漢字変換", cursorOffset: 3)

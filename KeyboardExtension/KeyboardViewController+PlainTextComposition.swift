@@ -91,8 +91,8 @@ extension KeyboardViewController {
     }
 
     // 未確定の表示を text に合わせる。ホストに置いてある文字列(plainCompositionPresentedText)との差分だけを
-    // insertText / deleteBackward で当てる。カーソルが未確定の中にあるときは、その位置での挿入・削除だけを
-    // 差分として受け付け、それ以外(候補循環など)はカーソルを末尾へ戻してから全置換する
+    // insertText / deleteBackward で当てる。カーソルが未確定の中にあるときは、その位置での挿入・削除と、
+    // カーソルの左だけの置き換え(濁点の後置。3697)を差分として受け付け、それ以外はカーソルを末尾へ戻してから全置換する
     func presentPlainComposition(_ text: String) {
         let old = plainCompositionPresentedText
         guard text != old else {
@@ -275,8 +275,8 @@ enum PlainTextComposition {
 
     // old(ホストに置いてある)を new にするための最小の手順。
     // カーソルが末尾: 共通の先頭を残して、後ろを消して差し込む(候補循環はこの形)。
-    // カーソルが途中(offset): その位置での純粋な挿入か、その直前の純粋な削除だけを差分として受ける。
-    // それ以外はカーソルを末尾へ送ってから全置換する(カーソルは末尾になる)
+    // カーソルが途中(offset): その位置での純粋な挿入、その直前の純粋な削除、右側を変えない左だけの置き換えを差分として受ける。
+    // それ以外(右側も変わる)はカーソルを末尾へ送ってから全置換する(カーソルは末尾になる)
     static func plan(old: String, new: String, cursorOffset: Int?) -> Plan {
         let oldChars = Array(old)
         let newChars = Array(new)
@@ -298,6 +298,17 @@ enum PlainTextComposition {
                 if n <= leftOld.count, Array(newChars[..<(newChars.count - rightOld.count)]) == Array(leftOld.dropLast(n)) {
                     return Plan(deleteCount: n, insertText: "", cursorOffsetAfter: offset - n)
                 }
+            }
+            // カーソルの左だけの置き換え(右側は同じ): 濁点・小書きの後置(ほ|くは → ぼ|くは)。共通の先頭を残し、
+            // カーソルの左の残りを消して差し込む。カーソルは置き換えた左側の末尾のまま(3697、テスター報告)
+            if newChars.count >= rightOld.count,
+                Array(newChars[(newChars.count - rightOld.count)...]) == rightOld {
+                let newLeft = Array(newChars[..<(newChars.count - rightOld.count)])
+                var common = 0
+                while common < leftOld.count, common < newLeft.count, leftOld[common] == newLeft[common] {
+                    common += 1
+                }
+                return Plan(deleteCount: leftOld.count - common, insertText: String(newLeft[common...]), cursorOffsetAfter: newLeft.count)
             }
             // それ以外: 末尾へ送ってから全置換
             let moveBy = String(rightOld).utf16.count

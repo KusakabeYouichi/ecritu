@@ -1096,7 +1096,8 @@ extension KeyboardViewController {
             let contextForResolution: String?
 
             if !composingRawText.isEmpty {
-                contextForResolution = composingRawText
+                // mountain view でカーソルが途中なら、その左の字で決める。描画(postModifierContextForRender)と同じ値にする(3697)
+                contextForResolution = effectiveComposingRawText.isEmpty ? nil : effectiveComposingRawText
             } else {
                 contextForResolution = currentTextContextBeforeInputTail(
                     maxLength: TextContextLimits.synchronizedContextTailLength
@@ -1154,6 +1155,29 @@ extension KeyboardViewController {
                 from: character,
                 for: resolvedButtonState
             )
+        }
+
+        // mountain view でカーソルが未確定の途中にあるときは、末尾ではなくカーソルの左の 1 字に当てる。ほくは の ほ を消して
+        // 打ち直し、濁点を押しても ぼ にならなかった(末尾の は を見ていた。テスター報告 3697)。カーソルが先頭なら何もしない
+        if currentInputMode == .kana, usesPlainTextComposition, let offset = plainCompositionCursorOffset {
+            var rawChars = Array(composingRawText)
+            guard offset > 0, offset <= rawChars.count,
+                let replacedCharacter = resolvedPostModifierCharacter(from: rawChars[offset - 1]) else {
+                return .ignored
+            }
+            rawChars[offset - 1] = replacedCharacter
+            var readingChars = Array(composingReading)
+            if offset - 1 < readingChars.count,
+                let normalizedKana = KanaTextNormalizer.normalizedKanaCharacter(from: String(replacedCharacter)) {
+                readingChars[offset - 1] = normalizedKana
+            }
+            composingRawText = String(rawChars)
+            composingReading = String(readingChars)
+            presentPlainComposition(composingRawText)
+            lastKanaPostModifierAppliedAt = CFAbsoluteTimeGetCurrent()
+            lastKanaPostModifierResultCharacter = replacedCharacter
+            refreshKeyboardStateForUserInitiatedAction(.postModifier)
+            return .applied
         }
 
         if currentInputMode == .kana,

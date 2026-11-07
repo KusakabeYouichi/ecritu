@@ -143,8 +143,10 @@ extension KeyboardViewController {
     // 状況で「小書きにできる」印(小さいアヒル)が出ていた。さらに lastSynchronized… は
     // 診断リセット時にしか空に戻らないキャッシュで、ホスト側で文字を消しても古い末尾を
     // 根拠に小さいアヒルが残り続けた(ユーザ報告 2755)。
+    // mountain view でカーソルが未確定の途中にあるときは、カーソルの左(後置修飾を当てる字)で決める(3697)
     private func postModifierContextForRender() -> String? {
-        composingRawText.isEmpty ? nil : composingRawText
+        let context = effectiveComposingRawText
+        return context.isEmpty ? nil : context
     }
 
     // 修飾キーのフリックガイド表示: 個別設定があればそれ、無ければ かな 設定を継承。
