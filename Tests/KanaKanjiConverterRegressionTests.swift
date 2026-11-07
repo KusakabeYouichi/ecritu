@@ -1872,6 +1872,12 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // 憂+すぎる より は+無能すぎる
         XCTAssertEqual(multi("むりょうのはむのうすぎる").first, "無料のは無能すぎる")
         XCTAssertEqual(multi("むのうすぎる").first, "無能すぎる")
+        // 詣で来る(古語)は抑制。かな できてる を先頭、出来てる を 2 番めに。かな先頭は表示層でも保つ
+        XCTAssertEqual(Array(multi("もうできてるから").prefix(2)), ["もうできてるから", "もう出来てるから"])
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "もうできてるから"))
+        XCTAssertEqual(Array(multi("もうできたから").prefix(2)), ["もうできたから", "もう出来たから"])
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "もうできたから"))
+        XCTAssertEqual(multi("はつもうでにいく").first, "初詣に行く")
     }
 
     // 2026-11-04 のユーザ報告(edition 3661)
