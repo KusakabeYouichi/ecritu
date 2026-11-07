@@ -1092,12 +1092,17 @@ enum SettingsJumpMenuTarget: Equatable {
     case item(SettingsJumpMenuItem)
 }
 
-// メニューの 1 行(リセットの項目か、設定の項目)。group が前の行と変わるところに区切り線
+// メニューの 1 行(リセットの項目か、設定の項目)。群は 1 つおきにアクセントカラーの淡い帯を敷き(groupOrdinal が奇数)、
+// 群の最初の行の右端に群の名前を出す(ユーザ指定 3700: 区切り線だけでは見づらい、色は増やさない・灰色は使わない)
 struct SettingsJumpMenuEntry {
     let target: SettingsJumpMenuTarget
-    let text: String
+    // 項目番号(L.1 等)と見出し。リセットの項目は番号なし
+    let number: String?
+    let title: String
     let frameKey: String
     let group: Character
+    // 設定の群の通し番号(L=0, E=1, …)。リセットの項目は -1
+    let groupOrdinal: Int
     let isDestructive: Bool
 }
 
@@ -1141,22 +1146,39 @@ enum SettingsJumpMenu {
         ("X.17", "iOSの連絡先の姓、名、会社名"), ("X.18", "iOSのユーザ辞書の単語"), ("X.19", "数詞の表記 – chiffres")
     ]
 
+    // 群の名前(設定の一覧の区分と同じ)
+    static let groupNames: [Character: String] = [
+        "L": "キー配列", "E": "入力", "G": "キー表示", "V": "表示", "F": "書式", "X": "変換"
+    ]
+
     static let entries: [SettingsJumpMenuEntry] = {
         var list: [SettingsJumpMenuEntry] = []
         if showsResetItem {
             list.append(SettingsJumpMenuEntry(
-                target: .resetLearningAndCache, text: "学習リセット+変換キャッシュクリア",
-                frameKey: resetFrameKey, group: "!", isDestructive: true
+                target: .resetLearningAndCache, number: nil, title: "学習リセット+変換キャッシュクリア",
+                frameKey: resetFrameKey, group: "!", groupOrdinal: -1, isDestructive: true
             ))
         }
+        var ordinal = -1
+        var previousGroup: Character?
         for item in items {
+            let group = item.cardID.first ?? "?"
+            if group != previousGroup {
+                ordinal += 1
+                previousGroup = group
+            }
             list.append(SettingsJumpMenuEntry(
-                target: .item(item), text: item.cardID + " " + item.title,
-                frameKey: frameKey(item.cardID), group: item.cardID.first ?? "?", isDestructive: false
+                target: .item(item), number: item.cardID, title: item.title,
+                frameKey: frameKey(item.cardID), group: group, groupOrdinal: ordinal, isDestructive: false
             ))
         }
         return list
     }()
+
+    // 群の最初の行か(列の先頭も含む。横画面で群が次の列へ続くときも名前を出す)
+    static func startsGroup(_ column: [SettingsJumpMenuEntry], at index: Int) -> Bool {
+        index == 0 || column[index - 1].group != column[index].group
+    }
 
     struct Layout {
         let columns: [[SettingsJumpMenuEntry]]
@@ -1165,9 +1187,13 @@ enum SettingsJumpMenu {
         let columnWidth: CGFloat
     }
 
-    // 列の中で、前の行と群が変わる行の前に区切り線(列の先頭には引かない)
+    // 区切り線はリセットの項目と設定の項目の境目だけ(設定の群どうしは帯で分ける)
+    static func showsDivider(_ column: [SettingsJumpMenuEntry], before index: Int) -> Bool {
+        index > 0 && (column[index - 1].groupOrdinal < 0) != (column[index].groupOrdinal < 0)
+    }
+
     static func dividerCount(in column: [SettingsJumpMenuEntry]) -> Int {
-        zip(column, column.dropFirst()).filter { $0.group != $1.group }.count
+        column.indices.filter { showsDivider(column, before: $0) }.count
     }
 
     // 1 列で 1 行 15pt 以上取れればそのまま(上限 26pt)、取れなければ 2 列・3 列にする(横画面)。文字は行の高さ−4pt(9〜13pt)
@@ -1321,12 +1347,13 @@ extension ContentView {
                         ForEach(Array(layout.columns.enumerated()), id: \.offset) { _, column in
                             VStack(spacing: 0) {
                                 ForEach(Array(column.enumerated()), id: \.element.frameKey) { index, entry in
-                                    if index > 0, column[index - 1].group != entry.group {
+                                    if SettingsJumpMenu.showsDivider(column, before: index) {
                                         Divider()
                                     }
                                     titleMenuRow(
                                         entry,
                                         isHighlighted: highlighted == entry.target,
+                                        isGroupStart: entry.groupOrdinal >= 0 && SettingsJumpMenu.startsGroup(column, at: index),
                                         layout: layout
                                     )
                                 }
@@ -1347,20 +1374,42 @@ extension ContentView {
         }
     }
 
+    // 1 行: 幅をそろえた番号(群の最初の行は頭の文字を太く)、見出し、群の最初の行だけ右端に群の名前(アクセントカラー)。
+    // 群は 1 つおきにアクセントカラーの淡い帯。指の下の行はアクセントカラーの塗りで、文字は白
     private func titleMenuRow(
         _ entry: SettingsJumpMenuEntry,
         isHighlighted: Bool,
+        isGroupStart: Bool,
         layout: SettingsJumpMenu.Layout
     ) -> some View {
-        Text(entry.text)
-            .font(.system(size: layout.fontSize, weight: .medium))
-            .lineLimit(1)
-            .truncationMode(.tail)
-            .foregroundStyle(isHighlighted ? Color.white : (entry.isDestructive ? Color.red : Color.primary))
-            .padding(.horizontal, 12)
-            .frame(maxWidth: .infinity, minHeight: layout.rowHeight, maxHeight: layout.rowHeight, alignment: .leading)
-            .background(isHighlighted ? Color.accentColor : Color.clear)
-            .background(
+        let bandColor: Color = isHighlighted
+            ? Color.accentColor
+            : (entry.groupOrdinal % 2 == 1 ? Color.accentColor.opacity(0.08) : Color.clear)
+        return HStack(spacing: 6) {
+            if let number = entry.number {
+                (Text(String(number.prefix(1))).fontWeight(isGroupStart ? .heavy : .regular)
+                    + Text(String(number.dropFirst())))
+                    .font(.system(size: layout.fontSize).monospacedDigit())
+                    .frame(width: layout.fontSize * 2.6, alignment: .leading)
+            }
+            Text(entry.title)
+                .font(.system(size: layout.fontSize, weight: .medium))
+                .lineLimit(1)
+                .truncationMode(.tail)
+            Spacer(minLength: 4)
+            if isGroupStart, let groupName = SettingsJumpMenu.groupNames[entry.group] {
+                Text(groupName)
+                    .font(.system(size: max(8, layout.fontSize - 2), weight: .semibold))
+                    .foregroundStyle(isHighlighted ? Color.white : Color.accentColor)
+                    .lineLimit(1)
+                    .fixedSize()
+            }
+        }
+        .foregroundStyle(isHighlighted ? Color.white : (entry.isDestructive ? Color.red : Color.primary))
+        .padding(.horizontal, 12)
+        .frame(maxWidth: .infinity, minHeight: layout.rowHeight, maxHeight: layout.rowHeight, alignment: .leading)
+        .background(bandColor)
+        .background(
                 GeometryReader { proxy in
                     Color.clear.preference(
                         key: LogoMenuFramePreferenceKey.self,
