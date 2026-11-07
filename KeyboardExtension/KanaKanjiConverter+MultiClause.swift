@@ -293,6 +293,7 @@ extension KanaKanjiConverter {
         candidates = Self.liquorCategoryOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.brewingTsukuruOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.contextCuedHomophoneOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
+        candidates = Self.nankaKanaSecondOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.yokuOrthographyOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.sweetnessOrthographyOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.kanaSecondVariantOrdered(candidates)
@@ -675,6 +676,20 @@ extension KanaKanjiConverter {
         }
         guard rewritten != candidates.first else { return candidates }
         return [rewritten] + candidates.filter { $0 != rewritten }
+    }
+
+    // なんか と読んだ 何か(3710): 先頭が 何か なら、なんか の形を 2 番めに置く(ユーザ指定: なんかいってや は 何か言ってや・なんか言ってや)。
+    // 変種は seed {なんか, 何か, 南下, 軟化} の順(差 100 刻み)で 南下言ってや が先に並び、かなの なんか は seed 順の対象外で後ろだった。
+    // 読みに なにか があるときは 何か がどちらの読みか分からないので触らない
+    static func nankaKanaSecondOrdered(reading: String, candidates: [String]) -> [String] {
+        guard reading.contains("なんか"), !reading.contains("なにか"), let top = candidates.first,
+            top.components(separatedBy: "何か").count == 2 else {
+            return candidates
+        }
+        let kana = top.replacingOccurrences(of: "何か", with: "なんか")
+        var result = candidates.filter { $0 != kana }
+        result.insert(kana, at: min(1, result.count))
+        return result
     }
 
     // 良く/よく(ユーザ指定 3670): 「悪く」に置き換えられる所は 良く、それ以外(よく知られている/よく見る)は よく。

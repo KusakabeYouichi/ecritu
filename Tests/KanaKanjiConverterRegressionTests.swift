@@ -1849,6 +1849,20 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("こうごうせいしたばあい").first, "光合成した場合")
     }
 
+    // 2026-11-07 のユーザ報告(edition 3709 の実機)
+    func testRegressionRealLMUserReports3710() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func single(_ reading: String) -> [String] { converter.candidates(for: reading, limit: 30, systemCandidateMode: .surface) }
+        func multi(_ reading: String) -> [String] {
+            let list = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            return list.isEmpty ? single(reading) : list
+        }
+        // 何か+言う(南海ってや/難解ってや にしない)。読みが なんか なら かな の形を 2 番めに
+        XCTAssertEqual(Array(multi("なんかいってや").prefix(2)), ["何か言ってや", "なんか言ってや"])
+        XCTAssertEqual(Array(multi("なんかいった").prefix(2)), ["何か言った", "なんか言った"])
+    }
+
     // 2026-11-04 のユーザ報告(edition 3661)
     func testRegressionRealLMUserReports3661() throws {
         try prepareRealLMDictionary()
