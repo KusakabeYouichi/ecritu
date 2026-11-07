@@ -245,6 +245,8 @@
 	        <dict><key>phrase</key><string>本田味噌</string><key>shortcut</key><string>ほんだみそ</string></dict>
 	        <dict><key>phrase</key><string>玉那覇味噌</string><key>shortcut</key><string>たまなはみそ</string></dict>
 	<!-- 料理・食材 -->
+	        <dict><key>phrase</key><string>甘葛</string><key>shortcut</key><string>あまかづら</string></dict>
+	        <dict><key>phrase</key><string>甘葛</string><key>shortcut</key><string>あまづら</string></dict>
 	<!-- 餃子の複合語: 辞書は読みを ぎょーざ で持っており、ぎょうざ と打つと出ない
 	     (むしぎょうざ→虫餃子/無視餃子)。ぎょうざ の読みでも引けるよう併記する(ユーザ指定 2973) -->
 	<dict><key>phrase</key><string>蒸し餃子</string><key>shortcut</key><string>むしぎょうざ</string></dict>
