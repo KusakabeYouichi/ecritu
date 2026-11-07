@@ -2839,6 +2839,10 @@ extension KanaKanjiConverter {
     static let multiClauseKatakanaSuffixPreferredSurfaces: Set<String> = ["種", "州"]
     static let multiClauseKatakanaSuffixPreferredSurfacesID = MultiClauseIDSet(multiClauseKatakanaSuffixPreferredSurfaces)
     static let multiClauseKatakanaSuffixDemotedSurfaces: Set<String> = ["酒", "集", "衆", "朱", "主", "巣"]
+    // 補助語彙(vin 等)に登録した漢数字入りの固有名(五百万石=酒米)は、同じ読みの 数+助数詞(500万石)より先に(ユーザ指定 3715)。
+    // 数のノードは定額 7200、LM に無い補助語彙は 8700 なので、その差を越える幅
+    static let multiClauseRegisteredNumeralNameBonus = 2000
+    static let multiClauseKanjiNumeralCharacters: Set<Character> = Set("〇一二三四五六七八九十百千万")
     // 名詞の前の あやまった は 誤った(謝った と同点で 謝った説明/謝った組み合わせ だった。learningBOX 検査 3667)
     static let multiClauseErroneousAttributiveSurfaces: Set<String> = ["誤った", "誤っている", "誤っていた"]
     static let multiClauseErroneousAttributiveSurfacesID = MultiClauseIDSet(multiClauseErroneousAttributiveSurfaces)

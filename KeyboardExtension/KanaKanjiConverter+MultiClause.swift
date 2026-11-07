@@ -2016,10 +2016,15 @@ extension KanaKanjiConverter {
                 //      コストは活用派生と同じ(7200)= 分割ゴミには勝つが なんかい→難解
                 //      のような実在の非数量語には基本負ける穏当な強さ。
                 if len >= 2 {
+                    // 補助語彙の漢数字入りの固有名(五百万石)は、数のノードより先に(定数コメント参照。ユーザ指定 3715)。
+                    // 数のノードを足す前の件数を控え、数のノードを足した区間だけ調べる(打鍵ごとの走査を増やさない)
+                    let surfaceCountBeforeNumeral = surfaces.count
+                    var suppliedNumeral = false
                     // 算用数字+助数詞(2本/第1回)を漢数字より先に供給(ユーザ方針: 算用優先)。
                     for surface in numeralCompoundCandidatesForLattice(for: segmentReading)
                     where surface != segmentReading {
                         add(surface, isDictWord: true, isCurated: false, isInflectionDerived: true)
+                        suppliedNumeral = true
                     }
                     let numeric = numericCounterCompoundCandidates(
                         for: segmentReading,
@@ -2031,6 +2036,16 @@ extension KanaKanjiConverter {
                     for surface in numeric.prefix(Self.multiClauseInflectionTopK)
                     where surface != segmentReading {
                         add(surface, isDictWord: true, isCurated: false, isInflectionDerived: true)
+                        suppliedNumeral = true
+                    }
+                    if suppliedNumeral {
+                        for entry in surfaces.prefix(surfaceCountBeforeNumeral)
+                        where entry.isDictWord && !entry.isInflectionDerived
+                            && entry.surface.contains(where: { Self.multiClauseKanjiNumeralCharacters.contains($0) })
+                            && supplementalSystemDictionary.contains(reading: segmentReading, surface: entry.surface) {
+                            seedOrderNounNodeBonuses[spanKeyByStart[start][end] + "-" + entry.surface, default: 0]
+                                += Self.multiClauseRegisteredNumeralNameBonus
+                        }
                     }
                     // 数+助数詞(数問/数本)は 数+門 のような 1 字名詞への分割に負けやすい。単文節と同じく先頭にするため、
                     // 表の順で最初の 数+助数詞 ノードにボーナスを付ける(3274)
