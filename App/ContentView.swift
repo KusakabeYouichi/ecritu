@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20261107130207"
+    private static let editionUpdatedAtRaw: String = "20261107140048"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -1799,7 +1799,14 @@ struct ContentView: View {
                         .padding(20)
                         // 題字のメニューで飛ぶ間は薄くする(飛び直しの動きを見せない。3704)。前後は滑らせる(3705)
                         .offset(y: settingsJumpSlide)
-                        .opacity(settingsJumpFading ? 0 : 1)
+                        // 0 にしない(完全に消えた面は組み立てを後回しにされうるので、飛び先の高さの確定が遅れる。3706)
+                        .opacity(settingsJumpFading ? 0.001 : 1)
+                    }
+                    // 見えている範囲の上端(ナビバーの下)。題字のメニューで飛んだ先が上端に着いたかの判定に使う(3706)
+                    .onGeometryChange(for: CGFloat.self) { proxy in
+                        proxy.frame(in: .global).minY + proxy.safeAreaInsets.top
+                    } action: { top in
+                        SettingsJumpPositions.shared.viewportTop = top
                     }
                     .disabled(isBootstrappingInitialData)
                     // ロゴメニューの表示中はスクロールを止める。止めないと指を項目へ下ろした

@@ -1219,6 +1219,8 @@ enum SettingsJumpMenu {
 final class SettingsJumpPositions {
     static let shared = SettingsJumpPositions()
     var minY: [String: CGFloat] = [:]
+    // 設定の一覧の見えている範囲の上端(.global。ナビバーの下)。scrollTo(.top) で着いたカードの上端はここに来る
+    var viewportTop: CGFloat?
 }
 
 // 飛んで着いたカードを一瞬光らせる(どこへ飛んだかを見せる。ユーザ指定 3704)
@@ -1393,8 +1395,13 @@ extension ContentView {
         }
     }
 
+    // 合ったかの判定(3706): 着いたカードの上端が見えている範囲の上端(+ 今の滑らせ量)に来ていて、前の回から動いていないこと。
+    // 「動いていない」だけでは、間のカードがまだ作られていないうちに同じ見積もり違いの場所で 2 回止まって合ったと見なし、
+    // 浮かび上がったあとで高さが直ってずれた(G.1 で上 1/3 が隠れる、L.4 で L.3 の下が見える。3705 の実機)。
+    // 上端まで寄せられない末尾のカード(X.19 等)は、3 回続けて動かなければ合ったとする
     func runSettingsJump(
-        _ request: SettingsJumpRequest, proxy: ScrollViewProxy, direction: Int = 0, attempt: Int = 0, lastMinY: CGFloat? = nil
+        _ request: SettingsJumpRequest, proxy: ScrollViewProxy, direction: Int = 0, attempt: Int = 0,
+        lastMinY: CGFloat? = nil, stableCount: Int = 0
     ) {
         guard settingsJumpRequest == request else {
             return
@@ -1409,18 +1416,27 @@ extension ContentView {
                 return
             }
             let minY = SettingsJumpPositions.shared.minY[targetID]
-            let converged = !usesPreScroll && minY != nil && lastMinY != nil && abs((minY ?? 0) - (lastMinY ?? 0)) < 1
-            guard converged || attempt >= 11 else {
+            var stable = stableCount
+            if !usesPreScroll, let minY, let lastMinY, abs(minY - lastMinY) < 1 {
+                stable += 1
+            } else {
+                stable = 0
+            }
+            let expectedTop = SettingsJumpPositions.shared.viewportTop.map { $0 + settingsJumpSlide }
+            let atTop = minY != nil && expectedTop != nil && abs((minY ?? 0) - (expectedTop ?? 0)) < 1.5
+            let converged = stable >= 1 && atTop || stable >= 3
+            guard converged || attempt >= 19 else {
                 runSettingsJump(
-                    request, proxy: proxy, direction: direction, attempt: attempt + 1, lastMinY: usesPreScroll ? nil : minY
+                    request, proxy: proxy, direction: direction, attempt: attempt + 1,
+                    lastMinY: usesPreScroll ? nil : minY, stableCount: stable
                 )
                 return
             }
-            finishSettingsJump(targetID: targetID, direction: direction)
+            finishSettingsJump(request, proxy: proxy, targetID: targetID, direction: direction)
         }
     }
 
-    private func finishSettingsJump(targetID: String, direction: Int) {
+    private func finishSettingsJump(_ request: SettingsJumpRequest, proxy: ScrollViewProxy, targetID: String, direction: Int) {
         // 進む向きの先から滑り込ませながら浮かび上がらせる(下へ飛んだなら下から上へ)
         var placement = Transaction()
         placement.disablesAnimations = true
@@ -1430,6 +1446,18 @@ extension ContentView {
         withAnimation(.easeOut(duration: 0.3)) {
             settingsJumpFading = false
             settingsJumpSlide = 0
+        }
+        // 浮かび上がったあと、まだずれていれば短く合わせ直す(後から作られたカードの高さで動いた分)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+            guard settingsJumpRequest == request,
+                let minY = SettingsJumpPositions.shared.minY[targetID],
+                let viewportTop = SettingsJumpPositions.shared.viewportTop,
+                abs(minY - viewportTop) >= 2 else {
+                return
+            }
+            withAnimation(.easeOut(duration: 0.2)) {
+                proxy.scrollTo(targetID, anchor: .top)
+            }
         }
         withAnimation(.easeOut(duration: 0.15)) {
             SettingsJumpHighlight.shared.anchorID = targetID
