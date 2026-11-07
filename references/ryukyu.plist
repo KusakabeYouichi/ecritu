@@ -3724,6 +3724,12 @@
 	<dict><key>phrase</key><string>てんぶす</string><key>shortcut</key><string>てんぶす</string></dict>
 	<dict><key>phrase</key><string>てんぶす那覇</string><key>shortcut</key><string>てんぶすなは</string></dict>
 	<dict><key>phrase</key><string>てんぷら</string><key>shortcut</key><string>てんぷら</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>とーなちん</string><key>shortcut</key><string>とーなちん</string></dict>
+	<dict><key>phrase</key><string>トーナチン</string><key>shortcut</key><string>とーなちん</string></dict>
+	<dict><key>phrase</key><string>とーなちん餅</string><key>shortcut</key><string>とーなちんむち</string></dict>
+	<dict><key>phrase</key><string>トーナチン餅</string><key>shortcut</key><string>とーなちんむち</string></dict>
+	<dict><key>phrase</key><string>とーなちん餅</string><key>shortcut</key><string>とーなちんむーちー</string></dict>
+	<dict><key>phrase</key><string>トーナチン餅</string><key>shortcut</key><string>とーなちんむーちー</string></dict>
 	<dict><key>phrase</key><string>唐一倍</string><key>shortcut</key><string>とういちべなー</string></dict>
 	<dict><key>phrase</key><string>冬至ジューシー</string><key>shortcut</key><string>とぅーじじゅーしー</string></dict>
 	<dict><key>phrase</key><string>トゥーナ</string><key>shortcut</key><string>とぅーな</string></dict>
@@ -6409,5 +6415,6 @@
 	<dict><key>phrase</key><string>le bois</string><key>shortcut</key><string>るぼあ</string></dict>
 	<dict><key>phrase</key><string>萬たく</string><key>shortcut</key><string>まんたく</string></dict>
 	<dict><key>phrase</key><string>よか寿司</string><key>shortcut</key><string>よかずし</string></dict>
+	<dict><key>phrase</key><string>マーミヤ</string><key>shortcut</key><string>まーみや</string></dict>
 </array>
 </plist>
