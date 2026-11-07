@@ -1228,7 +1228,102 @@ final class SettingsJumpPositions {
     static let shared = SettingsJumpPositions()
     var minY: [String: CGFloat] = [:]
     // 設定の一覧の見えている範囲の上端(.global。ナビバーの下)。scrollTo(.top) で着いたカードの上端はここに来る
-    var viewportTop: CGFloat?
+    var viewportTop: CGFloat? {
+        didSet {
+            SettingsJumpTrace.shared.log("vt \(SettingsJumpTrace.format(viewportTop))")
+        }
+    }
+}
+
+// 調査用ログ(題字メニューのずれ 3708)。飛んでいる間と着いたあとの位置の動きを App Group の settingsJumpTraceLines に
+// 足していく(DEBUG だけ。行頭は飛び始めからの ms)。T=飛び先の上端、A=1 つ上のカードの上端、vt=見えている範囲の上端。
+// 着いたあとに一覧が上下にずれてから戻る件(3706・3707 の実機。同じ L.5 でも向きが変わる)の原因が分かったら外す
+final class SettingsJumpTrace {
+    static let shared = SettingsJumpTrace()
+    static let defaultsKey = "settingsJumpTraceLines"
+    private var start: CFAbsoluteTime = 0
+    private var lines: [String] = []
+    private(set) var targetID: String?
+    private var aboveID: String?
+
+    static func format(_ value: CGFloat?) -> String {
+        value.map { String(format: "%.1f", Double($0)) } ?? "nil"
+    }
+
+    func begin(targetID: String, aboveID: String, note: String) {
+        #if DEBUG
+        if self.targetID != nil {
+            end()
+        }
+        start = CFAbsoluteTimeGetCurrent()
+        lines = []
+        self.targetID = targetID
+        self.aboveID = aboveID
+        log("begin \(note)")
+        #endif
+    }
+
+    func log(_ text: String) {
+        #if DEBUG
+        guard targetID != nil else {
+            return
+        }
+        let ms = Int((CFAbsoluteTimeGetCurrent() - start) * 1000)
+        lines.append("\(ms) \(text)")
+        #endif
+    }
+
+    func logGeometry(anchorID: String, minY: CGFloat) {
+        #if DEBUG
+        if anchorID == targetID {
+            log("geo T \(Self.format(minY))")
+        } else if anchorID == aboveID {
+            log("geo A \(Self.format(minY))")
+        }
+        #endif
+    }
+
+    func end() {
+        #if DEBUG
+        guard targetID != nil else {
+            return
+        }
+        log("end")
+        targetID = nil
+        aboveID = nil
+        var all = ContentView.sharedDefaults?.stringArray(forKey: Self.defaultsKey) ?? []
+        all.append(contentsOf: lines)
+        all.append("---")
+        ContentView.sharedDefaults?.set(Array(all.suffix(1500)), forKey: Self.defaultsKey)
+        lines = []
+        #endif
+    }
+}
+
+// 調査用ログ(題字メニューのずれ 3708)。一覧のスクロール量・中身の高さ・上の余白と、スクロールの状態(指・慣性・アニメーション)
+struct SettingsJumpTraceScrollObserver: ViewModifier {
+    func body(content: Content) -> some View {
+        #if DEBUG
+        if #available(iOS 18.0, macOS 15.0, *) {
+            content
+                .onScrollGeometryChange(for: [CGFloat].self) { geometry in
+                    [geometry.contentOffset.y, geometry.contentSize.height, geometry.contentInsets.top]
+                } action: { _, values in
+                    SettingsJumpTrace.shared.log(
+                        "scroll off=\(SettingsJumpTrace.format(values[0])) size=\(SettingsJumpTrace.format(values[1]))"
+                            + " inset=\(SettingsJumpTrace.format(values[2]))"
+                    )
+                }
+                .onScrollPhaseChange { oldPhase, newPhase in
+                    SettingsJumpTrace.shared.log("phase \(oldPhase)->\(newPhase)")
+                }
+        } else {
+            content
+        }
+        #else
+        content
+        #endif
+    }
 }
 
 // 飛んで着いたカードを一瞬光らせる(どこへ飛んだかを見せる。ユーザ指定 3704)
@@ -1260,6 +1355,7 @@ extension View {
                 proxy.frame(in: .global).minY
             } action: { minY in
                 SettingsJumpPositions.shared.minY[anchorID] = minY
+                SettingsJumpTrace.shared.logGeometry(anchorID: anchorID, minY: minY)
             }
             .id(anchorID)
     }
@@ -1393,6 +1489,13 @@ extension ContentView {
     func startSettingsJump(_ request: SettingsJumpRequest, proxy: ScrollViewProxy) {
         SettingsJumpHighlight.shared.anchorID = nil
         let direction = settingsJumpDirection(to: request.item)
+        let traceTargetID = SettingsJumpMenu.sectionAnchorID(request.item.cardID)
+        SettingsJumpTrace.shared.begin(
+            targetID: traceTargetID,
+            aboveID: SettingsJumpMenu.anchorIDAbove(request.item.cardID) ?? Self.scrollTopAnchorID,
+            note: "\(request.item.cardID) dir=\(direction) T=\(SettingsJumpTrace.format(SettingsJumpPositions.shared.minY[traceTargetID]))"
+                + " vt=\(SettingsJumpTrace.format(SettingsJumpPositions.shared.viewportTop))"
+        )
         // 進む向きと逆へ少しずらしながら薄くする(下へ飛ぶなら一覧は上へ流れる)
         withAnimation(.easeIn(duration: 0.1)) {
             settingsJumpFading = true
@@ -1434,6 +1537,11 @@ extension ContentView {
             let expectedTop = SettingsJumpPositions.shared.viewportTop.map { $0 + settingsJumpSlide }
             let atTop = minY != nil && expectedTop != nil && abs((minY ?? 0) - (expectedTop ?? 0)) < 1.5
             let converged = stable >= 1 && atTop || stable >= 3
+            SettingsJumpTrace.shared.log(
+                "check a=\(attempt) rev=\(revealedAbove) pre=\(usesPreScroll) T=\(SettingsJumpTrace.format(minY))"
+                    + " expect=\(SettingsJumpTrace.format(expectedTop)) slide=\(SettingsJumpTrace.format(settingsJumpSlide))"
+                    + " stable=\(stable) atTop=\(atTop) ok=\(converged)"
+            )
             guard converged || attempt >= 19 else {
                 runSettingsJump(
                     request, proxy: proxy, direction: direction, attempt: attempt + 1,
@@ -1454,6 +1562,7 @@ extension ContentView {
     // 初めて作られ、見積もりとの差だけ飛び先が押し下げられてから合わせ直しで戻っていた(L.5・X.5。3706 の実機)
     private func revealAboveSettingsJumpTarget(_ request: SettingsJumpRequest, proxy: ScrollViewProxy, direction: Int) {
         let aboveID = SettingsJumpMenu.anchorIDAbove(request.item.cardID) ?? Self.scrollTopAnchorID
+        SettingsJumpTrace.shared.log("reveal \(aboveID)")
         proxy.scrollTo(aboveID, anchor: .bottom)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.06) {
             runSettingsJump(request, proxy: proxy, direction: direction, revealedAbove: true)
@@ -1461,6 +1570,13 @@ extension ContentView {
     }
 
     private func finishSettingsJump(_ request: SettingsJumpRequest, proxy: ScrollViewProxy, targetID: String, direction: Int) {
+        SettingsJumpTrace.shared.log(
+            "finish T=\(SettingsJumpTrace.format(SettingsJumpPositions.shared.minY[targetID]))"
+                + " vt=\(SettingsJumpTrace.format(SettingsJumpPositions.shared.viewportTop))"
+        )
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            SettingsJumpTrace.shared.end()
+        }
         // 進む向きの先から滑り込ませながら浮かび上がらせる(下へ飛んだなら下から上へ)
         var placement = Transaction()
         placement.disablesAnimations = true
@@ -1473,12 +1589,17 @@ extension ContentView {
         }
         // 浮かび上がったあと、まだずれていれば短く合わせ直す(後から作られたカードの高さで動いた分)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+            SettingsJumpTrace.shared.log(
+                "recheck T=\(SettingsJumpTrace.format(SettingsJumpPositions.shared.minY[targetID]))"
+                    + " vt=\(SettingsJumpTrace.format(SettingsJumpPositions.shared.viewportTop))"
+            )
             guard settingsJumpRequest == request,
                 let minY = SettingsJumpPositions.shared.minY[targetID],
                 let viewportTop = SettingsJumpPositions.shared.viewportTop,
                 abs(minY - viewportTop) >= 2 else {
                 return
             }
+            SettingsJumpTrace.shared.log("correct")
             withAnimation(.easeOut(duration: 0.2)) {
                 proxy.scrollTo(targetID, anchor: .top)
             }

@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20261107140048"
+    private static let editionUpdatedAtRaw: String = "20261107142636"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -1808,6 +1808,8 @@ struct ContentView: View {
                     } action: { top in
                         SettingsJumpPositions.shared.viewportTop = top
                     }
+                    // 調査用ログ(題字メニューのずれ 3708)
+                    .modifier(SettingsJumpTraceScrollObserver())
                     .disabled(isBootstrappingInitialData)
                     // ロゴメニューの表示中はスクロールを止める。止めないと指を項目へ下ろした
                     // 瞬間に ScrollView のパンがドラッグを奪い、メニューは残るが項目が選ばれない(2762)
