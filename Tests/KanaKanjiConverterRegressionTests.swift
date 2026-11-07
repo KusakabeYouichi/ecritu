@@ -1779,6 +1779,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("らっかさせる").first, "落下させる")
         XCTAssertEqual(multi("しゅせきとしてせきしゅつします").first, "酒石として析出します")
         XCTAssertEqual(multi("ふなづみされたせんめい").first, "船積みされた船名")
+        XCTAssertEqual(multi("きたからつめたいかぜ").first, "北から冷たい風")
+        XCTAssertEqual(multi("たいふうがきたからかぜがつよい").first, "台風が来たから風が強い")
         XCTAssertEqual(multi("とくゆうなほうこう").first, "特有な芳香")
         XCTAssertEqual(multi("かじゅうとともにかひ").first, "果汁とともに果皮")
         XCTAssertEqual(multi("けっこんのかひ").first, "結婚の可否")
