@@ -1118,6 +1118,14 @@ enum SettingsJumpMenu {
         "settings-section-" + cardID
     }
 
+    // 画面で 1 つ上にあるカードの目印(items は画面の並び)。L.1 の上は設定のカードでないので nil
+    static func anchorIDAbove(_ cardID: String) -> String? {
+        guard let index = items.firstIndex(where: { $0.cardID == cardID }), index > 0 else {
+            return nil
+        }
+        return sectionAnchorID(items[index - 1].cardID)
+    }
+
 
     #if DEBUG
     static let showsResetItem = true
@@ -1398,17 +1406,18 @@ extension ContentView {
     // 合ったかの判定(3706): 着いたカードの上端が見えている範囲の上端(+ 今の滑らせ量)に来ていて、前の回から動いていないこと。
     // 「動いていない」だけでは、間のカードがまだ作られていないうちに同じ見積もり違いの場所で 2 回止まって合ったと見なし、
     // 浮かび上がったあとで高さが直ってずれた(G.1 で上 1/3 が隠れる、L.4 で L.3 の下が見える。3705 の実機)。
-    // 上端まで寄せられない末尾のカード(X.19 等)は、3 回続けて動かなければ合ったとする
+    // 上端まで寄せられない末尾のカード(X.19 等)は、3 回続けて動かなければ合ったとする。
+    // 1 度合ったら、飛び先の上を一度画面に入れて作らせ(revealAboveSettingsJumpTarget)、もう一度合わせてから見せる(3707)
     func runSettingsJump(
         _ request: SettingsJumpRequest, proxy: ScrollViewProxy, direction: Int = 0, attempt: Int = 0,
-        lastMinY: CGFloat? = nil, stableCount: Int = 0
+        lastMinY: CGFloat? = nil, stableCount: Int = 0, revealedAbove: Bool = false
     ) {
         guard settingsJumpRequest == request else {
             return
         }
         let item = request.item
         let targetID = SettingsJumpMenu.sectionAnchorID(item.cardID)
-        let usesPreScroll = item.preScrollCardID != nil && attempt < 2
+        let usesPreScroll = !revealedAbove && item.preScrollCardID != nil && attempt < 2
         let scrollID = usesPreScroll ? SettingsJumpMenu.sectionAnchorID(item.preScrollCardID ?? item.cardID) : targetID
         proxy.scrollTo(scrollID, anchor: .top)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.06) {
@@ -1428,11 +1437,26 @@ extension ContentView {
             guard converged || attempt >= 19 else {
                 runSettingsJump(
                     request, proxy: proxy, direction: direction, attempt: attempt + 1,
-                    lastMinY: usesPreScroll ? nil : minY, stableCount: stable
+                    lastMinY: usesPreScroll ? nil : minY, stableCount: stable, revealedAbove: revealedAbove
                 )
                 return
             }
+            guard revealedAbove else {
+                revealAboveSettingsJumpTarget(request, proxy: proxy, direction: direction)
+                return
+            }
             finishSettingsJump(request, proxy: proxy, targetID: targetID, direction: direction)
+        }
+    }
+
+    // 飛び先の 1 つ上のカードの下端を画面の下端に合わせ、飛び先の上の 1 画面分を作らせて高さを確定させる(3707)。
+    // まだ作られていないカードの高さは見積もりなので、作らずに見せると、浮かび上がるときの滑り込みでそのカードが画面に入って
+    // 初めて作られ、見積もりとの差だけ飛び先が押し下げられてから合わせ直しで戻っていた(L.5・X.5。3706 の実機)
+    private func revealAboveSettingsJumpTarget(_ request: SettingsJumpRequest, proxy: ScrollViewProxy, direction: Int) {
+        let aboveID = SettingsJumpMenu.anchorIDAbove(request.item.cardID) ?? Self.scrollTopAnchorID
+        proxy.scrollTo(aboveID, anchor: .bottom)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.06) {
+            runSettingsJump(request, proxy: proxy, direction: direction, revealedAbove: true)
         }
     }
 
