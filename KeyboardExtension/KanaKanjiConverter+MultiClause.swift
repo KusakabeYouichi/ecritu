@@ -4687,6 +4687,15 @@ extension KanaKanjiConverter {
                             !prevNode.isKanaIdentity, Self.isKatakanaString(prevNode.surface) {
                             cost += katakanaSuffixPreferred ? -Self.multiClauseKatakanaSuffixPreferenceBonus : Self.multiClauseKatakanaSuffixPreferenceBonus
                         }
+                        // 地名+人(じん)/族/型/西部 等(定数コメント参照。3715)。整数 ID の判定を先に、地名の表引きは後に。
+                        // 1 字の地名(塞=さい)は除く(さいせいぶにある が 塞西部 になり、最+西部 の 2880 を崩した)
+                        let placeSuffixPreferred = Self.multiClausePlaceNameSuffixPreferredSurfacesID.contains(node.surfaceID)
+                            && (node.surfaceID != SID.人 || node.readingID == SID.じん)
+                            && node.reading.first != "け"   // 型(けい)は ボルドー系 を巻き込む
+                        if placeSuffixPreferred || Self.multiClausePlaceNameSuffixDemotedSurfacesID.contains(node.surfaceID),
+                            prevNode.surface.count >= 2, placeNameKindByNodeKey[prevNode.key] != nil {
+                            cost += placeSuffixPreferred ? -Self.multiClausePlaceNameSuffixPreferenceBonus : Self.multiClausePlaceNameSuffixPreferenceBonus
+                        }
                         // 名詞の前の 誤った(定数コメント参照。3667)。整数 ID を先に見る
                         if Self.multiClauseErroneousAttributiveSurfacesID.contains(prevNode.surfaceID),
                             !node.isKanaIdentity, let first = node.surface.first, Self.isAllKanjiSurface(String(first)) {

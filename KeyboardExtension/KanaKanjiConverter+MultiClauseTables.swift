@@ -2839,6 +2839,14 @@ extension KanaKanjiConverter {
     static let multiClauseKatakanaSuffixPreferredSurfaces: Set<String> = ["種", "州"]
     static let multiClauseKatakanaSuffixPreferredSurfacesID = MultiClauseIDSet(multiClauseKatakanaSuffixPreferredSurfaces)
     static let multiClauseKatakanaSuffixDemotedSurfaces: Set<String> = ["酒", "集", "衆", "朱", "主", "巣"]
+    // 地名(place_names)の直後の 人(じん)/族/型/西部 等 は接尾(トラキア人/ケルト族/ブルゴーニュ型/ハンガリー西部)。陣/俗/方/西武 だった
+    // (learningBOX 検査 3697 の [直す]、3715)。カタカナ語一般に広げると コーチ陣/キャスト陣 を壊すので地名の直後に限る。
+    // 西武 は読みごと下げると 西武が勝った が 西部 になるので、地名の直後だけ
+    static let multiClausePlaceNameSuffixPreferenceBonus = 2000
+    static let multiClausePlaceNameSuffixPreferredSurfaces: Set<String> = ["人", "族", "型", "西部", "東部", "南部", "北部"]
+    static let multiClausePlaceNameSuffixPreferredSurfacesID = MultiClauseIDSet(multiClausePlaceNameSuffixPreferredSurfaces)
+    static let multiClausePlaceNameSuffixDemotedSurfaces: Set<String> = ["陣", "俗", "方", "西武", "東武", "頭部"]
+    static let multiClausePlaceNameSuffixDemotedSurfacesID = MultiClauseIDSet(multiClausePlaceNameSuffixDemotedSurfaces)
     // 補助語彙(vin 等)に登録した漢数字入りの固有名(五百万石=酒米)は、同じ読みの 数+助数詞(500万石)より先に(ユーザ指定 3715)。
     // 数のノードは定額 7200、LM に無い補助語彙は 8700 なので、その差を越える幅
     static let multiClauseRegisteredNumeralNameBonus = 2000
@@ -4126,6 +4134,8 @@ extension KanaKanjiConverter {
             for s in KanaKanjiConverter.multiClauseSeedKanaLeadStrictReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseKatakanaSuffixPreferredSurfaces.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseKatakanaSuffixDemotedSurfaces.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClausePlaceNameSuffixPreferredSurfaces.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClausePlaceNameSuffixDemotedSurfaces.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseErroneousAttributiveSurfaces.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseKaraKanjiSurfaces.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseKoiFollowedByNounSurfaces.sorted() { add(s) }
