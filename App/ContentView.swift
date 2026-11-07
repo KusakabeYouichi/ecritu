@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20261107183131"
+    private static let editionUpdatedAtRaw: String = "20261107190838"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -1256,18 +1256,20 @@ struct ContentView: View {
         return "Loading... 語彙データを読み込み中"
     }
 
+    // 青地に白(3713、ユーザ指定。前は半透明の素材で背景に紛れた)。起動直後の RootLoadingView と同じ見た目
     private var loadingToastLabel: some View {
         HStack(spacing: 8) {
             ProgressView()
                 .controlSize(.small)
+                .tint(.white)
 
             Text(loadingToastMessage)
                 .font(.footnote.weight(.semibold))
-                .foregroundStyle(.primary)
+                .foregroundStyle(.white)
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 10)
-        .background(.ultraThinMaterial, in: Capsule())
+        .background(Color.accentColor, in: Capsule())
         .shadow(color: .black.opacity(0.12), radius: 8, y: 3)
     }
 

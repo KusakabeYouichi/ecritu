@@ -26,14 +26,15 @@ private struct RootLoadingView: View {
                     HStack(spacing: 8) {
                         ProgressView()
                             .controlSize(.small)
+                            .tint(.white)
 
                         Text("起動準備中")
                             .font(.footnote.weight(.semibold))
-                            .foregroundStyle(.primary)
+                            .foregroundStyle(.white)
                     }
                     .padding(.horizontal, 14)
                     .padding(.vertical, 10)
-                    .background(.ultraThinMaterial, in: Capsule())
+                    .background(Color.accentColor, in: Capsule())
                     .shadow(color: .black.opacity(0.12), radius: 8, y: 3)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
