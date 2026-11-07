@@ -1400,10 +1400,9 @@ struct ModeSwitchColumnKey: View {
     var fontSize: CGFloat = 16
     // タップが効くか(今いる面のキーは押せない)。右フリックはこれに関わらず効く
     var isTapEnabled: Bool = true
-    // 右フリックで開く面の字(面選択のパレットのアイコンと同じ字)。右へ動かしている間はキーにこれを出す
+    // 右フリックで開く面の字(面選択のパレットのアイコンと同じ字)。右へ動かしている間はキーにこれを出す。
+    // フリックガイドがオンでも、ふだんは右上に出さない(3712、ユーザ指定: 3618 で出していたが要らない)
     let rightFlickLabel: String
-    // かなのフリックガイドと同じ条件で、右上の隅に行き先の字を小さく出す
-    var showsRightFlickHint = false
     // 長押し(0.3 秒)の割り当て。nil なら押し続けたときにタップと同じ切り替えを行なう(指を離す前に)
     var onLongPress: (() -> Void)? = nil
     let onTap: () -> Void
@@ -1497,17 +1496,6 @@ struct ModeSwitchColumnKey: View {
                 RoundedRectangle(cornerRadius: 10, style: .continuous)
                     .stroke(KeyboardThemePalette.keyBorder, lineWidth: 1)
             )
-            .overlay(alignment: .topTrailing) {
-                if showsRightFlickHint, !isRightFlickActive {
-                    Text(rightFlickLabel)
-                        .font(.system(size: 9, weight: .semibold, design: .rounded))
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.6)
-                        .foregroundStyle(KeyboardThemePalette.keyLabelSecondary)
-                        .padding(.top, 2)
-                        .padding(.trailing, 3)
-                }
-            }
             .contentShape(Rectangle())
             .onGeometryChange(for: CGSize.self) { proxy in
                 proxy.size

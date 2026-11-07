@@ -34,7 +34,6 @@ extension KeyboardRootView {
             fontSize: leftModeSwitchNumberFontSize,
             isTapEnabled: inputMode != .number,
             rightFlickLabel: leftModeSwitchNumberKeyRightFlickAction.keyLabel,
-            showsRightFlickHint: showsFlickGuideCharacters,
             onTap: { switchInputMode(.number) },
             onRightFlick: {
                 selectLeftModeSwitchKeyRightFlick(leftModeSwitchNumberKeyRightFlickAction, keyTitle: "123")
@@ -50,7 +49,6 @@ extension KeyboardRootView {
                 fontSize: leftModeSwitchLatinFontSize,
                 isTapEnabled: inputMode != .latin,
                 rightFlickLabel: leftModeSwitchLatinKeyRightFlickAction.keyLabel,
-                showsRightFlickHint: showsFlickGuideCharacters,
                 onLongPress: handleLatinModeSwitchLongPress,
                 onTap: handleLatinModeSwitchTap,
                 onRightFlick: {
@@ -75,7 +73,6 @@ extension KeyboardRootView {
             fontSize: fontSize,
             isTapEnabled: inputMode != .kana,
             rightFlickLabel: leftModeSwitchKanaKeyRightFlickAction.keyLabel,
-            showsRightFlickHint: showsFlickGuideCharacters,
             onTap: { switchInputMode(.kana) },
             onRightFlick: {
                 selectLeftModeSwitchKeyRightFlick(leftModeSwitchKanaKeyRightFlickAction, keyTitle: "あい")
