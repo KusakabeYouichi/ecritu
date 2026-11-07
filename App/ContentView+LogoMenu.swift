@@ -1357,6 +1357,11 @@ extension View {
                 SettingsJumpPositions.shared.minY[anchorID] = minY
                 SettingsJumpTrace.shared.logGeometry(anchorID: anchorID, minY: minY)
             }
+            // 画面から外れたカードの位置は消す。残すと、飛んで画面から消えたカードの最後の位置(画面内の値)が残り、
+            // 一番上にいるのに X.19 を見ていると判断して、進む向きを逆にしていた(3709)
+            .onDisappear {
+                SettingsJumpPositions.shared.minY[anchorID] = nil
+            }
             .id(anchorID)
     }
 }
@@ -1502,11 +1507,18 @@ extension ContentView {
             settingsJumpSlide = CGFloat(-direction) * 60
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            // 位置を合わせる前にずらしを 0 に戻す(薄いので見えない)。ずらしたまま scrollTo すると、ずらした後の位置を
+            // 上端に合わせるので、ずらしを戻したときにその分(60pt)だけ飛び先が動いていた(3709。3705〜3708 の実機の録画)
+            var reset = Transaction()
+            reset.disablesAnimations = true
+            withTransaction(reset) {
+                settingsJumpSlide = 0
+            }
             runSettingsJump(request, proxy: proxy, direction: direction)
         }
     }
 
-    // 合ったかの判定(3706): 着いたカードの上端が見えている範囲の上端(+ 今の滑らせ量)に来ていて、前の回から動いていないこと。
+    // 合ったかの判定(3706): 着いたカードの上端が見えている範囲の上端に来ていて、前の回から動いていないこと。
     // 「動いていない」だけでは、間のカードがまだ作られていないうちに同じ見積もり違いの場所で 2 回止まって合ったと見なし、
     // 浮かび上がったあとで高さが直ってずれた(G.1 で上 1/3 が隠れる、L.4 で L.3 の下が見える。3705 の実機)。
     // 上端まで寄せられない末尾のカード(X.19 等)は、3 回続けて動かなければ合ったとする。
@@ -1534,7 +1546,7 @@ extension ContentView {
             } else {
                 stable = 0
             }
-            let expectedTop = SettingsJumpPositions.shared.viewportTop.map { $0 + settingsJumpSlide }
+            let expectedTop = SettingsJumpPositions.shared.viewportTop
             let atTop = minY != nil && expectedTop != nil && abs((minY ?? 0) - (expectedTop ?? 0)) < 1.5
             let converged = stable >= 1 && atTop || stable >= 3
             SettingsJumpTrace.shared.log(
@@ -1558,8 +1570,10 @@ extension ContentView {
     }
 
     // 飛び先の 1 つ上のカードの下端を画面の下端に合わせ、飛び先の上の 1 画面分を作らせて高さを確定させる(3707)。
-    // まだ作られていないカードの高さは見積もりなので、作らずに見せると、浮かび上がるときの滑り込みでそのカードが画面に入って
-    // 初めて作られ、見積もりとの差だけ飛び先が押し下げられてから合わせ直しで戻っていた(L.5・X.5。3706 の実機)
+    // 下へ飛んだときの滑り込みは飛び先の上を 140pt 見せるので、まだ作られていないカードがそこで初めて作られて
+    // 見積もりとの差だけ飛び先が動かないように、見せる前に作らせておく。
+    // (3707 で足したときの「上のカードが後から作られて押し下げていた」という見立ては誤りで、3706 までのずれの原因は
+    // ずらしたままの scrollTo だった。3709 で直した)
     private func revealAboveSettingsJumpTarget(_ request: SettingsJumpRequest, proxy: ScrollViewProxy, direction: Int) {
         let aboveID = SettingsJumpMenu.anchorIDAbove(request.item.cardID) ?? Self.scrollTopAnchorID
         SettingsJumpTrace.shared.log("reveal \(aboveID)")
@@ -1577,17 +1591,27 @@ extension ContentView {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
             SettingsJumpTrace.shared.end()
         }
-        // 進む向きの先から滑り込ませながら浮かび上がらせる(下へ飛んだなら下から上へ)
+        // 進む向きの先から滑り込ませながら浮かび上がらせる(下へ飛んだなら下から上へ)。ずらした位置を一度描かせてから
+        // 0 へ動かす。同じ更新の中で 140 → 0 と続けて入れると最後の値しか描かれず、滑り込みが出ていなかった(3709)
         var placement = Transaction()
         placement.disablesAnimations = true
         withTransaction(placement) {
             settingsJumpSlide = CGFloat(direction) * 140
         }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.03) {
+            guard settingsJumpRequest == request else {
+                return
+            }
+            presentSettingsJump(request, proxy: proxy, targetID: targetID)
+        }
+    }
+
+    private func presentSettingsJump(_ request: SettingsJumpRequest, proxy: ScrollViewProxy, targetID: String) {
         withAnimation(.easeOut(duration: 0.3)) {
             settingsJumpFading = false
             settingsJumpSlide = 0
         }
-        // 浮かび上がったあと、まだずれていれば短く合わせ直す(後から作られたカードの高さで動いた分)
+        // 浮かび上がったあと、まだずれていれば短く合わせ直す(念のため。滑り込みで初めて作られたカードの高さで動いた分など)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
             SettingsJumpTrace.shared.log(
                 "recheck T=\(SettingsJumpTrace.format(SettingsJumpPositions.shared.minY[targetID]))"
