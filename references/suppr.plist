@@ -471,6 +471,8 @@
 	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>麴塵</string><key>shortcut</key><string>あおいろ</string></dict> -->
 
 	<!-- ■ 現代的に流行っていない言い方(古語・文語・旧仮名・非標準表記) -->
+	<dict><key>phrase</key><string>誰</string><key>shortcut</key><string>たれ</string><key>pos</key><string>名詞</string></dict>	<!-- 誰(たれ): 古語かその流れをくむ文脈だけの読みで、普通は だれ としか読まない。やきとりのたれがない が 焼き鳥の誰がない だった(ユーザ指定 3710)。だれ は残す -->
+	<dict><key>phrase</key><string>足れ</string><key>shortcut</key><string>たれ</string></dict>	<!-- 足れ(足る の古い活用形。今は 足りる)。やきとりのたれがない の 3 番めに 焼き鳥の足れがない が出ていた(誰 と同じ理由。3710) -->
 	<dict><key>phrase</key><string>詣で来る</string><key>shortcut</key><string>もうでくる</string></dict>	<!-- 詣で来る(古語の複合動詞、Sudachi)。活用ごと抑制する。もうできてるから が 詣で来てるから 1 つだけだった(ユーザ報告 3710) -->
 	<dict><key>phrase</key><string>捷い</string><key>shortcut</key><string>はやい</string></dict>	<!-- 捷い/迅い/疾い(はやい): Sudachi の古い表記(LM に出現なし)。活用 捷くしても/迅くしても が連文節の変種の枠を取り、をはやくしても の 破約しても が出なくなっていた(ユーザ報告 3781) -->
 	<dict><key>phrase</key><string>迅い</string><key>shortcut</key><string>はやい</string></dict>
