@@ -1077,9 +1077,6 @@ extension ContentView {
 struct SettingsJumpMenuItem: Equatable {
     let cardID: String
     let title: String
-    // 先に飛んで近くを描かせておくカード。X.14/X.15 は 1 つの型の中の 2 枚で、LazyVStack の直接の子でないことがあるので、
-    // 直接の子である 1 つ上の X.13 へ先に飛ぶ
-    var preScrollCardID: String? { cardID == "X.14" || cardID == "X.15" ? "X.13" : nil }
 }
 
 // serial は同じ項目を続けて選んでも onChange が来るようにするための通し番号
@@ -1117,15 +1114,6 @@ enum SettingsJumpMenu {
     static func sectionAnchorID(_ cardID: String) -> String {
         "settings-section-" + cardID
     }
-
-    // 画面で 1 つ上にあるカードの目印(items は画面の並び)。L.1 の上は設定のカードでないので nil
-    static func anchorIDAbove(_ cardID: String) -> String? {
-        guard let index = items.firstIndex(where: { $0.cardID == cardID }), index > 0 else {
-            return nil
-        }
-        return sectionAnchorID(items[index - 1].cardID)
-    }
-
 
     #if DEBUG
     static let showsResetItem = true
@@ -1222,110 +1210,6 @@ enum SettingsJumpMenu {
     }
 }
 
-// 飛び先のカードの上端の位置(.global)。描かれたカードだけが入る。飛び直しの収束の判定に使うだけなので、
-// 描き直しを起こさないよう @State でなく参照型に置く(メインスレッドだけで読み書き)
-final class SettingsJumpPositions {
-    static let shared = SettingsJumpPositions()
-    var minY: [String: CGFloat] = [:]
-    // 設定の一覧の見えている範囲の上端(.global。ナビバーの下)。scrollTo(.top) で着いたカードの上端はここに来る
-    var viewportTop: CGFloat? {
-        didSet {
-            SettingsJumpTrace.shared.log("vt \(SettingsJumpTrace.format(viewportTop))")
-        }
-    }
-}
-
-// 調査用ログ(題字メニューのずれ 3708)。飛んでいる間と着いたあとの位置の動きを App Group の settingsJumpTraceLines に
-// 足していく(DEBUG だけ。行頭は飛び始めからの ms)。T=飛び先の上端、A=1 つ上のカードの上端、vt=見えている範囲の上端。
-// 着いたあとに一覧が上下にずれてから戻る件(3706・3707 の実機。同じ L.5 でも向きが変わる)の原因が分かったら外す
-final class SettingsJumpTrace {
-    static let shared = SettingsJumpTrace()
-    static let defaultsKey = "settingsJumpTraceLines"
-    private var start: CFAbsoluteTime = 0
-    private var lines: [String] = []
-    private(set) var targetID: String?
-    private var aboveID: String?
-
-    static func format(_ value: CGFloat?) -> String {
-        value.map { String(format: "%.1f", Double($0)) } ?? "nil"
-    }
-
-    func begin(targetID: String, aboveID: String, note: String) {
-        #if DEBUG
-        if self.targetID != nil {
-            end()
-        }
-        start = CFAbsoluteTimeGetCurrent()
-        lines = []
-        self.targetID = targetID
-        self.aboveID = aboveID
-        log("begin \(note)")
-        #endif
-    }
-
-    func log(_ text: String) {
-        #if DEBUG
-        guard targetID != nil else {
-            return
-        }
-        let ms = Int((CFAbsoluteTimeGetCurrent() - start) * 1000)
-        lines.append("\(ms) \(text)")
-        #endif
-    }
-
-    func logGeometry(anchorID: String, minY: CGFloat) {
-        #if DEBUG
-        if anchorID == targetID {
-            log("geo T \(Self.format(minY))")
-        } else if anchorID == aboveID {
-            log("geo A \(Self.format(minY))")
-        }
-        #endif
-    }
-
-    func end() {
-        #if DEBUG
-        guard targetID != nil else {
-            return
-        }
-        log("end")
-        targetID = nil
-        aboveID = nil
-        var all = ContentView.sharedDefaults?.stringArray(forKey: Self.defaultsKey) ?? []
-        all.append(contentsOf: lines)
-        all.append("---")
-        ContentView.sharedDefaults?.set(Array(all.suffix(1500)), forKey: Self.defaultsKey)
-        lines = []
-        #endif
-    }
-}
-
-// 調査用ログ(題字メニューのずれ 3708)。一覧のスクロール量・中身の高さ・上の余白と、スクロールの状態(指・慣性・アニメーション)
-struct SettingsJumpTraceScrollObserver: ViewModifier {
-    func body(content: Content) -> some View {
-        #if DEBUG
-        if #available(iOS 18.0, macOS 15.0, *) {
-            content
-                .onScrollGeometryChange(for: [CGFloat].self) { geometry in
-                    [geometry.contentOffset.y, geometry.contentSize.height, geometry.contentInsets.top]
-                } action: { _, values in
-                    SettingsJumpTrace.shared.log(
-                        "scroll off=\(SettingsJumpTrace.format(values[0])) size=\(SettingsJumpTrace.format(values[1]))"
-                            + " inset=\(SettingsJumpTrace.format(values[2]))"
-                    )
-                }
-                .onScrollPhaseChange { oldPhase, newPhase in
-                    SettingsJumpTrace.shared.log("phase \(oldPhase)->\(newPhase)")
-                }
-        } else {
-            content
-        }
-        #else
-        content
-        #endif
-    }
-}
-
 // 飛んで着いたカードを一瞬光らせる(どこへ飛んだかを見せる。ユーザ指定 3704)
 final class SettingsJumpHighlight: ObservableObject {
     static let shared = SettingsJumpHighlight()
@@ -1348,20 +1232,9 @@ struct SettingsJumpHighlightOverlay: ViewModifier {
 }
 
 extension View {
-    // 題字のメニューの飛び先の目印。.id は LazyVStack の直接の子として一番外に付ける(まだ描いていないカードへ scrollTo するため)
+    // 題字のメニューの飛び先の目印(scrollTo の .id と、着いたときに光らせる枠)
     func settingsJumpAnchor(_ anchorID: String) -> some View {
         modifier(SettingsJumpHighlightOverlay(anchorID: anchorID))
-            .onGeometryChange(for: CGFloat.self) { proxy in
-                proxy.frame(in: .global).minY
-            } action: { minY in
-                SettingsJumpPositions.shared.minY[anchorID] = minY
-                SettingsJumpTrace.shared.logGeometry(anchorID: anchorID, minY: minY)
-            }
-            // 画面から外れたカードの位置は消す。残すと、飛んで画面から消えたカードの最後の位置(画面内の値)が残り、
-            // 一番上にいるのに X.19 を見ていると判断して、進む向きを逆にしていた(3709)
-            .onDisappear {
-                SettingsJumpPositions.shared.minY[anchorID] = nil
-            }
             .id(anchorID)
     }
 }
@@ -1469,174 +1342,42 @@ extension ContentView {
         }
     }
 
-    // 選んだ項目へ飛ぶ。LazyVStack はまだ描いていないカードの高さを見積もるので、1 回の scrollTo では大きく外れる
-    // (G.1 を選んで X.10、L.5 を選んで F.1。何度かやると合う。3702 の実機)。描かれるたびに見積もりが正しくなるので、
-    // アニメーションなしで飛び直し、目的のカードの上端の位置が前の回と変わらなくなったら止める(最大 12 回、0.06 秒ごと)。
-    // X.14/X.15 は先に X.13 へ 2 回飛んで描かせてから飛ぶ。新しい選択が来たら古い飛び直しはやめる。
-    // 飛び直しの動きは見せず、一覧を 0.1 秒で薄くしてから飛び、合ったら浮かび上がらせて着いたカードを 0.8 秒光らせる(3704、ユーザ指定)
-    // スクロールしたように見せる向き(下の項目へなら 1、上へなら -1、同じなら 0)。いま画面の上端にあるカード
-    // (描かれたカードのうち、上端がナビバーの少し下より上にある最後のもの)と飛び先の並びで決める(3705、ユーザ指定)
-    private func settingsJumpDirection(to item: SettingsJumpMenuItem) -> Int {
-        let items = SettingsJumpMenu.items
-        guard let targetIndex = items.firstIndex(of: item) else {
-            return 0
-        }
-        let viewTop = titleMenuTitleFrameInWindow.maxY + 40
-        var currentIndex = -1   // 一番上(L.1 より上)を見ている
-        for (index, candidate) in items.enumerated() {
-            if let minY = SettingsJumpPositions.shared.minY[SettingsJumpMenu.sectionAnchorID(candidate.cardID)], minY <= viewTop {
-                currentIndex = index
-            }
-        }
-        return targetIndex == currentIndex ? 0 : (targetIndex > currentIndex ? 1 : -1)
-    }
-
+    // 選んだ項目へ飛ぶ(3712)。一覧は全部のカードを作る VStack なので、scrollTo 1 回で正しい位置に着く。素直に
+    // スクロールして見せ、着いたカードを 0.8 秒光らせる(3704、ユーザ指定)。
+    // 3699〜3709 の LazyVStack ではまだ作っていないカードの高さが見積もりで、1 回の scrollTo では大きく外れた。飛び直し・
+    // 薄くする・滑らせるで補っていたが、着いたあとに上下へ動くのが残った(ユーザ指定で素直なスクロールに)。
+    // 一覧を作り終える前(起動直後)に選ばれたら、残りの塊を一度に作ってから飛ぶ。作るのは次の描画なので、
+    // すぐに飛ぶとまだ無いカードへの scrollTo が空振りする。0.05 秒おく(描画で主スレッドが埋まっている間は待たされる)
     func startSettingsJump(_ request: SettingsJumpRequest, proxy: ScrollViewProxy) {
         SettingsJumpHighlight.shared.anchorID = nil
-        let direction = settingsJumpDirection(to: request.item)
-        let traceTargetID = SettingsJumpMenu.sectionAnchorID(request.item.cardID)
-        SettingsJumpTrace.shared.begin(
-            targetID: traceTargetID,
-            aboveID: SettingsJumpMenu.anchorIDAbove(request.item.cardID) ?? Self.scrollTopAnchorID,
-            note: "\(request.item.cardID) dir=\(direction) T=\(SettingsJumpTrace.format(SettingsJumpPositions.shared.minY[traceTargetID]))"
-                + " vt=\(SettingsJumpTrace.format(SettingsJumpPositions.shared.viewportTop))"
-        )
-        // 進む向きと逆へ少しずらしながら薄くする(下へ飛ぶなら一覧は上へ流れる)
-        withAnimation(.easeIn(duration: 0.1)) {
-            settingsJumpFading = true
-            settingsJumpSlide = CGFloat(-direction) * 60
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            // 位置を合わせる前にずらしを 0 に戻す(薄いので見えない)。ずらしたまま scrollTo すると、ずらした後の位置を
-            // 上端に合わせるので、ずらしを戻したときにその分(60pt)だけ飛び先が動いていた(3709。3705〜3708 の実機の録画)
-            var reset = Transaction()
-            reset.disablesAnimations = true
-            withTransaction(reset) {
-                settingsJumpSlide = 0
+        guard settingsCardStagesBuilt >= Self.settingsCardStageCount else {
+            settingsCardStagesBuilt = Self.settingsCardStageCount
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                guard settingsJumpRequest == request else {
+                    return
+                }
+                startSettingsJump(request, proxy: proxy)
             }
-            runSettingsJump(request, proxy: proxy, direction: direction)
-        }
-    }
-
-    // 合ったかの判定(3706): 着いたカードの上端が見えている範囲の上端に来ていて、前の回から動いていないこと。
-    // 「動いていない」だけでは、間のカードがまだ作られていないうちに同じ見積もり違いの場所で 2 回止まって合ったと見なし、
-    // 浮かび上がったあとで高さが直ってずれた(G.1 で上 1/3 が隠れる、L.4 で L.3 の下が見える。3705 の実機)。
-    // 上端まで寄せられない末尾のカード(X.19 等)は、3 回続けて動かなければ合ったとする。
-    // 1 度合ったら、飛び先の上を一度画面に入れて作らせ(revealAboveSettingsJumpTarget)、もう一度合わせてから見せる(3707)
-    func runSettingsJump(
-        _ request: SettingsJumpRequest, proxy: ScrollViewProxy, direction: Int = 0, attempt: Int = 0,
-        lastMinY: CGFloat? = nil, stableCount: Int = 0, revealedAbove: Bool = false
-    ) {
-        guard settingsJumpRequest == request else {
             return
         }
-        let item = request.item
-        let targetID = SettingsJumpMenu.sectionAnchorID(item.cardID)
-        let usesPreScroll = !revealedAbove && item.preScrollCardID != nil && attempt < 2
-        let scrollID = usesPreScroll ? SettingsJumpMenu.sectionAnchorID(item.preScrollCardID ?? item.cardID) : targetID
-        proxy.scrollTo(scrollID, anchor: .top)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.06) {
-            guard settingsJumpRequest == request else {
-                return
-            }
-            let minY = SettingsJumpPositions.shared.minY[targetID]
-            var stable = stableCount
-            if !usesPreScroll, let minY, let lastMinY, abs(minY - lastMinY) < 1 {
-                stable += 1
-            } else {
-                stable = 0
-            }
-            let expectedTop = SettingsJumpPositions.shared.viewportTop
-            let atTop = minY != nil && expectedTop != nil && abs((minY ?? 0) - (expectedTop ?? 0)) < 1.5
-            let converged = stable >= 1 && atTop || stable >= 3
-            SettingsJumpTrace.shared.log(
-                "check a=\(attempt) rev=\(revealedAbove) pre=\(usesPreScroll) T=\(SettingsJumpTrace.format(minY))"
-                    + " expect=\(SettingsJumpTrace.format(expectedTop)) slide=\(SettingsJumpTrace.format(settingsJumpSlide))"
-                    + " stable=\(stable) atTop=\(atTop) ok=\(converged)"
-            )
-            guard converged || attempt >= 19 else {
-                runSettingsJump(
-                    request, proxy: proxy, direction: direction, attempt: attempt + 1,
-                    lastMinY: usesPreScroll ? nil : minY, stableCount: stable, revealedAbove: revealedAbove
-                )
-                return
-            }
-            guard revealedAbove else {
-                revealAboveSettingsJumpTarget(request, proxy: proxy, direction: direction)
-                return
-            }
-            finishSettingsJump(request, proxy: proxy, targetID: targetID, direction: direction)
+        let targetID = SettingsJumpMenu.sectionAnchorID(request.item.cardID)
+        withAnimation(.easeInOut(duration: 0.4)) {
+            proxy.scrollTo(targetID, anchor: .top)
         }
-    }
-
-    // 飛び先の 1 つ上のカードの下端を画面の下端に合わせ、飛び先の上の 1 画面分を作らせて高さを確定させる(3707)。
-    // 下へ飛んだときの滑り込みは飛び先の上を 140pt 見せるので、まだ作られていないカードがそこで初めて作られて
-    // 見積もりとの差だけ飛び先が動かないように、見せる前に作らせておく。
-    // (3707 で足したときの「上のカードが後から作られて押し下げていた」という見立ては誤りで、3706 までのずれの原因は
-    // ずらしたままの scrollTo だった。3709 で直した)
-    private func revealAboveSettingsJumpTarget(_ request: SettingsJumpRequest, proxy: ScrollViewProxy, direction: Int) {
-        let aboveID = SettingsJumpMenu.anchorIDAbove(request.item.cardID) ?? Self.scrollTopAnchorID
-        SettingsJumpTrace.shared.log("reveal \(aboveID)")
-        proxy.scrollTo(aboveID, anchor: .bottom)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.06) {
-            runSettingsJump(request, proxy: proxy, direction: direction, revealedAbove: true)
-        }
-    }
-
-    private func finishSettingsJump(_ request: SettingsJumpRequest, proxy: ScrollViewProxy, targetID: String, direction: Int) {
-        SettingsJumpTrace.shared.log(
-            "finish T=\(SettingsJumpTrace.format(SettingsJumpPositions.shared.minY[targetID]))"
-                + " vt=\(SettingsJumpTrace.format(SettingsJumpPositions.shared.viewportTop))"
-        )
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-            SettingsJumpTrace.shared.end()
-        }
-        // 進む向きの先から滑り込ませながら浮かび上がらせる(下へ飛んだなら下から上へ)。ずらした位置を一度描かせてから
-        // 0 へ動かす。同じ更新の中で 140 → 0 と続けて入れると最後の値しか描かれず、滑り込みが出ていなかった(3709)
-        var placement = Transaction()
-        placement.disablesAnimations = true
-        withTransaction(placement) {
-            settingsJumpSlide = CGFloat(direction) * 140
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.03) {
-            guard settingsJumpRequest == request else {
-                return
-            }
-            presentSettingsJump(request, proxy: proxy, targetID: targetID)
-        }
-    }
-
-    private func presentSettingsJump(_ request: SettingsJumpRequest, proxy: ScrollViewProxy, targetID: String) {
-        withAnimation(.easeOut(duration: 0.3)) {
-            settingsJumpFading = false
-            settingsJumpSlide = 0
-        }
-        // 浮かび上がったあと、まだずれていれば短く合わせ直す(念のため。滑り込みで初めて作られたカードの高さで動いた分など)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-            SettingsJumpTrace.shared.log(
-                "recheck T=\(SettingsJumpTrace.format(SettingsJumpPositions.shared.minY[targetID]))"
-                    + " vt=\(SettingsJumpTrace.format(SettingsJumpPositions.shared.viewportTop))"
-            )
-            guard settingsJumpRequest == request,
-                let minY = SettingsJumpPositions.shared.minY[targetID],
-                let viewportTop = SettingsJumpPositions.shared.viewportTop,
-                abs(minY - viewportTop) >= 2 else {
+            guard settingsJumpRequest == request else {
                 return
             }
-            SettingsJumpTrace.shared.log("correct")
-            withAnimation(.easeOut(duration: 0.2)) {
-                proxy.scrollTo(targetID, anchor: .top)
+            withAnimation(.easeOut(duration: 0.15)) {
+                SettingsJumpHighlight.shared.anchorID = targetID
             }
-        }
-        withAnimation(.easeOut(duration: 0.15)) {
-            SettingsJumpHighlight.shared.anchorID = targetID
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
-            guard SettingsJumpHighlight.shared.anchorID == targetID else {
-                return
-            }
-            withAnimation(.easeOut(duration: 0.4)) {
-                SettingsJumpHighlight.shared.anchorID = nil
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+                guard SettingsJumpHighlight.shared.anchorID == targetID else {
+                    return
+                }
+                withAnimation(.easeOut(duration: 0.4)) {
+                    SettingsJumpHighlight.shared.anchorID = nil
+                }
             }
         }
     }

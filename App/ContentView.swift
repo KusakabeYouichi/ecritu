@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20261107143104"
+    private static let editionUpdatedAtRaw: String = "20261107183131"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -555,8 +555,10 @@ struct ContentView: View {
     // 退避した設定の日時(無ければ nil)。メニューを描くたびに Keychain を読まないよう、起動時と退避・復元のあとに読む
     @State var settingsStashSavedAt: Date?
     @State var settingsToastMessage: String?
-    // 初回フレーム軽量化: 設定カード群は最初の描画後に構築する(起動直後の白背景 Loading 対策)。
-    @State private var didRenderInitialFrame = false
+    // 初回フレーム軽量化: 設定カード群は最初の描画後に、1 フレームに 1 塊ずつ作る(起動直後の白背景 Loading 対策。
+    // 塊に分けるのは 3712)。いくつめの塊まで作ったか。題字のメニューで飛ぶときは残りを先に作る
+    @State var settingsCardStagesBuilt = 0
+    static let settingsCardStageCount = 10
     // ナビバーのタイトル(筆記体の écritu)タップで先頭へ戻す(3205)。設定は縦に長く、
     // 一番上のロゴやテーマ選択まで指で戻すのが大変というユーザ要望。値の増減が合図で、
     // ScrollViewReader 側の onChange が受ける
@@ -569,11 +571,6 @@ struct ContentView: View {
     // 題字のウィンドウ上の枠(UIKit で測る)。ツールバーの .global との原点の差で指の位置をウィンドウ座標に直す
     @State var titleMenuTitleWindowFrame: CGRect = .zero
     @State var settingsJumpRequest: SettingsJumpRequest?
-    // 飛び直しの間は一覧を薄くして動きを見せない(3704)。前後はずらして滑らせ、スクロールしたように見せる(3705)
-    @State var settingsJumpFading = false
-    @State var settingsJumpSlide: CGFloat = 0
-    // 設定カード群の構築計測(2587)。didRenderInitialFrame を立てた時刻と、カード群の
-    // 最後の要素が画面に載った時刻の差が構築コストそのもの。
     // 1起動ぶんの計測断片。bootstrap完了で1行にまとめて履歴キーへ流す。
     @State var bootstrapTimingParts: [String] = []
     // 各事象が起動から何ms後に起きたかを出すための基準時刻。
@@ -1286,11 +1283,35 @@ struct ContentView: View {
         }
     }
 
+    // 設定カードを 1 塊ずつ作る(3712)。塊を足したら 1 ms 譲る。譲っている間に主スレッドがその塊を作って描くので、
+    // 戻るまでの時間がその塊の作成と描画の時間。どのフレームも 1 塊ぶんで済み、起動直後の画面が止まらない。
+    // 題字のメニューで飛ぶと残りを一度に作る(startSettingsJump)ので、そのときはここで終わる。
+    // 画面から外れて止められたら(.task の取り消し)、残りは作らずに終わる(戻ったときの .task が続きを作る)。
+    // 塊ごとの時間は診断ログ(開発ビルドだけ)に残す
+    func buildSettingsCardsInStages() async {
+        let startedAt = CFAbsoluteTimeGetCurrent()
+        // ロゴと説明を先に描かせる
+        await Task.yield()
+        var stageMilliseconds: [Int] = []
+        while settingsCardStagesBuilt < Self.settingsCardStageCount {
+            let stageStartedAt = CFAbsoluteTimeGetCurrent()
+            settingsCardStagesBuilt += 1
+            // 取り消されると sleep はすぐ戻るので、続けると残りを 1 フレームで作ってしまう
+            guard (try? await Task.sleep(for: .milliseconds(1))) != nil else {
+                return
+            }
+            stageMilliseconds.append(containerDiagnosticsElapsedMilliseconds(since: stageStartedAt))
+        }
+        appendContainerDiagnosticsLog(
+            "設定一覧の組み立て 塊ごとms=\(stageMilliseconds.map(String.init).joined(separator: ","))"
+                + " 最大ms=\(stageMilliseconds.max() ?? 0) 計ms=\(containerDiagnosticsElapsedMilliseconds(since: startedAt))"
+        )
+    }
+
     // 設定カード群(body の見出しコメントごとに小さなビューへ分割。1 つの body に 40 枚以上を並べると
     // 型検査と Release(WMO)のコンパイルが重く、過去にクラッシュもした。2805 リファクタ)
+    // 各カードの .id は題字のメニュー(項目へ飛ぶ。SettingsJumpMenu、3699)の目印
     @ViewBuilder
-    // 各カードの .id は題字のメニュー(項目へ飛ぶ。SettingsJumpMenu、3699)の目印。LazyVStack の直接の子に付けないと、
-    // まだ描いていないカードへ scrollTo で飛べない
     private var layoutSettingsCards: some View {
         KanaLayoutSettingsSection(selection: kanaLayoutSelection)
             .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("L.1"))
@@ -1495,7 +1516,11 @@ struct ContentView: View {
 
         KakikaeSettingsSection(rawValue: $kakikaePreferenceRawValue, everydayException: $kakikaeEverydayException)
             .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.9"))
+    }
 
+    // 変換の後半(X.10〜)。一覧は 1 フレームに 1 塊ずつ作るので、カードの多い変換は 2 つの塊に分ける(3712)
+    @ViewBuilder
+    private var conversionLateSettingsCards: some View {
         LateStandardizedRewriteSettingsSection(rawValue: $lateStandardizedRewritePreferenceRawValue)
             .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.10"))
 
@@ -1704,10 +1729,12 @@ struct ContentView: View {
                 // (白背景の全画面 Loading で待たせない。ユーザ方針)。
                 ScrollViewReader { scrollProxy in
                 ScrollView {
-                        // LazyVStack: 設定カードは約 290 個のコントロールを 8 群に持つ。VStack だと初回フレームで
-                        // 全部を構築し、実機で初回フレームまで 400〜900ms(OS のハング検出 0.44s)だった。
-                        // 画面に入る分だけ構築させる(2849)。実測は 44〜51ms へ短縮
-                        LazyVStack(alignment: .leading, spacing: 16) {
+                        // VStack: 設定カードは約 290 個のコントロールを持つ。一度に全部を作ると実機で初回フレームまで
+                        // 400〜900ms(OS のハング検出 0.44s)だったので、2849 で LazyVStack にした。ただ LazyVStack は
+                        // まだ作っていないカードの高さを見積もるので、題字のメニューで飛んだ先がずれ、飛び直しても着いたあとに
+                        // 上下へ動いた(3702〜3709)。全部を作る VStack に戻し、作るのは 1 フレームに 1 塊ずつにする
+                        // (buildSettingsCardsInStages。起動直後はロゴと説明だけを描く。3712、ユーザ指定)
+                        VStack(alignment: .leading, spacing: 16) {
                             // 先頭へ戻すときの目印(高さ 0。タイトルタップで ここへ scrollTo する)
                             Color.clear
                                 .frame(height: 0)
@@ -1772,44 +1799,51 @@ struct ContentView: View {
                             fullAccessStatusCard
                         }
 
-                        // 設定カード群は初回フレーム描画後に遅延構築する(下の .task が1フレーム後に
-                        // フラグを立てる)。起動直後はロゴ+ヘッダーだけを即描画し、白背景の
+                        // 設定カード群は初回フレームの後に、下の .task が 1 フレームに 1 塊ずつ作る
+                        // (settingsCardStageCount 塊)。起動直後はロゴ+ヘッダーだけを即描画し、白背景の
                         // Loading 表示が長引かないようにする。
-                        if didRenderInitialFrame {
-                            // ──── キー配列 ────
+                        // ──── キー配列 ────
+                        if settingsCardStagesBuilt >= 1 {
                             layoutSettingsCards
-                            // ──── 入力 ────
+                        }
+                        // ──── 入力 ────
+                        if settingsCardStagesBuilt >= 2 {
                             inputSettingsCards
-                            // ──── キー表示 ────
+                        }
+                        // ──── キー表示 ────
+                        if settingsCardStagesBuilt >= 3 {
                             keyDisplaySettingsCards
-                            // ──── 表示 ────
+                        }
+                        // ──── 表示 ────
+                        if settingsCardStagesBuilt >= 4 {
                             displaySettingsCards
-                            // ──── 書式 ────
+                        }
+                        // ──── 書式 ────
+                        if settingsCardStagesBuilt >= 5 {
                             formatSettingsCards
-                            // ──── 変換 ────
+                        }
+                        // ──── 変換 ────
+                        if settingsCardStagesBuilt >= 6 {
                             conversionSettingsCards
-                            // ──── 語彙管理 ────
+                        }
+                        if settingsCardStagesBuilt >= 7 {
+                            conversionLateSettingsCards
+                        }
+                        // ──── 語彙管理 ────
+                        if settingsCardStagesBuilt >= 8 {
                             vocabularySettingsCards
-                            // ──── アプリ情報 ────
+                        }
+                        // ──── アプリ情報 ────
+                        if settingsCardStagesBuilt >= 9 {
                             appInfoSettingsCards
-                            // ──── 診断 ────
+                        }
+                        // ──── 診断 ────
+                        if settingsCardStagesBuilt >= 10 {
                             diagnosticsSettingsCards
-                        } // didRenderInitialFrame
+                        }
                         }
                         .padding(20)
-                        // 題字のメニューで飛ぶ間は薄くする(飛び直しの動きを見せない。3704)。前後は滑らせる(3705)
-                        .offset(y: settingsJumpSlide)
-                        // 0 にしない(完全に消えた面は組み立てを後回しにされうるので、飛び先の高さの確定が遅れる。3706)
-                        .opacity(settingsJumpFading ? 0.001 : 1)
                     }
-                    // 見えている範囲の上端(ナビバーの下)。題字のメニューで飛んだ先が上端に着いたかの判定に使う(3706)
-                    .onGeometryChange(for: CGFloat.self) { proxy in
-                        proxy.frame(in: .global).minY + proxy.safeAreaInsets.top
-                    } action: { top in
-                        SettingsJumpPositions.shared.viewportTop = top
-                    }
-                    // 調査用ログ(題字メニューのずれ 3708)
-                    .modifier(SettingsJumpTraceScrollObserver())
                     .disabled(isBootstrappingInitialData)
                     // ロゴメニューの表示中はスクロールを止める。止めないと指を項目へ下ろした
                     // 瞬間に ScrollView のパンがドラッグを奪い、メニューは残るが項目が選ばれない(2762)
@@ -1819,7 +1853,7 @@ struct ContentView: View {
                             scrollProxy.scrollTo(Self.scrollTopAnchorID, anchor: .top)
                         }
                     }
-                    // 題字のメニューで選んだ項目へ飛ぶ(位置が落ち着くまで飛び直す。runSettingsJump。3699/3703)
+                    // 題字のメニューで選んだ項目へ飛ぶ(startSettingsJump。3699/3712)
                     .onChange(of: settingsJumpRequest) { _, request in
                         guard let request else {
                             return
@@ -1829,12 +1863,11 @@ struct ContentView: View {
                 }
             }
             .task {
-                guard !didRenderInitialFrame else {
+                // 途中で画面から外れて止まった(下の画面へ移った)ときは、戻ったときに続きから作る
+                guard settingsCardStagesBuilt < Self.settingsCardStageCount else {
                     return
                 }
-                // 1フレーム分だけ譲ってヘッダーを先に描画してから、カード群を構築する。
-                await Task.yield()
-                didRenderInitialFrame = true
+                await buildSettingsCardsInStages()
             }
             .onAppear {
                 handleContainerAppAppear()
