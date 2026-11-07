@@ -160,6 +160,12 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "くなかったです", baseReadingSuffix: "い", allowedClasses: .adjectiveI),
         InflectionRule(readingSuffix: "かった", baseReadingSuffix: "い", allowedClasses: .adjectiveI),
         InflectionRule(readingSuffix: "かったり", baseReadingSuffix: "い", allowedClasses: .adjectiveI),
+        // 〜かったりする(高かったりする/じゃなかったりする)。かったり+する の 2 ノードより、〜かった+利する(1 語 7649)が
+        // 安く じゃなかった利する だった(ユーザ報告 3715。動詞の なかったりする は 2757)
+        InflectionRule(readingSuffix: "かったりする", baseReadingSuffix: "い", allowedClasses: .adjectiveI),
+        InflectionRule(readingSuffix: "かったりした", baseReadingSuffix: "い", allowedClasses: .adjectiveI),
+        InflectionRule(readingSuffix: "かったりして", baseReadingSuffix: "い", allowedClasses: .adjectiveI),
+        InflectionRule(readingSuffix: "かったりします", baseReadingSuffix: "い", allowedClasses: .adjectiveI),
         InflectionRule(readingSuffix: "かったです", baseReadingSuffix: "い", allowedClasses: .adjectiveI),
         InflectionRule(readingSuffix: "くありません", baseReadingSuffix: "い", allowedClasses: .adjectiveI),
         InflectionRule(readingSuffix: "くありませんでした", baseReadingSuffix: "い", allowedClasses: .adjectiveI),
