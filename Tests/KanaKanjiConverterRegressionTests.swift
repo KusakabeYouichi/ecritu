@@ -1867,6 +1867,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(darou.prefix(6).contains(where: { $0.contains("労使") || $0.contains("老子") || $0.contains("牛") }), "\(darou.prefix(6))")
         XCTAssertTrue(multi("こまるひとがいるだろうし").first?.hasSuffix("だろうし") ?? false, "\(multi("こまるひとがいるだろうし").prefix(4))")
         XCTAssertEqual(multi("でしょうし").first, "でしょうし")
+        // も+出る(3 文字は連文節の対象外なので単文節へ。先頭は モデル のまま)
+        XCTAssertEqual(Array(single("もでる").prefix(2)), ["モデル", "も出る"])
     }
 
     // 2026-11-04 のユーザ報告(edition 3661)
