@@ -1869,6 +1869,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("でしょうし").first, "でしょうし")
         // も+出る(3 文字は連文節の対象外なので単文節へ。先頭は モデル のまま)
         XCTAssertEqual(Array(single("もでる").prefix(2)), ["モデル", "も出る"])
+        // 憂+すぎる より は+無能すぎる
+        XCTAssertEqual(multi("むりょうのはむのうすぎる").first, "無料のは無能すぎる")
+        XCTAssertEqual(multi("むのうすぎる").first, "無能すぎる")
     }
 
     // 2026-11-04 のユーザ報告(edition 3661)
