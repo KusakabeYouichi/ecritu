@@ -1043,8 +1043,18 @@ struct KeyboardRootView: View {
         fourRowAlignedClusterHeight - mainFlickKeyHeight - keyboardRowSpacing
     }
 
+    // 縦画面の 4 方向ガイドは 1.2 倍(1 字 10→12pt、2 字 9→10.8pt。数字を 24pt に下げた分。3715、ユーザ指定)。
+    // 下に並べる表示はこの倍率に numberDownDirectionalHintScale を掛けるので 1 のまま
     var numberThreeByThreeDirectionalHintScale: CGFloat {
-        isLandscapeLayout ? 0.82 : 1
+        if isLandscapeLayout {
+            return 0.82
+        }
+        return inputMode == .number && showsFlickGuideCharacters ? 1.2 : 1
+    }
+
+    // 数字モードのガイド文字の濃さ(ラベル色に掛ける不透明度)。ほかのモードの 0.55 より濃く(純正は黒。3715、ユーザ指定)
+    var numberDirectionalHintOpacity: Double {
+        0.75
     }
 
     private var shorterScreenEdge: CGFloat {

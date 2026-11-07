@@ -499,6 +499,8 @@ struct FlickKeyView: View {
     var directionalHintFontScale: CGFloat = 1
     var downDirectionalHintFontScale: CGFloat = 1
     var downDirectionalHintVerticalOffsetAdjustment: CGFloat = 0
+    // ガイド文字の濃さ(ラベル色に掛ける不透明度)。数字モードだけ濃くする(3715)
+    var directionalHintOpacity: Double = 0.55
     var onTouchStateChanged: (Bool) -> Void = { _ in }
     // 調査用ログ(記号面切替 2838): 設定するとこのキーの commit ごとに接触詳細(開始位置/移動量/接触時間)を診断へ流す。原因判明後に外す
     var touchForensicsLabel: String? = nil
@@ -814,7 +816,7 @@ struct FlickKeyView: View {
                     .lineLimit(1)
                     .allowsTightening(true)
                     .fixedSize(horizontal: true, vertical: false)
-                    .foregroundStyle(keyLabelColor.opacity(0.55))
+                    .foregroundStyle(keyLabelColor.opacity(directionalHintOpacity))
             }
         }
         .padding(.horizontal, 4)
@@ -833,7 +835,7 @@ struct FlickKeyView: View {
                 .fixedSize(horizontal: true, vertical: false)
                 .tracking(-0.2)
                 .scaleEffect(0.32)
-                .foregroundStyle(keyLabelColor.opacity(0.55))
+                .foregroundStyle(keyLabelColor.opacity(directionalHintOpacity))
                 .offset(specialDirectionalHintOffset(for: text, direction: direction))
         } else {
             Text(text)
@@ -842,7 +844,7 @@ struct FlickKeyView: View {
                 .lineLimit(1)
                 .allowsTightening(true)
                 .fixedSize(horizontal: true, vertical: false)
-                .foregroundStyle(keyLabelColor.opacity(0.55))
+                .foregroundStyle(keyLabelColor.opacity(directionalHintOpacity))
                 .offset(specialDirectionalHintOffset(for: text, direction: direction))
         }
     }

@@ -375,6 +375,7 @@ extension KeyboardRootView {
                 downDirectionalHintVerticalOffsetAdjustment: inputMode == .number
                     ? numberDownDirectionalHintVerticalOffsetAdjustment
                     : 0,
+                directionalHintOpacity: inputMode == .number ? numberDirectionalHintOpacity : 0.55,
                 onTouchStateChanged: { isTouching in
                     updateActiveLayer(isTouching, layerIndex: rowIndex)
                 }

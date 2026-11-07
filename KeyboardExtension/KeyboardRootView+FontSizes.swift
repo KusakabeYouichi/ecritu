@@ -23,8 +23,14 @@ extension KeyboardRootView {
         kanaThreeByThreeMainLabelFontSize(for: currentFlickGuideDisplayMode)
     }
 
+    // 数字(3×3)の中央の字。縦画面で 4 方向のガイドを出すときは 24pt にして、ガイドを 12pt に上げる余地を作る
+    // (純正の数字モードは数字 約 18pt Regular・ガイド 約 12pt の黒。3715、ユーザ指定)。ガイドなしは 28pt のまま。
+    // 下に並べる表示は FlickKeyView が 24pt に抑える
     var numberThreeByThreeMainLabelFontSize: CGFloat {
-        isLandscapeLayout ? 24 : 28
+        if isLandscapeLayout {
+            return 24
+        }
+        return inputMode == .number && showsFlickGuideCharacters ? 24 : 28
     }
 
     var modifierMainLabelFontSize: CGFloat {
