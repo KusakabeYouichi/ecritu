@@ -1363,17 +1363,39 @@ extension ContentView {
     // アニメーションなしで飛び直し、目的のカードの上端の位置が前の回と変わらなくなったら止める(最大 12 回、0.06 秒ごと)。
     // X.14/X.15 は先に X.13 へ 2 回飛んで描かせてから飛ぶ。新しい選択が来たら古い飛び直しはやめる。
     // 飛び直しの動きは見せず、一覧を 0.1 秒で薄くしてから飛び、合ったら浮かび上がらせて着いたカードを 0.8 秒光らせる(3704、ユーザ指定)
+    // スクロールしたように見せる向き(下の項目へなら 1、上へなら -1、同じなら 0)。いま画面の上端にあるカード
+    // (描かれたカードのうち、上端がナビバーの少し下より上にある最後のもの)と飛び先の並びで決める(3705、ユーザ指定)
+    private func settingsJumpDirection(to item: SettingsJumpMenuItem) -> Int {
+        let items = SettingsJumpMenu.items
+        guard let targetIndex = items.firstIndex(of: item) else {
+            return 0
+        }
+        let viewTop = titleMenuTitleFrameInWindow.maxY + 40
+        var currentIndex = -1   // 一番上(L.1 より上)を見ている
+        for (index, candidate) in items.enumerated() {
+            if let minY = SettingsJumpPositions.shared.minY[SettingsJumpMenu.sectionAnchorID(candidate.cardID)], minY <= viewTop {
+                currentIndex = index
+            }
+        }
+        return targetIndex == currentIndex ? 0 : (targetIndex > currentIndex ? 1 : -1)
+    }
+
     func startSettingsJump(_ request: SettingsJumpRequest, proxy: ScrollViewProxy) {
         SettingsJumpHighlight.shared.anchorID = nil
-        withAnimation(.easeOut(duration: 0.1)) {
+        let direction = settingsJumpDirection(to: request.item)
+        // 進む向きと逆へ少しずらしながら薄くする(下へ飛ぶなら一覧は上へ流れる)
+        withAnimation(.easeIn(duration: 0.1)) {
             settingsJumpFading = true
+            settingsJumpSlide = CGFloat(-direction) * 60
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            runSettingsJump(request, proxy: proxy)
+            runSettingsJump(request, proxy: proxy, direction: direction)
         }
     }
 
-    func runSettingsJump(_ request: SettingsJumpRequest, proxy: ScrollViewProxy, attempt: Int = 0, lastMinY: CGFloat? = nil) {
+    func runSettingsJump(
+        _ request: SettingsJumpRequest, proxy: ScrollViewProxy, direction: Int = 0, attempt: Int = 0, lastMinY: CGFloat? = nil
+    ) {
         guard settingsJumpRequest == request else {
             return
         }
@@ -1389,16 +1411,25 @@ extension ContentView {
             let minY = SettingsJumpPositions.shared.minY[targetID]
             let converged = !usesPreScroll && minY != nil && lastMinY != nil && abs((minY ?? 0) - (lastMinY ?? 0)) < 1
             guard converged || attempt >= 11 else {
-                runSettingsJump(request, proxy: proxy, attempt: attempt + 1, lastMinY: usesPreScroll ? nil : minY)
+                runSettingsJump(
+                    request, proxy: proxy, direction: direction, attempt: attempt + 1, lastMinY: usesPreScroll ? nil : minY
+                )
                 return
             }
-            finishSettingsJump(targetID: targetID)
+            finishSettingsJump(targetID: targetID, direction: direction)
         }
     }
 
-    private func finishSettingsJump(targetID: String) {
-        withAnimation(.easeIn(duration: 0.18)) {
+    private func finishSettingsJump(targetID: String, direction: Int) {
+        // 進む向きの先から滑り込ませながら浮かび上がらせる(下へ飛んだなら下から上へ)
+        var placement = Transaction()
+        placement.disablesAnimations = true
+        withTransaction(placement) {
+            settingsJumpSlide = CGFloat(direction) * 140
+        }
+        withAnimation(.easeOut(duration: 0.3)) {
             settingsJumpFading = false
+            settingsJumpSlide = 0
         }
         withAnimation(.easeOut(duration: 0.15)) {
             SettingsJumpHighlight.shared.anchorID = targetID
