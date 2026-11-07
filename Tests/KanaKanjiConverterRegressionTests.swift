@@ -1895,6 +1895,30 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("なんねんせいがたかい").first, "難燃性が高い")
     }
 
+    // 2026-11-08 のユーザ指定(learningBOX 検査 3697 の確認表の残り): ワイン・チーズは 造る、カクテルは 作る。
+    // 茶葉が よく撚れている(撚れる を補助語彙に足した。縒れる の後ろ)。表記だけ違う候補(マルキ葡萄酒)を 2 番めに
+    func testRegressionUserDecisions3716() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func single(_ reading: String) -> [String] { converter.candidates(for: reading, limit: 30, systemCandidateMode: .surface) }
+        func multi(_ reading: String) -> [String] {
+            let list = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            return list.isEmpty ? single(reading) : list
+        }
+        XCTAssertEqual(multi("することでつくられるていばんのかくてるです").first, "することで作られる定番のカクテルです")
+        XCTAssertEqual(multi("わいんでつくるかくてる").first, "ワインで作るカクテル")
+        XCTAssertEqual(multi("からくちしろわいんをつくります").first, "辛口白ワインを造ります")
+        XCTAssertEqual(multi("ようにゅうからつくられるひかねつあっさくたいぷです").first, "羊乳から造られる非加熱圧搾タイプです")
+        XCTAssertTrue(single("よれる").contains("撚れる"), "\(single("よれる").prefix(5))")
+        XCTAssertTrue(multi("よくよれている").contains("よく撚れている"), "\(multi("よくよれている").prefix(5))")
+        XCTAssertNotEqual(multi("しわがよれる").first, "しわが撚れる")
+        // まるき葡萄酒 が先頭、マルキ葡萄酒 が 2 番め(今の社名は ひらがな、明治の設立時は カタカナ)。文の中でも、
+        // 正解→政界/静海 の言い換えより表記だけの違いを 2 番めに
+        XCTAssertEqual(Array(multi("まるきぶどうしゅ").prefix(2)), ["まるき葡萄酒", "マルキ葡萄酒"])
+        XCTAssertEqual(Array(multi("せいかいはまるきぶどうしゅです").prefix(2)), ["正解はまるき葡萄酒です", "正解はマルキ葡萄酒です"])
+        XCTAssertTrue(KanaKanjiConverter.keepsSecondAgainstSingleBest("正解はまるき葡萄酒です", "正解はマルキ葡萄酒です"))
+    }
+
     // 2026-11-06 のユーザ報告(edition 3695 の実機)
     func testRegressionRealLMUserReports3695() throws {
         try prepareRealLMDictionary()
