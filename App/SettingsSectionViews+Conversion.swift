@@ -234,6 +234,8 @@ struct MeSuffixCandidateSettingsSection: View {
                 .foregroundStyle(.secondary)
         }
         .settingsCardStyle()
+        // 題字のメニューから X.15 へ飛ぶ目印(X.14 の目印へ飛んで描かせてから、ここへもう一段。3699)
+        .id(SettingsJumpMenu.cardAnchorID("X.15"))
     }
 }
 

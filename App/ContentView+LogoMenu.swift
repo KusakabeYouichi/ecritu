@@ -1065,3 +1065,308 @@ extension ContentView {
         }
     }
 }
+
+// ──── 題字(écritu)のメニュー(3699、ユーザ指定) ────
+// 題字に触れた途端に、設定の各項目(L.1〜X.19)へ飛ぶだけのメニューを題字の真下に出す。操作はアイコンのメニューと同じで、
+// 指を項目まで滑らせて離すとその項目へスクロールする。項目の外で離せば何もしない。題字の上で離したとき(ふつうのタップ)は
+// 従来どおり一番上へ戻る(3205)。項目は 42 あるので、1 行の高さは画面に収まるよう縮め、それでも入らない横画面は 2〜3 列にする。
+// 開発ビルド(#if DEBUG。TestFlight の版も Debug 構成でアーカイブしているので含む)では先頭に[学習リセット+変換キャッシュクリア]を置く。
+// 題字はツールバーの中(別のホスティング)なので、その .global はウィンドウ座標と原点が違いうる。題字のウィンドウ上の枠を
+// UIKit で取り(WindowFrameReader)、指の位置をウィンドウ座標に直してからメニューの行(ルートの overlay の .global)と比べる
+
+struct SettingsJumpMenuItem: Equatable {
+    let cardID: String
+    let title: String
+    // 飛び先の目印にするカード(LazyVStack の直接の子)。X.15 は X.14 と同じ型の中の 2 枚め
+    var sectionCardID: String { cardID == "X.15" ? "X.14" : cardID }
+}
+
+// serial は同じ項目を続けて選んでも onChange が来るようにするための通し番号
+struct SettingsJumpRequest: Equatable {
+    let item: SettingsJumpMenuItem
+    let serial: Int
+}
+
+enum SettingsJumpMenuTarget: Equatable {
+    case resetLearningAndCache
+    case item(SettingsJumpMenuItem)
+}
+
+// メニューの 1 行(リセットの項目か、設定の項目)。group が前の行と変わるところに区切り線
+struct SettingsJumpMenuEntry {
+    let target: SettingsJumpMenuTarget
+    let text: String
+    let frameKey: String
+    let group: Character
+    let isDestructive: Bool
+}
+
+enum SettingsJumpMenu {
+    static let resetFrameKey = "jump:reset"
+
+    static func frameKey(_ cardID: String) -> String {
+        "jump:" + cardID
+    }
+
+    static func sectionAnchorID(_ cardID: String) -> String {
+        "settings-section-" + cardID
+    }
+
+    static func cardAnchorID(_ cardID: String) -> String {
+        "settings-card-" + cardID
+    }
+
+    #if DEBUG
+    static let showsResetItem = true
+    #else
+    static let showsResetItem = false
+    #endif
+
+    // 画面の並び(キー配列 L → 入力 E → キー表示 G → 表示 V → 書式 F → 変換 X)。見出しの文言と同じ
+    static let items: [SettingsJumpMenuItem] = rawItems.map { SettingsJumpMenuItem(cardID: $0.0, title: $0.1) }
+    private static let rawItems: [(String, String)] = [
+        ("L.1", "かな配列"), ("L.2", "ラテン文字配列"), ("L.3", "数字配列"), ("L.4", "基本記号の並び順"), ("L.5", "かな修飾"),
+        ("E.1", "フリック方向"), ("E.2", "削除キーリピート"), ("E.3", "自動確定(アイドル)"), ("E.4", "未確定の方式"),
+        ("E.5", "モード切り替えキーの割り当て"), ("E.6", "修飾キーのタップ (後置修飾、未確定なし)"),
+        ("E.7", "後置修飾キーのフリックで濁点・半濁点"), ("E.8", "欧文サジェスチョンの言語"), ("E.9", "『や』キーの左右フリックの括弧"),
+        ("G.1", "ガイド文字表示"),
+        ("V.1", "ラテン文字候補ペイン (horizontal)"), ("V.2", "数字ペイン配列 (horizontal)"), ("V.3", "アクセントカラー"),
+        ("V.4", "テーマカラー"), ("V.5", "候補の文字"),
+        ("F.1", "format numérique"), ("F.2", "degré"), ("F.3", "カレンダー"),
+        ("X.1", "句読点入力時の自動確定候補"), ("X.2", "かな漢字候補モード"), ("X.3", "旧仮名遣い候補"), ("X.4", "仮名の踊り字候補"),
+        ("X.5", "カタカナ強調表記の候補"), ("X.6", "交ぜ書きの候補"), ("X.7", "旧字体・異体字の候補"), ("X.8", "かなで書く言葉の候補"),
+        ("X.9", "常用漢字による書きかえ"), ("X.10", "常用漢字による書きかえ(後に追加)"), ("X.11", "部首の画数の数え方"),
+        ("X.12", "助数詞型suffixe / 数詞類別suffixe – ka"), ("X.13", "送り仮名の許容形 – orthographe"), ("X.14", "序数化suffixe – me"),
+        ("X.15", "形状名詞化suffixe / 傾向派生suffixe – me"), ("X.16", "emojis & les émoticônes"),
+        ("X.17", "iOSの連絡先の姓、名、会社名"), ("X.18", "iOSのユーザ辞書の単語"), ("X.19", "数詞の表記 – chiffres")
+    ]
+
+    static let entries: [SettingsJumpMenuEntry] = {
+        var list: [SettingsJumpMenuEntry] = []
+        if showsResetItem {
+            list.append(SettingsJumpMenuEntry(
+                target: .resetLearningAndCache, text: "学習リセット+変換キャッシュクリア",
+                frameKey: resetFrameKey, group: "!", isDestructive: true
+            ))
+        }
+        for item in items {
+            list.append(SettingsJumpMenuEntry(
+                target: .item(item), text: item.cardID + " " + item.title,
+                frameKey: frameKey(item.cardID), group: item.cardID.first ?? "?", isDestructive: false
+            ))
+        }
+        return list
+    }()
+
+    struct Layout {
+        let columns: [[SettingsJumpMenuEntry]]
+        let rowHeight: CGFloat
+        let fontSize: CGFloat
+        let columnWidth: CGFloat
+    }
+
+    // 列の中で、前の行と群が変わる行の前に区切り線(列の先頭には引かない)
+    static func dividerCount(in column: [SettingsJumpMenuEntry]) -> Int {
+        zip(column, column.dropFirst()).filter { $0.group != $1.group }.count
+    }
+
+    // 1 列で 1 行 15pt 以上取れればそのまま(上限 26pt)、取れなければ 2 列・3 列にする(横画面)。文字は行の高さ−4pt(9〜13pt)
+    static func layout(availableHeight: CGFloat, availableWidth: CGFloat) -> Layout {
+        let all = entries
+        for columnCount in 1...3 {
+            let perColumn = Int((Double(all.count) / Double(columnCount)).rounded(.up))
+            let columns = stride(from: 0, to: all.count, by: perColumn).map { Array(all[$0..<min($0 + perColumn, all.count)]) }
+            let dividers = CGFloat(columns.map(dividerCount(in:)).max() ?? 0)
+            let fitted = floor((availableHeight - dividers - 12) / CGFloat(perColumn))   // 上下の余白 6pt ずつ
+            if fitted >= 15 || columnCount == 3 {
+                let rowHeight = min(26, max(11, fitted))
+                let columnWidth = columnCount == 1
+                    ? min(300, availableWidth - 24)
+                    : min(250, (availableWidth - 24 - CGFloat(columnCount - 1) * 8) / CGFloat(columnCount))
+                return Layout(columns: columns, rowHeight: rowHeight, fontSize: max(9, min(13, rowHeight - 4)), columnWidth: columnWidth)
+            }
+        }
+        return Layout(columns: [all], rowHeight: 13, fontSize: 9, columnWidth: 300)
+    }
+}
+
+#if os(iOS)
+// ビューのウィンドウ上の枠を UIKit で知らせる(ツールバーの中の SwiftUI の .global はウィンドウ座標と原点が違いうるため。3699)
+struct WindowFrameReader: UIViewRepresentable {
+    let onChange: (CGRect) -> Void
+
+    func makeUIView(context: Context) -> WindowFrameReaderView {
+        let view = WindowFrameReaderView()
+        view.isUserInteractionEnabled = false
+        view.backgroundColor = .clear
+        view.onChange = onChange
+        return view
+    }
+
+    func updateUIView(_ uiView: WindowFrameReaderView, context: Context) {
+        uiView.onChange = onChange
+        uiView.report()
+    }
+}
+
+final class WindowFrameReaderView: UIView {
+    var onChange: ((CGRect) -> Void)?
+    private var lastReported: CGRect = .null
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        report()
+    }
+
+    override func didMoveToWindow() {
+        super.didMoveToWindow()
+        report()
+    }
+
+    // 変わったときだけ、次の周回で知らせる(SwiftUI の更新中に状態を書き換えない)
+    func report() {
+        guard window != nil else {
+            return
+        }
+        let frame = convert(bounds, to: nil)
+        guard frame != lastReported else {
+            return
+        }
+        lastReported = frame
+        let onChange = onChange
+        DispatchQueue.main.async {
+            onChange?(frame)
+        }
+    }
+}
+
+#endif
+
+extension ContentView {
+    // 題字のウィンドウ上の枠(UIKit で取れていなければ .global の枠)
+    var titleMenuTitleFrameInWindow: CGRect {
+        titleMenuTitleWindowFrame.isEmpty ? titleMenuTitleFrame : titleMenuTitleWindowFrame
+    }
+
+    // ツールバーの中の .global の点をウィンドウ座標へ(題字の 2 つの枠の原点の差だけずらす)
+    func titleMenuWindowPoint(_ point: CGPoint) -> CGPoint {
+        guard !titleMenuTitleWindowFrame.isEmpty, !titleMenuTitleFrame.isEmpty else {
+            return point
+        }
+        return CGPoint(
+            x: point.x + titleMenuTitleWindowFrame.minX - titleMenuTitleFrame.minX,
+            y: point.y + titleMenuTitleWindowFrame.minY - titleMenuTitleFrame.minY
+        )
+    }
+
+    // 触れた途端にメニューを出し、指を項目まで滑らせて離すと実行(アイコンのメニューと同じ)。指の位置はウィンドウ座標に直して持つ
+    var titlePressAndDragGesture: some Gesture {
+        DragGesture(minimumDistance: 0, coordinateSpace: .global)
+            .updating($titleMenuGesture) { value, state, _ in
+                state = .touching(titleMenuWindowPoint(value.location))
+            }
+            .onEnded { value in
+                let point = titleMenuWindowPoint(value.location)
+                if let target = titleMenuTarget(at: point) {
+                    performTitleMenuTarget(target)
+                } else if titleMenuTitleFrameInWindow.contains(point) {
+                    // 題字の上で離した(ふつうのタップ): 従来どおり一番上へ戻る(3205)
+                    scrollToTopTrigger += 1
+                }
+            }
+    }
+
+    func titleMenuTarget(at point: CGPoint) -> SettingsJumpMenuTarget? {
+        SettingsJumpMenu.entries
+            .first { logoMenuFrames[$0.frameKey]?.contains(point) == true }
+            .map(\.target)
+    }
+
+    func performTitleMenuTarget(_ target: SettingsJumpMenuTarget) {
+        switch target {
+        case .resetLearningAndCache:
+            // 学習リセット。学習の世代を上げたうえで設定の世代も上げる(=変換キャッシュのクリアと同じ合図)ので、両方が 1 回で済む
+            resetKanaKanjiLearning()
+            showSettingsToast("学習をリセットし、変換キャッシュをクリアしました")
+        case .item(let item):
+            settingsJumpRequest = SettingsJumpRequest(item: item, serial: (settingsJumpRequest?.serial ?? 0) + 1)
+        }
+    }
+
+    // 画面下端のセーフエリア(ホームインジケーター)。メニューをその上で止める
+    private var titleMenuBottomInset: CGFloat {
+        #if os(iOS)
+        return UIApplication.shared.connectedScenes
+            .compactMap { ($0 as? UIWindowScene)?.keyWindow?.safeAreaInsets.bottom }
+            .first ?? 34
+        #else
+        return 0
+        #endif
+    }
+
+    @ViewBuilder
+    var titleMenuOverlay: some View {
+        if titleMenuGesture.isActive {
+            let highlighted = titleMenuGesture.location.flatMap(titleMenuTarget(at:))
+            GeometryReader { proxy in
+                // overlay は ignoresSafeArea なので proxy の座標はウィンドウ座標(題字のウィンドウ上の枠と同じ)
+                let top = max(titleMenuTitleFrameInWindow.maxY + 2, 0)
+                let layout = SettingsJumpMenu.layout(
+                    availableHeight: proxy.size.height - top - titleMenuBottomInset - 8,
+                    availableWidth: proxy.size.width
+                )
+                ZStack(alignment: .top) {
+                    Color.black.opacity(0.18)
+                    HStack(alignment: .top, spacing: 8) {
+                        ForEach(Array(layout.columns.enumerated()), id: \.offset) { _, column in
+                            VStack(spacing: 0) {
+                                ForEach(Array(column.enumerated()), id: \.element.frameKey) { index, entry in
+                                    if index > 0, column[index - 1].group != entry.group {
+                                        Divider()
+                                    }
+                                    titleMenuRow(
+                                        entry,
+                                        isHighlighted: highlighted == entry.target,
+                                        layout: layout
+                                    )
+                                }
+                            }
+                            .padding(.vertical, 6)
+                            .frame(width: layout.columnWidth)
+                            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                            .shadow(color: .black.opacity(0.18), radius: 14, y: 6)
+                        }
+                    }
+                    .padding(.top, top)
+                }
+                .frame(width: proxy.size.width, height: proxy.size.height, alignment: .top)
+            }
+            .ignoresSafeArea()
+            .allowsHitTesting(false)   // 指は題字の上のジェスチャーが追い続ける
+            .transition(.opacity)
+        }
+    }
+
+    private func titleMenuRow(
+        _ entry: SettingsJumpMenuEntry,
+        isHighlighted: Bool,
+        layout: SettingsJumpMenu.Layout
+    ) -> some View {
+        Text(entry.text)
+            .font(.system(size: layout.fontSize, weight: .medium))
+            .lineLimit(1)
+            .truncationMode(.tail)
+            .foregroundStyle(isHighlighted ? Color.white : (entry.isDestructive ? Color.red : Color.primary))
+            .padding(.horizontal, 12)
+            .frame(maxWidth: .infinity, minHeight: layout.rowHeight, maxHeight: layout.rowHeight, alignment: .leading)
+            .background(isHighlighted ? Color.accentColor : Color.clear)
+            .background(
+                GeometryReader { proxy in
+                    Color.clear.preference(
+                        key: LogoMenuFramePreferenceKey.self,
+                        value: [entry.frameKey: proxy.frame(in: .global)]
+                    )
+                }
+            )
+    }
+}
