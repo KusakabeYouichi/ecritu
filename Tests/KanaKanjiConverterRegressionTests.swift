@@ -1850,6 +1850,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     }
 
     // 2026-11-07 のユーザ報告(edition 3709 の実機)
+    // 連文節の後処理が 2 番目に置いた表記違いは、候補欄で単文節の 1 位に 2 番目を譲らない(3711、ユーザ報告: 実機の
+    // なんかいってや が 何か言ってや・何回ってや・なんか言ってや だった)。同音の別語(南下)や かな/漢字 の別語(さらに/皿に)は対象外
+    func testPinnedSecondKeepsPlaceAgainstSingleBest() {
+        XCTAssertTrue(KanaKanjiConverter.keepsSecondAgainstSingleBest("何か言ってや", "なんか言ってや"))
+        XCTAssertTrue(KanaKanjiConverter.keepsSecondAgainstSingleBest("焼鳥のたれがない", "焼鳥のタレがない"))
+        XCTAssertTrue(KanaKanjiConverter.keepsSecondAgainstSingleBest("変換のたびに", "変換の度に"))
+        XCTAssertTrue(KanaKanjiConverter.keepsSecondAgainstSingleBest("Portは", "ポートは"))
+        XCTAssertFalse(KanaKanjiConverter.keepsSecondAgainstSingleBest("何か言ってや", "南下言ってや"))
+        XCTAssertFalse(KanaKanjiConverter.keepsSecondAgainstSingleBest("さらに", "皿に"))
+        XCTAssertFalse(KanaKanjiConverter.keepsSecondAgainstSingleBest("なんか言ってや", "何か言ってや"))
+    }
+
     func testRegressionRealLMUserReports3710() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
@@ -27703,7 +27715,7 @@ extension KanaKanjiConverterRegressionTests {
             }
             var shown = reading.count >= 4 && ProcessInfo.processInfo.environment["AUDIT_SINGLE"] == nil ? multi : []
             if let top = single.first, !shown.contains(top) {
-                shown.insert(top, at: shown.count >= 2 && KanaKanjiConverter.isScriptCounterpartPair(shown[0], shown[1]) ? 2 : min(1, shown.count))
+                shown.insert(top, at: shown.count >= 2 && KanaKanjiConverter.keepsSecondAgainstSingleBest(shown[0], shown[1]) ? 2 : min(1, shown.count))
             }
             for candidate in single.dropFirst() where !shown.contains(candidate) {
                 shown.append(candidate)

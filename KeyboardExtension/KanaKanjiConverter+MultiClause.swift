@@ -474,6 +474,16 @@ extension KanaKanjiConverter {
         return String(latinSide.filter { !isLatin($0) && !isKatakana($0) }) == String(katakanaSide.filter { !isKatakana($0) })
     }
 
+    // 連文節の後処理が 2 番目に置いた表記違い(何か/なんか・のたれ/のタレ・のたびに/の度に。どれもユーザ指定 3710)。
+    // 候補欄で単文節の 1 位を差し込むときは、この組も 3 番目にする(3711、ユーザ報告: なんかいってや で 単文節の 1 位
+    // 何回ってや が 2 番目に入り、なんか言ってや が 3 番目だった)
+    static let pinnedSecondSubstitutions: [(String, String)] = [("何か", "なんか"), ("のたれ", "のタレ"), ("のたびに", "の度に")]
+    static func keepsSecondAgainstSingleBest(_ first: String, _ second: String) -> Bool {
+        isScriptCounterpartPair(first, second) || pinnedSecondSubstitutions.contains {
+            first.contains($0.0) && first.replacingOccurrences(of: $0.0, with: $0.1) == second
+        }
+    }
+
     // 単文節: 先頭がカタカナだけならラテン文字だけの候補を、ラテン文字だけならカタカナだけの候補を 2 番目に(3677)
     static func scriptCounterpartSecond(_ candidates: [String]) -> [String] {
         guard candidates.count >= 3, let top = candidates.first else { return candidates }
