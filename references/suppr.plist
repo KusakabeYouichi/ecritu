@@ -288,16 +288,13 @@
 	<dict><key>phrase</key><string>白じろ</string><key>shortcut</key><string>しろじろ</string></dict>	<!-- 白々 の交ぜ書き(副詞の一括点検 3552) -->
 	<dict><key>phrase</key><string>見ん事</string><key>shortcut</key><string>みんごと</string></dict>	<!-- 見事 の交ぜ書き(副詞の一括点検 3552) -->
 	<dict><key>phrase</key><string>山ほど</string><key>shortcut</key><string>やまほど</string></dict>	<!-- 山程 の交ぜ書き(副詞の一括点検 3552) -->
-	<dict><key>phrase</key><string>必ズ</string><key>shortcut</key><string>かならず</string></dict>	<!-- 必ず の送り仮名カタカナ化(Sudachi rank 2)。ユーザ指定 3537 -->
 	<dict><key>phrase</key><string>はっ酵</string><key>shortcut</key><string>はっこう</string></dict>	<!-- はっ酵: 発酵 の交ぜ書き(醗 を避けた書きかえの名残)。はっ酵する/される まで出ていた(ユーザ指定 3483) -->
 	<dict><key>phrase</key><string>街しょう</string><key>shortcut</key><string>がいしょう</string></dict>	<!-- 街しょう: 街娼 の交ぜ書きの収穫。由来不明で出さない(ユーザ指定 3392) -->
 	<dict><key>phrase</key><string>ススめる</string><key>shortcut</key><string>すすめる</string></dict>	<!-- 交ぜ書き収穫。同上 -->
-	<dict><key>phrase</key><string>感ジ</string><key>shortcut</key><string>かんじ</string></dict>	<!-- 感ジ: 感じ の交ぜ書き。使わない表記(ユーザ指定 3267) -->
 	<dict><key>phrase</key><string>キ怪</string><key>shortcut</key><string>きかい</string></dict>	<!-- キ怪(きかい): 奇怪 の交ぜ書き(Sudachi rank1、wc 3741 で 奇怪 と同値)。きかい の 3 番手に並んでいた(ユーザ指摘 3251) -->
 	<dict><key>phrase</key><string>本もの</string><key>shortcut</key><string>ほんもの</string></dict>
 	<dict><key>phrase</key><string>良い</string><key>shortcut</key><string>いい</string></dict>
 	<dict><key>phrase</key><string>石ユ</string><key>shortcut</key><string>いしく</string></dict>
-	<dict><key>phrase</key><string>立テ</string><key>shortcut</key><string>たて</string></dict>	<!-- たて の交ぜ書き収穫。たてに→立テに 等を汚す(ユーザ指定 2755) -->
 	<dict><key>phrase</key><string>ぜい金</string><key>shortcut</key><string>ぜいきん</string></dict>
 	<!-- ※ サンガ: さんが rank0(京都サンガ/僧伽)。敬称「〜さんが」(X さん+が)が圧倒的に頻出で 根路銘さんが→根路銘サンガ 等の分断を作る。exactReadingOnlySeed で さんが 完全一致時のみ末尾へ -->
 	<!-- ※ カイソウ: 海藻 のカタカナ表記ゆれ収穫(かいそう rank6)。単独カタカナ需要は無く候補を汚すため抑制 -->
@@ -307,6 +304,67 @@
 	<dict><key>phrase</key><string>河う</string><key>shortcut</key><string>かわう</string></dict>	<!-- 河う(かわう): 鳥のカワウ=河鵜 の交ぜ書き(鵜が常用外)。名詞なのに読み かわう に活用クラス行が 無いため五段う動詞と推論され、河って/河ってきて を生成して 変わってきてる を逆転していた。 交ぜ書き判定はかな部分1文字を対象外(漢字+助詞と区別不能)なので構造的にすり抜ける。 クラス推論側は 2465 で塞いだが、交ぜ書きエントリ自体も残す価値が無いので抑制する -->
 	<dict><key>phrase</key><string>価い</string><key>shortcut</key><string>あたい</string></dict>	<!-- 価い/値い(あたい): 送り仮名の付け方に無い送り(本則は 価/値)。seed {値、価、直} の単漢字は段階ブーストが小さく、この 2 つを下へ回せないので抑制(ユーザ判定 3506) -->
 	<dict><key>phrase</key><string>値い</string><key>shortcut</key><string>あたい</string></dict>
+
+	<!-- □ 送り仮名をカタカナで書いた形(凡テ/殆ド/始メテ/必ズ 等。Sudachi の収穫)。動詞・形容詞・副詞・接続詞・代名詞などで、
+	     ひらがなの送り仮名の形が同じ読みで辞書にあるものを選んだ(名詞の 大トロ/子ネコ/乳ガン は対象外)。ユーザ指定 3714 -->
+	<dict><key>phrase</key><string>必ズ</string><key>shortcut</key><string>かならず</string></dict>	<!-- 必ず の送り仮名カタカナ化(Sudachi rank 2)。ユーザ指定 3537 -->
+	<dict><key>phrase</key><string>感ジ</string><key>shortcut</key><string>かんじ</string></dict>	<!-- 感ジ: 感じ の交ぜ書き。使わない表記(ユーザ指定 3267) -->
+	<dict><key>phrase</key><string>立テ</string><key>shortcut</key><string>たて</string></dict>	<!-- たて の交ぜ書き収穫。たてに→立テに 等を汚す(ユーザ指定 2755) -->
+	<dict><key>phrase</key><string>之レ</string><key>shortcut</key><string>これ</string></dict>
+	<dict><key>phrase</key><string>是レ</string><key>shortcut</key><string>これ</string></dict>
+	<dict><key>phrase</key><string>此レ</string><key>shortcut</key><string>これ</string></dict>
+	<dict><key>phrase</key><string>其レ</string><key>shortcut</key><string>それ</string></dict>
+	<dict><key>phrase</key><string>孰レ</string><key>shortcut</key><string>いずれ</string></dict>
+	<dict><key>phrase</key><string>厥ノ</string><key>shortcut</key><string>その</string></dict>
+	<dict><key>phrase</key><string>凡テ</string><key>shortcut</key><string>すべて</string></dict>
+	<dict><key>phrase</key><string>殆ド</string><key>shortcut</key><string>ほとんど</string></dict>
+	<dict><key>phrase</key><string>即チ</string><key>shortcut</key><string>すなわち</string></dict>
+	<dict><key>phrase</key><string>然レドモ</string><key>shortcut</key><string>されども</string></dict>
+	<dict><key>phrase</key><string>斯ク</string><key>shortcut</key><string>かく</string></dict>
+	<dict><key>phrase</key><string>曰ク</string><key>shortcut</key><string>いわく</string></dict>
+	<dict><key>phrase</key><string>概ネ</string><key>shortcut</key><string>おおむね</string></dict>
+	<dict><key>phrase</key><string>自ラ</string><key>shortcut</key><string>みずから</string></dict>
+	<dict><key>phrase</key><string>迚モ</string><key>shortcut</key><string>とても</string></dict>
+	<dict><key>phrase</key><string>須ラク</string><key>shortcut</key><string>すべからく</string></dict>
+	<dict><key>phrase</key><string>始メ</string><key>shortcut</key><string>はじめ</string></dict>
+	<dict><key>phrase</key><string>始メテ</string><key>shortcut</key><string>はじめて</string></dict>
+	<dict><key>phrase</key><string>為メ</string><key>shortcut</key><string>ため</string></dict>
+	<dict><key>phrase</key><string>爲メ</string><key>shortcut</key><string>ため</string></dict>
+	<dict><key>phrase</key><string>切ナイ</string><key>shortcut</key><string>せつない</string></dict>
+	<dict><key>phrase</key><string>悪ィ</string><key>shortcut</key><string>わりぃ</string></dict>
+	<dict><key>phrase</key><string>白ウ</string><key>shortcut</key><string>しろう</string></dict>
+	<dict><key>phrase</key><string>白ウ</string><key>shortcut</key><string>じろう</string></dict>
+	<dict><key>phrase</key><string>上がッ</string><key>shortcut</key><string>あがっ</string></dict>
+	<dict><key>phrase</key><string>叩ッ</string><key>shortcut</key><string>たたっ</string></dict>
+	<dict><key>phrase</key><string>引ッ</string><key>shortcut</key><string>ひっ</string></dict>
+	<dict><key>phrase</key><string>突ッ</string><key>shortcut</key><string>つっ</string></dict>
+	<dict><key>phrase</key><string>蹴ッ</string><key>shortcut</key><string>けっ</string></dict>
+	<dict><key>phrase</key><string>云フ</string><key>shortcut</key><string>ゆふ</string></dict>
+	<dict><key>phrase</key><string>遵ヒ</string><key>shortcut</key><string>したがひ</string></dict>
+	<dict><key>phrase</key><string>遵フ</string><key>shortcut</key><string>したがふ</string></dict>
+	<dict><key>phrase</key><string>戦ヘ</string><key>shortcut</key><string>たたかへ</string></dict>
+	<dict><key>phrase</key><string>助ケ</string><key>shortcut</key><string>たすけ</string></dict>
+	<dict><key>phrase</key><string>負ケ</string><key>shortcut</key><string>まけ</string></dict>
+	<dict><key>phrase</key><string>開ケ</string><key>shortcut</key><string>あけ</string></dict>
+	<dict><key>phrase</key><string>掛ケ</string><key>shortcut</key><string>かけ</string></dict>
+	<dict><key>phrase</key><string>掛ケ</string><key>shortcut</key><string>がけ</string></dict>
+	<dict><key>phrase</key><string>寝ボケ</string><key>shortcut</key><string>ねぼけ</string></dict>
+	<dict><key>phrase</key><string>溺レ</string><key>shortcut</key><string>おぼれ</string></dict>
+	<dict><key>phrase</key><string>抜ク</string><key>shortcut</key><string>ぬく</string></dict>
+	<dict><key>phrase</key><string>抜ケ</string><key>shortcut</key><string>ぬけ</string></dict>
+	<dict><key>phrase</key><string>射抜ク</string><key>shortcut</key><string>いぬく</string></dict>
+	<dict><key>phrase</key><string>射抜ケ</string><key>shortcut</key><string>いぬけ</string></dict>
+	<dict><key>phrase</key><string>話ス</string><key>shortcut</key><string>はなす</string></dict>
+	<dict><key>phrase</key><string>話セ</string><key>shortcut</key><string>はなせ</string></dict>
+	<!-- 同じ型で、ひらがなの形(都て 等)が辞書に無かったもの。凡テ を抑制したら すべて に 都テ が出た(3714) -->
+	<dict><key>phrase</key><string>都テ</string><key>shortcut</key><string>すべて</string></dict>
+	<dict><key>phrase</key><string>然レトモ</string><key>shortcut</key><string>されども</string></dict>
+	<dict><key>phrase</key><string>俺ァ</string><key>shortcut</key><string>おりゃ</string></dict>
+	<dict><key>phrase</key><string>僕ァ</string><key>shortcut</key><string>ぼく</string></dict>
+	<dict><key>phrase</key><string>呀ッ</string><key>shortcut</key><string>あっ</string></dict>
+	<dict><key>phrase</key><string>屹ッ</string><key>shortcut</key><string>きっ</string></dict>
+	<dict><key>phrase</key><string>差ツ</string><key>shortcut</key><string>さつ</string></dict>
+	<dict><key>phrase</key><string>引ツ</string><key>shortcut</key><string>ひっ</string></dict>
 
 	<!-- ■ 非文法・実用ゼロの合成(学習しても出さない) -->
 	<dict><key>phrase</key><string>お蛭</string><key>shortcut</key><string>おひる</string></dict>	<!-- お+蛭 の丁寧接頭辞の合成。使わず見苦しい。きのうのおひるは→昨日のお蛭は が 2 番めに出ていた(ユーザ報告 3778) -->
@@ -515,9 +573,6 @@
 	<dict><key>phrase</key><string>矢ツぱり</string><key>shortcut</key><string>やっぱり</string></dict>
 	<dict><key>phrase</key><string>なァる程</string><key>shortcut</key><string>なるほど</string></dict>
 	<dict><key>phrase</key><string>なアるほど</string><key>shortcut</key><string>なるほど</string></dict>
-	<dict><key>phrase</key><string>之レ</string><key>shortcut</key><string>これ</string></dict>
-	<dict><key>phrase</key><string>是レ</string><key>shortcut</key><string>これ</string></dict>
-	<dict><key>phrase</key><string>此レ</string><key>shortcut</key><string>これ</string></dict>
 	<dict><key>phrase</key><string>是</string><key>shortcut</key><string>これ</string></dict>
 	<dict><key>phrase</key><string>此</string><key>shortcut</key><string>これ</string></dict>
 	<dict><key>phrase</key><string>凝れ</string><key>shortcut</key><string>これ</string></dict>
