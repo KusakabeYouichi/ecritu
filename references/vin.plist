@@ -8123,6 +8123,7 @@
 	<dict><key>phrase</key><string>B.O.P. Fannings</string><key>shortcut</key><string>ぶろーくんおれんじぺこーふぁにんぐす</string></dict>
 	<dict><key>phrase</key><string>篩下</string><key>shortcut</key><string>ふるいした</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>深蒸し</string><key>shortcut</key><string>ふかむし</string></dict>
+	<dict><key>phrase</key><string>撚れる</string><key>shortcut</key><string>よれる</string><key>pos</key><string>一段</string></dict>	<!-- 茶葉が よく撚れている(O.P. の形)。辞書は 縒れる だけだった(learningBOX 検査 3697 の確認表、ユーザ指定 3715)。補助語彙なので 縒れる の後ろ -->
 	<dict><key>phrase</key><string>Darjeeling</string><key>shortcut</key><string>だーじりん</string></dict>
 	<dict><key>phrase</key><string>Dimbula</string><key>shortcut</key><string>でぃんぶら</string></dict>
 	<dict><key>phrase</key><string>Broken Orange Pekoe</string><key>shortcut</key><string>ぶろーくんおれんじぺこー</string></dict>
