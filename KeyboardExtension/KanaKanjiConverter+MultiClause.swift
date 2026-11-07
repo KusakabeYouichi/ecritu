@@ -300,6 +300,7 @@ extension KanaKanjiConverter {
         candidates = Self.sweetnessOrthographyOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.kanaSecondVariantOrdered(candidates)
         candidates = Self.brewingMakeOrthographyOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
+        candidates = Self.cocktailMakeOrthographyOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         // 名詞+っぱなし(沖っぱなし/槍っぱなし/山車っぱなし)は後ろへ。経路は 連用形+っぱなし でも、区間の兄弟表記の差し替えで
         // 名詞が先頭に来ていた(3661)。直前が送り仮名のない漢字の候補(見/寝/出/居/着 の一字動詞は除く)
         if candidates.count >= 2, candidates.contains(where: { $0.contains("っぱなし") || $0.contains("っ放し") }) {
@@ -619,16 +620,18 @@ extension KanaKanjiConverter {
     // 酒の語がある文は下の brewingMakeOrthographyOrdered(3675)が受け持つ。ここはそれに無い語を補う:
     // 蒸溜/醗酵/混醸 は工程そのものなのでどの つくる でも。乳・チーズ・熟成 等は一般の料理(牛乳でプリンを作る/
     // チーズケーキを作る)があるので、受身(つくられ)か が/で/から/も/は の直後に限る。小麦/果物/ハーブ は
-    // パンやジャム(小麦から作られる)と区別できないので入れない
+    // パンやジャム(小麦から作られる)と区別できないので入れない。カクテルは混ぜて作るものなので 作る のまま(ユーザ指定 3716。
+    // 3695 は かくてる を手掛かりにしていた)。ワインの語があっても カクテル の文は 造 にしない(brewingCocktailReading)
     static let brewingProcessContextReadings: [String] = [
         "じょうりゅう", "はっこう", "こんじょう"
     ]
+    static let brewingCocktailReading = "かくてる"
     static let brewingProductContextReadings: [String] = [
-        "じゅくせい", "ぎゅうにゅう", "ようにゅう", "やぎにゅう", "ばくが", "ちーず", "かくてる", "しーどる", "ろぜ",
+        "じゅくせい", "ぎゅうにゅう", "ようにゅう", "やぎにゅう", "ばくが", "ちーず", "しーどる", "ろぜ",
         "あまくち", "からくち", "しゃるどね"
     ]
     static func brewingTsukuruOrdered(reading: String, candidates: [String]) -> [String] {
-        guard reading.contains("つく"), let top = candidates.first, top.contains("作") else {
+        guard reading.contains("つく"), !reading.contains(brewingCocktailReading), let top = candidates.first, top.contains("作") else {
             return candidates
         }
         let readingChars = Array(reading)
@@ -868,7 +871,7 @@ extension KanaKanjiConverter {
         "ぶらんでー", "りきゅーる", "すぴりっつ", "しぇりー", "しゃんぱーにゅ", "ぶどう", "もろみ", "しゅぼ"
     ]
     static func brewingMakeOrthographyOrdered(reading: String, candidates: [String]) -> [String] {
-        guard reading.contains("つく"), let top = candidates.first, top.contains("作"),
+        guard reading.contains("つく"), !reading.contains(brewingCocktailReading), let top = candidates.first, top.contains("作"),
             brewingContextReadings.contains(where: { reading.contains($0) }) else {
             return candidates
         }
@@ -877,6 +880,24 @@ extension KanaKanjiConverter {
         for index in characters.indices where characters[index] == "作" && index + 1 < characters.count
             && "らりるれろっ".contains(characters[index + 1]) {
             characters[index] = "造"
+            changed = true
+        }
+        guard changed else { return candidates }
+        let rewritten = String(characters)
+        return [rewritten] + candidates.filter { $0 != rewritten }
+    }
+
+    // カクテルの話の つくる は 作る(ユーザ指定 3716)。ワイン+で+造る の連語表が連文節の中で 造る を選ぶので(ワインで造るカクテル)、
+    // 読みに かくてる があれば先頭の候補の 造+活用語尾 を 作 に戻す
+    static func cocktailMakeOrthographyOrdered(reading: String, candidates: [String]) -> [String] {
+        guard reading.contains("つく"), reading.contains(brewingCocktailReading), let top = candidates.first, top.contains("造") else {
+            return candidates
+        }
+        var characters = Array(top)
+        var changed = false
+        for index in characters.indices where characters[index] == "造" && index + 1 < characters.count
+            && "らりるれろっ".contains(characters[index + 1]) {
+            characters[index] = "作"
             changed = true
         }
         guard changed else { return candidates }
