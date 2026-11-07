@@ -1374,7 +1374,7 @@ extension ContentView {
         }
     }
 
-    // 1 行: 幅をそろえた番号(群の最初の行は頭の文字を太く)、見出し、群の最初の行だけ右端に群の名前(アクセントカラー)。
+    // 1 行: 幅をそろえた番号、見出し、群の最初の行だけ右端に群の名前と番号の頭の文字(アクセントカラー)。
     // 群は 1 つおきにアクセントカラーの淡い帯。指の下の行はアクセントカラーの塗りで、文字は白
     private func titleMenuRow(
         _ entry: SettingsJumpMenuEntry,
@@ -1387,8 +1387,7 @@ extension ContentView {
             : (entry.groupOrdinal % 2 == 1 ? Color.accentColor.opacity(0.08) : Color.clear)
         return HStack(spacing: 6) {
             if let number = entry.number {
-                (Text(String(number.prefix(1))).fontWeight(isGroupStart ? .heavy : .regular)
-                    + Text(String(number.dropFirst())))
+                Text(number)
                     .font(.system(size: layout.fontSize).monospacedDigit())
                     .frame(width: layout.fontSize * 2.6, alignment: .leading)
             }
@@ -1398,7 +1397,8 @@ extension ContentView {
                 .truncationMode(.tail)
             Spacer(minLength: 4)
             if isGroupStart, let groupName = SettingsJumpMenu.groupNames[entry.group] {
-                Text(groupName)
+                // 区分の名前と番号の頭の文字(キー配列 (L)。ユーザ指定 3701)
+                Text("\(groupName) (\(entry.group))")
                     .font(.system(size: max(8, layout.fontSize - 2), weight: .semibold))
                     .foregroundStyle(isHighlighted ? Color.white : Color.accentColor)
                     .lineLimit(1)
