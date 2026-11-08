@@ -139,6 +139,7 @@
 	<dict><key>phrase</key><string>気が利く</string><key>shortcut</key><string>きがきく</string><key>pos</key><string>五段</string></dict>
 	<dict><key>phrase</key><string>勇気づける</string><key>shortcut</key><string>ゆうきづける</string><key>pos</key><string>一段</string></dict>	<!-- Sudachi/LM とも未収録で 有機+付ける に割れていた(ユーザ報告 3636) -->
 	<dict><key>phrase</key><string>気の利く</string><key>shortcut</key><string>きのきく</string><key>pos</key><string>五段</string></dict>
+	<dict><key>phrase</key><string>かっこ悪い</string><key>shortcut</key><string>かっこわるい</string><key>pos</key><string>形容詞</string></dict>	<!-- かっこ悪い: 辞書に無く 括弧悪い/確固悪い/恰好悪い の合成だった。先頭 かっこ悪い、次に かな(ユーザ指定 3726)。合成は suppr、恰好悪い/格好悪い は かっこうわるい で出す -->
 	<dict><key>phrase</key><string>度の強い</string><key>shortcut</key><string>どのつよい</string><key>pos</key><string>形容詞</string></dict>	<!-- 度の強い(眼鏡・酒): どの+強い が 度+の+強い に 261 差で勝ち、どのつよいめがね が どの強い目がね だった(ユーザ報告 3726)。どの は名詞の前にしか来ないが、どの新しい機能 のような 形容詞+名詞 もあるので一般の規則にせず登録 -->
 	<dict><key>phrase</key><string>度の弱い</string><key>shortcut</key><string>どのよわい</string><key>pos</key><string>形容詞</string></dict>
 	<dict><key>phrase</key><string>度の過ぎる</string><key>shortcut</key><string>どのすぎる</string><key>pos</key><string>一段</string></dict>	<!-- 度の過ぎた(冗談): どのすぎた が どの杉田 だった(3726) -->

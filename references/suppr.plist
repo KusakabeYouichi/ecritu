@@ -369,6 +369,11 @@
 	<!-- ■ 非文法・実用ゼロの合成(学習しても出さない) -->
 	<dict><key>phrase</key><string>お蛭</string><key>shortcut</key><string>おひる</string></dict>	<!-- お+蛭 の丁寧接頭辞の合成。使わず見苦しい。きのうのおひるは→昨日のお蛭は が 2 番めに出ていた(ユーザ報告 3778) -->
 	<dict><key>phrase</key><string>後悔注</string><key>shortcut</key><string>こうかいちゅう</string></dict>	<!-- 名詞+注 の合成。〜中(ちゅう)の取り違えで使えない(ユーザ報告 3778) -->
+	<dict><key>phrase</key><string>括弧悪い</string><key>shortcut</key><string>かっこわるい</string></dict>	<!-- かっこ+悪い の合成(括弧/確固/各戸)。かっこわるい は かっこ悪い(misc)が先頭、かなが次。恰好悪い/格好悪い は読み かっこう の かっこうわるい で出す(ユーザ指定 3726)。活用形(括弧悪かった)も消える -->
+	<dict><key>phrase</key><string>確固悪い</string><key>shortcut</key><string>かっこわるい</string></dict>
+	<dict><key>phrase</key><string>各戸悪い</string><key>shortcut</key><string>かっこわるい</string></dict>
+	<dict><key>phrase</key><string>恰好悪い</string><key>shortcut</key><string>かっこわるい</string></dict>
+	<dict><key>phrase</key><string>格好悪い</string><key>shortcut</key><string>かっこわるい</string></dict>
 	<dict><key>phrase</key><string>航海注</string><key>shortcut</key><string>こうかいちゅう</string></dict>
 	<!-- □ 活用形でだけ出さない合成(ユーザ判定 3772: サ変動詞化しない名詞・読み違い・送り仮名のカタカナ・お+動詞 等) -->
 	<dict><key>phrase</key><string>抽象する</string><key>shortcut</key><string>ちゅうしょうする</string><key>pos</key><string>名詞</string></dict>	<!-- 抽象 はサ変動詞化しない(抽象化する)。中傷する と同点で辞書順の 抽象する が先頭だった(一括検査 3640b、ユーザ指定 3642) -->
