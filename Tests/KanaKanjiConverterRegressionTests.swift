@@ -1960,6 +1960,31 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // 3725(ユーザ報告): かんこくなみ が 韓国波(名詞の直後の なみ は 並み、次に 並)。そんなにへんかな が そんなに経んかな
+    // (形容動詞語幹+かな の観測が無く、活用派生 経ん の述語クランプに負けた。経ん を下げると そんな+2片 に 21 差で負けた)
+    func testRegressionUserReports3725() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func single(_ reading: String) -> [String] { converter.candidates(for: reading, limit: 30, systemCandidateMode: .surface) }
+        func shown(_ reading: String) -> [String] {
+            let list = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            return list.isEmpty ? single(reading) : list
+        }
+        XCTAssertEqual(Array(shown("かんこくなみ").prefix(2)), ["韓国並み", "韓国並"])
+        for (reading, expected) in [
+            ("にほんなみ", "日本並み"), ("せけんなみ", "世間並み"), ("れいねんなみ", "例年並み"), ("かぞくなみ", "家族並み"),
+            ("かんこくなみの", "韓国並みの"), ("ぷろなみ", "プロ並み"),
+            // 文頭・助詞や連体詞の後ろの なみ は 波 のまま
+            ("なみがたかい", "波が高い"), ("うみのなみ", "海の波"), ("おおきななみ", "大きな波"),
+            ("そんなにへんかな", "そんなに変かな"), ("へんかな", "変かな"), ("ちょっとへんかな", "ちょっと変かな"),
+            ("これってへんかな", "これって変かな"), ("へんかも", "変かも"), ("だいじょうぶかな", "大丈夫かな"),
+            ("こんなにおおきい", "こんなに大きい"), ("どんなにがんばっても", "どんなに頑張っても"), ("としつきをへて", "年月を経て"),
+        ] {
+            let list = shown(reading)
+            XCTAssertEqual(list.first, expected, "\(list.prefix(5))")
+        }
+    }
+
     // 3723(ユーザ報告): かわいがられる が 河合がられる(受け身の がられる が がる の活用形に無かった)。
     // おもしろがって が 面白がって の後ろ(途中の 面白 に がって を継ぎ足す合成の点が 面白がって にだけ足された。
     // おもしろい は かな先頭の指定 3332 なので がる の形もかなが先)
