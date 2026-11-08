@@ -1960,6 +1960,38 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // learningBOX 確認表(3697)の 3 回めの回答の [直す](3736、ユーザ判定): 辞書に無い複合語、励起/唐服 の降格、初冬+早春、
+    // 石(こく)は数の後ろだけ、コク の抑制外し、正解は+答えの語
+    func testRegressionLearningBoxAudit3736() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func single(_ reading: String) -> [String] { converter.candidates(for: reading, limit: 30, systemCandidateMode: .surface) }
+        func shown(_ reading: String) -> [String] {
+            let list = reading.count >= 4 ? converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface) : []
+            var result = list.isEmpty ? single(reading) : list
+            for candidate in single(reading) where !result.contains(candidate) { result.append(candidate) }
+            return result
+        }
+        for (reading, expected) in [
+            ("ぶどうじゅのしたてかたで", "ぶどう樹の仕立て方で"), ("したてかた", "仕立て方"), ("はんたいりくせい", "半大陸性"),
+            ("ぐりぶどう", "グリぶどう"), ("このたに", "この他に"),
+            ("れいきがただよう", "冷気が漂う"), ("れいきじょうたい", "励起状態"),
+            ("しょとうからそうしゅん", "初冬から早春"), ("しょとうきょういく", "初等教育"),
+            ("にしがわからふく", "西側から吹く"),
+            // 石(こく)は数の後ろだけ。コク は 後ろに が/の が続くとき
+            ("こくがある", "コクがある"), ("こくのある", "コクのある"), ("ごひゃくまんごく", "五百万石"), ("いっこくもはやく", "一刻も早く"),
+            ("いろがこくでる", "色が濃く出る"),
+            // 正解は+答えの語(問題文の型だけ。道路 単独は保つ)
+            ("せいかいはどうろです", "正解はDouroです"), ("どうろをわたる", "道路を渡る"), ("せいかいはだれ", "正解は誰"),
+        ] {
+            let list = shown(reading)
+            XCTAssertEqual(list.first, expected, "\(reading) \(list.prefix(5))")
+        }
+        // こく 単独の並びは 3772 の指定(濃く が先頭)のまま、コク も候補に入る
+        XCTAssertEqual(single("こく").first, "濃く")
+        XCTAssertTrue(single("こく").contains("コク"))
+    }
+
     // 3736(ユーザ報告): じをおおきくすれば が 時を大きくすれば、きのうときょうで が 機能と今日で、すみで の先頭が 澄み出、
     // とうげつのげんかを が 当月の喧嘩を(喧嘩 を げんか と読むのは連濁のときだけ。確認表の指摘)
     func testRegressionUserReports3736() throws {
