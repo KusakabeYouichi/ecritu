@@ -1960,6 +1960,21 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // 3722(ユーザ報告): 実機で ほしがって が 星がって/干しがって/法師がって(打鍵の途中の ほしが の候補+って の合成)で埋まり、
+    // 欲しがって が 9 番め以降だった。合成は途中の読みのキャッシュがあるときだけ出る(打鍵の速さで OK/NG が入れ替わる)。
+    // 実機と同じく途中の読みを先に変換してから確かめる
+    func testRegressionAdjectiveGaruBeatsCachedPostfix3722() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("ほしがって", "欲しがって"), ("いやがって", "嫌がって"), ("さむがって", "寒がって")] {
+            for length in 1..<reading.count {
+                _ = converter.candidates(for: String(reading.prefix(length)), limit: 24, systemCandidateMode: .surface)
+            }
+            let list = converter.candidates(for: reading, limit: 24, systemCandidateMode: .surface)
+            XCTAssertEqual(list.first, expected, "\(list.prefix(6))")
+        }
+    }
+
     // 3721(ユーザ報告・指定): はつかうなとあれほど が 二十日ウナとあれほど(misc に登録した 二十日 が連文節で固定 1500)。
     // どのろご が 度のロゴ だけ(どの→名詞 の観測が LM に少ない)。らいん は LINE/ライン/Rhein(ライン川)の順
     func testRegressionUserReports3721() throws {
