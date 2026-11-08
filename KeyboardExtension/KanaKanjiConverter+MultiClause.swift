@@ -281,6 +281,7 @@ extension KanaKanjiConverter {
             candidates = candidates.filter { !Self.containsNonPassivizableSuruForm($0) }
                 + candidates.filter { Self.containsNonPassivizableSuruForm($0) }
         }
+        candidates = Self.katakanaCompoundOverKatakanaLatinTop(candidates)
         candidates = Self.allLatinOverMixedTop(candidates)
         candidates = Self.promoteKatakanaCounterpartOfLatinTop(candidates) { reading, katakana in
             scriptCounterpartSurface(for: reading, wantsLatin: false, plainKatakana: katakana)
@@ -430,6 +431,30 @@ extension KanaKanjiConverter {
             return result
         }
         return candidates
+    }
+
+    // 先頭でカタカナの直後にラテン文字が続く(スタートLINE)とき、ラテン文字を含まない同じ形(スタートライン)が上位にあれば
+    // 先頭へ(3720: らいん に LINE を足したら すたーとらいん が スタートLINE になった)。カタカナの語に続けて書くのは
+    // カタカナの語(複合語)。ラテン文字が先の形(iPhoneケース)と、助詞などを挟む形(ゼミはLINEで)は対象外
+    static func katakanaCompoundOverKatakanaLatinTop(_ candidates: [String]) -> [String] {
+        guard candidates.count >= 2, let top = candidates.first else { return candidates }
+        func isKatakana(_ c: Character) -> Bool { ("ァ"..."ヺ").contains(c) || c == "ー" }
+        let characters = Array(top)
+        guard characters.indices.dropFirst().contains(where: { index in
+            isKatakana(characters[index - 1]) && characters[index].unicodeScalars.contains(where: isLatinLetterScalar)
+        }) else { return candidates }
+        func skeleton(_ text: String) -> String {
+            String(text.filter { !isKatakana($0) && $0 != "・" && !$0.unicodeScalars.contains(where: isLatinLetterScalar) && $0 != " " })
+        }
+        let topSkeleton = skeleton(top)
+        guard let index = candidates.indices.dropFirst().prefix(5).first(where: { index in
+            let candidate = candidates[index]
+            return !candidate.unicodeScalars.contains(where: isLatinLetterScalar) && skeleton(candidate) == topSkeleton
+        }) else { return candidates }
+        var result = candidates
+        let katakana = result.remove(at: index)
+        result.insert(katakana, at: 0)
+        return result
     }
 
     // 先頭がカタカナとラテン文字の混ぜ書き(シェリーがApera/ビンゲンはRheinhessen)で、候補に全部ラテン文字の形があれば先頭へ
