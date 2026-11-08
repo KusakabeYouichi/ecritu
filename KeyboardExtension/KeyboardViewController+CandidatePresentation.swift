@@ -246,7 +246,7 @@ extension KeyboardViewController {
                     systemCandidateMode: systemCandidateMode
                 )
             }
-            let singleForTrace = Array(converterCandidates.prefix(4))
+            let singleForTrace = Array(converterCandidates.prefix(8))
             var multiClauseLeadingKana = false
 
             // 連文節変換(案1: 自前単語LM): フラグ on の時のみ、連文節候補を上位(先頭候補の次)へ
@@ -488,7 +488,9 @@ extension KeyboardViewController {
         }
         let edition = (Bundle.main.infoDictionary?["CFBundleVersion"] as? String) ?? "?"
         let multiText = multi.prefix(4).joined(separator: "/")
-        let singleText = single.prefix(3).joined(separator: "/")
+        // 単文節は 8 つまで(3720: ほしがって で 星がって/干しがって/法師がって の 3 つしか残らず、欲しがって が
+        // 4 番め以降にあるのか無いのかを見分けられなかった)
+        let singleText = single.prefix(8).joined(separator: "/")
         let wordLM = kanaKanjiStore.hasWordLMMetadata ? "1" : "0"
         let fallback = kanaKanjiStore.isSystemDictionaryFallback() ? "1" : "0"
         let trace = "[\(edition)] \(reading)\n連文節: \(multiText.isEmpty ? "(空)" : multiText)\n単文節: \(singleText.isEmpty ? "(空)" : singleText)\nwLM=\(wordLM) fallback=\(fallback) fs=\(memoryFailSafeProfile.rawValue) mode=\(mode.rawValue)"
