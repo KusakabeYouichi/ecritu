@@ -445,6 +445,7 @@
 	<dict><key>phrase</key><string>でかい</string><key>shortcut</key><string>でかい</string></dict>	<!-- でかい: かな正書の口語形容詞(dict rank0 かな、uni7715)。でかい→EOS bigram が無く(Wikipedia文語バイアス)、文末で 出(で)+会(かい) の断片連結(出口 会→EOS 1571)に負ける(そんなにでかい→そんなに出会)。かな正書curatedで供給 -->	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>こぞって</string><key>shortcut</key><string>こぞって</string></dict>	<!-- こぞって(挙って。かなが正書の副詞): 連文節/単文節で 小+ぞって の誤合成が先頭に来る。curated で こぞって を先頭に -->
 	<dict><key>phrase</key><string>ほんとだ</string><key>shortcut</key><string>ほんとだ</string></dict>	<!-- ほんとだ(本当だ の口語): かな ほんと(wc4550)は 本当(2581)より重く、連文節・単文節とも 本当だ が先頭になる。口語の相づちはかな表記が普通(ユーザー指定)なので、かな識別を curated で供給して先頭化する(うまく/さっき/いいね と同じ処方) -->
+	<dict><key>phrase</key><string>どんだけ</string><key>shortcut</key><string>どんだけ</string></dict>	<!-- どんだけ(どれだけ の口語。かな正書の副詞): 辞書にも LM にも 1 語で無く、ドン+だけ/丼+だけ に割れて どんだけあぶないか が ドンだけあぶないか だった(ユーザ報告 3731) -->
 
 	<!-- ■ 供給欠落の補充(Sudachi 未収録の複合語・固有名。そもそも候補が作れない) -->
 	<dict><key>phrase</key><string>ブレ</string><key>shortcut</key><string>ぶれ</string><key>pos</key><string>名詞</string></dict>	<!-- 味にブレが/手ブレ の ブレ。LM に無くカタカナ化の減点(+100000)で消え、あじにぶれが→味に触れが/味鈍れが だった(ユーザ報告 3778) -->
