@@ -122,6 +122,12 @@ extension KanaKanjiConverter {
         if Self.kanaHarvestDemotedReadings.contains(normalized) {
             return false
         }
+        // 活用形でも漢字を先頭にする基底(あぶない。derivedKanjiLeadBaseReadings)の語幹で始まる かな(あぶなくなる/
+        // あぶないか)は、かな書きも正書として 2 番めに残す(並びはエンジンで漢字が先頭)。根拠が無いと表示層が かな を
+        // 変換候補の列から外し、あぶなくなる の 2 番めが アブなくなる だった(実機、ユーザ報告 3734)
+        if Self.derivedKanjiLeadBaseReadings.contains(where: { normalized.hasPrefix(String($0.dropLast())) }) {
+            return keepKanaGround("L3734")
+        }
         // 述語の直後に続く付属語の連なり(のです/のだ/んです/のに 等。multiClausePredicateFollowingFunctionReadings)を
         // 単独で打ったとき(断片として使う)、かなが唯一の正書なのに根拠が無く、表示層が かな を末尾へ回して 乃です が
         // 先頭に見えていた(ユーザ報告 3633。ので は seed、のですが は か/が の剥がしで既に真)
