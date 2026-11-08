@@ -3665,6 +3665,11 @@ extension KanaKanjiConverter {
                 !isKanaIdentity || reading.count >= 3 {
                 penalty -= Self.multiClauseDonoNounBonus
             }
+            // 名詞(漢字・カタカナの語)の直後の なみ は接尾の 並み、次に 並(定数コメント参照。3725)
+            if readingID == SID.なみ, surfaceID == SID.並み || surfaceID == SID.並, !prevIsBOS, !prevIsKanaIdentity,
+                Self.isAllKanjiSurface(prev) || Self.isKatakanaString(prev) {
+                penalty -= surfaceID == SID.並み ? Self.multiClauseNounSuffixNamiBonus : Self.multiClauseNounSuffixNamiBonus - 500
+            }
             // 連用形(活用派生)直後の すぎ は 過ぎ/すぎ。杉/椙 を減点(定数コメント参照。2823)
             // 受身・使役のかな助動詞(られ/れ/させ/され)で切れた連用形の後ろも同じ(間違え+られ+すぎ の 3 分割経路)
             if readingID == SID.すぎ, !Self.multiClauseSugiSuffixSurfacesID.contains(surfaceID),

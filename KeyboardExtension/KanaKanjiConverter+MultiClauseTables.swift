@@ -1164,6 +1164,10 @@ extension KanaKanjiConverter {
     // 度+の+名詞 の の→名詞 に負けた(どのロゴ 180 差、本 1131、地図 1142、ぶどう 883。ほかに 度の店)。
     // 度の強い/度の過ぎた は後ろが形容詞・動詞なので対象外
     static let multiClauseDonoNounBonus = 1500
+    // 名詞(漢字・カタカナの語)の直後の なみ は接尾の 並み(韓国並み/例年並み/世間並み)。単独の語の 波 が安く、
+    // 韓国波/日本波/世間波/例年波/家族波 だった(韓国→波 12323 < 並み 13244 < 並 13426。3725、ユーザ報告)。
+    // 並み を先(この値)、並 を次(500 少なく)。文頭(波が高い)と助詞・連体詞の後ろ(海の波/大きな波)は対象外
+    static let multiClauseNounSuffixNamiBonus = 2000
     // カ変「来る」の活用形(読み→漢字表層)。活用供給順で一段動詞の後に沈むため連文節に
     // 明示供給する。北/着た 等の同音とは競合し LM が文脈で選ぶ(単独 きた→北 は不変)。
     // 単文節の kuruInflectionForms(きてしまいました→来てしまいました 等の複合尾を含む)から
@@ -4114,6 +4118,8 @@ extension KanaKanjiConverter {
             for s in ["ら", "かた", "方"] { add(s) }
             // 文頭の 事+助詞(3713)
             add("事")
+            // 名詞+並み の接尾(3725)
+            for s in ["なみ", "並み", "並"] { add(s) }
             // だろう/でしょう の途中で区切らない、サ変名詞+の+旅(3710)
             for s in ["だろ", "でしょ", "旅", "たび"] { add(s) }
             // 比況の みたい(3715)
@@ -4300,6 +4306,9 @@ extension KanaKanjiConverter {
         static let EOS = MultiClauseSymbols.id(multiClauseEOSMarker)
         static let ある = MultiClauseSymbols.id("ある")
         static let どの = MultiClauseSymbols.id("どの")
+        static let なみ = MultiClauseSymbols.id("なみ")
+        static let 並み = MultiClauseSymbols.id("並み")
+        static let 並 = MultiClauseSymbols.id("並")
         static let いう = MultiClauseSymbols.id("いう")
         static let いち = MultiClauseSymbols.id("いち")
         static let き = MultiClauseSymbols.id("き")
