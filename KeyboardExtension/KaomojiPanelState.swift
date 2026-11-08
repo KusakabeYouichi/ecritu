@@ -136,9 +136,24 @@ struct KaomojiCategory: Identifiable, Hashable {
 @Observable
 @MainActor
 final class KaomojiPanelState {
-    var selectedCategoryID = "existing"
+    var selectedCategoryID: String
     var selectedReadingPrefix: String? = nil
     var selectedReading: String? = nil
+    // 最後に開いていた区分の置き場(3726、ユーザ指定)。キーボードが作り直されてもその区分で開く(以前は毎回 基本)。
+    // nil(テストの既定)なら覚えない。検索の頭の字・読みは覚えない
+    @ObservationIgnored private let defaults: UserDefaults?
+    static let lastCategoryDefaultsKey = "kaomoji.lastCategory"
+
+    init(defaults: UserDefaults? = nil) {
+        self.defaults = defaults
+        let saved = defaults?.string(forKey: Self.lastCategoryDefaultsKey)
+        // 区分が無くなった(取り込みの作り直し等)ときは 基本
+        selectedCategoryID = saved.flatMap { id in Self.categories.contains(where: { $0.id == id }) ? id : nil } ?? "existing"
+    }
+
+    private func rememberSelectedCategory() {
+        defaults?.set(selectedCategoryID, forKey: Self.lastCategoryDefaultsKey)
+    }
 
     static var categories: [KaomojiCategory] {
         // 分類の表示順は KaomojiCatalog.displayCategoryOrder に一元化(設定アプリも同じ並びを写す)
@@ -217,6 +232,7 @@ final class KaomojiPanelState {
 
     func selectCategory(_ category: KaomojiCategory) {
         selectedCategoryID = category.id
+        rememberSelectedCategory()
 
         if case .search = category.kind {
             return
@@ -229,6 +245,7 @@ final class KaomojiPanelState {
     // 修飾キーの空タップから開くとき用。ID だけ変え、検索の接頭・読みは触らない
     func selectCategory(id: String) {
         selectedCategoryID = id
+        rememberSelectedCategory()
     }
 
     func selectReadingPrefix(_ prefix: String?) {

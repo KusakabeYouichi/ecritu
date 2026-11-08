@@ -166,7 +166,8 @@ struct KeyboardRootView: View {
         nonmutating set { inputState.inputModeChangeTrigger = newValue }
     }
     @State var radicalPickerState = RadicalPickerState()
-    @State var kaomojiPanelState = KaomojiPanelState()
+    // 最後に開いていた区分を App Group に覚える(3726)
+    @State var kaomojiPanelState = KaomojiPanelState(defaults: UserDefaults(suiteName: KeyboardViewController.SharedDefaultsKeys.appGroupID))
     // 書式化数値の入力の状態(バッファ・カテゴリー・単位/接頭辞・スイッチ・日付と書式)。
     // 持ち主はここだけ。寿命は以前の @State と同じ
     @State var formattedNumberState = FormattedNumberState()
