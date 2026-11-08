@@ -191,4 +191,34 @@ final class KaomojiPanelStateTests: XCTestCase {
         XCTAssertFalse(state.isShortcutCategorySelected)
         XCTAssertTrue(state.isSearchCategorySelected)
     }
+
+    // ショートカットのカーソル位置の印 ‸(3735): 入れる文字列は印を除いたもの、カーソルは印の位置(末尾からの UTF-16 数)へ戻す
+    func testShortcutCursorMarkerPlacement() {
+        let cases: [(String, String, Int)] = [
+            ("(‸)", "()", 1), ("『‸』", "『』", 1), ("[設定]-[‸]-[]", "[設定]-[]-[]", 4), ("-[‸]", "-[]", 1),
+            // 印が無い・末尾にある → 動かさない。先頭 → 全体の長さぶん戻す
+            ("()", "()", 0), ("abc‸", "abc", 0), ("‸abc", "abc", 3),
+            // 2 つめ以降の印も消し、最初の印の位置へ
+            ("a‸b‸c", "abc", 2),
+            // 戻す量は UTF-16 単位(絵文字は 2)
+            ("(‸😀)", "(😀)", 3),
+        ]
+        for (registered, inserted, offset) in cases {
+            let placement = ShortcutCursorMarker.placement(for: registered)
+            XCTAssertEqual(placement.insertedText, inserted, registered)
+            XCTAssertEqual(placement.cursorOffsetFromEnd, offset, registered)
+        }
+    }
+
+    // 初期ショートカットの括弧は印つき(ユーザ指定 3735)。印の無い旧形は残っていない
+    func testInitialShortcutsUseCursorMarker() throws {
+        let url = URL(fileURLWithPath: ecrituRepositoryRoot).appendingPathComponent("KeyboardExtension/InitialShortcutVocabMigration.json")
+        let entries = try JSONDecoder().decode([String].self, from: Data(contentsOf: url))
+        for expected in ["(‸)", "『‸』", "[設定]-[‸]-[]", "-[‸]"] {
+            XCTAssertTrue(entries.contains(expected), expected)
+        }
+        for old in ["()", "[設定]-[]-[]", "-[]"] {
+            XCTAssertFalse(entries.contains(old), old)
+        }
+    }
 }
