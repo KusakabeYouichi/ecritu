@@ -1168,6 +1168,11 @@ extension KanaKanjiConverter {
     // 韓国波/日本波/世間波/例年波/家族波 だった(韓国→波 12323 < 並み 13244 < 並 13426。3725、ユーザ報告)。
     // 並み を先(この値)、並 を次(500 少なく)。文頭(波が高い)と助詞・連体詞の後ろ(海の波/大きな波)は対象外
     static let multiClauseNounSuffixNamiBonus = 2000
+    // その分/この分(ぶん)の直後の形容動詞・形容詞(その分楽だよね/その分安い)。LM は 分→楽 の観測が無く 楽 の unigram(5449)で、
+    // その+文楽(6831)+だよね に 900 差で負けて そのぶんらくだよね が その文楽だよね だった(3726、ユーザ報告)。
+    // 幅は 1700〜2020 の間: になる/です は直前の語を見ない定額なので 楽 が 文楽 より安くなるまで(1700 超)要り、
+    // 2020 以上では その文楽の演目 が その分楽の演目 になる(楽→の 978 と 文楽→の 658 の差)。両端はテストで守る
+    static let multiClauseBunPredicateBonus = 1850
     // カ変「来る」の活用形(読み→漢字表層)。活用供給順で一段動詞の後に沈むため連文節に
     // 明示供給する。北/着た 等の同音とは競合し LM が文脈で選ぶ(単独 きた→北 は不変)。
     // 単文節の kuruInflectionForms(きてしまいました→来てしまいました 等の複合尾を含む)から
@@ -4126,6 +4131,8 @@ extension KanaKanjiConverter {
             add("事")
             // 名詞+並み の接尾(3725)
             for s in ["なみ", "並み", "並"] { add(s) }
+            // その分+形容動詞・形容詞(3726)
+            for s in ["分", "ぶん"] { add(s) }
             // だろう/でしょう の途中で区切らない、サ変名詞+の+旅(3710)
             for s in ["だろ", "でしょ", "旅", "たび"] { add(s) }
             // 比況の みたい(3715)
@@ -4315,6 +4322,8 @@ extension KanaKanjiConverter {
         static let なみ = MultiClauseSymbols.id("なみ")
         static let 並み = MultiClauseSymbols.id("並み")
         static let 並 = MultiClauseSymbols.id("並")
+        static let 分 = MultiClauseSymbols.id("分")
+        static let ぶん = MultiClauseSymbols.id("ぶん")
         static let いう = MultiClauseSymbols.id("いう")
         static let いち = MultiClauseSymbols.id("いち")
         static let き = MultiClauseSymbols.id("き")

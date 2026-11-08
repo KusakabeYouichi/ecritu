@@ -2993,6 +2993,16 @@ extension KanaKanjiConverter {
         // かなで書く言葉の設定(3404。transitionCost で引く)
         let kanaGakiSuppressed = withStateLock { kanaGakiSuppressedCategories }
 
+        // その分(ぶん)の直後の形容動詞(prev→な の実績)と形容詞の終止形(3726)。遷移の加点と、2 語を辞書の 1 語に
+        // 差し替える規則(3570。分+楽→文楽)の除外で共有する。動詞は対象外(ぶん殴る を 分+殴る にしない)
+        func isBunFollowedByAdjective(prevID: Int32, prevReadingID: Int32?, surface: String,
+                                      isKanaIdentity: Bool, isInflectionDerived: Bool, isDictionaryFormPredicate: Bool) -> Bool {
+            guard prevID == SID.分, prevReadingID == SID.ぶん, !isKanaIdentity, !isInflectionDerived else { return false }
+            if isDictionaryFormPredicate && surface.hasSuffix("い") { return true }
+            guard let naCost = store.wordLMBigramCost(prev: surface, cur: "な") else { return false }
+            return naCost <= Self.multiClauseNaAdjectiveBigramThreshold
+        }
+
         // --- 3. コスト関数(sim_lm.py と一致): bigram / unigram+backoff / 辞書OOV / 素通りper-char ---
         func transitionCost(
             prev: String,
@@ -3679,6 +3689,11 @@ extension KanaKanjiConverter {
             if readingID == SID.なみ, surfaceID == SID.並み || surfaceID == SID.並, !prevIsBOS, !prevIsKanaIdentity,
                 Self.isAllKanjiSurface(prev) || Self.isKatakanaString(prev) {
                 penalty -= surfaceID == SID.並み ? Self.multiClauseNounSuffixNamiBonus : Self.multiClauseNounSuffixNamiBonus - 500
+            }
+            // その分(ぶん)の直後の形容動詞と形容詞の終止形(定数コメント参照。3726)
+            if isBunFollowedByAdjective(prevID: prevID, prevReadingID: prevReadingID, surface: surface, isKanaIdentity: isKanaIdentity,
+                                        isInflectionDerived: isInflectionDerived, isDictionaryFormPredicate: isDictionaryFormPredicate) {
+                penalty -= Self.multiClauseBunPredicateBonus
             }
             // 連用形(活用派生)直後の すぎ は 過ぎ/すぎ。杉/椙 を減点(定数コメント参照。2823)
             // 受身・使役のかな助動詞(られ/れ/させ/され)で切れた連用形の後ろも同じ(間違え+られ+すぎ の 3 分割経路)
@@ -7085,7 +7100,11 @@ extension KanaKanjiConverter {
                 guard lhs.isDictWord, rhs.isDictWord,
                     segments[position] == lhs.surface, segments[position + 1] == rhs.surface,
                     Self.isAllKanjiSurface(lhs.surface), Self.isAllKanjiSurface(rhs.surface),
-                    bigramCostByIDPair[MultiClauseSymbols.pairKey(symbolID(lhs.surface), symbolID(rhs.surface))] == nil
+                    bigramCostByIDPair[MultiClauseSymbols.pairKey(symbolID(lhs.surface), symbolID(rhs.surface))] == nil,
+                    // その分+形容動詞・形容詞(その分楽)は 2 語の並びが正しい(分+楽 を 文楽 にしない。3726)
+                    !isBunFollowedByAdjective(prevID: lhs.surfaceID, prevReadingID: lhs.readingID, surface: rhs.surface,
+                                              isKanaIdentity: rhs.isKanaIdentity, isInflectionDerived: rhs.isInflectionDerived,
+                                              isDictionaryFormPredicate: rhs.isDictionaryFormPredicate)
                 else { continue }
                 let compoundReading = lhs.reading + rhs.reading
                 guard let compound = store.systemCandidates(for: compoundReading, mode: systemCandidateMode).first(where: {
