@@ -842,7 +842,10 @@ extension KanaKanjiConverter {
         guard let current = scores[reading] else {
             return
         }
-        for suffix in Self.kanaLeadAdjectiveInflectionSuffixes where reading.hasSuffix(suffix) && reading.count > suffix.count {
+        // 形容詞+がる の活用形(おもしろがって)も同じ(3723、ユーザ報告: 打鍵の途中の 面白 に がって を継ぎ足す合成の点が
+        // がる の派生の点に足され、面白がって が おもしろがって の前に出た)
+        for suffix in Self.kanaLeadAdjectiveInflectionSuffixes + Self.adjectiveGaruInflectionForms.map(\.readingSuffix)
+        where reading.hasSuffix(suffix) && reading.count > suffix.count {
             let base = String(reading.dropLast(suffix.count)) + "い"
             guard KanaKanjiSeedDictionary.seed[base]?.first == base || hasCuratedKanaIdentity(for: base) else {
                 continue
