@@ -1960,6 +1960,34 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // 3723(ユーザ報告): かわいがられる が 河合がられる(受け身の がられる が がる の活用形に無かった)。
+    // おもしろがって が 面白がって の後ろ(途中の 面白 に がって を継ぎ足す合成の点が 面白がって にだけ足された。
+    // おもしろい は かな先頭の指定 3332 なので がる の形もかなが先)
+    func testRegressionAdjectiveGaruPassiveAndKanaLead3723() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func warmedSingle(_ reading: String) -> [String] {
+            for length in 1..<reading.count {
+                _ = converter.candidates(for: String(reading.prefix(length)), limit: 24, systemCandidateMode: .surface)
+            }
+            return converter.candidates(for: reading, limit: 24, systemCandidateMode: .surface)
+        }
+        func shown(_ reading: String) -> [String] {
+            let list = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            return list.isEmpty ? warmedSingle(reading) : list
+        }
+        let omoshiro = warmedSingle("おもしろがって")
+        XCTAssertEqual(Array(omoshiro.prefix(2)), ["おもしろがって", "面白がって"], "\(omoshiro.prefix(5))")
+        for (reading, expected) in [
+            ("かわいがられる", "かわいがられる"), ("おもしろがられる", "おもしろがられる"), ("めいわくがられる", "迷惑がられる"),
+            ("いやがられる", "嫌がられる"), ("いやがられた", "嫌がられた"), ("ほしがります", "欲しがります"),
+            ("さむがらせる", "寒がらせる"), ("いやがらせ", "嫌がらせ"), ("あがられる", "上がられる"),
+        ] {
+            let list = shown(reading)
+            XCTAssertEqual(list.first, expected, "\(list.prefix(5))")
+        }
+    }
+
     // 3722(ユーザ報告): 実機で ほしがって が 星がって/干しがって/法師がって(打鍵の途中の ほしが の候補+って の合成)で埋まり、
     // 欲しがって が 9 番め以降だった。合成は途中の読みのキャッシュがあるときだけ出る(打鍵の速さで OK/NG が入れ替わる)。
     // 実機と同じく途中の読みを先に変換してから確かめる
