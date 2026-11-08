@@ -1784,12 +1784,16 @@ extension KanaKanjiConverter {
                     }
                     // 辞書 rank を使うのは頭が漢字同士の同値と、片方が欧文(ASCII)始まりの同値。カタカナ頭対漢字頭(スネ肉/臑肉)は
                     // 文字コード順でカタカナが先に来ていた従来の並びを保つ(臑肉 のような稀字が rank で繰り上がるのを避ける)。
-                    // 欧文対カタカナ(Acrux/アクルックス)は文字コード順だと欧文が必ず先になるので、plist の並び(=rank)に従う(2895)
+                    // 欧文対カタカナ(Acrux/アクルックス)は文字コード順だと欧文が必ず先になるので、plist の並び(=rank)に従う(2895)。
+                    // カタカナ頭同士も rank に従う(3717、ユーザ指定: 文字コード順だと ェ(U+30A7)が エ(U+30A8)より先で、
+                    // LM に無い語どうしの同点で 辞書の チンクェ・テッレ が 語彙の チンクエ・テッレ に勝っていた。単文節の並びと揃える)
                     func isASCIIHead(_ c: Character) -> Bool { c.isASCII && c.isLetter }
+                    func isKatakanaHead(_ c: Character) -> Bool { ("ァ"..."ヺ").contains(c) }
                     let ordered = costMap.sorted { lhs, rhs in
                         if lhs.value != rhs.value { return lhs.value < rhs.value }
                         if let l = lhs.key.first, let r = rhs.key.first,
-                            (containsKanji(String(l)) && containsKanji(String(r))) || isASCIIHead(l) != isASCIIHead(r) {
+                            (containsKanji(String(l)) && containsKanji(String(r))) || isASCIIHead(l) != isASCIIHead(r)
+                                || (isKatakanaHead(l) && isKatakanaHead(r)) {
                             let lhsRank = dictionaryRank[lhs.key] ?? Int.max
                             let rhsRank = dictionaryRank[rhs.key] ?? Int.max
                             if lhsRank != rhsRank { return lhsRank < rhsRank }
