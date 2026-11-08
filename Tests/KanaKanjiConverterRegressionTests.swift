@@ -1960,6 +1960,33 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // 3721(ユーザ報告・指定): はつかうなとあれほど が 二十日ウナとあれほど(misc に登録した 二十日 が連文節で固定 1500)。
+    // どのろご が 度のロゴ だけ(どの→名詞 の観測が LM に少ない)。らいん は LINE/ライン/Rhein(ライン川)の順
+    func testRegressionUserReports3721() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func single(_ reading: String) -> [String] { converter.candidates(for: reading, limit: 30, systemCandidateMode: .surface) }
+        func shown(_ reading: String) -> [String] {
+            let list = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            return list.isEmpty ? single(reading) : list
+        }
+        for (reading, expected) in [
+            ("はつかうなとあれほど", "は使うなとあれほど"), ("らいんはつかうなとあれほど", "LINEは使うなとあれほど"),
+            ("はつかにあいましょう", "二十日に会いましょう"), ("ごがつはつか", "五月二十日"),
+            ("どのろご", "どのロゴ"), ("どのみせ", "どの店"), ("どのほん", "どの本"), ("どのちず", "どの地図"),
+            ("どのぶどう", "どのぶどう"), ("どのもでる", "どのモデル"), ("どのくらい", "どのくらい"), ("どのように", "どのように"),
+            ("このろご", "このロゴ"), ("らいんで", "LINEで"), ("すたーとらいん", "スタートライン"),
+        ] {
+            let list = shown(reading)
+            XCTAssertEqual(list.first, expected, "\(list.prefix(5))")
+        }
+        XCTAssertEqual(Array(single("らいん").prefix(3)), ["LINE", "ライン", "Rhein"])
+        XCTAssertEqual(single("はつか").first, "二十日")
+        // Rhin(らん、アルザスの川)は 蘭/欄/乱 より後ろ
+        let ran = single("らん")
+        XCTAssertGreaterThanOrEqual(ran.firstIndex(of: "Rhin") ?? 99, 3, "\(ran.prefix(8))")
+    }
+
     // 3720(ユーザ指定・報告): らいん に LINE を先頭で足す(ライン は 2 番め)。カタカナの語に続く らいん は カタカナ
     // (LINE を足したら すたーとらいん が スタートLINE になった)。ありがたがって は かなを先頭に保つ(『候補なし』の印が出ていた)
     func testRegressionUserReports3720() throws {
