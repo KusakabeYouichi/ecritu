@@ -669,8 +669,8 @@ final class KeyboardModeTransitionTests: XCTestCase {
     func testKaomojiDisplayCategoryOrderIsStable() {
         XCTAssertEqual(
             KaomojiCatalog.displayCategoryOrder,
-            ["rire", "kawaii", "timide", "panique", "decu", "triste", "colere", "surprise", "dodo",
-             "coucou", "amour", "excite", "action", "bizarre", "heros", "special"]
+            ["etincelles", "amour", "rire", "kawaii", "timide", "panique", "decu", "triste", "colere", "surprise", "dodo",
+             "coucou", "excite", "action", "bizarre", "heros", "special"]
         )
         // 表示順に載っている分類は全て実データに存在すること(誤字で並びから落ちるのを防ぐ)
         let imported = Set(KaomojiCatalog.importedCategoryOrder)
@@ -682,6 +682,28 @@ final class KeyboardModeTransitionTests: XCTestCase {
             Set(KaomojiCatalog.displayCategoryOrder), imported,
             "表示順に載っていない分類: \(imported.subtracting(KaomojiCatalog.displayCategoryOrder))"
         )
+    }
+
+    // 3724: きらめき(etincelles)と 愛(amour)は、ユーザが人気の順に並べたファイル(tmp/kaomoji_kirakira.txt /
+    // tmp/kaomoji_heart.txt)の順。読みの きらきら/はーと の検索も同じ順。キラキラの顔文字は 特殊 から きらめき へ移した
+    func testKaomojiSparkleAndHeartCategoriesKeepHandSortedOrder() {
+        let byCategory = KaomojiCatalog.importedEntriesByCategory
+        XCTAssertEqual(Array((byCategory["etincelles"] ?? []).prefix(3)), ["(⊙ꇴ⊙)", "(✦ ﹏ ✦)♡", "◝✩"])
+        XCTAssertEqual(Array((byCategory["amour"] ?? []).prefix(3)), ["(♡⩊♡)", "♡( ˘ ³˘)", "♥‿♥"])
+        XCTAssertEqual(Array((KaomojiCatalog.importedEntriesByReading["きらきら"] ?? []).prefix(3)), ["(⊙ꇴ⊙)", "(✦ ﹏ ✦)♡", "◝✩"])
+        XCTAssertEqual(Array((KaomojiCatalog.importedEntriesByReading["はーと"] ?? []).prefix(3)), ["(♡⩊♡)", "♡( ˘ ³˘)", "♥‿♥"])
+        for moved in ["☆彡", "☆ミ", "(-ω☆)キラリ", "(-д☆)キラッ", "(*^▽^)/★*☆"] {
+            XCTAssertFalse((byCategory["special"] ?? []).contains(moved), moved)
+            XCTAssertTrue((byCategory["etincelles"] ?? []).contains(moved), moved)
+        }
+        // 文字化け(U+FFFD)・ゼロ幅の字・いわゆる全角の範囲(U+FF00〜FFEF)を含む顔文字が無いこと
+        let forbidden: (Unicode.Scalar) -> Bool = { scalar in
+            scalar.value == 0xFFFD || (0x200B...0x200D).contains(scalar.value) || scalar.value == 0x2060
+                || scalar.value == 0xFEFF || (0xFF00...0xFFEF).contains(scalar.value)
+        }
+        for face in Set(byCategory.values.joined()) where face.unicodeScalars.contains(where: forbidden) {
+            XCTFail("使えない字を含む顔文字: \(face) \(face.unicodeScalars.map { String($0.value, radix: 16) })")
+        }
     }
 
     // リットルは単位ドラムに収録され、接頭辞と組んで hL・cL・mL が作れること。

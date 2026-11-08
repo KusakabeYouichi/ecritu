@@ -41,7 +41,8 @@ final class KaomojiPanelStateTests: XCTestCase {
         let ordered = KaomojiCatalog.displayCategoryOrder.filter { importedSet.contains($0) }
         let remaining = KaomojiCatalog.importedCategoryOrder.filter { !ordered.contains($0) }
         XCTAssertEqual(Array(ids.dropFirst(3)), (ordered + remaining).map { "imported:\($0)" })
-        XCTAssertEqual(Array(ids[3..<6]), ["imported:rire", "imported:kawaii", "imported:timide"])
+        // きらめき と 愛 が先頭(3724、ユーザ指定)
+        XCTAssertEqual(Array(ids[3..<6]), ["imported:etincelles", "imported:amour", "imported:rire"])
     }
 
     func testCategoryIDsAreUnique() {
