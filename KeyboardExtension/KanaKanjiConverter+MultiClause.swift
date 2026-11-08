@@ -3529,6 +3529,16 @@ extension KanaKanjiConverter {
                 naCost <= Self.multiClauseNaAdjectiveBigramThreshold {
                 base = min(base, Self.multiClauseNaAdjectiveSaCost)
             }
+            // 形容動詞語幹の直後の疑問の終助詞 かな/かも/かしら(変かな/綺麗かも)も述語の直後と同じ値に(3725、ユーザ報告)。
+            // 変→かな は LM の観測が無く 7276 で、活用派生の 経ん(述語クランプ 1200 付き)+かな に負けて そんなにへんかな が
+            // そんなに経んかな だった。形容動詞かは そう/さ と同じく prev→な の実績で見る。名詞+けど のような非文を作らないよう か で始まるものだけ
+            if isKanaIdentity, reading.count >= 2, reading.hasPrefix("か"),
+                Self.multiClauseFinalParticleReadingsID.contains(readingID),
+                !prevIsBOS, !prevIsKanaIdentity,
+                let naCost = store.wordLMBigramCost(prev: prev, cur: "な"),
+                naCost <= Self.multiClauseNaAdjectiveBigramThreshold {
+                base = min(base, Self.multiClauseFinalParticleAfterPredicateCost)
+            }
             // 説明・詠嘆の のね/のよ は辞書形述語(ノードフラグ)直後のみ安価にクランプ
             // (定数コメント参照)。表層末尾文字では名詞 思い と形容詞 重い を区別できない
             // ため、こちらは inflection_classes 由来のフラグでゲートする。
