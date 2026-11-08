@@ -326,13 +326,18 @@ extension KanaKanjiConverter {
     static let kansaiNegativeContractionSuffixes: Set<String> = {
         var set = kansaiContractionReadingSuffixes
         for pattern in godanPatterns {
-            for tail in ["ん", "んかった", "んかったら"] {
+            for tail in ["ん", "んかった", "んかったら", "へん", "へんかった", "へんかったら"] {
                 set.insert(pattern.aForm + tail)
             }
         }
         set.formUnion(godanRuNnaiContractionSuffixes)
+        set.formUnion(ichidanKansaiHenSuffixes)
+        set.formUnion(["せえへん", "せーへん", "せえへんかった", "しいひん"])
         return set
     }()
+    // 一段の関西の打ち消し 〜へん/〜ひん(食べへん/できへん。3726)。語幹 1 かなの動詞(得る/寝る/出る)には組まない:
+    // えへん(咳払い)が 得へん になった。1 かなの語幹は 寝えへん/出えへん/見いひん と伸ばして言うのがふつう
+    static let ichidanKansaiHenSuffixes: Set<String> = ["へん", "へんかった", "ひん", "ひんかった"]
     // 五段ら行の口語縮約 らない→んない(わかんない/変わんない。2887)。稀な動詞の同ゲートに加え、語幹 1 かなの
     // 動詞(蹴る→蹴んない/刈る→刈んない/遣る→やんない)には組まない: けんない/かんない の候補列に
     // 蹴んない/刈んない が混ざり、県内/管内 が先頭から落ちた(全網テストで検出)
@@ -385,6 +390,11 @@ extension KanaKanjiConverter {
         }
         // らない→んない 縮約は語幹 2 かな以上(定義コメント参照。2887)
         if rule.baseReadingSuffix == "る", Self.godanRuNnaiContractionSuffixes.contains(rule.readingSuffix),
+            readingStem.count < 2 {
+            return ([], Int.max)
+        }
+        // 一段の 〜へん/〜ひん は語幹 2 かな以上(定義コメント参照。3726)
+        if rule.baseReadingSuffix == "る", Self.ichidanKansaiHenSuffixes.contains(rule.readingSuffix),
             readingStem.count < 2 {
             return ([], Int.max)
         }

@@ -369,6 +369,11 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "んかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "んかったら", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "んで", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        // 関西の打ち消し 〜へん/〜ひん(食べへん/見ひん/できへん。3726)
+        InflectionRule(readingSuffix: "へん", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "へんかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "ひん", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "ひんかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
         // 「〜なくては/〜なければ」の口語縮約(食べなくちゃ, 食べなきゃ 等)
         InflectionRule(readingSuffix: "なくちゃ", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "なきゃ", baseReadingSuffix: "る", allowedClasses: .ichidan),
@@ -1269,6 +1274,13 @@ extension KanaKanjiConverter {
                     pattern.aForm + "んかったら"
                 ])
             }
+            // 関西の打ち消し 〜へん(行かへん/分からへん/知らへん。3726、ユーザ報告: いかへん が イカ変、わからへん が わから変)。
+            // さへん は 敬称 さん と衝突しないので 五段す も含める
+            suffixes.append(contentsOf: [
+                pattern.aForm + "へん",
+                pattern.aForm + "へんかった",
+                pattern.aForm + "へんかったら"
+            ])
             // 五段ら行の口語縮約「らない→んない」(わからない→わかんない、変わらない→変わんない、
             // つまらない→つまんない、やらない→やんない)。無いと かわんない が 買わん+ない の
             // 2 ノードにしか組めず 保母買わんない/ほぼ買わんない になる(ユーザ報告 2887)。
@@ -1416,6 +1428,11 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "せんかった", baseReadingSuffix: "する", allowedClasses: .suru),
         InflectionRule(readingSuffix: "せんかったら", baseReadingSuffix: "する", allowedClasses: .suru),
         InflectionRule(readingSuffix: "せんで", baseReadingSuffix: "する", allowedClasses: .suru),
+        // 関西の打ち消し(せえへん/せーへん/しいひん。3726)
+        InflectionRule(readingSuffix: "せえへん", baseReadingSuffix: "する", allowedClasses: .suru),
+        InflectionRule(readingSuffix: "せーへん", baseReadingSuffix: "する", allowedClasses: .suru),
+        InflectionRule(readingSuffix: "せえへんかった", baseReadingSuffix: "する", allowedClasses: .suru),
+        InflectionRule(readingSuffix: "しいひん", baseReadingSuffix: "する", allowedClasses: .suru),
         // 「〜なくては/〜なければ」の口語縮約(しなくちゃ, しなきゃ 等)
         InflectionRule(readingSuffix: "しなくちゃ", baseReadingSuffix: "する", allowedClasses: .suru),
         InflectionRule(readingSuffix: "しなきゃ", baseReadingSuffix: "する", allowedClasses: .suru),
@@ -1947,6 +1964,11 @@ extension KanaKanjiConverter {
         ("こんかった", "来んかった"),
         ("こんかったら", "来んかったら"),
         ("こんで", "来んで"),
+        // 関西の打ち消し(来おへん/来えへん。3726)
+        ("こおへん", "来おへん"),
+        ("けえへん", "来えへん"),
+        ("こおへんかった", "来おへんかった"),
+        ("けえへんかった", "来えへんかった"),
         // 「〜なくては/〜なければ」の口語縮約(来なくちゃ, 来なきゃ 等)
         ("こなくちゃ", "来なくちゃ"),
         ("こなきゃ", "来なきゃ"),
