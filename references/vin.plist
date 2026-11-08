@@ -4954,6 +4954,8 @@
 	<dict><key>phrase</key><string>ツヴァイゲルト</string><key>shortcut</key><string>つゔぁいげると</string></dict>
 	<dict><key>phrase</key><string>テラン</string><key>shortcut</key><string>てらん</string></dict>
 	<dict><key>phrase</key><string>テランテス</string><key>shortcut</key><string>てらんてす</string></dict>
+	<dict><key>phrase</key><string>Dijon clone</string><key>shortcut</key><string>でぃじょんくろーん</string></dict>
+	<dict><key>phrase</key><string>ディジョン・クローン</string><key>shortcut</key><string>でぃじょんくろーん</string></dict>
 	<dict><key>phrase</key><string>ディミャット</string><key>shortcut</key><string>でぃみゃっと</string></dict>
 	<dict><key>phrase</key><string>Debina</string><key>shortcut</key><string>でびな</string></dict>
 	<dict><key>phrase</key><string>デビナ</string><key>shortcut</key><string>でびな</string></dict>
@@ -5385,7 +5387,7 @@
 	<dict><key>phrase</key><string>クリオジャ</string><key>shortcut</key><string>くりおじゃ</string></dict>
 	<dict><key>phrase</key><string>Aletta</string><key>shortcut</key><string>あれった</string></dict>
 	<dict><key>phrase</key><string>La Francesa</string><key>shortcut</key><string>らふらんせさ</string></dict>
-	<dict><key>phrase</key><string>Castets</string><key>shortcut</key><string>かすて</string></dict>
+	<dict><key>phrase</key><string>Castets</string><key>shortcut</key><string>かすて</string></dict>	<!-- 黒ぶどうの品種で、地名でもある -->
 	<dict><key>phrase</key><string>カステ</string><key>shortcut</key><string>かすて</string></dict>
 
 	<!-- ■ ぶどう以外の果物 -->
@@ -5632,7 +5634,6 @@
 	<dict><key>phrase</key><string>クローン技術</string><key>shortcut</key><string>くろーんぎじゅつ</string></dict>
 	<dict><key>phrase</key><string>クローン選抜</string><key>shortcut</key><string>くろーんせんばつ</string></dict>
 	<dict><key>phrase</key><string>グラン・クリュ畑</string><key>shortcut</key><string>ぐらんくりゅばたけ</string></dict>
-	<dict><key>phrase</key><string>ディジョン・クローン</string><key>shortcut</key><string>でぃじょんくろーん</string></dict>
 	<dict><key>phrase</key><string>ドリップ灌漑</string><key>shortcut</key><string>どりっぷかんがい</string></dict>
 	<dict><key>phrase</key><string>ナチュラル灌漑</string><key>shortcut</key><string>なちゅらるかんがい</string></dict>
 	<dict><key>phrase</key><string>フラッド灌漑</string><key>shortcut</key><string>ふらっどかんがい</string></dict>

@@ -1257,7 +1257,6 @@
 	<dict><key>phrase</key><string>clonal selection</string><key>shortcut</key><string>くろーなるせれくしょん</string></dict>	<!-- クローナル・セレクション -->
 	<dict><key>phrase</key><string>clone</string><key>shortcut</key><string>くろーん</string></dict>	<!-- クローン -->
 	<dict><key>phrase</key><string>terroir</string><key>shortcut</key><string>てろわーる</string></dict>	<!-- テロワール -->
-	<dict><key>phrase</key><string>Dijon clone</string><key>shortcut</key><string>でぃじょんくろーん</string></dict>	<!-- ディジョン・クローン -->
 	<dict><key>phrase</key><string>traditional irrigation</string><key>shortcut</key><string>とらでぃしょなるいりげーしょん</string></dict>	<!-- トラディショナル・イリゲーション -->
 	<dict><key>phrase</key><string>ドライ・イリゲーション</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: どらいいりげーしょん -->
 	<dict><key>phrase</key><string>dry farming</string><key>shortcut</key><string>どらいふぁーみんぐ</string></dict>	<!-- ドライ・ファーミング -->
