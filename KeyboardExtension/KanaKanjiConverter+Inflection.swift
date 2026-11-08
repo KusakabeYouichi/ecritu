@@ -223,6 +223,21 @@ extension KanaKanjiConverter {
                 continue
             }
 
+            // 形容動詞の語幹+がる(嫌がって/不思議がって。3717、ユーザ指定)。許可リストに語幹の読み(いや→嫌)で載せた語だけ。
+            // 活用する語(暑い 等の い形容詞・動詞)は除く(読み あつい に がって が付いた 暑いがって を作らない)
+            let stemMetadata = adjectiveGaruMetadata(for: readingStem)
+            if stemMetadata.hasMetadata, !stemMetadata.allowedCandidates.isEmpty {
+                let stemClassMap = inflectionMetadata(for: readingStem).classMap
+                for candidate in candidatesForReading(
+                    readingStem,
+                    ajoutVocabulary: ajoutVocabulary,
+                    initialAjoutVocabulary: initialAjoutVocabulary,
+                    systemCandidateMode: systemCandidateMode
+                ) where stemMetadata.allowedCandidates.contains(candidate) && stemClassMap[candidate] == nil {
+                    derived.append(candidate + form.outputSuffix)
+                }
+            }
+
             let baseReading = readingStem + "い"
             let baseCandidates = candidatesForReading(
                 baseReading,

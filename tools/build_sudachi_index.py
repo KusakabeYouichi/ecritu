@@ -705,12 +705,11 @@ def build_index(
         if candidate_source_map:
             candidate_source_index[reading] = candidate_source_map
 
+    # い形容詞(暑い→暑がる)に加え、活用しない語=形容動詞の語幹(嫌→嫌がる、不思議→不思議がる)も印を付ける
+    # (3717)。形容動詞は活用の分類を持たないので、許可リストに載っていて分類が無い語をそれとみなす。
+    # 動詞など、い形容詞以外の活用する語は従来どおり除く
     for reading, allowed_candidates in adjective_garu_allowlist.items():
-        inflection_map = inflection_index.get(reading)
-
-        if not inflection_map:
-            continue
-
+        inflection_map = inflection_index.get(reading) or {}
         available_candidates = set(index.get(reading, []))
         metadata_map = candidate_source_index.setdefault(reading, {})
 
@@ -718,7 +717,7 @@ def build_index(
             if candidate not in available_candidates:
                 continue
 
-            if inflection_map.get(candidate) != "adjective-i":
+            if inflection_map.get(candidate) not in ("adjective-i", None):
                 continue
 
             sources = metadata_map.setdefault(candidate, [])
