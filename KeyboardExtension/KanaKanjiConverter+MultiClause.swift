@@ -4354,7 +4354,9 @@ extension KanaKanjiConverter {
             }
             // 杯 を ばい/ぱい と読むのは数の後ろの連濁(3杯/一杯/何杯)だけ。それ以外の ばい は 倍/枚 等で、ばいになったそうね の
             // 2 番めが 杯になった だった(ユーザ指定 3695)。数字を確定した後の 3+ばい は助数詞の前置(digitContextCounterBoostedCandidates)が受け持つ
-            if surface == "杯", reading == "ばい" || reading == "ぱい",
+            // 石(こく)も同じで、数の後ろ(五百万石/百石)の単位だけ。それ以外の こく は コク(豊かなコク/コクがあり。確認表 3697 の
+            // [直す]、3736。石 4945 が コク 7040 より安く 豊かな石 だった)
+            if (surface == "杯" && (reading == "ばい" || reading == "ぱい")) || (surface == "石" && reading == "こく"),
                 prevIsBOS || !(prev.last.map { $0.isNumber || "一二三四五六七八九十百千何数".contains($0) } ?? false) {
                 penalty += Self.multiClauseRendakuHaiAfterNonNumeralPenalty
             }
