@@ -319,7 +319,9 @@ extension KanaKanjiConverter {
     // 戻り値の familyKey = 実際に派生へ寄与した基底表層の LM unigram 最小値(かな識別も
     // 寄与すれば含む)。連文節 b2b の「未代表族の追加供給」の優劣ゲートにだけ使う。
     // 関西弁・口語の否定縮約(する→せん 系)。文語サ変ゲート(derivedCandidates)で参照
-    static let kansaiContractionReadingSuffixes: Set<String> = ["せん", "せんかった", "せんかったら", "せんで"]
+    static let kansaiContractionReadingSuffixes: Set<String> = [
+        "せん", "せんかった", "せんかったら", "せんで", "せえへん", "せーへん", "せえへんかった", "しいひん"
+    ]
     // 関西弁の否定縮約(ん/んかった/んかったら、サ変 せん系)の全読み接尾辞。稀な読みの動詞には組まない
     // ゲート(derivedCandidates)で参照する。ユーザ指摘(2721): 選る/彫る(える)の 選らん/彫らん は
     // 書き言葉で使わず、えらん 等で常用語(選ぶ)の候補列を汚すだけ。知る/分かる 等の常用動詞は残す
@@ -332,9 +334,11 @@ extension KanaKanjiConverter {
         }
         set.formUnion(godanRuNnaiContractionSuffixes)
         set.formUnion(ichidanKansaiHenSuffixes)
-        set.formUnion(["せえへん", "せーへん", "せえへんかった", "しいひん"])
+        set.formUnion(ichidanKansaiLongHenSuffixes)
         return set
     }()
+    // 一段の語幹 1 かなの 〜へん/〜ひん は伸ばした形(見いひん/寝えへん/出えへん。3727)。語幹 1 かなのときだけ作る
+    static let ichidanKansaiLongHenSuffixes: Set<String> = ["いひん", "いひんかった", "えへん", "えへんかった"]
     // 一段の関西の打ち消し 〜へん/〜ひん(食べへん/できへん。3726)。語幹 1 かなの動詞(得る/寝る/出る)には組まない:
     // えへん(咳払い)が 得へん になった。1 かなの語幹は 寝えへん/出えへん/見いひん と伸ばして言うのがふつう
     static let ichidanKansaiHenSuffixes: Set<String> = ["へん", "へんかった", "ひん", "ひんかった"]
@@ -398,6 +402,16 @@ extension KanaKanjiConverter {
             readingStem.count < 2 {
             return ([], Int.max)
         }
+        if rule.baseReadingSuffix == "る", Self.ichidanKansaiLongHenSuffixes.contains(rule.readingSuffix),
+            readingStem.count != 1 {
+            return ([], Int.max)
+        }
+        // サ変名詞の関西の打ち消し(勉強せん。3727)は、読み全体が辞書の語(耳下腺/回線/環状線/新幹線)のときは作らない。
+        // じかせんが が 磁化せんが、かいせん の候補に 飼いせん が入った(全網で検出)
+        if rule.baseReadingSuffix.isEmpty, Self.kansaiContractionReadingSuffixes.contains(rule.readingSuffix),
+            !store.wordCosts(for: reading).isEmpty {
+            return ([], Int.max)
+        }
 
         let baseReading = readingStem + rule.baseReadingSuffix
         // 一段命令形(ろ/よ)の除外(2026-08-27): 居ろ/射ろ 等は同音語(色/意呂)を跨ぐ実害が
@@ -443,6 +457,9 @@ extension KanaKanjiConverter {
                     && rule.baseReadingSuffix == "する"
                     && $0.hasSuffix("する") && $0.count == 3
                     && ($0.first.map { !("ぁ"..."ん").contains($0) && !("ァ"..."ヶ").contains($0) } ?? false))
+                // サ変名詞の側(勉強せん。3727)も 1 字の名詞(害/得)とは組まない(がいせん→害せん にしない)
+                && !(Self.kansaiContractionReadingSuffixes.contains(rule.readingSuffix)
+                    && rule.baseReadingSuffix.isEmpty && $0.count < 2)
         }
 
         guard !baseCandidates.isEmpty else {

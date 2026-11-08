@@ -374,6 +374,11 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "へんかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "ひん", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "ひんかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        // 語幹 1 かなは伸ばして言う(見いひん/寝えへん/出えへん。3727)。語幹 1 かなだけ(Inflection 側のゲート)
+        InflectionRule(readingSuffix: "いひん", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "いひんかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "えへん", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "えへんかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
         // 「〜なくては/〜なければ」の口語縮約(食べなくちゃ, 食べなきゃ 等)
         InflectionRule(readingSuffix: "なくちゃ", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "なきゃ", baseReadingSuffix: "る", allowedClasses: .ichidan),
@@ -1724,6 +1729,17 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "しないの", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "しないのか", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "しないのに", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
+        // 関西・口語の打ち消し(勉強せん/掃除せんで/勉強せえへん)。〜する の動詞の側(せん/せえへん、base する)にしか無く、
+        // サ変名詞では べんきょうせん が 勉強線、べんきょうせえへん が 便供せえへん だった(3727、ユーザ報告)。
+        // 名詞 1 字(害/得)とは組まない(がいせん→害せん にしない。Inflection 側のゲート)。
+        // せんで は 〜線で/〜船で とぶつかるので作らない(かんじょうせんで が 1 語の 勘定せんで になり 環状線で に勝った)
+        InflectionRule(readingSuffix: "せん", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
+        InflectionRule(readingSuffix: "せんかった", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
+        InflectionRule(readingSuffix: "せんかったら", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
+        InflectionRule(readingSuffix: "せえへん", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
+        InflectionRule(readingSuffix: "せーへん", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
+        InflectionRule(readingSuffix: "せえへんかった", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
+        InflectionRule(readingSuffix: "しいひん", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "しなさそう", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "しなさそうだ", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "しなさそうです", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
