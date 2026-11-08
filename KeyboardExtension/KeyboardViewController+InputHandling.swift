@@ -71,6 +71,16 @@ extension KeyboardViewController {
         }
     }
 
+    // ショートカットのカーソル位置の印 ‸(3735): 入れた直後にカーソルを印の位置へ戻す。入れるのは handleTextInput で
+    // 同期に済んでいる(絵文字・顔文字の面は未確定を持たない)
+    func moveCursorAfterShortcutInsertion(by offset: Int) {
+        guard offset != 0 else {
+            return
+        }
+        markTextProxyEdit()
+        textDocumentProxy.adjustTextPosition(byCharacterOffset: offset)
+    }
+
     func shouldAutoCommitConversion(beforeInserting text: String) -> Bool {
         guard !text.isEmpty else {
             return false

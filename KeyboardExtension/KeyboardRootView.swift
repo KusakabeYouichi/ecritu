@@ -25,6 +25,8 @@ struct KeyboardRootView: View {
     // 絵文字/顔文字パネルで確定した文字列をショートカット語彙の先頭へ足す(3243。ユーザ指定)。
     // ショートカット・カテゴリー自身からの確定も先頭へ(3634)。足すか否かは設定[récents en premier](受け手で判定)
     var onShortcutCandidateCommitted: (String) -> Void = { _ in }
+    // 確定した後にカーソルを動かす(負で左。ショートカットのカーソル位置の印 ‸。3735)
+    var onMoveCursorBy: (Int) -> Void = { _ in }
     let showsNextKeyboardKey: Bool
     // キーボードビューのウィンドウ座標の枠(KeyboardViewController が view.convert で測る)。
     // width が盤面の幅見積もり、minX/maxX が吹き出しのクランプに使われる。zero=未レイアウト

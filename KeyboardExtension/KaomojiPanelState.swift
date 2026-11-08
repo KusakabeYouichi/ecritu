@@ -261,3 +261,19 @@ final class KaomojiPanelState {
         selectedReading = nil
     }
 }
+
+// ショートカット語彙のカーソル位置の印(3735、ユーザ指定)。『(‸)』のように登録すると、確定した後にカーソルを印の位置
+// (括弧の中)へ戻す。印は入力しない。印が 2 つ以上あれば最初の印の位置で、残りの印も消して入れる
+enum ShortcutCursorMarker {
+    static let marker: Character = "‸"
+
+    // 入れる文字列と、入れた後にカーソルを左へ戻す量(UTF-16 単位。adjustTextPosition に渡す)
+    static func placement(for text: String) -> (insertedText: String, cursorOffsetFromEnd: Int) {
+        guard let index = text.firstIndex(of: marker) else {
+            return (text, 0)
+        }
+        let after = text[text.index(after: index)...].filter { $0 != marker }
+        let before = text[..<index]
+        return (String(before) + after, after.utf16.count)
+    }
+}

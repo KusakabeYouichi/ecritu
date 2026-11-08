@@ -130,6 +130,8 @@ enum SettingsKeys {
     static let kanaKanjiLearningVocabularyMigrationCompleted = "kanaKanjiLearningVocabularyMigrationCompleted"
     static let kanaKanjiShortcutVocabulary = "ÉcrituShortcutVocab"
     static let kanaKanjiInitialShortcutVocabularyMigrated = "kanaKanjiInitialShortcutVocabularyMigrated"
+    // 初期ショートカットのカーソル位置の印 ‸ を、すでに入っている初期項目へ当てた(3735)
+    static let kanaKanjiShortcutCursorMarkerMigrated = "kanaKanjiShortcutCursorMarkerMigrated"
     // iOS のユーザ辞書で読みが ☻ の単語をショートカット語彙へ取り込む予約(3244)。拡張がレキシコン取得時に消費
     static let kanaKanjiUserDictionaryShortcutImportPending = "kanaKanjiUserDictionaryShortcutImportPending"
     // 取り込んで足した ☻ 語の記録(拡張の KanaKanjiStorageKeys と同じキー)。「使わない」にしたとき外す

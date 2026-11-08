@@ -200,6 +200,7 @@ extension ContentView {
                 migrateInitialAjoutVocabularyIfNeeded()
                 backfillUserRegisteredAjoutVocabularyIfNeeded()
                 migrateInitialShortcutVocabularyIfNeeded()
+                migrateShortcutCursorMarkerIfNeeded()
                 migrateInitialSuppressionDictionaryIfNeeded()
                 backfillUserRegisteredSuppressionVocabularyIfNeeded()
                 migrateLearningVocabularySeparationIfNeeded()
@@ -660,6 +661,43 @@ extension ContentView {
         }
 
         defaults.set(true, forKey: SettingsKeys.kanaKanjiInitialShortcutVocabularyMigrated)
+    }
+
+    // 初期ショートカットにカーソル位置の印 ‸ を入れた(3735、ユーザ指定)のを、すでに入っている端末にも 1 回だけ当てる。
+    // 置き換えるのは以前の初期項目と同じ文字列だけ(ユーザが書いた語は触らない)。新しい初期項目 『‸』 は (‸) の直後
+    // (無ければ末尾)へ足す。新しい端末は上の初期登録で印つきが入るので、ここでは何も変わらない
+    static let shortcutCursorMarkerReplacements: [String: String] = [
+        "()": "(‸)", "[設定]-[]-[]": "[設定]-[‸]-[]", "-[]": "-[‸]",
+    ]
+    static let shortcutCursorMarkerAddedEntry = "『‸』"
+
+    static func shortcutCandidatesApplyingCursorMarker(_ candidates: [String]) -> [String] {
+        var updated = candidates.map { shortcutCursorMarkerReplacements[$0] ?? $0 }
+        if !updated.contains(shortcutCursorMarkerAddedEntry) {
+            if let index = updated.firstIndex(of: "(‸)") {
+                updated.insert(shortcutCursorMarkerAddedEntry, at: index + 1)
+            } else {
+                updated.append(shortcutCursorMarkerAddedEntry)
+            }
+        }
+        return updated
+    }
+
+    func migrateShortcutCursorMarkerIfNeeded() {
+        guard let defaults = Self.sharedDefaults,
+            !defaults.bool(forKey: SettingsKeys.kanaKanjiShortcutCursorMarkerMigrated) else {
+            return
+        }
+
+        let currentCandidates = loadShortcutVocabularyCandidates()
+        let updatedCandidates = uniqueShortcutCandidatesPreservingOrder(
+            Self.shortcutCandidatesApplyingCursorMarker(currentCandidates)
+        )
+        if updatedCandidates != currentCandidates {
+            saveShortcutVocabularyCandidates(updatedCandidates)
+        }
+
+        defaults.set(true, forKey: SettingsKeys.kanaKanjiShortcutCursorMarkerMigrated)
     }
 
     func migrateLearningVocabularySeparationIfNeeded() {

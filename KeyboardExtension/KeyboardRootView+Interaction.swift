@@ -70,11 +70,18 @@ extension KeyboardRootView {
     }
 
     func commitEmojiKaomojiSymbolText(_ text: String) {
-        // ショートカット語彙の先頭へ足すかどうかの規則はモデル側(3243。⚡️ 自身からの確定も先頭へ 3634)
+        // ショートカット語彙の先頭へ足すかどうかの規則はモデル側(3243。⚡️ 自身からの確定も先頭へ 3634)。
+        // 先頭へ足すのは印 ‸ 込みの登録文字列のまま、入れるのは印を除いた文字列で、入れた後にカーソルを印の位置へ戻す(3735)
+        let placement = ShortcutCursorMarker.placement(for: text)
         inputState.commitEmojiKaomojiSymbolText(
             text,
             onShortcutCandidateCommitted: onShortcutCandidateCommitted,
-            onTextInput: onTextInput
+            onTextInput: { _ in
+                onTextInput(placement.insertedText)
+                if placement.cursorOffsetFromEnd > 0 {
+                    onMoveCursorBy(-placement.cursorOffsetFromEnd)
+                }
+            }
         )
     }
 

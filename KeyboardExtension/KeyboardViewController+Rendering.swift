@@ -663,6 +663,9 @@ extension KeyboardViewController {
             guard shortcutVocabularyRecentsFirst else { return }
             self?.kanaKanjiStore.prependShortcutCandidate(text)
         }
+        rootView.onMoveCursorBy = { [weak self] offset in
+            self?.moveCursorAfterShortcutInsertion(by: offset)
+        }
         return rootView
     }
 
