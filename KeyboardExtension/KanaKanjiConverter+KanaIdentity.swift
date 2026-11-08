@@ -144,6 +144,19 @@ extension KanaKanjiConverter {
         where normalized.count > suffix.count && normalized.hasSuffix(suffix) {
             return keepKanaGround("L134")
         }
+        // 形容詞+がる で、許可リスト(references/adjective_garu_allowlist.json)の表記がかなの語(ありがたい/おもしろい/かわいい)は
+        // がる の形もかなが正書。根拠が無いと 読みそのままのかなとして扱われ、ありがたがって が『候補なし』の印になっていた
+        // (3720、ユーザ報告)。adjectiveGaruCandidates がかなを返すのは、許可リストにかなを載せた語だけ
+        if Self.adjectiveGaruInflectionForms.contains(where: { normalized.hasSuffix($0.readingSuffix) }),
+            adjectiveGaruCandidates(
+                for: normalized,
+                ajoutVocabulary: store.ajoutVocabulary(),
+                initialAjoutVocabulary: store.initialAjoutVocabulary(),
+                systemCandidateMode: .surface,
+                limit: 4
+            ).contains(normalized) {
+            return keepKanaGround("L158")
+        }
         // 助詞のかな+比況の みたい*(までみたいよ/のみたいだ)はかなが正書(3717、ユーザ報告: 迄みたいよ が先頭だった)。
         // 連文節は全かなエコー抑制で空を返すので、提示層が根拠を持つ
         for particle in ["まで", "で", "の", "と", "か", "だ"] where normalized.count > particle.count && normalized.hasPrefix(particle) {
