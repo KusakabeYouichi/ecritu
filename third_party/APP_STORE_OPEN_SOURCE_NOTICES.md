@@ -193,11 +193,13 @@ and code.
 
 ## Kaomoji (emoticon) panel
 
-The kaomoji panel contains about 750 emoticons. The emoticon strings
+The kaomoji panel contains about 1,450 emoticons. The emoticon strings
 themselves are widely circulated character sequences with no identifiable
-author; the panel is limited to emoticons that also appear in public
+author; the panel draws on emoticons that also appear in public
 kaomoji collection sites (such as kaomojis.jp and kaomoji.tokyo) or in the
-Mozc dictionary below. Their Japanese readings and the 16 category
+Mozc dictionary below, plus some sparkle and heart emoticons entered or
+adjusted by hand by the author of this app. Their Japanese readings, the
+popularity order of the sparkle and heart categories, and the 17 category
 assignments were written by the author of this app (with AI assistance)
 from the appearance of each emoticon.
 

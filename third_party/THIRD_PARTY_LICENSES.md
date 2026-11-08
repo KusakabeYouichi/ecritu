@@ -119,11 +119,15 @@ Flag names shown on long-press are generated at runtime from Foundation's
 
 - https://github.com/google/mozc — BSD 3-Clause, Copyright 2010-2018 Google Inc.
 - About 440 emoticons with readings (categories SMILE/SADNESS/SWEAT/DISPLEASURE/
-  OTHER mapped to this app's 16 categories) are taken from Mozc's emoticon
+  OTHER mapped to this app's 17 categories) are taken from Mozc's emoticon
   dictionary; `third_party/mozc/MOZC-LICENSE` is bundled and shown in-app.
-- The panel holds about 750 emoticons in total (748 as of 3678, 2026-10-17):
-  only those that also appear in public kaomoji collection sites
-  (kaomojis.jp, kaomoji.tokyo) or in Mozc are kept. The strings are widely
+- The panel holds about 1,450 emoticons in total (1,454 as of 3724, 2026-11-08;
+  748 as of 3678): those that also appear in public kaomoji collection sites
+  (kaomojis.jp, kaomoji.tokyo) or in Mozc, plus about 190 sparkle/heart
+  emoticons entered or adjusted by hand by the developer in 3724 (the new
+  Étincelles category and Amour, hand-sorted from the most popular;
+  tools/import_kaomoji_lists.py from tmp/kaomoji_kirakira.txt and
+  tmp/kaomoji_heart.txt). The strings are widely
   circulated character sequences; readings and category assignments were
   authored for this app (2026-09-04, tools/build_kaomoji_catalog.py from
   tmp/kaomoji_merged.json). An earlier build had used readings/categories
