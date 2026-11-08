@@ -48,7 +48,7 @@
 	<dict><key>phrase</key><string>Osoyoos</string><key>shortcut</key><string>おそよーす</string></dict>	<!-- オソヨース -->
 	<dict><key>phrase</key><string>Osorno</string><key>shortcut</key><string>おそるの</string></dict>	<!-- オソルノ -->
 	<dict><key>phrase</key><string>Otago</string><key>shortcut</key><string>おたご</string></dict>	<!-- オタゴ -->
-	<dict><key>phrase</key><string>Oak Knoll District of Napa Valley</string><key>shortcut</key><string>おーくのーるでぃすとりくとおぶなぱゔぁれー</string></dict>	<!-- オーク・ノール・ディストリクト・オブ・ナパ・ヴァレー -->
+	<dict><key>phrase</key><string>Oak Knoll District of Napa Valley</string><key>shortcut</key><string>おーくのーるでぃすとりくとおゔなぱゔぁれー</string></dict>	<!-- オーク・ノール・ディストリクト・オヴ・ナパ・ヴァレー -->
 	<dict><key>phrase</key><string>Auxey-Duresses</string><key>shortcut</key><string>おーせいでゅれす</string></dict>	<!-- オーセイ・デュレス -->
 	<dict><key>phrase</key><string>オーバン</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: おーばん -->
 	<dict><key>phrase</key><string>Hautvillers</string><key>shortcut</key><string>おーゔぃれーる</string></dict>	<!-- オーヴィレール -->
@@ -115,7 +115,6 @@
 	<dict><key>phrase</key><string>Siena</string><key>shortcut</key><string>しえな</string></dict>	<!-- シエナ -->
 	<dict><key>phrase</key><string>Sydney</string><key>shortcut</key><string>しどにー</string></dict>	<!-- シドニー -->
 	<dict><key>phrase</key><string>Châteauneuf</string><key>shortcut</key><string>しゃとーぬふ</string></dict>	<!-- シャトーヌフ -->
-	<dict><key>phrase</key><string>Champlain Valley of New York</string><key>shortcut</key><string>しゃんぷれいんゔぁれーおぶにゅーよーく</string></dict>	<!-- シャンプレイン・ヴァレー・オブ・ニューヨーク -->
 	<dict><key>phrase</key><string>Štajerska Slovenija</string><key>shortcut</key><string>しゅたいえるしゅかすろゔぇにあ</string></dict>	<!-- シュタイエルシュカ・スロヴェニア -->
 	<dict><key>phrase</key><string>Steigerwald</string><key>shortcut</key><string>しゅたいがーゔぁると</string></dict>	<!-- シュタイガーヴァルト -->
 	<dict><key>phrase</key><string>Steiermark</string><key>shortcut</key><string>しゅたいやーまるく</string></dict>	<!-- シュタイヤーマルク -->
@@ -1344,7 +1343,7 @@
 	<dict><key>phrase</key><string>ソンダ・ヴァレー</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: そんだゔぁれー -->
 
 	<!-- ■ 湾 -->
-	<dict><key>phrase</key><string>Bay of Islands</string><key>shortcut</key><string>べいおぶあいらんず</string></dict>	<!-- ベイ・オブ・アイランズ -->
+	<dict><key>phrase</key><string>Bay of Islands</string><key>shortcut</key><string>べいおゔあいらんず</string></dict>	<!-- ベイ・オヴ・アイランズ -->
 	<dict><key>phrase</key><string>Mar Menor</string><key>shortcut</key><string>まーるめのーる</string></dict>	<!-- マール・メノール -->
 
 	<!-- ■ 物質 -->

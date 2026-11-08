@@ -1216,8 +1216,8 @@
 	<dict><key>phrase</key><string>Ionian Islands</string><key>shortcut</key><string>いおにあんあいらんず</string></dict>
 	<dict><key>phrase</key><string>Macedonia</string><key>shortcut</key><string>まけどにあ</string></dict>
 	<dict><key>phrase</key><string>Mantinia</string><key>shortcut</key><string>まんてぃにあ</string></dict>
-	<dict><key>phrase</key><string>Mavrodaphne of Patras</string><key>shortcut</key><string>まゔろだふねおぶぱとらす</string></dict>
-	<dict><key>phrase</key><string>Muscat of Cephalonia</string><key>shortcut</key><string>ますかっとおぶけふぁろにあ</string></dict>
+	<dict><key>phrase</key><string>Mavrodaphne of Patras</string><key>shortcut</key><string>まゔろだふねおゔぱとらす</string></dict>
+	<dict><key>phrase</key><string>Muscat of Cephalonia</string><key>shortcut</key><string>ますかっとおゔけふぁろにあ</string></dict>
 	<dict><key>phrase</key><string>Muscat of Limnos</string><key>shortcut</key><string>ますかっとおゔりむのす</string></dict>
 	<dict><key>phrase</key><string>Muscat of Patras</string><key>shortcut</key><string>ますかっとおゔぱとらす</string></dict>
 	<dict><key>phrase</key><string>Muscat of Rhodes</string><key>shortcut</key><string>ますかっとおゔろどす</string></dict>
@@ -1228,12 +1228,12 @@
 	<dict><key>phrase</key><string>Patras</string><key>shortcut</key><string>ぱとらす</string></dict>
 	<dict><key>phrase</key><string>Peza</string><key>shortcut</key><string>ぺざ</string></dict>
 	<dict><key>phrase</key><string>Rapsani</string><key>shortcut</key><string>らぷさに</string></dict>
-	<dict><key>phrase</key><string>Robola of Cephalonia</string><key>shortcut</key><string>ろぼらおぶけふぁろにあ</string></dict>
+	<dict><key>phrase</key><string>Robola of Cephalonia</string><key>shortcut</key><string>ろぼらおゔけふぁろにあ</string></dict>
 	<dict><key>phrase</key><string>Samos</string><key>shortcut</key><string>さもす</string></dict>
 	<dict><key>phrase</key><string>Santorini</string><key>shortcut</key><string>さんとりーに</string></dict>
 	<dict><key>phrase</key><string>Sitia</string><key>shortcut</key><string>してぃあ</string></dict>
-	<dict><key>phrase</key><string>Slopes of Meliton</string><key>shortcut</key><string>すろーぷすおぶめりとん</string></dict>
-	<dict><key>phrase</key><string>Verdea, Traditional Designation of Zakynthos</string><key>shortcut</key><string>ゔぇるであとらでぃしょなるでじぐねーしょんおぶざきんとす</string></dict>
+	<dict><key>phrase</key><string>Slopes of Meliton</string><key>shortcut</key><string>すろーぷすおゔめりとん</string></dict>
+	<dict><key>phrase</key><string>Verdea, Traditional Designation of Zakynthos</string><key>shortcut</key><string>ゔぇるであとらでぃしょなるでじぐねーしょんおゔざきんとす</string></dict>
 	<dict><key>phrase</key><string>Zitsa</string><key>shortcut</key><string>ずぃつぁ</string></dict>
 	<dict><key>phrase</key><string>アヴディラ</string><key>shortcut</key><string>あゔでぃら</string></dict>
 	<dict><key>phrase</key><string>アクロティリ</string><key>shortcut</key><string>あくろてぃり</string></dict>
@@ -1246,7 +1246,7 @@
 	<dict><key>phrase</key><string>ピリッポイ</string><key>shortcut</key><string>ぴりっぽい</string></dict>
 	<dict><key>phrase</key><string>マロニア</string><key>shortcut</key><string>まろにあ</string></dict>
 	<dict><key>phrase</key><string>ラプサニ</string><key>shortcut</key><string>らぷさに</string></dict>
-	<dict><key>phrase</key><string>ロボラ・オブ・ケファロニア</string><key>shortcut</key><string>ろぼらおぶけふぁろにあ</string></dict>
+	<dict><key>phrase</key><string>ロボラ・オヴ・ケファロニア</string><key>shortcut</key><string>ろぼらおゔけふぁろにあ</string></dict>
 
 	<!-- □ ルーマニア -->
 	<dict><key>phrase</key><string>Banat</string><key>shortcut</key><string>ばなと</string></dict>
@@ -1501,7 +1501,7 @@
 	<dict><key>phrase</key><string>Yountville</string><key>shortcut</key><string>よんとゔぃる</string></dict>
 	<dict><key>phrase</key><string>ヴァージニア</string><key>shortcut</key><string>ゔぁーじにあ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>オークヴィル</string><key>shortcut</key><string>おーくゔぃる</string></dict>
-	<dict><key>phrase</key><string>オーク・ノール・ディストリクト・オブ・ナパ・ヴァレー</string><key>shortcut</key><string>おーくのーるでぃすとりくとおぶなぱゔぁれー</string></dict>
+	<dict><key>phrase</key><string>オーク・ノール・ディストリクト・オヴ・ナパ・ヴァレー</string><key>shortcut</key><string>おーくのーるでぃすとりくとおゔなぱゔぁれー</string></dict>
 	<dict><key>phrase</key><string>カーネロス</string><key>shortcut</key><string>かーねろす</string></dict>
 	<dict><key>phrase</key><string>カーネロス,ロス・カーネロス</string><key>shortcut</key><string>かーねろすろすかーねろす</string></dict>
 	<dict><key>phrase</key><string>カリストガ</string><key>shortcut</key><string>かりすとが</string></dict>
@@ -1515,7 +1515,7 @@
 	<dict><key>phrase</key><string>サンタ・バーバラ・カウンティ</string><key>shortcut</key><string>さんたばーばらかうんてぃ</string></dict>
 	<dict><key>phrase</key><string>サンフランシスコ</string><key>shortcut</key><string>さんふらんしすこ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>シエラ・フットヒルズ</string><key>shortcut</key><string>しえらふっとひるず</string></dict>
-	<dict><key>phrase</key><string>シャンプレイン・ヴァレー・オブ・ニューヨーク</string><key>shortcut</key><string>しゃんぷれいんゔぁれーおぶにゅーよーく</string></dict>
+	<dict><key>phrase</key><string>シャンプレイン・ヴァレー・オヴ・ニューヨーク</string><key>shortcut</key><string>しゃんぷれいんゔぁれーおゔにゅーよーく</string></dict>
 	<dict><key>phrase</key><string>スタッグス・リープ・ディストリクト</string><key>shortcut</key><string>すたっぐすりーぷでぃすとりくと</string></dict>
 	<dict><key>phrase</key><string>スプリング・マウンテン・ディストリクト</string><key>shortcut</key><string>すぷりんぐまうんてんでぃすとりくと</string></dict>
 	<dict><key>phrase</key><string>セント・ヘレナ</string><key>shortcut</key><string>せんとへれな</string></dict>	<!-- Sudachiにもある -->
@@ -2887,7 +2887,7 @@
 	<dict><key>phrase</key><string>Castilla y León</string><key>shortcut</key><string>かすてぃーりゃいれおん</string></dict>
 	<dict><key>phrase</key><string>Cataluña</string><key>shortcut</key><string>かたるーにゃ</string></dict>
 	<dict><key>phrase</key><string>Catamarca</string><key>shortcut</key><string>かたまるか</string></dict>
-	<dict><key>phrase</key><string>Commonwealth of Virginia</string><key>shortcut</key><string>こもんうぇるすおぶゔぁーじにあ</string></dict>
+	<dict><key>phrase</key><string>Commonwealth of Virginia</string><key>shortcut</key><string>こもんうぇるすおゔゔぁーじにあ</string></dict>
 	<dict><key>phrase</key><string>Cornwall</string><key>shortcut</key><string>こーんうぉーる</string></dict>
 	<dict><key>phrase</key><string>Devon</string><key>shortcut</key><string>でゔぉん</string></dict>
 	<dict><key>phrase</key><string>Dorset</string><key>shortcut</key><string>どーせっと</string></dict>
@@ -3380,7 +3380,7 @@
 	<dict><key>phrase</key><string>フォルス湾</string><key>shortcut</key><string>ふぉるすわん</string></dict>
 	<dict><key>phrase</key><string>ボデガ湾</string><key>shortcut</key><string>ぼでがわん</string></dict>
 	<dict><key>phrase</key><string>メキシコ湾</string><key>shortcut</key><string>めきしこわん</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>ベイ・オブ・アイランズ</string><key>shortcut</key><string>べいおぶあいらんず</string></dict>
+	<dict><key>phrase</key><string>ベイ・オヴ・アイランズ</string><key>shortcut</key><string>べいおゔあいらんず</string></dict>
 	<dict><key>phrase</key><string>マール・メノール</string><key>shortcut</key><string>まーるめのーる</string></dict>
 	<dict><key>phrase</key><string>ピュージェット・サウンド</string><key>shortcut</key><string>ぴゅーじぇっとさうんど</string></dict>
 
@@ -3574,7 +3574,7 @@
 	<dict><key>phrase</key><string>Ortswein</string><key>shortcut</key><string>おるつばいん</string></dict>
 	<dict><key>phrase</key><string>Paraje</string><key>shortcut</key><string>ぱらへ</string></dict>
 	<dict><key>phrase</key><string>Podregija</string><key>shortcut</key><string>ぽどれぎや</string></dict>
-	<dict><key>phrase</key><string>Protected Designation of Origin</string><key>shortcut</key><string>ぷろてくてっどでじぐねーしょんおぶおりじん</string></dict>
+	<dict><key>phrase</key><string>Protected Designation of Origin</string><key>shortcut</key><string>ぷろてくてっどでじぐねーしょんおゔおりじん</string></dict>
 	<dict><key>phrase</key><string>Sekt Austria</string><key>shortcut</key><string>ぜくとおーすとりあ</string></dict>
 	<dict><key>phrase</key><string>Sekt Austria Grosse Reserve</string><key>shortcut</key><string>ぜくとおーすとりあぐろっせれぜるゔぇ</string></dict>
 	<dict><key>phrase</key><string>Sekt Austria Reserve</string><key>shortcut</key><string>ぜくとおーすとりあれぜるゔぇ</string></dict>
@@ -3583,8 +3583,8 @@
 	<dict><key>phrase</key><string>V.Q.A</string><key>shortcut</key><string>ぶいきゅーえー</string></dict>
 	<dict><key>phrase</key><string>Vinogorje</string><key>shortcut</key><string>ゔぃのごりぇ</string></dict>
 	<dict><key>phrase</key><string>Ward</string><key>shortcut</key><string>わーど</string></dict>
-	<dict><key>phrase</key><string>Wine of Origin</string><key>shortcut</key><string>わいんおぶおりじん</string></dict>
-	<dict><key>phrase</key><string>Wine of United Kingdom</string><key>shortcut</key><string>わいんおぶゆないてっどきんぐだむ</string></dict>
+	<dict><key>phrase</key><string>Wine of Origin</string><key>shortcut</key><string>わいんおゔおりじん</string></dict>
+	<dict><key>phrase</key><string>Wine of United Kingdom</string><key>shortcut</key><string>わいんおゔゆないてっどきんぐだむ</string></dict>
 	<dict><key>phrase</key><string>Édes Szamorodni</string><key>shortcut</key><string>えーでしゅさもろどに</string></dict>
 	<dict><key>phrase</key><string>álló eredetmegjelölés</string><key>shortcut</key><string>あーろーえれでとめぐいぇるれーしゅ</string></dict>
 	<dict><key>phrase</key><string>álló földrajzi jelzés</string><key>shortcut</key><string>あーろーふぇるどらいじいぇるぜーしゅ</string></dict>
@@ -3607,7 +3607,7 @@
 	<dict><key>phrase</key><string>Öchsle</string><key>shortcut</key><string>えくすれ</string></dict>
 	<dict><key>phrase</key><string>Colheita</string><key>shortcut</key><string>こりぇいた</string></dict>
 	<dict><key>phrase</key><string>Coopérative de Manipulation</string><key>shortcut</key><string>こおぺらてぃーゔどまにぴゅらしおん</string></dict>
-	<dict><key>phrase</key><string>Integrated Production of Wine</string><key>shortcut</key><string>いんてぐれーてっどぷろだくしょんおぶわいん</string></dict>
+	<dict><key>phrase</key><string>Integrated Production of Wine</string><key>shortcut</key><string>いんてぐれーてっどぷろだくしょんおゔわいん</string></dict>
 	<dict><key>phrase</key><string>Millésimé</string><key>shortcut</key><string>みれじめ</string></dict>
 	<dict><key>phrase</key><string>Récoltant-Coopérateur</string><key>shortcut</key><string>れこるたんこーぺらとぅーる</string></dict>
 	<dict><key>phrase</key><string>Récoltant-Manipulant</string><key>shortcut</key><string>れこるたんまにぴゅらん</string></dict>
@@ -5052,11 +5052,10 @@
 	<dict><key>phrase</key><string>ポルトギザッツ</string><key>shortcut</key><string>ぽるとぎざっつ</string></dict>
 	<dict><key>phrase</key><string>マカベオ</string><key>shortcut</key><string>まかべお</string></dict>
 	<dict><key>phrase</key><string>マスカット</string><key>shortcut</key><string>ますかっと</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>Muscat of Alexandria</string><key>shortcut</key><string>ますかっとおぶあれきさんどりあ</string></dict>
-	<dict><key>phrase</key><string>マスカット・オブ・アレキサンドリア</string><key>shortcut</key><string>ますかっとおぶあれきさんどりあ</string></dict>
-	<dict><key>phrase</key><string>マスカット・オブ・ケファロニア</string><key>shortcut</key><string>ますかっとおぶけふぁろにあ</string></dict>
-	<dict><key>phrase</key><string>Muscat of Limnos</string><key>shortcut</key><string>ますかっとおぶりむのす</string></dict>
-	<dict><key>phrase</key><string>マスカット・オブ・リムノス</string><key>shortcut</key><string>ますかっとおぶりむのす</string></dict>
+	<dict><key>phrase</key><string>Muscat of Alexandria</string><key>shortcut</key><string>ますかっとおゔあれきさんどりあ</string></dict>
+	<dict><key>phrase</key><string>マスカット・オヴ・アレキサンドリア</string><key>shortcut</key><string>ますかっとおゔあれきさんどりあ</string></dict>
+	<dict><key>phrase</key><string>マスカット・オヴ・ケファロニア</string><key>shortcut</key><string>ますかっとおゔけふぁろにあ</string></dict>
+	<dict><key>phrase</key><string>マスカット・オヴ・リムノス</string><key>shortcut</key><string>ますかっとおゔりむのす</string></dict>
 	<dict><key>phrase</key><string>Muscat Hamburg</string><key>shortcut</key><string>ますかっとはんぶるぐ</string></dict>
 	<dict><key>phrase</key><string>マスカット・ハンブルグ</string><key>shortcut</key><string>ますかっとはんぶるぐ</string></dict>
 	<dict><key>phrase</key><string>マスカット・ベイリーA</string><key>shortcut</key><string>ますかっとべいりーえい</string></dict>
@@ -5077,8 +5076,8 @@
 	<dict><key>phrase</key><string>Mavroudi</string><key>shortcut</key><string>まゔるでぃ</string></dict>
 	<dict><key>phrase</key><string>マヴルディ</string><key>shortcut</key><string>まゔるでぃ</string></dict>
 	<dict><key>phrase</key><string>マヴロダフネ</string><key>shortcut</key><string>まゔろだふね</string></dict>
-	<dict><key>phrase</key><string>Mavrodaphne of Cephalonia</string><key>shortcut</key><string>まゔろだふねおぶけふぁろにあ</string></dict>
-	<dict><key>phrase</key><string>マヴロダフネ・オブ・ケファロニア</string><key>shortcut</key><string>まゔろだふねおぶけふぁろにあ</string></dict>
+	<dict><key>phrase</key><string>Mavrodaphne of Cephalonia</string><key>shortcut</key><string>まゔろだふねおゔけふぁろにあ</string></dict>
+	<dict><key>phrase</key><string>マヴロダフネ・オヴ・ケファロニア</string><key>shortcut</key><string>まゔろだふねおゔけふぁろにあ</string></dict>
 	<dict><key>phrase</key><string>ミッション</string><key>shortcut</key><string>みっしょん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ミュスカ</string><key>shortcut</key><string>みゅすか</string></dict>
 	<dict><key>phrase</key><string>ミュスカデル</string><key>shortcut</key><string>みゅすかでる</string></dict>
@@ -9594,7 +9593,7 @@
 	<dict><key>phrase</key><string>20フィートコンテナ</string><key>shortcut</key><string>にじゅっふぃーとこんてな</string></dict>
 	<dict><key>phrase</key><string>40フィート</string><key>shortcut</key><string>よんじゅっふぃーと</string></dict>
 	<dict><key>phrase</key><string>40フィートコンテナ</string><key>shortcut</key><string>よんじゅっふぃーとこんてな</string></dict>
-	<dict><key>phrase</key><string>Bill of Lading</string><key>shortcut</key><string>びるおぶれーでぃんぐ</string></dict>
+	<dict><key>phrase</key><string>Bill of Lading</string><key>shortcut</key><string>びるおゔれーでぃんぐ</string></dict>
 	<dict><key>phrase</key><string>C&amp;F</string><key>shortcut</key><string>しーえふ</string></dict>
 	<dict><key>phrase</key><string>Cost and Freight</string><key>shortcut</key><string>こすとあんどふれいと</string></dict>
 	<dict><key>phrase</key><string>Cost, Insurance and Freight</string><key>shortcut</key><string>こすといんしゅらんすあんどふれいと</string></dict>
@@ -10480,7 +10479,7 @@
 	<dict><key>phrase</key><string>インターナショナル・ピノ・ノワール・セレブレーション</string><key>shortcut</key><string>いんたーなしょなるぴののわーるせれぶれーしょん</string></dict>
 	<dict><key>phrase</key><string>インターナショナル・ブレンズ</string><key>shortcut</key><string>いんたーなしょなるぶれんず</string></dict>
 	<dict><key>phrase</key><string>インターナショナル・ブレンド</string><key>shortcut</key><string>いんたーなしょなるぶれんど</string></dict>
-	<dict><key>phrase</key><string>インテグレーテッド・プロダクション・オブ・ワイン</string><key>shortcut</key><string>いんてぐれーてっどぷろだくしょんおぶわいん</string></dict>
+	<dict><key>phrase</key><string>インテグレーテッド・プロダクション・オヴ・ワイン</string><key>shortcut</key><string>いんてぐれーてっどぷろだくしょんおゔわいん</string></dict>
 	<dict><key>phrase</key><string>インランド・ヴァレーズ</string><key>shortcut</key><string>いんらんどゔぁれーず</string></dict>
 	<dict><key>phrase</key><string>イースト・ケロウナ・スロープス</string><key>shortcut</key><string>いーすとけろうなすろーぷす</string></dict>
 	<dict><key>phrase</key><string>イースト・サセックス</string><key>shortcut</key><string>いーすとさせっくす</string></dict>
@@ -10627,7 +10626,7 @@
 	<dict><key>phrase</key><string>コネリアーノ・ヴァルドッビアーデネ・プロセッコ</string><key>shortcut</key><string>こねりあーのゔぁるどっびあーでねぷろせっこ</string></dict>
 	<dict><key>phrase</key><string>コピアポ・ヴァレー</string><key>shortcut</key><string>こぴあぽゔぁれー</string></dict>
 	<dict><key>phrase</key><string>コミサオ・デ・ヴィティクルトゥラ・ダ・レジアオ・ドス・ヴィニョス・ヴェルデス</string><key>shortcut</key><string>こみさおでゔぃてぃくるとぅらだれじあおどすゔぃにょすゔぇるです</string></dict>
-	<dict><key>phrase</key><string>コモンウェルス・オブ・ヴァージニア</string><key>shortcut</key><string>こもんうぇるすおぶゔぁーじにあ</string></dict>
+	<dict><key>phrase</key><string>コモンウェルス・オヴ・ヴァージニア</string><key>shortcut</key><string>こもんうぇるすおゔゔぁーじにあ</string></dict>
 	<dict><key>phrase</key><string>コリネレ・ドブロジェイ</string><key>shortcut</key><string>こりねれどぶろじぇい</string></dict>
 	<dict><key>phrase</key><string>コルス・カルヴィ</string><key>shortcut</key><string>こるすかるゔぃ</string></dict>
 	<dict><key>phrase</key><string>コルス・サルテーヌ</string><key>shortcut</key><string>こるすさるてーぬ</string></dict>
@@ -10745,7 +10744,7 @@
 	<dict><key>phrase</key><string>スペシャル・レセルバ</string><key>shortcut</key><string>すぺしゃるれせるば</string></dict>
 	<dict><key>phrase</key><string>スミス・オー・ラフィット</string><key>shortcut</key><string>すみすおーらふぃっと</string></dict>
 	<dict><key>phrase</key><string>スレディニャ・イ・ユジュナ・ダルマチア</string><key>shortcut</key><string>すれでぃにゃいゆじゅなだるまちあ</string></dict>
-	<dict><key>phrase</key><string>スロープス・オブ・メリトン</string><key>shortcut</key><string>すろーぷすおぶめりとん</string></dict>
+	<dict><key>phrase</key><string>スロープス・オヴ・メリトン</string><key>shortcut</key><string>すろーぷすおゔめりとん</string></dict>
 	<dict><key>phrase</key><string>スワン・ヒル</string><key>shortcut</key><string>すわんひる</string></dict>
 	<dict><key>phrase</key><string>スー・ブション</string><key>shortcut</key><string>すーぶしょん</string></dict>
 	<dict><key>phrase</key><string>スー・ボワ</string><key>shortcut</key><string>すーぼわ</string></dict>
@@ -10876,7 +10875,7 @@
 	<dict><key>phrase</key><string>ビアンヴニュ・バタール・モンラッシェ</string><key>shortcut</key><string>びあんゔにゅばたーるもんらっしぇ</string></dict>
 	<dict><key>phrase</key><string>ビニェド・シングラール</string><key>shortcut</key><string>びにぇどしんぐらーる</string></dict>
 	<dict><key>phrase</key><string>ビュジェ・モンタニュー</string><key>shortcut</key><string>びゅじぇもんたにゅー</string></dict>
-	<dict><key>phrase</key><string>ビル・オブ・レーディング</string><key>shortcut</key><string>びるおぶれーでぃんぐ</string></dict>
+	<dict><key>phrase</key><string>ビル・オヴ・レーディング</string><key>shortcut</key><string>びるおゔれーでぃんぐ</string></dict>
 	<dict><key>phrase</key><string>ビーノ・ガシフィカード</string><key>shortcut</key><string>びーのがしふぃかーど</string></dict>
 	<dict><key>phrase</key><string>ビーノ・コムン</string><key>shortcut</key><string>びーのこむん</string></dict>
 	<dict><key>phrase</key><string>ビーノ・コンプエスト</string><key>shortcut</key><string>びーのこんぷえすと</string></dict>
@@ -10960,7 +10959,7 @@
 	<dict><key>phrase</key><string>プリミティーヴォ・ディ・マンドゥリア・ドルチェ・ナトゥラーレ</string><key>shortcut</key><string>ぷりみてぃーゔぉでぃまんどぅりあどるちぇなとぅらーれ</string></dict>
 	<dict><key>phrase</key><string>プレシュラージュ・ディレクト</string><key>shortcut</key><string>ぷれしゅらーじゅでぃれくと</string></dict>
 	<dict><key>phrase</key><string>プロシュット・ディ・サン・ダニエーレ</string><key>shortcut</key><string>ぷろしゅっとでぃさんだにえーれ</string></dict>
-	<dict><key>phrase</key><string>プロテクテッド・デジグネーション・オブ・オリジン</string><key>shortcut</key><string>ぷろてくてっどでじぐねーしょんおぶおりじん</string></dict>
+	<dict><key>phrase</key><string>プロテクテッド・デジグネーション・オヴ・オリジン</string><key>shortcut</key><string>ぷろてくてっどでじぐねーしょんおゔおりじん</string></dict>
 	<dict><key>phrase</key><string>プロドゥクトーレス・インデペンディエンテス・デ・パラヘ・アルタミラ</string><key>shortcut</key><string>ぷろどぅくとーれすいんでぺんでぃえんてすでぱらへあるたみら</string></dict>
 	<dict><key>phrase</key><string>プーリニィ・サン・ピエール</string><key>shortcut</key><string>ぷーりにぃさんぴえーる</string></dict>
 	<dict><key>phrase</key><string>ヘイスティングス・リヴァー</string><key>shortcut</key><string>へいすてぃんぐすりゔぁー</string></dict>
@@ -11002,7 +11001,6 @@
 	<dict><key>phrase</key><string>マカロン・ド・サン・テミリオン</string><key>shortcut</key><string>まかろんどさんてみりおん</string></dict>
 	<dict><key>phrase</key><string>マクラーレン・ヴェイル</string><key>shortcut</key><string>まくらーれんゔぇいる</string></dict>
 	<dict><key>phrase</key><string>マクヴァン・デュ・ジュラ</string><key>shortcut</key><string>まくゔぁんでゅじゅら</string></dict>
-	<dict><key>phrase</key><string>マスカット・オヴ・リムノス</string><key>shortcut</key><string>ますかっとおゔりむのす</string></dict>
 	<dict><key>phrase</key><string>マセドン・レンジズ</string><key>shortcut</key><string>ませどんれんじず</string></dict>
 	<dict><key>phrase</key><string>マセラシオン・フィナル</string><key>shortcut</key><string>ませらしおんふぃなる</string></dict>
 	<dict><key>phrase</key><string>マセラシオン・プレフェルマンテール</string><key>shortcut</key><string>ませらしおんぷれふぇるまんてーる</string></dict>
@@ -11113,8 +11111,8 @@
 	<dict><key>phrase</key><string>ワイメア・プレインズ</string><key>shortcut</key><string>わいめあぷれいんず</string></dict>
 	<dict><key>phrase</key><string>ワイン・イニシアティヴ</string><key>shortcut</key><string>わいんいにしあてぃゔ</string></dict>
 	<dict><key>phrase</key><string>ワイン・エンスージアスト</string><key>shortcut</key><string>わいんえんすーじあすと</string></dict>
-	<dict><key>phrase</key><string>ワイン・オブ・オリジン</string><key>shortcut</key><string>わいんおぶおりじん</string></dict>
-	<dict><key>phrase</key><string>ワイン・オブ・ユナイテッド・キングダム</string><key>shortcut</key><string>わいんおぶゆないてっどきんぐだむ</string></dict>
+	<dict><key>phrase</key><string>ワイン・オヴ・オリジン</string><key>shortcut</key><string>わいんおゔおりじん</string></dict>
+	<dict><key>phrase</key><string>ワイン・オヴ・ユナイテッド・キングダム</string><key>shortcut</key><string>わいんおゔゆないてっどきんぐだむ</string></dict>
 	<dict><key>phrase</key><string>ワイン・スペクテーター</string><key>shortcut</key><string>わいんすぺくてーたー</string></dict>
 	<dict><key>phrase</key><string>ワラ・ワラ・ヴァレー</string><key>shortcut</key><string>わらわらゔぁれー</string></dict>
 	<dict><key>phrase</key><string>ヴァイサー・ブルグンダー</string><key>shortcut</key><string>ゔぁいさーぶるぐんだー</string></dict>
@@ -11139,7 +11137,7 @@
 	<dict><key>phrase</key><string>ヴィーノ・ノビレ・ディ・モンテプルチアーノ</string><key>shortcut</key><string>ゔぃーののびれでぃもんてぷるちあーの</string></dict>
 	<dict><key>phrase</key><string>ヴェリー・オールド・シェリー</string><key>shortcut</key><string>ゔぇりーおーるどしぇりー</string></dict>
 	<dict><key>phrase</key><string>ヴェリー・オールド・レア・シェリー</string><key>shortcut</key><string>ゔぇりーおーるどれあしぇりー</string></dict>
-	<dict><key>phrase</key><string>ヴェルデア・トラディショナル・デジグネーション・オブ・ザキントス</string><key>shortcut</key><string>ゔぇるであとらでぃしょなるでじぐねーしょんおぶざきんとす</string></dict>
+	<dict><key>phrase</key><string>ヴェルデア・トラディショナル・デジグネーション・オヴ・ザキントス</string><key>shortcut</key><string>ゔぇるであとらでぃしょなるでじぐねーしょんおゔざきんとす</string></dict>
 	<dict><key>phrase</key><string>ヴェルディッキオ・ディ・マテリカ・リゼルヴァ</string><key>shortcut</key><string>ゔぇるでぃっきおでぃまてりかりぜるゔぁ</string></dict>
 	<dict><key>phrase</key><string>ヴェルナッチャ・ディ・オリスターノ</string><key>shortcut</key><string>ゔぇるなっちゃでぃおりすたーの</string></dict>
 	<dict><key>phrase</key><string>ヴェルナッチャ・ディ・サン・ジミニャーノ</string><key>shortcut</key><string>ゔぇるなっちゃでぃさんじみにゃーの</string></dict>
@@ -11318,7 +11316,7 @@
 	<dict><key>phrase</key><string>マスカット・オヴ・ロドス</string><key>shortcut</key><string>ますかっとおゔろどす</string></dict>
 	<dict><key>phrase</key><string>マルヴァジア・ビアンカ・ディ・バジリカータ</string><key>shortcut</key><string>まるゔぁじあびあんかでぃばじりかーた</string></dict>
 	<dict><key>phrase</key><string>マルヴォワジー・ド・コルス</string><key>shortcut</key><string>まるゔぉわじーどこるす</string></dict>
-	<dict><key>phrase</key><string>マヴロダフネ・オブ・パトラス</string><key>shortcut</key><string>まゔろだふねおぶぱとらす</string></dict>
+	<dict><key>phrase</key><string>マヴロダフネ・オヴ・パトラス</string><key>shortcut</key><string>まゔろだふねおゔぱとらす</string></dict>
 	<dict><key>phrase</key><string>マール・デュ・ジュラ</string><key>shortcut</key><string>まーるでゅじゅら</string></dict>
 	<dict><key>phrase</key><string>マール・ド・ブルゴーニュ</string><key>shortcut</key><string>まーるどぶるごーにゅ</string></dict>
 	<dict><key>phrase</key><string>マール・ド・プロヴァンス</string><key>shortcut</key><string>まーるどぷろゔぁんす</string></dict>
