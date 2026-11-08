@@ -45,6 +45,35 @@ final class KaomojiPanelStateTests: XCTestCase {
         XCTAssertEqual(Array(ids[3..<6]), ["imported:etincelles", "imported:amour", "imported:rire"])
     }
 
+    // 最後に開いていた区分で開く(3726、ユーザ指定)。覚えるのは区分だけで、検索の頭の字・読みは覚えない
+    func testReopensWithLastSelectedCategory() throws {
+        let suiteName = "KaomojiPanelStateTests-\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        XCTAssertEqual(KaomojiPanelState(defaults: defaults).selectedCategoryID, "existing")
+
+        let first = KaomojiPanelState(defaults: defaults)
+        first.selectCategory(id: "imported:amour")
+        XCTAssertEqual(KaomojiPanelState(defaults: defaults).selectedCategoryID, "imported:amour")
+
+        first.selectCategory(searchCategory)
+        first.selectReadingPrefix("か")
+        first.selectReading("かお")
+        let reopened = KaomojiPanelState(defaults: defaults)
+        XCTAssertEqual(reopened.selectedCategoryID, "search")
+        XCTAssertNil(reopened.selectedReadingPrefix)
+        XCTAssertNil(reopened.selectedReading)
+    }
+
+    func testUnknownRememberedCategoryFallsBackToExisting() throws {
+        let suiteName = "KaomojiPanelStateTests-\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        defaults.set("imported:inexistant", forKey: KaomojiPanelState.lastCategoryDefaultsKey)
+        XCTAssertEqual(KaomojiPanelState(defaults: defaults).selectedCategoryID, "existing")
+    }
+
     func testCategoryIDsAreUnique() {
         let ids = KaomojiPanelState.categories.map(\.id)
         XCTAssertEqual(Set(ids).count, ids.count)
