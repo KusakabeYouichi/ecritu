@@ -4485,6 +4485,10 @@ extension KanaKanjiConverter {
             // かな表記の降格(定数コメント参照。3442)
             if isKanaIdentity, let demotion = Self.multiClauseKanaIdentityDemotionsByReading[reading] {
                 penalty += demotion
+            } else if isKanaIdentity,
+                let entry = Self.multiClauseKanaIdentityDemotionsByStem.first(where: { reading.hasPrefix($0.stem) }) {
+                // 活用形のかな(あぶなく/あぶなけれ 等)も同じだけ下げる(定数コメント参照。3733)
+                penalty += entry.demotion
             }
             if !isKanaIdentity {
                 // 活用派生でない語は読みの完全一致だけなので辞書引き(打鍵あたり全ノード×全キーの走査をやめる。3625)。

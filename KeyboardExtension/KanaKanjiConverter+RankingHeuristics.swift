@@ -280,8 +280,20 @@ extension KanaKanjiConverter {
                     scores[reading] = min(identityScore, top - 1)
                 }
             }
+            // 活用形でも漢字を先頭にする基底(定数コメント参照。3733): 基底の seed の先頭(危ない)から作った活用形(危なければ)を
+            // 先頭に、かなをその直下に置く
+            var derivedKanjiLeadApplied = false
+            if seedDeclared == nil, let leader = derivedKanjiLeadSurface(for: reading), let leaderScore = scores[leader] {
+                let rivalTop = scores.filter { $0.key != reading && $0.key != leader }.values.max() ?? leaderScore
+                let leaderTop = max(leaderScore, identityScore + 1, rivalTop + 2)
+                scores[leader] = leaderTop
+                scores[reading] = leaderTop - 1
+                derivedKanjiLeadApplied = true
+            }
             let others = uniqueCandidates(from: systemCandidates).filter { $0 != reading }
-            if kanaSkippedBySeed {
+            if derivedKanjiLeadApplied {
+                // 上で並びを決めた(かなの昇格・降格はしない)
+            } else if kanaSkippedBySeed {
                 let otherScores = others.compactMap { scores[$0] }
                 if let lowest = otherScores.min() {
                     scores[reading] = min(identityScore, lowest - 1)
@@ -336,6 +348,29 @@ extension KanaKanjiConverter {
                 scores[candidate] = min(penalizedScore, lowestNonKatakanaScore - 1)
             }
         }
+    }
+
+    // 活用形でも漢字を先頭、かなを 2 番めにする基底の読み(ユーザ指定 3733)。基底の seed で漢字を先頭、かなを 2 番めに
+    // 宣言しても、活用形(あぶなければ/あぶなくなる)は かな が活用の経路と 語幹+なく 等の合成で二重に加算されて先頭だった。
+    // かな書きも見かける語なので、かな は消さずに 2 番めに残す。連文節は multiClauseKanaIdentityDemotionsByStem
+    static let derivedKanjiLeadBaseReadings: Set<String> = ["あぶない"]
+
+    // reading が derivedKanjiLeadBaseReadings の基底の活用形なら、基底の seed の先頭表記から作った活用形を返す
+    func derivedKanjiLeadSurface(for reading: String) -> String? {
+        for ruleIndex in Self.candidateInflectionRuleIndices(forReadingEndingWith: reading.last) {
+            let rule = Self.allInflectionRules[ruleIndex]
+            guard let stem = removingSuffix(reading, suffix: rule.readingSuffix), !stem.isEmpty else {
+                continue
+            }
+            let base = stem + rule.baseReadingSuffix
+            guard Self.derivedKanjiLeadBaseReadings.contains(base),
+                let first = KanaKanjiSeedDictionary.seed[base]?.first, first != base,
+                let matched = rule.firstBaseCandidateSuffix(where: { first.hasSuffix($0) }) else {
+                continue
+            }
+            return String(first.dropLast(matched.count)) + rule.outputCandidateSuffix
+        }
+        return nil
     }
 
     // 派生読み(とっていて 等)のかな首位化の抑止判定(2644): 派生の基底読みの seed が
