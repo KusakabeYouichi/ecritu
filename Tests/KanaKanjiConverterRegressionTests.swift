@@ -1960,6 +1960,40 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // 3736(ユーザ報告): じをおおきくすれば が 時を大きくすれば、きのうときょうで が 機能と今日で、すみで の先頭が 澄み出、
+    // とうげつのげんかを が 当月の喧嘩を(喧嘩 を げんか と読むのは連濁のときだけ。確認表の指摘)
+    func testRegressionUserReports3736() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func single(_ reading: String) -> [String] { converter.candidates(for: reading, limit: 30, systemCandidateMode: .surface) }
+        func shown(_ reading: String) -> [String] {
+            let list = reading.count >= 4 ? converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface) : []
+            var result = list.isEmpty ? single(reading) : list
+            for candidate in single(reading) where !result.contains(candidate) { result.append(candidate) }
+            return result
+        }
+        for (reading, expected) in [
+            // 字+を+大きくする/小さくする/書く(連語表の手書きの組)
+            ("じをおおきくすれば", "字を大きくすれば"), ("じをちいさくして", "字を小さくして"), ("じをかく", "字を書く"),
+            ("もじをおおきくする", "文字を大きくする"),
+            // 昨日+と+今日/明日(加点 1200 の幅 506〜2090 の両端)
+            ("きのうときょうで", "昨日と今日で"), ("きのうとあした", "昨日と明日"), ("きのうからきょうまで", "昨日から今日まで"),
+            ("このきのうときょうで", "この機能と今日で"), ("あたらしいきのうとあした", "新しい機能と明日"),
+            // 喧嘩(げんか)は前が文頭・かな のとき減点。漢字の語の後ろ(夫婦+喧嘩)は保つ
+            ("げんかをけいさんする", "原価を計算する"), ("ふうふげんか", "夫婦喧嘩"), ("おやこげんかをした", "親子喧嘩をした"),
+            ("くちげんか", "口喧嘩"),
+        ] {
+            let list = shown(reading)
+            XCTAssertEqual(list.first, expected, "\(reading) \(list.prefix(5))")
+        }
+        // 当月の原価を は 3 番めまで(先頭は 減価。原価/減価 の取り違えは別の問題で、喧嘩 が先頭でないことを見る)
+        let genka = shown("とうげつのげんかをうりあげきんがくでわったものです")
+        XCTAssertFalse(genka.prefix(3).contains { $0.contains("喧嘩") }, "\(genka.prefix(5))")
+        XCTAssertTrue(genka.prefix(3).contains("当月の原価を売上金額で割ったものです"), "\(genka.prefix(5))")
+        // すみで を単独で打ったときの並び(ユーザ指定)
+        XCTAssertEqual(Array(single("すみで").prefix(5)), ["隅で", "角で", "炭で", "墨で", "済みで"])
+    }
+
     // 3731(ユーザ報告): どんだけあぶないか が ドンだけあぶないか(どんだけ が辞書に無く ドン+だけ、あぶない は LM で かな が安い)
     func testRegressionUserReports3731() throws {
         try prepareRealLMDictionary()
