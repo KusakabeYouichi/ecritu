@@ -1939,6 +1939,27 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(multi("ちんくえてっれとは").prefix(2)), ["Cinque Terreとは", "チンクエ・テッレとは"])
     }
 
+    // 3719(ユーザ報告): こさ の 濃さ が 26 番め(コサ/胡沙/子さ/股さ/戸さ の後ろ)。くろっぽくしたぜ が 黒っぽく下ぜ
+    // (し+た+ぜ の た→ぜ が高く、名詞 下→ぜ に負けた。ぜ を除いた くろっぽくした は正しかった)
+    func testRegressionUserReports3719() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func single(_ reading: String) -> [String] { converter.candidates(for: reading, limit: 30, systemCandidateMode: .surface) }
+        func shown(_ reading: String) -> [String] {
+            let list = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            return list.isEmpty ? single(reading) : list
+        }
+        XCTAssertEqual(single("こさ").first, "濃さ", "\(single("こさ").prefix(5))")
+        for (reading, expected) in [
+            ("こさが", "濃さが"), ("いろのこさ", "色の濃さ"), ("あじのこさ", "味の濃さ"), ("こさをかえる", "濃さを変える"),
+            ("くろっぽくしたぜ", "黒っぽくしたぜ"), ("くろっぽくした", "黒っぽくした"), ("あかくしたぜ", "赤くしたぜ"),
+            ("しんぱいしたぜ", "心配したぜ"), ("つくえのしたぜんぶ", "机の下全部"),
+        ] {
+            let list = shown(reading)
+            XCTAssertEqual(list.first, expected, "\(list.prefix(5))")
+        }
+    }
+
     // 3717(ユーザ報告): ありがたがって が 有りが違って/阿里が違って/ありが違って/有我違って/有りがたがって の合成ばかりで、
     // かな ありがたがって は末尾だった。形容詞+がる は単文節でしか作っておらず、連文節の格子に 1 ノードで入っていなかった
     func testRegressionAdjectiveGaruInMultiClause3717() throws {
