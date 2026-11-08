@@ -1986,6 +1986,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         ] {
             let list = shown(reading)
             XCTAssertEqual(Array(list.prefix(2)), expected, "\(reading) \(list.prefix(5))")
+            // 2 番めの かな が表示層で変換候補の列から外されないよう、かな の根拠も立つこと(実機で あぶなくなる の
+            // 2 番めが アブなくなる だった。3734)
+            XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: reading), reading)
         }
         for (reading, expected) in [
             ("どれだけあぶないか", "どれだけ危ないか"), ("あぶないから", "危ないから"), ("それはあぶない", "それは危ない"),
