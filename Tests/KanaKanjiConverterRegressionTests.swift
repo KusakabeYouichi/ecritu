@@ -1960,6 +1960,40 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // 3727(ユーザ報告): 楽だ が ラクダ に負ける(らくだよね→ラクダよね、じゅうぶんらくだ→十分ラクダ、すごくらくだよ→かな)、
+    // たばこはやめたよ→タバコ早めたよ(を落としの加点)、べんきょうせん→勉強線/せえへん→せえ変(関西の する の打ち消し)、みいひん が出ない
+    func testRegressionUserReports3727() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func single(_ reading: String) -> [String] { converter.candidates(for: reading, limit: 30, systemCandidateMode: .surface) }
+        func shown(_ reading: String) -> [String] {
+            let list = reading.count >= 4 ? converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface) : []
+            var result = list.isEmpty ? single(reading) : list
+            for candidate in single(reading) where !result.contains(candidate) { result.append(candidate) }
+            return result
+        }
+        for (reading, expected) in [
+            // 形容動詞+だ と同じ読みの名詞(ラクダ)は終助詞の前と文末で下げる。助詞の前・読み全体・助詞の直後の文末は名詞のまま
+            ("らくだよね", "楽だよね"), ("らくだね", "楽だね"), ("すごくらくだよ", "すごく楽だよ"), ("じゅうぶんらくだ", "十分楽だ"),
+            ("らくだけど", "楽だけど"), ("それはらくだね", "それは楽だね"), ("らくだった", "楽だった"),
+            ("らくだ", "ラクダ"), ("らくだにのる", "ラクダに乗る"), ("らくだからおりる", "ラクダから降りる"), ("らくだやうま", "ラクダや馬"),
+            ("あれはらくだ", "あれはラクダ"), ("これもらくだ", "これもラクダ"),
+            // カタカナ名詞+は+やめた。を を落とした口語(ゲーム買った/ログ取って)はそのまま
+            ("たばこはやめたよ", "タバコはやめたよ"), ("げーむはやめた", "ゲームはやめた"), ("げーむかった", "ゲーム買った"),
+            ("ろぐとって", "ログ取って"), ("ぱすぽーとはもってるよ", "パスポートは持ってるよ"),
+            // サ変名詞の関西の打ち消し。〜線/〜船 の語は崩さない
+            ("べんきょうせん", "勉強せん"), ("べんきょうせんかった", "勉強せんかった"), ("べんきょうせえへん", "勉強せえへん"),
+            ("せえへん", "せえへん"), ("なにもせえへん", "何もせえへん"), ("せえへんかった", "せえへんかった"),
+            ("しんかんせん", "新幹線"), ("しんかんせんで", "新幹線で"), ("かんじょうせん", "環状線"), ("かんじょうせんで", "環状線で"),
+            ("かいせんで", "回線で"), ("がいせん", "凱旋"), ("ろせん", "路線"),
+            // 一段の語幹 1 かなは伸ばした形
+            ("みいひん", "見いひん"), ("ねえへん", "寝えへん"), ("でえへん", "出えへん"), ("みえへん", "見えへん"), ("えへん", "えへん"),
+        ] {
+            let list = shown(reading)
+            XCTAssertEqual(list.first, expected, "\(reading) \(list.prefix(5))")
+        }
+    }
+
     // 3726(ユーザ報告): そのぶんらくだよね が その文楽だよね(その分+形容動詞)、関西の打ち消し いかへん が イカ変、
     // どのつよいめがね が どの強い目がね、あれはあれでいい が あれは有れでいい(命令形+で)、ひかるろご が ヒカルロゴ、
     // かっこわるい が 括弧悪い
