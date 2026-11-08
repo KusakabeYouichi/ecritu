@@ -1919,6 +1919,52 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(KanaKanjiConverter.keepsSecondAgainstSingleBest("正解はまるき葡萄酒です", "正解はマルキ葡萄酒です"))
     }
 
+    // 3717(ユーザ指定): LM に無いカタカナ語どうしの同点は単文節の並び(辞書 rank)で。文字コード順だと Sudachi の
+    // チンクェ・テッレ(ェ U+30A7)が 語彙の チンクエ・テッレ(エ U+30A8)より先に格子へ入り、文の中で勝っていた
+    func testRegressionKatakanaTieFollowsDictionaryRank3717() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ reading: String) -> [String] { converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface) }
+        for (reading, expected) in [
+            ("せいかいはちんくえてっれです", "正解はチンクエ・テッレです"),
+            ("せかいいさんのちんくえてっれなど", "世界遺産のチンクエ・テッレなど"),
+            ("ちんくえてっれのわいん", "チンクエ・テッレのワイン"),
+        ] {
+            let list = multi(reading)
+            XCTAssertEqual(list.first, expected, "\(list.prefix(4))")
+            let small = expected.replacingOccurrences(of: "チンクエ", with: "チンクェ")
+            XCTAssertLessThan(list.firstIndex(of: expected) ?? 99, list.firstIndex(of: small) ?? 99, "\(list.prefix(4))")
+        }
+        // ラテン文字が先頭の文でも、2 番めのカタカナは語彙の チンクエ・テッレ
+        XCTAssertEqual(Array(multi("ちんくえてっれとは").prefix(2)), ["Cinque Terreとは", "チンクエ・テッレとは"])
+    }
+
+    // 3717(ユーザ報告): ありがたがって が 有りが違って/阿里が違って/ありが違って/有我違って/有りがたがって の合成ばかりで、
+    // かな ありがたがって は末尾だった。形容詞+がる は単文節でしか作っておらず、連文節の格子に 1 ノードで入っていなかった
+    func testRegressionAdjectiveGaruInMultiClause3717() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func single(_ reading: String) -> [String] { converter.candidates(for: reading, limit: 30, systemCandidateMode: .surface) }
+        // 候補欄と同じく、連文節が空(読み全体が 1 語)なら単文節の並び
+        func shown(_ reading: String) -> [String] {
+            let list = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            return list.isEmpty ? single(reading) : list
+        }
+        for (reading, expected) in [
+            ("ありがたがって", "ありがたがって"), ("ありがたがった", "ありがたがった"), ("ありがたがる", "ありがたがる"),
+            ("みんなありがたがっている", "みんなありがたがっている"),
+            ("さむがって", "寒がって"), ("こわがって", "怖がって"), ("くやしがって", "悔しがって"),
+        ] {
+            let list = shown(reading)
+            XCTAssertEqual(list.first, expected, "\(list.prefix(5))")
+        }
+        let arigatagatte = shown("ありがたがって")
+        for junk in ["有りが違って", "阿里が違って", "ありが違って", "有我違って", "有りがたがって", "有我たがって"] {
+            XCTAssertFalse(arigatagatte.contains(junk), "\(arigatagatte)")
+        }
+        XCTAssertFalse(shown("さむがって").contains("サム勝手"), "\(shown("さむがって"))")
+    }
+
     // 2026-11-06 のユーザ報告(edition 3695 の実機)
     func testRegressionRealLMUserReports3695() throws {
         try prepareRealLMDictionary()
