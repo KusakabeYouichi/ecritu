@@ -2480,7 +2480,6 @@
 	<dict><key>phrase</key><string>テフラ川</string><key>shortcut</key><string>てふらがわ</string></dict>
 	<dict><key>phrase</key><string>トゥア川</string><key>shortcut</key><string>とぅあがわ</string></dict>
 	<dict><key>phrase</key><string>ドゥエロ川</string><key>shortcut</key><string>どぅえろがわ</string></dict>
-	<dict><key>phrase</key><string>ドゥエロ川</string><key>shortcut</key><string>どぅえろかわ</string></dict>	<!-- かわ と読む打ち方も(確認表の ドゥエロ川沿い、ユーザ指定 3736) -->
 	<dict><key>phrase</key><string>ドウロ川</string><key>shortcut</key><string>どうろがわ</string></dict>
 	<dict><key>phrase</key><string>ドナウ川</string><key>shortcut</key><string>どなうがわ</string></dict>
 	<dict><key>phrase</key><string>ドラヴァ川</string><key>shortcut</key><string>どらゔぁがわ</string></dict>
