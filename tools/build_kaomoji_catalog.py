@@ -2,17 +2,22 @@
 """Regenerate the two data tables in KeyboardExtension/KaomojiCatalog.swift
 (importedEntriesByCategory / importedEntriesByReading) from a JSON list of
 {"kaomoji", "yomi_list", "categories"} records (categories = French keys:
-rire/kawaii/timide/panique/decu/triste/colere/surprise/dodo/coucou/amour/excite/
-action/bizarre/heros/special/lignes).
+etincelles/rire/kawaii/timide/panique/decu/triste/colere/surprise/dodo/coucou/amour/
+excite/action/bizarre/heros/special).
 
-Usage: python3 tools/build_kaomoji_catalog.py tmp/kaomoji_merged.json
+Usage: python3 -I tools/build_kaomoji_catalog.py tmp/kaomoji_merged.json \
+           [--order tmp/kaomoji_kirakira.txt:etincelles:きらきら --order tmp/kaomoji_heart.txt:amour:はーと]
 Only the two tables are replaced; everything else in the Swift file is kept.
 Category order inside the table follows KaomojiCatalog.importedCategoryOrder;
 readings are sorted (localized order is applied at runtime).
+Faces inside a category or a reading follow the record order of the JSON, except that
+--order FILE:CATEGORY:READING puts the faces listed in FILE first, in the file's order
+(hand-sorted from the most popular, 3724), and keeps the rest after them.
 """
 
 from __future__ import annotations
 
+import argparse
 import json
 import re
 import sys
@@ -39,10 +44,27 @@ def render_table(name: str, mapping: dict[str, list[str]], keys: list[str]) -> s
     return "\n".join(lines)
 
 
+def ordered_faces(path: Path) -> list[str]:
+    faces: list[str] = []
+    for line in path.read_text(encoding="utf-8").split("\n"):
+        if line.strip() and not line.startswith("#") and line not in faces:
+            faces.append(line)
+    return faces
+
+
+def put_first(bucket: list[str], order: list[str]) -> list[str]:
+    present = set(bucket)
+    head = [face for face in order if face in present]
+    head_set = set(head)
+    return head + [face for face in bucket if face not in head_set]
+
+
 def main() -> None:
-    if len(sys.argv) != 2:
-        sys.exit("usage: build_kaomoji_catalog.py <merged.json>")
-    records = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+    parser = argparse.ArgumentParser()
+    parser.add_argument("merged")
+    parser.add_argument("--order", action="append", default=[], help="FILE:CATEGORY:READING")
+    args = parser.parse_args()
+    records = json.loads(Path(args.merged).read_text(encoding="utf-8"))
     source = SWIFT.read_text(encoding="utf-8")
 
     order_match = re.search(r"static let importedCategoryOrder: \[String\] = \[(.*?)\]", source, re.S)
@@ -64,6 +86,14 @@ def main() -> None:
             bucket = by_reading.setdefault(reading, [])
             if face not in bucket:
                 bucket.append(face)
+
+    for spec in args.order:
+        file_name, category, reading = spec.rsplit(":", 2)
+        order = ordered_faces(Path(file_name))
+        if category in by_category:
+            by_category[category] = put_first(by_category[category], order)
+        if reading in by_reading:
+            by_reading[reading] = put_first(by_reading[reading], order)
 
     def replace_table(text: str, name: str, rendered: str) -> str:
         pattern = re.compile(
