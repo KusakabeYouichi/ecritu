@@ -1960,6 +1960,42 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // 3731(ユーザ報告): どんだけあぶないか が ドンだけあぶないか(どんだけ が辞書に無く ドン+だけ、あぶない は LM で かな が安い)
+    func testRegressionUserReports3731() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func single(_ reading: String) -> [String] { converter.candidates(for: reading, limit: 30, systemCandidateMode: .surface) }
+        func shown(_ reading: String) -> [String] {
+            let list = reading.count >= 4 ? converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface) : []
+            var result = list.isEmpty ? single(reading) : list
+            for candidate in single(reading) where !result.contains(candidate) { result.append(candidate) }
+            return result
+        }
+        // 危ない が先頭、かな が 2 番め(ユーザ指定)
+        for (reading, expected) in [
+            ("どんだけあぶないか", ["どんだけ危ないか", "どんだけあぶないか"]),
+            ("あぶない", ["危ない", "あぶない"]), ("あぶないか", ["危ないか", "あぶないか"]),
+        ] {
+            let list = shown(reading)
+            XCTAssertEqual(Array(list.prefix(2)), expected, "\(reading) \(list.prefix(5))")
+        }
+        for (reading, expected) in [
+            ("どれだけあぶないか", "どれだけ危ないか"), ("あぶないから", "危ないから"), ("それはあぶない", "それは危ない"),
+            ("どんだけたかいの", "どんだけ高いの"), ("どんだけすきなの", "どんだけ好きなの"),
+            // 作品名(1 語)と 丼 はそのまま
+            ("あぶないけいじ", "あぶない刑事"), ("どんぶり", "丼"),
+        ] {
+            let list = shown(reading)
+            XCTAssertEqual(list.first, expected, "\(reading) \(list.prefix(5))")
+        }
+        // どんだけ はかなが先頭。表示層でかなが後ろへ回されないよう、かな先頭の根拠も立つこと
+        for reading in ["どんだけ", "どんだけあるの", "どんだけかかる"] {
+            let list = shown(reading)
+            XCTAssertEqual(list.first, reading, "\(reading) \(list.prefix(5))")
+            XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: reading), reading)
+        }
+    }
+
     // 3727(ユーザ報告): 楽だ が ラクダ に負ける(らくだよね→ラクダよね、じゅうぶんらくだ→十分ラクダ、すごくらくだよ→かな)、
     // たばこはやめたよ→タバコ早めたよ(を落としの加点)、べんきょうせん→勉強線/せえへん→せえ変(関西の する の打ち消し)、みいひん が出ない
     func testRegressionUserReports3727() throws {
