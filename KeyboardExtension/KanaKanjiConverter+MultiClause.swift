@@ -3767,6 +3767,9 @@ extension KanaKanjiConverter {
                 !prevIsBOS, prev.count >= 2,
                 Self.isKatakanaString(prev),
                 !Self.multiClauseWoDropIntransitiveReadingPrefixes.contains(where: { reading.hasPrefix($0) }),
+                // 読みが は で始まる動詞(早めた/話した)は 名詞+は+動詞 と区切りが競合する。たばこはやめたよ が タバコ早めたよ、
+                // げーむはやめた が ゲーム早めた だった(3727、ユーザ報告)
+                !reading.hasPrefix("は"),
                 let woBigram = store.wordLMBigramCost(prev: prev, cur: "を"),
                 woBigram < Self.multiClauseWoDropVerbMaxWoBigram {
                 penalty -= Self.multiClauseWoDropVerbBonus
