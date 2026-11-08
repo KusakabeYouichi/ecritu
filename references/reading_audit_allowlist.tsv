@@ -135,9 +135,9 @@ vin.plist	薪火	まきび	薪火焼きなど料理用語
 vin.plist	身質	みしつ	魚の身の質
 vin.plist	鳥居平	とりいびら	勝沼の著名畑名
 vin.plist	service	せるゔぃす	仏語serviceの読み
-vin.plist	Alicante Bouschet	ありかんとぶーしぇ	vin、品種(仏 Henri Bouschet の交配)。産地の Alicante(西 ありかんて)とは言語が違う(3727)
+vin.plist	Alicante Bouschet	ありかんとぶーしぇ	vin、品種(仏 Henri Bouschet の交配)。綴りは産地と同じ Alicante のまま、日本ではカタカナを アリカント と書く慣例(ポルトガルなどでは アリカンテ・ブーシェ で、そちらの読みも vin にある)(3729、ユーザ指摘で理由を直した)
 vin.plist	Alicante Bouschet	ありかんとぶすけ	vin、上と同じ品種の別のカタカナ(アリカント・ブスケ)の読み(3727)
-vin.plist	Bailey Alicante A	べいりーありかんとえい	vin、日本の交配品種。カタカナ ベイリー・アリカントA の読み(3727)
+vin.plist	Bailey Alicante A	べいりーありかんとえい	vin、日本の交配品種。綴りは Alicante のまま、カタカナは日本の慣例で ベイリー・アリカントA(3727)
 sacoche.plist	梅香	めいしゃん	いずれもsacoche、2026-08-18の対Sudachi読み差分監査でOK確定。中華料理店名の現地音写
 sacoche.plist	新疆	しんちゃん	Xinjiangの中国語音写
 sacoche.plist	白湯	ぱいたん	中華スープのパイタン

@@ -4858,6 +4858,8 @@
 	<dict><key>phrase</key><string>アリカント・ブスケ</string><key>shortcut</key><string>ありかんとぶすけ</string></dict>
 	<dict><key>phrase</key><string>Alicante Bouschet</string><key>shortcut</key><string>ありかんとぶーしぇ</string></dict>
 	<dict><key>phrase</key><string>アリカント・ブーシェ</string><key>shortcut</key><string>ありかんとぶーしぇ</string></dict>
+	<dict><key>phrase</key><string>Alicante Bouschet</string><key>shortcut</key><string>ありかんてぶーしぇ</string></dict>
+	<dict><key>phrase</key><string>アリカンテ・ブーシェ</string><key>shortcut</key><string>ありかんてぶーしぇ</string></dict>	<!-- ポルトガルなどでの呼び方。綴りは アリカント・ブーシェ と同じ Alicante -->
 	<dict><key>phrase</key><string>アリゴテ</string><key>shortcut</key><string>ありごて</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>アリント</string><key>shortcut</key><string>ありんと</string></dict>
 	<dict><key>phrase</key><string>アルバリーニョ</string><key>shortcut</key><string>あるばりーにょ</string></dict>
@@ -5038,7 +5040,7 @@
 	<dict><key>phrase</key><string>ベイリー</string><key>shortcut</key><string>べいりー</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>Bailey Alicante A</string><key>shortcut</key><string>べいりーありかんとえい</string></dict>
 	<dict><key>phrase</key><string>ベイリー・アリカントA</string><key>shortcut</key><string>べいりーありかんとえい</string></dict>
-	<dict><key>phrase</key><string>Berlandieri</string><key>shortcut</key><string>べるらんでぃえり</string></dict>
+	<dict><key>phrase</key><string>berlandieri</string><key>shortcut</key><string>べるらんでぃえり</string></dict>
 	<dict><key>phrase</key><string>ベルランディエリ</string><key>shortcut</key><string>べるらんでぃえり</string></dict>
 	<dict><key>phrase</key><string>ペドロ・ヒメネス</string><key>shortcut</key><string>ぺどろひめねす</string></dict>
 	<dict><key>phrase</key><string>ボスコ</string><key>shortcut</key><string>ぼすこ</string></dict>
@@ -5256,8 +5258,7 @@
 	<dict><key>phrase</key><string>キャンベル・アーリー</string><key>shortcut</key><string>きゃんべるあーりー</string></dict>
 	<dict><key>phrase</key><string>グラウブルグンダー</string><key>shortcut</key><string>ぐらうぶるぐんだー</string></dict>
 	<dict><key>phrase</key><string>グラシェヴィナ</string><key>shortcut</key><string>ぐらしぇゔぃな</string></dict>
-	<dict><key>phrase</key><string>Grüner Veltliner</string><key>shortcut</key><string>ぐりゅなーゔぇるとりーなー</string></dict>
-	<dict><key>phrase</key><string>グリュナーヴェルトリーナー</string><key>shortcut</key><string>ぐりゅなーゔぇるとりーなー</string></dict>
+	<dict><key>phrase</key><string>グリューナーヴェルトリーナー</string><key>shortcut</key><string>ぐりゅーなーゔぇるとりーなー</string></dict>
 	<dict><key>phrase</key><string>グレカニコ</string><key>shortcut</key><string>ぐれかにこ</string></dict>
 	<dict><key>phrase</key><string>グレケット</string><key>shortcut</key><string>ぐれけっと</string></dict>
 	<dict><key>phrase</key><string>グロレアル</string><key>shortcut</key><string>ぐろれある</string></dict>
@@ -5324,8 +5325,6 @@
 	<dict><key>phrase</key><string>フロマントー</string><key>shortcut</key><string>ふろまんとー</string></dict>
 	<dict><key>phrase</key><string>ブラウブルグンダー</string><key>shortcut</key><string>ぶらうぶるぐんだー</string></dict>
 	<dict><key>phrase</key><string>ブラック・クイーン</string><key>shortcut</key><string>ぶらっくくいーん</string></dict>
-	<dict><key>phrase</key><string>Blaufränkisch</string><key>shortcut</key><string>ぶらふれんきっしゅ</string></dict>
-	<dict><key>phrase</key><string>ブラフレンキッシュ</string><key>shortcut</key><string>ぶらふれんきっしゅ</string></dict>
 	<dict><key>phrase</key><string>Burgunder</string><key>shortcut</key><string>ぶるぐんだー</string></dict>
 	<dict><key>phrase</key><string>ブルグンダー</string><key>shortcut</key><string>ぶるぐんだー</string></dict>
 	<dict><key>phrase</key><string>ブルトン</string><key>shortcut</key><string>ぶるとん</string></dict>	<!-- Sudachiにもある -->
@@ -5337,8 +5336,7 @@
 	<dict><key>phrase</key><string>プールサール</string><key>shortcut</key><string>ぷーるさーる</string></dict>
 	<dict><key>phrase</key><string>Heroldrebe</string><key>shortcut</key><string>へろるどれーべ</string></dict>
 	<dict><key>phrase</key><string>ヘロルドレーベ</string><key>shortcut</key><string>へろるどれーべ</string></dict>
-	<dict><key>phrase</key><string>Pedro Ximénez</string><key>shortcut</key><string>べどろひめねす</string></dict>
-	<dict><key>phrase</key><string>ベドロヒメネス</string><key>shortcut</key><string>べどろひめねす</string></dict>
+	<dict><key>phrase</key><string>ペドロヒメネス</string><key>shortcut</key><string>ぺどろひめねす</string></dict>
 	<dict><key>phrase</key><string>ベルデホ</string><key>shortcut</key><string>べるでほ</string></dict>
 	<dict><key>phrase</key><string>Portugieser</string><key>shortcut</key><string>ぽるとぎーざー</string></dict>
 	<dict><key>phrase</key><string>ポルトギーザー</string><key>shortcut</key><string>ぽるとぎーざー</string></dict>
