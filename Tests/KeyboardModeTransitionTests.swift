@@ -632,6 +632,13 @@ final class KeyboardModeTransitionTests: XCTestCase {
     // 基本記号の並びは 共通記号(りんごマーク・矢印・和文括弧) → 図形 → ASCII/JIS の順。
     // 使用頻度の高いものを手前に置くというユーザー指定(2600)。以前は ASCII が先頭で、
     // 共通記号は各並び(ASCII/EBCDIC/ANSI)の配列末尾に埋め込まれていた。
+    // 中黒と矢印の間に 〃々〆〒(3726、ユーザ指定)
+    func testBasicCommonSymbolsPutDittoIterationShimeAndPostalMarkAfterNakaguro() {
+        let common = KeyboardRootView.SymbolCategory.basicSymbolsCommon
+        let start = common.firstIndex(of: "・")
+        XCTAssertEqual(start.map { Array(common[$0..<min(common.count, $0 + 6)]) }, ["・", "〃", "々", "〆", "〒", "←"])
+    }
+
     func testBasicSymbolSectionsAreOrderedCommonShapesThenPunctuation() {
         let common = KeyboardRootView.SymbolCategory.basicSymbolsCommon
         let shapes = KeyboardRootView.SymbolCategory.basicSymbolsExtras

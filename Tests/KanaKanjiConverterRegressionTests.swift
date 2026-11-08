@@ -1960,6 +1960,54 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // 3726(ユーザ報告): そのぶんらくだよね が その文楽だよね(その分+形容動詞)、関西の打ち消し いかへん が イカ変、
+    // どのつよいめがね が どの強い目がね、あれはあれでいい が あれは有れでいい(命令形+で)、ひかるろご が ヒカルロゴ、
+    // かっこわるい が 括弧悪い
+    func testRegressionUserReports3726() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func single(_ reading: String) -> [String] { converter.candidates(for: reading, limit: 30, systemCandidateMode: .surface) }
+        func shown(_ reading: String) -> [String] {
+            let list = reading.count >= 4 ? converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface) : []
+            var result = list.isEmpty ? single(reading) : list
+            for candidate in single(reading) where !result.contains(candidate) { result.append(candidate) }
+            return result
+        }
+        for (reading, expected) in [
+            // その分(ぶん)+形容動詞・形容詞。加点の幅の下端(になる/です)と上端(その文楽の演目)を両方守る
+            ("そのぶんらくだよね", "その分楽だよね"), ("そのぶんらくになる", "その分楽になる"), ("そのぶんらくです", "その分楽です"),
+            ("そのぶんらくに", "その分楽に"), ("このぶんらくだね", "この分楽だね"), ("そのぶんやすい", "その分安い"),
+            ("そのぶんらくのえんもく", "その文楽の演目"), ("ぶんらくをみる", "文楽を見る"), ("そのぶんやでは", "その分野では"),
+            ("そのぶんしょうをよむ", "その文章を読む"), ("ぶんなぐる", "ぶん殴る"),
+            // 関西の打ち消し 〜へん。一段の語幹 1 かな(得へん)は作らない
+            ("いかへん", "行かへん"), ("わからへん", "分からへん"), ("しらへん", "知らへん"), ("たべへん", "食べへん"),
+            ("いかへんかった", "行かへんかった"), ("もうわからへんわ", "もう分からへんわ"), ("なにもしらへんで", "何も知らへんで"),
+            ("えへん", "えへん"), ("いへん", "異変"), ("たいへん", "大変"), ("へんかな", "変かな"),
+            // 度の強い(misc)と、形容詞+めがね が 目+が+ね にならない
+            ("どのつよいめがね", "度の強い眼鏡"), ("どのすぎたじょうだん", "度の過ぎた冗談"), ("つよいめがね", "強い眼鏡"),
+            ("あたらしいめがね", "新しい眼鏡"), ("めがね", "眼鏡"), ("それがね", "それがね"),
+            ("どのあたらしいきのう", "どの新しい機能"), ("どのみせ", "どの店"),
+            // 命令形・仮定形(え段)+格助詞 は非文。名詞の 疲れ/揺れ/遅れ/晴れ+助詞 はそのまま
+            ("あれはあれでいい", "あれはあれでいい"), ("あれでいい", "あれでいい"), ("つかれでねむい", "疲れで眠い"),
+            ("ゆれでおきた", "揺れで起きた"), ("つかれがとれない", "疲れが取れない"), ("おくれがでる", "遅れが出る"),
+            ("はれでよかった", "晴れでよかった"),
+            // 動詞と同じ読みのカタカナの名(ヒカル=光る)は、敬称・が/を/は 以外の前では動詞を先に
+            ("ひかるろご", "光るロゴ"), ("ひかるほし", "光る星"), ("ひかるのはやめたよ", "光るのはやめたよ"),
+            ("ひかるさんがきた", "ヒカルさんが来た"), ("ひかるがきた", "ヒカルが来た"),
+            ("かっこわるかった", "かっこ悪かった"),
+        ] {
+            let list = shown(reading)
+            XCTAssertEqual(list.first, expected, "\(reading) \(list.prefix(5))")
+        }
+        let kakko = shown("かっこわるい")
+        XCTAssertEqual(Array(kakko.prefix(2)), ["かっこ悪い", "かっこわるい"], "\(kakko.prefix(6))")
+        for composed in ["括弧悪い", "確固悪い", "各戸悪い", "恰好悪い", "格好悪い"] {
+            XCTAssertFalse(kakko.contains(composed), "\(composed) \(kakko)")
+        }
+        XCTAssertEqual(Array(shown("かっこうわるい").prefix(2)), ["格好悪い", "恰好悪い"])
+        XCTAssertFalse(single("えへん").contains("得へん"))
+    }
+
     // 3725(ユーザ報告): かんこくなみ が 韓国波(名詞の直後の なみ は 並み、次に 並)。そんなにへんかな が そんなに経んかな
     // (形容動詞語幹+かな の観測が無く、活用派生 経ん の述語クランプに負けた。経ん を下げると そんな+2片 に 21 差で負けた)
     func testRegressionUserReports3725() throws {
