@@ -378,7 +378,10 @@ final class KanaKanjiConverter {
         static let ichidanStemCompoundBoost = 1500
         // 関西方言の ている→とる 縮約形(騙しとった)を同経路の標準形(騙し取った)より後ろへ下げる幅(2887)
         static let kansaiContractionDemotion = 60
-        static let adjectiveGaru = 970          // ガル形派生
+        // ガル形派生(許可リストの語だけ)。postfix 合成(1040)より上にする(3722、ユーザ報告: 実機で ほしがって が
+        // 星がって/干しがって/法師がって(ほしが+って の合成 1260)で埋まり、欲しがって(970+220=1190)が 9 番め以降だった。
+        // 合成は打鍵の途中の候補のキャッシュがあるときだけ出るので、打鍵の速さで OK/NG が入れ替わっていた)。辞書(1200)より下
+        static let adjectiveGaru = 1100
         // 歴史的経緯: 数詞複合はブースト値(360)を基礎点として流用してきた。
         // 辞書語より大きく下に置く意図はそのまま名前だけ明示する。
         static let numericCounterCompound = 360
