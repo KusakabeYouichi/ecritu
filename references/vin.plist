@@ -2519,6 +2519,7 @@
 	<dict><key>phrase</key><string>北上川</string><key>shortcut</key><string>きたかみがわ</string></dict>
 	<dict><key>phrase</key><string>Elbe</string><key>shortcut</key><string>えるべ</string></dict>
 	<dict><key>phrase</key><string>Havel</string><key>shortcut</key><string>はーふぇる</string></dict>
+	<dict><key>phrase</key><string>Rhein</string><key>shortcut</key><string>らいん</string></dict>	<!-- ライン川(ドイツ語)。LINE/ライン の次(seed で並びを指定。ユーザ指定 3720) -->
 	<dict><key>phrase</key><string>Rhin</string><key>shortcut</key><string>らん</string></dict>
 	<dict><key>phrase</key><string>Río Oja</string><key>shortcut</key><string>りおおは</string></dict>	<!-- アクセント付きを先に(learningBOX 検査 3684、ユーザ指定) -->
 	<dict><key>phrase</key><string>Rio Oja</string><key>shortcut</key><string>りおおは</string></dict>
