@@ -555,6 +555,8 @@ struct ContentView: View {
     // 退避した設定の日時(無ければ nil)。メニューを描くたびに Keychain を読まないよう、起動時と退避・復元のあとに読む
     @State var settingsStashSavedAt: Date?
     @State var settingsToastMessage: String?
+    // トーストを Loading... と同じ青地に白で出すか(学習リセット+変換キャッシュクリア 3717)
+    @State var settingsToastAccented = false
     // 初回フレーム軽量化: 設定カード群は最初の描画後に、1 フレームに 1 塊ずつ作る(起動直後の白背景 Loading 対策。
     // 塊に分けるのは 3712)。いくつめの塊まで作ったか。題字のメニューで飛ぶときは残りを先に作る
     @State var settingsCardStagesBuilt = 0
@@ -865,11 +867,14 @@ struct ContentView: View {
                 Text(settingsToastMessage)
                     .font(.footnote.weight(.semibold))
                     .multilineTextAlignment(.center)
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(settingsToastAccented ? AnyShapeStyle(Color.white) : AnyShapeStyle(.primary))
                     .padding(.horizontal, 14)
                     .padding(.vertical, 10)
-                    // 複数行(フルアクセスの知らせ 3467)でも崩れないよう角丸の四角にし、画面の端から離す
-                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+                    // 複数行(フルアクセスの知らせ 3467)でも崩れないよう角丸の四角にし、画面の端から離す。
+                    // 青地に白は Loading... と同じ色(3717、ユーザ指定。学習リセット+変換キャッシュクリア のトースト)
+                    .background(
+                        settingsToastAccented ? AnyShapeStyle(Color.accentColor) : AnyShapeStyle(.ultraThinMaterial),
+                        in: RoundedRectangle(cornerRadius: 18, style: .continuous))
                     .shadow(color: .black.opacity(0.12), radius: 8, y: 3)
                     .padding(.horizontal, 24)
             }

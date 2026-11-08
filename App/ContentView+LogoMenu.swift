@@ -1052,8 +1052,9 @@ extension ContentView {
 
     // ──── トースト ────
 
-    func showSettingsToast(_ message: String, duration: TimeInterval = 1.8) {
+    func showSettingsToast(_ message: String, duration: TimeInterval = 1.8, accented: Bool = false) {
         withAnimation(.easeOut(duration: 0.15)) {
+            settingsToastAccented = accented
             settingsToastMessage = message
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
@@ -1336,7 +1337,7 @@ extension ContentView {
         case .resetLearningAndCache:
             // 学習リセット。学習の世代を上げたうえで設定の世代も上げる(=変換キャッシュのクリアと同じ合図)ので、両方が 1 回で済む
             resetKanaKanjiLearning()
-            showSettingsToast("学習をリセットし、変換キャッシュをクリアしました")
+            showSettingsToast("学習をリセットし、変換キャッシュをクリアしました", accented: true)
         case .item(let item):
             settingsJumpRequest = SettingsJumpRequest(item: item, serial: (settingsJumpRequest?.serial ?? 0) + 1)
         }
