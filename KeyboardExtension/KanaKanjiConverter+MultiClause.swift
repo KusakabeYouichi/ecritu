@@ -3593,6 +3593,16 @@ extension KanaKanjiConverter {
             if isDakeAfterERowDerived {
                 penalty += Self.multiClauseImperativeParticlePenalty
             }
+            // 格助詞(で/に/を/が/は/へ/も)も 命令形・仮定形(え段)の直後には付かない。あれはあれでいい が あれは有れでいい
+            // (有る の 有れ+で)だった(3726、ユーザ報告)。あれ→で は観測(2907)が未観測の 有れ→で(2597)より高かった。
+            // て形(書いて/読んで)は除く(行ってでも)
+            if isKanaIdentity, surface.count == 1,
+                Self.multiClauseImperativeBannedTailParticles.contains(surface.first!) || surfaceID == SID.で,
+                prevIsInflectionDerived, !prevIsKanaIdentity,
+                let prevLast = prevReading?.last, prevLast != "て", prevLast != "で",
+                Self.multiClauseERowKanaCharacters.contains(prevLast) {
+                penalty += Self.multiClauseImperativeParticlePenalty
+            }
             // 終止形の動詞(見る/やる/行く)の直後の きなく…/きた… は 気(見る気なくなる/やる気がない)で、一段 着る の活用形
             // (着なくなる)が動詞の終止形に直接続く文は無い。かな みる の直後は OOV 定額の 着なくなる(7200)が
             // みる→気 の bigram 欠落(6164)より安く、見る着なくなる になっていた(それだけでみるきなくなる。ユーザ報告 3566)
