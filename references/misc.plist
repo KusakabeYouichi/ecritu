@@ -355,6 +355,7 @@
 	<dict><key>phrase</key><string>肉厚</string><key>shortcut</key><string>にくあつ</string><key>pos</key><string>形容動詞</string></dict>	<!-- 肉厚(にくあつ): Sudachi は名詞だけで、にくあつな が 肉亜綱 だった。〜な(肉厚な果肉)/〜に(learningBOX 検査 3697 の確認表、ユーザ指摘) -->
 	<dict><key>phrase</key><string>宣材</string><key>shortcut</key><string>せんざい</string></dict>	<!-- 宣材(宣伝材料。宣材写真): 辞書に無かった(ユーザ報告 3629) -->
 	<dict><key>phrase</key><string>JASRAC</string><key>shortcut</key><string>じゃすらっく</string></dict>	<!-- JASRAC(日本音楽著作権協会): 辞書に ジャスラック だけで JASRAC が無かった(ユーザ報告 3629) -->
+	<dict><key>phrase</key><string>LINE</string><key>shortcut</key><string>らいん</string></dict>	<!-- LINE(メッセージアプリ): 辞書は ライン/らいん/羅允 だけだった。LINE を先頭、ライン を 2 番めに(ユーザ指定 3720) -->
 	<dict><key>phrase</key><string>typo</string><key>shortcut</key><string>たいぽ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- typo(英字): タイポ の次(ユーザ指定 3622) -->
 	<dict><key>phrase</key><string>№</string><key>shortcut</key><string>なんばー</string></dict>	<!-- ヌメロ記号(№/Nº/N°): なんばー/ぬめろ/のんぶる で変換。連文節では弱め(ナンバー を勝たせるため multiClauseHomophoneDemotionsByReading で降格。ユーザ指定 3623) -->
 	<dict><key>phrase</key><string>№</string><key>shortcut</key><string>ぬめろ</string></dict>
