@@ -1960,6 +1960,35 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // 3720(ユーザ指定・報告): らいん に LINE を先頭で足す(ライン は 2 番め)。カタカナの語に続く らいん は カタカナ
+    // (LINE を足したら すたーとらいん が スタートLINE になった)。ありがたがって は かなを先頭に保つ(『候補なし』の印が出ていた)
+    func testRegressionUserReports3720() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func single(_ reading: String) -> [String] { converter.candidates(for: reading, limit: 30, systemCandidateMode: .surface) }
+        func shown(_ reading: String) -> [String] {
+            let list = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            return list.isEmpty ? single(reading) : list
+        }
+        XCTAssertEqual(Array(single("らいん").prefix(2)), ["LINE", "ライン"])
+        for (reading, expected) in [
+            ("らいんで", "LINEで"), ("らいんをおくる", "LINEを送る"), ("ぜみはらいんで", "ゼミはLINEで"),
+            ("すたーとらいん", "スタートライン"), ("ごーるらいん", "ゴールライン"), ("たいむらいん", "タイムライン"),
+            ("ぼーだーらいん", "ボーダーライン"), ("あいふぉんけーす", "iPhoneケース"),
+        ] {
+            let list = shown(reading)
+            XCTAssertEqual(list.first, expected, "\(list.prefix(5))")
+        }
+        XCTAssertEqual(KanaKanjiConverter.katakanaCompoundOverKatakanaLatinTop(["スタートLINE", "スタートライン"]).first, "スタートライン")
+        XCTAssertEqual(KanaKanjiConverter.katakanaCompoundOverKatakanaLatinTop(["iPhoneケース", "アイフォンケース"]).first, "iPhoneケース")
+        for reading in ["ありがたがって", "ありがたがった", "おもしろがって", "かわいがって"] {
+            XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: reading), reading)
+        }
+        for reading in ["ほしがって", "いやがって", "ちがって"] {
+            XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: reading), reading)
+        }
+    }
+
     // 3717(ユーザ報告): ありがたがって が 有りが違って/阿里が違って/ありが違って/有我違って/有りがたがって の合成ばかりで、
     // かな ありがたがって は末尾だった。形容詞+がる は単文節でしか作っておらず、連文節の格子に 1 ノードで入っていなかった
     func testRegressionAdjectiveGaruInMultiClause3717() throws {
