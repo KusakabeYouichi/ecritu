@@ -830,6 +830,9 @@ enum KaomojiCategoryChoice {
         // 以前は importedCategoryOrder(辞書の反復順)を写していたため、導入時からキーボードと
         // 並びが食い違っていた(2026-09-02 是正)
         let importedCategories: [(name: String, icon: String)] = [
+            // 3724: きらめき を新設し、愛 と並べて先頭 2 つに(ユーザ指定)
+            ("etincelles", "✨"),
+            ("amour", "❤️"),
             ("rire", "😂"),
             ("kawaii", "🥰"),
             ("timide", "😊"),
@@ -840,12 +843,11 @@ enum KaomojiCategoryChoice {
             ("surprise", "😲"),
             ("dodo", "😴"),
             ("coucou", "🙋"),
-            ("amour", "❤️"),
             ("excite", "💥"),
             ("action", "🏃"),
             ("bizarre", "🤪"),
             ("heros", "🧑"),
-            ("special", "✨")
+            ("special", "🎵")
             // lignes(区切り線)は 3678 で顔文字を複数サイト掲載分に絞った際に空になり、分類ごと撤去
         ]
 
@@ -868,6 +870,7 @@ enum KaomojiCategoryChoice {
         guard id.hasPrefix("imported:") else { return id }
         let name = String(id.dropFirst("imported:".count))
         switch name {
+        case "etincelles": return "Étincelles (きらめき/キラキラ)"
         case "rire": return "Sourire / Rire (笑顔)"
         case "kawaii": return "Kawaii / Chou (かわいい)"
         case "timide": return "Timide (照れ)"

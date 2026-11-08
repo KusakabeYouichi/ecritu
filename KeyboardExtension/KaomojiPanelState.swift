@@ -33,6 +33,8 @@ struct KaomojiCategory: Identifiable, Hashable {
             return "Base (基本)"
         case .imported(let name):
             switch name {
+            case "etincelles":
+                return "Étincelles (きらめき/キラキラ)"
             case "rire":
                 return "Sourire / Rire (笑顔)"
             case "kawaii":
@@ -83,6 +85,8 @@ struct KaomojiCategory: Identifiable, Hashable {
             return "🙂"
         case .imported(let name):
             switch name {
+            case "etincelles":
+                return "✨"
             case "rire":
                 return "😂"
             case "kawaii":
@@ -114,7 +118,8 @@ struct KaomojiCategory: Identifiable, Hashable {
             case "heros":
                 return "🧑"
             case "special":
-                return "✨"
+                // ✨ は きらめき(etincelles)へ。特殊に残るのは ♪ と 泡(○o。)など(3724)
+                return "🎵"
             case "lignes":
                 return "💬"
             default:
