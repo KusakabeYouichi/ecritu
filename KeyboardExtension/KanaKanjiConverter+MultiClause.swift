@@ -2870,21 +2870,30 @@ extension KanaKanjiConverter {
             }
         }
         // 動詞と同じ読みの名(守/まもる=守る、茂/しげる=茂る)は、直後が敬称か が/を/は なら名を上げ、
-        // それ以外(には/ために 等)は動詞の後ろへ(定数コメント参照。3646、3649)
+        // それ以外(には/ために 等)は動詞の後ろへ(定数コメント参照。3646、3649)。
+        // カタカナの名(ヒカル=光る、ススム=進む)も同じ区間に終止形の動詞があれば同じ扱い(ひかるろご が ヒカルロゴ。3726、ユーザ報告)
         do {
             // 名の区間だけを見る(全ノードの表を作らない。打鍵ごとの確保を増やさない)
             let givenNameNodes = nodes.filter {
-                $0.surface.count < $0.reading.count && personNameKindByNodeKey[$0.key] == "名"
+                ($0.surface.count < $0.reading.count || Self.isKatakanaString($0.surface))
+                    && personNameKindByNodeKey[$0.key] == "名"
                     && Self.multiClauseVerbEndingKana.contains($0.reading.last!)
             }
             if !givenNameNodes.isEmpty {
                 let spans = Set(givenNameNodes.map(\.spanKey))
                 var surfacesBySpan: [String: Set<String>] = [:]
+                var dictionaryFormVerbSpans = Set<String>()
                 for node in nodes where node.isDictWord && !node.isKanaIdentity && spans.contains(node.spanKey) {
                     surfacesBySpan[node.spanKey, default: []].insert(node.surface)
+                    if node.isDictionaryFormPredicate, containsKanji(node.surface), node.surface.last == node.reading.last {
+                        dictionaryFormVerbSpans.insert(node.spanKey)
+                    }
                 }
                 for node in givenNameNodes {
-                    guard surfacesBySpan[node.spanKey]?.contains(node.surface + String(node.reading.last!)) ?? false else {
+                    let hasHomographVerb = Self.isKatakanaString(node.surface)
+                        ? dictionaryFormVerbSpans.contains(node.spanKey)
+                        : surfacesBySpan[node.spanKey]?.contains(node.surface + String(node.reading.last!)) ?? false
+                    guard hasHomographVerb else {
                         continue
                     }
                     let nameContext: Bool
