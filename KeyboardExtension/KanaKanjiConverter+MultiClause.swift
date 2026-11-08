@@ -2939,6 +2939,24 @@ extension KanaKanjiConverter {
         for node in nodes where node.isDictWord && node.surface.hasSuffix("屋") && node.surface.count >= 2 {
             occupationalYaSpanKeys.insert(node.spanKey)
         }
+        // 形容動詞+だ と同じ読みの名詞(らくだ: ラクダ/駱駝/かな らくだ と 楽+だ)。終助詞の前と文末では 楽だ の方を採るので、
+        // 名詞の側を下げる(定数コメント参照。3727)。同じ区間に 形容動詞(prev→な の実績)+だ が組めるときだけ
+        var naAdjectiveCopulaHomophoneNodeKeys = Set<String>()
+        for node in nodes where node.reading.count >= 3 && node.reading.last == "だ" && node.isDictWord
+            && !node.isInflectionDerived && !node.isCurated {
+            let stemEnd = node.end - 1
+            let hasCopula = nodesStartingAt[stemEnd].contains { nodes[$0].surfaceID == SID.だ && nodes[$0].end == node.end }
+            guard hasCopula else { continue }
+            let hasNaAdjectiveStem = nodesEndingAt[stemEnd].contains { index in
+                let stem = nodes[index]
+                guard stem.start == node.start, !stem.isKanaIdentity, !stem.isInflectionDerived,
+                    let naCost = store.wordLMBigramCost(prev: stem.surface, cur: "な") else { return false }
+                return naCost <= Self.multiClauseNaAdjectiveBigramThreshold
+            }
+            if hasNaAdjectiveStem {
+                naAdjectiveCopulaHomophoneNodeKeys.insert(node.key)
+            }
+        }
 
         // 文頭のかな助詞 で(定数コメント参照)。読み で で始まる活用派生(出ない/出た/できない/でかい 等、
         // 幅 3 以上)が立っているときだけ減点する。でも/では/です は別ノードなので無関係
@@ -5488,6 +5506,12 @@ extension KanaKanjiConverter {
                                 || (prevNode.surface.last.map { Self.multiClauseTrailingProlongationPredicateTails.contains($0) } ?? false) {
                             cost = min(cost, prevCost + Self.multiClauseTrailingProlongationAfterPredicateCost)
                         }
+                        // 形容動詞+だ と同じ読みの名詞(ラクダ)+終助詞 は 楽だ+終助詞 の方(定数コメント参照。3727)
+                        if !naAdjectiveCopulaHomophoneNodeKeys.isEmpty, node.isKanaIdentity,
+                            naAdjectiveCopulaHomophoneNodeKeys.contains(prevNode.key),
+                            Self.multiClauseNaAdjectiveCopulaHomophoneFollowers.contains(node.reading) {
+                            cost += Self.multiClauseNaAdjectiveCopulaHomophoneNounPenalty
+                        }
                         // 連用形+副助詞(呼びさえ)は直後の する系(すれば/しない)で加点、それ以外は減点(定数コメント参照。2894)
                         if renyouFocusNodeKeys.contains(prevNode.key) {
                             if Self.isSuruFormKanaSurface(node.surface, reading: node.reading) {
@@ -5888,6 +5912,13 @@ extension KanaKanjiConverter {
                 // 連用形+副助詞(呼びさえ)で文が終わることはない(定数コメント参照。2894)
                 if renyouFocusNodeKeys.contains(nodes[idx].key) {
                     eosCost += Self.multiClauseRenyouFocusWithoutSuruPenalty
+                }
+                // 形容動詞+だ と同じ読みの名詞(ラクダ)で文が終わるより 楽だ(定数コメント参照。3727)。
+                // 読み全体がその名詞だけ(らくだ)のときと、助詞の直後(あれはラクダ/これもラクダ)は名詞のまま
+                if nodes[idx].start > 0, naAdjectiveCopulaHomophoneNodeKeys.contains(nodes[idx].key),
+                    !(backPointer[idx] >= 0 && nodes[backPointer[idx]].isKanaIdentity
+                        && Self.multiClauseCaseParticleSurfacesID.contains(nodes[backPointer[idx]].surfaceID)) {
+                    eosCost += Self.multiClauseNaAdjectiveCopulaHomophoneNounPenalty
                 }
                 var total = best[idx] + eosCost
                 #if DEBUG

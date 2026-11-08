@@ -1326,6 +1326,15 @@ extension KanaKanjiConverter {
     static let multiClauseRenyouFocusParticles: [String] = ["さえ", "すら", "こそ"]
     static let multiClauseRenyouFocusBeforeSuruBonus = 3500
     static let multiClauseRenyouFocusWithoutSuruPenalty = 4000
+    // 形容動詞+だ と同じ読みの名詞(らくだ: ラクダ/駱駝/かな らくだ と 楽+だ)を、終助詞の前と文末で下げる(3727、ユーザ報告)。
+    // らくだよね が ラクダよね(26 差)、らくだね/すごくらくだよ が かな らくだ、じゅうぶんらくだ が 十分ラクダ だった。
+    // 名詞の後ろにも付く助詞(から/や/だけ/の/に)は対象外(ラクダから降りる/ラクダや馬/ラクダに乗る)。
+    // 1500 では らくだけど(ラクダ+けど と 楽+だ+けど が 116 差)に届かなかった
+    static let multiClauseNaAdjectiveCopulaHomophoneNounPenalty = 2000
+    static let multiClauseNaAdjectiveCopulaHomophoneFollowers: Set<String> = [
+        "よ", "ね", "よね", "よな", "な", "わ", "なあ", "ねえ", "よー", "ねー", "なー", "わー", "よお", "わあ", "よねー", "よねえ",
+        "けど", "けどー", "し", "ぞ", "ぜ"
+    ]
     static func isSuruFormKanaSurface(_ surface: String, reading: String) -> Bool {
         surface == reading && (reading.hasPrefix("す") || reading.hasPrefix("し"))
     }
