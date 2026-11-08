@@ -1160,6 +1160,10 @@ extension KanaKanjiConverter {
     // 読み末尾 さ のときの形容動詞語幹ノードへのボーナス。語幹 unigram 差(680)+
     // される分割由来 bigram(検挙→さ532)を、さクランプ(400)込みで確実に跨ぐ値。
     static let multiClauseNaAdjectiveSaStemBonus = 1200
+    // 疑問の連体詞 どの の直後の名詞を補う(3720、ユーザ報告: どのろご が 度のロゴ だけ)。LM は どの→名詞 の観測が少なく、
+    // 度+の+名詞 の の→名詞 に負けた(どのロゴ 180 差、本 1131、地図 1142、ぶどう 883。ほかに 度の店)。
+    // 度の強い/度の過ぎた は後ろが形容詞・動詞なので対象外
+    static let multiClauseDonoNounBonus = 1500
     // カ変「来る」の活用形(読み→漢字表層)。活用供給順で一段動詞の後に沈むため連文節に
     // 明示供給する。北/着た 等の同音とは競合し LM が文脈で選ぶ(単独 きた→北 は不変)。
     // 単文節の kuruInflectionForms(きてしまいました→来てしまいました 等の複合尾を含む)から
@@ -2117,6 +2121,7 @@ extension KanaKanjiConverter {
         "買おう\tね": 2000,
         // あまりおさないなあ が あまり幼いなあ(あまり→幼い が 733 安い。あまり は打ち消しと結ぶ。ユーザ指定 3649)
         "あまり\t押さない": 1500,
+        // (どの+名詞 は組でなく一般の規則 multiClauseDonoNounBonus で支える。3720)
         // かた の seed を 型/形/方 の順にしたら そのかたに が その形に になった。指示の連体詞+方(人)を支える(3654)
         "その\t方": 1500, "あの\t方": 1500, "どの\t方": 1500,
         // てまだな が て+まだ+な(11985)で 手間+だ+な(13952)に勝っていた(ユーザ指定 3654)
@@ -4294,6 +4299,7 @@ extension KanaKanjiConverter {
         static let BOS = MultiClauseSymbols.id(multiClauseBOSMarker)
         static let EOS = MultiClauseSymbols.id(multiClauseEOSMarker)
         static let ある = MultiClauseSymbols.id("ある")
+        static let どの = MultiClauseSymbols.id("どの")
         static let いう = MultiClauseSymbols.id("いう")
         static let いち = MultiClauseSymbols.id("いち")
         static let き = MultiClauseSymbols.id("き")
