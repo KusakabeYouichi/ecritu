@@ -3800,6 +3800,11 @@ extension KanaKanjiConverter {
     static let multiClauseHouGaDesuPenalty = 2000
     // 数以外+杯(ばい/ぱい)の減点(3695)
     static let multiClauseRendakuHaiAfterNonNumeralPenalty = 3000
+    // 連濁した読みでだけ立つ語(表記 → 連濁の読み)。前が文頭か かな(助詞等)のときは複合語の後ろ側でないので減点する。
+    // 喧嘩(げんか)は 夫婦喧嘩/親子喧嘩 の連濁で、単独では けんか。当月のげんかを が 当月の喧嘩を だった(喧嘩@げんか 5737 <
+    // 原価 7401。ユーザ指摘 3736)。夫婦+喧嘩 のように漢字の語の後ろは減点しない(辞書に 1 語で無い複合が崩れるので抑制はしない)
+    static let multiClauseRendakuOnlyReadingsBySurface: [String: String] = ["喧嘩": "げんか"]
+    static let multiClauseRendakuOnlyAfterNonNounPenalty = 3000
     // の+かどこか の減点(3760)。上+の と 上野 の差 870 を越える幅
     static let multiClauseKadokokaAfterNoPenalty = 3000
     // だろう/でしょう の途中で漢字・カタカナの語へ区切る減点(3710)。いるだろうし で 居る+だ+労使 が 居る+だろう+し に 1707 差、

@@ -4358,6 +4358,11 @@ extension KanaKanjiConverter {
                 prevIsBOS || !(prev.last.map { $0.isNumber || "一二三四五六七八九十百千何数".contains($0) } ?? false) {
                 penalty += Self.multiClauseRendakuHaiAfterNonNumeralPenalty
             }
+            // 連濁した読みでだけ立つ語(喧嘩=げんか)は、前が文頭か かな のときは減点(定数コメント参照。3736)
+            if !isKanaIdentity, prevIsBOS || prevIsKanaIdentity,
+                Self.multiClauseRendakuOnlyReadingsBySurface[surface] == reading {
+                penalty += Self.multiClauseRendakuOnlyAfterNonNounPenalty
+            }
             // だろう/でしょう を途中で漢字・カタカナの語へ区切らない(だ+労使/だろ+牛/でしょ+宇)。いるだろうし が 居るだ労使 だった
             // (ユーザ報告 3710)。かなのまま続く形(読んだ+ろう の口語)は対象外。ID の比較で絞ってから読みを見る
             if !isKanaIdentity, prevIsKanaIdentity, prevID == SID.だ || prevID == SID.だろ || prevID == SID.でしょ,
