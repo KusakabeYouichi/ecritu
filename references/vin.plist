@@ -4380,12 +4380,15 @@
 	<dict><key>phrase</key><string>A.P.Nr.</string><key>shortcut</key><string>あーぺーぬまー</string></dict>
 
 	<!-- ■ ワイン用ぶどう品種名 / セパージュ -->
+	<dict><key>phrase</key><string>Servadou</string><key>shortcut</key><string>せるゔぁどぅ</string></dict>
 	<dict><key>phrase</key><string>セルヴァドゥ</string><key>shortcut</key><string>せるゔぁどぅ</string></dict>	<!-- セルヴァどぅ だった(learningBOX 検査 3662) -->
+	<dict><key>phrase</key><string>Grüner</string><key>shortcut</key><string>ぐりゅーなー</string></dict>
 	<dict><key>phrase</key><string>グリューナー</string><key>shortcut</key><string>ぐりゅーなー</string></dict>	<!-- グリューナー・ヴェルトリーナーの略(いずれもグリューナー が いずれモグリューなー だった。learningBOX 検査 3658) -->
 	<dict><key>phrase</key><string>アンダナ</string><key>shortcut</key><string>あんだな</string></dict>
 	<dict><key>phrase</key><string>オセアニカ</string><key>shortcut</key><string>おせあにか</string></dict>
 	<dict><key>phrase</key><string>カラマン</string><key>shortcut</key><string>からまん</string></dict>
 	<dict><key>phrase</key><string>バッフス</string><key>shortcut</key><string>ばっふす</string></dict>
+	<dict><key>phrase</key><string>PIWI</string><key>shortcut</key><string>ぴーゔぃ</string></dict>
 	<dict><key>phrase</key><string>ピーヴィ</string><key>shortcut</key><string>ぴーゔぃ</string></dict>	<!-- ピーヴィ(PIWI): 耐病性品種(Pilzwiderstandsfähige Rebsorten)の総称 -->
 	<dict><key>phrase</key><string>フランクシャ</string><key>shortcut</key><string>ふらんくしゃ</string></dict>
 	<dict><key>phrase</key><string>プリミティーヴォ</string><key>shortcut</key><string>ぷりみてぃーゔぉ</string></dict>
@@ -4847,24 +4850,31 @@
 	<dict><key>phrase</key><string>アイレン</string><key>shortcut</key><string>あいれん</string></dict>
 	<dict><key>phrase</key><string>アギオルギティコ</string><key>shortcut</key><string>あぎおるぎてぃこ</string></dict>
 	<dict><key>phrase</key><string>アジア系種</string><key>shortcut</key><string>あじあけいしゅ</string></dict>
+	<dict><key>phrase</key><string>Ata Rangi clone</string><key>shortcut</key><string>あたらんぎくろーん</string></dict>
 	<dict><key>phrase</key><string>アタランギ・クローン</string><key>shortcut</key><string>あたらんぎくろーん</string></dict>
 	<dict><key>phrase</key><string>アムレンシス種</string><key>shortcut</key><string>あむれんしすしゅ</string></dict>
 	<dict><key>phrase</key><string>アリアニコ</string><key>shortcut</key><string>ありあにこ</string></dict>
+	<dict><key>phrase</key><string>Alicante Bouschet</string><key>shortcut</key><string>ありかんとぶすけ</string></dict>
 	<dict><key>phrase</key><string>アリカント・ブスケ</string><key>shortcut</key><string>ありかんとぶすけ</string></dict>
+	<dict><key>phrase</key><string>Alicante Bouschet</string><key>shortcut</key><string>ありかんとぶーしぇ</string></dict>
 	<dict><key>phrase</key><string>アリカント・ブーシェ</string><key>shortcut</key><string>ありかんとぶーしぇ</string></dict>
 	<dict><key>phrase</key><string>アリゴテ</string><key>shortcut</key><string>ありごて</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>アリント</string><key>shortcut</key><string>ありんと</string></dict>
 	<dict><key>phrase</key><string>アルバリーニョ</string><key>shortcut</key><string>あるばりーにょ</string></dict>
+	<dict><key>phrase</key><string>Albarola</string><key>shortcut</key><string>あるばろーら</string></dict>
 	<dict><key>phrase</key><string>アルバローラ</string><key>shortcut</key><string>あるばろーら</string></dict>
 	<dict><key>phrase</key><string>アルヴァリーニョ</string><key>shortcut</key><string>あるゔぁりーにょ</string></dict>
 	<dict><key>phrase</key><string>アロマティック品種</string><key>shortcut</key><string>あろまてぃっくひんしゅ</string></dict>
 	<dict><key>phrase</key><string>イタリア・スペイン系品種</string><key>shortcut</key><string>いたりあすぺいんけいひんしゅ</string></dict>
 	<dict><key>phrase</key><string>イタリア系</string><key>shortcut</key><string>いたりあけい</string></dict>
+	<dict><key>phrase</key><string>Incrocio Manzoni 6.0.13</string><key>shortcut</key><string>いんくろーちょまんつぉーに</string></dict>
 	<dict><key>phrase</key><string>インクローチョ・マンツォーニ 6.0.13</string><key>shortcut</key><string>いんくろーちょまんつぉーに</string></dict>
 	<dict><key>phrase</key><string>オンダラビ・ベルツァ</string><key>shortcut</key><string>おんだらびべるつぁ</string></dict>
 	<dict><key>phrase</key><string>オーセロワ</string><key>shortcut</key><string>おーせろわ</string></dict>
 	<dict><key>phrase</key><string>カステラォン</string><key>shortcut</key><string>かすてらぉん</string></dict>
+	<dict><key>phrase</key><string>Carricante</string><key>shortcut</key><string>かっりかんて</string></dict>
 	<dict><key>phrase</key><string>カッリカンテ</string><key>shortcut</key><string>かっりかんて</string></dict>
+	<dict><key>phrase</key><string>Canaiolo</string><key>shortcut</key><string>かないおーろ</string></dict>
 	<dict><key>phrase</key><string>カナイオーロ</string><key>shortcut</key><string>かないおーろ</string></dict>
 	<dict><key>phrase</key><string>カビ菌耐性品種</string><key>shortcut</key><string>かびきんたいせいひんしゅ</string></dict>
 	<dict><key>phrase</key><string>カベルネ・ソーヴィニヨン</string><key>shortcut</key><string>かべるねそーゔぃによん</string></dict>
@@ -4882,14 +4892,17 @@
 	<dict><key>phrase</key><string>クシノマヴロ</string><key>shortcut</key><string>くしのまゔろ</string></dict>
 	<dict><key>phrase</key><string>クリオジャ・グランデ</string><key>shortcut</key><string>くりおじゃぐらんで</string></dict>
 	<dict><key>phrase</key><string>クリオジャ・チカ</string><key>shortcut</key><string>くりおじゃちか</string></dict>
+	<dict><key>phrase</key><string>Criolla Chica</string><key>shortcut</key><string>くりおーじゃちか</string></dict>
 	<dict><key>phrase</key><string>クリオージャ・チカ</string><key>shortcut</key><string>くりおーじゃちか</string></dict>
 	<dict><key>phrase</key><string>クレレット</string><key>shortcut</key><string>くれれっと</string></dict>
 	<dict><key>phrase</key><string>クロアティーナ</string><key>shortcut</key><string>くろあてぃーな</string></dict>
+	<dict><key>phrase</key><string>Grüner Veltliner</string><key>shortcut</key><string>ぐりゅーなーゔぇるとりーなー</string></dict>
 	<dict><key>phrase</key><string>グリューナー・ヴェルトリーナー</string><key>shortcut</key><string>ぐりゅーなーゔぇるとりーなー</string></dict>
 	<dict><key>phrase</key><string>グリ系</string><key>shortcut</key><string>ぐりけい</string></dict>
 	<dict><key>phrase</key><string>グルナッシュ</string><key>shortcut</key><string>ぐるなっしゅ</string></dict>
 	<dict><key>phrase</key><string>グレーコ</string><key>shortcut</key><string>ぐれーこ</string></dict>
 	<dict><key>phrase</key><string>グレーラ</string><key>shortcut</key><string>ぐれーら</string></dict>
+	<dict><key>phrase</key><string>Grolleau Gris</string><key>shortcut</key><string>ぐろろーぐり</string></dict>
 	<dict><key>phrase</key><string>グロロー・グリ</string><key>shortcut</key><string>ぐろろーぐり</string></dict>
 	<dict><key>phrase</key><string>ケルナー</string><key>shortcut</key><string>けるなー</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ゲヴュルツトラミネール</string><key>shortcut</key><string>げゔゅるつとらみねーる</string></dict>
@@ -4899,8 +4912,10 @@
 	<dict><key>phrase</key><string>コンコード</string><key>shortcut</key><string>こんこーど</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>コーカサス品種</string><key>shortcut</key><string>こーかさすひんしゅ</string></dict>
 	<dict><key>phrase</key><string>ゴデーリョ</string><key>shortcut</key><string>ごでーりょ</string></dict>
+	<dict><key>phrase</key><string>Golden Queen</string><key>shortcut</key><string>ごーるでんくいーん</string></dict>
 	<dict><key>phrase</key><string>ゴールデン・クイーン</string><key>shortcut</key><string>ごーるでんくいーん</string></dict>
 	<dict><key>phrase</key><string>サペラヴィ</string><key>shortcut</key><string>さぺらゔぃ</string></dict>
+	<dict><key>phrase</key><string>Saperavi Khashmi</string><key>shortcut</key><string>さぺらゔぃはしみ</string></dict>
 	<dict><key>phrase</key><string>サペラヴィ・ハシミ</string><key>shortcut</key><string>さぺらゔぃはしみ</string></dict>
 	<dict><key>phrase</key><string>サンジョヴェーゼ</string><key>shortcut</key><string>さんじょゔぇーぜ</string></dict>
 	<dict><key>phrase</key><string>サンソー</string><key>shortcut</key><string>さんそー</string></dict>
@@ -4915,18 +4930,21 @@
 	<dict><key>phrase</key><string>シュペートロート</string><key>shortcut</key><string>しゅぺーとろーと</string></dict>
 	<dict><key>phrase</key><string>シラー</string><key>shortcut</key><string>しらー</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>シラーズ</string><key>shortcut</key><string>しらーず</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>Shiroka Melnishka Loza</string><key>shortcut</key><string>しろかめるにしゅかろざ</string></dict>
 	<dict><key>phrase</key><string>シロカ・メルニシュカ・ロザ</string><key>shortcut</key><string>しろかめるにしゅかろざ</string></dict>
 	<dict><key>phrase</key><string>シヴィ・ピノ</string><key>shortcut</key><string>しゔぃぴの</string></dict>
 	<dict><key>phrase</key><string>スティーン</string><key>shortcut</key><string>すてぃーん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>セイヴァル・ブラン</string><key>shortcut</key><string>せいゔぁるぶらん</string></dict>
 	<dict><key>phrase</key><string>セパージュ</string><key>shortcut</key><string>せぱーじゅ</string></dict>
 	<dict><key>phrase</key><string>セレサ</string><key>shortcut</key><string>せれさ</string></dict>
+	<dict><key>phrase</key><string>Sauvignac</string><key>shortcut</key><string>そーゔぃにゃっく</string></dict>
 	<dict><key>phrase</key><string>ソーヴィニャック</string><key>shortcut</key><string>そーゔぃにゃっく</string></dict>
 	<dict><key>phrase</key><string>ソーヴィニヨン・ブラン</string><key>shortcut</key><string>そーゔぃによんぶらん</string></dict>
 	<dict><key>phrase</key><string>タイ</string><key>shortcut</key><string>たい</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>タナ</string><key>shortcut</key><string>たな</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ダオン</string><key>shortcut</key><string>だおん</string></dict>
 	<dict><key>phrase</key><string>ダヴィディ</string><key>shortcut</key><string>だゔぃでぃ</string></dict>
+	<dict><key>phrase</key><string>Cesanese</string><key>shortcut</key><string>ちぇざねーぜ</string></dict>
 	<dict><key>phrase</key><string>チェザネーゼ</string><key>shortcut</key><string>ちぇざねーぜ</string></dict>
 	<dict><key>phrase</key><string>ツァメトフカ</string><key>shortcut</key><string>つぁめとふか</string></dict>
 	<dict><key>phrase</key><string>ツィアファンドラー</string><key>shortcut</key><string>つぃあふぁんどらー</string></dict>
@@ -4935,17 +4953,21 @@
 	<dict><key>phrase</key><string>テラン</string><key>shortcut</key><string>てらん</string></dict>
 	<dict><key>phrase</key><string>テランテス</string><key>shortcut</key><string>てらんてす</string></dict>
 	<dict><key>phrase</key><string>ディミャット</string><key>shortcut</key><string>でぃみゃっと</string></dict>
+	<dict><key>phrase</key><string>Debina</string><key>shortcut</key><string>でびな</string></dict>
 	<dict><key>phrase</key><string>デビナ</string><key>shortcut</key><string>でびな</string></dict>
 	<dict><key>phrase</key><string>デラウェア</string><key>shortcut</key><string>でらうぇあ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>Touriga Nacional</string><key>shortcut</key><string>とぅりがなしおなる</string></dict>
 	<dict><key>phrase</key><string>トゥリガ・ナシオナル</string><key>shortcut</key><string>とぅりがなしおなる</string></dict>
 	<dict><key>phrase</key><string>トウリガ・ナショナル</string><key>shortcut</key><string>とうりがなしょなる</string></dict>
 	<dict><key>phrase</key><string>トカイ・フリウラーノ</string><key>shortcut</key><string>とかいふりうらーの</string></dict>
 	<dict><key>phrase</key><string>トリビドラグ</string><key>shortcut</key><string>とりびどらぐ</string></dict>
 	<dict><key>phrase</key><string>トレッビアーノ</string><key>shortcut</key><string>とれっびあーの</string></dict>
+	<dict><key>phrase</key><string>Trebbiano Abruzzese</string><key>shortcut</key><string>とれっびあーのあぶるっつぇーぜ</string></dict>
 	<dict><key>phrase</key><string>トレッビアーノ・アブルッツェーゼ</string><key>shortcut</key><string>とれっびあーのあぶるっつぇーぜ</string></dict>
 	<dict><key>phrase</key><string>トレッビアーノ・トスカーノ</string><key>shortcut</key><string>とれっびあーのとすかーの</string></dict>
 	<dict><key>phrase</key><string>トロリンガー</string><key>shortcut</key><string>とろりんがー</string></dict>
 	<dict><key>phrase</key><string>トロンテス</string><key>shortcut</key><string>とろんてす</string></dict>
+	<dict><key>phrase</key><string>Torrontés Riojano</string><key>shortcut</key><string>とろんてすりおはーの</string></dict>
 	<dict><key>phrase</key><string>トロンテス・リオハーノ</string><key>shortcut</key><string>とろんてすりおはーの</string></dict>
 	<dict><key>phrase</key><string>ドルチェット</string><key>shortcut</key><string>どるちぇっと</string></dict>
 	<dict><key>phrase</key><string>ドルンフェルダー</string><key>shortcut</key><string>どるんふぇるだー</string></dict>
@@ -4953,14 +4975,18 @@
 	<dict><key>phrase</key><string>ナバーラ在来品種</string><key>shortcut</key><string>なばーらざいらいひんしゅ</string></dict>
 	<dict><key>phrase</key><string>ネグレット</string><key>shortcut</key><string>ねぐれっと</string></dict>
 	<dict><key>phrase</key><string>ネッビオーロ</string><key>shortcut</key><string>ねっびおーろ</string></dict>
+	<dict><key>phrase</key><string>Nerello Cappuccio</string><key>shortcut</key><string>ねれっろかっぷっちょ</string></dict>
 	<dict><key>phrase</key><string>ネレッロ・カップッチョ</string><key>shortcut</key><string>ねれっろかっぷっちょ</string></dict>
 	<dict><key>phrase</key><string>ネレッロ・マスカレーゼ</string><key>shortcut</key><string>ねれっろますかれーぜ</string></dict>
+	<dict><key>phrase</key><string>Nero d'Avola</string><key>shortcut</key><string>ねろだゔぉら</string></dict>
 	<dict><key>phrase</key><string>ネロ・ダヴォラ</string><key>shortcut</key><string>ねろだゔぉら</string></dict>
 	<dict><key>phrase</key><string>ネーロ・ダヴォラ</string><key>shortcut</key><string>ねーろだゔぉら</string></dict>
+	<dict><key>phrase</key><string>Nero di Troia</string><key>shortcut</key><string>ねーろでぃとろいあ</string></dict>
 	<dict><key>phrase</key><string>ネーロ・ディ・トロイア</string><key>shortcut</key><string>ねーろでぃとろいあ</string></dict>
 	<dict><key>phrase</key><string>ハイブリッド品種</string><key>shortcut</key><string>はいぶりっどひんしゅ</string></dict>
 	<dict><key>phrase</key><string>ハイブリッド種</string><key>shortcut</key><string>はいぶりっどしゅ</string></dict>
 	<dict><key>phrase</key><string>ハイブリッド系</string><key>shortcut</key><string>はいぶりっどけい</string></dict>
+	<dict><key>phrase</key><string>Busby clone</string><key>shortcut</key><string>ばずびーくろーん</string></dict>
 	<dict><key>phrase</key><string>バズビー・クローン</string><key>shortcut</key><string>ばずびーくろーん</string></dict>
 	<dict><key>phrase</key><string>バビッチ</string><key>shortcut</key><string>ばびっち</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>バベアスカ・ネアグラ</string><key>shortcut</key><string>ばべあすかねあぐら</string></dict>
@@ -4969,17 +4995,22 @@
 	<dict><key>phrase</key><string>パロミノ</string><key>shortcut</key><string>ぱろみの</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ビウラ</string><key>shortcut</key><string>びうら</string></dict>
 	<dict><key>phrase</key><string>ピニョレット</string><key>shortcut</key><string>ぴにょれっと</string></dict>
+	<dict><key>phrase</key><string>Pinot</string><key>shortcut</key><string>ぴの</string></dict>
 	<dict><key>phrase</key><string>ピノ</string><key>shortcut</key><string>ぴの</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ピノタージュ</string><key>shortcut</key><string>ぴのたーじゅ</string></dict>
 	<dict><key>phrase</key><string>ピノ・グリ</string><key>shortcut</key><string>ぴのぐり</string></dict>
+	<dict><key>phrase</key><string>Pinot Grigio</string><key>shortcut</key><string>ぴのぐりーじょ</string></dict>
 	<dict><key>phrase</key><string>ピノ・グリージョ</string><key>shortcut</key><string>ぴのぐりーじょ</string></dict>
 	<dict><key>phrase</key><string>ピノ・シヴィ</string><key>shortcut</key><string>ぴのしゔぃ</string></dict>
+	<dict><key>phrase</key><string>Pinot Črni</string><key>shortcut</key><string>ぴのつるに</string></dict>
 	<dict><key>phrase</key><string>ピノ・ツルニ</string><key>shortcut</key><string>ぴのつるに</string></dict>
 	<dict><key>phrase</key><string>ピノ・ネーロ</string><key>shortcut</key><string>ぴのねーろ</string></dict>
 	<dict><key>phrase</key><string>ピノ・ノワール</string><key>shortcut</key><string>ぴののわーる</string></dict>
 	<dict><key>phrase</key><string>ピノ・ブラン</string><key>shortcut</key><string>ぴのぶらん</string></dict>
 	<dict><key>phrase</key><string>ピノ・ムニエ</string><key>shortcut</key><string>ぴのむにえ</string></dict>
+	<dict><key>phrase</key><string>Pineau d'Aunis</string><key>shortcut</key><string>ぴのーどーに</string></dict>
 	<dict><key>phrase</key><string>ピノー・ドーニ</string><key>shortcut</key><string>ぴのーどーに</string></dict>
+	<dict><key>phrase</key><string>Pink Chardonnay</string><key>shortcut</key><string>ぴんくしゃるどね</string></dict>
 	<dict><key>phrase</key><string>ピンク・シャルドネ</string><key>shortcut</key><string>ぴんくしゃるどね</string></dict>
 	<dict><key>phrase</key><string>ピンク系品種</string><key>shortcut</key><string>ぴんくけいひんしゅ</string></dict>
 	<dict><key>phrase</key><string>フィアーノ</string><key>shortcut</key><string>ふぃあーの</string></dict>
@@ -4990,8 +5021,10 @@
 	<dict><key>phrase</key><string>フェール・セルヴァドゥ</string><key>shortcut</key><string>ふぇーるせるゔぁどぅ</string></dict>
 	<dict><key>phrase</key><string>フランコヴカ</string><key>shortcut</key><string>ふらんこゔか</string></dict>
 	<dict><key>phrase</key><string>フリウラーノ</string><key>shortcut</key><string>ふりうらーの</string></dict>
+	<dict><key>phrase</key><string>Früher Malingre</string><key>shortcut</key><string>ふりゅーあーまりんぐれ</string></dict>
 	<dict><key>phrase</key><string>フリューアー・マリングレ</string><key>shortcut</key><string>ふりゅーあーまりんぐれ</string></dict>
 	<dict><key>phrase</key><string>ブドウ科</string><key>shortcut</key><string>ぶどうか</string></dict>
+	<dict><key>phrase</key><string>Blauer Burgunder</string><key>shortcut</key><string>ぶらうあーぶるぐんだー</string></dict>
 	<dict><key>phrase</key><string>ブラウアー・ブルグンダー</string><key>shortcut</key><string>ぶらうあーぶるぐんだー</string></dict>
 	<dict><key>phrase</key><string>ブラウアー・ヴィルトバッハー</string><key>shortcut</key><string>ぶらうあーゔぃるとばっはー</string></dict>
 	<dict><key>phrase</key><string>ブラウフレンキッシュ</string><key>shortcut</key><string>ぶらうふれんきっしゅ</string></dict>
@@ -5001,8 +5034,11 @@
 	<dict><key>phrase</key><string>プラヴァッツ・マリ</string><key>shortcut</key><string>ぷらゔぁっつまり</string></dict>
 	<dict><key>phrase</key><string>プルニョーロ・ジェンティーレ</string><key>shortcut</key><string>ぷるにょーろじぇんてぃーれ</string></dict>
 	<dict><key>phrase</key><string>ヘルフェンシュタイナー</string><key>shortcut</key><string>へるふぇんしゅたいなー</string></dict>
+	<dict><key>phrase</key><string>Bailey</string><key>shortcut</key><string>べいりー</string></dict>
 	<dict><key>phrase</key><string>ベイリー</string><key>shortcut</key><string>べいりー</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>Bailey Alicante A</string><key>shortcut</key><string>べいりーありかんとえい</string></dict>
 	<dict><key>phrase</key><string>ベイリー・アリカントA</string><key>shortcut</key><string>べいりーありかんとえい</string></dict>
+	<dict><key>phrase</key><string>Berlandieri</string><key>shortcut</key><string>べるらんでぃえり</string></dict>
 	<dict><key>phrase</key><string>ベルランディエリ</string><key>shortcut</key><string>べるらんでぃえり</string></dict>
 	<dict><key>phrase</key><string>ペドロ・ヒメネス</string><key>shortcut</key><string>ぺどろひめねす</string></dict>
 	<dict><key>phrase</key><string>ボスコ</string><key>shortcut</key><string>ぼすこ</string></dict>
@@ -5011,33 +5047,45 @@
 	<dict><key>phrase</key><string>ボルドー系</string><key>shortcut</key><string>ぼるどーけい</string></dict>
 	<dict><key>phrase</key><string>ボルドー系品種</string><key>shortcut</key><string>ぼるどーけいひんしゅ</string></dict>
 	<dict><key>phrase</key><string>ボンビーノ・ネーロ</string><key>shortcut</key><string>ぼんびーのねーろ</string></dict>
+	<dict><key>phrase</key><string>Pommard clone</string><key>shortcut</key><string>ぽまーるくろーん</string></dict>
 	<dict><key>phrase</key><string>ポマール・クローン</string><key>shortcut</key><string>ぽまーるくろーん</string></dict>
 	<dict><key>phrase</key><string>ポルトギザッツ</string><key>shortcut</key><string>ぽるとぎざっつ</string></dict>
 	<dict><key>phrase</key><string>マカベオ</string><key>shortcut</key><string>まかべお</string></dict>
 	<dict><key>phrase</key><string>マスカット</string><key>shortcut</key><string>ますかっと</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>Muscat of Alexandria</string><key>shortcut</key><string>ますかっとおぶあれきさんどりあ</string></dict>
 	<dict><key>phrase</key><string>マスカット・オブ・アレキサンドリア</string><key>shortcut</key><string>ますかっとおぶあれきさんどりあ</string></dict>
 	<dict><key>phrase</key><string>マスカット・オブ・ケファロニア</string><key>shortcut</key><string>ますかっとおぶけふぁろにあ</string></dict>
+	<dict><key>phrase</key><string>Muscat of Limnos</string><key>shortcut</key><string>ますかっとおぶりむのす</string></dict>
 	<dict><key>phrase</key><string>マスカット・オブ・リムノス</string><key>shortcut</key><string>ますかっとおぶりむのす</string></dict>
+	<dict><key>phrase</key><string>Muscat Hamburg</string><key>shortcut</key><string>ますかっとはんぶるぐ</string></dict>
 	<dict><key>phrase</key><string>マスカット・ハンブルグ</string><key>shortcut</key><string>ますかっとはんぶるぐ</string></dict>
 	<dict><key>phrase</key><string>マスカット・ベイリーA</string><key>shortcut</key><string>ますかっとべいりーえい</string></dict>
 	<dict><key>phrase</key><string>マスカット種</string><key>shortcut</key><string>ますかっとしゅ</string></dict>
+	<dict><key>phrase</key><string>Mataro</string><key>shortcut</key><string>またろ</string></dict>
 	<dict><key>phrase</key><string>マタロ</string><key>shortcut</key><string>またろ</string></dict>
+	<dict><key>phrase</key><string>Madeleine Royale</string><key>shortcut</key><string>まどれーぬろいやる</string></dict>
 	<dict><key>phrase</key><string>マドレーヌ・ロイヤル</string><key>shortcut</key><string>まどれーぬろいやる</string></dict>
 	<dict><key>phrase</key><string>マルサンヌ</string><key>shortcut</key><string>まるさんぬ</string></dict>
 	<dict><key>phrase</key><string>マルベック</string><key>shortcut</key><string>まるべっく</string></dict>
+	<dict><key>phrase</key><string>Malvasia del Chianti</string><key>shortcut</key><string>まるゔぁじあでるきあんてぃ</string></dict>
 	<dict><key>phrase</key><string>マルヴァジア・デル・キアンティ</string><key>shortcut</key><string>まるゔぁじあでるきあんてぃ</string></dict>
+	<dict><key>phrase</key><string>Malvasia Bianca</string><key>shortcut</key><string>まるゔぁじあびあんか</string></dict>
 	<dict><key>phrase</key><string>マルヴァジア・ビアンカ</string><key>shortcut</key><string>まるゔぁじあびあんか</string></dict>
 	<dict><key>phrase</key><string>マルヴァジア・フィナ</string><key>shortcut</key><string>まるゔぁじあふぃな</string></dict>
 	<dict><key>phrase</key><string>マルヴォワジー</string><key>shortcut</key><string>まるゔぉわじー</string></dict>
 	<dict><key>phrase</key><string>マヴルッド</string><key>shortcut</key><string>まゔるっど</string></dict>
+	<dict><key>phrase</key><string>Mavroudi</string><key>shortcut</key><string>まゔるでぃ</string></dict>
 	<dict><key>phrase</key><string>マヴルディ</string><key>shortcut</key><string>まゔるでぃ</string></dict>
 	<dict><key>phrase</key><string>マヴロダフネ</string><key>shortcut</key><string>まゔろだふね</string></dict>
+	<dict><key>phrase</key><string>Mavrodaphne of Cephalonia</string><key>shortcut</key><string>まゔろだふねおぶけふぁろにあ</string></dict>
 	<dict><key>phrase</key><string>マヴロダフネ・オブ・ケファロニア</string><key>shortcut</key><string>まゔろだふねおぶけふぁろにあ</string></dict>
 	<dict><key>phrase</key><string>ミッション</string><key>shortcut</key><string>みっしょん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ミュスカ</string><key>shortcut</key><string>みゅすか</string></dict>
 	<dict><key>phrase</key><string>ミュスカデル</string><key>shortcut</key><string>みゅすかでる</string></dict>
+	<dict><key>phrase</key><string>Muscat à Petits Grains</string><key>shortcut</key><string>みゅすかあぷてぃぐらん</string></dict>
 	<dict><key>phrase</key><string>ミュスカ・ア・プティ・グラン</string><key>shortcut</key><string>みゅすかあぷてぃぐらん</string></dict>
 	<dict><key>phrase</key><string>ミュラー・トゥルガウ</string><key>shortcut</key><string>みゅらーとぅるがう</string></dict>
+	<dict><key>phrase</key><string>Millennium</string><key>shortcut</key><string>みるれんにゅーむ</string></dict>
 	<dict><key>phrase</key><string>ミルレンニューム</string><key>shortcut</key><string>みるれんにゅーむ</string></dict>
 	<dict><key>phrase</key><string>ムロン・ダルボワ</string><key>shortcut</key><string>むろんだるぼわ</string></dict>
 	<dict><key>phrase</key><string>ムロン・ド・ブルゴーニュ</string><key>shortcut</key><string>むろんどぶるごーにゅ</string></dict>
@@ -5045,39 +5093,53 @@
 	<dict><key>phrase</key><string>メイン品種</string><key>shortcut</key><string>めいんひんしゅ</string></dict>
 	<dict><key>phrase</key><string>メルニック</string><key>shortcut</key><string>めるにっく</string></dict>
 	<dict><key>phrase</key><string>メルロ</string><key>shortcut</key><string>めるろ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>Merlot</string><key>shortcut</key><string>めるろー</string></dict>
 	<dict><key>phrase</key><string>メルロー</string><key>shortcut</key><string>めるろー</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>モスカテル</string><key>shortcut</key><string>もすかてる</string></dict>
+	<dict><key>phrase</key><string>Moscatel de Alejandría</string><key>shortcut</key><string>もすかてるであれはんどりあ</string></dict>
 	<dict><key>phrase</key><string>モスカテル・デ・アレハンドリア</string><key>shortcut</key><string>もすかてるであれはんどりあ</string></dict>
+	<dict><key>phrase</key><string>Moscato Giallo</string><key>shortcut</key><string>もすかーとじゃっろ</string></dict>
 	<dict><key>phrase</key><string>モスカート・ジャッロ</string><key>shortcut</key><string>もすかーとじゃっろ</string></dict>
 	<dict><key>phrase</key><string>モスカート・ビアンコ</string><key>shortcut</key><string>もすかーとびあんこ</string></dict>
+	<dict><key>phrase</key><string>Moschofilero</string><key>shortcut</key><string>もすほふぃれろ</string></dict>
 	<dict><key>phrase</key><string>モスホフィレロ</string><key>shortcut</key><string>もすほふぃれろ</string></dict>
 	<dict><key>phrase</key><string>モドラ・フランキニャ</string><key>shortcut</key><string>もどらふらんきにゃ</string></dict>
 	<dict><key>phrase</key><string>モナストレル</string><key>shortcut</key><string>もなすとれる</string></dict>
 	<dict><key>phrase</key><string>モレッリーノ</string><key>shortcut</key><string>もれっりーの</string></dict>
+	<dict><key>phrase</key><string>Mondeuse</string><key>shortcut</key><string>もんどぅーず</string></dict>
 	<dict><key>phrase</key><string>モンドゥーズ</string><key>shortcut</key><string>もんどぅーず</string></dict>
 	<dict><key>phrase</key><string>ヤマブドウ</string><key>shortcut</key><string>やまぶどう</string></dict>
+	<dict><key>phrase</key><string>Yama Sauvignon</string><key>shortcut</key><string>やまそーびにおん</string></dict>
 	<dict><key>phrase</key><string>ヤマ・ソービニオン</string><key>shortcut</key><string>やまそーびにおん</string></dict>
+	<dict><key>phrase</key><string>labrusca</string><key>shortcut</key><string>らぶるすか</string></dict>
 	<dict><key>phrase</key><string>ラブルスカ</string><key>shortcut</key><string>らぶるすか</string></dict>
 	<dict><key>phrase</key><string>ララ・ネアグラ</string><key>shortcut</key><string>ららねあぐら</string></dict>
 	<dict><key>phrase</key><string>ランブルスコ・ディ・ソルバーラ</string><key>shortcut</key><string>らんぶるすこでぃそるばーら</string></dict>
 	<dict><key>phrase</key><string>リスタン・プリエト</string><key>shortcut</key><string>りすたんぷりえと</string></dict>
+	<dict><key>phrase</key><string>riparia</string><key>shortcut</key><string>りぱりあ</string></dict>
 	<dict><key>phrase</key><string>リパリア</string><key>shortcut</key><string>りぱりあ</string></dict>
 	<dict><key>phrase</key><string>リボッラ・ジャッラ</string><key>shortcut</key><string>りぼっらじゃっら</string></dict>
 	<dict><key>phrase</key><string>リャティコ</string><key>shortcut</key><string>りゃてぃこ</string></dict>
+	<dict><key>phrase</key><string>Liliorila</string><key>shortcut</key><string>りりおりら</string></dict>
 	<dict><key>phrase</key><string>リリオリラ</string><key>shortcut</key><string>りりおりら</string></dict>
 	<dict><key>phrase</key><string>リースリング</string><key>shortcut</key><string>りーすりんぐ</string></dict>
 	<dict><key>phrase</key><string>リースリング・イタリコ</string><key>shortcut</key><string>りーすりんぐいたりこ</string></dict>
 	<dict><key>phrase</key><string>リースリング・リオン</string><key>shortcut</key><string>りーすりんぐりおん</string></dict>
 	<dict><key>phrase</key><string>ルカツィテリ</string><key>shortcut</key><string>るかつぃてり</string></dict>
 	<dict><key>phrase</key><string>ルケ</string><key>shortcut</key><string>るけ</string></dict>
+	<dict><key>phrase</key><string>rupestris</string><key>shortcut</key><string>るぺすとりす</string></dict>
 	<dict><key>phrase</key><string>ルペストリス</string><key>shortcut</key><string>るぺすとりす</string></dict>
 	<dict><key>phrase</key><string>ルーサンヌ</string><key>shortcut</key><string>るーさんぬ</string></dict>
 	<dict><key>phrase</key><string>レゲント</string><key>shortcut</key><string>れげんと</string></dict>
+	<dict><key>phrase</key><string>Red Millennium</string><key>shortcut</key><string>れっどみるれんにゅーむ</string></dict>
 	<dict><key>phrase</key><string>レッド・ミルレンニューム</string><key>shortcut</key><string>れっどみるれんにゅーむ</string></dict>
 	<dict><key>phrase</key><string>レフォシュク</string><key>shortcut</key><string>れふぉしゅく</string></dict>
 	<dict><key>phrase</key><string>ロウレイロ</string><key>shortcut</key><string>ろうれいろ</string></dict>
+	<dict><key>phrase</key><string>Rossese</string><key>shortcut</key><string>ろっせーぜ</string></dict>
 	<dict><key>phrase</key><string>ロッセーゼ</string><key>shortcut</key><string>ろっせーぜ</string></dict>
+	<dict><key>phrase</key><string>Robola</string><key>shortcut</key><string>ろぼら</string></dict>
 	<dict><key>phrase</key><string>ロボラ</string><key>shortcut</key><string>ろぼら</string></dict>
+	<dict><key>phrase</key><string>Roter Veltliner</string><key>shortcut</key><string>ろーたーゔぇるとりーなー</string></dict>
 	<dict><key>phrase</key><string>ローター・ヴェルトリーナー</string><key>shortcut</key><string>ろーたーゔぇるとりーなー</string></dict>
 	<dict><key>phrase</key><string>ロートギプフラー</string><key>shortcut</key><string>ろーとぎぷふらー</string></dict>
 	<dict><key>phrase</key><string>ヴィティス・コワニティ</string><key>shortcut</key><string>ゔぃてぃすこわにてぃ</string></dict>
@@ -5090,11 +5152,13 @@
 	<dict><key>phrase</key><string>ヴィティス・ヴィニフェラ</string><key>shortcut</key><string>ゔぃてぃすゔぃにふぇら</string></dict>
 	<dict><key>phrase</key><string>ヴィティス・ヴィニフェラ種</string><key>shortcut</key><string>ゔぃてぃすゔぃにふぇらしゅ</string></dict>
 	<dict><key>phrase</key><string>ヴィティス・ヴィニフェラ系</string><key>shortcut</key><string>ゔぃてぃすゔぃにふぇらけい</string></dict>
+	<dict><key>phrase</key><string>vinifera</string><key>shortcut</key><string>ゔぃにふぇら</string></dict>
 	<dict><key>phrase</key><string>ヴィニフェラ</string><key>shortcut</key><string>ゔぃにふぇら</string></dict>
 	<dict><key>phrase</key><string>ヴィニフェラ種</string><key>shortcut</key><string>ゔぃにふぇらしゅ</string></dict>
 	<dict><key>phrase</key><string>ヴィニフェラ系</string><key>shortcut</key><string>ゔぃにふぇらけい</string></dict>
 	<dict><key>phrase</key><string>ヴェルディッキオ</string><key>shortcut</key><string>ゔぇるでぃっきお</string></dict>
 	<dict><key>phrase</key><string>ヴェルメンティーノ</string><key>shortcut</key><string>ゔぇるめんてぃーの</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>Wädenswil clone</string><key>shortcut</key><string>ゔぇーでんすゔぃるくろーん</string></dict>
 	<dict><key>phrase</key><string>ヴェーデンスヴィル・クローン</string><key>shortcut</key><string>ゔぇーでんすゔぃるくろーん</string></dict>
 	<dict><key>phrase</key><string>ヴォルティス</string><key>shortcut</key><string>ゔぉるてぃす</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>主要栽培品種</string><key>shortcut</key><string>しゅようさいばいひんしゅ</string></dict>
@@ -5158,6 +5222,7 @@
 	<dict><key>phrase</key><string>黒品種</string><key>shortcut</key><string>くろひんしゅ</string></dict>
 	<dict><key>phrase</key><string>ブラウアー・ツヴァイゲルト</string><key>shortcut</key><string>ぶらうあーつゔぁいげると</string></dict>
 	<dict><key>phrase</key><string>Malvoisie de Corse</string><key>shortcut</key><string>まるゔぉわじーどこるす</string></dict>
+	<dict><key>phrase</key><string>L'Acadie</string><key>shortcut</key><string>らかでぃー</string></dict>
 	<dict><key>phrase</key><string>ラカディー</string><key>shortcut</key><string>らかでぃー</string></dict>
 	<dict><key>phrase</key><string>Cartoixa</string><key>shortcut</key><string>かるといしゃ</string></dict>
 	<dict><key>phrase</key><string>スペイン系品種</string><key>shortcut</key><string>すぺいんけいひんしゅ</string></dict>
@@ -5168,16 +5233,20 @@
 	<dict><key>phrase</key><string>Red Millennium</string><key>shortcut</key><string>れっどみれにあむ</string></dict>
 	<dict><key>phrase</key><string>Shokoshi</string><key>shortcut</key><string>しょうこうし</string></dict>
 	<dict><key>phrase</key><string>Bonarda</string><key>shortcut</key><string>ぼなるだ</string></dict>
+	<dict><key>phrase</key><string>Aidani</string><key>shortcut</key><string>あいだに</string></dict>
 	<dict><key>phrase</key><string>アイダニ</string><key>shortcut</key><string>あいだに</string></dict>
 	<dict><key>phrase</key><string>アシルティコ</string><key>shortcut</key><string>あしるてぃこ</string></dict>
+	<dict><key>phrase</key><string>Aramon</string><key>shortcut</key><string>あらもん</string></dict>
 	<dict><key>phrase</key><string>アラモン</string><key>shortcut</key><string>あらもん</string></dict>
 	<dict><key>phrase</key><string>アリナルノア</string><key>shortcut</key><string>ありなるのあ</string></dict>
 	<dict><key>phrase</key><string>アルテス</string><key>shortcut</key><string>あるてす</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>アルネイス</string><key>shortcut</key><string>あるねいす</string></dict>
 	<dict><key>phrase</key><string>アルバンヌ</string><key>shortcut</key><string>あるばんぬ</string></dict>
 	<dict><key>phrase</key><string>アルバーナ</string><key>shortcut</key><string>あるばーな</string></dict>
+	<dict><key>phrase</key><string>Arnsburger</string><key>shortcut</key><string>あるんすぶるがー</string></dict>
 	<dict><key>phrase</key><string>アルンスブルガー</string><key>shortcut</key><string>あるんすぶるがー</string></dict>
 	<dict><key>phrase</key><string>エルバマット</string><key>shortcut</key><string>えるばまっと</string></dict>
+	<dict><key>phrase</key><string>Erbaluce</string><key>shortcut</key><string>えるばるーちぇ</string></dict>
 	<dict><key>phrase</key><string>エルバルーチェ</string><key>shortcut</key><string>えるばるーちぇ</string></dict>
 	<dict><key>phrase</key><string>エンクルザード</string><key>shortcut</key><string>えんくるざーど</string></dict>
 	<dict><key>phrase</key><string>オルメアスコ</string><key>shortcut</key><string>おるめあすこ</string></dict>
@@ -5188,6 +5257,7 @@
 	<dict><key>phrase</key><string>キャンベル・アーリー</string><key>shortcut</key><string>きゃんべるあーりー</string></dict>
 	<dict><key>phrase</key><string>グラウブルグンダー</string><key>shortcut</key><string>ぐらうぶるぐんだー</string></dict>
 	<dict><key>phrase</key><string>グラシェヴィナ</string><key>shortcut</key><string>ぐらしぇゔぃな</string></dict>
+	<dict><key>phrase</key><string>Grüner Veltliner</string><key>shortcut</key><string>ぐりゅなーゔぇるとりーなー</string></dict>
 	<dict><key>phrase</key><string>グリュナーヴェルトリーナー</string><key>shortcut</key><string>ぐりゅなーゔぇるとりーなー</string></dict>
 	<dict><key>phrase</key><string>グレカニコ</string><key>shortcut</key><string>ぐれかにこ</string></dict>
 	<dict><key>phrase</key><string>グレケット</string><key>shortcut</key><string>ぐれけっと</string></dict>
@@ -5196,13 +5266,16 @@
 	<dict><key>phrase</key><string>グロ・プラン</string><key>shortcut</key><string>ぐろぷらん</string></dict>
 	<dict><key>phrase</key><string>コルテーゼ</string><key>shortcut</key><string>こるてーぜ</string></dict>
 	<dict><key>phrase</key><string>コロンバール</string><key>shortcut</key><string>ころんばーる</string></dict>
+	<dict><key>phrase</key><string>Goldriesling</string><key>shortcut</key><string>ごるとりーすりんぐ</string></dict>
 	<dict><key>phrase</key><string>ゴルトリースリング</string><key>shortcut</key><string>ごるとりーすりんぐ</string></dict>
 	<dict><key>phrase</key><string>サグランティーノ</string><key>shortcut</key><string>さぐらんてぃーの</string></dict>
+	<dict><key>phrase</key><string>Sangiovese</string><key>shortcut</key><string>さんじょべーぜ</string></dict>
 	<dict><key>phrase</key><string>サンジョベーゼ</string><key>shortcut</key><string>さんじょべーぜ</string></dict>
 	<dict><key>phrase</key><string>サヴァニャン</string><key>shortcut</key><string>さゔぁにゃん</string></dict>
 	<dict><key>phrase</key><string>シュペートブルグンダー</string><key>shortcut</key><string>しゅぺーとぶるぐんだー</string></dict>
 	<dict><key>phrase</key><string>シュヴァルツリースリング</string><key>shortcut</key><string>しゅゔぁるつりーすりんぐ</string></dict>
 	<dict><key>phrase</key><string>ショイレーベ</string><key>shortcut</key><string>しょいれーべ</string></dict>
+	<dict><key>phrase</key><string>Sylvaner</string><key>shortcut</key><string>しるゔぁねーる</string></dict>
 	<dict><key>phrase</key><string>シルヴァネール</string><key>shortcut</key><string>しるゔぁねーる</string></dict>
 	<dict><key>phrase</key><string>シルヴァーナー</string><key>shortcut</key><string>しるゔぁーなー</string></dict>
 	<dict><key>phrase</key><string>ジャケール</string><key>shortcut</key><string>じゃけーる</string></dict>
@@ -5211,24 +5284,31 @@
 	<dict><key>phrase</key><string>ジルヴァーナー</string><key>shortcut</key><string>じるゔぁーなー</string></dict>
 	<dict><key>phrase</key><string>ジンファンデル</string><key>shortcut</key><string>じんふぁんでる</string></dict>
 	<dict><key>phrase</key><string>スパンナ</string><key>shortcut</key><string>すぱんな</string></dict>
+	<dict><key>phrase</key><string>Seyval</string><key>shortcut</key><string>せいゔぁる</string></dict>
 	<dict><key>phrase</key><string>セイヴァル</string><key>shortcut</key><string>せいゔぁる</string></dict>
 	<dict><key>phrase</key><string>セイヴァルブラン</string><key>shortcut</key><string>せいゔぁるぶらん</string></dict>
 	<dict><key>phrase</key><string>セミヨン</string><key>shortcut</key><string>せみよん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>セミヨン単一</string><key>shortcut</key><string>せみよんたんいつ</string></dict>
 	<dict><key>phrase</key><string>セルシアル</string><key>shortcut</key><string>せるしある</string></dict>
 	<dict><key>phrase</key><string>ソーヴィニヨン</string><key>shortcut</key><string>そーゔぃによん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>Sauvignon Gris</string><key>shortcut</key><string>そーゔぃによんぐり</string></dict>
 	<dict><key>phrase</key><string>ソーヴィニヨン・グリ</string><key>shortcut</key><string>そーゔぃによんぐり</string></dict>
 	<dict><key>phrase</key><string>ティンティリア</string><key>shortcut</key><string>てぃんてぃりあ</string></dict>
 	<dict><key>phrase</key><string>テロルデゴ</string><key>shortcut</key><string>てろるでご</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>テンプラニーリョ</string><key>shortcut</key><string>てんぷらにーりょ</string></dict>
 	<dict><key>phrase</key><string>トゥルソー</string><key>shortcut</key><string>とぅるそー</string></dict>
 	<dict><key>phrase</key><string>トレパット</string><key>shortcut</key><string>とれぱっと</string></dict>
+	<dict><key>phrase</key><string>Douce Noire</string><key>shortcut</key><string>どぅーすのわーる</string></dict>
 	<dict><key>phrase</key><string>ドゥース・ノワール</string><key>shortcut</key><string>どぅーすのわーる</string></dict>
+	<dict><key>phrase</key><string>Donauriesling</string><key>shortcut</key><string>どなうりーすりんぐ</string></dict>
 	<dict><key>phrase</key><string>ドナウリースリング</string><key>shortcut</key><string>どなうりーすりんぐ</string></dict>
+	<dict><key>phrase</key><string>Donauveltliner</string><key>shortcut</key><string>どなうゔぇるとりーなー</string></dict>
 	<dict><key>phrase</key><string>ドナウヴェルトリーナー</string><key>shortcut</key><string>どなうゔぇるとりーなー</string></dict>
 	<dict><key>phrase</key><string>ニエルッチョ</string><key>shortcut</key><string>にえるっちょ</string></dict>
+	<dict><key>phrase</key><string>Negroamaro</string><key>shortcut</key><string>ねぐろあまーろ</string></dict>
 	<dict><key>phrase</key><string>ネグロアマーロ</string><key>shortcut</key><string>ねぐろあまーろ</string></dict>
 	<dict><key>phrase</key><string>ネグロ・アマーロ</string><key>shortcut</key><string>ねぐろあまーろ</string></dict>
+	<dict><key>phrase</key><string>Negoska</string><key>shortcut</key><string>ねごすか</string></dict>
 	<dict><key>phrase</key><string>ネゴスカ</string><key>shortcut</key><string>ねごすか</string></dict>
 	<dict><key>phrase</key><string>ノジオーラ</string><key>shortcut</key><string>のじおーら</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ハンター・セミヨン</string><key>shortcut</key><string>はんたーせみよん</string></dict>
@@ -5236,24 +5316,32 @@
 	<dict><key>phrase</key><string>バガ</string><key>shortcut</key><string>ばが</string></dict>
 	<dict><key>phrase</key><string>パッセリーナ</string><key>shortcut</key><string>ぱっせりーな</string></dict>
 	<dict><key>phrase</key><string>パミッド</string><key>shortcut</key><string>ぱみっど</string></dict>
+	<dict><key>phrase</key><string>Pardina</string><key>shortcut</key><string>ぱるでぃーな</string></dict>
 	<dict><key>phrase</key><string>パルディーナ</string><key>shortcut</key><string>ぱるでぃーな</string></dict>
 	<dict><key>phrase</key><string>バッカス</string><key>shortcut</key><string>ばっかす</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>Folle Blanche</string><key>shortcut</key><string>ふぉーるぶらんしゅ</string></dict>
 	<dict><key>phrase</key><string>フォール・ブランシュ</string><key>shortcut</key><string>ふぉーるぶらんしゅ</string></dict>
 	<dict><key>phrase</key><string>フラッパート</string><key>shortcut</key><string>ふらっぱーと</string></dict>
 	<dict><key>phrase</key><string>フロマントー</string><key>shortcut</key><string>ふろまんとー</string></dict>
 	<dict><key>phrase</key><string>ブラウブルグンダー</string><key>shortcut</key><string>ぶらうぶるぐんだー</string></dict>
 	<dict><key>phrase</key><string>ブラック・クイーン</string><key>shortcut</key><string>ぶらっくくいーん</string></dict>
+	<dict><key>phrase</key><string>Blaufränkisch</string><key>shortcut</key><string>ぶらふれんきっしゅ</string></dict>
 	<dict><key>phrase</key><string>ブラフレンキッシュ</string><key>shortcut</key><string>ぶらふれんきっしゅ</string></dict>
+	<dict><key>phrase</key><string>Burgunder</string><key>shortcut</key><string>ぶるぐんだー</string></dict>
 	<dict><key>phrase</key><string>ブルグンダー</string><key>shortcut</key><string>ぶるぐんだー</string></dict>
 	<dict><key>phrase</key><string>ブルトン</string><key>shortcut</key><string>ぶるとん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>Bronner</string><key>shortcut</key><string>ぶろんなー</string></dict>
 	<dict><key>phrase</key><string>ブロンナー</string><key>shortcut</key><string>ぶろんなー</string></dict>
 	<dict><key>phrase</key><string>プティ・ルージュ</string><key>shortcut</key><string>ぷてぃるーじゅ</string></dict>
 	<dict><key>phrase</key><string>プティ・ヴェルド</string><key>shortcut</key><string>ぷてぃゔぇるど</string></dict>
 	<dict><key>phrase</key><string>プリエ・ブラン</string><key>shortcut</key><string>ぷりえぶらん</string></dict>
 	<dict><key>phrase</key><string>プールサール</string><key>shortcut</key><string>ぷーるさーる</string></dict>
+	<dict><key>phrase</key><string>Heroldrebe</string><key>shortcut</key><string>へろるどれーべ</string></dict>
 	<dict><key>phrase</key><string>ヘロルドレーベ</string><key>shortcut</key><string>へろるどれーべ</string></dict>
+	<dict><key>phrase</key><string>Pedro Ximénez</string><key>shortcut</key><string>べどろひめねす</string></dict>
 	<dict><key>phrase</key><string>ベドロヒメネス</string><key>shortcut</key><string>べどろひめねす</string></dict>
 	<dict><key>phrase</key><string>ベルデホ</string><key>shortcut</key><string>べるでほ</string></dict>
+	<dict><key>phrase</key><string>Portugieser</string><key>shortcut</key><string>ぽるとぎーざー</string></dict>
 	<dict><key>phrase</key><string>ポルトギーザー</string><key>shortcut</key><string>ぽるとぎーざー</string></dict>
 	<dict><key>phrase</key><string>マスエロ</string><key>shortcut</key><string>ますえろ</string></dict>
 	<dict><key>phrase</key><string>マルスラン</string><key>shortcut</key><string>まるすらん</string></dict>	<!-- Sudachiにもある -->
@@ -5261,7 +5349,9 @@
 	<dict><key>phrase</key><string>マルヴァジア</string><key>shortcut</key><string>まるゔぁじあ</string></dict>
 	<dict><key>phrase</key><string>マンサリーニャ</string><key>shortcut</key><string>まんさりーにゃ</string></dict>
 	<dict><key>phrase</key><string>マント・ネグロ</string><key>shortcut</key><string>まんとねぐろ</string></dict>
+	<dict><key>phrase</key><string>Mavro</string><key>shortcut</key><string>まゔろ</string></dict>
 	<dict><key>phrase</key><string>マヴロ</string><key>shortcut</key><string>まゔろ</string></dict>
+	<dict><key>phrase</key><string>Misket</string><key>shortcut</key><string>みすけっと</string></dict>
 	<dict><key>phrase</key><string>ミスケット</string><key>shortcut</key><string>みすけっと</string></dict>
 	<dict><key>phrase</key><string>ミュスカデ</string><key>shortcut</key><string>みゅすかで</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ムラサキマサリ</string><key>shortcut</key><string>むらさきまさり</string></dict>
@@ -5275,15 +5365,19 @@
 	<dict><key>phrase</key><string>ヴィダル・ブラン</string><key>shortcut</key><string>ゔぃだるぶらん</string></dict>
 	<dict><key>phrase</key><string>ヴェルシュリースリング</string><key>shortcut</key><string>ゔぇるしゅりーすりんぐ</string></dict>
 	<dict><key>phrase</key><string>ヴェルデア</string><key>shortcut</key><string>ゔぇるであ</string></dict>
+	<dict><key>phrase</key><string>Verdejo</string><key>shortcut</key><string>ゔぇるでほ</string></dict>
 	<dict><key>phrase</key><string>ヴェルデホ</string><key>shortcut</key><string>ゔぇるでほ</string></dict>
 	<dict><key>phrase</key><string>ヴェルデーリョ</string><key>shortcut</key><string>ゔぇるでーりょ</string></dict>
 	<dict><key>phrase</key><string>信濃リースリング</string><key>shortcut</key><string>しなのりーすりんぐ</string></dict>
 	<dict><key>phrase</key><string>小公子</string><key>shortcut</key><string>しょうこうし</string></dict>
 	<dict><key>phrase</key><string>ドール・ブランシュ</string><key>shortcut</key><string>どーるぶらんしゅ</string></dict>
+	<dict><key>phrase</key><string>Blanc de Morgex et de La Salle</string><key>shortcut</key><string>ぶらんどもるじぇえどらさる</string></dict>
 	<dict><key>phrase</key><string>ブラン・ド・モルジェ・エ・ド・ラ・サル</string><key>shortcut</key><string>ぶらんどもるじぇえどらさる</string></dict>
 	<dict><key>phrase</key><string>モーザック</string><key>shortcut</key><string>もーざっく</string></dict>
 	<dict><key>phrase</key><string>ユニ・ブラン</string><key>shortcut</key><string>ゆにぶらん</string></dict>
+	<dict><key>phrase</key><string>Listán</string><key>shortcut</key><string>りすたん</string></dict>
 	<dict><key>phrase</key><string>リスタン</string><key>shortcut</key><string>りすたん</string></dict>
+	<dict><key>phrase</key><string>Rivaner</string><key>shortcut</key><string>りゔぁねーる</string></dict>
 	<dict><key>phrase</key><string>リヴァネール</string><key>shortcut</key><string>りゔぁねーる</string></dict>
 	<dict><key>phrase</key><string>ルビー・カベルネ</string><key>shortcut</key><string>るびーかべるね</string></dict>
 	<dict><key>phrase</key><string>ルーセット</string><key>shortcut</key><string>るーせっと</string></dict>
@@ -5294,6 +5388,7 @@
 	<dict><key>phrase</key><string>クリオジャ</string><key>shortcut</key><string>くりおじゃ</string></dict>
 	<dict><key>phrase</key><string>Aletta</string><key>shortcut</key><string>あれった</string></dict>
 	<dict><key>phrase</key><string>La Francesa</string><key>shortcut</key><string>らふらんせさ</string></dict>
+	<dict><key>phrase</key><string>Castets</string><key>shortcut</key><string>かすて</string></dict>
 	<dict><key>phrase</key><string>カステ</string><key>shortcut</key><string>かすて</string></dict>
 
 	<!-- ■ ぶどう以外の果物 -->

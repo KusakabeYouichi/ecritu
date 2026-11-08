@@ -669,110 +669,19 @@
 	<dict><key>phrase</key><string>クロ・デ・ロジエール</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: くろでろじえーる -->
 
 	<!-- ■ ワイン用ぶどう品種名 / セパージュ -->
-	<dict><key>phrase</key><string>Aidani</string><key>shortcut</key><string>あいだに</string></dict>	<!-- アイダニ -->
-	<dict><key>phrase</key><string>Ata Rangi clone</string><key>shortcut</key><string>あたらんぎくろーん</string></dict>	<!-- アタランギ・クローン -->
-	<dict><key>phrase</key><string>Aramon</string><key>shortcut</key><string>あらもん</string></dict>	<!-- アラモン -->
-	<dict><key>phrase</key><string>Alicante Bouschet</string><key>shortcut</key><string>ありかんとぶすけ</string></dict>	<!-- アリカント・ブスケ -->
-	<dict><key>phrase</key><string>Alicante Bouschet</string><key>shortcut</key><string>ありかんとぶーしぇ</string></dict>	<!-- アリカント・ブーシェ -->
-	<dict><key>phrase</key><string>Albarola</string><key>shortcut</key><string>あるばろーら</string></dict>	<!-- アルバローラ -->
-	<dict><key>phrase</key><string>Arnsburger</string><key>shortcut</key><string>あるんすぶるがー</string></dict>	<!-- アルンスブルガー -->
 	<dict><key>phrase</key><string>アンダナ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: あんだな -->
-	<dict><key>phrase</key><string>Erbaluce</string><key>shortcut</key><string>えるばるーちぇ</string></dict>	<!-- エルバルーチェ -->
 	<dict><key>phrase</key><string>オセアニカ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: おせあにか -->
-	<dict><key>phrase</key><string>カステ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: かすて -->
-	<dict><key>phrase</key><string>Carricante</string><key>shortcut</key><string>かっりかんて</string></dict>	<!-- カッリカンテ -->
-	<dict><key>phrase</key><string>Canaiolo</string><key>shortcut</key><string>かないおーろ</string></dict>	<!-- カナイオーロ -->
-	<dict><key>phrase</key><string>Criolla Chica</string><key>shortcut</key><string>くりおーじゃちか</string></dict>	<!-- クリオージャ・チカ -->
-	<dict><key>phrase</key><string>Grüner Veltliner</string><key>shortcut</key><string>ぐりゅなーゔぇるとりーなー</string></dict>	<!-- グリュナーヴェルトリーナー -->
-	<dict><key>phrase</key><string>Grüner Veltliner</string><key>shortcut</key><string>ぐりゅーなーゔぇるとりーなー</string></dict>	<!-- グリューナー・ヴェルトリーナー -->
 	<dict><key>phrase</key><string>グロレアル</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: ぐろれある -->
-	<dict><key>phrase</key><string>Grolleau Gris</string><key>shortcut</key><string>ぐろろーぐり</string></dict>	<!-- グロロー・グリ -->
-	<dict><key>phrase</key><string>Goldriesling</string><key>shortcut</key><string>ごるとりーすりんぐ</string></dict>	<!-- ゴルトリースリング -->
-	<dict><key>phrase</key><string>Golden Queen</string><key>shortcut</key><string>ごーるでんくいーん</string></dict>	<!-- ゴールデン・クイーン -->
-	<dict><key>phrase</key><string>Saperavi Khashmi</string><key>shortcut</key><string>さぺらゔぃはしみ</string></dict>	<!-- サペラヴィ・ハシミ -->
-	<dict><key>phrase</key><string>Sangiovese</string><key>shortcut</key><string>さんじょべーぜ</string></dict>	<!-- サンジョベーゼ -->
 	<dict><key>phrase</key><string>シュクルレット</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: しゅくるれっと -->
-	<dict><key>phrase</key><string>Sylvaner</string><key>shortcut</key><string>しるゔぁねーる</string></dict>	<!-- シルヴァネール -->
-	<dict><key>phrase</key><string>Shiroka Melnishka Loza</string><key>shortcut</key><string>しろかめるにしゅかろざ</string></dict>	<!-- シロカ・メルニシュカ・ロザ -->
 	<dict><key>phrase</key><string>ジョイホワイト</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: じょいほわいと -->
-	<dict><key>phrase</key><string>Seyval</string><key>shortcut</key><string>せいゔぁる</string></dict>	<!-- セイヴァル -->
-	<dict><key>phrase</key><string>Sauvignac</string><key>shortcut</key><string>そーゔぃにゃっく</string></dict>	<!-- ソーヴィニャック -->
-	<dict><key>phrase</key><string>Sauvignon Gris</string><key>shortcut</key><string>そーゔぃによんぐり</string></dict>	<!-- ソーヴィニヨン・グリ -->
 	<dict><key>phrase</key><string>ダオン</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: だおん -->
 	<dict><key>phrase</key><string>ダヴィディ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: だゔぃでぃ -->
-	<dict><key>phrase</key><string>Cesanese</string><key>shortcut</key><string>ちぇざねーぜ</string></dict>	<!-- チェザネーゼ -->
-	<dict><key>phrase</key><string>Debina</string><key>shortcut</key><string>でびな</string></dict>	<!-- デビナ -->
-	<dict><key>phrase</key><string>Touriga Nacional</string><key>shortcut</key><string>とぅりがなしおなる</string></dict>	<!-- トゥリガ・ナシオナル -->
-	<dict><key>phrase</key><string>Trebbiano Abruzzese</string><key>shortcut</key><string>とれっびあーのあぶるっつぇーぜ</string></dict>	<!-- トレッビアーノ・アブルッツェーゼ -->
-	<dict><key>phrase</key><string>Torrontés Riojano</string><key>shortcut</key><string>とろんてすりおはーの</string></dict>	<!-- トロンテス・リオハーノ -->
-	<dict><key>phrase</key><string>Douce Noire</string><key>shortcut</key><string>どぅーすのわーる</string></dict>	<!-- ドゥース・ノワール -->
-	<dict><key>phrase</key><string>Donauriesling</string><key>shortcut</key><string>どなうりーすりんぐ</string></dict>	<!-- ドナウリースリング -->
-	<dict><key>phrase</key><string>Donauveltliner</string><key>shortcut</key><string>どなうゔぇるとりーなー</string></dict>	<!-- ドナウヴェルトリーナー -->
-	<dict><key>phrase</key><string>Negroamaro</string><key>shortcut</key><string>ねぐろあまーろ</string></dict>	<!-- ネグロアマーロ / ネグロ・アマーロ -->
-	<dict><key>phrase</key><string>Negoska</string><key>shortcut</key><string>ねごすか</string></dict>	<!-- ネゴスカ -->
-	<dict><key>phrase</key><string>Nerello Cappuccio</string><key>shortcut</key><string>ねれっろかっぷっちょ</string></dict>	<!-- ネレッロ・カップッチョ -->
-	<dict><key>phrase</key><string>Nero d'Avola</string><key>shortcut</key><string>ねろだゔぉら</string></dict>	<!-- ネロ・ダヴォラ -->
-	<dict><key>phrase</key><string>Nero di Troia</string><key>shortcut</key><string>ねーろでぃとろいあ</string></dict>	<!-- ネーロ・ディ・トロイア -->
-	<dict><key>phrase</key><string>Busby clone</string><key>shortcut</key><string>ばずびーくろーん</string></dict>	<!-- バズビー・クローン -->
-	<dict><key>phrase</key><string>Pardina</string><key>shortcut</key><string>ぱるでぃーな</string></dict>	<!-- パルディーナ -->
-	<dict><key>phrase</key><string>Pinot</string><key>shortcut</key><string>ぴの</string></dict>	<!-- ピノ -->
-	<dict><key>phrase</key><string>Pinot Grigio</string><key>shortcut</key><string>ぴのぐりーじょ</string></dict>	<!-- ピノ・グリージョ -->
-	<dict><key>phrase</key><string>Pinot Črni</string><key>shortcut</key><string>ぴのつるに</string></dict>	<!-- ピノ・ツルニ -->
-	<dict><key>phrase</key><string>Pineau d'Aunis</string><key>shortcut</key><string>ぴのーどーに</string></dict>	<!-- ピノー・ドーニ -->
-	<dict><key>phrase</key><string>Pink Chardonnay</string><key>shortcut</key><string>ぴんくしゃるどね</string></dict>	<!-- ピンク・シャルドネ -->
-	<dict><key>phrase</key><string>ピーヴィ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: ぴーゔぃ -->
-	<dict><key>phrase</key><string>Folle Blanche</string><key>shortcut</key><string>ふぉーるぶらんしゅ</string></dict>	<!-- フォール・ブランシュ -->
 	<dict><key>phrase</key><string>フランクシャ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: ふらんくしゃ -->
-	<dict><key>phrase</key><string>Früher Malingre</string><key>shortcut</key><string>ふりゅーあーまりんぐれ</string></dict>	<!-- フリューアー・マリングレ -->
-	<dict><key>phrase</key><string>Blauer Burgunder</string><key>shortcut</key><string>ぶらうあーぶるぐんだー</string></dict>	<!-- ブラウアー・ブルグンダー -->
-	<dict><key>phrase</key><string>Blaufränkisch</string><key>shortcut</key><string>ぶらふれんきっしゅ</string></dict>	<!-- ブラフレンキッシュ -->
-	<dict><key>phrase</key><string>Blanc de Morgex et de La Salle</string><key>shortcut</key><string>ぶらんどもるじぇえどらさる</string></dict>	<!-- ブラン・ド・モルジェ・エ・ド・ラ・サル -->
-	<dict><key>phrase</key><string>Burgunder</string><key>shortcut</key><string>ぶるぐんだー</string></dict>	<!-- ブルグンダー -->
-	<dict><key>phrase</key><string>Bronner</string><key>shortcut</key><string>ぶろんなー</string></dict>	<!-- ブロンナー -->
-	<dict><key>phrase</key><string>Heroldrebe</string><key>shortcut</key><string>へろるどれーべ</string></dict>	<!-- ヘロルドレーベ -->
-	<dict><key>phrase</key><string>Bailey</string><key>shortcut</key><string>べいりー</string></dict>	<!-- ベイリー -->
-	<dict><key>phrase</key><string>Pedro Ximénez</string><key>shortcut</key><string>べどろひめねす</string></dict>	<!-- ベドロヒメネス -->
-	<dict><key>phrase</key><string>Berlandieri</string><key>shortcut</key><string>べるらんでぃえり</string></dict>	<!-- ベルランディエリ -->
-	<dict><key>phrase</key><string>Pommard clone</string><key>shortcut</key><string>ぽまーるくろーん</string></dict>	<!-- ポマール・クローン -->
-	<dict><key>phrase</key><string>Portugieser</string><key>shortcut</key><string>ぽるとぎーざー</string></dict>	<!-- ポルトギーザー -->
-	<dict><key>phrase</key><string>Muscat</string><key>shortcut</key><string>ますかっと</string></dict>	<!-- マスカット -->
-	<dict><key>phrase</key><string>Muscat of Alexandria</string><key>shortcut</key><string>ますかっとおぶあれきさんどりあ</string></dict>	<!-- マスカット・オブ・アレキサンドリア -->
-	<dict><key>phrase</key><string>Muscat of Limnos</string><key>shortcut</key><string>ますかっとおぶりむのす</string></dict>	<!-- マスカット・オブ・リムノス -->
-	<dict><key>phrase</key><string>Muscat Hamburg</string><key>shortcut</key><string>ますかっとはんぶるぐ</string></dict>	<!-- マスカット・ハンブルグ -->
-	<dict><key>phrase</key><string>Mataro</string><key>shortcut</key><string>またろ</string></dict>	<!-- マタロ -->
-	<dict><key>phrase</key><string>Madeleine Royale</string><key>shortcut</key><string>まどれーぬろいやる</string></dict>	<!-- マドレーヌ・ロイヤル -->
 	<dict><key>phrase</key><string>マリレン</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: まりれん -->
-	<dict><key>phrase</key><string>Malvasia del Chianti</string><key>shortcut</key><string>まるゔぁじあでるきあんてぃ</string></dict>	<!-- マルヴァジア・デル・キアンティ -->
-	<dict><key>phrase</key><string>Malvasia Bianca</string><key>shortcut</key><string>まるゔぁじあびあんか</string></dict>	<!-- マルヴァジア・ビアンカ -->
 	<dict><key>phrase</key><string>マンサリーニャ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: まんさりーにゃ -->
-	<dict><key>phrase</key><string>Mavroudi</string><key>shortcut</key><string>まゔるでぃ</string></dict>	<!-- マヴルディ -->
-	<dict><key>phrase</key><string>Mavro</string><key>shortcut</key><string>まゔろ</string></dict>	<!-- マヴロ -->
-	<dict><key>phrase</key><string>Mavrodaphne of Kefalonia</string><key>shortcut</key><string>まゔろだふねおぶけふぁろにあ</string></dict>	<!-- マヴロダフネ・オブ・ケファロニア -->
-	<dict><key>phrase</key><string>Misket</string><key>shortcut</key><string>みすけっと</string></dict>	<!-- ミスケット -->
-	<dict><key>phrase</key><string>Muscat à Petits Grains</string><key>shortcut</key><string>みゅすかあぷてぃぐらん</string></dict>	<!-- ミュスカ・ア・プティ・グラン -->
-	<dict><key>phrase</key><string>ミルレンニューム</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: みるれんにゅーむ -->
 	<dict><key>phrase</key><string>ムラサキマサリ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: むらさきまさり -->
-	<dict><key>phrase</key><string>Merlot</string><key>shortcut</key><string>めるろー</string></dict>	<!-- メルロー -->
-	<dict><key>phrase</key><string>Moscatel de Alejandría</string><key>shortcut</key><string>もすかてるであれはんどりあ</string></dict>	<!-- モスカテル・デ・アレハンドリア -->
-	<dict><key>phrase</key><string>Moscato Giallo</string><key>shortcut</key><string>もすかーとじゃっろ</string></dict>	<!-- モスカート・ジャッロ -->
-	<dict><key>phrase</key><string>Moschofilero</string><key>shortcut</key><string>もすほふぃれろ</string></dict>	<!-- モスホフィレロ -->
-	<dict><key>phrase</key><string>Mondeuse</string><key>shortcut</key><string>もんどぅーず</string></dict>	<!-- モンドゥーズ -->
-	<dict><key>phrase</key><string>Yama Sauvignon</string><key>shortcut</key><string>やまそーびにおん</string></dict>	<!-- ヤマ・ソービニオン -->
 	<dict><key>phrase</key><string>ヤマブドウ</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: やまぶどう -->
-	<dict><key>phrase</key><string>ラカディー</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: らかでぃー -->
-	<dict><key>phrase</key><string>labrusca</string><key>shortcut</key><string>らぶるすか</string></dict>	<!-- ラブルスカ -->
-	<dict><key>phrase</key><string>Listán</string><key>shortcut</key><string>りすたん</string></dict>	<!-- リスタン -->
-	<dict><key>phrase</key><string>riparia</string><key>shortcut</key><string>りぱりあ</string></dict>	<!-- リパリア -->
-	<dict><key>phrase</key><string>Liliorila</string><key>shortcut</key><string>りりおりら</string></dict>	<!-- リリオリラ -->
-	<dict><key>phrase</key><string>Rivaner</string><key>shortcut</key><string>りゔぁねーる</string></dict>	<!-- リヴァネール -->
-	<dict><key>phrase</key><string>rupestris</string><key>shortcut</key><string>るぺすとりす</string></dict>	<!-- ルペストリス -->
-	<dict><key>phrase</key><string>レッド・ミルレンニューム</string><key>shortcut</key><string>★</string></dict>	<!-- よみ: れっどみるれんにゅーむ -->
-	<dict><key>phrase</key><string>Rossese</string><key>shortcut</key><string>ろっせーぜ</string></dict>	<!-- ロッセーゼ -->
-	<dict><key>phrase</key><string>Robola</string><key>shortcut</key><string>ろぼら</string></dict>	<!-- ロボラ -->
-	<dict><key>phrase</key><string>Roter Veltliner</string><key>shortcut</key><string>ろーたーゔぇるとりーなー</string></dict>	<!-- ローター・ヴェルトリーナー -->
-	<dict><key>phrase</key><string>vinifera</string><key>shortcut</key><string>ゔぃにふぇら</string></dict>	<!-- ヴィニフェラ -->
-	<dict><key>phrase</key><string>Verdejo</string><key>shortcut</key><string>ゔぇるでほ</string></dict>	<!-- ヴェルデホ -->
-	<dict><key>phrase</key><string>Wädenswil clone</string><key>shortcut</key><string>ゔぇーでんすゔぃるくろーん</string></dict>	<!-- ヴェーデンスヴィル・クローン -->
+	<dict><key>phrase</key><string>Muscat</string><key>shortcut</key><string>ますかっと</string></dict>	<!-- マスカット。vin へ移さない: ラテン文字が先頭になるので、果物の マスカット(シャインマスカット 等)を打っても Muscat が先に出る。Muscat=みゅすか は vin にある(3727) -->
 
 	<!-- ■ 人名、固有名 -->
 	<dict><key>phrase</key><string>Ausonius</string><key>shortcut</key><string>あうそにうす</string></dict>	<!-- アウソニウス -->
