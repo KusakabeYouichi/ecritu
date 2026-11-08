@@ -2665,13 +2665,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         func multiTop(_ reading: String) -> String? { converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).first }
         // 読み全体が補助語彙の一語なら連文節でも先頭(メルろー/夢のか/具リュなー… だった)
         // 3673 から メル+ろー の区切りが立たず、連文節は空(単文節の メルロー が出る)
-        XCTAssertTrue([nil, "メルロー"].contains(multiTop("めるろー")), "\(String(describing: multiTop("めるろー")))")
-        XCTAssertEqual(converter.candidates(for: "めるろー", limit: 5, systemCandidateMode: .surface).first, "メルロー")
+        // 3727 で Merlot(めるろー)を vin に足したので、ラテン文字が先頭・カタカナが 2 番め(ラテン先の方針 11-03)
+        XCTAssertTrue([nil, "Merlot"].contains(multiTop("めるろー")), "\(String(describing: multiTop("めるろー")))")
+        XCTAssertEqual(Array(converter.candidates(for: "めるろー", limit: 5, systemCandidateMode: .surface).prefix(2)), ["Merlot", "メルロー"])
         // 夢の香 の読みは ゆめのかおり(ユーザ修正 3677。ゆめのか はいちごの品種)
         XCTAssertEqual(multiTop("ゆめのかおり") ?? converter.candidates(for: "ゆめのかおり", limit: 3, systemCandidateMode: .surface).first, "夢の香")
         // 12 字を超える補助語彙も 1 語に立つようになった(3697)ので、読み全体が 1 語なら連文節は空で単文節の先頭が出る
-        XCTAssertEqual(multiTop("ぐりゅなーゔぇるとりーなー")
-            ?? converter.candidates(for: "ぐりゅなーゔぇるとりーなー", limit: 3, systemCandidateMode: .surface).first, "グリュナーヴェルトリーナー")
+        // 3727 で Grüner Veltliner(ぐりゅなーゔぇるとりーなー)を足したので、ラテン文字が先頭・カタカナが 2 番め
+        let gruner = converter.multiClauseCandidates(for: "ぐりゅなーゔぇるとりーなー", systemCandidateMode: .surface)
+        XCTAssertEqual(Array((gruner.isEmpty
+            ? converter.candidates(for: "ぐりゅなーゔぇるとりーなー", limit: 3, systemCandidateMode: .surface) : gruner).prefix(2)),
+            ["Grüner Veltliner", "グリュナーヴェルトリーナー"])
         let erzeuger = converter.multiClauseCandidates(for: "えあつぉいがーあぷふゅるんぐ", systemCandidateMode: .surface)
         XCTAssertEqual(Array((erzeuger.isEmpty
             ? converter.candidates(for: "えあつぉいがーあぷふゅるんぐ", limit: 3, systemCandidateMode: .surface) : erzeuger).prefix(2)),
