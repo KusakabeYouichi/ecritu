@@ -1679,6 +1679,19 @@ extension KanaKanjiConverter {
                             ? inflectionTopK * 2
                             : inflectionTopK * 2 + Self.multiClauseSeededInflectionExtraFetch
                     )
+                    // 形容詞+がる(寒がって/ありがたがって。許可リスト references/adjective_garu_allowlist.json の語)も
+                    // 1 ノードで供給する。単文節だけが作っていて、連文節では ありが+違って/サム+勝手 に割れていた
+                    // (3717、ユーザ報告)。許可リストの表記(ありがたい は かな)が正書なので先頭に置く(かな識別の供給条件)
+                    if Self.adjectiveGaruInflectionForms.contains(where: { segmentReading.hasSuffix($0.readingSuffix) }) {
+                        let garu = adjectiveGaruCandidates(
+                            for: segmentReading,
+                            ajoutVocabulary: manualAjoutVocabulary,
+                            initialAjoutVocabulary: initialAjoutVocabulary,
+                            systemCandidateMode: systemCandidateMode,
+                            limit: inflectionTopK
+                        )
+                        inflected = garu + inflected.filter { !garu.contains($0) }
+                    }
                     if let seedOrder {
                         let seedSet = Set(seedOrder)
                         let seeded = seedOrder.filter { inflected.contains($0) }
