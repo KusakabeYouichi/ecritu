@@ -1971,10 +1971,15 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             for candidate in single(reading) where !result.contains(candidate) { result.append(candidate) }
             return result
         }
-        // 危ない が先頭、かな が 2 番め(ユーザ指定)
+        // 危ない が先頭、かな が 2 番め(ユーザ指定)。終助詞の前(3732: 連文節で かな あぶない を 2500 下げる)と
+        // 活用形(3732: あぶなかった/あぶなく は seed。かな が活用と あぶ+なく の合成で二重に加算されていた)も同じ
         for (reading, expected) in [
             ("どんだけあぶないか", ["どんだけ危ないか", "どんだけあぶないか"]),
             ("あぶない", ["危ない", "あぶない"]), ("あぶないか", ["危ないか", "あぶないか"]),
+            ("あぶないよ", ["危ないよ", "あぶないよ"]), ("あぶないね", ["危ないね", "あぶないね"]),
+            ("あぶないわ", ["危ないわ", "あぶないわ"]), ("あぶないよね", ["危ないよね", "あぶないよね"]),
+            ("あぶなかった", ["危なかった", "あぶなかった"]), ("あぶなく", ["危なく", "あぶなく"]),
+            ("あぶなかったね", ["危なかったね", "あぶなかったね"]), ("あぶなくない", ["危なくない", "あぶなくない"]),
         ] {
             let list = shown(reading)
             XCTAssertEqual(Array(list.prefix(2)), expected, "\(reading) \(list.prefix(5))")
