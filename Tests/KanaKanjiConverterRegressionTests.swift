@@ -2115,6 +2115,30 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single("おくそく").first, "臆測", "\(single("おくそく").prefix(4))")
     }
 
+    // 3743(ユーザ指定): とぐ を目的語で書き分ける。米は 研ぐ が先頭・磨ぐ が次で、砥ぐ は刃物の字なので米では下げる。
+    // 刃物(包丁/ナイフ/鎌 等)は 砥ぐ を先頭に。連語表(references/colloc_sweep/manual.json)の 米+を+研ぐ/磨ぐ と 刃物+を+砥ぐ
+    func testRegressionToguByObject3743() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ reading: String) -> [String] { converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface) }
+        let rice = multi("こめをとぐ")
+        XCTAssertEqual(rice.first, "米を研ぐ", "\(rice.prefix(5))")
+        XCTAssertTrue(rice.prefix(3).contains("米を磨ぐ"), "\(rice.prefix(5))")
+        if let sharpen = rice.firstIndex(of: "米を砥ぐ") {
+            XCTAssertLessThan(rice.firstIndex(of: "米を磨ぐ") ?? Int.max, sharpen, "\(rice.prefix(5))")
+        }
+        XCTAssertEqual(multi("こめをといで").first, "米を研いで", "\(multi("こめをといで").prefix(4))")
+        for (reading, expected) in [
+            ("ほうちょうをとぐ", "包丁を砥ぐ"),
+            ("ほうちょうをといだ", "包丁を砥いだ"),
+            ("ないふをとぐ", "ナイフを砥ぐ"),
+            ("かまをとぐ", "鎌を砥ぐ"),
+        ] {
+            XCTAssertEqual(multi(reading).first, expected, "\(reading) \(multi(reading).prefix(4))")
+        }
+        XCTAssertEqual(Array(converter.candidates(for: "とぐ", limit: 10, systemCandidateMode: .surface).prefix(3)), ["研ぐ", "砥ぐ", "磨ぐ"])
+    }
+
     // 3743(ユーザ報告): さとうなんかつかうのかー の候補に 砂糖 が 1 つも無く、なんか の差し替え(佐藤南下/佐藤何課/佐藤軟化)が並んでいた。
     // 調味料+を+使う を連語表に足し、なんか/なんて を連語の橋渡しにした。名詞直後の なんか の加減点(2888)を変種の差分にも入れた。
     // さとう の単文節は 佐藤/砂糖/サトウ/左党 の順(ひらがなは末尾でよい)
