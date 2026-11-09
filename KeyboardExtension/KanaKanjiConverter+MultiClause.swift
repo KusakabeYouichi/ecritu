@@ -4430,6 +4430,10 @@ extension KanaKanjiConverter {
                     penalty += Self.multiClauseDemonstrativeMaPenalty
                 }
             }
+            // 二(ふた)の直後の助詞(定数コメント参照。3740)
+            if isKanaIdentity, prevID == SID.二, prevReading == "ふた", Self.multiClauseCollocationBridgeParticlesID.contains(surfaceID) {
+                penalty += Self.multiClauseFutaNumeralBeforeParticlePenalty
+            }
             // 意向形 しよう の直後の する の活用(定数コメント参照。3739)
             if isKanaIdentity, prevID == SID.にしよう || prevID == SID.しよう,
                 let first = reading.first, first == "し" || first == "さ" || first == "す" || first == "せ" {

@@ -3817,6 +3817,8 @@ extension KanaKanjiConverter {
         // アル(読み ある): でしょ は カタカナ語の直後に安く付く(アル→でしょ 1200)ので、動詞 ある+でしょ(4000)を 161 差で
         // 上回り あるでしょ が アルでしょ だった(ユーザ報告 3739)。アル・パチーノ 等の人名は 1 語で別に立つ
         "ある": ["アル": 1500],
+        // 二面(ふたも): ふたも が 二面 だった(ユーザ指定 3740: ふたも→蓋も→フタも→布田も→二も→二面)
+        "ふたも": ["二面": 3000],
         "ぱい": ["牌": 1500]
     ]
     // 稀な語幹の活用派生を同点の常用語より後ろへ(表層接頭 → 加算)。どうじように で 動じよう(動じる 7369)と
@@ -3924,6 +3926,9 @@ extension KanaKanjiConverter {
     // その間の各カウンティと、なぱでもそのまでも が その間でも だった(learningBOX 確認表 3697 の [直す])
     static let multiClauseDemonstrativeMaPenalty = 3000
     static let multiClauseDemonstrativeFollowingParticles: Set<String> = ["まで", "から", "より", "が", "を", "に", "で", "へ"]
+    // 二(ふた)の直後の助詞(二も/二の)の減点(3740、ユーザ指定: ふたも→蓋も→フタも→布田も→二も)。数の ふた は 二つ/二回り の
+    // ように後ろに語が付き、助詞は付かない。LM の 二(3941)は数の に の統計で、ふたも が 二も だった
+    static let multiClauseFutaNumeralBeforeParticlePenalty = 3000
     // 意向形 しよう(misc の curated かな にしよう を含む)の直後に する の活用(し/した/される/する)は続かない(3739、ユーザ判定:
     // 使用した は一般によく使う)。にしよう(curated の床 1500)+し+た が に+使用した より 1730 安く、食品にしようした/
     // 研究のためにしようしたい絵/チーズにしようされる菌 だった(learningBOX 確認表 3697 の [直す])
@@ -4396,6 +4401,8 @@ extension KanaKanjiConverter {
             for s in ["その", "この", "あの", "どの"] { add(s) }
             // 意向形 しよう の直後の する の活用の減点(3739)
             for s in ["しよう", "にしよう"] { add(s) }
+            // 二(ふた)+助詞 の減点(3740)
+            add("二")
             for s in KanaKanjiConverter.multiClauseSugiSuffixSurfaces.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseTeOruAuxiliaryReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseKanaPassiveHeadReadings.sorted() { add(s) }
@@ -4486,6 +4493,7 @@ extension KanaKanjiConverter {
         static let あの = MultiClauseSymbols.id("あの")
         static let しよう = MultiClauseSymbols.id("しよう")
         static let にしよう = MultiClauseSymbols.id("にしよう")
+        static let 二 = MultiClauseSymbols.id("二")
         static let なみ = MultiClauseSymbols.id("なみ")
         static let 並み = MultiClauseSymbols.id("並み")
         static let 並 = MultiClauseSymbols.id("並")
