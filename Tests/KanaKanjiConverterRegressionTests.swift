@@ -2115,6 +2115,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single("おくそく").first, "臆測", "\(single("おくそく").prefix(4))")
     }
 
+    // 3745(ユーザ指定): おかいどく を お買い得 先頭に(お解読/お買い得/おかいどく の順だった。お買い得 は語コスト 10853 で収穫の帯)
+    func testRegressionOkaidoku3745() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let single = converter.candidates(for: "おかいどく", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(2)), ["お買い得", "おかいどく"], "\(single.prefix(4))")
+        for (reading, expected) in [("おかいどくです", "お買い得です"), ("きょうはおかいどくだよ", "今日はお買い得だよ")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "\(reading) \(multi.prefix(4))")
+        }
+    }
+
     // 3745(ユーザ報告): しこんだから が 而今だから。compenser のミシュランの店名 而今 の読みを しこん と誤っていた(正しくは にこん。
     // ミシュランガイドの NARA NIKON)。奈良 而今 は ならにこん、而今 だけ(にこん)は ニコン の前に出るので入れない
     func testRegressionJikonReading3745() throws {
