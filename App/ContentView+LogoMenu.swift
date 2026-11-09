@@ -1449,11 +1449,30 @@ extension ContentView {
         let bandColor: Color = isHighlighted
             ? Color.accentColor
             : (entry.groupOrdinal % 2 == 1 ? Color.accentColor.opacity(0.08) : Color.clear)
+        // 初期設定から変わっている項目の印(設定の見出しの ● と同じ判定。番号と見出しの間。3739、ユーザ指定)
+        let isModified: Bool = {
+            guard let number = entry.number,
+                let keys = SettingsCardKeys.keysForModifiedMark(
+                    cardID: number,
+                    action: SettingsCardKeys.currentPostModifierEmptyTapAction
+                ) else {
+                return false
+            }
+            return ContentView.isModifiedFromBasePreset(keys: keys)
+        }()
         return HStack(spacing: 6) {
             if let number = entry.number {
                 Text(number)
                     .font(.system(size: layout.fontSize).monospacedDigit())
                     .frame(width: layout.fontSize * 2.6, alignment: .leading)
+                // 印の無い行も同じ幅を取り、見出しの頭をそろえる
+                Text("●")
+                    .font(.system(size: max(6, layout.fontSize - 5)))
+                    .foregroundStyle(isHighlighted ? Color.white : Color.accentColor.opacity(0.75))
+                    .opacity(isModified ? 1 : 0)
+                    .frame(width: layout.fontSize * 0.6)
+                    .accessibilityHidden(!isModified)
+                    .accessibilityLabel("初期設定から変更あり")
             }
             Text(entry.title)
                 .font(.system(size: layout.fontSize, weight: .medium))
