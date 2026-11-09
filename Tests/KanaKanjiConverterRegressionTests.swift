@@ -2127,6 +2127,15 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // 3745(ユーザ指定): いません の 今仙(地名・姓。辞書の見出しはこれだけ)を 3 番め以降に(今仙/いません/居ません の順だった)
+    func testRegressionImasen3745() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let imasen = converter.candidates(for: "いません", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(imasen.prefix(2)), ["いません", "居ません"], "\(imasen.prefix(4))")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "だれもいません", systemCandidateMode: .surface).first, "誰もいません")
+    }
+
     // 3745(ユーザ報告): しこんだから が 而今だから。compenser のミシュランの店名 而今 の読みを しこん と誤っていた(正しくは にこん。
     // ミシュランガイドの NARA NIKON)。奈良 而今 は ならにこん、而今 だけ(にこん)は ニコン の前に出るので入れない
     func testRegressionJikonReading3745() throws {
