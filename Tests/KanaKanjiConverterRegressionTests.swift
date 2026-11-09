@@ -1992,6 +1992,63 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(single("こく").contains("コク"))
     }
 
+    // learningBOX 確認表(3697)の 3 回めの回答の [直す] の vin の固有名(3738、ユーザ判定「文脈で上げて、直らなかった語は
+    // 全体で上げる。既存のテストが落ちる語は除く」): 問題文の型(正解は/北から/フランス語で/または/他に)と固有名の並び
+    // (GrecoやAglianico)の後ろの vin の語を上げ、残りは語ごとの値段の上限。普段の文(来たから/ワインは棚に/陣を張る)は保つ
+    func testRegressionLearningBoxAudit3738() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func single(_ reading: String) -> [String] { converter.candidates(for: reading, limit: 30, systemCandidateMode: .surface) }
+        func shown(_ reading: String) -> [String] {
+            let list = reading.count >= 4 ? converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface) : []
+            var result = list.isEmpty ? single(reading) : list
+            for candidate in single(reading) where !result.contains(candidate) { result.append(candidate) }
+            return result
+        }
+        for (reading, expected) in [
+            // 問題文の型
+            ("せいかいはばらかです", "正解はBarakaです"), ("せいかいはるえだです", "正解はRuedaです"),
+            ("ふらんすごでごぶれです", "フランス語でGobeletです"),
+            ("またはごぶれ", "またはGobelet"), ("しろぶどうはくれれっと", "白ぶどうはClairette"),
+            // 固有名の並び
+            ("ぐれーこやありあにこがある", "GrecoやAglianicoがある"), ("とろっけんとあしゅっとは", "TrockenとAsciuttoは"),
+            // vin の漢字の語(全麹)や個別の組(正解\tでんぷん)がある区間は型の加点を掛けない
+            ("せいかいはぜんこうじしこみです", "正解は全麹仕込みです"), ("せいかいはでんぷんです", "正解はでんぷんです"),
+            // 普段の文は保つ
+            ("きたからかえる", "来たから帰る"), ("せいかいはどれですか", "正解はどれですか"), ("わいんはたなにならべる", "ワインは棚に並べる"),
+            ("ほかにいく", "他に行く"), ("またはあした", "または明日"), ("じんをはる", "陣を張る"), ("だんがある", "段がある"),
+            ("たなにおく", "棚に置く"), ("まーじゃんのぱい", "麻雀の牌"),
+            ("ぱりとろんどんへいく", "パリとロンドンへ行く"), ("びーるやわいんをのむ", "ビールやワインを飲む"),
+        ] {
+            let list = shown(reading)
+            XCTAssertEqual(list.first, expected, "\(reading) \(list.prefix(5))")
+        }
+        // ラテン文字とカタカナの違いだけの行は 2 番めまで(答えがカタカナの行は ラテン文字が先・カタカナが 2 番め)。
+        // 語ごとの値段の上限(とパーク/とノート だった)もここ
+        for (reading, expected) in [
+            ("せいかいはくれれっとです", "正解はクレレットです"), ("せいかいはぼばるです", "正解はボバルです"),
+            ("きたからむるそー", "北からMeursault"), ("とのーとなります", "Tonneauとなります"),
+            ("とぱーくのきゅうしょうをえらんでください", "Topaqueの旧称を選んでください"),
+        ] {
+            let list = shown(reading)
+            XCTAssertTrue(list.prefix(2).contains(expected), "\(reading) \(list.prefix(5))")
+        }
+    }
+
+    // 3738(ユーザ報告): ひざいためるよ が 膝炒めるよ(ユーザ指定: 膝痛めるよ→膝傷めるよ→ひざ痛めるよ→ひざ傷めるよ の順)。
+    // 体の部位+(助詞なし・を)+痛める/傷める を連語表(manual.json)に。炒める は消さずに後ろへ
+    func testRegressionUserReports3738() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let hiza = converter.multiClauseCandidates(for: "ひざいためるよ", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(hiza.prefix(4)), ["膝痛めるよ", "膝傷めるよ", "ひざ痛めるよ", "ひざ傷めるよ"], "\(hiza.prefix(6))")
+        XCTAssertTrue(hiza.contains("膝炒めるよ"), "\(hiza.prefix(6))")
+        for (reading, expected) in [("こしをいためた", "腰を痛めた"), ("のどをいためる", "喉を痛める")] {
+            let list = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(list.first, expected, "\(reading) \(list.prefix(5))")
+        }
+    }
+
     // 3736(ユーザ報告): じをおおきくすれば が 時を大きくすれば、きのうときょうで が 機能と今日で、すみで の先頭が 澄み出、
     // とうげつのげんかを が 当月の喧嘩を(喧嘩 を げんか と読むのは連濁のときだけ。確認表の指摘)
     func testRegressionUserReports3736() throws {
