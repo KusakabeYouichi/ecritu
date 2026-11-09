@@ -6729,6 +6729,8 @@ extension KanaKanjiConverter {
         var variants: [(delta: Int, order: Int, position: Int, joined: String)] = []
         // 1 文節差し替えの記録(差し替え先の表層)。複数文節の組み合わせ変種(3567)の材料
         var positionalAlternatives: [String: (delta: Int, position: Int, surface: String)] = [:]
+        // 目的語で決まる動詞の表の 助詞なしの組に無い兄弟(膝+炒める)は、組み合わせ変種の後ろに回す(3738)
+        var adjacentCollocationRivalVariants: [(delta: Int, joined: String)] = []
         var variantOrder = 0
         for (pos, nodeIdx) in pathIndices.enumerated() {
             let chosen = nodes[nodeIdx]
@@ -7111,6 +7113,18 @@ extension KanaKanjiConverter {
                     Self.acrossParticleCollocationBonus(prevPrev: nodes[pathIndices[pos - 2]].surface, surface: alt.surface) != nil {
                     delta = min(delta, Self.multiClauseSeedOrderVariantStep)
                 }
+                // 目的語で決まる動詞の表の 助詞なしの組(膝+痛め 3000/傷め 2500)の兄弟は、加点の差だけ後ろに置く。表に無い兄弟
+                // (炒める/かな)は変種枠に入れず、組み合わせ変種(ひざ傷めるよ)の後ろに回す(3738、ユーザ指定:
+                // 膝痛めるよ→膝傷めるよ→ひざ痛めるよ→ひざ傷めるよ)。seed 順(炒める が先頭)の 100 刻みで 膝炒めるよ が 2 番めだった
+                var isAdjacentCollocationRival = false
+                if pos >= 1, let adjacent = Self.multiClauseObjectVerbAdjacentBonusesByNoun[prevSurface] {
+                    let chosenBonus = adjacent.first { chosen.surface.hasPrefix($0.head) }?.bonus ?? 0
+                    let altBonus = adjacent.first { alt.surface.hasPrefix($0.head) }?.bonus ?? 0
+                    if chosenBonus > altBonus {
+                        delta = max(delta, chosenBonus - altBonus)
+                        isAdjacentCollocationRival = altBonus == 0
+                    }
+                }
                 // 漢字が seed 先頭の読みのカタカナ兄弟(コメ/ネコ)は、DP では定額で下げる(3544)が変種では 2 番目に(ユーザ指定 3554:
                 // 米買ってた の次に コメ買ってた)。同区間の LM 僅差の兄弟(飼ってた)より前
                 // seed で漢字の直後に並ぶカタカナ(米/コメ)だけ。間のかな(読みそのもの。米/こめ/コメ。3570)は飛ばす。
@@ -7187,6 +7201,10 @@ extension KanaKanjiConverter {
                         !shouldKeepKanaIdentityLeading(for: normalized) {
                         continue
                     }
+                }
+                if isAdjacentCollocationRival {
+                    adjacentCollocationRivalVariants.append((delta, variantJoined))
+                    continue
                 }
                 variants.append((delta, variantOrder, pos, variantJoined))
                 positionalAlternatives[variantJoined] = (delta, pos, alt.surface)
@@ -7331,7 +7349,14 @@ extension KanaKanjiConverter {
             for (lhsIndex, lhs) in takenPositional.enumerated() {
                 for rhs in takenPositional[(lhsIndex + 1)...] where lhs.1.position != rhs.1.position {
                     let delta = lhs.1.delta + rhs.1.delta
-                    guard lhs.1.delta >= 0, rhs.1.delta >= 0, delta <= Self.multiClauseCrossVariantMaxDelta else { continue }
+                    // 名詞と動詞の両方を、目的語で決まる動詞の表の 助詞なしの組の中で替えた形(ひざ+傷める)は差が開いていても作る(3738)
+                    let (nounAlt, verbAlt) = lhs.1.position < rhs.1.position ? (lhs.1, rhs.1) : (rhs.1, lhs.1)
+                    let isAdjacentCollocationCross = verbAlt.position == nounAlt.position + 1
+                        && (Self.multiClauseObjectVerbAdjacentBonusesByNoun[nounAlt.surface]?
+                            .contains { verbAlt.surface.hasPrefix($0.head) } ?? false)
+                    guard lhs.1.delta >= 0, rhs.1.delta >= 0,
+                        delta <= Self.multiClauseCrossVariantMaxDelta
+                            || (isAdjacentCollocationCross && delta <= Self.multiClauseVariantMaxDelta) else { continue }
                     var crossSegments = segments
                     crossSegments[lhs.1.position] = lhs.1.surface
                     crossSegments[rhs.1.position] = rhs.1.surface
@@ -7344,6 +7369,10 @@ extension KanaKanjiConverter {
             for entry in crossed.prefix(Self.multiClauseCrossVariantLimit) where !results.contains(entry.joined) {
                 results.append(entry.joined)
             }
+        }
+        for entry in adjacentCollocationRivalVariants.sorted(by: { $0.delta < $1.delta }).prefix(Self.multiClauseCrossVariantLimit)
+        where !results.contains(entry.joined) {
+            results.append(entry.joined)
         }
         // 先頭 2 ノード(移動+だ)を LM 未収録の漢字 1 ノード(収穫の人名 伊藤田)が覆えるとき、それを強制した経路を末尾に温存する(3610、
         // ユーザ指定: いどうだなんて は 移動だなんて が先頭になった(3609)が、以前先頭だった 伊藤田なんて も末尾に残す)。

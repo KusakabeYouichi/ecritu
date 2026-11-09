@@ -3447,6 +3447,14 @@ extension KanaKanjiConverter {
         }
         return byPrev
     }()
+    // 目的語で決まる動詞の表の 助詞なしの組を名詞の表記で引く形(変種の並び用。3738)
+    static let multiClauseObjectVerbAdjacentBonusesByNoun: [String: [(head: String, bonus: Int)]] = {
+        var byNoun: [String: [(head: String, bonus: Int)]] = [:]
+        for entry in multiClauseObjectVerbAdjacentBonuses {
+            byNoun[entry.noun, default: []].append((entry.head, entry.bonus))
+        }
+        return byNoun
+    }()
     // 隣り合う語の加点表 - (前の語の表記→次の語の表記の頭 に加点。副詞+動詞・助詞+動詞・複合語 等。助詞なしの 名詞+動詞
     // (時間計って/靴下履いて/この道通ってて)は目的語で決まる動詞の表(manual.json の particles に "")へ移した。3779)
     static let multiClauseBigramPrefixPairBonuses: [String: Int] = [
