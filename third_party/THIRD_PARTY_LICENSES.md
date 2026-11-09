@@ -63,6 +63,18 @@ information. Keep the two in sync.
   were derived mechanically (kana/katakana names) or supplied by the author.
   Credited in-app under "Sake brand names (Japanese Wikipedia)".
 
+## Japanese Wikipedia — gagaku terms
+
+- Articles in the categories "雅楽" and "舞楽"
+  (https://ja.wikipedia.org/wiki/Category:雅楽,
+  https://ja.wikipedia.org/wiki/Category:舞楽), retrieved 2026-11-09 —
+  CC BY-SA 4.0. About 220 terms and their readings only
+  (`references/musique.plist`, bundled in ÉcrituSecondVocab.eccs); no
+  descriptions or article structure. The twelve pitch names were checked
+  against https://www.eastvalley.or.jp/onritsuhyo.html. Terms whose readings
+  the articles do not give are left commented out. Credited in-app under
+  "Gagaku terms (Japanese Wikipedia)".
+
 ## Unicode CLDR (emoji readings)
 
 - https://cldr.unicode.org/ — Unicode License. Japanese emoji annotations,
@@ -97,8 +109,8 @@ small set of words from the *suggestion* lists only (2026-09-04).
 
 Vocabulary plists under `references/` (vin / vin-acronyme / ryukyu / it /
 personnalités / drapeaux / monnaies / sacoche / misc / suppr / poubelle)
-are the author's original compilations (sake.plist is the one exception;
-see the sake section above), not imports from external
+are the author's original compilations (the exceptions are sake.plist and
+the gagaku section of musique.plist; see their sections above), not imports from external
 dictionaries (confirmed 2026-08-31; drapeaux readings re-confirmed
 2026-09-04). `LatinSuggestionSupplemental.txt` is generated from those
 files (tools/build_latin_suggestion_supplemental.swift).

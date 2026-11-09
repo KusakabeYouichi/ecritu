@@ -99,6 +99,27 @@ Wikipedia article "日本酒の銘柄一覧"
   article, they are likewise provided under CC BY-SA 4.0 (see "ShareAlike
   data and this app" below).
 
+## Gagaku terms (Japanese Wikipedia)
+
+This app includes about 220 terms of gagaku (Japanese court music) and
+their readings in its supplementary vocabulary, taken from Japanese
+Wikipedia articles in the categories "雅楽" and "舞楽"
+(https://ja.wikipedia.org/wiki/Category:雅楽,
+https://ja.wikipedia.org/wiki/Category:舞楽), retrieved 2026-11-09.
+
+- The article text is available under the Creative Commons
+  Attribution-ShareAlike License (CC BY-SA 4.0,
+  https://creativecommons.org/licenses/by-sa/4.0/). Attribution: the
+  authors of the respective Japanese Wikipedia articles (see each
+  article's revision history).
+- Only terms and their readings were taken (references/musique.plist);
+  descriptions and the structure of the articles are not included. The
+  names and readings of the twelve pitches (十二律) were checked against
+  "十二律と五音、五調子" (https://www.eastvalley.or.jp/onritsuhyo.html).
+- To the extent these entries are considered an adaptation of the
+  articles, they are likewise provided under CC BY-SA 4.0 (see "ShareAlike
+  data and this app" below).
+
 ## Emoji readings (Unicode CLDR)
 
 This app includes Japanese readings for emoji candidates, derived from
@@ -169,8 +190,8 @@ The CC BY-SA 4.0 licensed files bundled in this app are the four Latin
 suggestion lists (LatinSuggestionLexicon_{en,fr,de,it}.txt) and, to the
 extent it is considered an adaptation, the Wikipedia-derived word n-gram
 table inside kana_kanji_dictionary.sqlite, and the sake brand entries
-(from the Japanese Wikipedia article above) contained in the supplementary
-vocabulary file ÉcrituSecondVocab.eccs. These files are plain data
+and gagaku terms (from the Japanese Wikipedia articles above) contained in
+the supplementary vocabulary file ÉcrituSecondVocab.eccs. These files are plain data
 files inside the application bundle, are not encrypted or otherwise
 technologically protected by us, and may be freely extracted, copied and
 redistributed under CC BY-SA 4.0 regardless of the terms under which the
