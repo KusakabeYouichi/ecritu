@@ -149,6 +149,8 @@ extension KanaKanjiConverter {
         // 通常の に ノードは最良の前ノード(神)しか backPointer に持たず、頭が最良でない連語(紙に印刷)を
         // 跨ぐボーナスが評価されなかった。頭を固定した複製を並走させ、次の遷移で連語ボーナスを受ける
         var boundHeadSurface: String? = nil
+        // 頭固定の複製の頭が補助語彙の外来の固有名で LM に無い語か(固有名の並びの加点。3738)
+        var boundHeadIsSupplementalLoanword = false
         // ノード集合(ボーナス/減点/選好の記録)のキー。以前は 26 箇所で "\(start)-\(end)-\(surface)" を
         // 遷移ごとにその場で組み立てていた。生成時に 1 回だけ作る(2805 リファクタ)
         let key: String
@@ -1049,6 +1051,19 @@ extension KanaKanjiConverter {
         result.removeAll { $0 == produce }
         result.insert(produce, at: min(rank, result.count))
         return result
+    }
+
+    // 外来の固有名の表層か: カタカナ(中黒・長音を含む)だけ、またはラテン文字(語の中の空白・ハイフン・アポストロフィ・ピリオド
+    // を含む)だけ(問題文の型の加点の対象。3738)
+    static func isLoanwordProperNounSurface(_ surface: String) -> Bool {
+        guard let first = surface.unicodeScalars.first else {
+            return false
+        }
+        if (0x30A1...0x30FA).contains(first.value) {
+            return surface.unicodeScalars.allSatisfy { (0x30A1...0x30FC).contains($0.value) }
+        }
+        return isLatinLetterScalar(first)
+            && surface.unicodeScalars.allSatisfy { isLatinLetterScalar($0) || " -'.’".unicodeScalars.contains($0) }
     }
 
     static func isLatinLetterScalar(_ scalar: Unicode.Scalar) -> Bool {
@@ -2461,28 +2476,67 @@ extension KanaKanjiConverter {
         }
 
         // 連語の橋渡し助詞の頭固定複製(定義コメント参照。2836): 表の頭(紙)がこの助詞(に)の直前に立ち、
-        // 表の後段(印刷)が直後に立つときだけ、prev を頭に固定した複製ノードを足す
+        // 表の後段(印刷)が直後に立つときだけ、prev を頭に固定した複製ノードを足す。
+        // 問題文の型(正解+は)・固有名の並び(Greco+や)の後ろに補助語彙の外来語が立つときも同じ複製を足す(3738)
+        // 補助語彙(vin 等)の外来の固有名のノード(問題文の型・固有名の並びの加点の対象。3738)。表層がカタカナ/ラテン文字で、
+        // 補助語彙にその読みで載っているもの。頭固定の複製は外来語ではないので false で足す
+        var isSupplementalLoanwordNode: [Bool] = nodes.map {
+            !$0.isKanaIdentity && Self.isLoanwordProperNounSurface($0.surface)
+                && supplementalSystemDictionary.contains(reading: $0.reading, surface: $0.surface)
+        }
+        // 同じ区間に補助語彙の漢字の語(全麹=ぜんこうじ)があるとき、または問題文の型の頭からの個別の組(正解\tでんぷん)が
+        // 同じ区間の兄弟にあるときは外す(正解はZenkoji仕込みです/正解はデンプンです になった。3738)
+        for index in isSupplementalLoanwordNode.indices where isSupplementalLoanwordNode[index] {
+            let node = nodes[index]
+            let hasPreferredSibling = nodesStartingAt[node.start].contains { siblingIndex in
+                let sibling = nodes[siblingIndex]
+                guard siblingIndex != index, sibling.end == node.end else { return false }
+                if !sibling.isKanaIdentity, containsKanji(sibling.surface),
+                    supplementalSystemDictionary.contains(reading: sibling.reading, surface: sibling.surface) {
+                    return true
+                }
+                return Self.multiClauseSupplementalFrameHeads.keys.contains {
+                    Self.acrossParticleCollocationBonus(prevPrev: $0, surface: sibling.surface) != nil
+                }
+            }
+            if hasPreferredSibling {
+                isSupplementalLoanwordNode[index] = false
+            }
+        }
         do {
             let collocationHeads = Self.multiClauseAcrossNoCollocationHeads
             for particleIndex in nodes.indices {
                 let particle = nodes[particleIndex]
-                guard particle.start > 0, particle.surface == particle.reading,
-                    Self.multiClauseCollocationBridgeParticles.contains(particle.surface) else { continue }
-                for headIndex in nodesEndingAt[particle.start] where collocationHeads.contains(nodes[headIndex].surface) {
+                guard particle.start > 0, particle.surface == particle.reading else { continue }
+                let isBridge = Self.multiClauseCollocationBridgeParticles.contains(particle.surface)
+                let isPairParticle = Self.multiClauseSupplementalPairParticles.contains(particle.surface)
+                let isFrameParticle = Self.multiClauseSupplementalFrameParticles.contains(particle.surface)
+                guard isBridge || isPairParticle || isFrameParticle else { continue }
+                let hasSupplementalTail = (isPairParticle || isFrameParticle) && particle.end < n
+                    && nodesStartingAt[particle.end].contains { isSupplementalLoanwordNode[$0] }
+                for headIndex in nodesEndingAt[particle.start] {
                     let head = nodes[headIndex].surface
-                    let hasTail = particle.end < n && nodesStartingAt[particle.end].contains { tailIndex in
-                        Self.acrossParticleCollocationBonus(prevPrev: head, surface: nodes[tailIndex].surface) != nil
-                    }
-                    guard hasTail else { continue }
+                    let bindsCollocation = isBridge && collocationHeads.contains(head)
+                        && particle.end < n && nodesStartingAt[particle.end].contains { tailIndex in
+                            Self.acrossParticleCollocationBonus(prevPrev: head, surface: nodes[tailIndex].surface) != nil
+                        }
+                    let bindsSupplemental = hasSupplementalTail
+                        && ((isPairParticle && isSupplementalLoanwordNode[headIndex])
+                            || (Self.multiClauseSupplementalFrameHeads[head]?.particles.contains(particle.surface) ?? false))
+                    guard bindsCollocation || bindsSupplemental else { continue }
                     var bound = particle
                     bound.boundHeadSurface = head
+                    bound.boundHeadIsSupplementalLoanword = isSupplementalLoanwordNode[headIndex]
                     let index = nodes.count
                     nodes.append(bound)
+                    isSupplementalLoanwordNode.append(false)
                     nodesEndingAt[particle.end].append(index)
                     nodesStartingAt[particle.start].append(index)
                 }
             }
         }
+        let supplementalLoanwordFlags = isSupplementalLoanwordNode
+        let supplementalLoanwordNodeKeys = Set(nodes.indices.lazy.filter { supplementalLoanwordFlags[$0] }.map { nodes[$0].key })
 
 
         // --- 2. LM コスト(unigram/bigram)を一括ロード(sqlite アクセスを最小化) ---
@@ -5821,6 +5875,33 @@ extension KanaKanjiConverter {
                         // 頭+尾 の複合の実績がある の 連結(東京の支店。定数コメント参照。3328)
                         cost -= Self.multiClauseCrossNoCompoundBonus
                     }
+                    // 問題文の型(正解は/北から/または)・固有名の並び(GrecoやAglianico)の後ろの補助語彙の外来語(定数コメント参照。3738)
+                    if supplementalLoanwordFlags[idx] {
+                        if let frame = Self.multiClauseSupplementalFrameHeads[prevNode.surface], frame.particles.contains("") {
+                            cost -= frame.bonus
+                        } else if prevNode.isKanaIdentity {
+                            var headIdx = backPointer[prevIdx]
+                            var particleSurface = prevNode.surface
+                            // で+は/に+は に割れた助詞(ソンダ・ヴァレーで+は+タナ)は 1 つ前の語を頭に見る
+                            if prevNode.boundHeadSurface == nil, prevNode.surfaceID == SID.は, headIdx >= 0,
+                                nodes[headIdx].isKanaIdentity, nodes[headIdx].surface == "で" || nodes[headIdx].surface == "に" {
+                                particleSurface = nodes[headIdx].surface + "は"
+                                headIdx = backPointer[headIdx]
+                            }
+                            if let headSurface = prevNode.boundHeadSurface ?? (headIdx >= 0 ? nodes[headIdx].surface : nil) {
+                                if let frame = Self.multiClauseSupplementalFrameHeads[headSurface],
+                                    frame.particles.contains(particleSurface) {
+                                    cost -= frame.bonus
+                                } else if Self.multiClauseSupplementalPairParticles.contains(particleSurface),
+                                    prevNode.boundHeadSurface != nil
+                                        ? prevNode.boundHeadIsSupplementalLoanword
+                                        : supplementalLoanwordFlags[headIdx],
+                                    (unigramCosts[headSurface] ?? Int.max) >= Self.multiClauseSupplementalPairHeadMinUnigram {
+                                    cost -= Self.multiClauseSupplementalPairBonus
+                                }
+                            }
+                        }
+                    }
                     // サ変名詞+の+事象名詞(定数コメント参照。2944)。の の前が出来事(suru クラス)なら
                     // 前兆 を採る。道路の全長/吊り橋の全長 は サ変名詞でないので無傷
                     if let eventBonus = Self.multiClauseEventNounAfterSuruNounBonusesByID[node.surfaceID],
@@ -6696,6 +6777,9 @@ extension KanaKanjiConverter {
                     isCollocationPreferredKana: nodeFlags.isCollocationPreferredKana,
                     isCollocationPreferredVerb: nodeFlags.isCollocationPreferredVerb,
                     scriptVariantPenalty: nodeFlags.scriptVariantPenalty,
+                    // 補助語彙(vin 等)のカタカナは DP と同じく何でもカタカナ化の減点から外す(3738。正解はClairetteです の次の
+                    // 正解はクレレットです が 3000 の減点で変種に残らなかった)
+                    isSupplementalKatakanaExempt: supplementalKatakanaExemptNodeKeys.contains(node.key),
                     prevStartsSentence: pos > 0 && nodes[pathIndices[pos - 1]].start == 0
                 )
                 // DP で足していたノード単位のボーナス(seed 順/単文節先頭/の を挟む連語)を変種の差分にも反映する(2738)。
@@ -6715,6 +6799,24 @@ extension KanaKanjiConverter {
                 } else if prevSurface == "の", pos >= 2,
                     crossNoCompoundPairs.contains(MultiClauseSymbols.pairKey(nodes[pathIndices[pos - 2]].surfaceID, node.surfaceID)) {
                     nodeBonus += Self.multiClauseCrossNoCompoundBonus
+                }
+                // 問題文の型・固有名の並びの加点(3738)も差分に入れる(上限付き)。無いと 正解はClairetteです の カタカナの兄弟
+                // (クレレット)の差分が 5000 開いて変種に残らず、ラテン文字が先・カタカナが 2 番め にならなかった
+                if pos >= 1, supplementalLoanwordNodeKeys.contains(node.key) {
+                    let prev = nodes[pathIndices[pos - 1]]
+                    var frameBonus = 0
+                    if let frame = Self.multiClauseSupplementalFrameHeads[prev.surface], frame.particles.contains("") {
+                        frameBonus = frame.bonus
+                    } else if prev.isKanaIdentity, pos >= 2 {
+                        let head = nodes[pathIndices[pos - 2]]
+                        if let frame = Self.multiClauseSupplementalFrameHeads[head.surface], frame.particles.contains(prev.surface) {
+                            frameBonus = frame.bonus
+                        } else if Self.multiClauseSupplementalPairParticles.contains(prev.surface),
+                            supplementalLoanwordFlags[pathIndices[pos - 2]], (unigramCosts[head.surface] ?? Int.max) >= Self.multiClauseSupplementalPairHeadMinUnigram {
+                            frameBonus = Self.multiClauseSupplementalPairBonus
+                        }
+                    }
+                    nodeBonus += min(frameBonus, Self.multiClauseVariantCollocationBonusCap)
                 }
                 // 隣接ペアの接頭一致ボーナス(気+無くし 等)も DP と同じく差分に入れる(3537)。無いと 気+無くし の優位が
                 // 変種の差分に反映されず、兄弟(亡くし/なくし)が負の delta で seed 順より前に並んだ(はいるきなくした)
@@ -6754,6 +6856,7 @@ extension KanaKanjiConverter {
                         isCollocationPreferredKana: nextFlags.isCollocationPreferredKana,
                         isCollocationPreferredVerb: nextFlags.isCollocationPreferredVerb,
                         scriptVariantPenalty: nextFlags.scriptVariantPenalty,
+                        isSupplementalKatakanaExempt: supplementalKatakanaExemptNodeKeys.contains(nextNode.key),
                         prevStartsSentence: node.start == 0
                     )
                 } else {

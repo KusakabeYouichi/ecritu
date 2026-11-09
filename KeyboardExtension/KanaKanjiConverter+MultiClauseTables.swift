@@ -927,6 +927,29 @@ extension KanaKanjiConverter {
     // も も橋渡しにする(まだ空きもあるから。3496)
     // へ も橋渡しにする(米国へ送れれば。3530)
     static let multiClauseCollocationBridgeParticles: Set<String> = ["の", "が", "を", "は", "に", "から", "と", "も", "へ", "で"]
+    // 問題文の型の後ろに来る補助語彙(vin 等)の外来の固有名(カタカナ・ラテン文字)を上げる(3738。learningBOX 確認表 3697 の
+    // [直す]、ユーザ判定「文脈で上げる」)。vin の語の多くは LM に無く 8700 で、正解は+幅らか/北から→来たから/フランス語で+後ブレ
+    // のように一般語に負けていた。頭の語+助詞(空文字は助詞を挟まず直後)の直後に立つ補助語彙の外来語ノードだけを下げるので、
+    // 普段の文(来たから帰る/正解は二つ)は変わらない。3736 の 正解\tX の組(multiClauseAcrossNoCollocationBonuses)を型にしたもの
+    static let multiClauseSupplementalFrameHeads: [String: (particles: Set<String>, bonus: Int)] = [
+        "正解": (["は"], 5000),
+        "北": (["から", "は"], 5000), "南": (["から", "は"], 5000),
+        "フランス語": (["で", "では", "は"], 5000), "イタリア語": (["で", "では", "は"], 5000),
+        "スペイン語": (["で", "では", "は"], 5000), "ポルトガル語": (["で", "では", "は"], 5000),
+        "ドイツ語": (["で", "では", "は"], 5000),
+        "白ぶどう": (["は"], 5000), "黒ぶどう": (["は"], 5000), "白": (["は"], 5000), "赤": (["は"], 5000),
+        "古木": (["の"], 5000),
+        "他": (["に"], 5000), "他に": ([""], 5000), "または": ([""], 5000),
+    ]
+    // 補助語彙の外来の固有名どうしを や/と/は 等でつなぐ並び(GrecoやAglianico/MeslandとAmboise/EssexはKent/ベルデホはルエダ)の
+    // 後ろの語を上げる(3738)。前の語が LM に無いか稀な(7500 以上の)固有名のときだけ(ワイン 5401/タンク 5634/コルク 6844
+    // のような LM でよく見る語は普段の文にも出るので、ワインは+棚 を タナ にしない)。で+は/に+は に割れた形も同じに扱う
+    static let multiClauseSupplementalPairParticles: Set<String> = ["や", "と", "は", "では", "には", "でも"]
+    static let multiClauseSupplementalPairHeadMinUnigram = 7500
+    static let multiClauseSupplementalFrameParticles: Set<String> = Set(
+        multiClauseSupplementalFrameHeads.values.flatMap { $0.particles }.filter { !$0.isEmpty }
+    )
+    static let multiClauseSupplementalPairBonus = 3000
     // 1字の格助詞(multiClauseCaseParticleSurfaces の1字分)+連体の の
     static let multiClauseSingleTopParticleTails: Set<Character> = ["に", "を", "が", "へ", "と", "で", "は", "も", "の"]
 
