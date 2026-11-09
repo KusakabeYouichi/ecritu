@@ -2115,6 +2115,36 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single("おくそく").first, "臆測", "\(single("おくそく").prefix(4))")
     }
 
+    // 3743(ユーザ報告): さとうなんかつかうのかー の候補に 砂糖 が 1 つも無く、なんか の差し替え(佐藤南下/佐藤何課/佐藤軟化)が並んでいた。
+    // 調味料+を+使う を連語表に足し、なんか/なんて を連語の橋渡しにした。名詞直後の なんか の加減点(2888)を変種の差分にも入れた。
+    // さとう の単文節は 佐藤/砂糖/サトウ/左党 の順(ひらがなは末尾でよい)
+    func testRegressionUserReports3743() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func single(_ reading: String) -> [String] { converter.candidates(for: reading, limit: 30, systemCandidateMode: .surface) }
+        func multi(_ reading: String) -> [String] { converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface) }
+        for (reading, expected) in [
+            ("さとうなんかつかうのかー", "砂糖なんか使うのかー"),
+            ("さとうなんかつかうのか", "砂糖なんか使うのか"),
+            ("さとうなんかつかうの", "砂糖なんか使うの"),
+            ("さとうなんかつかう", "砂糖なんか使う"),
+        ] {
+            let candidates = multi(reading)
+            XCTAssertEqual(candidates.first, expected, "\(reading) \(candidates.prefix(5))")
+        }
+        // 動詞が無いと 佐藤 が先頭のまま。2 番めに 砂糖。なんか は名詞の直後なので副助詞(南下/何課/軟化 を並べない)
+        let nanka = multi("さとうなんか")
+        XCTAssertEqual(Array(nanka.prefix(2)), ["佐藤なんか", "砂糖なんか"], "\(nanka.prefix(5))")
+        for reading in ["さとうなんか", "さとうなんかつかうのか"] {
+            let top = multi(reading).prefix(4)
+            XCTAssertFalse(top.contains { $0.contains("南下") || $0.contains("何課") || $0.contains("軟化") }, "\(reading) \(top)")
+        }
+        // 塩なんか使わない(同じ組の別の名詞)。人名の 佐藤 が要る文は崩さない
+        XCTAssertEqual(multi("しおなんかつかわない").first, "塩なんか使わない")
+        XCTAssertEqual(multi("さとうさんがきた").first, "佐藤さんが来た")
+        XCTAssertEqual(Array(single("さとう").prefix(4)), ["佐藤", "砂糖", "サトウ", "左党"], "\(single("さとう").prefix(8))")
+    }
+
     // 3742(ユーザ報告): めいるや が 名るや(メイルや→滅入るや の順)、こめんとかく が コメント描く(コメント書く→コメント描く の順)
     func testRegressionUserReports3742() throws {
         try prepareRealLMDictionary()

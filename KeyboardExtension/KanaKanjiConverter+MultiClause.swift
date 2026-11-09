@@ -68,6 +68,25 @@ extension KanaKanjiConverter {
         spanString(chars, range.lowerBound..<chars.count)
     }
 
+    // 名詞の直後の なんか/なんて(副助詞)の加減点(定数コメント参照。2888)。正の値は減点、負の値は加点。
+    // DP と変種の差分の両方で使う(3743: 差分に無く、佐藤なんか の次に 佐藤南下/佐藤何課/佐藤軟化 が並んで さとう の兄弟 砂糖 が枠に入らなかった)
+    func multiClauseNankaAfterNounCost(prev: MultiClauseNode, node: MultiClauseNode) -> Int {
+        guard !prev.isKanaIdentity, containsKanji(prev.surface),
+            !prev.isInflectionDerived, !prev.isDictionaryFormPredicate,
+            let nankaReading = Self.multiClauseNankaAdverbialReadings.first(where: { node.reading.hasPrefix($0) }) else {
+            return 0
+        }
+        // 読みが なんか/なんて そのもの(なんか/南下/軟化)か、そのサ変派生(南下してない)だけ。
+        // なんかい(何回)のような別語は対象外(全網テストで 顔何回も見たい が崩れた)
+        if node.reading == nankaReading, node.isKanaIdentity {
+            return -Self.multiClauseNankaKanaAfterNounBonus
+        }
+        if node.reading == nankaReading || node.isInflectionDerived, !node.surface.hasPrefix(nankaReading) {
+            return Self.multiClauseNankaKanjiAfterNounPenalty
+        }
+        return 0
+    }
+
 
     // 人を指すノードか: 人名詞の表層(友達/彼)、その読みの辞書候補に人名詞があるもの(ともだち→友達)、
     // 敬称(さん/さま)、person_names の姓/名(2883)
@@ -5336,18 +5355,7 @@ extension KanaKanjiConverter {
                             }
                         }
                         // 名詞直後の なんか/なんて は副助詞(保存なんかしてない。定数コメント参照。2888)
-                        if !prevNode.isKanaIdentity, containsKanji(prevNode.surface),
-                            !prevNode.isInflectionDerived, !prevNode.isDictionaryFormPredicate,
-                            let nankaReading = Self.multiClauseNankaAdverbialReadings.first(where: { node.reading.hasPrefix($0) }) {
-                            // 読みが なんか/なんて そのもの(なんか/南下/軟化)か、そのサ変派生(南下してない)だけ。
-                            // なんかい(何回)のような別語は対象外(全網テストで 顔何回も見たい が崩れた)
-                            if node.reading == nankaReading, node.isKanaIdentity {
-                                cost -= Self.multiClauseNankaKanaAfterNounBonus
-                            } else if node.reading == nankaReading || node.isInflectionDerived,
-                                !node.surface.hasPrefix(nankaReading) {
-                                cost += Self.multiClauseNankaKanjiAfterNounPenalty
-                            }
-                        }
+                        cost += multiClauseNankaAfterNounCost(prev: prevNode, node: node)
                         // 述語(辞書形/た形)直後の形式名詞 とき(去るときに。定数コメント参照。2887)
                         if node.reading.hasPrefix("とき"),
                             node.surface.hasPrefix("とき") || node.surface.hasPrefix("時"),
@@ -6884,6 +6892,14 @@ extension KanaKanjiConverter {
                     for entry in prefixBonuses where nextNode.surface.hasPrefix(entry.prefix) {
                         nodeBonus += entry.bonus
                     }
+                }
+                // 名詞直後の なんか/なんて(2888)も DP と同じく差分に入れる(3743)。無いと 佐藤なんか の次に 佐藤南下/佐藤何課/佐藤軟化
+                // が並び、さとう の兄弟(砂糖)が変種の枠に入らなかった
+                if pos >= 1 {
+                    nodeBonus -= multiClauseNankaAfterNounCost(prev: nodes[pathIndices[pos - 1]], node: node)
+                }
+                if let nextNode {
+                    nodeBonus -= multiClauseNankaAfterNounCost(prev: node, node: nextNode)
                 }
                 // 先頭側を差し替えると後段の連語(甲州→果皮)が失われる分も差分に入れる(公衆の果皮 が負値で先頭に来ていた)
                 if pos + 2 < pathIndices.count, Self.multiClauseCollocationBridgeParticles.contains(nodes[pathIndices[pos + 1]].surface),
