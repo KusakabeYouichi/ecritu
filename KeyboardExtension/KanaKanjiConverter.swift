@@ -1589,13 +1589,15 @@ final class KanaKanjiConverter {
         text.applyingTransform(.hiraganaToKatakana, reverse: false) ?? text
     }
 
-    func learn(reading: String, candidate: String, allowKanaIdentity: Bool = false) {
+    // 学習した場合は学習する前の状態を返す(確定の直後に削除キーで消したときの取り消しに使う。3741)
+    @discardableResult
+    func learn(reading: String, candidate: String, allowKanaIdentity: Bool = false) -> KanaKanjiStore.LearningUndoSnapshot? {
         let normalizedReading = KanaTextNormalizer.normalizedReading(reading)
         let trimmedCandidate = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
 
         guard !normalizedReading.isEmpty,
                 !trimmedCandidate.isEmpty else {
-            return
+            return nil
         }
 
         // かな識別(変換せず読みのかなのまま確定)は原則学習しない。学習すると連文節DPの
@@ -1607,10 +1609,11 @@ final class KanaKanjiConverter {
         if trimmedCandidate == normalizedReading {
             guard allowKanaIdentity,
                 normalizedReading.count <= KanaKanjiStore.kanaIdentityLearnableMaxReadingCount else {
-                return
+                return nil
             }
         }
 
+        let undoSnapshot = store.learningUndoSnapshot(reading: normalizedReading, candidate: trimmedCandidate)
         store.addLearnedEntry(
             reading: normalizedReading,
             candidate: trimmedCandidate,
@@ -1623,6 +1626,15 @@ final class KanaKanjiConverter {
             // 部分無効化は stale 候補(学習が効かない)の温床になる。全無効化のままとし、
             // 再計算コストは store 層の LM/wordCosts キャッシュ(learn では無効化されない)
             // が吸収する。
+            invalidateCandidateCache()
+        }
+        return undoSnapshot
+    }
+
+    // 学習を学習する前の状態に戻す(確定の直後に削除キーで消したとき。3741、ユーザ指定)
+    func undoLearning(_ snapshot: KanaKanjiStore.LearningUndoSnapshot) {
+        store.restoreLearning(snapshot)
+        withStateLock {
             invalidateCandidateCache()
         }
     }

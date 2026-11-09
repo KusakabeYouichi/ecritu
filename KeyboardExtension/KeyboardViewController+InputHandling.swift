@@ -30,6 +30,8 @@ extension KeyboardViewController {
         }
 
         commitActiveConversion(learn: true)
+        // 確定に続けて文字を打った(確定を受け入れた)ので、直後の削除による学習の取り消しの対象から外す(3741)
+        recentLearnedCommit = nil
 
         if currentInputMode == .kana,
             let normalizedKana = KanaTextNormalizer.normalizedKanaCharacter(from: text) {
@@ -263,6 +265,7 @@ extension KeyboardViewController {
             return
         }
 
+        noteDeleteForRecentLearnedCommit()
         markTextProxyEdit()
         textDocumentProxy.deleteBackward()
         refreshKeyboardStateAsync()
@@ -1033,9 +1036,10 @@ extension KeyboardViewController {
         )
 
         // 日付の候補(あさって→10月10日 等)は日ごとに変わるので学習しない(3445)
+        var learnedUndo: KanaKanjiStore.LearningUndoSnapshot? = nil
         if learn, allowsLearningInCurrentField,
             !RelativeDateCandidates.isGeneratedCandidate(committedText, reading: sourceReading) {
-            kanaKanjiConverter.learn(
+            learnedUndo = kanaKanjiConverter.learn(
                 reading: sourceReading,
                 candidate: committedText,
                 allowKanaIdentity: learnKanaIdentity
@@ -1043,10 +1047,13 @@ extension KeyboardViewController {
         }
 
         if usesPlainTextComposition, !plainRemainderRaw.isEmpty {
+            // 右側の残りが次の未確定になるので、直後の削除は未確定に掛かる(学習の取り消しの対象にしない)
+            recentLearnedCommit = nil
             adoptPlainCompositionRemainder(rawRemainder: plainRemainderRaw, readingRemainder: plainRemainderReading)
             return
         }
         clearComposingState()
+        rememberLearnedCommit(learnedUndo, committedText: committedText, insertedText: committedTextForInsertion)
     }
 
     func commitActiveConversion(learn: Bool) {
@@ -1076,9 +1083,10 @@ extension KeyboardViewController {
             sourceTextForFallbackReplacement: conversion.sourceText
         )
 
+        var learnedUndo: KanaKanjiStore.LearningUndoSnapshot? = nil
         if learn, allowsLearningInCurrentField,
             !RelativeDateCandidates.isGeneratedCandidate(committedText, reading: conversion.reading) {
-            kanaKanjiConverter.learn(
+            learnedUndo = kanaKanjiConverter.learn(
                 reading: conversion.reading,
                 candidate: committedText
             )
@@ -1086,6 +1094,55 @@ extension KeyboardViewController {
 
         self.activeConversion = nil
         clearComposingState()
+        rememberLearnedCommit(learnedUndo, committedText: committedText, insertedText: committedTextForInsertion)
+    }
+
+    // 学習した確定を覚えておく(直後の削除で取り消すため。3741、ユーザ指定)。確定した語の後ろに一緒に入れた文字
+    // (句読点・括弧の閉じ)の数を数え、削除がそれを越えて確定した語に入ったら取り消す
+    func rememberLearnedCommit(
+        _ undo: KanaKanjiStore.LearningUndoSnapshot?,
+        committedText: String,
+        insertedText: String
+    ) {
+        guard let undo else {
+            recentLearnedCommit = nil
+            return
+        }
+        var trailingCount = 0
+        if let range = insertedText.range(of: committedText, options: .backwards) {
+            trailingCount = insertedText.distance(from: range.upperBound, to: insertedText.endIndex)
+        }
+        recentLearnedCommit = RecentLearnedCommit(
+            undo: undo,
+            trailingCount: trailingCount,
+            committedAt: Date(),
+            expectedEditSerial: textProxyEditSerial
+        )
+    }
+
+    // 削除キー(未確定が無いとき)。学習した確定の直後(15 秒以内)で、間に別の編集が挟まっておらず、削除が確定した語まで
+    // 届いたら、その確定の学習を学習する前の状態に戻す(打ち間違いで確定した語を学習に残さない。3741、ユーザ指定)。
+    // ホストから受け取る文書の内容は当てにならないことがあるので、削除キーの回数と編集の通し番号で判定する
+    func noteDeleteForRecentLearnedCommit() {
+        guard var recent = recentLearnedCommit else {
+            return
+        }
+        guard recent.expectedEditSerial == textProxyEditSerial,
+            Date().timeIntervalSince(recent.committedAt) <= Self.learnedCommitUndoWindow else {
+            recentLearnedCommit = nil
+            return
+        }
+        recent.deletes += 1
+        if recent.deletes > recent.trailingCount {
+            kanaKanjiConverter.undoLearning(recent.undo)
+            recentLearnedCommit = nil
+            // 診断ログに語は残さない(入力内容を記録しない)
+            appendKeyboardDiagnosticsLogFromInputHandling("確定直後の削除で学習を取り消した 読み=\(recent.undo.reading.count)字")
+        } else {
+            // この削除の markTextProxyEdit で通し番号が 1 進む
+            recent.expectedEditSerial = textProxyEditSerial &+ 1
+            recentLearnedCommit = recent
+        }
     }
 
     func applyKanaPostModifier(

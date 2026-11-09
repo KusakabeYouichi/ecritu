@@ -235,6 +235,52 @@ extension KanaKanjiStore {
         return learningScoresByReading()[normalizedReading] ?? [:]
     }
 
+    // 確定の直後に削除キーで消したとき、その確定の学習を取り消すための「学習する前の状態」(3741、ユーザ指定)。
+    // 点数を 1 引くのではなく、その読みの学習済みの並びと、その組の点数を学習前の値に戻す(並びの順も戻る)
+    struct LearningUndoSnapshot: Equatable {
+        let reading: String
+        let candidate: String
+        let learnedCandidates: [String]?
+        let score: Int?
+    }
+
+    func learningUndoSnapshot(reading: String, candidate: String) -> LearningUndoSnapshot {
+        _ = learnedDictionary()   // キャッシュを確実にロード(ロックの外で)
+        _ = learningScores()
+        let key = learningKey(reading: reading, candidate: candidate)
+        return withCacheLock {
+            LearningUndoSnapshot(
+                reading: reading,
+                candidate: candidate,
+                learnedCandidates: cachedLearnedDictionary?[reading],
+                score: cachedLearningScores?[key]
+            )
+        }
+    }
+
+    func restoreLearning(_ snapshot: LearningUndoSnapshot) {
+        _ = learnedDictionary()
+        _ = learningScores()
+        _ = learningScoresByReading()
+        let key = learningKey(reading: snapshot.reading, candidate: snapshot.candidate)
+        withCacheLock {
+            cachedLearnedDictionary?[snapshot.reading] = snapshot.learnedCandidates
+            learningPersistDirtyLearned = true
+            if let score = snapshot.score {
+                cachedLearningScores?[key] = score
+                cachedLearningScoresByReading?[snapshot.reading, default: [:]][snapshot.candidate] = score
+            } else {
+                cachedLearningScores?.removeValue(forKey: key)
+                cachedLearningScoresByReading?[snapshot.reading]?.removeValue(forKey: snapshot.candidate)
+                if cachedLearningScoresByReading?[snapshot.reading]?.isEmpty == true {
+                    cachedLearningScoresByReading?.removeValue(forKey: snapshot.reading)
+                }
+            }
+            learningPersistDirtyScores = true
+        }
+        scheduleLearningPersist()
+    }
+
     func incrementLearning(reading: String, candidate: String) {
         let normalizedReading = KanaTextNormalizer.normalizedReading(reading)
         let trimmedCandidate = candidate.trimmingCharacters(in: .whitespacesAndNewlines)

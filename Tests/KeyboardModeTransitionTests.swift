@@ -854,6 +854,55 @@ final class KeyboardViewControllerLifecycleTests: XCTestCase {
             print("LIFECYCLE note: root UIInputView はコントローラー解放後も残る(テストホスト側の保持の可能性)")
         }
     }
+
+    // 3741(ユーザ指定): 学習した確定の直後に削除キーで確定した語まで消したら、その学習を取り消す。確定と一緒に入れた句読点を
+    // 消す分は数えない。確定と削除の間に別の編集が挟まったら取り消さない
+    @MainActor
+    func testDeleteRightAfterLearnedCommitUndoesLearning() throws {
+        let controller = KeyboardViewController()
+        let converter = controller.kanaKanjiConverter
+        let store = converter.store
+        let reading = "がくしゅうとりけしてすと"
+        let candidate = "学習取消テスト"
+        func learned() -> [String]? { store.learnedDictionary()[reading] }
+        func score() -> Int? { store.learningScores()[reading + "\t" + candidate] }
+        // 前の回が途中で落ちて学習が残っていても始められるよう、最初に学習の無い状態にする
+        store.restoreLearning(KanaKanjiStore.LearningUndoSnapshot(reading: reading, candidate: candidate, learnedCandidates: nil, score: nil))
+        XCTAssertNil(learned())
+
+        // 句読点つきの確定: 1 回めの削除(。)では取り消さず、2 回めで確定した語に入ったら取り消す
+        let undo = try XCTUnwrap(converter.learn(reading: reading, candidate: candidate))
+        controller.rememberLearnedCommit(undo, committedText: candidate, insertedText: candidate + "。")
+        XCTAssertEqual(learned(), [candidate])
+        controller.handleDeleteBackward()
+        XCTAssertEqual(learned(), [candidate], "句読点を消しただけでは取り消さない")
+        controller.handleDeleteBackward()
+        XCTAssertNil(learned(), "確定した語まで消したら取り消す")
+        XCTAssertNil(score())
+
+        // 確定と削除の間に別の編集が入ったら取り消さない
+        let undo2 = try XCTUnwrap(converter.learn(reading: reading, candidate: candidate))
+        controller.rememberLearnedCommit(undo2, committedText: candidate, insertedText: candidate)
+        controller.markTextProxyEdit()   // 確定の後に文字を足した、等
+        controller.handleDeleteBackward()
+        XCTAssertEqual(learned(), [candidate], "間に別の編集があれば取り消さない")
+        XCTAssertNil(controller.recentLearnedCommit)
+
+        // 2 回めの学習の取り消しは 1 回めの学習の状態(点数 1)に戻す
+        let undo3 = try XCTUnwrap(converter.learn(reading: reading, candidate: candidate))
+        XCTAssertEqual(score(), 2)
+        controller.rememberLearnedCommit(undo3, committedText: candidate, insertedText: candidate)
+        controller.handleDeleteBackward()
+        XCTAssertEqual(score(), 1)
+        XCTAssertEqual(learned(), [candidate])
+
+        // 後始末(学習前に戻す)
+        converter.undoLearning(undo2)
+        XCTAssertNil(learned())
+        XCTAssertNil(score())
+        // かなのまま(学習しない確定)は取り消しの記録も無い
+        XCTAssertNil(converter.learn(reading: reading, candidate: reading))
+    }
 }
 
 // 入力の状態のモデル(iPad 版に向けた切り分け 段 1)。以前はビューの @State で、テストから触れなかった

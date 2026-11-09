@@ -263,6 +263,10 @@ final class KeyboardViewController: UIInputViewController {
     var hasParenthesesWrapper = false
     var activeConversion: ActiveConversion?
     var recentKanaPlainCommit: RecentKanaPlainCommit?
+    // 学習した確定の直後に削除キーで確定した文字まで消したら、その学習を取り消す(3741、ユーザ指定。打ち間違いの確定を学習に残さない)
+    var recentLearnedCommit: RecentLearnedCommit?
+    // ホストへの編集(markTextProxyEdit)の通し番号。確定から削除までの間に別の編集が挟まっていないかを見る(3741)
+    var textProxyEditSerial = 0
     let recentKanaPlainCommitUpgradeWindow: TimeInterval = 0.45
     let idleCommitUndoWindow: TimeInterval = 4.0
     var lastKanaPostModifierAppliedAt: CFAbsoluteTime = 0
@@ -381,6 +385,18 @@ final class KeyboardViewController: UIInputViewController {
         let candidates: [String]
         let selectedIndex: Int?
     }
+
+    struct RecentLearnedCommit {
+        let undo: KanaKanjiStore.LearningUndoSnapshot
+        // 確定した語の後ろに一緒に入れた文字の数(句読点・括弧の閉じ)。削除がこれを越えたら確定した語に入ったとみなす
+        let trailingCount: Int
+        let committedAt: Date
+        // 確定(または前の削除)の直後の通し番号。これと違えば、間に別の編集が入っている
+        var expectedEditSerial: Int
+        var deletes = 0
+    }
+
+    static let learnedCommitUndoWindow: TimeInterval = 15
 
     struct RecentKanaPlainCommit: Equatable {
         let sourceText: String
@@ -1075,6 +1091,7 @@ final class KeyboardViewController: UIInputViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        recentLearnedCommit = nil
         recordDisappearanceKindIfNeeded(animated: animated)
         updateKeyboardDiagnosticsHeartbeat(event: "viewWillDisappear", appendLog: true)
         persistBufferedKeyboardDiagnostics()
@@ -1742,6 +1759,7 @@ final class KeyboardViewController: UIInputViewController {
 
     func markTextProxyEdit() {
         lastTextProxyEditAt = CFAbsoluteTimeGetCurrent()
+        textProxyEditSerial &+= 1
         invalidateTextContextCache()
     }
 
