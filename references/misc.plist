@@ -450,6 +450,7 @@
 	<!-- ■ 供給欠落の補充(Sudachi 未収録の複合語・固有名。そもそも候補が作れない) -->
 	<dict><key>phrase</key><string>ブレ</string><key>shortcut</key><string>ぶれ</string><key>pos</key><string>名詞</string></dict>	<!-- 味にブレが/手ブレ の ブレ。LM に無くカタカナ化の減点(+100000)で消え、あじにぶれが→味に触れが/味鈍れが だった(ユーザ報告 3778) -->
 	<dict><key>phrase</key><string>サイドブレイキ</string><key>shortcut</key><string>さいどぶれいき</string><key>pos</key><string>名詞</string></dict>	<!-- サイド+ブレイキ の合成は 再度ブレイキ が先頭だった(ユーザ指定 3778) -->
+	<dict><key>phrase</key><string>ブレイキ</string><key>shortcut</key><string>ぶれいき</string><key>pos</key><string>名詞</string></dict>	<!-- ブレーキ の -エイ- 表記(グラデイション/アップデイト と同じ書き方)。部励起/部冷気 だった(ユーザ指定 3778) -->
 	<!-- learningBOX 確認表(3697)の [直す](3736、ユーザ判定): 辞書に無い複合語 -->
 	<dict><key>phrase</key><string>仕立て方</string><key>shortcut</key><string>したてかた</string><key>pos</key><string>名詞</string></dict>	<!-- 仕立て方: したてかたです が 四縦型です/し縦型です だった -->
 	<dict><key>phrase</key><string>仕立て法</string><key>shortcut</key><string>したてほう</string><key>pos</key><string>名詞</string></dict>	<!-- 仕立て法: 四縦方 だった -->
@@ -459,7 +460,9 @@
 	<dict><key>phrase</key><string>低振動</string><key>shortcut</key><string>ていしんどう</string><key>pos</key><string>名詞</string></dict>	<!-- 低振動低騒音: 逓信同定騒音 だった -->
 	<dict><key>phrase</key><string>低騒音</string><key>shortcut</key><string>ていそうおん</string><key>pos</key><string>名詞</string></dict>
 	<dict><key>phrase</key><string>半大陸性</string><key>shortcut</key><string>はんたいりくせい</string><key>pos</key><string>名詞</string></dict>	<!-- 半大陸性(気候): 反対陸生 だった -->
-	<dict><key>phrase</key><string>三段仕込み</string><key>shortcut</key><string>さんだんじこみ</string><key>pos</key><string>名詞</string></dict>	<!-- 三段仕込み(酒造り): 辞書は送り仮名なしの 三段仕込 だけ -->	<dict><key>phrase</key><string>ブレイキ</string><key>shortcut</key><string>ぶれいき</string><key>pos</key><string>名詞</string></dict>	<!-- ブレーキ の -エイ- 表記(グラデイション/アップデイト と同じ書き方)。部励起/部冷気 だった(ユーザ指定 3778) -->
+	<dict><key>phrase</key><string>三段仕込み</string><key>shortcut</key><string>さんだんじこみ</string><key>pos</key><string>名詞</string></dict>	<!-- 三段仕込み(酒造り): 辞書は送り仮名なしの 三段仕込 だけ -->
+	<!-- learningBOX 確認表(3697)の [直す](3738、ユーザ判定) -->
+	<dict><key>phrase</key><string>粒摘み</string><key>shortcut</key><string>つぶつみ</string><key>pos</key><string>名詞</string></dict>	<!-- 粒摘み(貴腐ぶどうの摘み方): Aszúは粒摘みした が Aszú初物実した だった -->
 	<dict><key>phrase</key><string>日較差</string><key>shortcut</key><string>にっかくさ</string><key>pos</key><string>名詞</string></dict>	<!-- 気温の日較差: 辞書の読みは にちかくさ/にっこうさ だけで、よく使う にっかくさ では 日覚さ だった(learningBOX 検査 3657) -->
 	<dict><key>phrase</key><string>ミイラ化</string><key>shortcut</key><string>みいらか</string><key>pos</key><string>サ変名詞</string></dict>	<!-- ミイラ化させます が ミイラ課させます だった(learningBOX 検査 3658) -->
 	<dict><key>phrase</key><string>突然変異</string><key>shortcut</key><string>とつぜんへんい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 突然変異しやすく が とつぜん変異しやすく だった(learningBOX 検査 3658) -->
