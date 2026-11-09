@@ -189,7 +189,7 @@ take 6 で使った種(iPhone 17 Pro Max、`B907C0B8-0540-436D-9D10-2E5747498716
   App Store の 6.9 インチは iPhone 17 Pro Max(1320×2868)なので別のシミュレーターで撮る
 
 
-## iPhone Duo(未撮影。2026-11-05 に試して中断)
+## iPhone Duo(2026-11-09 に閉じた状態と開いた状態を 1 枚ずつ撮影。appstore/screenshots/duo/)
 
 App Store Connect に「iPhone Duo」の欄があり、出すと商品ページに「iPhone Duo に最適化」のバッジが付く(Apple の説明)。
 寸法は外画面 1398×2034 / 内画面 2007×2853(横向きはそれぞれ逆。Apple のページの要約から拾った数字なので提出時に ASC で照合)。
@@ -209,3 +209,17 @@ App Store Connect に「iPhone Duo」の欄があり、出すと商品ページ�
 **中断の理由**: iOS 27 のシミュレーターは中の常駐プロセス(intelligencetasksd ほか)が落ち続け、Mac の load average が
 400〜600 になってホーム画面も描かれない。iOS 27.2 の Duo(iPhone19-4 の実行環境)は Safari の初回案内が閉じられず不可。
 Xcode/シミュレーターの更新で負荷が直ってから撮る。
+
+**2026-11-09 に撮れた手順**(Mac の負荷が 5 前後のときに始めた)
+- 起動すると 5 分ほど負荷が 300〜500 になるが、外画面のホーム画面は描かれ、その後 1 桁まで下がった。27.2 の機体のままで撮れた
+- Duo には web クリップが無い。17 Pro Max の web クリップの .webclip を data/Library/WebClips に写しても白い画面になるだけなので、
+  `simctl openurl <UD> http://127.0.0.1:8765/capture-page.html` で Safari に開く(ドメイン表示ピルと ⌃⌄✓ の帯が写る)
+- **plist の AppleKeyboards に écritu を書いても、27.2 では有効にならなかった**(地球儀の一覧にも出ず、iOS は純正に戻す)。
+  DeviceHub で機体を表示し、iOS の設定アプリ › 一般 › キーボード › キーボード › 新しいキーボードを追加 で écritu を追加して解消
+- 初回だけ Safari の案内とキーボード切り替えの案内が重なって出る。DeviceHub で[続ける]を 2 回押して閉じる
+- DeviceHub につないでいると、ページの autofocus ではキーボードが出ない。入力欄を DeviceHub でクリックしてもらうと、
+  écritu が出て撮影用の仕掛けが打鍵を始める
+- 閉じる・開くを切り替えると未確定の文字が一部確定されて崩れる。切り替えた後は Safari を終了して開き直し、入力欄をクリックし直す
+- 撮影は `xcrun simctl io <UD> screenshot --display=1`(閉じた状態の外画面 1398×2034)/ `--display=3`(開いた状態の内画面 2007×2853)。
+  種は 01 だけ(停止中に App Group の plist に `screenshotScript=01`)。ほかの種は 1 枚ごとに停止→起動が要り、起動のたびに負荷が跳ねるので撮っていない
+- apply-screenshot-hooks.py は 3726(顔文字の区分を覚える)に合わせて差し込み先を直した
