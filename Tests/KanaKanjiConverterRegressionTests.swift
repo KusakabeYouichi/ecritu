@@ -28228,7 +28228,8 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(list.contains { $0.contains("憶測") && $0.contains("回転") }, "\(list)")
     }
 
-    // 表: X.10 の組は 17 組、X.9 の組は 292 組(3632 で 人蔘/人参 を追加)。2 つのグループは語を共有せず、X.10 の語は日常語の例外に入っていない
+    // 表: X.10 の組は 17 組、X.9 の組は 292 組(3632 で 人蔘/人参 を追加)。2 つのグループは語を共有せず、X.10 の語で日常語の例外に入るのは
+    // 理屈/理窟 だけ(ユーザ指定 3739)
     func testLateStandardizedTableSeparatesGroups() {
         XCTAssertEqual(KakikaeTable.lateStandardizedPairs.count, 17)
         XCTAssertEqual(KakikaeTable.switchablePairs.count, 292)
@@ -28237,7 +28238,7 @@ extension KanaKanjiConverterRegressionTests {
         let lateWords = Set(KakikaeTable.lateStandardizedPairs.flatMap { [$0.before, $0.after] })
         let switchableWords = Set(KakikaeTable.switchablePairs.flatMap { [$0.before, $0.after] })
         XCTAssertTrue(lateWords.isDisjoint(with: switchableWords), "\(lateWords.intersection(switchableWords))")
-        XCTAssertTrue(lateWords.isDisjoint(with: KakikaePreference.everydayAfterFirstPairs))
+        XCTAssertEqual(lateWords.intersection(KakikaePreference.everydayAfterFirstPairs), ["理屈", "理窟"])
     }
 
     func testDiagnosticCollocationSweep() throws {

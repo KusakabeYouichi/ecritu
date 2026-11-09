@@ -1209,10 +1209,10 @@ extension KanaKanjiConverter {
             }
         }
         for candidate in candidates {
-            // 日常語の例外(了解/回復)は X.9 の組だけ
+            // 日常語の例外(了解/回復)。X.10 の組も例外の表に載る語(理屈/理窟。3739)だけ同じに扱う
             let groups = [
                 (preference: preference?.demotingEverydayPair(for: candidate, enabled: everydayException), late: false),
-                (preference: lateStandardized, late: true),
+                (preference: lateStandardized?.demotingEverydayPair(for: candidate, enabled: everydayException), late: true),
             ].compactMap { group in group.preference.map { (preference: $0, late: group.late) } }
             let showsBoth: (KakikaePreference) -> Bool = { $0 == .bothBeforeFirst || $0 == .bothAfterFirst }
             var base = candidate

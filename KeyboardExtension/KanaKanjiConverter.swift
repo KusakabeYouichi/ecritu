@@ -1110,7 +1110,7 @@ final class KanaKanjiConverter {
                         continue
                     }
                     let preference = pair.isLateStandardized
-                        ? lateStandardized
+                        ? lateStandardized?.demotingEverydayPair(for: candidate, enabled: everydayException)
                         : basePreference?.demotingEverydayPair(for: candidate, enabled: everydayException)
                     guard preference == .bothBeforeFirst || preference == .bothAfterFirst else {
                         return nil
@@ -1215,9 +1215,9 @@ final class KanaKanjiConverter {
                 continue
             }
             let top = max(score, original[beforeForm] ?? Int.min, original[afterForm] ?? Int.min)
-            // 日常語の例外(了解/回復)は X.9 の組だけ。X.10 の組とは語が重ならない
+            // 日常語の例外(了解/回復)。X.10 の組も例外の表に載る語(理屈/理窟。3739、ユーザ指定)だけ同じに扱う
             guard let effective = isLateStandardized
-                ? latePreference
+                ? latePreference?.demotingEverydayPair(for: candidate, enabled: everydayException)
                 : switchablePreference?.demotingEverydayPair(for: candidate, enabled: everydayException) else {
                 continue
             }
