@@ -87,6 +87,7 @@ REF_MONNAIES_PLIST="$ROOT_DIR/references/monnaies.plist"
 REF_ASTRONOMIQUE_PLIST="$ROOT_DIR/references/astronomique.plist"
 REF_POKE_PLIST="$ROOT_DIR/references/poké.plist"
 REF_SAKE_PLIST="$ROOT_DIR/references/sake.plist"
+REF_MUSIQUE_PLIST="$ROOT_DIR/references/musique.plist"
 # 病名(標準病名マスター由来)。配布の許諾がまだ無い(references/ReadMe 参照)ため、
 # ECRITU_INCLUDE_MEDICAUX=1(Config/Signing.local.xcconfig など手元の設定)のときだけ入れる。
 # 補助語彙(vin/it 等)の JSON には混ぜず、sqlite に Premier の後ろで足す(偽性/犠牲・拘禁性/抗菌性 のように
@@ -222,6 +223,7 @@ python3 tools/build_second_vocab_from_references.py \
   --input-plist "$REF_ASTRONOMIQUE_PLIST" \
   --input-plist "$REF_POKE_PLIST" \
   --input-plist "$REF_SAKE_PLIST" \
+  --input-plist "$REF_MUSIQUE_PLIST" \
   --output "$TMP_SECOND" \
   --output-inflections "$TMP_SECOND_INFLECTIONS"
 

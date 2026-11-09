@@ -162,13 +162,7 @@
 	        <dict><key>phrase</key><string>寅の日</string><key>shortcut</key><string>とらのひ</string></dict>
 	        <dict><key>phrase</key><string>巳の日</string><key>shortcut</key><string>みのひ</string></dict>
 	        <dict><key>phrase</key><string>己巳の日</string><key>shortcut</key><string>つちのとみのひ</string></dict>
-	<!-- 音楽 -->
-	        <dict><key>phrase</key><string>McIntosh</string><key>shortcut</key><string>まっきんとっしゅ</string></dict>
-	        <dict><key>phrase</key><string>Fostex</string><key>shortcut</key><string>ふぉすてっくす</string></dict>
-	        <dict><key>phrase</key><string>フォステックス</string><key>shortcut</key><string>ふぉすてっくす</string></dict>
-	        <dict><key>phrase</key><string>エレヴォイ</string><key>shortcut</key><string>えれゔぉい</string></dict>
-	        <dict><key>phrase</key><string>Electro-Voice</string><key>shortcut</key><string>えれくとろゔぉいす</string></dict>
-	        <dict><key>phrase</key><string>雅楽</string><key>shortcut</key><string>ががく</string></dict>	<!-- Sudachiにもある(基底3位/3、コスト6545) -->
+	<!-- 音楽(音部記号と音楽記号は、書いた順に並べ読みの先頭に出す compenser の働きに頼るのでここに残す。ほかの音楽の語は musique.plist。3743) -->
 	        <dict><key>phrase</key><string>ト音記号</string><key>shortcut</key><string>とおんきごう</string></dict>
 	        <dict><key>phrase</key><string>ヘ音記号</string><key>shortcut</key><string>へおんきごう</string></dict>
 	        <dict><key>phrase</key><string>ハ音記号</string><key>shortcut</key><string>はおんきごう</string></dict>

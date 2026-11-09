@@ -20800,6 +20800,43 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Category.music.symbols(basicOrder: .ascii, temperatureUnit: .celsius).count, 11)
     }
 
+    // 3743: 音楽の用語を references/musique.plist(補助語彙)にまとめた。雅楽の用語(Wikipedia の雅楽・舞楽の記事と eastvalley の
+    // 音律表から)を足し、compenser の 音楽 の節の 雅楽・オーディオ機器 を移した(ユーザ指定)。辞書に無かった語が出て、同じ読みの
+    // 一般語は先頭のまま(補助語彙は弱い層なので、当局/殺到 の前に 当曲/颯踏 は出ない)。compenser で先頭だった 雅楽 は先頭のまま。
+    // 音部記号・音楽記号は compenser の並び(言葉→記号)に頼るので compenser に残した(移すと おんぷ で ♪ が 音符 より前に出た)
+    func testMusiqueVocabularyAddsGagakuTermsWithoutTakingOverReadings() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for (reading, expected) in [
+            ("いちこつちょう", "壱越調"),
+            ("えてんらく", "越天楽"),
+            ("しゅんのうでん", "春鶯囀"),
+            ("ばんしきちょう", "盤渉調"),
+            ("りゅうてき", "龍笛"),
+            ("ががく", "雅楽"),
+            ("とおんきごう", "ト音記号"),
+        ] {
+            let candidates = converter.candidates(for: reading, limit: 12, systemCandidateMode: .surface)
+            XCTAssertEqual(candidates.first, expected, "\(reading) \(candidates)")
+        }
+        for (reading, term) in [
+            ("とうきょく", "当曲"),
+            ("さっとう", "颯踏"),
+            ("かんしゅう", "甘州"),
+            ("びょうじょう", "屏上"),
+        ] {
+            let candidates = converter.candidates(for: reading, limit: 40, systemCandidateMode: .surface)
+            XCTAssertNotEqual(candidates.first, term, "\(reading) \(candidates)")
+            XCTAssertTrue(candidates.contains(term), "\(reading) \(term) \(candidates)")
+        }
+        // 1 字の 笙(しょう)は今の辞書に無いので有効にした(ユーザ指定)。単独では出て、しょう を含む文には紛れ込まない
+        XCTAssertTrue(converter.candidates(for: "しょう", limit: 300, systemCandidateMode: .surface).contains("笙"))
+        for reading in ["しょうがない", "しょうをとった", "しょうがっこう", "だいいっしょう", "けいしょうがある"] {
+            let top = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).first ?? ""
+            XCTAssertFalse(top.contains("笙"), "\(reading) → \(top)")
+        }
+    }
+
     // 3041: しめちゃうらしいぞ に 閉めちゃう が無い(ユーザ報告)。基底 しめる の seed 順を 閉める 先頭にし
     // (活用派生と連文節 topK=3 の供給に継がれる)、占める は 3 番目に残して 半分を占めています の供給を守る。
     // 目的語による書き分けは を を挟む連語表(ドア→閉/ネクタイ→締/首→絞)

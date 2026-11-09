@@ -14,10 +14,12 @@ ryukyu.plist			# [沖縄辞書]
 it.plist				# [IT]
 drapeaux.plist			# [国旗] 読みは作者付与(2026-09-04 確認)。長押しの仏語国名は Locale(fr_FR) から実行時生成で、表は持たない
 monnaies.plist			# [通貨]
-sake.plist				# [清酒の銘柄] ※この 1 つだけ外部からの取り込み: Wikipedia 日本語版「日本酒の銘柄一覧」(https://ja.wikipedia.org/wiki/日本酒の銘柄一覧)から 2026-10-15 に取得した
+sake.plist				# [清酒の銘柄] ※外部からの取り込み(ほかに musique.plist の雅楽の節): Wikipedia 日本語版「日本酒の銘柄一覧」(https://ja.wikipedia.org/wiki/日本酒の銘柄一覧)から 2026-10-15 に取得した
 						#   銘柄名と読みの語だけ(説明文・構成は使わない)。出典 Wikipedia 日本語版の執筆者、CC BY-SA 4.0。読みが記事にあるものはその読み、かな書き・カタカナ名の銘柄は表記から。空白・記号を含むものは除く。短い語(表記 1 字・読み 2 字以下)と読みが記事に無い漢字名(AI 推測)はコメントアウトで置く(作者確認済みの 15 件は有効)。
 						#   アプリのクレジットにも出典を書くこと(済: APP_STORE_OPEN_SOURCE_NOTICES.md の Sake brand names 節)。3632
 astronomique.plist		# [天文] 恒星の固有名(IAU 承認名。カタカナ+原語、等級別、コメントに星座)と 88 星座(和名+IAU ラテン語名)。作者編纂(2026-09-13)
+musique.plist			# [音楽] 雅楽の用語(Wikipedia 日本語版の「雅楽」「舞楽」カテゴリーの記事の「漢字(よみ)」と eastvalley の音律表 https://www.eastvalley.or.jp/onritsuhyo.html から 2026-11-09 に集めた。
+						#   語と読みだけ。出典 Wikipedia 日本語版の執筆者、CC BY-SA 4.0)と、compenser から移した 雅楽・オーディオ機器(音部記号と音楽記号は compenser の並びに頼るので compenser に残す)。表記が 1 字か読みが 2 文字以下の語と、出典に読みの無い語はコメントアウトで置く(sake と同じ基準)。3743
 emoji.plist				# [絵文字] CLDR ja アノテーション由来(SudachiPyで読み化+手動整備。2026-08-31 に全読みのCLDR帰着を検証済み、f8c4c10)
 personnalités.plist	# [人名]
 kanagaki.plist			# [かなで書く言葉] 所謂/即ち/下さい/事/此処 等、漢字で書けるが今はかなで書くことが多い語。節(■ 英名 日本語名)が仲間で、コンテナー X.8 で仲間ごとに抑制/かな先頭を選ぶ。

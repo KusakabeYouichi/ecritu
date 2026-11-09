@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<!-- 音楽(musique): 音楽の用語。補助語彙(ÉcrituSecondVocab)に入る。2026-11-09 新設。雅楽 の節は Wikipedia 日本語版の「雅楽」「舞楽」カテゴリーの記事と eastvalley の音律表から集めた(出典は節の頭のコメント)。オーディオ機器の節は compenser.plist の「音楽」から移した(音部記号と音楽記号は compenser の並びに頼るので compenser に残す)。コメントアウトはコメントの開始タグを行頭に置き、有効な行(タブ 1 つ)と dict の頭をそろえる -->
+
+	<!-- ■ 雅楽 -->
+	<!-- 出典: Wikipedia 日本語版の「雅楽」「舞楽」カテゴリーの記事の冒頭・本文の「漢字(よみ)」(2026-11-09 取得。執筆者、CC BY-SA 4.0)、https://www.eastvalley.or.jp/onritsuhyo.html(十二律と五音、五調子)。行末コメント: 出典 / 今の辞書の状態(「今の辞書にもある」=同じ漢字と読みがすでに辞書にある、「同じ読みの先頭は X」=同じ読みの今の第 1 候補)/ 補足。表記が 1 字か読みが 2 文字以下の語と、出典に読みの無い語は、並べるだけでコメントアウト(sake.plist と同じ基準) -->
+	<!-- □ 種目・様式 -->
+	<dict><key>phrase</key><string>雅楽</string><key>shortcut</key><string>ががく</string></dict>	<!-- compenser.plist から移した(有効のまま) / 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>唐楽</string><key>shortcut</key><string>とうがく</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>高麗楽</string><key>shortcut</key><string>こまがく</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>林邑楽</string><key>shortcut</key><string>りんゆうがく</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>渤海楽</string><key>shortcut</key><string>ぼっかいがく</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>百済楽</string><key>shortcut</key><string>くだらがく</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>新羅楽</string><key>shortcut</key><string>しらぎがく</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>度羅楽</string><key>shortcut</key><string>とらがく</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>伎楽</string><key>shortcut</key><string>ぎがく</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>国風歌舞</string><key>shortcut</key><string>くにぶりのうたまい</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>国風歌舞</string><key>shortcut</key><string>くにぶりかぶ</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>管絃</string><key>shortcut</key><string>かんげん</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>舞楽</string><key>shortcut</key><string>ぶがく</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>催馬楽</string><key>shortcut</key><string>さいばら</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>朗詠</string><key>shortcut</key><string>ろうえい</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>東遊</string><key>shortcut</key><string>あずまあそび</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>久米歌</string><key>shortcut</key><string>くめうた</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>久米舞</string><key>shortcut</key><string>くめまい</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>大歌</string><key>shortcut</key><string>おおうた</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>神楽歌</string><key>shortcut</key><string>かぐらうた</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>大和歌</string><key>shortcut</key><string>やまとうた</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>倭歌</string><key>shortcut</key><string>やまとうた</string></dict>	<!-- 出典 Wikipedia / 同じ読みの先頭は 大和歌 -->
+<!--<dict><key>phrase</key><string>倭歌</string><key>shortcut</key><string>わか</string></dict>	(読みが短い。出典 Wikipedia / 同じ読みの先頭は 和香) -->
+	<dict><key>phrase</key><string>和舞</string><key>shortcut</key><string>やまとまい</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>駿河舞</string><key>shortcut</key><string>するがまい</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>求子舞</string><key>shortcut</key><string>もとめごまい</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>人長舞</string><key>shortcut</key><string>にんじょうまい</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>誄歌</string><key>shortcut</key><string>るいか</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>五節舞</string><key>shortcut</key><string>ごせちのまい</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>御遊</string><key>shortcut</key><string>ぎょゆう</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>路次楽</string><key>shortcut</key><string>るじがく</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>御座楽</string><key>shortcut</key><string>うざがく</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある / 琉球王国の宮廷音楽 -->
+	<dict><key>phrase</key><string>明楽</string><key>shortcut</key><string>みんがく</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>燕楽</string><key>shortcut</key><string>えんがく</string></dict>	<!-- 出典 Wikipedia / 同じ読みの先頭は 円覚 / 中国の宴饗楽 -->
+	<dict><key>phrase</key><string>遠楽</string><key>shortcut</key><string>えんがく</string></dict>	<!-- 出典 Wikipedia / 同じ読みの先頭は 円覚 -->
+	<dict><key>phrase</key><string>番舞</string><key>shortcut</key><string>つがいまい</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>右方平舞</string><key>shortcut</key><string>うほうひらまい</string></dict>	<!-- 出典 Wikipedia -->
+
+	<!-- □ 楽器(管) -->
+	<dict><key>phrase</key><string>笙</string><key>shortcut</key><string>しょう</string></dict>	<!-- 出典 Wikipedia / 同じ読みの先頭は 尚 / 表記が 1 字だが有効(今の辞書に無い。ユーザ指定) -->
+	<dict><key>phrase</key><string>鳳笙</string><key>shortcut</key><string>ほうしょう</string></dict>	<!-- 出典 Wikipedia / 同じ読みの先頭は 放縦 / 笙の別名 -->
+	<dict><key>phrase</key><string>篳篥</string><key>shortcut</key><string>ひちりき</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>大篳篥</string><key>shortcut</key><string>おおひちりき</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>龍笛</string><key>shortcut</key><string>りゅうてき</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>横笛</string><key>shortcut</key><string>おうてき</string></dict>	<!-- 出典 Wikipedia / 同じ読みの先頭は 青出木 / 龍笛の別称。おうじょう とも -->
+	<dict><key>phrase</key><string>高麗笛</string><key>shortcut</key><string>こまぶえ</string></dict>	<!-- 出典 Wikipedia / 同じ読みの先頭は 狛笛 -->
+	<dict><key>phrase</key><string>神楽笛</string><key>shortcut</key><string>かぐらぶえ</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>東遊笛</string><key>shortcut</key><string>あずまあそびぶえ</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>莫目</string><key>shortcut</key><string>まくも</string></dict>	<!-- 出典 Wikipedia / 同じ読みの先頭は 間雲 -->
+	<dict><key>phrase</key><string>莫牟</string><key>shortcut</key><string>まくも</string></dict>	<!-- 出典 Wikipedia / 同じ読みの先頭は 間雲 -->
+<!--<dict><key>phrase</key><string>竽</string><key>shortcut</key><string>う</string></dict>	(読みが短い。出典 Wikipedia / 同じ読みの先頭は ウ) -->
+
+	<!-- □ 楽器(絃) -->
+	<dict><key>phrase</key><string>和琴</string><key>shortcut</key><string>わごん</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>和琴</string><key>shortcut</key><string>やまとごと</string></dict>	<!-- 出典 Wikipedia / 同じ読みの先頭は 大和琴 -->
+	<dict><key>phrase</key><string>大和琴</string><key>shortcut</key><string>やまとごと</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>東琴</string><key>shortcut</key><string>あずまごと</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+<!--<dict><key>phrase</key><string>箏</string><key>shortcut</key><string>そう</string></dict>	(読みが短い。出典 Wikipedia / 同じ読みの先頭は ソウ) -->
+<!--<dict><key>phrase</key><string>箜篌</string><key>shortcut</key><string>くご</string></dict>	(読みが短い。出典 Wikipedia / 今の辞書にもある) -->
+<!--<dict><key>phrase</key><string>瑟</string><key>shortcut</key><string>しつ</string></dict>	(読みが短い。出典 Wikipedia / 今の辞書にもある) -->
+	<dict><key>phrase</key><string>阮咸</string><key>shortcut</key><string>げんかん</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+<!--<dict><key>phrase</key><string>楽箏</string><key>shortcut</key><string>がくそう</string></dict>	(要確認。出典に読みなし / 今の辞書にもある) -->
+<!--<dict><key>phrase</key><string>楽琵琶</string><key>shortcut</key><string>がくびわ</string></dict>	(要確認。出典に読みなし) -->
+
+	<!-- □ 楽器(打) -->
+	<dict><key>phrase</key><string>羯鼓</string><key>shortcut</key><string>かっこ</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>鞨鼓</string><key>shortcut</key><string>かっこ</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>鉦鼓</string><key>shortcut</key><string>しょうこ</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>釣太鼓</string><key>shortcut</key><string>つりだいこ</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>楽太鼓</string><key>shortcut</key><string>がくだいこ</string></dict>	<!-- 出典 Wikipedia -->
+<!--<dict><key>phrase</key><string>大太鼓</string><key>shortcut</key><string>だだいこ</string></dict>	(要確認。出典に読みなし / 雅楽の大型の太鼓。出典の記事は一般の おおだいこ) -->
+	<dict><key>phrase</key><string>三ノ鼓</string><key>shortcut</key><string>さんのつづみ</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>三の鼓</string><key>shortcut</key><string>さんのつづみ</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>一鼓</string><key>shortcut</key><string>いっこ</string></dict>	<!-- 出典 Wikipedia / 同じ読みの先頭は 一顧 -->
+	<dict><key>phrase</key><string>細腰鼓</string><key>shortcut</key><string>さいようこ</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>笏拍子</string><key>shortcut</key><string>しゃくびょうし</string></dict>	<!-- 出典 Wikipedia -->
+
+	<!-- □ 楽器の部分・付属 -->
+<!--<dict><key>phrase</key><string>簧</string><key>shortcut</key><string>した</string></dict>	(読みが短い。出典 Wikipedia / 今の辞書にもある / 笙の簧) -->
+<!--<dict><key>phrase</key><string>匏</string><key>shortcut</key><string>ほう</string></dict>	(読みが短い。出典 Wikipedia / 同じ読みの先頭は ホウ / 笙の頭) -->
+	<dict><key>phrase</key><string>逆輪</string><key>shortcut</key><string>さかわ</string></dict>	<!-- 出典 Wikipedia / 同じ読みの先頭は 酒匂 -->
+	<dict><key>phrase</key><string>屏上</string><key>shortcut</key><string>びょうじょう</string></dict>	<!-- 出典 Wikipedia / 同じ読みの先頭は 病状 -->
+	<dict><key>phrase</key><string>蘆舌</string><key>shortcut</key><string>ろぜつ</string></dict>	<!-- 出典 Wikipedia / 篳篥のリード -->
+	<dict><key>phrase</key><string>図紙</string><key>shortcut</key><string>ずがみ</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>歌口</string><key>shortcut</key><string>うたぐち</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>指孔</string><key>shortcut</key><string>ゆびあな</string></dict>	<!-- 出典 Wikipedia / 同じ読みの先頭は 指穴 -->
+<!--<dict><key>phrase</key><string>柱</string><key>shortcut</key><string>じ</string></dict>	(読みが短い。出典 Wikipedia / 今の辞書にもある / 箏・和琴の柱) -->
+	<dict><key>phrase</key><string>琴軋</string><key>shortcut</key><string>ことさぎ</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>葦津緒</string><key>shortcut</key><string>あしづお</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>琴持</string><key>shortcut</key><string>こともち</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>管箱</string><key>shortcut</key><string>かんばこ</string></dict>	<!-- 出典 Wikipedia -->
+
+	<!-- □ 十二律(音名。洋音名は D から順に) -->
+	<dict><key>phrase</key><string>十二律</string><key>shortcut</key><string>じゅうにりつ</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>壱越</string><key>shortcut</key><string>いちこつ</string></dict>	<!-- 出典 eastvalley 音律表 / D -->
+	<dict><key>phrase</key><string>断金</string><key>shortcut</key><string>たんぎん</string></dict>	<!-- 出典 eastvalley 音律表 / 同じ読みの先頭は 但銀 / D# -->
+	<dict><key>phrase</key><string>平調</string><key>shortcut</key><string>ひょうじょう</string></dict>	<!-- 出典 eastvalley 音律表 / 今の辞書にもある / E -->
+	<dict><key>phrase</key><string>勝絶</string><key>shortcut</key><string>しょうぜつ</string></dict>	<!-- 出典 eastvalley 音律表 / F -->
+	<dict><key>phrase</key><string>下無</string><key>shortcut</key><string>しもむ</string></dict>	<!-- 出典 eastvalley 音律表 / F# -->
+	<dict><key>phrase</key><string>双調</string><key>shortcut</key><string>そうじょう</string></dict>	<!-- 出典 eastvalley 音律表 / 同じ読みの先頭は 相乗 / G -->
+	<dict><key>phrase</key><string>鳧鐘</string><key>shortcut</key><string>ふしょう</string></dict>	<!-- 出典 eastvalley 音律表 / 同じ読みの先頭は 府省 / G# -->
+	<dict><key>phrase</key><string>黄鐘</string><key>shortcut</key><string>おうしき</string></dict>	<!-- 出典 eastvalley 音律表 / 今の辞書にもある / A -->
+	<dict><key>phrase</key><string>鸞鏡</string><key>shortcut</key><string>らんけい</string></dict>	<!-- 出典 eastvalley 音律表 / 同じ読みの先頭は 卵形 / A# -->
+	<dict><key>phrase</key><string>盤渉</string><key>shortcut</key><string>ばんしき</string></dict>	<!-- 出典 eastvalley 音律表 / 今の辞書にもある / B -->
+	<dict><key>phrase</key><string>神仙</string><key>shortcut</key><string>しんせん</string></dict>	<!-- 出典 eastvalley 音律表 / 今の辞書にもある / C -->
+	<dict><key>phrase</key><string>上無</string><key>shortcut</key><string>かみむ</string></dict>	<!-- 出典 eastvalley 音律表 / C# -->
+
+	<!-- □ 五音・旋法 -->
+	<dict><key>phrase</key><string>五音</string><key>shortcut</key><string>ごいん</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>五声</string><key>shortcut</key><string>ごせい</string></dict>	<!-- 出典 Wikipedia / 同じ読みの先頭は 互生 -->
+<!--<dict><key>phrase</key><string>宮</string><key>shortcut</key><string>きゅう</string></dict>	(表記が 1 字。出典 eastvalley 音律表 / 今の辞書にもある) -->
+<!--<dict><key>phrase</key><string>商</string><key>shortcut</key><string>しょう</string></dict>	(表記が 1 字。出典 eastvalley 音律表 / 今の辞書にもある) -->
+<!--<dict><key>phrase</key><string>角</string><key>shortcut</key><string>かく</string></dict>	(読みが短い。出典 eastvalley 音律表 / 今の辞書にもある) -->
+<!--<dict><key>phrase</key><string>徴</string><key>shortcut</key><string>ち</string></dict>	(読みが短い。出典 eastvalley 音律表 / 同じ読みの先頭は チ) -->
+<!--<dict><key>phrase</key><string>羽</string><key>shortcut</key><string>う</string></dict>	(読みが短い。出典 eastvalley 音律表 / 今の辞書にもある) -->
+<!--<dict><key>phrase</key><string>呂</string><key>shortcut</key><string>りょ</string></dict>	(読みが短い。出典 eastvalley 音律表 / 今の辞書にもある) -->
+<!--<dict><key>phrase</key><string>律</string><key>shortcut</key><string>りつ</string></dict>	(読みが短い。出典 eastvalley 音律表 / 今の辞書にもある) -->
+	<dict><key>phrase</key><string>呂旋法</string><key>shortcut</key><string>りょせんぽう</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>律旋法</string><key>shortcut</key><string>りつせんぽう</string></dict>	<!-- 出典 Wikipedia -->
+
+	<!-- □ 調子 -->
+	<dict><key>phrase</key><string>壱越調</string><key>shortcut</key><string>いちこつちょう</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>平調</string><key>shortcut</key><string>ひょうじょう</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>双調</string><key>shortcut</key><string>そうじょう</string></dict>	<!-- 出典 Wikipedia / 同じ読みの先頭は 相乗 -->
+	<dict><key>phrase</key><string>黄鐘調</string><key>shortcut</key><string>おうしきちょう</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>盤渉調</string><key>shortcut</key><string>ばんしきちょう</string></dict>	<!-- 出典 Wikipedia -->
+<!--<dict><key>phrase</key><string>太食調</string><key>shortcut</key><string>たいしきちょう</string></dict>	(要確認。出典に読みなし / 六調子の 1 つ。出典の記事に読みが無い) -->
+	<dict><key>phrase</key><string>沙陀調</string><key>shortcut</key><string>さだちょう</string></dict>	<!-- 出典 Wikipedia / 同じ読みの先頭は 佐田町 -->
+	<dict><key>phrase</key><string>高麗壱越調</string><key>shortcut</key><string>こまいちこつちょう</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>高麗平調</string><key>shortcut</key><string>こまひょうじょう</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>高麗双調</string><key>shortcut</key><string>こまそうじょう</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>狛調子</string><key>shortcut</key><string>こまぢょうし</string></dict>	<!-- 出典 Wikipedia -->
+
+	<!-- □ 曲の構成・拍子・奏法 -->
+	<dict><key>phrase</key><string>序破急</string><key>shortcut</key><string>じょはきゅう</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+<!--<dict><key>phrase</key><string>序</string><key>shortcut</key><string>じょ</string></dict>	(読みが短い。出典 Wikipedia / 今の辞書にもある) -->
+<!--<dict><key>phrase</key><string>破</string><key>shortcut</key><string>は</string></dict>	(読みが短い。出典 Wikipedia / 今の辞書にもある) -->
+<!--<dict><key>phrase</key><string>急</string><key>shortcut</key><string>きゅう</string></dict>	(表記が 1 字。出典 Wikipedia / 今の辞書にもある) -->
+	<dict><key>phrase</key><string>当曲</string><key>shortcut</key><string>とうきょく</string></dict>	<!-- 出典 Wikipedia / 同じ読みの先頭は 当局 -->
+	<dict><key>phrase</key><string>音取</string><key>shortcut</key><string>ねとり</string></dict>	<!-- 出典 Wikipedia / 同じ読みの先頭は 根取り -->
+	<dict><key>phrase</key><string>颯踏</string><key>shortcut</key><string>さっとう</string></dict>	<!-- 出典 Wikipedia / 同じ読みの先頭は 殺到 -->
+	<dict><key>phrase</key><string>入破</string><key>shortcut</key><string>じゅは</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>鳥声</string><key>shortcut</key><string>てっしょう</string></dict>	<!-- 出典 Wikipedia / 同じ読みの先頭は 徹宵 -->
+	<dict><key>phrase</key><string>急声</string><key>shortcut</key><string>きっしょう</string></dict>	<!-- 出典 Wikipedia / 同じ読みの先頭は 吉祥 -->
+	<dict><key>phrase</key><string>遊声</string><key>shortcut</key><string>ゆうせい</string></dict>	<!-- 出典 Wikipedia / 同じ読みの先頭は 幽栖 -->
+<!--<dict><key>phrase</key><string>延</string><key>shortcut</key><string>のべ</string></dict>	(読みが短い。出典 Wikipedia / 今の辞書にもある / 延拍子の延) -->
+<!--<dict><key>phrase</key><string>只</string><key>shortcut</key><string>ただ</string></dict>	(読みが短い。出典 Wikipedia / 今の辞書にもある / 只拍子の只) -->
+<!--<dict><key>phrase</key><string>早</string><key>shortcut</key><string>はや</string></dict>	(読みが短い。出典 Wikipedia / 今の辞書にもある / 早拍子の早) -->
+	<dict><key>phrase</key><string>唱歌</string><key>shortcut</key><string>しょうが</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>合竹</string><key>shortcut</key><string>あいたけ</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>一竹</string><key>shortcut</key><string>いっちく</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>塩梅</string><key>shortcut</key><string>えんばい</string></dict>	<!-- 出典 Wikipedia / 同じ読みの先頭は 煙灰 / 篳篥の奏法 -->
+<!--<dict><key>phrase</key><string>責</string><key>shortcut</key><string>せめ</string></dict>	(読みが短い。出典 Wikipedia / 今の辞書にもある) -->
+	<dict><key>phrase</key><string>吹止句</string><key>shortcut</key><string>ふきどめく</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>音頭</string><key>shortcut</key><string>おんど</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+
+	<!-- □ 唐楽の曲(左方) -->
+	<dict><key>phrase</key><string>越天楽</string><key>shortcut</key><string>えてんらく</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>萬歳楽</string><key>shortcut</key><string>まんざいらく</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>万歳楽</string><key>shortcut</key><string>まんざいらく</string></dict>	<!-- 出典 Wikipedia / 同じ読みの先頭は 萬歳楽 -->
+	<dict><key>phrase</key><string>太平楽</string><key>shortcut</key><string>たいへいらく</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>蘭陵王</string><key>shortcut</key><string>らんりょうおう</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>新羅陵王</string><key>shortcut</key><string>しんらりょうおう</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>春鶯囀</string><key>shortcut</key><string>しゅんのうでん</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>五常楽</string><key>shortcut</key><string>ごしょうらく</string></dict>	<!-- 出典 Wikipedia / 同じ読みの先頭は 後生楽 -->
+	<dict><key>phrase</key><string>五常楽</string><key>shortcut</key><string>ごじょうらく</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>青海波</string><key>shortcut</key><string>せいがいは</string></dict>	<!-- 出典 Wikipedia -->
+<!--<dict><key>phrase</key><string>青海波</string><key>shortcut</key><string>せいかいは</string></dict>	(入れない: 連文節で 正解は を奪う。せいかいはだれ が 青海波誰 になった(全網で 15 件)。せいがいは の行は有効。出典 Wikipedia) -->
+	<dict><key>phrase</key><string>迦陵頻</string><key>shortcut</key><string>かりょうびん</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>抜頭</string><key>shortcut</key><string>ばとう</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>胡飲酒</string><key>shortcut</key><string>こんじゅ</string></dict>	<!-- 出典 Wikipedia / 同じ読みの先頭は 紺綬 -->
+	<dict><key>phrase</key><string>皇麞</string><key>shortcut</key><string>おうじょう</string></dict>	<!-- 出典 Wikipedia / 同じ読みの先頭は 往生 -->
+	<dict><key>phrase</key><string>皇帝三台</string><key>shortcut</key><string>おうだいさんだい</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>甘州</string><key>shortcut</key><string>かんしゅう</string></dict>	<!-- 出典 Wikipedia / 同じ読みの先頭は 監修 -->
+	<dict><key>phrase</key><string>傾盃楽</string><key>shortcut</key><string>けいばいらく</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>還城楽</string><key>shortcut</key><string>げんじょうらく</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>採桑老</string><key>shortcut</key><string>さいそうろう</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>三台塩</string><key>shortcut</key><string>さんだいえん</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>春庭楽</string><key>shortcut</key><string>しゅんでいらく</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>承和楽</string><key>shortcut</key><string>しょうわらく</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>千秋楽</string><key>shortcut</key><string>せんしゅうらく</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>想夫恋</string><key>shortcut</key><string>そうぶれん</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>蘇合香</string><key>shortcut</key><string>そこうこう</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>蘇合</string><key>shortcut</key><string>そこう</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>蘇莫者</string><key>shortcut</key><string>そまくしゃ</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>庶人三台</string><key>shortcut</key><string>そにんさんだい</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>打毬楽</string><key>shortcut</key><string>たぎゅうらく</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>長慶子</string><key>shortcut</key><string>ちょうげいし</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>桃李花</string><key>shortcut</key><string>とうりか</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>陪臚</string><key>shortcut</key><string>ばいろ</string></dict>	<!-- 出典 Wikipedia / 同じ読みの先頭は 場色 -->
+	<dict><key>phrase</key><string>楊真操</string><key>shortcut</key><string>ようしんそう</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>啄木</string><key>shortcut</key><string>たくぼく</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある / 楽琵琶の秘曲 -->
+	<dict><key>phrase</key><string>一曲</string><key>shortcut</key><string>いっきょく</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>振鉾</string><key>shortcut</key><string>えんぶ</string></dict>	<!-- 出典 Wikipedia / 同じ読みの先頭は 閻浮 -->
+	<dict><key>phrase</key><string>朝小子</string><key>shortcut</key><string>ちょうこし</string></dict>	<!-- 出典 Wikipedia / 太平楽の道行 -->
+	<dict><key>phrase</key><string>武昌楽</string><key>shortcut</key><string>ぶしょうらく</string></dict>	<!-- 出典 Wikipedia / 太平楽の破 -->
+	<dict><key>phrase</key><string>合歓塩</string><key>shortcut</key><string>がっかえん</string></dict>	<!-- 出典 Wikipedia / 太平楽の急 -->
+	<dict><key>phrase</key><string>四箇之大曲</string><key>shortcut</key><string>しかのたいきょく</string></dict>	<!-- 出典 Wikipedia -->
+<!--<dict><key>phrase</key><string>賀殿</string><key>shortcut</key><string>かてん</string></dict>	(読みが短い・要確認。出典に読みなし / 同じ読みの先頭は 加添 / 出典の記事に読みが無い) -->
+
+	<!-- □ 高麗楽の曲(右方) -->
+	<dict><key>phrase</key><string>納曽利</string><key>shortcut</key><string>なそり</string></dict>	<!-- 出典 Wikipedia / 同じ読みの先頭は 納蘇利 -->
+	<dict><key>phrase</key><string>延喜楽</string><key>shortcut</key><string>えんぎらく</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>地久</string><key>shortcut</key><string>ちきゅう</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>胡蝶</string><key>shortcut</key><string>こちょう</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>蝴蝶楽</string><key>shortcut</key><string>こちょうらく</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>蘇志摩利</string><key>shortcut</key><string>そしまり</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>蘇利古</string><key>shortcut</key><string>そりこ</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>貴徳</string><key>shortcut</key><string>きとく</string></dict>	<!-- 出典 Wikipedia / 同じ読みの先頭は 奇特 -->
+	<dict><key>phrase</key><string>林歌</string><key>shortcut</key><string>りんが</string></dict>	<!-- 出典 Wikipedia / 同じ読みの先頭は リンガ -->
+	<dict><key>phrase</key><string>秋庭歌</string><key>shortcut</key><string>しゅうていが</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>花栄楽</string><key>shortcut</key><string>かえいらく</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>班朗徳</string><key>shortcut</key><string>はんろうとく</string></dict>	<!-- 出典 Wikipedia -->
+
+	<!-- □ 東遊の曲の部分 -->
+	<dict><key>phrase</key><string>一歌</string><key>shortcut</key><string>いちうた</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>二歌</string><key>shortcut</key><string>にうた</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>駿河歌</string><key>shortcut</key><string>するがうた</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>求子歌</string><key>shortcut</key><string>もとめごのうた</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>大比礼歌</string><key>shortcut</key><string>おおひれのうた</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>大比礼歌</string><key>shortcut</key><string>おおびれのうた</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>加多於呂志</string><key>shortcut</key><string>かたおろし</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>音出</string><key>shortcut</key><string>こわだし</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>於振</string><key>shortcut</key><string>おぶり</string></dict>	<!-- 出典 Wikipedia / 同じ読みの先頭は オブリ -->
+
+	<!-- □ 装束・面・舞台 -->
+	<dict><key>phrase</key><string>襲装束</string><key>shortcut</key><string>かさねしょうぞく</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>常装束</string><key>shortcut</key><string>つねしょうぞく</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>蛮絵装束</string><key>shortcut</key><string>ばんえしょうぞく</string></dict>	<!-- 出典 Wikipedia -->
+<!--<dict><key>phrase</key><string>袍</string><key>shortcut</key><string>ほう</string></dict>	(読みが短い。出典 Wikipedia / 今の辞書にもある) -->
+	<dict><key>phrase</key><string>下襲</string><key>shortcut</key><string>したがさね</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>半臂</string><key>shortcut</key><string>はんぴ</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>表袴</string><key>shortcut</key><string>うえのはかま</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>大口</string><key>shortcut</key><string>おおくち</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>指貫</string><key>shortcut</key><string>さしぬき</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+<!--<dict><key>phrase</key><string>単</string><key>shortcut</key><string>ひとえ</string></dict>	(表記が 1 字。出典 Wikipedia / 今の辞書にもある) -->
+	<dict><key>phrase</key><string>裲襠</string><key>shortcut</key><string>りょうとう</string></dict>	<!-- 出典 Wikipedia / 同じ読みの先頭は 両党 -->
+	<dict><key>phrase</key><string>踏懸</string><key>shortcut</key><string>ふがけ</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>絲鞋</string><key>shortcut</key><string>しがい</string></dict>	<!-- 出典 Wikipedia / 同じ読みの先頭は 死骸 -->
+	<dict><key>phrase</key><string>鳥兜</string><key>shortcut</key><string>とりかぶと</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>雑面</string><key>shortcut</key><string>ぞうめん</string></dict>	<!-- 出典 Wikipedia / 同じ読みの先頭は 像面 -->
+	<dict><key>phrase</key><string>片肩袒</string><key>shortcut</key><string>かたかたぬぎ</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>高舞台</string><key>shortcut</key><string>たかぶたい</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>出手</string><key>shortcut</key><string>ずるて</string></dict>	<!-- 出典 Wikipedia / 舞人の登場の所作 -->
+	<dict><key>phrase</key><string>入手</string><key>shortcut</key><string>いるて</string></dict>	<!-- 出典 Wikipedia / 舞人の退場の所作 -->
+
+	<!-- □ 楽所・楽家・組織 -->
+	<dict><key>phrase</key><string>楽所</string><key>shortcut</key><string>がくそ</string></dict>	<!-- 出典 Wikipedia / 同じ読みの先頭は 学祖 -->
+	<dict><key>phrase</key><string>楽所</string><key>shortcut</key><string>がくしょ</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>楽人</string><key>shortcut</key><string>がくにん</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>楽家</string><key>shortcut</key><string>がっけ</string></dict>	<!-- 出典 Wikipedia / 同じ読みの先頭は 脚気 -->
+	<dict><key>phrase</key><string>陪従</string><key>shortcut</key><string>へいじゅう</string></dict>	<!-- 出典 Wikipedia / 同じ読みの先頭は 兵十 / 出典どおり。べいじゅう とも読まれる -->
+	<dict><key>phrase</key><string>雅楽寮</string><key>shortcut</key><string>うたりょう</string></dict>	<!-- 出典 Wikipedia -->
+<!--<dict><key>phrase</key><string>雅楽寮</string><key>shortcut</key><string>ががくりょう</string></dict>	(要確認。出典に読みなし / 出典は うたりょう だけ) -->
+	<dict><key>phrase</key><string>雅楽局</string><key>shortcut</key><string>ががくきょく</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>大内楽所</string><key>shortcut</key><string>おおうちがくそ</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>南都楽所</string><key>shortcut</key><string>なんとがくそ</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>天王寺楽所</string><key>shortcut</key><string>てんのうじがくそ</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>三方楽所</string><key>shortcut</key><string>さんぽうがくそ</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>紅葉山楽人</string><key>shortcut</key><string>もみじやまがくにん</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>宮内庁式部職楽部</string><key>shortcut</key><string>くないちょうしきぶしょくがくぶ</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>式部寮</string><key>shortcut</key><string>しきぶりょう</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>東儀家</string><key>shortcut</key><string>とうぎけ</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>多治部氏</string><key>shortcut</key><string>たじべし</string></dict>	<!-- 出典 Wikipedia -->
+
+	<!-- □ 楽書・譜 -->
+	<dict><key>phrase</key><string>楽書</string><key>shortcut</key><string>がくしょ</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>教訓抄</string><key>shortcut</key><string>きょうくんしょう</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>楽家録</string><key>shortcut</key><string>がっかろく</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>体源抄</string><key>shortcut</key><string>たいげんしょう</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>懐竹抄</string><key>shortcut</key><string>かいちくしょう</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>龍鳴抄</string><key>shortcut</key><string>りゅうめいしょう</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>文机談</string><key>shortcut</key><string>ぶんきだん</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>山鳥秘要抄</string><key>shortcut</key><string>やまどりひようしょう</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>信西古楽図</string><key>shortcut</key><string>しんぜいこがくず</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>明治撰定譜</string><key>shortcut</key><string>めいじせんていふ</string></dict>	<!-- 出典 Wikipedia -->
+
+	<!-- □ 伝承 -->
+	<dict><key>phrase</key><string>廃絶曲</string><key>shortcut</key><string>はいぜつきょく</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>亡失曲</string><key>shortcut</key><string>ぼうしつきょく</string></dict>	<!-- 出典 Wikipedia -->
+	<dict><key>phrase</key><string>復曲</string><key>shortcut</key><string>ふっきょく</string></dict>	<!-- 出典 Wikipedia / 今の辞書にもある -->
+	<dict><key>phrase</key><string>露通し</string><key>shortcut</key><string>つゆどおし</string></dict>	<!-- 出典 Wikipedia -->
+
+	<!-- □ 催馬楽・神楽歌の曲名(出典の読みは歴史的仮名遣い。現代仮名にするかを決めてから入れる。すべてコメントアウト) -->
+<!--<dict><key>phrase</key><string>前張</string><key>shortcut</key><string>さいばり</string></dict>	(出典 Wikipedia 催馬楽。歴史的仮名遣い) -->
+<!--<dict><key>phrase</key><string>東屋</string><key>shortcut</key><string>あづまや</string></dict>	(出典 Wikipedia 催馬楽。歴史的仮名遣い) -->
+<!--<dict><key>phrase</key><string>庭生</string><key>shortcut</key><string>にはにおふる</string></dict>	(出典 Wikipedia 催馬楽。歴史的仮名遣い) -->
+<!--<dict><key>phrase</key><string>逢路</string><key>shortcut</key><string>あふみぢ</string></dict>	(出典 Wikipedia 催馬楽。歴史的仮名遣い) -->
+<!--<dict><key>phrase</key><string>更衣</string><key>shortcut</key><string>ころもがへ</string></dict>	(出典 Wikipedia 催馬楽。歴史的仮名遣い) -->
+<!--<dict><key>phrase</key><string>何為</string><key>shortcut</key><string>いかにせん</string></dict>	(出典 Wikipedia 催馬楽。歴史的仮名遣い) -->
+<!--<dict><key>phrase</key><string>鶏鳴</string><key>shortcut</key><string>とりはなきぬ</string></dict>	(出典 Wikipedia 催馬楽。歴史的仮名遣い) -->
+<!--<dict><key>phrase</key><string>隠名</string><key>shortcut</key><string>くぼのな</string></dict>	(出典 Wikipedia 催馬楽。歴史的仮名遣い) -->
+<!--<dict><key>phrase</key><string>安名尊</string><key>shortcut</key><string>あなたふと</string></dict>	(出典 Wikipedia 催馬楽。歴史的仮名遣い) -->
+<!--<dict><key>phrase</key><string>妹与我</string><key>shortcut</key><string>いもとわれ</string></dict>	(出典 Wikipedia 催馬楽。歴史的仮名遣い) -->
+<!--<dict><key>phrase</key><string>妹之門</string><key>shortcut</key><string>いもがかど</string></dict>	(出典 Wikipedia 催馬楽。歴史的仮名遣い) -->
+<!--<dict><key>phrase</key><string>蓆田</string><key>shortcut</key><string>むしろだ</string></dict>	(出典 Wikipedia 催馬楽。歴史的仮名遣い) -->
+<!--<dict><key>phrase</key><string>総角</string><key>shortcut</key><string>あげまき</string></dict>	(出典 Wikipedia 催馬楽。歴史的仮名遣い) -->
+<!--<dict><key>phrase</key><string>本滋</string><key>shortcut</key><string>もとしげき</string></dict>	(出典 Wikipedia 催馬楽。歴史的仮名遣い) -->
+<!--<dict><key>phrase</key><string>御馬草</string><key>shortcut</key><string>みまくさ</string></dict>	(出典 Wikipedia 催馬楽。歴史的仮名遣い) -->
+<!--<dict><key>phrase</key><string>酒飲</string><key>shortcut</key><string>さけをたうべて</string></dict>	(出典 Wikipedia 催馬楽。歴史的仮名遣い) -->
+<!--<dict><key>phrase</key><string>無力蝦</string><key>shortcut</key><string>ちからなきかえる</string></dict>	(出典 Wikipedia 催馬楽。歴史的仮名遣い) -->
+<!--<dict><key>phrase</key><string>鈴之川</string><key>shortcut</key><string>すずかがは</string></dict>	(出典 Wikipedia 催馬楽。歴史的仮名遣い) -->
+<!--<dict><key>phrase</key><string>我家</string><key>shortcut</key><string>わいへ</string></dict>	(出典 Wikipedia 催馬楽。歴史的仮名遣い) -->
+<!--<dict><key>phrase</key><string>千年経</string><key>shortcut</key><string>ちとせふる</string></dict>	(出典 Wikipedia 催馬楽。歴史的仮名遣い) -->
+<!--<dict><key>phrase</key><string>浅也</string><key>shortcut</key><string>あさや</string></dict>	(出典 Wikipedia 催馬楽。歴史的仮名遣い) -->
+<!--<dict><key>phrase</key><string>万木</string><key>shortcut</key><string>よろづき</string></dict>	(出典 Wikipedia 催馬楽。歴史的仮名遣い) -->
+<!--<dict><key>phrase</key><string>何曽毛曽</string><key>shortcut</key><string>なにぞもそ</string></dict>	(出典 Wikipedia 催馬楽。歴史的仮名遣い) -->
+
+
+	<!-- ■ オーディオ機器(compenser.plist の「音楽」から移した) -->
+	<dict><key>phrase</key><string>McIntosh</string><key>shortcut</key><string>まっきんとっしゅ</string></dict>
+	<dict><key>phrase</key><string>Fostex</string><key>shortcut</key><string>ふぉすてっくす</string></dict>
+	<dict><key>phrase</key><string>フォステックス</string><key>shortcut</key><string>ふぉすてっくす</string></dict>
+	<dict><key>phrase</key><string>エレヴォイ</string><key>shortcut</key><string>えれゔぉい</string></dict>
+	<dict><key>phrase</key><string>Electro-Voice</string><key>shortcut</key><string>えれくとろゔぉいす</string></dict>
+</array>
+</plist>
