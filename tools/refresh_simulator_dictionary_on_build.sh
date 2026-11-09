@@ -22,6 +22,31 @@ fi
 
 cd "$ROOT_DIR"
 
+# 2 つのビルド(Xcode の ⌘R とコマンドラインの xcodebuild)が同時に走ると、どちらも tmp/ の辞書を作り直し、片方が消しかけの
+# sqlite を読んで失敗する(3740: Command PhaseScriptExecution failed。テスト側も実辞書が無くて 1315 本が飛んだ)。
+# DerivedData を分けても tmp/ は共有なので、ここで順番待ちにする。持ち主のプロセスが居ないロック(中断したビルドの残り)は取り上げる
+LOCK_DIR="$ROOT_DIR/tmp/.refresh_dictionary.lock"
+mkdir -p "$ROOT_DIR/tmp"
+lock_waited=0
+until mkdir "$LOCK_DIR" 2>/dev/null; do
+  lock_owner="$(cat "$LOCK_DIR/pid" 2>/dev/null || true)"
+  if [[ -n "$lock_owner" ]] && ! kill -0 "$lock_owner" 2>/dev/null; then
+    rm -rf "$LOCK_DIR"
+    continue
+  fi
+  if (( lock_waited % 30 == 0 )); then
+    echo "note: 別のビルドが tmp/ の辞書を作っているので終わるまで待ちます(tmp/.refresh_dictionary.lock)"
+  fi
+  sleep 2
+  lock_waited=$((lock_waited + 2))
+  if (( lock_waited > 1800 )); then
+    echo "warning: 辞書のロック待ちが 30 分を超えたので、ロックを取り上げて進めます"
+    rm -rf "$LOCK_DIR"
+  fi
+done
+echo $$ > "$LOCK_DIR/pid"
+trap 'rm -rf "$LOCK_DIR"' EXIT
+
 # 同梱する語彙のデータに U+FF01〜U+FFEE の文字(いわゆる全角の英数字・記号、いわゆる半角のカタカナ)が無いかを毎ビルドで見て、
 # あれば Xcode の警告にする(3616)
 bash "$ROOT_DIR/tools/check_halfwidth_fullwidth_forms_in_vocab.sh"
