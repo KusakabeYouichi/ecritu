@@ -450,12 +450,17 @@ regenerate_sqlite_if_possible() {
     echo "[dict] Warning: 既存SQLiteの行数が異常に少ない(rows=$existing_rows)。再生成します。"
   fi
 
+  # 別名(.building)で作り、行数を確かめてから名前を入れ替える(3742)。書き出し先の名前のまま作り直すと、同じ時間に
+  # 辞書を読んでいるテスト(xcodebuild test)が作りかけの辞書を読み、よわさ/温泉 の候補が空になって 59 か所落ちた
+  # (⌘R の作り直しと重なった)。名前の入れ替えは一瞬で、読んでいる側は古い辞書を最後まで読める
+  local building_sqlite="$TMP_SQLITE.building"
+  rm -f "$building_sqlite"
   local sqlite_args=(
     python3 tools/build_kana_kanji_sqlite.py
     --vocab-json "$TMP_SECOND"
     --normalized-vocab-json "$TMP_SECOND"
     --vocab-json "$TMP_PREMIER"
-    --output "$TMP_SQLITE"
+    --output "$building_sqlite"
   )
 
   # 病名は Premier の後ろ = 同じ読みでは既存の語より後ろの rank(偽性 が 犠牲 を押しのけない)
@@ -521,15 +526,17 @@ regenerate_sqlite_if_possible() {
 
   if "${sqlite_args[@]}"; then
     local regenerated_rows
-  regenerated_rows=$(sqlite3 "$TMP_SQLITE" "SELECT count(*) FROM dictionary_entries;" 2>/dev/null || echo 0)
+  regenerated_rows=$(sqlite3 "$building_sqlite" "SELECT count(*) FROM dictionary_entries;" 2>/dev/null || echo 0)
   if [[ "${regenerated_rows:-0}" -lt 100000 ]]; then
     echo "[dict] error: SQLite regeneration produced too few rows (rows=$regenerated_rows). Failing the build to avoid bundling a broken dictionary." >&2
-    rm -f "$TMP_SQLITE"
+    rm -f "$building_sqlite" "$TMP_SQLITE"
     exit 1
   fi
+  mv -f "$building_sqlite" "$TMP_SQLITE"
   medicaux_state > "$TMP_MEDICAUX_STATE"
   echo "[dict] SQLite regeneration complete (rows=$regenerated_rows, médicaux=$(medicaux_state))."
   else
+    rm -f "$building_sqlite"
     echo "[dict] Warning: sqlite regeneration failed. Keeping previous artifacts if present."
   fi
 }
