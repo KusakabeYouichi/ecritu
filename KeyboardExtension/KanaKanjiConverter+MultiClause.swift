@@ -4428,6 +4428,11 @@ extension KanaKanjiConverter {
                     penalty += Self.multiClauseDemonstrativeMaPenalty
                 }
             }
+            // 意向形 しよう の直後の する の活用(定数コメント参照。3739)
+            if isKanaIdentity, prevID == SID.にしよう || prevID == SID.しよう,
+                let first = reading.first, first == "し" || first == "さ" || first == "す" || first == "せ" {
+                penalty += Self.multiClauseVolitionalBeforeSuruPenalty
+            }
             // 連濁した読みでだけ立つ語(喧嘩=げんか)は、前が文頭か かな のときは減点(定数コメント参照。3736)
             if !isKanaIdentity, prevIsBOS || prevIsKanaIdentity,
                 Self.multiClauseRendakuOnlyReadingsBySurface[surface] == reading {

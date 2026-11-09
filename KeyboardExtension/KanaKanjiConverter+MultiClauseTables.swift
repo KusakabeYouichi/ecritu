@@ -3917,6 +3917,10 @@ extension KanaKanjiConverter {
     // その間の各カウンティと、なぱでもそのまでも が その間でも だった(learningBOX 確認表 3697 の [直す])
     static let multiClauseDemonstrativeMaPenalty = 3000
     static let multiClauseDemonstrativeFollowingParticles: Set<String> = ["まで", "から", "より", "が", "を", "に", "で", "へ"]
+    // 意向形 しよう(misc の curated かな にしよう を含む)の直後に する の活用(し/した/される/する)は続かない(3739、ユーザ判定:
+    // 使用した は一般によく使う)。にしよう(curated の床 1500)+し+た が に+使用した より 1730 安く、食品にしようした/
+    // 研究のためにしようしたい絵/チーズにしようされる菌 だった(learningBOX 確認表 3697 の [直す])
+    static let multiClauseVolitionalBeforeSuruPenalty = 3000
     // 補助語彙の固有名(LM に無いか稀)の直後の は で始まる漢字の語(Arinto+破産)の減点(3739、ユーザ判定: 区切りが変)。
     // 固有名+は(助詞)+酸 が 破産 より 3688 高く、アリントは酸が が Arinto破産が だった。とパーク端の も同じ型
     static let multiClauseLoanwordThenHaWordPenalty = 4000
@@ -4383,6 +4387,8 @@ extension KanaKanjiConverter {
             add("から")
             // 指示語(その/この/あの/どの)の直後の 間(ま)・助詞の減点(3739)
             for s in ["その", "この", "あの", "どの"] { add(s) }
+            // 意向形 しよう の直後の する の活用の減点(3739)
+            for s in ["しよう", "にしよう"] { add(s) }
             for s in KanaKanjiConverter.multiClauseSugiSuffixSurfaces.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseTeOruAuxiliaryReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseKanaPassiveHeadReadings.sorted() { add(s) }
@@ -4471,6 +4477,8 @@ extension KanaKanjiConverter {
         static let その = MultiClauseSymbols.id("その")
         static let この = MultiClauseSymbols.id("この")
         static let あの = MultiClauseSymbols.id("あの")
+        static let しよう = MultiClauseSymbols.id("しよう")
+        static let にしよう = MultiClauseSymbols.id("にしよう")
         static let なみ = MultiClauseSymbols.id("なみ")
         static let 並み = MultiClauseSymbols.id("並み")
         static let 並 = MultiClauseSymbols.id("並")
