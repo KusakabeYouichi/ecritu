@@ -2035,6 +2035,81 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // learningBOX 確認表(3697)の 4 回めの判定(3739、ユーザ判定): その間 は ソノマ と競合しない、陣 は Gin と同じ水準、神将 は
+    // 心証 より下、名産/酸/仔牛/貴腐/擁します/使用した、野菜を炒める
+    func testRegressionLearningBoxAudit3739() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func single(_ reading: String) -> [String] { converter.candidates(for: reading, limit: 30, systemCandidateMode: .surface) }
+        func shown(_ reading: String) -> [String] {
+            let list = reading.count >= 4 ? converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface) : []
+            var result = list.isEmpty ? single(reading) : list
+            for candidate in single(reading) where !result.contains(candidate) { result.append(candidate) }
+            return result
+        }
+        for (reading, expected) in [
+            ("そのあいだに", "その間に"), ("そのままでいい", "そのままでいい"),
+            ("じんはびふぃーたー", "Ginはビフィーター"), ("じんをはる", "陣を張る"), ("じんをしく", "陣を敷く"),
+            ("おおさかのじん", "大阪の陣"), ("なつのじん", "夏の陣"), ("とらきあじん", "トラキア人"), ("にほんじん", "日本人"),
+            ("しんしょうがわるい", "心証が悪い"), ("かんこくのめいさん", "韓国の名産"), ("かれははさんした", "彼は破産した"),
+            ("じかんをようします", "時間を要します"), ("こうしのぱいつつみやき", "仔牛のパイ包み焼き"),
+            ("こうしをつとめる", "講師を務める"), ("けんりをこうしする", "権利を行使する"),
+            ("しょくひんにしようしたてんかぶつは", "食品に使用した添加物は"), ("しようした", "使用した"),
+            ("ゆうしょくはかれーにしよう", "夕食はカレーにしよう"),
+            ("やさいをいためる", "野菜を炒める"), ("にくいためる", "肉炒める"),
+        ] {
+            let list = shown(reading)
+            XCTAssertEqual(list.first, expected, "\(reading) \(list.prefix(5))")
+        }
+        // ラテン文字とカタカナの違いだけの行は 2 番めまで
+        for (reading, expected) in [
+            ("そのまのかくかうんてぃと", "ソノマの各カウンティと"), ("なぱでもそのまでもいちばんみなみにいちします", "ナパでもソノマでも一番南に位置します"),
+            ("せいほうはじんににていますが", "製法はGinに似ていますが"), ("さるでーにゃのめいさんです", "Sardegnaの名産です"),
+            ("ありんとはさんがとてもたかいしろぶどうです", "アリントは酸がとても高い白ぶどうです"),
+            ("あれんてーじょをようします", "アレンテージョを擁します"),
+        ] {
+            let list = shown(reading)
+            XCTAssertTrue(list.prefix(2).contains(expected), "\(reading) \(list.prefix(5))")
+        }
+        // 貴腐 をかなり優先、寄付 は サ変動詞の文脈で負けない
+        let kifu = shown("れぜるゔぇともにきふがあってはならない")
+        XCTAssertTrue(kifu.first?.contains("貴腐が") ?? false, "\(kifu.prefix(3))")
+        XCTAssertTrue(shown("きふした").first?.hasPrefix("寄") ?? false, "\(shown("きふした").prefix(3))")
+    }
+
+    // 3739(ユーザ報告): うりかたは が うり方は(は の無い うりかた は 売り方 が先頭)、うちはじめは が うち始めは、
+    // ふた の候補に 二タ/二夕(見分けのつかない ニタ が 2 つ)
+    func testRegressionUserReports3739() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func single(_ reading: String) -> [String] { converter.candidates(for: reading, limit: 30, systemCandidateMode: .surface) }
+        func multi(_ reading: String) -> [String] { converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface) }
+        XCTAssertEqual(multi("うりかたは").first, "売り方は", "\(multi("うりかたは").prefix(3))")
+        XCTAssertEqual(single("うりかた").first, "売り方")
+        XCTAssertEqual(multi("うちはじめは").first, "打ち始めは", "\(multi("うちはじめは").prefix(3))")
+        XCTAssertEqual(multi("かきはじめは").first, "書き始めは")
+        XCTAssertEqual(multi("あれはあれでいい").first, "あれはあれでいい")
+        // ふた: 二タ/二夕 は出さない。二(ふた)と その組み立て(二回り/二つ)は残す
+        let futa = single("ふた")
+        XCTAssertFalse(futa.contains("二タ") || futa.contains("二夕"), "\(futa)")
+        XCTAssertTrue(futa.contains("二"), "\(futa)")
+        XCTAssertTrue(multi("ふたまわり").prefix(3).contains("二回り"), "\(multi("ふたまわり").prefix(4))")
+        // かれは: 彼は→かれは の順(ユーザ指定)。あるでしょ: かな(カタカナの アル+でしょ が 161 差で勝っていた)
+        XCTAssertEqual(Array(single("かれは").prefix(2)), ["彼は", "かれは"], "\(single("かれは").prefix(4))")
+        XCTAssertEqual(multi("あるでしょ").first, "あるでしょ", "\(multi("あるでしょ").prefix(3))")
+        XCTAssertEqual(multi("かれはがっこうにいった").first, "彼は学校に行った")
+        // 書きかえの日常語の例外に 理屈/画期的(本来の漢字を先に でも常用漢字を先に)。理窟 は X.10 の組(ユーザ指定)
+        converter.setKakikaeEverydayException(true)
+        converter.setKakikaePreference(.bothBeforeFirst)
+        converter.setLateStandardizedRewritePreference(.bothBeforeFirst)
+        XCTAssertEqual(single("りくつ").first, "理屈", "\(single("りくつ").prefix(4))")
+        XCTAssertTrue(single("りくつ").contains("理窟"), "\(single("りくつ").prefix(4))")
+        XCTAssertEqual(single("かっきてき").first, "画期的", "\(single("かっきてき").prefix(4))")
+        XCTAssertTrue(multi("りくつをこねる").first?.hasPrefix("理屈を") ?? false, "\(multi("りくつをこねる").prefix(3))")
+        // 例外の表に無い X.10 の語(臆測)は設定どおり
+        XCTAssertEqual(single("おくそく").first, "臆測", "\(single("おくそく").prefix(4))")
+    }
+
     // 3738(ユーザ報告): ひざいためるよ が 膝炒めるよ(ユーザ指定: 膝痛めるよ→膝傷めるよ→ひざ痛めるよ→ひざ傷めるよ の順)。
     // 体の部位+(助詞なし・を)+痛める/傷める を連語表(manual.json)に。炒める は消さずに後ろへ
     func testRegressionUserReports3738() throws {
