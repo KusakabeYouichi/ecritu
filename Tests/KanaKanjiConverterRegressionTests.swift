@@ -2115,6 +2115,30 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single("おくそく").first, "臆測", "\(single("おくそく").prefix(4))")
     }
 
+    // 3740(ユーザ報告): ふた/ふたも の並び(フタ を出し、二 は 布田 の後ろ)、うちはじめは の うち初めは、どくまで の並び
+    func testRegressionUserReports3740() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func single(_ reading: String) -> [String] { converter.candidates(for: reading, limit: 30, systemCandidateMode: .surface) }
+        func multi(_ reading: String) -> [String] { converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface) }
+        XCTAssertEqual(Array(single("ふた").prefix(6)), ["ふた", "蓋", "フタ", "布田", "二", "畉田"], "\(single("ふた").prefix(8))")
+        XCTAssertEqual(Array(single("ふたも").prefix(5)), ["ふたも", "蓋も", "フタも", "布田も", "二も"], "\(single("ふたも").prefix(8))")
+        // 数の 二(ふた)の組み立ては残す
+        XCTAssertTrue(multi("ふたまわり").prefix(3).contains("二回り"), "\(multi("ふたまわり").prefix(4))")
+        XCTAssertEqual(multi("ふたりで").first, "二人で")
+        XCTAssertEqual(multi("ふたのうら").first, "蓋の裏")
+        // 打ち始めは が先頭、区切りの違う うち初めは も残す
+        let hajime = multi("うちはじめは")
+        XCTAssertEqual(Array(hajime.prefix(2)), ["打ち始めは", "うち初めは"], "\(hajime.prefix(4))")
+        // どくまで: 毒まで→退くまで→どくまで→独まで。場所+を+退く は 退く、毒+を+盛る
+        XCTAssertEqual(Array(single("どくまで").prefix(4)), ["毒まで", "退くまで", "どくまで", "独まで"], "\(single("どくまで").prefix(6))")
+        // 読み全体が seed の 1 語なので連文節は空でもよい(表示は単文節の並び)
+        XCTAssertEqual(multi("どくまで").first ?? single("どくまで").first, "毒まで")
+        XCTAssertEqual(multi("そこをどくまで").first, "そこを退くまで")
+        XCTAssertEqual(multi("みちをどく").first, "道を退く")
+        XCTAssertEqual(multi("どくをもる").first, "毒を盛る")
+    }
+
     // 3738(ユーザ報告): ひざいためるよ が 膝炒めるよ(ユーザ指定: 膝痛めるよ→膝傷めるよ→ひざ痛めるよ→ひざ傷めるよ の順)。
     // 体の部位+(助詞なし・を)+痛める/傷める を連語表(manual.json)に。炒める は消さずに後ろへ
     func testRegressionUserReports3738() throws {
@@ -28321,6 +28345,19 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(lateWords.intersection(KakikaePreference.everydayAfterFirstPairs), ["理屈", "理窟"])
     }
 
+    // 連語表(目的語で決まる動詞の表)を最初に使うときの組み立ての時間(3740。小さなリテラルに分けたので起動時に遅くならないかを見る)。
+    // 他のテストが先に使うと測れないので、このテストだけを TEST_RUNNER_OVT_TIME=1 で流す
+    func testDiagnosticObjectVerbTableInitTime() throws {
+        guard ProcessInfo.processInfo.environment["OVT_TIME"] != nil else {
+            throw XCTSkip("TEST_RUNNER_OVT_TIME=1 のときだけ実行")
+        }
+        let start = DispatchTime.now().uptimeNanoseconds
+        let count = KanaKanjiConverter.multiClauseObjectVerbCollocations.count
+        let elapsed = Double(DispatchTime.now().uptimeNanoseconds - start) / 1_000_000
+        print("OVTTIME first access \(String(format: "%.2f", elapsed)) ms nouns=\(count)")
+        XCTAssertEqual(count, 1298)
+    }
+
     func testDiagnosticCollocationSweep() throws {
         guard ProcessInfo.processInfo.environment["SWEEP_COLLOC"] != nil else {
             throw XCTSkip("TEST_RUNNER_SWEEP_COLLOC=1 のときだけ実行")
@@ -28373,6 +28410,10 @@ extension KanaKanjiConverterRegressionTests {
                 }
             }
             converter.setOkuriganaVariantPreference(OkuriganaVariantPreference(modes: modes))
+        }
+        // AUDIT_ADJME=1 で X.15 の 目(形状名詞化 め の漢字)をオンにする(実機の adjectiveMeKanjiCandidatesEnabled。3740)
+        if ProcessInfo.processInfo.environment["AUDIT_ADJME"] != nil {
+            converter.setAdjectiveMeKanjiCandidatesEnabled(true)
         }
         // AUDIT_KANAGAKI=adverb,conjunction,… で X.8 かなで書く言葉 の分類を実機と揃える(3688)
         if let raw = ProcessInfo.processInfo.environment["AUDIT_KANAGAKI"] {
