@@ -1346,6 +1346,9 @@ extension KanaKanjiConverter {
         var objectVerbCollocationVerbStarts = Set<Int>()
         var objectVerbCollocationRivalNodeKeys = Set<String>()
         var objectVerbCollocationRivalMaxEndByStart = [Int: Int]()
+        // 目的語+助詞+動詞の連語表に当たった名詞の表記(鑿を砥ぐ の 鑿)。連語が単独の名詞として使われていることを示すので、
+        // 1 字漢字の「単独名詞になれない字」の減点(2841)から外す(3744。のみをとぐ で 鑿 が 野見/飲み に負けて候補に無かった)
+        var objectVerbCollocationNounSurfaces = Set<String>()
         func surfaceMatchesCollocationVerb(_ surface: String, start: Int, prefixes: [String]) -> Bool {
             guard let head = prefixes.first(where: { surface.hasPrefix($0) }) else {
                 return false
@@ -1671,10 +1674,10 @@ extension KanaKanjiConverter {
                     if collocationPreferredVerbSurfacePrefixesByStart[verbStart] == nil,
                         objectEntries.contains(where: { $0.particle == particle }) {
                         let rest = Self.spanString(chars, verbStart..<n)
-                        var objectHit: (heads: [String], matchedPrefix: String)?
+                        var objectHit: (heads: [String], matchedPrefix: String, nouns: [String])?
                         for entry in objectEntries where entry.particle == particle {
                             if let prefix = entry.prefixes.first(where: { rest.hasPrefix($0) }) {
-                                objectHit = (entry.heads, prefix)
+                                objectHit = (entry.heads, prefix, entry.nouns)
                                 break
                             }
                         }
@@ -1685,6 +1688,7 @@ extension KanaKanjiConverter {
                                 })
                             if !embeddedInLongerWord {
                                 collocationPreferredVerbSurfacePrefixesByStart[verbStart] = hit.heads
+                                objectVerbCollocationNounSurfaces.formUnion(hit.nouns)
                                 objectVerbCollocationVerbStarts.insert(verbStart)
                                 objectVerbCollocationRivalMaxEndByStart[verbStart] = verbStart + hit.matchedPrefix.count
                             }
@@ -4332,6 +4336,7 @@ extension KanaKanjiConverter {
             // コピュラ(だっけ/だよ/です…)の前も同じ(どうだっけ→同だっけ。3739)。ただし その字→だ が LM にある字
             // (嫌だ/駄目だ の 嫌)は形容動詞の語幹なので減点しない(いやだけどな→嫌だけどな を守る)
             if weakStandaloneKanjiSurfaces.contains(prev),
+                !objectVerbCollocationNounSurfaces.contains(prev),
                 surfaceID == SID.EOS || surfaceID == SID.の
                     || Self.multiClauseCaseParticleSurfacesID.contains(surfaceID)
                     || (isKanaIdentity && Self.multiClauseFinalParticleReadingsID.contains(readingID))
@@ -7106,6 +7111,7 @@ extension KanaKanjiConverter {
                 // 単独名詞になれない 1 字漢字(総/想: 定数コメント参照。2841)が名詞の位置(直後が格助詞/の/文末)に
                 // ある変種は seed 順で繰り上げない(seed の そう→層→総→想 は単文節の並び用)。DP の減点をそのまま使う
                 let isWeakStandaloneAltInNounSlot = weakStandaloneKanjiSurfaces.contains(alt.surface)
+                    && !objectVerbCollocationNounSurfaces.contains(alt.surface)
                     && (nextNode.map { $0.surface == "の" || Self.multiClauseCaseParticleSurfaces.contains($0.surface) } ?? true)
                 // 連体修飾を受けない稀読み(他人=ひと: 定数コメント参照。2842)も、修飾直後では seed 順で繰り上げない
                 let isUnmodifiableRareReadingAltAfterModifier: Bool = {
@@ -7156,6 +7162,12 @@ extension KanaKanjiConverter {
                     let seedList = KanaKanjiSeedDictionary.seed[alt.reading],
                     seedList.contains(chosen.surface), !seedList.contains(alt.surface) {
                     delta = max(delta, seedList.count * Self.multiClauseSeedOrderVariantStep)
+                }
+                // 連語表に当たった 1 字漢字の名詞(鑿/鉋 を砥ぐ)は、かな書き(のみ/かんな)を 2 番めに置く(3744、ユーザ指定: 鑿を砥ぐ→
+                // のみを砥ぐ)。道具の名前の 1 字漢字はかなで書くことも多い。のみ は助詞の のみ と同じ読みで、野見/飲み より後ろだった
+                if alt.reading == chosen.reading, alt.surface == alt.reading,
+                    chosen.surface.count == 1, objectVerbCollocationNounSurfaces.contains(chosen.surface) {
+                    delta = min(delta, 1)
                 }
                 // 文脈の pair bonus(行→返る 等、multiClauseBigramPairBonuses の正値)が付く変種は、seed 順(帰る が先)より
                 // 文脈の選好を優先して変種の先頭に出す。DP ではすでに 返る<帰る なのに、変種順だけ seed 順で
