@@ -2115,6 +2115,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single("おくそく").first, "臆測", "\(single("おくそく").prefix(4))")
     }
 
+    // 3744(ユーザ報告): さとうなんか の 2 番め以降を単文節の seed 順(佐藤→砂糖→サトウ→左党)に。サトウ は文中のカタカナ化の減点で
+    // 差分が上限を越え、左藤 が繰り上がっていた
+    func testRegressionSatoNankaVariantsFollowSeedOrder3744() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let nanka = converter.multiClauseCandidates(for: "さとうなんか", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(nanka.prefix(4)), ["佐藤なんか", "砂糖なんか", "サトウなんか", "左党なんか"], "\(nanka.prefix(6))")
+        // 動詞があるときは 砂糖 が先頭のまま
+        XCTAssertEqual(converter.multiClauseCandidates(for: "さとうなんかつかう", systemCandidateMode: .surface).first, "砂糖なんか使う")
+    }
+
     // 3743(ユーザ指定): とぐ を目的語で書き分ける。米は 研ぐ が先頭・磨ぐ が次で、砥ぐ は刃物の字なので米では下げる。
     // 刃物(包丁/ナイフ/鎌 等)は 砥ぐ を先頭に。連語表(references/colloc_sweep/manual.json)の 米+を+研ぐ/磨ぐ と 刃物+を+砥ぐ
     func testRegressionToguByObject3743() throws {
