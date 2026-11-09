@@ -46,6 +46,9 @@ RENYOU_FOLLOWERS = "まただなそにつや"
 ONBIN_FOLLOWERS = "たてだでちじ"
 ICHIDAN_FOLLOWERS = "るれろよたてなまずさそちやら"
 # 名詞の表記の直後の動詞の頭への加点。判定由来の組は 0(加点は接頭の絞り込みを素通りし、下に書くした/役目を負えた が出た。3777)。
+# 連語表の Swift リテラルを分ける大きさ(組の数)。1 つの大きなリテラルは型検査が遅い(3740)
+CHUNK_ROWS = 100
+
 # manual.json は group ごとに bonus で指定(古い multiClauseAcrossNoCollocationBonuses の値を引き継ぐ。標準 3000)
 DECISION_NOUN_BONUS = 0
 DEFAULT_NOUN_BONUS = 3000
@@ -192,15 +195,45 @@ def main():
         "    // heads で始まり残りがかなだけのものを連語選好にする(席を立つ/消息を絶つ と同じ仕組み)。",
         "    // 名詞の表記 nouns の直後(助詞を挟む)の heads には nounBonus を加点し、名詞の取り違え(端を渡る/日が通る)も防ぐ",
         "    // (multiClauseAcrossNoCollocationBonusesByPrevPrev に合流する。3777)",
-        "    static let multiClauseObjectVerbCollocations:",
-        "        [String: [(particle: Character, prefixes: [String], heads: [String], nouns: [String], nounBonus: Int)]] = [",
+        "    // 表は 1 つの大きなリテラルにすると型検査が遅い(2296 組で実機向けのコンパイルが 10 分近く。3740)。名詞の読みの順に",
+        f"    // 約 {CHUNK_ROWS} 組ずつの小さなリテラル(objectVerbCollocationChunkN)に分け、最初に使うときに 1 つにまとめる(中身は同じ)",
+        "    typealias ObjectVerbCollocationRow = (particle: Character, prefixes: [String], heads: [String], nouns: [String], nounBonus: Int)",
     ]
+    chunks = [[]]
     for nr, entries in sorted(table.items()):
-        lines.append(f'        "{nr}": [')
-        for p, prefixes, heads, nouns, bonus, key in entries:
-            lines.append(f'            ("{p}", {swift_str_list(prefixes)}, {swift_str_list(heads)}, {swift_str_list(nouns)}, {bonus}),  // {key}')
-        lines.append("        ],")
-    lines.append("    ]")
+        if chunks[-1] and sum(len(e) for _, e in chunks[-1]) >= CHUNK_ROWS:
+            chunks.append([])
+        chunks[-1].append((nr, entries))
+    lines += [
+        "    static let multiClauseObjectVerbCollocations: [String: [ObjectVerbCollocationRow]] = {",
+        "        var table: [String: [ObjectVerbCollocationRow]] = [:]",
+        f"        table.reserveCapacity({len(table)})",
+        "        for chunk in [",
+    ]
+    for i in range(len(chunks)):
+        lines.append(f"            objectVerbCollocationChunk{i}(),")
+    lines += [
+        "        ] {",
+        "            table.merge(chunk) { first, _ in first }",
+        "        }",
+        "        return table",
+        "    }()",
+    ]
+    for i, chunk in enumerate(chunks):
+        lines += [
+            "",
+            f"    private static func objectVerbCollocationChunk{i}() -> [String: [ObjectVerbCollocationRow]] {{",
+            "        [",
+        ]
+        for nr, entries in chunk:
+            lines.append(f'            "{nr}": [')
+            for p, prefixes, heads, nouns, bonus, key in entries:
+                lines.append(f'                ("{p}", {swift_str_list(prefixes)}, {swift_str_list(heads)}, {swift_str_list(nouns)}, {bonus}),  // {key}')
+            lines.append("            ],")
+        lines += [
+            "        ]",
+            "    }",
+        ]
     lines += [
         "",
         "    // 目的語で決まる動詞の表の 助詞なしの組 - (名詞の表記の直後の動詞の頭へ加点。時間計って/靴下履いて/この道通ってて。",
