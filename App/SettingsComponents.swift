@@ -118,9 +118,10 @@ struct SettingsModifiedMark: View {
                 action: SettingsCardKeys.currentPostModifierEmptyTapAction
             ),
             ContentView.isModifiedFromBasePreset(keys: keys) {
+            // 色は基準の初期設定ごと(戦略的=青/現代的=ピンク/保守的=緑。3740)
             Text("●")
                 .font(.system(size: 8))
-                .foregroundStyle(Color.accentColor.opacity(0.75))
+                .foregroundStyle(ContentView.currentBasePreset.markColor.opacity(0.75))
                 .accessibilityLabel("初期設定から変更あり")
         }
     }

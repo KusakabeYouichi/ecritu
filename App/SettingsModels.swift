@@ -20,6 +20,19 @@ enum SettingsBasePreset: String, CaseIterable {
     }
 
     var title: String { menuAction.title }
+
+    // 初期設定ごとの色。題字のアイコンのメニューの基準の初期設定のアイコンと、そこから変えた項目の ●(設定画面の見出しと題字の
+    // メニュー)に使う(3740、ユーザ指定: どの初期設定からの差分かが分かるように、色はそれぞれの初期設定のキーボードの背景色に合わせる)。
+    // 戦略的初期設定(背景 bleu)は以前からの青。現代的初期設定(背景 sakura、色相 338°)は同じ色相の桜色寄りのピンク(紫にも
+    // オレンジにも寄らない 338°、彩度は青より控えめ)。保守的初期設定(背景 chartreuse、色相 81°)は黄緑寄りの緑(色相 90°。黄色に
+    // 寄せすぎると白地で見えにくい)。明るさは青に揃える
+    var markColor: Color {
+        switch self {
+        case .strategic: return .blue
+        case .contemporary: return Color(red: 230.0 / 255.0, green: 105.0 / 255.0, blue: 150.0 / 255.0)
+        case .conservative: return Color(red: 110.0 / 255.0, green: 170.0 / 255.0, blue: 50.0 / 255.0)
+        }
+    }
 }
 
 enum SettingsKeys {

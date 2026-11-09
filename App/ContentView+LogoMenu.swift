@@ -748,12 +748,12 @@ extension ContentView {
                         .font(.system(size: 18, weight: .medium))
                 }
             }
-            // 基準の初期設定(最後に当てたもの)のアイコンは青。選択中で項目が灰色のときも、そこから
-            // 個別に変えて灰色が解けたあとも青のまま ─ どの初期設定を土台にしているかを示す(3649)。
-            // 押して強調色の背景になっている間は白(青地に青で見えなくなるため)
+            // 基準の初期設定(最後に当てたもの)のアイコンはその初期設定の色(戦略的=青/現代的=ピンク/保守的=緑。3740)。選択中で項目が
+            // 灰色のときも、そこから個別に変えて灰色が解けたあともその色のまま ─ どの初期設定を土台にしているかを示す(3649)。
+            // 設定画面の ● も同じ色。押して強調色の背景になっている間は白(強調色の地に色で見えにくくなるため)
             .foregroundStyle(
                 action == Self.currentBasePreset.menuAction
-                    ? (isHighlighted && isEnabled ? Color.white : Color.blue)
+                    ? (isHighlighted && isEnabled ? Color.white : Self.currentBasePreset.markColor)
                     : labelColor
             )
             .frame(width: 26)
@@ -1449,7 +1449,7 @@ extension ContentView {
         let bandColor: Color = isHighlighted
             ? Color.accentColor
             : (entry.groupOrdinal % 2 == 1 ? Color.accentColor.opacity(0.08) : Color.clear)
-        // 初期設定から変わっている項目の印(設定の見出しの ● と同じ判定。番号と見出しの間。3739、ユーザ指定)
+        // 初期設定から変わっている項目の印(設定の見出しの ● と同じ判定・同じ色。番号と見出しの間。3739、ユーザ指定)
         let isModified: Bool = {
             guard let number = entry.number,
                 let keys = SettingsCardKeys.keysForModifiedMark(
@@ -1462,17 +1462,21 @@ extension ContentView {
         }()
         return HStack(spacing: 6) {
             if let number = entry.number {
-                Text(number)
-                    .font(.system(size: layout.fontSize).monospacedDigit())
-                    .frame(width: layout.fontSize * 2.6, alignment: .leading)
-                // 印の無い行も同じ幅を取り、見出しの頭をそろえる
-                Text("●")
-                    .font(.system(size: max(6, layout.fontSize - 5)))
-                    .foregroundStyle(isHighlighted ? Color.white : Color.accentColor.opacity(0.75))
-                    .opacity(isModified ? 1 : 0)
-                    .frame(width: layout.fontSize * 0.6)
-                    .accessibilityHidden(!isModified)
-                    .accessibilityLabel("初期設定から変更あり")
+                // 番号は右寄せで ● のすぐ左に付け、欄の幅は X.19 が収まる分だけ(番号と ● と見出しの間を詰めて、見出しの
+                // 末尾が … になるのを減らす。3740、ユーザ指定)。印の無い行も ● の幅を取り、見出しの頭をそろえる
+                HStack(spacing: 1) {
+                    Text(number)
+                        .font(.system(size: layout.fontSize).monospacedDigit())
+                        .frame(width: layout.fontSize * 2.3, alignment: .trailing)
+                    Text("●")
+                        .font(.system(size: max(6, layout.fontSize - 5)))
+                        .foregroundStyle(isHighlighted ? Color.white : ContentView.currentBasePreset.markColor.opacity(0.75))
+                        .opacity(isModified ? 1 : 0)
+                        .frame(width: layout.fontSize * 0.5)
+                        .accessibilityHidden(!isModified)
+                        .accessibilityLabel("初期設定から変更あり")
+                }
+                .padding(.trailing, -3)
             }
             Text(entry.title)
                 .font(.system(size: layout.fontSize, weight: .medium))
