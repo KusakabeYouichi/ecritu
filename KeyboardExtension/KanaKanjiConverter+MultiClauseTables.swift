@@ -3159,6 +3159,18 @@ extension KanaKanjiConverter {
         // 文中の bigram が期待される位置は複合助詞クランプ(multiClauseCompoundParticles)が担う
         "とか": 6300,
     ]
+    // 補助語彙(vin)の語ごとの値段の上限(3738。learningBOX 確認表 3697 の [直す]、ユーザ判定「文脈で上げて
+    // (multiClauseSupplementalFrameHeads)、それで直らなかった語は全体で上げる。既存のテストが落ちる語は除く」)。
+    // vin の語の多くは LM に無く 8700 で、とパーク/後ブレ/とノート/離存/乗るて のように切れ端や同音語に負けた。
+    // 値は 3695 で試した外来語の上限と同じ 7000(常用の漢字語の LM+500 より高く、同じ読みの日常語は追い越さない)。
+    // タナ は 棚(6523+500)と僅差になるので 7500(固有名の並びの加点 3000 があるときだけ 棚 を越える)
+    static let multiClauseSupplementalWordCostCaps: [String: Int] = [
+        "Topaque": 7000, "トパーク": 7000, "Gobelet": 7000, "ゴブレ": 7000, "Tonneau": 7000, "トノー": 7000,
+        "Lison": 7000, "リゾン": 7000, "Brun": 7000, "Dão": 7000, "Moll": 7000, "Syrah": 7000, "Gamay": 7000, "ガメイ": 7000,
+        "Glera": 7000, "グレーラ": 7000, "Matakana": 7000, "マタカナ": 7000, "Gin": 7000, "Kent": 7000,
+        "ノルテ": 7000, "Norte": 7000, "動ビン": 7000,
+        "タナ": 7500, "Tannat": 7500,
+    ]
     static let multiClauseConversationalTemporalNounUnigramCaps: [String: Int] = [
         "昨日": 4300,
         // 今日(会話最頻)が 経(お経4660)/教派(6278)等に unigram(5041)で競り負ける
@@ -4314,6 +4326,7 @@ extension KanaKanjiConverter {
             for s in KanaKanjiConverter.multiClauseEventNounAfterSuruNounBonuses.keys.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseKuruFormSurfaces.keys.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseLMSplitCompoundUnigramSubstitutes.keys.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseSupplementalWordCostCaps.keys.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseOutgoingBigramBorrowDeniedReadingsBySurface.keys.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClausePrenominalVerbNounPreferences.keys.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseRareReadingFloorExemptSurfacesByReading.keys.sorted() { add(s) }
@@ -4589,6 +4602,7 @@ extension KanaKanjiConverter {
     static let multiClauseEventNounAfterSuruNounBonusesByID = MultiClauseSymbols.byID(multiClauseEventNounAfterSuruNounBonuses)
     static let multiClauseKuruFormSurfacesByID = MultiClauseSymbols.byID(multiClauseKuruFormSurfaces)
     static let multiClauseLMSplitCompoundUnigramSubstitutesByID = MultiClauseSymbols.byID(multiClauseLMSplitCompoundUnigramSubstitutes)
+    static let multiClauseSupplementalWordCostCapsByID = MultiClauseSymbols.byID(multiClauseSupplementalWordCostCaps)
     static let multiClauseOutgoingBigramBorrowDeniedReadingsBySurfaceByID = MultiClauseSymbols.byID(multiClauseOutgoingBigramBorrowDeniedReadingsBySurface)
     static let multiClausePrenominalVerbNounPreferencesByID = MultiClauseSymbols.byID(multiClausePrenominalVerbNounPreferences)
     static let multiClauseRareReadingFloorExemptSurfacesByReadingByID = MultiClauseSymbols.byID(multiClauseRareReadingFloorExemptSurfacesByReading)

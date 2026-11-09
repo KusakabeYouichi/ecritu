@@ -3301,6 +3301,10 @@ extension KanaKanjiConverter {
                 if let temporalCap = Self.multiClauseConversationalTemporalNounUnigramCapsByID[surfaceID] {
                     base = min(base, temporalCap)
                 }
+                // 補助語彙(vin)の語ごとの値段の上限(定数コメント参照。3738)
+                if let supplementalCap = Self.multiClauseSupplementalWordCostCapsByID[surfaceID] {
+                    base = min(base, supplementalCap)
+                }
                 // 収穫底値(wc>=10000)の表層は unigram があっても信頼しない — その unigram
                 // は別の主読みの統計で、レア読みがタダ乗りする(田中(でんちゅう12670)が
                 // たなか 用途の4821、方面(かたも11000)が ほうめん 用途の4792 に乗って
@@ -3394,6 +3398,10 @@ extension KanaKanjiConverter {
                 // LM がトークン分割していて unigram を持たない日常語(その他 等。定数コメント参照)
                 if let substitute = Self.multiClauseLMSplitCompoundUnigramSubstitutesByID[surfaceID] {
                     base = substitute
+                }
+                // 補助語彙(vin)の語ごとの値段の上限(定数コメント参照。3738)
+                if let supplementalCap = Self.multiClauseSupplementalWordCostCapsByID[surfaceID] {
+                    base = min(base, supplementalCap)
                 }
                 // 収穫底値ノードはさらに重く(定数コメント参照)。seed 掲載語(柚香 等、
                 // wc が底値でも人手で代表に選んだ語)は単文節の降格と同様に免除する。
