@@ -5889,6 +5889,12 @@ extension KanaKanjiConverter {
                         // 頭+尾 の複合の実績がある の 連結(東京の支店。定数コメント参照。3328)
                         cost -= Self.multiClauseCrossNoCompoundBonus
                     }
+                    // 補助語彙の固有名(LM に無いか稀)の直後の は で始まる漢字の語(Arinto+破産。定数コメント参照。3739)
+                    if supplementalLoanwordFlags[prevIdx], !node.isKanaIdentity, node.reading.count >= 2,
+                        node.reading.hasPrefix("は"),
+                        (unigramCosts[prevNode.surface] ?? Int.max) >= Self.multiClauseSupplementalPairHeadMinUnigram {
+                        cost += Self.multiClauseLoanwordThenHaWordPenalty
+                    }
                     // 問題文の型(正解は/北から/または)・固有名の並び(GrecoやAglianico)の後ろの補助語彙の外来語(定数コメント参照。3738)
                     if supplementalLoanwordFlags[idx] {
                         if let frame = Self.multiClauseSupplementalFrameHeads[prevNode.surface], frame.particles.contains("") {

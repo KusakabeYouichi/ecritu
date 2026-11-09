@@ -1781,6 +1781,8 @@ extension KanaKanjiConverter {
         "の\t名産": 2000,
         // 心証+が/を(しんしょうがわるい が 神将/信証 を下げたら 心象が悪い だった。心象 7406 < 心証 7995。3739、ユーザ判定)
         "心証\tが": 1500, "心証\tを": 1500,
+        // 酸+が(アリントは酸がとても高い が は+サン+が だった。は→酸 の bigram が 8607 と高い。3739、ユーザ判定)
+        "酸\tが": 1500, "は\t酸": 2500,
         // くろっぽくしたぜ→黒っぽく下ぜ(ユーザ報告 3719)。し+た+ぜ の た→ぜ が 9435 と高く、名詞 下→ぜ(6690)に 1197 差で負けた。
         // 書き言葉の LM に 〜たぜ が少ないため。過去の た の後ろの終助詞 ぜ を補う
         "た\tぜ": 2500,
@@ -3902,6 +3904,9 @@ extension KanaKanjiConverter {
     // その間の各カウンティと、なぱでもそのまでも が その間でも だった(learningBOX 確認表 3697 の [直す])
     static let multiClauseDemonstrativeMaPenalty = 3000
     static let multiClauseDemonstrativeFollowingParticles: Set<String> = ["まで", "から", "より", "が", "を", "に", "で", "へ"]
+    // 補助語彙の固有名(LM に無いか稀)の直後の は で始まる漢字の語(Arinto+破産)の減点(3739、ユーザ判定: 区切りが変)。
+    // 固有名+は(助詞)+酸 が 破産 より 3688 高く、アリントは酸が が Arinto破産が だった。とパーク端の も同じ型
+    static let multiClauseLoanwordThenHaWordPenalty = 4000
     // の+かどこか の減点(3760)。上+の と 上野 の差 870 を越える幅
     static let multiClauseKadokokaAfterNoPenalty = 3000
     // だろう/でしょう の途中で漢字・カタカナの語へ区切る減点(3710)。いるだろうし で 居る+だ+労使 が 居る+だろう+し に 1707 差、
