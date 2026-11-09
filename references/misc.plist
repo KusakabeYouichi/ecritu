@@ -463,6 +463,9 @@
 	<dict><key>phrase</key><string>三段仕込み</string><key>shortcut</key><string>さんだんじこみ</string><key>pos</key><string>名詞</string></dict>	<!-- 三段仕込み(酒造り): 辞書は送り仮名なしの 三段仕込 だけ -->
 	<!-- learningBOX 確認表(3697)の [直す](3738、ユーザ判定) -->
 	<dict><key>phrase</key><string>粒摘み</string><key>shortcut</key><string>つぶつみ</string><key>pos</key><string>名詞</string></dict>	<!-- 粒摘み(貴腐ぶどうの摘み方): Aszúは粒摘みした が Aszú初物実した だった -->
+	<dict><key>phrase</key><string>パイ包み焼き</string><key>shortcut</key><string>ぱいつつみやき</string><key>pos</key><string>名詞</string></dict>	<!-- 仔牛のパイ包み焼き が 牌堤焼 だった(3739。vin の パイ包み は ぱいづつみ だけ) -->
+	<dict><key>phrase</key><string>パイ包み焼き</string><key>shortcut</key><string>ぱいづつみやき</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>パイ包み</string><key>shortcut</key><string>ぱいつつみ</string><key>pos</key><string>名詞</string></dict>
 	<dict><key>phrase</key><string>日較差</string><key>shortcut</key><string>にっかくさ</string><key>pos</key><string>名詞</string></dict>	<!-- 気温の日較差: 辞書の読みは にちかくさ/にっこうさ だけで、よく使う にっかくさ では 日覚さ だった(learningBOX 検査 3657) -->
 	<dict><key>phrase</key><string>ミイラ化</string><key>shortcut</key><string>みいらか</string><key>pos</key><string>サ変名詞</string></dict>	<!-- ミイラ化させます が ミイラ課させます だった(learningBOX 検査 3658) -->
 	<dict><key>phrase</key><string>突然変異</string><key>shortcut</key><string>とつぜんへんい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 突然変異しやすく が とつぜん変異しやすく だった(learningBOX 検査 3658) -->
