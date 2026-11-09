@@ -2115,6 +2115,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single("おくそく").first, "臆測", "\(single("おくそく").prefix(4))")
     }
 
+    // 3745(ユーザ報告): しこんだから が 而今だから。compenser のミシュランの店名 而今 の読みを しこん と誤っていた(正しくは にこん。
+    // ミシュランガイドの NARA NIKON)。奈良 而今 は ならにこん、而今 だけ(にこん)は ニコン の前に出るので入れない
+    func testRegressionJikonReading3745() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.multiClauseCandidates(for: "しこんだから", systemCandidateMode: .surface).first, "仕込んだから")
+        XCTAssertFalse(converter.candidates(for: "しこん", limit: 30, systemCandidateMode: .surface).contains("而今"))
+        XCTAssertEqual(converter.candidates(for: "にこん", limit: 5, systemCandidateMode: .surface).first, "ニコン")
+        XCTAssertEqual(converter.candidates(for: "ならにこん", limit: 5, systemCandidateMode: .surface).first, "奈良 而今")
+    }
+
     // 3744(ユーザ報告): かんなをとぐ が カンナを砥ぐ で 鉋 が、のみをとぐ が 野見を砥ぐ で 鑿 が無かった。低頻度の 1 字漢字は 鉋→を が
     // LM に無く、単独名詞になれない字(2841)の減点 2500 を受けていた。連語表に当たった名詞はこの文で単独の名詞として使われているので
     // 減点から外し、かな書きを 2 番めに(ユーザ指定)。読みの長さで外す案は 放(ぱなし)/橘 を巻き込み やりっぱなし が やり放 になった

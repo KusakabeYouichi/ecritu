@@ -805,7 +805,7 @@
 	        <dict><key>phrase</key><string>御料理 花墻</string><key>shortcut</key><string>おりょうりはながき</string></dict>
 	        <dict><key>phrase</key><string>アコルドゥ</string><key>shortcut</key><string>あこるどぅ</string></dict>
 	        <dict><key>phrase</key><string>緒方</string><key>shortcut</key><string>おがた</string></dict>
-	        <dict><key>phrase</key><string>奈良 而今</string><key>shortcut</key><string>ならしこん</string></dict>
+	        <dict><key>phrase</key><string>奈良 而今</string><key>shortcut</key><string>ならにこん</string></dict>	<!-- 読みは ならにこん(ミシュランガイドの店名 NARA NIKON。以前は しこん と誤っていた。3745) -->
 	<!--        <dict><key>phrase</key><string>白</string><key>shortcut</key><string>つくも</string></dict>	(入れない: つくも→九十九 の前に出る) -->
 	        <dict><key>phrase</key><string>東山 吉寿</string><key>shortcut</key><string>ひがしやまよしひさ</string></dict>
 	        <dict><key>phrase</key><string>山荘 京大和</string><key>shortcut</key><string>さんそうきょうやまと</string></dict>
@@ -877,7 +877,7 @@
 	<!--        <dict><key>phrase</key><string>さかい</string><key>shortcut</key><string>さかい</string></dict>	(入れない: 堺/境/酒井 の前に出る) -->
 	<!--        <dict><key>phrase</key><string>さゝ木</string><key>shortcut</key><string>ささき</string></dict>	(入れない: 佐々木 の前に出る) -->
 	<!--        <dict><key>phrase</key><string>さわ田</string><key>shortcut</key><string>さわだ</string></dict>	(入れない: 沢田 の前に出る) -->
-	        <dict><key>phrase</key><string>而今</string><key>shortcut</key><string>しこん</string></dict>
+	<!--        <dict><key>phrase</key><string>而今</string><key>shortcut</key><string>にこん</string></dict>	(入れない: にこん→ニコン の前に出る。以前は しこん と誤って入れていて、しこんだから が 而今だから になった。清酒の 而今(じこん)は sake.plist) -->
 	<!--        <dict><key>phrase</key><string>しのはら</string><key>shortcut</key><string>しのはら</string></dict>	(入れない: 篠原 の前に出る) -->
 	        <dict><key>phrase</key><string>旬彩天</string><key>shortcut</key><string>しゅんさいてん</string></dict>
 	<!--        <dict><key>phrase</key><string>真</string><key>shortcut</key><string>しん</string></dict>	(入れない: しん→新/心 の前に出る) -->
