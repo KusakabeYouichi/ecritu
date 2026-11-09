@@ -855,6 +855,8 @@ extension KanaKanjiConverter {
         "Botrytis cinerea\t貴腐菌": 3000, "ボトリティス・シネレア\t貴腐菌": 3000,
         // 新梢 は語ごとの上限(7000)だと しんしょうがわるい が 新梢が悪い になった(心証 7995)ので、Tying は+新梢 の組だけ
         "Tying\t新梢": 3000, "タイイング\t新梢": 3000,
+        // 大阪の陣/夏の陣/冬の陣(陣 を Gin と同じ水準に下げたら 大阪のじん/夏のじん になった。3739)
+        "大阪\t陣": 3000, "大坂\t陣": 3000, "夏\t陣": 3000, "冬\t陣": 3000,
         "天\t来": 2000,
         // 法律・条約が はっこうする は 発効(上の 発行/醗酵 と同じ報告で確かめた)
         "法律\t発効": 3000, "法令\t発効": 3000, "条約\t発効": 3000, "協定\t発効": 3000, "規則\t発効": 3000, "改正法\t発効": 3000, "契約\t発効": 3000,
@@ -2975,7 +2977,8 @@ extension KanaKanjiConverter {
     static let multiClausePlaceNameSuffixPreferenceBonus = 2000
     static let multiClausePlaceNameSuffixPreferredSurfaces: Set<String> = ["人", "族", "型", "西部", "東部", "南部", "北部"]
     static let multiClausePlaceNameSuffixPreferredSurfacesID = MultiClauseIDSet(multiClausePlaceNameSuffixPreferredSurfaces)
-    static let multiClausePlaceNameSuffixDemotedSurfaces: Set<String> = ["陣", "俗", "方", "西武", "東武", "頭部"]
+    // Gin/ジン/仁 も地名の直後には来ない(Gin を 陣 と同じ水準に上げたら トラキアGin/トラキアジン になった。3739)
+    static let multiClausePlaceNameSuffixDemotedSurfaces: Set<String> = ["陣", "俗", "方", "西武", "東武", "頭部", "Gin", "ジン", "仁"]
     static let multiClausePlaceNameSuffixDemotedSurfacesID = MultiClauseIDSet(multiClausePlaceNameSuffixDemotedSurfaces)
     // 補助語彙(vin 等)に登録した漢数字入りの固有名(五百万石=酒米)は、同じ読みの 数+助数詞(500万石)より先に(ユーザ指定 3715)。
     // 数のノードは定額 7200、LM に無い補助語彙は 8700 なので、その差を越える幅
@@ -3174,9 +3177,13 @@ extension KanaKanjiConverter {
     static let multiClauseSupplementalWordCostCaps: [String: Int] = [
         "Topaque": 7000, "トパーク": 7000, "Gobelet": 7000, "ゴブレ": 7000, "Tonneau": 7000, "トノー": 7000,
         "Lison": 7000, "リゾン": 7000, "Brun": 7000, "Dão": 7000, "Moll": 7000, "Syrah": 7000, "Gamay": 7000, "ガメイ": 7000,
-        "Glera": 7000, "グレーラ": 7000, "Matakana": 7000, "マタカナ": 7000, "Gin": 7000, "Kent": 7000,
+        "Glera": 7000, "グレーラ": 7000, "Matakana": 7000, "マタカナ": 7000, "Kent": 7000,
         "ノルテ": 7000, "Norte": 7000, "動ビン": 7000,
         "タナ": 7500, "Tannat": 7500,
+        // Gin は 陣(語コスト 6211)と同じ水準に(3739、ユーザ判定: 陣 はそう頻度が高くないので文脈に関係なく同じ水準。
+        // Ginはビフィーター/製法はGinに似て が 陣 だった)。どれを採るかは前後の bigram で決まる。ジン(LM 6722)まで上げると
+        // 接尾の 人(じん)を越えて トラキアジン/大阪ジン になったので Gin だけ(ラテン文字が先・カタカナが 2 番め)
+        "Gin": 6200,
         // ソノマ/Sonoma は語コストが収穫底値(11000)で 9500 に床上げされ、その+間(ま)/その+まで+も に負けていた(3739)
         "ソノマ": 7000, "Sonoma": 7000,
     ]
@@ -3776,6 +3783,10 @@ extension KanaKanjiConverter {
         // 確認表 3697 の [直す](3738、ユーザ判定): 無(ぶ)を 1 字で立てる読みは まず無い(無事/無礼 の中だけ)。研究におけるハブ/
         // キャベツにハム が は+無 だった。牌(ぱい、6117)は パイ(6485)より安く チーズの牌/仔牛の牌堤焼 だった
         "ぶ": ["無": 3000],
+        // 陣 は Gin/ジン と同じ水準に(3739、ユーザ判定: 陣 はそう頻度が高くないので文脈に関係なく同じ水準)。陣→は/が/を の
+        // bigram で 約 1350 安く、Ginはビフィーター/製法はGinに似て が 陣 だった。陣を張る/敷く は連語表(manual.json)で守る。
+        // 仁(単独の語としてはまれ)も同じだけ下げる(陣 だけ下げると 大阪の仁/夏の仁 になった)
+        "じん": ["陣": 1500, "仁": 1500],
         "ぱい": ["牌": 1500]
     ]
     // 稀な語幹の活用派生を同点の常用語より後ろへ(表層接頭 → 加算)。どうじように で 動じよう(動じる 7369)と
