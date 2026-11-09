@@ -2054,6 +2054,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             ("しんしょうがわるい", "心証が悪い"), ("かんこくのめいさん", "韓国の名産"), ("かれははさんした", "彼は破産した"),
             ("じかんをようします", "時間を要します"), ("こうしのぱいつつみやき", "仔牛のパイ包み焼き"),
             ("こうしをつとめる", "講師を務める"), ("けんりをこうしする", "権利を行使する"),
+            ("こうしのことば", "孔子の言葉"), ("こうしのおしえ", "孔子の教え"),
             ("しょくひんにしようしたてんかぶつは", "食品に使用した添加物は"), ("しようした", "使用した"),
             ("ゆうしょくはかれーにしよう", "夕食はカレーにしよう"),
             ("やさいをいためる", "野菜を炒める"), ("にくいためる", "肉炒める"),
@@ -2075,6 +2076,10 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let kifu = shown("れぜるゔぇともにきふがあってはならない")
         XCTAssertTrue(kifu.first?.contains("貴腐が") ?? false, "\(kifu.prefix(3))")
         XCTAssertTrue(shown("きふした").first?.hasPrefix("寄") ?? false, "\(shown("きふした").prefix(3))")
+        // 募る/集める/集まる の目的語・主語は 寄付(連語表。ユーザ指定 3740: 募る なら寄付)
+        for reading in ["きふをつのる", "きふをあつめる", "きふがあつまった", "きふをよびかける"] {
+            XCTAssertTrue(shown(reading).first?.hasPrefix("寄") ?? false, "\(reading) \(shown(reading).prefix(3))")
+        }
     }
 
     // 3739(ユーザ報告): うりかたは が うり方は(は の無い うりかた は 売り方 が先頭)、うちはじめは が うち始めは、
