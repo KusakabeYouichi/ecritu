@@ -125,8 +125,9 @@ enum ScreenshotSeed {
 ''')
 # 面の状態は 3583(iPad 版に向けた切り分け)で KeyboardRootView の @State から状態のクラスへ移った(2026-11-05 に追従)
 patch("KaomojiPanelState.swift", [
-    ('    var selectedCategoryID = "existing"',
-     '    var selectedCategoryID = ScreenshotSeed.string("kaomojiCategory") ?? "existing"'),
+    # 3726 から区分は init で決まる(最後に開いていた区分を覚える)。種があればそれを優先する(2026-11-09 に追従)
+    ('        selectedCategoryID = saved.flatMap',
+     '        selectedCategoryID = ScreenshotSeed.string("kaomojiCategory") ?? saved.flatMap'),
     ('    var selectedReadingPrefix: String? = nil',
      '    var selectedReadingPrefix: String? = ScreenshotSeed.string("kaomojiPrefix")'),
     ('    var selectedReading: String? = nil',
