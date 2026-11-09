@@ -3686,7 +3686,9 @@ extension KanaKanjiConverter {
                 Self.multiClauseImperativeBannedTailParticles.contains(surface.first!) || surfaceID == SID.で,
                 prevIsInflectionDerived, !prevIsKanaIdentity,
                 let prevLast = prevReading?.last, prevLast != "て", prevLast != "で",
-                Self.multiClauseERowKanaCharacters.contains(prevLast) {
+                Self.multiClauseERowKanaCharacters.contains(prevLast),
+                // 〜始め(打ち始め/書き始め)は一段の連用形で、名詞として は/が が付く(3739、ユーザ報告: うちはじめは が うち初めは だった)
+                !prev.hasSuffix("始め") {
                 penalty += Self.multiClauseImperativeParticlePenalty
             }
             // 終止形の動詞(見る/やる/行く)の直後の きなく…/きた… は 気(見る気なくなる/やる気がない)で、一段 着る の活用形
