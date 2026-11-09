@@ -5895,6 +5895,11 @@ extension KanaKanjiConverter {
                         (unigramCosts[prevNode.surface] ?? Int.max) >= Self.multiClauseSupplementalPairHeadMinUnigram {
                         cost += Self.multiClauseLoanwordThenHaWordPenalty
                     }
+                    // 補助語彙の固有名+を+擁する(定数コメント参照。3739)
+                    if prevNode.surfaceID == SID.を, node.isInflectionDerived, backPointer[prevIdx] >= 0,
+                        supplementalLoanwordFlags[backPointer[prevIdx]], node.surface.hasPrefix("擁") {
+                        cost -= Self.multiClauseLoanwordObjectYouBonus
+                    }
                     // 問題文の型(正解は/北から/または)・固有名の並び(GrecoやAglianico)の後ろの補助語彙の外来語(定数コメント参照。3738)
                     if supplementalLoanwordFlags[idx] {
                         if let frame = Self.multiClauseSupplementalFrameHeads[prevNode.surface], frame.particles.contains("") {
