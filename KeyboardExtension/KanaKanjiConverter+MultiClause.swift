@@ -3301,10 +3301,6 @@ extension KanaKanjiConverter {
                 if let temporalCap = Self.multiClauseConversationalTemporalNounUnigramCapsByID[surfaceID] {
                     base = min(base, temporalCap)
                 }
-                // 補助語彙(vin)の語ごとの値段の上限(定数コメント参照。3738)
-                if let supplementalCap = Self.multiClauseSupplementalWordCostCapsByID[surfaceID] {
-                    base = min(base, supplementalCap)
-                }
                 // 収穫底値(wc>=10000)の表層は unigram があっても信頼しない — その unigram
                 // は別の主読みの統計で、レア読みがタダ乗りする(田中(でんちゅう12670)が
                 // たなか 用途の4821、方面(かたも11000)が ほうめん 用途の4792 に乗って
@@ -3399,10 +3395,6 @@ extension KanaKanjiConverter {
                 if let substitute = Self.multiClauseLMSplitCompoundUnigramSubstitutesByID[surfaceID] {
                     base = substitute
                 }
-                // 補助語彙(vin)の語ごとの値段の上限(定数コメント参照。3738)
-                if let supplementalCap = Self.multiClauseSupplementalWordCostCapsByID[surfaceID] {
-                    base = min(base, supplementalCap)
-                }
                 // 収穫底値ノードはさらに重く(定数コメント参照)。seed 掲載語(柚香 等、
                 // wc が底値でも人手で代表に選んだ語)は単文節の降格と同様に免除する。
                 if let wordCost,
@@ -3412,6 +3404,11 @@ extension KanaKanjiConverter {
                 }
             } else {
                 base = Self.multiClausePassthroughPerCharCost * reading.count
+            }
+            // 補助語彙(vin)の語ごとの値段の上限(定数コメント参照。3738)。収穫底値(語コスト 11000 の Gin/ソノマ)の床上げや
+            // bigram の値より後に掛ける(3739。床上げの前に掛けると 9500 に戻され効いていなかった)
+            if let supplementalCap = Self.multiClauseSupplementalWordCostCapsByID[surfaceID] {
+                base = min(base, supplementalCap)
             }
             // seed 先頭語のコスト救済(2662→2677): seed がその読みの先頭に指定した表層が、
             // seed 掲載の兄弟より LM で高い(または LM 未収録=dictUnknown)ために連文節で必ず
@@ -4421,6 +4418,15 @@ extension KanaKanjiConverter {
             if (surface == "杯" && (reading == "ばい" || reading == "ぱい")) || (surface == "石" && reading == "こく"),
                 prevIsBOS || !(prev.last.map { $0.isNumber || "一二三四五六七八九十百千何数".contains($0) } ?? false) {
                 penalty += Self.multiClauseRendakuHaiAfterNonNumeralPenalty
+            }
+            // 指示語(その/この/あの/どの)の直後の 間 は あいだ/かん で、ま とは読まない(定数コメント参照。3739)
+            // 指示語の直後の助詞(その+まで+も)も、指示語は名詞を修飾するので立たない(なぱでもそのまでも が ソノマ でなかった)
+            if prevID == SID.その || prevID == SID.この || prevID == SID.あの || prevID == SID.どの {
+                if reading == "ま", surface == "間" {
+                    penalty += Self.multiClauseDemonstrativeMaPenalty
+                } else if isKanaIdentity, Self.multiClauseDemonstrativeFollowingParticles.contains(reading) {
+                    penalty += Self.multiClauseDemonstrativeMaPenalty
+                }
             }
             // 連濁した読みでだけ立つ語(喧嘩=げんか)は、前が文頭か かな のときは減点(定数コメント参照。3736)
             if !isKanaIdentity, prevIsBOS || prevIsKanaIdentity,
@@ -5890,10 +5896,10 @@ extension KanaKanjiConverter {
                         } else if prevNode.isKanaIdentity {
                             var headIdx = backPointer[prevIdx]
                             var particleSurface = prevNode.surface
-                            // で+は/に+は に割れた助詞(ソンダ・ヴァレーで+は+タナ)は 1 つ前の語を頭に見る
-                            if prevNode.boundHeadSurface == nil, prevNode.surfaceID == SID.は, headIdx >= 0,
+                            // で+は/に+は/で+も に割れた助詞(ソンダ・ヴァレーで+は+タナ/ナパで+も+ソノマ)は 1 つ前の語を頭に見る
+                            if prevNode.boundHeadSurface == nil, prevNode.surfaceID == SID.は || prevNode.surface == "も", headIdx >= 0,
                                 nodes[headIdx].isKanaIdentity, nodes[headIdx].surface == "で" || nodes[headIdx].surface == "に" {
-                                particleSurface = nodes[headIdx].surface + "は"
+                                particleSurface = nodes[headIdx].surface + prevNode.surface
                                 headIdx = backPointer[headIdx]
                             }
                             if let headSurface = prevNode.boundHeadSurface ?? (headIdx >= 0 ? nodes[headIdx].surface : nil) {

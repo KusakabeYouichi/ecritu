@@ -3177,6 +3177,8 @@ extension KanaKanjiConverter {
         "Glera": 7000, "グレーラ": 7000, "Matakana": 7000, "マタカナ": 7000, "Gin": 7000, "Kent": 7000,
         "ノルテ": 7000, "Norte": 7000, "動ビン": 7000,
         "タナ": 7500, "Tannat": 7500,
+        // ソノマ/Sonoma は語コストが収穫底値(11000)で 9500 に床上げされ、その+間(ま)/その+まで+も に負けていた(3739)
+        "ソノマ": 7000, "Sonoma": 7000,
     ]
     static let multiClauseConversationalTemporalNounUnigramCaps: [String: Int] = [
         "昨日": 4300,
@@ -3874,6 +3876,11 @@ extension KanaKanjiConverter {
     // 原価 7401。ユーザ指摘 3736)。夫婦+喧嘩 のように漢字の語の後ろは減点しない(辞書に 1 語で無い複合が崩れるので抑制はしない)
     static let multiClauseRendakuOnlyReadingsBySurface: [String: String] = ["喧嘩": "げんか"]
     static let multiClauseRendakuOnlyAfterNonNounPenalty = 3000
+    // 指示語(その/この/あの/どの)の直後の 間(ま)の減点(3739)。その間 は そのあいだ/そのかん と読み、そのま とは読まない
+    // (ユーザ判定: その間 は vin の ソノマ と競合しない)。その+間(ま) が ソノマ(7995)より安く、そのまのかくかうんてぃと が
+    // その間の各カウンティと、なぱでもそのまでも が その間でも だった(learningBOX 確認表 3697 の [直す])
+    static let multiClauseDemonstrativeMaPenalty = 3000
+    static let multiClauseDemonstrativeFollowingParticles: Set<String> = ["まで", "から", "より", "が", "を", "に", "で", "へ"]
     // の+かどこか の減点(3760)。上+の と 上野 の差 870 を越える幅
     static let multiClauseKadokokaAfterNoPenalty = 3000
     // だろう/でしょう の途中で漢字・カタカナの語へ区切る減点(3710)。いるだろうし で 居る+だ+労使 が 居る+だろう+し に 1707 差、
@@ -4333,6 +4340,8 @@ extension KanaKanjiConverter {
             for s in KanaKanjiConverter.multiClauseKoiFollowedByNounSurfaces.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseKoiReadings.sorted() { add(s) }
             add("から")
+            // 指示語(その/この/あの/どの)の直後の 間(ま)・助詞の減点(3739)
+            for s in ["その", "この", "あの", "どの"] { add(s) }
             for s in KanaKanjiConverter.multiClauseSugiSuffixSurfaces.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseTeOruAuxiliaryReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseKanaPassiveHeadReadings.sorted() { add(s) }
@@ -4418,6 +4427,9 @@ extension KanaKanjiConverter {
         static let EOS = MultiClauseSymbols.id(multiClauseEOSMarker)
         static let ある = MultiClauseSymbols.id("ある")
         static let どの = MultiClauseSymbols.id("どの")
+        static let その = MultiClauseSymbols.id("その")
+        static let この = MultiClauseSymbols.id("この")
+        static let あの = MultiClauseSymbols.id("あの")
         static let なみ = MultiClauseSymbols.id("なみ")
         static let 並み = MultiClauseSymbols.id("並み")
         static let 並 = MultiClauseSymbols.id("並")
