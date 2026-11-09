@@ -176,6 +176,10 @@ def main():
                         row = decided.get((nr, p, vr))
                         if row:
                             # 同じ読みの組が既にあれば、表記の頭は先の行のまま、名詞の表記と加点だけ合わせる(くぎ/釘、めがね/眼鏡)
+                            # 組に merge_heads があれば、同じ読みの別の表記の頭も優先に加える(米を研ぐ/磨ぐ。3743)。
+                            # 無い組(薦める/勧める 等)は先の表記だけが優先で、後の表記は対抗のまま
+                            if g.get("merge_heads") and heads[0] not in row[2]:
+                                row[2].append(heads[0])
                             if noun not in row[3]:
                                 row[3].append(noun)
                             row[4] = max(row[4], bonus)
