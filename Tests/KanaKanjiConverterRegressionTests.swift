@@ -2115,6 +2115,22 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single("おくそく").first, "臆測", "\(single("おくそく").prefix(4))")
     }
 
+    // 3742(ユーザ報告): めいるや が 名るや(メイルや→滅入るや の順)、こめんとかく が コメント描く(コメント書く→コメント描く の順)
+    func testRegressionUserReports3742() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func single(_ reading: String) -> [String] { converter.candidates(for: reading, limit: 30, systemCandidateMode: .surface) }
+        func multi(_ reading: String) -> [String] { converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface) }
+        XCTAssertEqual(Array(multi("めいるや").prefix(2)), ["メイルや", "滅入るや"], "\(multi("めいるや").prefix(4))")
+        XCTAssertEqual(Array(single("めいる").prefix(2)), ["メイル", "滅入る"], "\(single("めいる").prefix(4))")
+        // 気/気分+が+滅入る は保つ
+        XCTAssertEqual(multi("きがめいる").first, "気が滅入る")
+        XCTAssertEqual(multi("きぶんがめいる").first, "気分が滅入る")
+        XCTAssertEqual(Array(multi("こめんとかく").prefix(2)), ["コメント書く", "コメント描く"], "\(multi("こめんとかく").prefix(4))")
+        XCTAssertEqual(multi("にっきをかく").first, "日記を書く")
+        XCTAssertEqual(multi("えをかく").first, "絵を描く")
+    }
+
     // 3740(ユーザ報告): ふた/ふたも の並び(フタ を出し、二 は 布田 の後ろ)、うちはじめは の うち初めは、どくまで の並び
     func testRegressionUserReports3740() throws {
         try prepareRealLMDictionary()
