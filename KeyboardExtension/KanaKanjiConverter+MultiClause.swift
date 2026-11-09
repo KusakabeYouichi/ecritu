@@ -6287,6 +6287,23 @@ extension KanaKanjiConverter {
         // 数分→で の bigram が引けないため、助詞の backoff 500 ぶんだけ で 分割が負けていた(397差)。
         // 意味(数分で直す / 明日出直す)は LM では判定できないのでコストは動かさず、両方を提示する。
         // 変種は1文節差し替えしか作らないため、区切りの違う経路はこの再最適化でしか出せない
+        // 〜始め の活用派生(打ち始め)が最良のとき、語幹と はじめ の間で区切った経路(うち+初め)も第2候補群に残す(3740、ユーザ指定:
+        // うちはじめは は 打ち始めは が先頭で、前に出ていた うち初めは も残す)。変種は 1 文節の差し替えしか作らないので、
+        // 区切りの違う経路はこの再最適化でしか出せない
+        var hajimeSplitAlternative: (joined: String, delta: Int)? = nil
+        for nodeIdx in pathIndices {
+            let node = nodes[nodeIdx]
+            guard node.isInflectionDerived, node.surface.count >= 3, node.surface.hasSuffix("始め"),
+                node.reading.count >= 4, node.reading.hasSuffix("はじめ") else { continue }
+            if let alternative = solveViterbi(allowedStartNodeIndex: nil, forcedBoundary: node.end - 3),
+                alternative.bestTotal - bestTotal <= Self.multiClauseVariantMaxDelta {
+                let altJoined = alternative.pathIndices.map { nodes[$0].surface }.joined()
+                if altJoined != normalized, altJoined != pathIndices.map({ nodes[$0].surface }).joined() {
+                    hajimeSplitAlternative = (altJoined, max(1, alternative.bestTotal - bestTotal))
+                }
+            }
+            break
+        }
         var particleSplitAlternativeJoined: String? = nil
         var particleSplitAlternativeDelta = 0
         if pathIndices.count >= 2 {
@@ -7247,6 +7264,10 @@ extension KanaKanjiConverter {
         // 助詞に割った代替経路(2771)もコスト差で同列に並べる
         if let particleSplitAlternativeJoined, particleSplitAlternativeJoined != joined {
             variants.append((particleSplitAlternativeDelta, -2, -1, particleSplitAlternativeJoined))
+        }
+        // 〜始め を語幹と はじめ に割った代替経路(3740)もコスト差で同列に並べる
+        if let hajimeSplitAlternative, hajimeSplitAlternative.joined != joined {
+            variants.append((hajimeSplitAlternative.delta, -2, -1, hajimeSplitAlternative.joined))
         }
         // た形/たて の区間を割った代替経路(3537)は seed 順変種の刻みで
         for alternative in taFormSplitAlternatives where alternative.joined != joined {
