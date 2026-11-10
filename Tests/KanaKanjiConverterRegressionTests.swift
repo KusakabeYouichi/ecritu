@@ -29428,4 +29428,13 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "いちょうがわるい", systemCandidateMode: .surface).first, "胃腸が悪い")
     }
 
+    // 3752(ユーザ指定): いちょうなみき が 胃腸並木(misc の 胃腸 が安い)。銀杏並木/イチョウ並木 を seed に並べ、連文節でも先頭に加点
+    func testRegressionIchouNamiki3752() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(Array(converter.candidates(for: "いちょうなみき", limit: 10, systemCandidateMode: .surface).prefix(2)), ["銀杏並木", "イチョウ並木"])
+        let walk = converter.multiClauseCandidates(for: "いちょうなみきをあるく", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(walk.prefix(2)), ["銀杏並木を歩く", "イチョウ並木を歩く"], "\(walk.prefix(4))")
+    }
+
 }
