@@ -29089,4 +29089,21 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertFalse(converter.candidates(for: "ほそくできる", limit: 20, systemCandidateMode: .surface).contains("捕そくできる"))
     }
 
+    // 3747(ユーザ指定): ほそくできる を 細くできる 先頭に。説明・資料は 補足、電波・敵機は 捕捉
+    // (連語表。サ変の接頭に可能の でき を足した)
+    func testRegressionHosokuDekiru3747() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ reading: String) -> [String] { converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface) }
+        let single = converter.candidates(for: "ほそくできる", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "細くできる", "\(single.prefix(5))")
+        for (reading, expected) in [
+            ("せつめいをほそくできる", "説明を補足できる"), ("しりょうをほそくできる", "資料を補足できる"),
+            ("でんぱをほそくできる", "電波を捕捉できる"), ("てっきをほそくできる", "敵機を捕捉できる"),
+            ("てっきをほそくした", "敵機を捕捉した"),
+        ] {
+            XCTAssertEqual(multi(reading).first, expected, "\(reading) \(multi(reading).prefix(4))")
+        }
+    }
+
 }
