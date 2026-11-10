@@ -29264,4 +29264,13 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(mawatta.first, "回った")
     }
 
+    // 3748(ユーザ指定): いっしゅう を 1周/一周/1週/一週/一蹴 の順に(一周 が辞書に無い)。いっしゅうまわった も 1周回った/一周回った/1週回った
+    func testRegressionIsshuu3748() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(Array(converter.candidates(for: "いっしゅう", limit: 10, systemCandidateMode: .surface).prefix(5)), ["1周", "一周", "1週", "一週", "一蹴"])
+        let mawatta = converter.multiClauseCandidates(for: "いっしゅうまわった", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(mawatta.prefix(3)), ["1周回った", "一周回った", "1週回った"], "\(mawatta.prefix(5))")
+    }
+
 }
