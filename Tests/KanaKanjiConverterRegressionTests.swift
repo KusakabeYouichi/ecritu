@@ -29043,4 +29043,12 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("かなりいいかげん").first, "かなりいい加減")
     }
 
+    // 3747(ユーザ指定): にこん を ニコン/Nikon/而今/仁近 の順に(辞書は ニコン/仁近 だけ。而今 は奈良のミシュランの店名)
+    func testRegressionNikon3747() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let nikon = converter.candidates(for: "にこん", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(nikon.prefix(4)), ["ニコン", "Nikon", "而今", "仁近"], "\(nikon.prefix(6))")
+    }
+
 }
