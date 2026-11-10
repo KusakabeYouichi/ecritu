@@ -29206,4 +29206,11 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "しんききのうの", systemCandidateMode: .surface).first, "新規機能の")
     }
 
+    // 3748(ユーザ指定): じどうあっぷでいと を 自動アップデイト 先頭に(児童アップデイト。LM の 自動→アップデート は アップデイト に効かない)
+    func testRegressionJidouAppudeito3748() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.multiClauseCandidates(for: "じどうあっぷでいと", systemCandidateMode: .surface).first, "自動アップデイト")
+    }
+
 }
