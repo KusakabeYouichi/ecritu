@@ -495,6 +495,7 @@ extension KanaKanjiConverter {
     // 文頭と格助詞直後の 付き に減点
     static let multiClauseTsukiSuffixWithoutHostPenalty = 2500
     static let multiClauseTsukiSuffixSymbols: Set<String> = ["付き", "つき"]  // SID.付き/つき の記号表登録用
+    static let multiClauseWariSymbols: Set<String> = ["割", "わり"]  // SID.割/わり の記号表登録用(3748)
     // かなの未然形(よば/とわ/おこなわ。LM にかな書きのトークンとして有る)+かな れ/れる/れた は、
     // 活用派生の 1 ノード(呼ばれる 5000)より かな断片の連鎖(よば 3636+れる 140)が安く、
     // と呼ばれる→とよばれる、行なわれている→おこなわれている だった(一括検査 3640b)。
@@ -3584,6 +3585,8 @@ extension KanaKanjiConverter {
     static let multiClauseTeFormKanaDemotion = 500
     // 漢字の名詞の直後(助詞なし)の 1 字+を の curated 部品(像+気を)への減点(3748)
     static let multiClauseNounBeforeCuratedObjectFragmentPenalty = 1500
+    // 数の後ろでない 割(わり)への減点(炭酸水割→炭酸水割り。割合の 割 は 3割/何割 のように数の後ろ。3748)
+    static let multiClauseNonNumeralWariPenalty = 1500
     // 文頭の の+漢字 2 字以上の名詞で終わる断片(の宣伝)への加点(3748)
     static let multiClauseSentenceInitialNoNounFragmentBonus = 1000
     // Wikipedia 偏りの同音語の降格(読み → [表層: 加算])。連文節でだけ、LM が百科事典寄りで前に出す表層を
@@ -4432,6 +4435,7 @@ extension KanaKanjiConverter {
             for s in KanaKanjiConverter.multiClauseTeOruAuxiliaryReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseKanaPassiveHeadReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseTsukiSuffixSymbols.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseWariSymbols.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseBigramBorrowDeniedReadingsBySurface.keys.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseBigramPrefixPairBonusesByPrev.keys.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseConstellationStandardSurfacesByReading.keys.sorted() { add(s) }
@@ -4557,6 +4561,8 @@ extension KanaKanjiConverter {
         static let た = MultiClauseSymbols.id("た")
         static let だし = MultiClauseSymbols.id("だし")
         static let 付き = MultiClauseSymbols.id("付き")
+        static let 割 = MultiClauseSymbols.id("割")
+        static let わり = MultiClauseSymbols.id("わり")
         static let つき = MultiClauseSymbols.id("つき")
         static let たい = MultiClauseSymbols.id("たい")
         static let ため = MultiClauseSymbols.id("ため")

@@ -29239,4 +29239,13 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(list.prefix(4)), ["加湿器", "加湿機", "歌詞付き", "菓子付き"], "\(list)")
     }
 
+    // 3748(ユーザ指定): たんさんすいわり を 炭酸水割り 先頭に(割 は数の後ろ。3割/何割 は保つ)
+    func testRegressionNonNumeralWari3748() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ reading: String) -> [String] { converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface) }
+        XCTAssertEqual(multi("たんさんすいわり").first, "炭酸水割り", "\(multi("たんさんすいわり").prefix(4))")
+        XCTAssertEqual(multi("なんわりか").first, "何割か")
+    }
+
 }

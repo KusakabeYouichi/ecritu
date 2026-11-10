@@ -4211,6 +4211,12 @@ extension KanaKanjiConverter {
                 containsKanji(prev), !prevIsInflectionDerived, !prevIsDictionaryFormPredicate {
                 penalty += Self.multiClauseNounBeforeCuratedObjectFragmentPenalty
             }
+            // 割合の 割(わり)は数の後ろ(3割/何割/一割)。名詞の後ろの わり は 割り(水割り/炭酸水割り)。LM は 割 5072 < 割り 6427
+            // で、たんさんすいわり が 炭酸水割 だった(3748、ユーザ指定)
+            if surfaceID == SID.割, readingID == SID.わり, !prevIsBOS, let last = prev.last,
+                !last.isNumber, !"一二三四五六七八九十百千万何数幾".contains(last) {
+                penalty += Self.multiClauseNonNumeralWariPenalty
+            }
             // 丁寧の お/ご(1 字のかな)は、た形・て形の活用(来た/着た/起きて)には付かない(お来た/お着た は非文)。
             // お送り/お待ちください のような連用形と、その合成ノード(お送りください)は対象外。
             // きょうおきた が きょう+お+来た で 今日起きた が出なかった(3747、ユーザ報告)
