@@ -29368,4 +29368,20 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "あると"))
     }
 
+    // 3751(ユーザ報告): つかってるせいか が 使ってる成果(はってるせいか は 貼ってるせいか)。貼って は追加語彙で安く 貼って+る+せい+か
+    // の経路が勝っていただけで、動詞の直後の せいか(所為か)を扱う規則が無かった。述語の連体形の直後の かな せい+か/で/だ を加点する。
+    // 使ってる成果が出た のように が が続く形は 成果 のまま
+    func testRegressionPredicateBeforeSei3751() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ reading: String) -> [String] { converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface) }
+        for (reading, expected) in [
+            ("つかってるせいか", "使ってるせいか"), ("つかっているせいか", "使っているせいか"), ("はってるせいか", "貼ってるせいか"),
+            ("つかったせいで", "使ったせいで"), ("さむいせいか", "寒いせいか"), ("かれのせいだ", "彼のせいだ"),
+            ("つかってるせいかがでた", "使ってる成果が出た"), ("がんばったせいかがでた", "頑張った成果が出た"),
+        ] {
+            XCTAssertEqual(multi(reading).first, expected, "\(reading) \(multi(reading).prefix(4))")
+        }
+    }
+
 }

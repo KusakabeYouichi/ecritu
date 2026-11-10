@@ -5036,6 +5036,15 @@ extension KanaKanjiConverter {
                             unigramCosts[prevNode.surface] == nil {
                             cost += Self.multiClauseHarvestedWordBeforePredicatePenalty
                         }
+                        // 述語の連体形(使ってる/した/寒い)の直後の かな せい は 所為(〜のせい)。後ろが か/で/だ のときは加点する。
+                        // つかってるせいか が 使ってる+成果 だった(貼って が追加語彙で安い はってるせいか だけ 貼って+る+せい+か の経路で
+                        // 正しくなっていた。3751、ユーザ報告)。使ってる成果が のように が が続く形は対象外
+                        if node.isKanaIdentity, node.readingID == SID.せい, node.end < n,
+                            chars[node.end] == "か" || chars[node.end] == "で" || chars[node.end] == "だ",
+                            prevNode.isInflectionDerived || prevNode.isDictionaryFormPredicate,
+                            let last = prevNode.surface.last, last == "る" || last == "た" || last == "だ" || last == "い" {
+                            cost -= Self.multiClausePredicateBeforeSeiBonus
+                        }
                         // 人名(姓/名)の直後に助詞なしで ください が続くのは非文(大栗ください)。お+連用形(お送りください)や
                         // 名詞(ビールください)はそのまま。姓の直後は さん/様 等の敬称が本来の続き(ユーザ報告 3632)
                         if node.isKanaIdentity, Self.multiClauseKudasaiReadingsID.contains(node.readingID),
