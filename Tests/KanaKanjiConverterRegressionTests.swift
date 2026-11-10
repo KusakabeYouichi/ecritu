@@ -29189,4 +29189,14 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.candidates(for: "のみもの", limit: 5, systemCandidateMode: .surface).first, "飲み物")
     }
 
+    // 3748(ユーザ指定): かねつかわないとね を 金使わないとね 先頭に(加熱+買わない だった。連語表 金+(を)+使う)
+    func testRegressionKaneTsukau3748() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ reading: String) -> [String] { converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface) }
+        XCTAssertEqual(multi("かねつかわないとね").first, "金使わないとね", "\(multi("かねつかわないとね").prefix(4))")
+        XCTAssertEqual(multi("おかねつかわないとね").first, "お金使わないとね")
+        XCTAssertEqual(converter.candidates(for: "かねつ", limit: 5, systemCandidateMode: .surface).first, "加熱")
+    }
+
 }
