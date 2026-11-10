@@ -718,7 +718,7 @@
 	        <dict><key>phrase</key><string>豊州</string><key>shortcut</key><string>ほうしゅう</string><key>pos</key><string>名詞</string></dict>
 	        <dict><key>phrase</key><string>肥州</string><key>shortcut</key><string>ひしゅう</string><key>pos</key><string>名詞</string></dict>
 	        <dict><key>phrase</key><string>隅州</string><key>shortcut</key><string>ぐうしゅう</string><key>pos</key><string>名詞</string></dict>
-	        <dict><key>phrase</key><string>壱州</string><key>shortcut</key><string>いっしゅう</string><key>pos</key><string>名詞</string></dict>
+<!--        <dict><key>phrase</key><string>壱州</string><key>shortcut</key><string>いっしゅう</string><key>pos</key><string>名詞</string></dict>	(compenser は読みの先頭を取るので、いっしゅう が 壱州 先頭になり 一周/一週 が出なかった。ユーザ指摘 3748) -->
 	        <dict><key>phrase</key><string>隠州</string><key>shortcut</key><string>おんしゅう</string><key>pos</key><string>名詞</string></dict>
 	        <dict><key>phrase</key><string>隠州</string><key>shortcut</key><string>いんしゅう</string><key>pos</key><string>名詞</string></dict>
 

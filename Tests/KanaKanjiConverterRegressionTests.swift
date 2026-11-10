@@ -29248,4 +29248,11 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("なんわりか").first, "何割か")
     }
 
+    // 3748(ユーザ指摘): compenser の 壱州(令制国の別称)が いっしゅう の先頭を取っていたので外す
+    func testRegressionIsshuuProvinceRemoved3748() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertFalse(converter.candidates(for: "いっしゅう", limit: 20, systemCandidateMode: .surface).contains("壱州"))
+    }
+
 }
