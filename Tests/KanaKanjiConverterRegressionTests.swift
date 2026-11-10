@@ -29051,4 +29051,13 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(nikon.prefix(4)), ["ニコン", "Nikon", "而今", "仁近"], "\(nikon.prefix(6))")
     }
 
+    // 3747(ユーザ指定): じみに を 地味に/滋味に/じみに の順に(染みに/じみに/地味に だった)
+    func testRegressionJimi3747() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let jimini = converter.candidates(for: "じみに", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(jimini.prefix(3)), ["地味に", "滋味に", "じみに"], "\(jimini.prefix(5))")
+        XCTAssertEqual(Array(converter.candidates(for: "じみ", limit: 10, systemCandidateMode: .surface).prefix(3)), ["地味", "滋味", "じみ"])
+    }
+
 }
