@@ -29334,4 +29334,16 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "てきであるか", systemCandidateMode: .surface).first, "的であるか")
     }
 
+    // 3749(ユーザ指定): たこ を 蛸/タコ/凧/鮹/章魚/🐙/胼胝/胝/胼/腓胝/たこ/多古/太古/田子 の順に。タコ はカタカナ強調の抑制で
+    // 出ていなかった(seed に載せたカタカナは抑制しない)。🐙 は 章魚 の次、かな は 腓胝 の次に残す
+    func testRegressionTako3749() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let tako = converter.candidates(for: "たこ", limit: 20, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(tako.prefix(13)), ["蛸", "タコ", "凧", "鮹", "章魚", "胼胝", "胝", "胼", "腓胝", "たこ", "多古", "太古", "田子"], "\(tako)")
+        XCTAssertEqual(SupplementaryCandidateMerger.emojiWindowIndex(forReading: "たこ"), 5)
+        XCTAssertTrue(KeyboardViewController.kanaKeptAtSeedPositionReadings.contains("たこ"))
+        XCTAssertTrue(converter.candidates(for: "いか", limit: 10, systemCandidateMode: .surface).contains("イカ"))
+    }
+
 }
