@@ -29199,4 +29199,11 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.candidates(for: "かねつ", limit: 5, systemCandidateMode: .surface).first, "加熱")
     }
 
+    // 3748(ユーザ指定): しんききのうの を 新規機能の 先頭に(新規昨日の。新規→機能/昨日 とも LM に無く 100 差)
+    func testRegressionShinkiKinou3748() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.multiClauseCandidates(for: "しんききのうの", systemCandidateMode: .surface).first, "新規機能の")
+    }
+
 }
