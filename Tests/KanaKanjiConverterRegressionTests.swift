@@ -29419,4 +29419,13 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("さらだがたべたい").first, "サラダが食べたい")
     }
 
+    // 3752(ユーザ指定): いちょう の 2 番めに イチョウ(seed)。いちょうがわるい は 胃腸が悪い のまま
+    func testRegressionIchouKatakana3752() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let ichou = converter.candidates(for: "いちょう", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(ichou.prefix(3)), ["銀杏", "イチョウ", "胃腸"], "\(ichou)")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "いちょうがわるい", systemCandidateMode: .surface).first, "胃腸が悪い")
+    }
+
 }
