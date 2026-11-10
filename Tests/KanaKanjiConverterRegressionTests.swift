@@ -29359,4 +29359,13 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3750(ユーザ指定): あると を かな先頭に(辞書の アルト が先頭だった)。アルト は 2 番めに残す
+    func testRegressionAruto3750() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let aruto = converter.candidates(for: "あると", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(aruto.prefix(2)), ["あると", "アルト"], "\(aruto)")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "あると"))
+    }
+
 }
