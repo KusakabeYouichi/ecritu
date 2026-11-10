@@ -29106,4 +29106,23 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3747(ユーザ報告): らくしょうだった が 楽所茹だった(楽所 は雅楽の語で LM が 楽勝 より安い)。楽勝 を seed 先頭にし連文節でも先に。
+    // 茹る(茹った)は送り仮名の許容形の組に足し、本則だけ の設定では出さない
+    func testRegressionRakushouDatta3747() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        defer { converter.setOkuriganaVariantPreference(.default) }
+        let datta = converter.multiClauseCandidates(for: "らくしょうだった", systemCandidateMode: .surface)
+        XCTAssertEqual(datta.first, "楽勝だった", "\(datta.prefix(4))")
+        converter.setOkuriganaVariantPreference(.default)
+        XCTAssertFalse(converter.candidates(for: "ゆだった", limit: 20, systemCandidateMode: .surface).contains("茹った"))
+        XCTAssertTrue(converter.candidates(for: "ゆだった", limit: 20, systemCandidateMode: .surface).contains("茹だった"))
+        XCTAssertFalse(converter.multiClauseCandidates(for: "らくしょだった", systemCandidateMode: .surface).contains { $0.contains("茹った") })
+        converter.setOkuriganaVariantPreference(.conservative)
+        let conservative = converter.candidates(for: "ゆだった", limit: 20, systemCandidateMode: .surface)
+        if let short = conservative.firstIndex(of: "茹った") {
+            XCTAssertLessThan(conservative.firstIndex(of: "茹だった") ?? Int.max, short, "\(conservative.prefix(6))")
+        }
+    }
+
 }
