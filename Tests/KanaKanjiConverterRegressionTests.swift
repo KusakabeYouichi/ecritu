@@ -29158,4 +29158,16 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("せんせいになれた").first, "先生になれた")
     }
 
+    // 3748(ユーザ報告): ひとだろうか/そっちのひとですが が ヒト先頭。カタカナ語の直後のコピュラ(だろう/ですが)を安くつなぐ規則(2771)が
+    // 漢字が seed 先頭の読みのカタカナ兄弟(ヒト)にも効き、漢字(人)は割引が無かった。ピンクだし のようなカタカナ語は保つ
+    func testRegressionKatakanaSeedSiblingCopula3748() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ reading: String) -> [String] { converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface) }
+        XCTAssertEqual(multi("ひとだろうか").first, "人だろうか", "\(multi("ひとだろうか").prefix(4))")
+        XCTAssertEqual(multi("そっちのひとですが").first, "そっちの人ですが", "\(multi("そっちのひとですが").prefix(4))")
+        XCTAssertEqual(multi("ぴんくだし").first, "ピンクだし")
+        XCTAssertEqual(multi("こめだよね").first, "米だよね")
+    }
+
 }

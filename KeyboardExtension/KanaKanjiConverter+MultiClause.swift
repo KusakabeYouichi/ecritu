@@ -4367,7 +4367,10 @@ extension KanaKanjiConverter {
                 Self.isKatakanaString(prev),
                 !prevIsInflectionDerived, !prevIsDictionaryFormPredicate,
                 !Self.multiClauseCaseParticleSurfacesID.contains(prevID),
-                !Self.multiClauseCompoundParticlesID.contains(prevID) {
+                !Self.multiClauseCompoundParticlesID.contains(prevID),
+                // 漢字が seed 先頭の読みのカタカナ兄弟(ヒト/コメ/ネコ。容認するが推奨しない、3537)には割り引かない。
+                // 漢字(人)は割引が無いので、ひとだろうか/そっちのひとですが が ヒト先頭だった(2771 以来。3748、ユーザ報告)
+                !(prevReading.flatMap { Self.multiClauseSeed($0)?.first }.map { $0 != prev && containsKanji($0) } ?? false) {
                 base = min(base, Self.multiClauseFinalParticleAfterPredicateCost)
             }
             // 述語直後の終助詞かなクラスタはクランプ(定数コメント参照。2628)。
