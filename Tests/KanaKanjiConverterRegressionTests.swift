@@ -29255,4 +29255,13 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertFalse(converter.candidates(for: "いっしゅう", limit: 20, systemCandidateMode: .surface).contains("壱州"))
     }
 
+    // 3748(ユーザ指摘): 送り仮名の誤り 回わる/廻わる を出さない(いっしゅうまわった に 回わった、まわった に 廻わった)
+    func testRegressionMawaruOkuriganaSuppressed3748() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let mawatta = converter.candidates(for: "まわった", limit: 20, systemCandidateMode: .surface)
+        XCTAssertFalse(mawatta.contains("回わった") || mawatta.contains("廻わった"), "\(mawatta)")
+        XCTAssertEqual(mawatta.first, "回った")
+    }
+
 }
