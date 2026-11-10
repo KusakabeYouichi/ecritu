@@ -4205,6 +4205,12 @@ extension KanaKanjiConverter {
                 prevID != SID.お, prevID != SID.ご, prevID != SID.や {
                 penalty += Self.multiClauseKanaMoraChainPenalty
             }
+            // 慣用句の部品の 1 字+を(気を。curated)が、助詞を挟まず漢字の名詞の直後に立つのは、名詞の読みの途中で割った形
+            // (ぞうきを が 像+気を(像気を)で 臓器を が 2 番め以降だった。3748、ユーザ報告)。の/が などの後(人の気を)は対象外
+            if isCurated, reading.count == 2, reading.hasSuffix("を"), !prevIsBOS, !prevIsKanaIdentity,
+                containsKanji(prev), !prevIsInflectionDerived, !prevIsDictionaryFormPredicate {
+                penalty += Self.multiClauseNounBeforeCuratedObjectFragmentPenalty
+            }
             // 丁寧の お/ご(1 字のかな)は、た形・て形の活用(来た/着た/起きて)には付かない(お来た/お着た は非文)。
             // お送り/お待ちください のような連用形と、その合成ノード(お送りください)は対象外。
             // きょうおきた が きょう+お+来た で 今日起きた が出なかった(3747、ユーザ報告)

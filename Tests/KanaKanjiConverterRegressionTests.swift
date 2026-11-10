@@ -29170,4 +29170,15 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("こめだよね").first, "米だよね")
     }
 
+    // 3748(ユーザ報告): ぞうきを が 像気を(像+気を)。像気 という語は無く、慣用句の部品 気を(curated)を名詞の直後に助詞なしで
+    // つないだ組み立て。漢字の名詞の直後の 1 字+を の部品は減点する。人の気を引く は保つ
+    func testRegressionNounBeforeCuratedObjectFragment3748() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ reading: String) -> [String] { converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface) }
+        XCTAssertEqual(multi("ぞうきを").first, "臓器を", "\(multi("ぞうきを").prefix(4))")
+        XCTAssertFalse(multi("ぞうきを").contains("像気を"))
+        XCTAssertEqual(multi("ひとのきをひく").first, "人の気を引く")
+    }
+
 }

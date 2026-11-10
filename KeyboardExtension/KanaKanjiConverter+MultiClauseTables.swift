@@ -3577,6 +3577,8 @@ extension KanaKanjiConverter {
     // けど で終わる読み(なれてるんだけどねー)は かな を残す根拠があるので、かな が先頭に見えていた(3748、ユーザ報告)
     static let teFormKanjiLeadStems: [(kanaStem: String, kanjiStem: String)] = [("なれ", "慣れ")]
     static let multiClauseTeFormKanaDemotion = 500
+    // 漢字の名詞の直後(助詞なし)の 1 字+を の curated 部品(像+気を)への減点(3748)
+    static let multiClauseNounBeforeCuratedObjectFragmentPenalty = 1500
     // Wikipedia 偏りの同音語の降格(読み → [表層: 加算])。連文節でだけ、LM が百科事典寄りで前に出す表層を
     // 日常入力の頻度実感に合わせて後ろへ下げる(マニュアル検査でユーザ指定 2890)。単文節の並びは seed 側で揃える。
     // 官僚 4987 vs 完了 5182 / 呼称 4946 vs 故障 5654(胡椒 は触らない)/ 大気 5289 vs 待機 6086 /
