@@ -29409,4 +29409,14 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.candidates(for: "きがする", limit: 5, systemCandidateMode: .surface).first, "気がする")
         XCTAssertEqual(multi("きがのくるしみ").first, "飢餓の苦しみ")
     }
+
+    // 3752(ユーザ指定): さらだがすき が 皿だが好き(皿+だが+好き が サラダ+が+好き より 301 安かった)。サラダ+が を加点
+    func testRegressionSaradaGa3752() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ reading: String) -> [String] { converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface) }
+        XCTAssertEqual(multi("さらだがすき").first, "サラダが好き", "\(multi("さらだがすき").prefix(4))")
+        XCTAssertEqual(multi("さらだがたべたい").first, "サラダが食べたい")
+    }
+
 }
