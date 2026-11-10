@@ -29231,4 +29231,12 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(converter.candidates(for: "あるな", limit: 10, systemCandidateMode: .surface).prefix(3)), ["あるな", "有るな", "在るな"])
     }
 
+    // 3748(ユーザ指定): かしつき を 加湿器/加湿機 の順に、歌詞付き/菓子付き も出す
+    func testRegressionKashitsuki3748() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let list = converter.candidates(for: "かしつき", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(4)), ["加湿器", "加湿機", "歌詞付き", "菓子付き"], "\(list)")
+    }
+
 }
