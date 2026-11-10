@@ -976,6 +976,8 @@ extension KanaKanjiConverter {
         "いっしゅう": 1500,
         // 今朝(seed 先頭)。袈裟 の LM(6896)が 今朝(7272)より安く、けさおきた が 袈裟起きた だった(3749、ユーザ報告)
         "けさ": 1500,
+        // 銀杏の木(seed 先頭、ユーザ指定 3752)。misc の 胃腸 が安く、いちょうのきが が 胃腸+の+木+が だった(1500 では届かない)
+        "いちょうのき": 4200,
         // 州名(seed 先頭、3684 ユーザ指定)。連文節では 襲名 が 983 安く、州名ではありません が 襲名では… だった(3696)
         "しゅうめい": 1500,
         // 焼鳥(seed 先頭、ユーザ指定 3572)を連文節でも。LM 未収録の 焼鳥(8700)が 焼き鳥(7716)に負け、後ろの の への遷移も
@@ -1414,7 +1416,7 @@ extension KanaKanjiConverter {
     static let multiClauseVariantLimit = 3
     // 変種の枠(3)で切れても、その区間の seed の表記を全部(seed 順で)枠の外に出す読み。いっしゅうまわった の 壱州回った(seed 6 番め)を
     // 無くさない(3749、ユーザ指定)
-    static let multiClauseSeedOrderVariantFullListReadings: Set<String> = ["いっしゅう"]
+    static let multiClauseSeedOrderVariantFullListReadings: Set<String> = ["いっしゅう", "いちょうのき"]
     // 別々の文節を同時に差し替えた組み合わせ変種を、変種枠の外に追記する最大件数(3567)
     static let multiClauseCrossVariantLimit = 2
     static let multiClauseCrossVariantMaxDelta = 150
@@ -1566,7 +1568,7 @@ extension KanaKanjiConverter {
     // こつ(3476): seed 順(コツ→こつ→骨)で、ちょっとしたこつ の 2 番目を かな にする(ユーザ指定)
     // とった(3723): seed で漢字の後ろ(獲った の次)に置いたかな とった を、変種でも 撮った 等より前に出さない(ユーザ報告 普通にとっただけ)
     // いっしゅう(3748): seed 順(1周/一周/1週/一週/一蹴)で、いっしゅうまわった の 2 番めに 一蹴 を出さない(ユーザ指定)
-    static let multiClauseSeedOrderVariantStrictReadings: Set<String> = ["いっしゅう", "いない", "たとえて", "おしい", "みずみずしさ", "みずみずしい", "へり", "おすすめ", "かけないで", "こつ", "とった"]
+    static let multiClauseSeedOrderVariantStrictReadings: Set<String> = ["いっしゅう", "いちょうのき", "いない", "たとえて", "おしい", "みずみずしさ", "みずみずしい", "へり", "おすすめ", "かけないで", "こつ", "とった"]
     // seed 先頭語のコスト救済(2677)を「LM 収録済みでも」適用する読みの opt-in。
     // せいかい: Sudachi は 正解6465<政界7140 なのに Wikipedia LM は 政界6236<正解6479 で
     // 政界では が先頭だった。無条件適用は7件退行(位置から遣り直す/占いしか/東京中 等)

@@ -29384,4 +29384,16 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3752(ユーザ指定): いちょうのき を 銀杏の木/イチョウの木/銀杏木/銀南木 の順に。銀杏木/銀南木 は Sudachi の地名(青森県の字)。
+    // 連文節では misc の 胃腸 が安く 胃腸+の+木+が が勝っていた。いちょうがわるい(胃腸が悪い)は保つ
+    func testRegressionIchounoki3752() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let single = converter.candidates(for: "いちょうのき", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(4)), ["銀杏の木", "イチョウの木", "銀杏木", "銀南木"], "\(single)")
+        let ga = converter.multiClauseCandidates(for: "いちょうのきが", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(ga.prefix(4)), ["銀杏の木が", "イチョウの木が", "銀杏木が", "銀南木が"], "\(ga.prefix(6))")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "いちょうのきがきいろくなった", systemCandidateMode: .surface).first, "銀杏の木が黄色くなった")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "いちょうがわるい", systemCandidateMode: .surface).first, "胃腸が悪い")
+    }
 }
