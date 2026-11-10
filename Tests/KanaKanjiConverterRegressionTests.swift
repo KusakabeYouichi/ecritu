@@ -29060,4 +29060,13 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(converter.candidates(for: "じみ", limit: 10, systemCandidateMode: .surface).prefix(3)), ["地味", "滋味", "じみ"])
     }
 
+    // 3747(ユーザ指定): りつ を 率/立/律 の順に(立/律/率 だった)。りつがたかい は 率が高い
+    func testRegressionRitsu3747() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let ritsu = converter.candidates(for: "りつ", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(ritsu.prefix(3)), ["率", "立", "律"], "\(ritsu.prefix(5))")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "りつがたかい", systemCandidateMode: .surface).first, "率が高い")
+    }
+
 }
