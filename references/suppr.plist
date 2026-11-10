@@ -122,6 +122,12 @@
 	<dict><key>phrase</key><string>二タ</string><key>shortcut</key><string>ふた</string><key>pos</key><string>名詞</string></dict>	<!-- 二タ(二+カタカナの タ): Sudachi core_lex.csv 114814 行の地名(二タ又/二タ子/二タ見 等の ふた の書き方)。単独で ふた と打って選ぶ語ではなく、ふた の先頭に出ていた(ユーザ報告 3739) -->
 
 	<!-- ■ 収穫ノイズ: レア人名・レア姓(1ノードで安く、合成や連文節を汚す) -->
+	<dict><key>phrase</key><string>亜璃</string><key>shortcut</key><string>ある</string><key>pos</key><string>名詞</string></dict>	<!-- 亜璃/亜留/阿留(ある): レア人名の収穫。あるな の候補に 亜璃な/亜留な/阿留な の意味のない合成が並んでいた(ユーザ指定 3748) -->
+	<dict><key>phrase</key><string>亜留</string><key>shortcut</key><string>ある</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>阿留</string><key>shortcut</key><string>ある</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>アルナ</string><key>shortcut</key><string>あるな</string><key>pos</key><string>名詞</string></dict>	<!-- アルナ/阿留奈/亜瑠奈(あるな): レア人名の収穫。ある+な(あるな)の候補に並んでいた(ユーザ指定 3748) -->
+	<dict><key>phrase</key><string>阿留奈</string><key>shortcut</key><string>あるな</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>亜瑠奈</string><key>shortcut</key><string>あるな</string><key>pos</key><string>名詞</string></dict>
 	<dict><key>phrase</key><string>大睦</string><key>shortcut</key><string>たいりく</string></dict>	<!-- 大陸 と字形類似のレア人名収穫。たいりく で出したい場面が無い -->
 	<dict><key>phrase</key><string>野登木</string><key>shortcut</key><string>のとき</string></dict>	<!-- 野登木(のとき): Sudachi の姓(wc 10000、LM に出現なし)。の+とき を 1 ノードで跨ぎ、のときだったら→野登木だったら が先頭だった(ユーザ報告 3778) -->
 	<dict><key>phrase</key><string>重走</string><key>shortcut</key><string>じゅうそう</string></dict>	<!-- 重走(じゅうそう): レア姓の収穫(wc 10000)。じゅうそうで の末尾に並んでいた(ユーザ指摘 2818) -->
@@ -379,6 +385,8 @@
 	<dict><key>phrase</key><string>格好悪い</string><key>shortcut</key><string>かっこわるい</string></dict>
 	<dict><key>phrase</key><string>航海注</string><key>shortcut</key><string>こうかいちゅう</string></dict>
 	<!-- □ 活用形でだけ出さない合成(ユーザ判定 3772: サ変動詞化しない名詞・読み違い・送り仮名のカタカナ・お+動詞 等) -->
+	<dict><key>phrase</key><string>或な</string><key>shortcut</key><string>あるな</string><key>pos</key><string>名詞</string></dict>	<!-- 或な/アルな: ある+な の意味のない合成(或 は 或いは の部品なので語は抑制しない)。あるな の候補に並んでいた(ユーザ指定 3748) -->
+	<dict><key>phrase</key><string>アルな</string><key>shortcut</key><string>あるな</string><key>pos</key><string>名詞</string></dict>
 	<dict><key>phrase</key><string>抽象する</string><key>shortcut</key><string>ちゅうしょうする</string><key>pos</key><string>名詞</string></dict>	<!-- 抽象 はサ変動詞化しない(抽象化する)。中傷する と同点で辞書順の 抽象する が先頭だった(一括検査 3640b、ユーザ指定 3642) -->
 	<dict><key>phrase</key><string>抽象した</string><key>shortcut</key><string>ちゅうしょうした</string><key>pos</key><string>名詞</string></dict>
 	<dict><key>phrase</key><string>抽象して</string><key>shortcut</key><string>ちゅうしょうして</string><key>pos</key><string>名詞</string></dict>

@@ -29213,4 +29213,15 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "じどうあっぷでいと", systemCandidateMode: .surface).first, "自動アップデイト")
     }
 
+    // 3748(ユーザ指定): あるな の候補に レア人名(亜璃/亜留/阿留、アルナ/阿留奈/亜瑠奈)と 或な/アルな の意味のない合成を出さない
+    // (或 は 或いは の部品なので語は抑制せず、合成 或な だけを抑制する)
+    func testRegressionAruNameHarvestSuppressed3748() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let aruna = converter.candidates(for: "あるな", limit: 20, systemCandidateMode: .surface)
+        for bad in ["亜璃な", "亜留な", "阿留な", "アルナ", "阿留奈", "亜瑠奈", "或な", "アルな"] {
+            XCTAssertFalse(aruna.contains(bad), "\(bad) \(aruna)")
+        }
+    }
+
 }
