@@ -29069,4 +29069,16 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "りつがたかい", systemCandidateMode: .surface).first, "率が高い")
     }
 
+    // 3747(ユーザ報告): なれているんだけどねー の単文節が かな先頭(なれているんだけど は 慣れ が先頭)。ー で終わる読みにかな全体を
+    // 補う規則(2564)が、合成でもかな全体ができる読みにまで点を重ねていた。補うのはかな全体がまだ無いときだけ。なるほどー は保つ
+    func testRegressionLongVowelKanaSupplyOnlyWhenMissing3747() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let nareteru = converter.candidates(for: "なれているんだけどねー", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(nareteru.first, "慣れているんだけどねー", "\(nareteru.prefix(4))")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "なれているんだけどねー", systemCandidateMode: .surface).first, "慣れているんだけどねー")
+        XCTAssertEqual(converter.candidates(for: "なるほどー", limit: 5, systemCandidateMode: .surface).first, "なるほどー")
+        XCTAssertEqual(converter.candidates(for: "そうだよねー", limit: 5, systemCandidateMode: .surface).first, "そうだよねー")
+    }
+
 }

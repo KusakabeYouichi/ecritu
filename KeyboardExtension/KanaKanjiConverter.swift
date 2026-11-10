@@ -465,6 +465,7 @@ final class KanaKanjiConverter {
         var scores: [String: Int] = [:]
         collectDirectCandidates(context, into: &scores)
         let inflectionDerivedCandidates = collectDerivedCandidates(context, into: &scores)
+        supplyLongVowelKanaIfMissing(context, into: &scores)
         applyRankingAdjustments(
             context,
             inflectionDerivedCandidates: inflectionDerivedCandidates,
@@ -679,13 +680,21 @@ final class KanaKanjiConverter {
         if let radicalForms = KanjiRadicalCatalog.formsByKanaName[context.reading] {
             addCandidates(radicalForms, baseScore: CandidateScore.exactReadingOnly, to: &scores)
         }
-        // 末尾を長音で引き伸ばした形(なるほどー)は辞書に無く、単文節では候補が1件も
-        // 作れない。keepKana(末尾長音の剥がし)が根拠を認める読みに限り、かな全長を
-        // 供給する。keepKana は既にあるかな候補を維持するだけで供給はしないため(2564)
-        if shouldKeepKanaIdentityLeading(for: context.reading),
-            context.reading.hasSuffix("ー") {
-            addCandidates([context.reading], baseScore: CandidateScore.supplementalVocabulary, to: &scores)
+    }
+
+    // 末尾を長音で引き伸ばした形(なるほどー)は辞書に無く、単文節では候補が1件も
+    // 作れない。keepKana(末尾長音の剥がし)が根拠を認める読みに限り、かな全長を
+    // 供給する。keepKana は既にあるかな候補を維持するだけで供給はしないため(2564)。
+    // 派生の段の後に置き、かな全長がまだ無いときだけ足す。以前は直接の段で無条件に足しており、合成(postfix)でも
+    // かな全長ができる読みでは点が重なって、なれているんだけどねー が 慣れているんだけどねー より前だった
+    // (けど の根拠は「維持」で昇格ではない。3747、ユーザ報告)
+    private func supplyLongVowelKanaIfMissing(_ context: CandidateGenerationContext, into scores: inout [String: Int]) {
+        guard context.reading.hasSuffix("ー"),
+            scores[context.reading] == nil,
+            shouldKeepKanaIdentityLeading(for: context.reading) else {
+            return
         }
+        addCandidates([context.reading], baseScore: CandidateScore.supplementalVocabulary, to: &scores)
     }
 
     // ステージ2: 派生候補(活用/ガル形/丁寧接頭辞/序数/数値/名詞接辞/postfix)を登録する。
