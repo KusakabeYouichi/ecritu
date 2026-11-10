@@ -29396,4 +29396,17 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "いちょうのきがきいろくなった", systemCandidateMode: .surface).first, "銀杏の木が黄色くなった")
         XCTAssertEqual(converter.multiClauseCandidates(for: "いちょうがわるい", systemCandidateMode: .surface).first, "胃腸が悪い")
     }
+
+    // 3752(ユーザ指定): きが を 気が/木が/期が/饑餓/飢餓/帰臥/起臥/木香/きが/気賀/木賀/紀が の順に(飢餓/木賀 が 木が/期が より前だった)。
+    // かな は seed の位置に残す。きがする/きがのくるしみ は保つ
+    func testRegressionKiga3752() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let kiga = converter.candidates(for: "きが", limit: 20, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(kiga.prefix(12)), ["気が", "木が", "期が", "饑餓", "飢餓", "帰臥", "起臥", "木香", "きが", "気賀", "木賀", "紀が"], "\(kiga)")
+        XCTAssertTrue(KeyboardViewController.kanaKeptAtSeedPositionReadings.contains("きが"))
+        func multi(_ reading: String) -> [String] { converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface) }
+        XCTAssertEqual(converter.candidates(for: "きがする", limit: 5, systemCandidateMode: .surface).first, "気がする")
+        XCTAssertEqual(multi("きがのくるしみ").first, "飢餓の苦しみ")
+    }
 }
