@@ -29302,4 +29302,18 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("けさのにゅーす").first, "今朝のニュース")
     }
 
+    // 3749(ユーザ指摘): おきます に お来ます/お着ます(お+名詞 の組み立てが seed の活用形 来ます/着ます を名詞として拾っていた)。
+    // お+名詞 の名詞は辞書の見出し語と追加語彙に限る。お店/お金/お部屋 は保つ
+    func testRegressionPolitePrefixNounOnlyDictionaryWords3749() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for reading in ["おきます", "おきません"] {
+            let list = converter.candidates(for: reading, limit: 20, systemCandidateMode: .surface)
+            XCTAssertFalse(list.contains { $0.hasPrefix("お来") || $0.hasPrefix("お着") }, "\(reading) \(list)")
+        }
+        for (reading, expected) in [("おみせ", "お店"), ("おかね", "お金"), ("おへや", "お部屋"), ("おなまえ", "お名前"), ("おしごと", "お仕事")] {
+            XCTAssertEqual(converter.candidates(for: reading, limit: 5, systemCandidateMode: .surface).first, expected)
+        }
+    }
+
 }

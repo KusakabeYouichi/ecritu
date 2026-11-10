@@ -598,6 +598,12 @@ extension KanaKanjiConverter {
             let stemUnigramCosts = store.wordLMUnigramCosts(for: stemCandidates)
 
             for candidate in stemCandidates {
+                // お+名詞 の名詞は辞書の見出し語(語コストがある語)か追加語彙の語に限る。seed の 活用形の並び(きます: 来ます/着ます)を
+                // 拾うと おきます に お来ます/お着ます が出ていた(丁寧の お は活用形に付かない。3749、ユーザ指摘)
+                if store.hasWordLMMetadata, stemWordCosts[candidate] == nil,
+                    !userCandidateSet.contains(candidate) {
+                    continue
+                }
                 if let wc = stemWordCosts[candidate],
                     wc >= KanaKanjiConverter.CandidateScore.harvestTierWordCostFloor,
                     !userCandidateSet.contains(candidate),
