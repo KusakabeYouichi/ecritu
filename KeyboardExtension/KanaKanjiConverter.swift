@@ -490,6 +490,15 @@ final class KanaKanjiConverter {
             }
             finalCandidates.insert(standard, at: 0)
         }
+        // て形のかなを漢字の後ろへ(定数コメント参照。なれている/なれてるんだけどねー。3748)
+        if context.learnedCandidates.isEmpty, finalCandidates.first == normalizedReading,
+            let entry = Self.teFormKanjiLeadStems.first(where: { normalizedReading.hasPrefix($0.kanaStem + "て") }) {
+            let kanji = entry.kanjiStem + String(normalizedReading.dropFirst(entry.kanaStem.count))
+            if let index = finalCandidates.firstIndex(of: kanji) {
+                finalCandidates.remove(at: index)
+                finalCandidates.insert(kanji, at: 0)
+            }
+        }
         // め終わり読みの『め/目』選好(序数/形容詞語幹。設定に応じたペア整列・補生成・除去)。
         finalCandidates = applyMeSuffixPreferences(reading: normalizedReading, to: finalCandidates)
         // 助数詞+付属語(かい+しか 等)の合成をレア語合成(芥子か 等)より前へ(先頭候補の直後)。

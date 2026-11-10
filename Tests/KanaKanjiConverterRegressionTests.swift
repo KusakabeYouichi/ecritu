@@ -29138,4 +29138,24 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "あさおきた", systemCandidateMode: .surface).first, "朝起きた")
     }
 
+    // 3748(ユーザ報告): なれてるんだけどねー が かな先頭。慣れている までは漢字が先頭なのに、ん が付くと逆転した(なれているん)。
+    // なれる の かな は LM で 慣れる より安く(なる の可能形を含む)活用形も かな が先頭で、単文節の候補がある読みだけ表示層が
+    // かな を後ろへ回していた。て形は漢字を先頭に、に/く の後(先生になれて/優しくなれて)は可能形なので かな のまま
+    func testRegressionNareteKanjiLead3748() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ reading: String) -> [String] { converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface) }
+        func single(_ reading: String) -> [String] { converter.candidates(for: reading, limit: 10, systemCandidateMode: .surface) }
+        for reading in ["なれているん", "なれてるん", "なれてるんだけどねー", "なれているんだけどねー"] {
+            XCTAssertEqual(multi(reading).first, "慣" + reading.dropFirst(1), "\(reading) \(multi(reading).prefix(3))")
+        }
+        for reading in ["なれている", "なれてる", "なれてるんだけどねー", "なれてきた"] {
+            XCTAssertEqual(single(reading).first, "慣" + reading.dropFirst(1), "\(reading) \(single(reading).prefix(3))")
+        }
+        XCTAssertEqual(multi("せんせいになれて").first, "先生になれて")
+        XCTAssertEqual(multi("せんせいになれてうれしい").first, "先生になれて嬉しい")
+        XCTAssertEqual(multi("やさしくなれて").first, "優しくなれて")
+        XCTAssertEqual(multi("せんせいになれた").first, "先生になれた")
+    }
+
 }
