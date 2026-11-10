@@ -29293,4 +29293,13 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertFalse(okita.prefix(4).contains { $0.contains("袈裟尾") || $0.contains("今朝生") || $0.contains("袈裟男") }, "\(okita.prefix(5))")
     }
 
+    // 3749(ユーザ報告): けさ を連文節でも 今朝 先頭に(袈裟 の LM が 今朝 より安く、けさおきた が 袈裟起きた だった)
+    func testRegressionKesa3749() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ reading: String) -> [String] { converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface) }
+        XCTAssertEqual(multi("けさおきた").first, "今朝起きた", "\(multi("けさおきた").prefix(4))")
+        XCTAssertEqual(multi("けさのにゅーす").first, "今朝のニュース")
+    }
+
 }
