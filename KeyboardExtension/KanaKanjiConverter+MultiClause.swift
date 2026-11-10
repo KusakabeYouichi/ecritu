@@ -7474,6 +7474,13 @@ extension KanaKanjiConverter {
                 break
             }
         }
+        // seed の全表記を変種に出す読み(定数コメント参照。3749)。枠(3)で切れた残りを seed 順で枠の外に足す
+        for variant in variants.sorted(by: { $0.delta < $1.delta })
+        where variant.position >= 0 && variant.position < pathIndices.count
+            && Self.multiClauseSeedOrderVariantFullListReadings.contains(nodes[pathIndices[variant.position]].reading)
+            && !results.contains(variant.joined) {
+            results.append(variant.joined)
+        }
         // 採った変種どうしが別の文節の差し替えなら、両方を同時に替えた組み合わせも出す(3567)。
         // かおりはうつしても: 薫は移しても/香りは写しても は出るが、香りは移しても は 1 文節ずつの差し替えでは作れず消えていた。
         // 差し替えの delta 合計が上限(僅差の組だけ。各 delta も 0 以上=負は文脈ボーナスで押し下げられた側の差し替えで 胡椒の全長かも 級の弱い組を増やさない)以内のものを、合計の小さい順に最大 2 件(変種枠の外に追記)

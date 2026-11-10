@@ -29248,11 +29248,11 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("なんわりか").first, "何割か")
     }
 
-    // 3748(ユーザ指摘): compenser の 壱州(令制国の別称)が いっしゅう の先頭を取っていたので外す
+    // 3748(ユーザ指摘): compenser の 壱州(令制国の別称)が いっしゅう の先頭を取っていたので外す(3749 から seed の末尾に残す)
     func testRegressionIsshuuProvinceRemoved3748() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
-        XCTAssertFalse(converter.candidates(for: "いっしゅう", limit: 20, systemCandidateMode: .surface).contains("壱州"))
+        XCTAssertNotEqual(converter.candidates(for: "いっしゅう", limit: 20, systemCandidateMode: .surface).first, "壱州")
     }
 
     // 3748(ユーザ指摘): 送り仮名の誤り 回わる/廻わる を出さない(いっしゅうまわった に 回わった、まわった に 廻わった)
@@ -29314,6 +29314,16 @@ extension KanaKanjiConverterRegressionTests {
         for (reading, expected) in [("おみせ", "お店"), ("おかね", "お金"), ("おへや", "お部屋"), ("おなまえ", "お名前"), ("おしごと", "お仕事")] {
             XCTAssertEqual(converter.candidates(for: reading, limit: 5, systemCandidateMode: .surface).first, expected)
         }
+    }
+
+    // 3749(ユーザ指定): 壱州 も無くさない。単文節は seed の末尾、連文節は seed の残りを変種の枠の外に出す(壱州回った)
+    func testRegressionIkishuKeptLast3749() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.candidates(for: "いっしゅう", limit: 10, systemCandidateMode: .surface), ["1周", "一周", "1週", "一週", "一蹴", "壱州"])
+        let mawatta = converter.multiClauseCandidates(for: "いっしゅうまわった", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(mawatta.prefix(3)), ["1周回った", "一周回った", "1週回った"], "\(mawatta)")
+        XCTAssertTrue(mawatta.contains("壱州回った"), "\(mawatta)")
     }
 
 }

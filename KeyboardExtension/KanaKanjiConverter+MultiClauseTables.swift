@@ -1411,6 +1411,9 @@ extension KanaKanjiConverter {
     // Nベスト風バリアント: 最良経路の1文節を同区間の次点表層に差し替えて提示する件数と、
     // 採用するコスト差の上限(bigram拮抗の第2候補: しかく→視覚/資格 等を拾う)。
     static let multiClauseVariantLimit = 3
+    // 変種の枠(3)で切れても、その区間の seed の表記を全部(seed 順で)枠の外に出す読み。いっしゅうまわった の 壱州回った(seed 6 番め)を
+    // 無くさない(3749、ユーザ指定)
+    static let multiClauseSeedOrderVariantFullListReadings: Set<String> = ["いっしゅう"]
     // 別々の文節を同時に差し替えた組み合わせ変種を、変種枠の外に追記する最大件数(3567)
     static let multiClauseCrossVariantLimit = 2
     static let multiClauseCrossVariantMaxDelta = 150
