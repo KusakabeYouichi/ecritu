@@ -29224,4 +29224,11 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3748(ユーザ指定): あるな を かな先頭に(有るな/在るな/… の順で かな が 10 番めだった)
+    func testRegressionAruna3748() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(Array(converter.candidates(for: "あるな", limit: 10, systemCandidateMode: .surface).prefix(3)), ["あるな", "有るな", "在るな"])
+    }
+
 }
