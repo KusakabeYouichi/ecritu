@@ -4622,10 +4622,11 @@ extension KanaKanjiConverter {
                 // 活用形のかな(あぶなく/あぶなけれ 等)も同じだけ下げる(定数コメント参照。3733)
                 penalty += entry.demotion
             }
-            // て形のかな(なれている)を漢字(慣れている)の後ろへ。に/く の後(先生になれて/優しくなれて)は可能形なので残す
-            // (定数コメント参照。3748)
-            if isKanaIdentity, prevID != SID.に, !prev.hasSuffix("く"),
-                Self.teFormKanjiLeadStems.contains(where: { reading.hasPrefix($0.kanaStem + "て") }) {
+            // て形のかな(なれている)を漢字(慣れている)の後ろへ。に/く の後の なれて で区切れる形(先生になれて/優しくなれて)は
+            // 可能形なので残す。可能形は てきた/ている とは続かない(仕事になれてきた は 慣れて。3749、ユーザ指摘)(定数コメント参照。3748)
+            if isKanaIdentity,
+                let entry = Self.teFormKanjiLeadStems.first(where: { reading.hasPrefix($0.kanaStem + "て") }),
+                prevID != SID.に && !prev.hasSuffix("く") || reading != entry.kanaStem + "て" {
                 penalty += Self.multiClauseTeFormKanaDemotion
             }
             if !isKanaIdentity {

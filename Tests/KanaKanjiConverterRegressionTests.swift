@@ -29273,4 +29273,15 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(mawatta.prefix(3)), ["1周回った", "一周回った", "1週回った"], "\(mawatta.prefix(5))")
     }
 
+    // 3749(ユーザ指摘): しごとになれてきた が 仕事になれてきた。なる の可能形 なれる は てきた/ている とは続かないので、に/く の後で
+    // かな を残すのは なれて で区切れる形(先生になれて/優しくなれて)だけ
+    func testRegressionNareteKiteAfterNi3749() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ reading: String) -> [String] { converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface) }
+        XCTAssertEqual(multi("しごとになれてきた").first, "仕事に慣れてきた", "\(multi("しごとになれてきた").prefix(4))")
+        XCTAssertEqual(multi("せんせいになれて").first, "先生になれて")
+        XCTAssertEqual(multi("せんせいになれてうれしい").first, "先生になれて嬉しい")
+    }
+
 }
