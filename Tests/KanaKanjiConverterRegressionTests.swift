@@ -29326,4 +29326,12 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(mawatta.contains("壱州回った"), "\(mawatta)")
     }
 
+    // 3749(ユーザ指定): である を かな先頭に(辞書は デアル だけ。断片入力でよく使う)
+    func testRegressionDearu3749() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.candidates(for: "である", limit: 5, systemCandidateMode: .surface), ["である", "デアル"])
+        XCTAssertEqual(converter.multiClauseCandidates(for: "てきであるか", systemCandidateMode: .surface).first, "的であるか")
+    }
+
 }
