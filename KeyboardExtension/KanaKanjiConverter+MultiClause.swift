@@ -5795,7 +5795,17 @@ extension KanaKanjiConverter {
                             !(prevNode.isKanaIdentity
                                 && Self.multiClauseConjunctiveParticlesBeforeFinalNaID.contains(prevNode.surfaceID)),
                             // カタカナ語+な の言いさし(フランスな…)は許す(2823)
-                            !(prevNode.surface.count >= 2 && Self.isKatakanaString(prevNode.surface)) {
+                            !(prevNode.surface.count >= 2 && Self.isKatakanaString(prevNode.surface)),
+                            // 形容動詞語幹+な の言いさし(かなりいい加減な…/地味な…)は連体形で正当。語幹かは そう/さ と同じく
+                            // prev→な の実績で見る(いい加減→な 269。三田→な は観測なし)。減点で かなりいいかげんな が全かなだった(3747、ユーザ報告)
+                            // 同じ読みの seed の表記のどれかに実績があればその読みの語幹とみなす(肝腎 は →な が LM に無く、肝心 だけ
+                            // 減点が外れて かんじんな の seed 順 肝腎な→肝心な が逆になった)
+                            !(containsKanji(prevNode.surface)
+                                && ([prevNode.surface] + (Self.multiClauseSeed(prevNode.reading) ?? [])).contains { stem in
+                                    containsKanji(stem)
+                                        && (store.wordLMBigramCost(prev: stem, cur: "な") ?? Int.max)
+                                            <= Self.multiClauseNaAdjectiveBigramThreshold
+                                }) {
                             cost += Self.multiClauseSentenceFinalNaAfterNounPenalty
                         }
                         // かな語直後の そう(推量・指示)+コピュラ/否定(そうでもない/そうだ/そうじゃない)。

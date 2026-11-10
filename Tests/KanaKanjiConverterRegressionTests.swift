@@ -29032,4 +29032,15 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("にげおくれたこどもをかばい").first, "逃げ遅れた子供を庇い")
     }
 
+    // 3747(ユーザ報告): かなりいいかげんな が全かなだけ(な の無い かなりいいかげん は いい加減)。文末の な が名詞の後に来たときの減点が
+    // 形容動詞語幹(いい加減→な 269)にも掛かっていた。語幹は prev→な の実績で免除する。三田な のような名詞+な は減点のまま
+    func testRegressionNaAdjectiveFinalNa3747() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ reading: String) -> [String] { converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface) }
+        XCTAssertEqual(multi("かなりいいかげんな").first, "かなりいい加減な", "\(multi("かなりいいかげんな").prefix(4))")
+        XCTAssertEqual(multi("いいかげんな").first, "いい加減な", "\(multi("いいかげんな").prefix(4))")
+        XCTAssertEqual(multi("かなりいいかげん").first, "かなりいい加減")
+    }
+
 }
