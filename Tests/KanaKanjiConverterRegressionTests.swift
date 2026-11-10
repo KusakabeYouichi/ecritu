@@ -29125,4 +29125,17 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3747(ユーザ報告): きょうおきた が きょうお来た/きょうお北/今日お来た/きょうお着た だった(きょう+お+来た)。丁寧の お/ご は
+    // た形・て形の活用には付かないので、その連接を止める。これだけで 今日起きた が先頭になる
+    func testRegressionPolitePrefixBeforePastForm3747() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let okita = converter.multiClauseCandidates(for: "きょうおきた", systemCandidateMode: .surface)
+        XCTAssertEqual(okita.first, "今日起きた", "\(okita.prefix(5))")
+        for bad in ["お来た", "お着た", "お北"] {
+            XCTAssertFalse(okita.prefix(4).contains { $0.contains(bad) }, "\(bad) \(okita.prefix(5))")
+        }
+        XCTAssertEqual(converter.multiClauseCandidates(for: "あさおきた", systemCandidateMode: .surface).first, "朝起きた")
+    }
+
 }

@@ -4205,6 +4205,13 @@ extension KanaKanjiConverter {
                 prevID != SID.お, prevID != SID.ご, prevID != SID.や {
                 penalty += Self.multiClauseKanaMoraChainPenalty
             }
+            // 丁寧の お/ご(1 字のかな)は、た形・て形の活用(来た/着た/起きて)には付かない(お来た/お着た は非文)。
+            // お送り/お待ちください のような連用形と、その合成ノード(お送りください)は対象外。
+            // きょうおきた が きょう+お+来た で 今日起きた が出なかった(3747、ユーザ報告)
+            if prevID == SID.お || prevID == SID.ご, isInflectionDerived,
+                let last = surface.last, last == "た" || last == "だ" || last == "て" || last == "で" {
+                penalty += Self.multiClauseForbiddenPenaltyCost
+            }
             // 名詞+た の非文連結の遮断(2657): 核子+た/各紙+た/客死+た が 1ノードの 格下
             // (unigram 7272、Wikipedia で希少)を跨いでいた(かくした)。過去の助動詞 た が
             // 付くのは活用語の連用形(活用派生ノード: 隠し+た)だけで、活用派生でない漢字語
