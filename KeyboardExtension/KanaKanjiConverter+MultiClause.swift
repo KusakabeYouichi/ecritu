@@ -5195,6 +5195,16 @@ extension KanaKanjiConverter {
                                 cost -= Self.multiClauseSentenceInitialParticleOverlapPenalty
                             }
                         }
+                        // 文頭の の+漢字 2 字以上の名詞で入力が終わる断片(のせんでん=の宣伝)は、名詞の後ろから打ち始めた形として
+                        // 加点する。載せ+ん+でん(載せんでん)に 416 差で負けていた(3748、ユーザ報告)。
+                        // の→名詞 が LM にあるときだけ。入力全体が 1 語(のみもの=飲み物)の読みは対象外
+                        if prevNode.start == 0, prevNode.isKanaIdentity, prevNode.surfaceID == SID.の,
+                            node.end == n, !node.isKanaIdentity, !node.isInflectionDerived,
+                            node.surface.count >= 2, node.surface.prefix(2).allSatisfy({ containsKanji(String($0)) }),
+                            bigramCostByIDPair[MultiClauseSymbols.pairKey(SID.の, node.surfaceID)] != nil,
+                            !nodesStartingAt[0].contains(where: { nodes[$0].end == n && !nodes[$0].isKanaIdentity }) {
+                            cost -= Self.multiClauseSentenceInitialNoNounFragmentBonus
+                        }
                         // 文頭の で/と(減点の無い助詞)+漢字 2 字以上で始まる派生述語(で+開始しないと)は、文の途中から打った形として
                         // 加点する(3502)。でかいししないと は 追加語彙の でかい(床 1500)+視し+ないと が勝ち、で開始しないと が 2 番目
                         // 止まりだった(ユーザ指定: 先頭に)。文頭から丸ごと活用形が読める読み(でんわした=電話した、でかける=出かける)は対象外

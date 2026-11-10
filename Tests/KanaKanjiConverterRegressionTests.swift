@@ -29181,4 +29181,12 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("ひとのきをひく").first, "人の気を引く")
     }
 
+    // 3748(ユーザ指定): のせんでん を の宣伝 先頭に(〜の の断片。載せ+ん+でん に 416 差で負けていた)。のみもの(1 語)は保つ
+    func testRegressionSentenceInitialNoNounFragment3748() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.multiClauseCandidates(for: "のせんでん", systemCandidateMode: .surface).first, "の宣伝")
+        XCTAssertEqual(converter.candidates(for: "のみもの", limit: 5, systemCandidateMode: .surface).first, "飲み物")
+    }
+
 }
