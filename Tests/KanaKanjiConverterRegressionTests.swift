@@ -29081,4 +29081,12 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.candidates(for: "そうだよねー", limit: 5, systemCandidateMode: .surface).first, "そうだよねー")
     }
 
+    // 3747(ユーザ指定): 捕捉 の交ぜ書き 捕そく は出さない(ほそくできる の 5 番めに 捕そくできる が出ていた)
+    func testRegressionHosokuMixedScriptSuppressed3747() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertFalse(converter.candidates(for: "ほそく", limit: 20, systemCandidateMode: .surface).contains("捕そく"))
+        XCTAssertFalse(converter.candidates(for: "ほそくできる", limit: 20, systemCandidateMode: .surface).contains("捕そくできる"))
+    }
+
 }
