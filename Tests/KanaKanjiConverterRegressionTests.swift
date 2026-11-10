@@ -29284,4 +29284,13 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("せんせいになれてうれしい").first, "先生になれて嬉しい")
     }
 
+    // 3749(ユーザ報告): けさおきた が 袈裟尾来た。袈裟尾 は収穫底値の珍しい名前(LM に無い)で、その直後に助詞なしで 来た を続けた組み立て。
+    // 収穫底値で LM に無い語の直後の漢字始まりの活用形を減点する
+    func testRegressionHarvestedWordBeforePredicate3749() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let okita = converter.multiClauseCandidates(for: "けさおきた", systemCandidateMode: .surface)
+        XCTAssertFalse(okita.prefix(4).contains { $0.contains("袈裟尾") || $0.contains("今朝生") || $0.contains("袈裟男") }, "\(okita.prefix(5))")
+    }
+
 }

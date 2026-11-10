@@ -5026,6 +5026,16 @@ extension KanaKanjiConverter {
                             !(personNameKindByNodeKey[prevNode.key] == "姓" && nodeKind == "名") {
                             cost += Self.multiClauseHarvestedPersonNameAfterFragmentPenalty
                         }
+                        // 収穫底値の語(LM にも無い珍しい名前 袈裟尾 等)の直後に、助詞なしで漢字始まりの活用形(来た/起きた)が続くのは
+                        // 読みの途中で割った形。けさおきた が 袈裟尾+来た で 今朝起きた が出なかった(3749、ユーザ報告)。
+                        // サ変の し/す/さ/せ 始まり(〜した)と curated・seed の語は対象外
+                        if node.isInflectionDerived, let head = node.surface.first, containsKanji(String(head)),
+                            let prevWordCost = prevNode.wordCost,
+                            prevWordCost >= KanaKanjiConverter.CandidateScore.harvestTierWordCostFloor,
+                            !prevNode.isCurated, !prevNode.isSeedListed, !prevNode.isKanaIdentity,
+                            unigramCosts[prevNode.surface] == nil {
+                            cost += Self.multiClauseHarvestedWordBeforePredicatePenalty
+                        }
                         // 人名(姓/名)の直後に助詞なしで ください が続くのは非文(大栗ください)。お+連用形(お送りください)や
                         // 名詞(ビールください)はそのまま。姓の直後は さん/様 等の敬称が本来の続き(ユーザ報告 3632)
                         if node.isKanaIdentity, Self.multiClauseKudasaiReadingsID.contains(node.readingID),

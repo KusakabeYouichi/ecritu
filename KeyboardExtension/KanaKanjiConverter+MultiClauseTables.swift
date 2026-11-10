@@ -3592,6 +3592,8 @@ extension KanaKanjiConverter {
     static let multiClauseNonNumeralWariPenalty = 1500
     // 文頭の の+漢字 2 字以上の名詞で終わる断片(の宣伝)への加点(3748)
     static let multiClauseSentenceInitialNoNounFragmentBonus = 1000
+    // 収穫底値で LM にも無い語の直後(助詞なし)の漢字始まりの活用形への減点(袈裟尾+来た。3749)
+    static let multiClauseHarvestedWordBeforePredicatePenalty = 3000
     // Wikipedia 偏りの同音語の降格(読み → [表層: 加算])。連文節でだけ、LM が百科事典寄りで前に出す表層を
     // 日常入力の頻度実感に合わせて後ろへ下げる(マニュアル検査でユーザ指定 2890)。単文節の並びは seed 側で揃える。
     // 官僚 4987 vs 完了 5182 / 呼称 4946 vs 故障 5654(胡椒 は触らない)/ 大気 5289 vs 待機 6086 /
