@@ -29346,4 +29346,17 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(converter.candidates(for: "いか", limit: 10, systemCandidateMode: .surface).contains("イカ"))
     }
 
+    // 3749(ユーザ報告): きょうしになれて が 供しに慣れて(供する の 連用形+に)。目的の に(見に行く)は なる/なれる/慣れる には続かない。
+    // 先生になれて/見に行く/食べに来た/都会に住んでる は保つ
+    func testRegressionRenyouNiBeforeNaru3749() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ reading: String) -> [String] { converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface) }
+        XCTAssertEqual(multi("きょうしになれて").first, "教師になれて", "\(multi("きょうしになれて").prefix(4))")
+        XCTAssertEqual(multi("きょうしになれた").first, "教師になれた")
+        for (reading, expected) in [("みにいく", "見に行く"), ("たべにきた", "食べに来た"), ("とかいにすんでる", "都会に住んでる"), ("せんせいになれて", "先生になれて")] {
+            XCTAssertEqual(multi(reading).first, expected)
+        }
+    }
+
 }

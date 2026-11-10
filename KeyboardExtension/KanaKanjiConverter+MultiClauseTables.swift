@@ -1264,7 +1264,8 @@ extension KanaKanjiConverter {
     // 安いときは名詞+に に任せる(分割の 生み+に は残る)。撮り(6239)/鳥(5228)、寝(6183)/値(4610) は差が小さく対象外
     static let multiClauseRenyouNiUnattestedNounMargin = 2000
     // 連用形+に(目的)の直後の状態動詞への減点(3503)と、形容詞の直後の派生動詞への減点(3504)
-    static let multiClauseRenyouNiStatefulVerbPrefixes: [String] = ["住", "居", "暮ら", "済", "澄"]
+    // なる/なれる/慣れる 系も目的の に には続かない(きょうしになれて が 供しに+慣れて で 教師に が出なかった。3750、ユーザ報告)
+    static let multiClauseRenyouNiStatefulVerbPrefixes: [String] = ["住", "居", "暮ら", "済", "澄", "慣", "馴", "成", "なれ", "なっ", "なる", "なり"]
     static let multiClauseRenyouNiStatefulVerbPenalty = 2000
     static let multiClauseAdjectiveBeforeVerbPenalty = 2000
     // 88 星座の標準和名(日本天文学会。astronomique.plist と対)。Sudachi の漢字/カタカナ表記(大熊座 15148、サソリ座 3703)は
