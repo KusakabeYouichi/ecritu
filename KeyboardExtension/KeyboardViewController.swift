@@ -275,6 +275,7 @@ final class KeyboardViewController: UIInputViewController {
     // 調査用ログ(メッセージの未確定乱れ 3756)。原因判明後に外す
     var investigation3756OwnWindowNotificationCount = 0
     var investigation3756AwaitsFollowUp = false
+    var investigation3756FollowUpUntil: CFAbsoluteTime = 0
     let externalTextChangeDetectionWindow: CFTimeInterval = 0.35
     // メモリ警告を1イベント(バースト)にまとめる窓(定義は Diagnostics の memoryWarningBurstCountThisSession 参照)
     static let memoryWarningBurstWindow: CFTimeInterval = 2.0
@@ -832,15 +833,21 @@ final class KeyboardViewController: UIInputViewController {
     static let investigation3756MaxLineCount = 400
     func logHostNotificationWhileComposingForInvestigation(_ trigger: String) {
         #if DEBUG
-        guard activeConversion != nil || !composingRawText.isEmpty else {
+        // 外部の通知を 1 回記録したら、その後 5 秒は未確定が無くなっても(確定・破棄の分岐に入っても)続きを残す
+        let now = CFAbsoluteTimeGetCurrent()
+        let inFollowUpWindow = now < investigation3756FollowUpUntil
+        guard activeConversion != nil || !composingRawText.isEmpty || inFollowUpWindow else {
             return
         }
-        guard shouldTreatAsExternalTextChange() else {
+        guard shouldTreatAsExternalTextChange() || inFollowUpWindow else {
             investigation3756OwnWindowNotificationCount += 1
             return
         }
         appendInvestigation3756Line(trigger)
         investigation3756AwaitsFollowUp = true
+        if !inFollowUpWindow {
+            investigation3756FollowUpUntil = now + 5
+        }
         #endif
     }
 
@@ -872,6 +879,7 @@ final class KeyboardViewController: UIInputViewController {
             + " selected=\(proxy.selectedText?.count ?? -1) prevBefore=\(lastSynchronizedContextBeforeInputLength)"
             + " beforeEndsWithMarked=\(before.map { !marked.isEmpty && $0.hasSuffix(marked) } ?? false)"
             + " beforeEndsWithPrevTail=\(before.map { $0.hasSuffix(lastSynchronizedContextBeforeInputTail) } ?? false)"
+            + " beforeTailScalars=\((before ?? "").unicodeScalars.suffix(2).map { String($0.value, radix: 16) }.joined(separator: ","))"
             + " hasText=\(proxy.hasText) doc=\(proxy.documentIdentifier.uuidString.prefix(8))"
         investigation3756OwnWindowNotificationCount = 0
         var lines = diagnosticsLogLines(from: sharedDefaults, key: SharedDefaultsKeys.keyboardInvestigation3756LogLines)
@@ -927,6 +935,18 @@ final class KeyboardViewController: UIInputViewController {
         if sinceOwnEdit < Self.externalCommitKeystrokeQuiescenceSec {
             appendKeyboardDiagnosticsLogFromInputHandling(
                 "外部変更確定を打鍵直後のため見送り trigger=\(trigger) sinceOwnEditMs=\(Int(sinceOwnEdit * 1000)) composingLen=\(composingRawText.count)",
+                critical: true
+            )
+            return
+        }
+        // 調査3756(実験): メッセージで相手の発言が届くと、打鍵から 25 秒後の textWillChange でここに来て確定し、ホストが
+        // 未確定を掛け直して『あいうえお(確定)+あいうえお(未確定)』になった(実機 2026-11-11 17:33)。そのとき文脈の長さは
+        // 最後に同期した長さと違っていた(before=1、同期時 0)。メモの完了ボタンは文脈そのままで届く(2684)ので、
+        // 長さがずれているときは確定を見送り、ホストに任せた結果を調査用ログで見る。原因判明後に判定を確定させる
+        let beforeLengthNow = (textDocumentProxy.documentContextBeforeInput ?? "").count
+        if beforeLengthNow != lastSynchronizedContextBeforeInputLength {
+            appendKeyboardDiagnosticsLogFromInputHandling(
+                "外部変更確定を文脈のずれのため見送り(調査3756) trigger=\(trigger) before=\(beforeLengthNow) prevBefore=\(lastSynchronizedContextBeforeInputLength) composingLen=\(composingRawText.count)",
                 critical: true
             )
             return
