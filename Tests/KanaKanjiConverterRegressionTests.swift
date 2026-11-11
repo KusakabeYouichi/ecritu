@@ -29584,4 +29584,13 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(single.contains("チリ"))
     }
 
+    // さらにかせんつき が さらに河川付き だった(3763、ユーザ報告)
+    func testRegressionSaraniKasenTsuki3763() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.multiClauseCandidates(for: "さらにかせんつき", systemCandidateMode: .surface).first, "さらに下線付き")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "かせんつきのもじ", systemCandidateMode: .surface).first, "下線付きの文字")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "かせんのはんらん", systemCandidateMode: .surface).first, "河川の氾濫")
+    }
+
 }
