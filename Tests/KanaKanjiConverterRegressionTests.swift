@@ -29611,4 +29611,29 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 画面に出る並び(連文節があれば先、単文節の先頭を 2 番めに差し込み、残りを後ろへ。診断の一括検査と同じ組み立て)
+    private func shownCandidates3765(_ reading: String) -> [String] {
+        var shown = reading.count >= 4 ? converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface) : []
+        let single = converter.candidates(for: reading, limit: 30, systemCandidateMode: .surface)
+        if let top = single.first, !shown.contains(top) {
+            shown.insert(top, at: min(1, shown.count))
+        }
+        for candidate in single.dropFirst() where !shown.contains(candidate) {
+            shown.append(candidate)
+        }
+        return shown
+    }
+
+    // そんだよ の先頭が 染んだよ だった(3765、ユーザ指摘)。染む(そむ)は古語で 染んだ とは活用しない(抑制)。
+    // 並びは 損だよ・孫だよ・村だよ・園田よ・Zondaよ・尊田よ(seed)
+    func testRegressionSondayo3765() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let shown = shownCandidates3765("そんだよ")
+        XCTAssertEqual(Array(shown.prefix(6)), ["損だよ", "孫だよ", "村だよ", "園田よ", "Zondaよ", "尊田よ"])
+        XCTAssertFalse(shown.contains("染んだよ"))
+        XCTAssertFalse(converter.candidates(for: "そんだ", limit: 30, systemCandidateMode: .surface).contains("染んだ"))
+        XCTAssertEqual(converter.candidates(for: "そまる", limit: 10, systemCandidateMode: .surface).first, "染まる")
+    }
+
 }
