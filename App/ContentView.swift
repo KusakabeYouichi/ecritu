@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20261111184818"
+    private static let editionUpdatedAtRaw: String = "20261111202602"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -548,8 +548,9 @@ struct ContentView: View {
     @State var containerBootstrapFailSafeWorkItem: DispatchWorkItem?
     @GestureState private var isEditionNumberPressed = false
     // ロゴのメニュー(ContentView+LogoMenu.swift)。触れた途端に出て、指を離すと消える
-    @GestureState var logoMenuGesture: LogoMenuGestureState = .inactive
-    @State var logoMenuFrames: [String: CGRect] = [:]
+    // ここに持つのは「触れているか」だけ。指の下の行は tracker に置き、メニューの view だけが見る(3761。PressMenuTracker のコメント参照)
+    @GestureState var isLogoMenuPressed = false
+    @State var logoMenuTracker = PressMenuTracker()
     // ロゴの枠(スクロールで毎フレーム変わる)。@State の値にすると書くたびに body を作り直すので、参照の入れ物に置く(3756)
     @State var logoMenuLogoFrameBox = LogoMenuLogoFrameBox()
     @State var pendingLogoMenuAction: LogoMenuAction?
@@ -570,7 +571,8 @@ struct ContentView: View {
     static let scrollTopAnchorID = "container-scroll-top"
     // 題字(écritu)のメニュー: 設定の各項目へ飛ぶ(ContentView+LogoMenu.swift の SettingsJumpMenu。3699)。
     // 触れた途端に出て指を離すと消える。題字の枠はツールバーの中なので preference でなく onGeometryChange で受ける
-    @GestureState var titleMenuGesture: LogoMenuGestureState = .inactive
+    @GestureState var isTitleMenuPressed = false
+    @State var titleMenuTracker = PressMenuTracker()
     @State var titleMenuTitleFrame: CGRect = .zero
     // 題字のウィンドウ上の枠(UIKit で測る)。ツールバーの .global との原点の差で指の位置をウィンドウ座標に直す
     @State var titleMenuTitleWindowFrame: CGRect = .zero
@@ -1856,7 +1858,7 @@ struct ContentView: View {
                     .disabled(isBootstrappingInitialData)
                     // ロゴメニューの表示中はスクロールを止める。止めないと指を項目へ下ろした
                     // 瞬間に ScrollView のパンがドラッグを奪い、メニューは残るが項目が選ばれない(2762)
-                    .scrollDisabled(logoMenuGesture.isActive || titleMenuGesture.isActive)
+                    .scrollDisabled(isLogoMenuPressed || isTitleMenuPressed)
                     .onChange(of: scrollToTopTrigger) { _, _ in
                         withAnimation(.easeOut(duration: 0.3)) {
                             scrollProxy.scrollTo(Self.scrollTopAnchorID, anchor: .top)
@@ -1990,9 +1992,6 @@ struct ContentView: View {
         }
         .overlay {
             titleMenuOverlay
-        }
-        .onPreferenceChange(LogoMenuFramePreferenceKey.self) { frames in
-            logoMenuFrames.merge(frames) { _, new in new }
         }
         .alert(
             pendingLogoMenuAction?.title ?? "",

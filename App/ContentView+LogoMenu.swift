@@ -96,16 +96,27 @@ struct LogoMenuInfo: Identifiable {
     let message: String
 }
 
-// 触れている間の進行状態。GestureState なので指を離すと自動で .inactive に戻り、メニューも消える
-enum LogoMenuGestureState: Equatable {
-    case inactive
-    case touching(CGPoint)
+// 触れて出すメニュー(アイコンのメニューとタイトルのメニュー)の、指の下の行。
+// 以前は指の位置を ContentView の @GestureState に持っていて、指が 1 点動くたびに ContentView の body 全体
+// (設定の全カード)を作り直していた。青い行が指に追いつかず、2 行選ばれて見えたり遅れて選ばれたりした(3761、ユーザ報告)。
+// ContentView が持つのは「触れているか」だけにし、指の下の行はここに置いてメニューの view だけが見る。
+// 行が変わったときだけ書くので、同じ行の中で指が動いても何も作り直さない
+@Observable
+final class PressMenuTracker {
+    private(set) var highlightedKey: String?
+    // 行の枠(ウィンドウ座標)と選べない行。書いても再描画を起こさない
+    @ObservationIgnored var frames: [String: CGRect] = [:]
+    @ObservationIgnored var disabledKeys: Set<String> = []
 
-    var isActive: Bool { self != .inactive }
+    func key(at point: CGPoint) -> String? {
+        frames.first { !disabledKeys.contains($0.key) && $0.value.contains(point) }?.key
+    }
 
-    var location: CGPoint? {
-        if case .touching(let point) = self { return point }
-        return nil
+    func track(_ point: CGPoint) {
+        let key = key(at: point)
+        if key != highlightedKey {
+            highlightedKey = key
+        }
     }
 }
 
@@ -566,25 +577,22 @@ extension ContentView {
     // 指より約1項目上(2764)→半項目上(2765)と判定がずれ続けた。ウィンドウ座標なら3者の原点が同じ
     var logoPressAndDragGesture: some Gesture {
         DragGesture(minimumDistance: 0, coordinateSpace: .global)
-            .updating($logoMenuGesture) { value, state, _ in
-                state = .touching(value.location)
+            .updating($isLogoMenuPressed) { value, state, _ in
+                // 触れた瞬間に 1 回だけ書く(ここで ContentView が作り直されてメニューが出る)。以後は指の下の行だけを追う
+                if !state {
+                    logoMenuTracker.disabledKeys = Set(
+                        LogoMenuAction.allCases.filter { !isLogoMenuActionEnabled($0) }.map(\.rawValue)
+                    )
+                    state = true
+                }
+                logoMenuTracker.track(value.location)
             }
             .onEnded { value in
-                guard let action = logoMenuAction(at: value.location) else {
+                guard let action = logoMenuTracker.key(at: value.location).flatMap(LogoMenuAction.init(rawValue:)) else {
                     return
                 }
                 performLogoMenuAction(action)
             }
-    }
-
-    var logoMenuHighlightedAction: LogoMenuAction? {
-        logoMenuGesture.location.flatMap(logoMenuAction(at:))
-    }
-
-    func logoMenuAction(at point: CGPoint) -> LogoMenuAction? {
-        LogoMenuAction.allCases.first {
-            isLogoMenuActionEnabled($0) && logoMenuFrames[$0.rawValue]?.contains(point) == true
-        }
     }
 
     // 選んでも設定がどこも変わらない項目は灰色にして選べなくする(ユーザー指定 3177)。
@@ -699,99 +707,14 @@ extension ContentView {
 
     @ViewBuilder
     var logoMenuOverlay: some View {
-        if logoMenuGesture.isActive {
-            let logoFrame = logoMenuLogoFrameBox.frame
-            ZStack(alignment: .top) {
-                Color.black.opacity(0.18)
-                VStack(spacing: 0) {
-                    ForEach(LogoMenuAction.allCases) { action in
-                        // まとまりの境目に区切り線(初期設定 / 設定の控え / 案内。ユーザー指定 3591)
-                        if action.startsNewGroup {
-                            Divider()
-                        }
-                        logoMenuRowContent(
-                            action,
-                            isHighlighted: logoMenuHighlightedAction == action,
-                            isEnabled: isLogoMenuActionEnabled(action)
-                        )
-                    }
-                }
-                .frame(width: 300)
-                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-                .shadow(color: .black.opacity(0.18), radius: 14, y: 6)
-                // ロゴの真下に隙間なく置く(指がロゴにある状態からそのまま下へ滑らせる)。
-                // ロゴ枠はウィンドウ座標なので、overlay 全体を ignoresSafeArea にして原点をウィンドウ
-                // 上端に揃える(overlay の中身は既定でセーフエリア内側に置かれる)。未取得なら上端
-                .padding(.top, max(logoFrame.maxY, 0))
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-            .ignoresSafeArea()
-            .allowsHitTesting(false)   // 指はロゴ上のジェスチャーが追い続ける
+        if isLogoMenuPressed {
+            LogoMenuOverlayView(
+                tracker: logoMenuTracker,
+                logoFrame: logoMenuLogoFrameBox.frame,
+                stashSavedAtLabel: settingsStashSavedAt.map(settingsStashSavedAtLabel)
+            )
             .transition(.opacity)
         }
-    }
-
-    private func logoMenuRowContent(
-        _ action: LogoMenuAction,
-        isHighlighted: Bool,
-        isEnabled: Bool
-    ) -> some View {
-        // 今の設定と同じ初期設定は灰色(定義箇所のコメント参照。3177)
-        let labelColor: Color = isEnabled
-            ? (isHighlighted ? Color.white : Color.primary)
-            : Color.secondary.opacity(0.55)
-        let subtitleColor: Color = isEnabled
-            ? (isHighlighted ? Color.white.opacity(0.85) : Color.secondary)
-            : Color.secondary.opacity(0.45)
-        return HStack(spacing: 12) {
-            Group {
-                if let presetIcon = action.presetIcon {
-                    LogoMenuPresetIconView(icon: presetIcon, size: 22)
-                } else {
-                    Image(systemName: action.systemImage)
-                        .font(.system(size: 18, weight: .medium))
-                }
-            }
-            // 基準の初期設定(最後に当てたもの)のアイコンはその初期設定の色(戦略的=青/現代的=ピンク/保守的=緑。3740)。選択中で項目が
-            // 灰色のときも、そこから個別に変えて灰色が解けたあともその色のまま ─ どの初期設定を土台にしているかを示す(3649)。
-            // 設定画面の ● も同じ色。押して強調色の背景になっている間は白(強調色の地に色で見えにくくなるため)
-            .foregroundStyle(
-                action == Self.currentBasePreset.menuAction
-                    ? (isHighlighted && isEnabled ? Color.white : Self.currentBasePreset.markColor)
-                    : labelColor
-            )
-            .frame(width: 26)
-            VStack(alignment: .leading, spacing: 1) {
-                HStack(alignment: .firstTextBaseline, spacing: 4) {
-                    // 最後に当てた初期設定に下線(3432)
-                    Text(action.title)
-                        .font(.body.weight(.semibold))
-                        .underline(action == Self.currentBasePreset.menuAction)
-                    if action == .restoreStashedSettings, let savedAt = settingsStashSavedAt {
-                        Text(settingsStashSavedAtLabel(savedAt))
-                            .font(.caption)
-                            .foregroundStyle(subtitleColor)
-                    }
-                }
-                Text(action.subtitle)
-                    .font(.caption)
-                    .foregroundStyle(subtitleColor)
-            }
-            Spacer(minLength: 0)
-        }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 9)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .foregroundStyle(labelColor)
-        .background(isHighlighted && isEnabled ? Color.accentColor : Color.clear)
-        .background(
-            GeometryReader { proxy in
-                Color.clear.preference(
-                    key: LogoMenuFramePreferenceKey.self,
-                    value: [action.rawValue: proxy.frame(in: .global)]
-                )
-            }
-        )
     }
 
     // ──── 実行 ────
@@ -1334,8 +1257,12 @@ extension ContentView {
     // 触れた途端にメニューを出し、指を項目まで滑らせて離すと実行(アイコンのメニューと同じ)。指の位置はウィンドウ座標に直して持つ
     var titlePressAndDragGesture: some Gesture {
         DragGesture(minimumDistance: 0, coordinateSpace: .global)
-            .updating($titleMenuGesture) { value, state, _ in
-                state = .touching(titleMenuWindowPoint(value.location))
+            .updating($isTitleMenuPressed) { value, state, _ in
+                // 触れた瞬間に 1 回だけ書く(アイコンのメニューと同じ。PressMenuTracker のコメント参照)
+                if !state {
+                    state = true
+                }
+                titleMenuTracker.track(titleMenuWindowPoint(value.location))
             }
             .onEnded { value in
                 let point = titleMenuWindowPoint(value.location)
@@ -1349,9 +1276,10 @@ extension ContentView {
     }
 
     func titleMenuTarget(at point: CGPoint) -> SettingsJumpMenuTarget? {
-        SettingsJumpMenu.entries
-            .first { logoMenuFrames[$0.frameKey]?.contains(point) == true }
-            .map(\.target)
+        guard let key = titleMenuTracker.key(at: point) else {
+            return nil
+        }
+        return SettingsJumpMenu.entries.first { $0.frameKey == key }?.target
     }
 
     func performTitleMenuTarget(_ target: SettingsJumpMenuTarget) {
@@ -1418,70 +1346,204 @@ extension ContentView {
 
     @ViewBuilder
     var titleMenuOverlay: some View {
-        if titleMenuGesture.isActive {
-            let highlighted = titleMenuGesture.location.flatMap(titleMenuTarget(at:))
-            GeometryReader { proxy in
-                // overlay は ignoresSafeArea なので proxy の座標はウィンドウ座標(題字のウィンドウ上の枠と同じ)
-                let top = max(titleMenuTitleFrameInWindow.maxY + 2, 0)
-                let layout = SettingsJumpMenu.layout(
-                    availableHeight: proxy.size.height - top - titleMenuBottomInset - 8,
-                    availableWidth: proxy.size.width
-                )
-                ZStack(alignment: .top) {
-                    Color.black.opacity(0.18)
-                    HStack(alignment: .top, spacing: 8) {
-                        ForEach(Array(layout.columns.enumerated()), id: \.offset) { _, column in
-                            VStack(spacing: 0) {
-                                ForEach(Array(column.enumerated()), id: \.element.frameKey) { index, entry in
-                                    if SettingsJumpMenu.showsDivider(column, before: index) {
-                                        Divider()
-                                    }
-                                    titleMenuRow(
-                                        entry,
-                                        isHighlighted: highlighted == entry.target,
-                                        isGroupStart: entry.groupOrdinal >= 0 && SettingsJumpMenu.startsGroup(column, at: index),
-                                        layout: layout
-                                    )
-                                }
-                            }
-                            .padding(.vertical, 6)
-                            .frame(width: layout.columnWidth)
-                            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-                            .shadow(color: .black.opacity(0.18), radius: 14, y: 6)
-                        }
-                    }
-                    .padding(.top, top)
-                }
-                .frame(width: proxy.size.width, height: proxy.size.height, alignment: .top)
-            }
-            .ignoresSafeArea()
-            .allowsHitTesting(false)   // 指は題字の上のジェスチャーが追い続ける
+        if isTitleMenuPressed {
+            SettingsJumpMenuOverlayView(
+                tracker: titleMenuTracker,
+                titleFrame: titleMenuTitleFrameInWindow,
+                bottomInset: titleMenuBottomInset,
+                modifiedNumbers: Self.settingsJumpMenuModifiedNumbers()
+            )
             .transition(.opacity)
+        }
+    }
+
+    // 初期設定から変わっている項目の番号(設定の見出しの ● と同じ判定。3739)。メニューを出すときに 1 回だけ調べる
+    static func settingsJumpMenuModifiedNumbers() -> Set<String> {
+        let action = SettingsCardKeys.currentPostModifierEmptyTapAction
+        return Set(SettingsJumpMenu.entries.compactMap { entry -> String? in
+            guard let number = entry.number,
+                let keys = SettingsCardKeys.keysForModifiedMark(cardID: number, action: action),
+                isModifiedFromBasePreset(keys: keys) else {
+                return nil
+            }
+            return number
+        })
+    }
+}
+
+// アイコンのメニューの表示。指の下の行(tracker)を見るのはこの view だけ(PressMenuTracker のコメント参照)
+struct LogoMenuOverlayView: View {
+    let tracker: PressMenuTracker
+    let logoFrame: CGRect
+    let stashSavedAtLabel: String?
+
+    var body: some View {
+        let highlightedKey = tracker.highlightedKey
+        let basePreset = ContentView.currentBasePreset
+        ZStack(alignment: .top) {
+            Color.black.opacity(0.18)
+            VStack(spacing: 0) {
+                ForEach(LogoMenuAction.allCases) { action in
+                    // まとまりの境目に区切り線(初期設定 / 設定の控え / 案内。ユーザー指定 3591)
+                    if action.startsNewGroup {
+                        Divider()
+                    }
+                    row(
+                        action,
+                        isHighlighted: highlightedKey == action.rawValue,
+                        isEnabled: !tracker.disabledKeys.contains(action.rawValue),
+                        basePreset: basePreset
+                    )
+                }
+            }
+            .frame(width: 300)
+            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .shadow(color: .black.opacity(0.18), radius: 14, y: 6)
+            // ロゴの真下に隙間なく置く(指がロゴにある状態からそのまま下へ滑らせる)。
+            // ロゴ枠はウィンドウ座標なので、overlay 全体を ignoresSafeArea にして原点をウィンドウ
+            // 上端に揃える(overlay の中身は既定でセーフエリア内側に置かれる)。未取得なら上端
+            .padding(.top, max(logoFrame.maxY, 0))
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .ignoresSafeArea()
+        .allowsHitTesting(false)   // 指はロゴ上のジェスチャーが追い続ける
+        .onPreferenceChange(LogoMenuFramePreferenceKey.self) { frames in
+            tracker.frames.merge(frames) { _, new in new }
+        }
+    }
+
+    private func row(
+        _ action: LogoMenuAction,
+        isHighlighted: Bool,
+        isEnabled: Bool,
+        basePreset: SettingsBasePreset
+    ) -> some View {
+        // 今の設定と同じ初期設定は灰色(定義箇所のコメント参照。3177)
+        let labelColor: Color = isEnabled
+            ? (isHighlighted ? Color.white : Color.primary)
+            : Color.secondary.opacity(0.55)
+        let subtitleColor: Color = isEnabled
+            ? (isHighlighted ? Color.white.opacity(0.85) : Color.secondary)
+            : Color.secondary.opacity(0.45)
+        return HStack(spacing: 12) {
+            Group {
+                if let presetIcon = action.presetIcon {
+                    LogoMenuPresetIconView(icon: presetIcon, size: 22)
+                } else {
+                    Image(systemName: action.systemImage)
+                        .font(.system(size: 18, weight: .medium))
+                }
+            }
+            // 基準の初期設定(最後に当てたもの)のアイコンはその初期設定の色(戦略的=青/現代的=ピンク/保守的=緑。3740)。選択中で項目が
+            // 灰色のときも、そこから個別に変えて灰色が解けたあともその色のまま ─ どの初期設定を土台にしているかを示す(3649)。
+            // 設定画面の ● も同じ色。押して強調色の背景になっている間は白(強調色の地に色で見えにくくなるため)
+            .foregroundStyle(
+                action == basePreset.menuAction
+                    ? (isHighlighted && isEnabled ? Color.white : basePreset.markColor)
+                    : labelColor
+            )
+            .frame(width: 26)
+            VStack(alignment: .leading, spacing: 1) {
+                HStack(alignment: .firstTextBaseline, spacing: 4) {
+                    // 最後に当てた初期設定に下線(3432)
+                    Text(action.title)
+                        .font(.body.weight(.semibold))
+                        .underline(action == basePreset.menuAction)
+                    if action == .restoreStashedSettings, let stashSavedAtLabel {
+                        Text(stashSavedAtLabel)
+                            .font(.caption)
+                            .foregroundStyle(subtitleColor)
+                    }
+                }
+                Text(action.subtitle)
+                    .font(.caption)
+                    .foregroundStyle(subtitleColor)
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 9)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .foregroundStyle(labelColor)
+        .background(isHighlighted && isEnabled ? Color.accentColor : Color.clear)
+        .background(
+            GeometryReader { proxy in
+                Color.clear.preference(
+                    key: LogoMenuFramePreferenceKey.self,
+                    value: [action.rawValue: proxy.frame(in: .global)]
+                )
+            }
+        )
+    }
+}
+
+// タイトルのメニュー(設定の各項目へ飛ぶ)の表示。指の下の行(tracker)を見るのはこの view だけ
+struct SettingsJumpMenuOverlayView: View {
+    let tracker: PressMenuTracker
+    // タイトルのウィンドウ上の枠
+    let titleFrame: CGRect
+    let bottomInset: CGFloat
+    let modifiedNumbers: Set<String>
+
+    var body: some View {
+        let highlightedKey = tracker.highlightedKey
+        let markColor = ContentView.currentBasePreset.markColor
+        GeometryReader { proxy in
+            // overlay は ignoresSafeArea なので proxy の座標はウィンドウ座標(題字のウィンドウ上の枠と同じ)
+            let top = max(titleFrame.maxY + 2, 0)
+            let layout = SettingsJumpMenu.layout(
+                availableHeight: proxy.size.height - top - bottomInset - 8,
+                availableWidth: proxy.size.width
+            )
+            ZStack(alignment: .top) {
+                Color.black.opacity(0.18)
+                HStack(alignment: .top, spacing: 8) {
+                    ForEach(Array(layout.columns.enumerated()), id: \.offset) { _, column in
+                        VStack(spacing: 0) {
+                            ForEach(Array(column.enumerated()), id: \.element.frameKey) { index, entry in
+                                if SettingsJumpMenu.showsDivider(column, before: index) {
+                                    Divider()
+                                }
+                                row(
+                                    entry,
+                                    isHighlighted: highlightedKey == entry.frameKey,
+                                    isGroupStart: entry.groupOrdinal >= 0 && SettingsJumpMenu.startsGroup(column, at: index),
+                                    layout: layout,
+                                    markColor: markColor
+                                )
+                            }
+                        }
+                        .padding(.vertical, 6)
+                        .frame(width: layout.columnWidth)
+                        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                        .shadow(color: .black.opacity(0.18), radius: 14, y: 6)
+                    }
+                }
+                .padding(.top, top)
+            }
+            .frame(width: proxy.size.width, height: proxy.size.height, alignment: .top)
+        }
+        .ignoresSafeArea()
+        .allowsHitTesting(false)   // 指は題字の上のジェスチャーが追い続ける
+        .onPreferenceChange(LogoMenuFramePreferenceKey.self) { frames in
+            tracker.frames.merge(frames) { _, new in new }
         }
     }
 
     // 1 行: 幅をそろえた番号、見出し、群の最初の行だけ右端に群の名前と番号の頭の文字(アクセントカラー)。
     // 群は 1 つおきにアクセントカラーの淡い帯。指の下の行はアクセントカラーの塗りで、文字は白
-    private func titleMenuRow(
+    private func row(
         _ entry: SettingsJumpMenuEntry,
         isHighlighted: Bool,
         isGroupStart: Bool,
-        layout: SettingsJumpMenu.Layout
+        layout: SettingsJumpMenu.Layout,
+        markColor: Color
     ) -> some View {
         let bandColor: Color = isHighlighted
             ? Color.accentColor
             : (entry.groupOrdinal % 2 == 1 ? Color.accentColor.opacity(0.08) : Color.clear)
         // 初期設定から変わっている項目の印(設定の見出しの ● と同じ判定・同じ色。番号と見出しの間。3739、ユーザ指定)
-        let isModified: Bool = {
-            guard let number = entry.number,
-                let keys = SettingsCardKeys.keysForModifiedMark(
-                    cardID: number,
-                    action: SettingsCardKeys.currentPostModifierEmptyTapAction
-                ) else {
-                return false
-            }
-            return ContentView.isModifiedFromBasePreset(keys: keys)
-        }()
+        let isModified = entry.number.map(modifiedNumbers.contains) ?? false
         return HStack(spacing: 6) {
             if let number = entry.number {
                 // 番号は右寄せで ● のすぐ左に付け、欄の幅は X.19 が収まる分だけ(番号と ● と見出しの間を詰めて、見出しの
@@ -1492,7 +1554,7 @@ extension ContentView {
                         .frame(width: layout.fontSize * 2.3, alignment: .trailing)
                     Text("●")
                         .font(.system(size: max(6, layout.fontSize - 5)))
-                        .foregroundStyle(isHighlighted ? Color.white : ContentView.currentBasePreset.markColor.opacity(0.75))
+                        .foregroundStyle(isHighlighted ? Color.white : markColor.opacity(0.75))
                         .opacity(isModified ? 1 : 0)
                         .frame(width: layout.fontSize * 0.5)
                         .accessibilityHidden(!isModified)
@@ -1519,12 +1581,12 @@ extension ContentView {
         .frame(maxWidth: .infinity, minHeight: layout.rowHeight, maxHeight: layout.rowHeight, alignment: .leading)
         .background(bandColor)
         .background(
-                GeometryReader { proxy in
-                    Color.clear.preference(
-                        key: LogoMenuFramePreferenceKey.self,
-                        value: [entry.frameKey: proxy.frame(in: .global)]
-                    )
-                }
-            )
+            GeometryReader { proxy in
+                Color.clear.preference(
+                    key: LogoMenuFramePreferenceKey.self,
+                    value: [entry.frameKey: proxy.frame(in: .global)]
+                )
+            }
+        )
     }
 }
