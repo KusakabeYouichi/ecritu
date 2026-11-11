@@ -29672,4 +29672,18 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "はなをかざる", systemCandidateMode: .surface).first, "花を飾る")
     }
 
+    // 連語表に手で足した 2 組(3770・3771、ユーザ指定)。にっかをこなす は ニッカをこなす(連文節の先頭は ニッカ)、
+    // さらにかせんをひく は さらに河川を引く(さらに の後は 河川 が安い)だった
+    func testRegressionNikkaKonasuKasenHiku3770() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let expectations = [
+            "にっかをこなす": "日課をこなす", "にっかをこなした": "日課をこなした",
+            "さらにかせんをひく": "さらに下線を引く", "かせんをひいた": "下線を引いた", "かせんのはんらん": "河川の氾濫"
+        ]
+        for (reading, expected) in expectations {
+            XCTAssertEqual(converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).first, expected, reading)
+        }
+    }
+
 }
