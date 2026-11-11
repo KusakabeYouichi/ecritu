@@ -29472,4 +29472,16 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(converter.multiClauseCandidates(for: "おかんをつける", systemCandidateMode: .surface).prefix(2)), ["悪寒をつける", "お燗をつける"])
     }
 
+    // 3754(ユーザ報告): おかんがする が お官衙する。丁寧の お が 官衙 に付いていた。官衙 には お を付けない
+    func testRegressionOkanGaSuru3754() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for reading in ["おかんがする", "おかんがした"] {
+            let list = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(list.first, reading == "おかんがする" ? "悪寒がする" : "悪寒がした", reading)
+            XCTAssertFalse(list.contains { $0.hasPrefix("お官衙") }, reading)
+        }
+        XCTAssertEqual(converter.multiClauseCandidates(for: "かんがする", systemCandidateMode: .surface).isEmpty, false)
+    }
+
 }
