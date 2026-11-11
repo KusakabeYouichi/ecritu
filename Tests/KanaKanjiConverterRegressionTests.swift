@@ -29463,4 +29463,13 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "にしたい"))
         XCTAssertEqual(converter.multiClauseCandidates(for: "にしたいらさん", systemCandidateMode: .surface).first, "西平さん")
     }
+
+    // 3753(ユーザ指定): おかん に お燗 が無かった(辞書に無い)。seed で 2 番めに。お燗をつける も 2 番め
+    func testRegressionOkan3753() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(Array(converter.candidates(for: "おかん", limit: 10, systemCandidateMode: .surface).prefix(2)), ["悪寒", "お燗"])
+        XCTAssertEqual(Array(converter.multiClauseCandidates(for: "おかんをつける", systemCandidateMode: .surface).prefix(2)), ["悪寒をつける", "お燗をつける"])
+    }
+
 }
