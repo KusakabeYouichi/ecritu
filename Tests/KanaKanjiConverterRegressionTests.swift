@@ -29537,4 +29537,12 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(list.contains("門ね"))
     }
 
+    // 3760(ユーザ指定): つかってなにかするのかな が 使ってな二化するのかな。二化 は専門語なので抑制せず 使って+何 を上げる
+    func testRegressionTsukatteNanika3760() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.multiClauseCandidates(for: "つかってなにかするのかな", systemCandidateMode: .surface).first, "使って何かするのかな")
+        XCTAssertEqual(converter.candidates(for: "にかする", limit: 10, systemCandidateMode: .surface).first, "二化する")
+    }
+
 }
