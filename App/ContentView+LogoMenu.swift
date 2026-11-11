@@ -1225,14 +1225,32 @@ struct SettingsJumpHighlightOverlay: ViewModifier {
     let anchorID: String
     @ObservedObject private var highlight = SettingsJumpHighlight.shared
 
+    // 見えている範囲の近くにあるカードだけ、触れた位置の判定(hit test)の対象にする。一覧は全カードを作る VStack(3712)なので、
+    // 指が触れるたびに SwiftUI が全カード(約 290 個の部品)を判定して、実機で 1 回 118ms メインスレッドを止めていた
+    // (Time Profiler、25 秒に 69 回・計 8 秒。スクロールの出だしが引っかかる。3757、ユーザ報告)。
+    // 状態はカードごとにこの修飾の中に持つので、切り替わっても ContentView の body は作り直さない
+    @State private var isNearVisibleArea = true
+    static let hitTestMargin: CGFloat = 300
+
     func body(content: Content) -> some View {
-        content.overlay {
-            // カードの角(settingsCardStyle の 14pt)に合わせたアクセントカラーの枠
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .stroke(Color.accentColor, lineWidth: 3)
-                .opacity(highlight.anchorID == anchorID ? 1 : 0)
-                .allowsHitTesting(false)
-        }
+        content
+            .allowsHitTesting(isNearVisibleArea)
+            .onGeometryChange(for: Bool.self) { proxy in
+                // スクロールビューの見えている範囲(このカードの座標)。取れないときは対象のままにする
+                guard let visible = proxy.bounds(of: .scrollView) else {
+                    return true
+                }
+                return visible.maxY > -Self.hitTestMargin && visible.minY < proxy.size.height + Self.hitTestMargin
+            } action: { newValue in
+                isNearVisibleArea = newValue
+            }
+            .overlay {
+                // カードの角(settingsCardStyle の 14pt)に合わせたアクセントカラーの枠
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .stroke(Color.accentColor, lineWidth: 3)
+                    .opacity(highlight.anchorID == anchorID ? 1 : 0)
+                    .allowsHitTesting(false)
+            }
     }
 }
 
