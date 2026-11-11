@@ -29525,4 +29525,16 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "やってないようをみなおす", systemCandidateMode: .surface).first, "やって内容を見直す")
     }
 
+    // 3759(ユーザ報告): 門 を確定した後、もんね の先頭が 門ね(実機だけ)。逐次入力で もん の並び(学習で 門 先頭)が
+    // 語幹のキャッシュから もんね に伝わっていた。終助詞の前の もん は かな を先にする
+    func testRegressionMonneAfterLearningMon3759() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for _ in 0..<3 { converter.learn(reading: "もん", candidate: "門") }
+        XCTAssertEqual(converter.candidates(for: "もん", limit: 24, systemCandidateMode: .surface).first, "門")
+        let list = converter.candidates(for: "もんね", limit: 24, systemCandidateMode: .surface)
+        XCTAssertEqual(list.first, "もんね")
+        XCTAssertTrue(list.contains("門ね"))
+    }
+
 }

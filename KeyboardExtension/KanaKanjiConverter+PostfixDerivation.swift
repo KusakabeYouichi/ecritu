@@ -24,6 +24,10 @@ extension KanaKanjiConverter {
         "官衙",
     ]
 
+    static let sentenceFinalParticlesKeepingKanaStem: Set<String> = [
+        "よ", "ね", "な", "わ", "ぞ", "ぜ", "さ", "なあ", "ねえ", "よね", "わね", "わよ",
+    ]
+
     // 呼ばれるたびに組んで並べ替えていた(サンプルで約 2%。3038)。内容は静的なので 1 回だけ作る
     static func honorificOSuruInflectionSuffixes() -> [String] {
         honorificOSuruInflectionSuffixesCache
@@ -190,9 +194,20 @@ extension KanaKanjiConverter {
             guard !filteredStemCandidates.isEmpty else {
                 continue
             }
+            // 終助詞の前で seed が かな を先頭に置く語幹(もん)は、キャッシュの並びが学習で漢字先頭(門)でも かな を先にする。
+            // 逐次入力では もん の並びがそのまま伝わり、門 を確定した後の もんね が 門ね だった(実機だけ。3759、ユーザ報告)
+            let orderedStemCandidates: [String]
+            if Self.sentenceFinalParticlesKeepingKanaStem.contains(passthrough),
+                KanaKanjiSeedDictionary.seed[stem]?.first == stem,
+                filteredStemCandidates.first != stem,
+                filteredStemCandidates.contains(stem) {
+                orderedStemCandidates = [stem] + filteredStemCandidates.filter { $0 != stem }
+            } else {
+                orderedStemCandidates = filteredStemCandidates
+            }
 
             let suffixVariants = Self.postfixOutputSuffixVariants(for: passthrough)
-            let derived = filteredStemCandidates.flatMap { candidate in
+            let derived = orderedStemCandidates.flatMap { candidate in
                 suffixVariants.map { candidate + $0 }
             }
 
