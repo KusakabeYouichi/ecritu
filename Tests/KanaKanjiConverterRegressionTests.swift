@@ -29437,4 +29437,12 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(walk.prefix(2)), ["銀杏並木を歩く", "イチョウ並木を歩く"], "\(walk.prefix(4))")
     }
 
+    // 3753(ユーザ報告): かつおぶしけずりき が 鰹節削り木(けずりき が辞書に無く 削り+木)。削り器 を misc に登録(部品なので 鉛筆削り器 にも効く)
+    func testRegressionKezuriki3753() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ reading: String) -> [String] { converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface) }
+        XCTAssertEqual(multi("かつおぶしけずりき").first, "鰹節削り器", "\(multi("かつおぶしけずりき").prefix(4))")
+        XCTAssertEqual(multi("えんぴつけずりき").first, "鉛筆削り器")
+    }
 }
