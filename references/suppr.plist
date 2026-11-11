@@ -7,6 +7,7 @@
 	<!-- ■ 誤エントリ: 辞書の誤った読み・存在しない表記(学習でも古語でもなく明確な誤り) -->
 	<dict><key>phrase</key><string>回わる</string><key>shortcut</key><string>まわる</string></dict>	<!-- 回わる/廻わる: 送り仮名の誤り(本則・許容とも 回る/廻る)。いっしゅうまわった の候補に 回わった、まわった に 廻わった が出ていた(ユーザ指摘 3748) -->
 	<dict><key>phrase</key><string>廻わる</string><key>shortcut</key><string>まわる</string></dict>
+	<dict><key>phrase</key><string>田嶌</string><key>shortcut</key><string>たつた</string></dict>	<!-- 田嶌(姓)の読みは たじま(嶌=島)。small_lex の タツタ は読みの誤り。たつたあげ に 田嶌上げ が出ていた(ユーザ指摘 3757) -->
 	<dict><key>phrase</key><string>日傅</string><key>shortcut</key><string>ではない</string></dict>	<!-- 日傅(姓): Sudachi の core_lex.csv に デハナイ と ヒヅタ の 2 行があり、デハナイ は読みの誤り(本来は ヒヅタ。どこかで「ではない」という文字列が読みの欄に紛れ込んだものと推測。どういう経緯で紛れたのかは確かめていない)。ではない の候補に 日傅 が並んでいた(ユーザ報告 3678)。ひづた は残す -->
 	<dict><key>phrase</key><string>おおお</string><key>shortcut</key><string>おお</string></dict>	<!-- Sudachi の伸ばし表記(おおお)を おお の読みで持つ項目(rank8)。おおさかさん に おお+おさかさん の おおおさかさん が出ていた(ユーザ報告 3661) -->
 	<dict><key>phrase</key><string>不・思・議</string><key>shortcut</key><string>ふしぎ</string></dict>	<!-- Sudachi small_lex の中黒入り装飾表記(不思議)。合成(不・思・議だね)に出ていた(ユーザ報告 3715) -->
