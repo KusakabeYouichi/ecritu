@@ -29484,4 +29484,16 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "かんがする", systemCandidateMode: .surface).isEmpty, false)
     }
 
+    // 3755(ユーザ報告): にだんかいにんしょう が に段階認証。段階 が数+助数詞の表に無かった
+    func testRegressionNidankaiNinshou3755() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let single = converter.candidates(for: "にだんかい", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "2段階")
+        XCTAssertTrue(single.contains("二段階"))
+        XCTAssertEqual(converter.multiClauseCandidates(for: "にだんかいにんしょう", systemCandidateMode: .surface).first, "2段階認証")
+        XCTAssertEqual(converter.candidates(for: "なんだんかい", limit: 10, systemCandidateMode: .surface).first, "何段階")
+        XCTAssertEqual(converter.candidates(for: "だんかいのせだい", limit: 10, systemCandidateMode: .surface).first, "団塊の世代")
+    }
+
 }
