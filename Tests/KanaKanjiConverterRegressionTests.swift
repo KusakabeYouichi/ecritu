@@ -29445,4 +29445,13 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("かつおぶしけずりき").first, "鰹節削り器", "\(multi("かつおぶしけずりき").prefix(4))")
         XCTAssertEqual(multi("えんぴつけずりき").first, "鉛筆削り器")
     }
+
+    // 3753(ユーザ指定): あげた の ryukyu 人名 安慶田 を 4 番めに(上げた/挙げた/揚げた の後)。してあげた/教えてあげた は保つ
+    func testRegressionAgeta3753() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let ageta = converter.candidates(for: "あげた", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(ageta.prefix(4)), ["上げた", "挙げた", "揚げた", "安慶田"], "\(ageta)")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "おしえてあげた", systemCandidateMode: .surface).first, "教えてあげた")
+    }
 }
