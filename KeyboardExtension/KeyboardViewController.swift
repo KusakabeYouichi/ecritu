@@ -272,6 +272,9 @@ final class KeyboardViewController: UIInputViewController {
     var lastKanaPostModifierAppliedAt: CFAbsoluteTime = 0
     var lastKanaPostModifierResultCharacter: Character?
     var lastTextProxyEditAt: CFAbsoluteTime = 0
+    // 調査用ログ(メッセージの未確定乱れ 3756)。原因判明後に外す
+    var investigation3756OwnWindowNotificationCount = 0
+    var investigation3756AwaitsFollowUp = false
     let externalTextChangeDetectionWindow: CFTimeInterval = 0.35
     // メモリ警告を1イベント(バースト)にまとめる窓(定義は Diagnostics の memoryWarningBurstCountThisSession 参照)
     static let memoryWarningBurstWindow: CFTimeInterval = 2.0
@@ -535,6 +538,8 @@ final class KeyboardViewController: UIInputViewController {
         // 重大イベント(メモリ警告/最終手段アンロード/フェイルセーフ遷移)の保護ログ。
         // 320行ローテーションとinstall変更リセットの対象外(事後検証の証拠を残す)。
         static let keyboardDiagnosticsCriticalLogLines = "keyboardDiagnosticsCriticalLogLines"
+        // 調査用ログ(メッセージの未確定乱れ 3756)の置き場。原因判明後に外す
+        static let keyboardInvestigation3756LogLines = "keyboardInvestigation3756LogLines"
         static let keyboardDiagnosticsInstallMarker = "keyboardDiagnosticsInstallMarker"
         static let keyboardDiagnosticsSessionActive = "keyboardDiagnosticsSessionActive"
         static let keyboardDiagnosticsSessionOwnerToken = "keyboardDiagnosticsSessionOwnerToken"
@@ -818,9 +823,70 @@ final class KeyboardViewController: UIInputViewController {
         refreshKeyboardState(trigger: "viewWillAppear")
     }
 
+    // 調査用ログ(メッセージの未確定乱れ 3756): メッセージで未確定があるときに相手の発言が届くと、未確定が消える・壊れる・
+    // 増える件。未確定があるあいだにホストから届いた通知を、処理の前に残す(従来は確定・破棄の分岐に入ったときしか残らなかった)。
+    // 本文は残さず、長さと「文脈の末尾が未確定と一致するか」だけ。原因判明後に外す(grep "調査3756")。
+    // - 自前の打鍵に伴う通知(打鍵から 0.35 秒以内)は数だけ数え、行にはしない(1 打鍵ごとに 2〜4 行出て、すぐ流れるため)
+    // - 置き場は専用のキー(保護ログは 60 行しかなく、他の証拠を押し出すため)
+    // - 通知のあとの最初の自前編集の直前にも 1 行残す(乱れたあとの状態。増えた/消えた の切り分け)
+    static let investigation3756MaxLineCount = 400
+    func logHostNotificationWhileComposingForInvestigation(_ trigger: String) {
+        #if DEBUG
+        guard activeConversion != nil || !composingRawText.isEmpty else {
+            return
+        }
+        guard shouldTreatAsExternalTextChange() else {
+            investigation3756OwnWindowNotificationCount += 1
+            return
+        }
+        appendInvestigation3756Line(trigger)
+        investigation3756AwaitsFollowUp = true
+        #endif
+    }
+
+    // 外部の通知を記録したあと、最初の自前編集の直前の状態を 1 行残す(markTextProxyEdit / noteOwnTextProxyEditTimestamp から)
+    func logFirstOwnEditAfterHostNotificationForInvestigation() {
+        #if DEBUG
+        guard investigation3756AwaitsFollowUp else {
+            return
+        }
+        investigation3756AwaitsFollowUp = false
+        appendInvestigation3756Line("次の自前編集の直前")
+        #endif
+    }
+
+    private func appendInvestigation3756Line(_ trigger: String) {
+        #if DEBUG
+        guard let sharedDefaults else {
+            return
+        }
+        let proxy = textDocumentProxy
+        let before = proxy.documentContextBeforeInput
+        let marked = activeConversion?.committedText ?? composingRawText
+        let sinceOwnEdit = CFAbsoluteTimeGetCurrent() - lastTextProxyEditAt
+        let entry = "\(Self.diagnosticsTimestampFormatter.string(from: Date())) 調査3756 \(trigger)"
+            + " id=\(diagnosticsState.diagnosticsControllerID.prefix(8)) window=\(viewIfLoaded?.window != nil ? 1 : 0)"
+            + " sinceOwnEditMs=\(Int(sinceOwnEdit * 1000)) ownWindowSkipped=\(investigation3756OwnWindowNotificationCount)"
+            + " composingLen=\(composingRawText.count) active=\(activeConversion != nil) markedLen=\(marked.count)"
+            + " before=\(before?.count ?? -1) after=\(proxy.documentContextAfterInput?.count ?? -1)"
+            + " selected=\(proxy.selectedText?.count ?? -1) prevBefore=\(lastSynchronizedContextBeforeInputLength)"
+            + " beforeEndsWithMarked=\(before.map { !marked.isEmpty && $0.hasSuffix(marked) } ?? false)"
+            + " beforeEndsWithPrevTail=\(before.map { $0.hasSuffix(lastSynchronizedContextBeforeInputTail) } ?? false)"
+            + " hasText=\(proxy.hasText) doc=\(proxy.documentIdentifier.uuidString.prefix(8))"
+        investigation3756OwnWindowNotificationCount = 0
+        var lines = diagnosticsLogLines(from: sharedDefaults, key: SharedDefaultsKeys.keyboardInvestigation3756LogLines)
+        lines.append(entry)
+        if lines.count > Self.investigation3756MaxLineCount {
+            lines.removeFirst(lines.count - Self.investigation3756MaxLineCount)
+        }
+        saveDiagnosticsLogLines(lines, to: sharedDefaults, key: SharedDefaultsKeys.keyboardInvestigation3756LogLines)
+        #endif
+    }
+
     // 外部変更の直前通知。完了ボタンでは textDidChange(文脈空)の 8ms 前に文脈そのままで届く(2684 実機)
     override func textWillChange(_ textInput: UITextInput?) {
         super.textWillChange(textInput)
+        logHostNotificationWhileComposingForInvestigation("textWillChange")
         commitComposingTextOnExternalTextWillChangeIfNeeded(trigger: "textWillChange")
     }
 
@@ -831,6 +897,7 @@ final class KeyboardViewController: UIInputViewController {
     // 消失は確定に置き換えられる(2979、ユーザ報告)
     override func selectionWillChange(_ textInput: UITextInput?) {
         super.selectionWillChange(textInput)
+        logHostNotificationWhileComposingForInvestigation("selectionWillChange")
         commitComposingTextOnExternalTextWillChangeIfNeeded(trigger: "selectionWillChange")
     }
 
@@ -925,6 +992,7 @@ final class KeyboardViewController: UIInputViewController {
 
     override func textDidChange(_ textInput: UITextInput?) {
         super.textDidChange(textInput)
+        logHostNotificationWhileComposingForInvestigation("textDidChange")
         updateKeyboardDiagnosticsHeartbeat(event: "textDidChange")
         publishMemoryFootprintPeakForDebugDisplay()
 
@@ -950,6 +1018,7 @@ final class KeyboardViewController: UIInputViewController {
 
     override func selectionDidChange(_ textInput: UITextInput?) {
         super.selectionDidChange(textInput)
+        logHostNotificationWhileComposingForInvestigation("selectionDidChange")
         updateKeyboardDiagnosticsHeartbeat(event: "selectionDidChange")
 
         // 多重生存の非アクティブインスタンスでも、未確定の確定/クリアと下線残留クリアは
@@ -1758,6 +1827,7 @@ final class KeyboardViewController: UIInputViewController {
     }
 
     func markTextProxyEdit() {
+        logFirstOwnEditAfterHostNotificationForInvestigation()
         lastTextProxyEditAt = CFAbsoluteTimeGetCurrent()
         textProxyEditSerial &+= 1
         invalidateTextContextCache()
@@ -1766,6 +1836,7 @@ final class KeyboardViewController: UIInputViewController {
     // setMarkedText のように beforeInput/afterInput を変えない自前編集に使う。
     // タイムスタンプだけ更新してキャッシュ無効化を回避する(XPC 再取得を削減)。
     func noteOwnTextProxyEditTimestamp() {
+        logFirstOwnEditAfterHostNotificationForInvestigation()
         lastTextProxyEditAt = CFAbsoluteTimeGetCurrent()
     }
 
