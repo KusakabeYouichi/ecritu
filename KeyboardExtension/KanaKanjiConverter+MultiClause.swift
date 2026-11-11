@@ -1367,6 +1367,8 @@ extension KanaKanjiConverter {
         // suppressed=+100000(事実上不採用)、demoted=+6000(後方)。
         var scriptVariantSuppressedNodeKeys = Set<String>()
         var scriptVariantDemotedNodeKeys = Set<String>()
+        // 後ろへ送った国名のカタカナ(チリ。国名を並べる形で減点を打ち消す。3762)
+        var countryNameDemotedNodeKeys = Set<String>()
         // 丁寧接頭辞合成ノードの後置対象(同スパンに実辞書語があるもの。定数コメント参照)
         var politeSupplementDemotedNodeKeys = Set<String>()
         // 丁寧接頭辞の合成ノード(お送り)の語幹の区間キー(start+1-end-送り)。最良経路の お+送り を合成ノードに差し替える判定に使う(3632)
@@ -2720,7 +2722,12 @@ extension KanaKanjiConverter {
                             || spanHasKanjiSurface.contains(node.spanKey)
                     }
                     if isEmphasis {
-                        if katakanaEmphasisCandidateMode == .suppress {
+                        // 国名のカタカナ(チリ)が同じ読みの語(地理)と僅差で負けているだけなら、消さずに後ろへ送るだけにする。
+                        // 国名を や で並べる形(タイやチリ/チリやペルー)では、この減点を打ち消す(定数コメント参照。3762)
+                        if isKatakanaCountryNameNearTie(reading: node.reading, surface: node.surface, katakanaUnigram: kataUni, alternativeUnigram: altUni) {
+                            scriptVariantDemotedNodeKeys.insert(key)
+                            countryNameDemotedNodeKeys.insert(key)
+                        } else if katakanaEmphasisCandidateMode == .suppress {
                             scriptVariantSuppressedNodeKeys.insert(key)
                         } else {
                             scriptVariantDemotedNodeKeys.insert(key)
@@ -2914,6 +2921,7 @@ extension KanaKanjiConverter {
         // 地名ノード(国/一般。place_names、3633): 漢字・カタカナの辞書語の読みごとに引く(読み単位でキャッシュ)。
         // 地名+りょう は 領(韓国領/対馬領)の判定に使う
         var placeNameKindByNodeKey: [String: String] = [:]
+        var countryNameStartPositions = Set<Int>()
         do {
             var placeNameKindsByReading: [String: [String: String]] = [:]
             for node in nodes where node.isDictWord && !node.isInflectionDerived && !node.isKanaIdentity {
@@ -2922,6 +2930,10 @@ extension KanaKanjiConverter {
                 }
                 if let kind = placeNameKindsByReading[node.reading]?[node.surface] {
                     placeNameKindByNodeKey[node.key] = kind
+                    // 2 字以上の国名が始まる位置(国名+や+国名 の加点で、や の先に国名があるかを見る。3762)
+                    if kind == "国", node.surface.count >= 2 {
+                        countryNameStartPositions.insert(node.start)
+                    }
                 }
             }
         }
@@ -5057,6 +5069,22 @@ extension KanaKanjiConverter {
                             node.surface == "領",
                             placeNameKindByNodeKey[prevNode.key] != nil {
                             cost -= Self.multiClausePlaceNameTerritoryBonus
+                        }
+                        // 国名+や+国名(定数コメント参照。3762)。整数 ID の判定を先に、地名の表引きは後に
+                        // 前半: 国名→や で、や の先に国名が始まる。後半: や→国名 で、2 つ前が国名。
+                        // 僅差で後ろへ送った国名のカタカナ(チリ)は、ここで減点(6000)も打ち消す
+                        if node.surfaceID == SID.や, node.isKanaIdentity, prevNode.surface.count >= 2,
+                            countryNameStartPositions.contains(node.end), placeNameKindByNodeKey[prevNode.key] == "国" {
+                            cost -= Self.multiClauseCountryEnumerationBonus
+                                + (countryNameDemotedNodeKeys.contains(prevNode.key) ? 6000 : 0)
+                        }
+                        if prevNode.surfaceID == SID.や, prevNode.isKanaIdentity, node.surface.count >= 2,
+                            placeNameKindByNodeKey[node.key] == "国", backPointer[prevIdx] >= 0 {
+                            let prevPrev = nodes[backPointer[prevIdx]]
+                            if prevPrev.surface.count >= 2, placeNameKindByNodeKey[prevPrev.key] == "国" {
+                                cost -= Self.multiClauseCountryEnumerationBonus
+                                    + (countryNameDemotedNodeKeys.contains(node.key) ? 6000 : 0)
+                            }
                         }
                         // カタカナ語+種/州(定数コメント参照。3662)
                         // 整数 ID の判定を先に(遷移ごとの文字列走査を避ける。変換速度の予算)

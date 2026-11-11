@@ -1464,6 +1464,10 @@ final class KanaKanjiConverter {
                     // LM未収録のカタカナ化は、かな/漢字の代替が存在する限り強調とみなす
                     return altBest != nil || !kanjiAlternatives.isEmpty
                 }
+                // 国名のカタカナ(チリ)が同じ読みの語(地理)と僅差で負けているだけなら強調ではない(連文節側と同じ判定。3762)
+                if isKatakanaCountryNameNearTie(reading: reading, surface: candidate, katakanaUnigram: kataUni, alternativeUnigram: altBest) {
+                    return false
+                }
                 if let altBest { return altBest < kataUni }
                 return false
             }

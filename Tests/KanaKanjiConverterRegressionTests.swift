@@ -29554,4 +29554,34 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "あんせいのたいごく", systemCandidateMode: .surface).first, "安政の大獄")
     }
 
+    // 国名を や で並べる形(3762、ユーザ報告)。たいやかんこく は タイヤ韓国、たいやちり は タイや塵 だった
+    // (タイヤ 1 語が 63 差で勝つ/チリ がカタカナ強調の抑制で消える)。国名でない並びと タイヤ はそのまま
+    func testRegressionCountryEnumeration3762() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let expectations = [
+            "たいやかんこく": "タイや韓国",
+            "たいやちり": "タイやチリ",
+            "たいやべとなむ": "タイやベトナム",
+            "たいやにほん": "タイや日本",
+            "ちりやぺるー": "チリやペルー",
+            "かんこくやたい": "韓国やタイ",
+            "たいやをこうかん": "タイヤを交換",
+            "たいやこうかん": "タイヤ交換",
+            "たいやめーかー": "タイヤメーカー",
+            "ちりがつもる": "塵が積もる",
+            "ちりにくわしい": "地理に詳しい",
+            "にほんのちり": "日本の地理"
+        ]
+        for (reading, expected) in expectations {
+            XCTAssertEqual(
+                converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).first, expected, reading
+            )
+        }
+        // 単文節の並びは変えない(地理 が先頭、チリ は候補に残る)
+        let single = converter.candidates(for: "ちり", limit: 20, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "地理")
+        XCTAssertTrue(single.contains("チリ"))
+    }
+
 }

@@ -3015,6 +3015,26 @@ extension KanaKanjiConverter {
     // 連用形+っぱなし(つきっぱなし/やりっぱなし/しっぱなし)の加点(ユーザ報告 3661)。つ+キッパ+なし/や+立派+なし/しっぱ+無し に
     // 割れていた。直前が用言の連用形(い段・え段で終わる読み)のときだけ
     static let multiClausePpanashiBonus = 3000
+    // 国名を や で並べる形(タイや韓国/タイやチリ/チリやペルー)の加点(3762、ユーザ報告)。たいやかんこく は タイヤ+韓国(11704)が
+    // タイ+や+韓国(11767)に 63 差で勝っていた。国名(place_names の 国)→や で や の先に国名が始まるときと、や→国名 で
+    // 2 つ前が国名のときの 2 か所に付ける。1 字の国名(泰/米)は他の語を割りやすいので除く
+    static let multiClauseCountryEnumerationBonus = 1500
+    // 国名のカタカナ(チリ 5562)が、同じ読みの語(地理 5559)と LM で僅差で負けているだけのとき(3762)。
+    // カタカナ強調の抑制で チリ が +100000 になり、たいやちり が タイや塵、ちりやぺるー が 塵やペルー だった。
+    // 抑制を一律に外すと ちりがつもる が チリが積もる、ちりにくわしい が チリに詳しい になるので、消さずに後ろへ送り(+6000)、
+    // 国名を や で並べる形のときだけその減点を打ち消す。単文節は候補に残すだけ(並びは変えない)。
+    // 表には モシ/トウ/キバ/イタ のような国名らしくない行もあるので、差が小さいときに限る(モシ 7884 は もし に大差で負けるので対象外)
+    static let katakanaCountryNameNearTieMargin = 500
+
+    func isKatakanaCountryNameNearTie(reading: String, surface: String, katakanaUnigram: Int?, alternativeUnigram: Int?) -> Bool {
+        guard let katakanaUnigram, let alternativeUnigram,
+            katakanaUnigram - alternativeUnigram < Self.katakanaCountryNameNearTieMargin,
+            surface.count >= 2 else {
+            return false
+        }
+        return store.placeNameKinds(for: reading)[surface] == "国"
+    }
+
     // カタカナ語+しゅ/しゅう は 種/州(ラブルスカ種/マンチャ州)。酒/集 だった(learningBOX 検査 3662)。ラム酒 などは一語で辞書にある
     static let multiClauseKatakanaSuffixPreferenceBonus = 2000
     static let multiClauseKatakanaSuffixPreferredSurfaces: Set<String> = ["種", "州"]
