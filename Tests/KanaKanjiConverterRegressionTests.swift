@@ -29746,4 +29746,27 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 一括検査 3765 の再検査で見つかった退行(3774)。正解は の後ろの短い読みの外来語(Tai/Tannat)への加点が 大正時代/棚仕立て を割り、
+    // 地名の後ろの 県/語 が 件/後、ラテン文字の学名の後ろの 種 が 酒、川の名+がわ が 側 になっていた。さんを付ける は 酸 にしない
+    func testRegressionAuditRegressions3774() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let expectations = [
+            "せいかいはたいしょうじだいです": "正解は大正時代です",
+            "せいかいはたなじたてです": "正解は棚仕立てです",
+            "せいかいはたいです": "正解はTaiです",
+            "せいかいはたなです": "正解はTannatです",
+            "せいかいはしえなけんです": "正解はシエナ県です",
+            "せいかいはどいつごです": "正解はドイツ語です",
+            "せいかいはどなうがわです": "正解はドナウ川です",
+            "らぶるすかしゅ": "labrusca種",
+            "とうきょうがわ": "東京側",
+            "ふらんすけい": "フランス系"
+        ]
+        for (reading, expected) in expectations {
+            XCTAssertEqual(converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).first, expected, reading)
+        }
+        XCTAssertNotEqual(converter.multiClauseCandidates(for: "さんをつける", systemCandidateMode: .surface).first, "酸をつける")
+    }
+
 }

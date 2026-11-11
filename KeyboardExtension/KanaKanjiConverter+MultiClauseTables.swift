@@ -2757,6 +2757,10 @@ extension KanaKanjiConverter {
         guard node.readingID == SID.さん, node.end == n || multiClauseStandaloneAcidFollowers.contains(chars[node.end]) else {
             return 0
         }
+        // 敬称そのものの話(さんを付ける/さんをつけて呼ぶ)は対象外(酸をつける になった。3774)
+        if node.end + 2 < n, chars[node.end] == "を", chars[node.end + 1] == "つ", chars[node.end + 2] == "け" {
+            return 0
+        }
         if let prevNode {
             guard prevNode.isInflectionDerived
                 || (prevNode.isKanaIdentity
@@ -3095,10 +3099,11 @@ extension KanaKanjiConverter {
     // (learningBOX 検査 3697 の [直す]、3715)。カタカナ語一般に広げると コーチ陣/キャスト陣 を壊すので地名の直後に限る。
     // 西武 は読みごと下げると 西武が勝った が 西部 になるので、地名の直後だけ
     static let multiClausePlaceNameSuffixPreferenceBonus = 2000
-    static let multiClausePlaceNameSuffixPreferredSurfaces: Set<String> = ["人", "族", "型", "西部", "東部", "南部", "北部"]
+    // 県/語 は 3774 で追加(正解はシエナ県です が シエナ件、ドイツ語 が ドイツ後 だった。一括検査の退行)
+    static let multiClausePlaceNameSuffixPreferredSurfaces: Set<String> = ["人", "族", "型", "西部", "東部", "南部", "北部", "県", "語"]
     static let multiClausePlaceNameSuffixPreferredSurfacesID = MultiClauseIDSet(multiClausePlaceNameSuffixPreferredSurfaces)
     // Gin/ジン/仁 も地名の直後には来ない(Gin を 陣 と同じ水準に上げたら トラキアGin/トラキアジン になった。3739)
-    static let multiClausePlaceNameSuffixDemotedSurfaces: Set<String> = ["陣", "俗", "方", "西武", "東武", "頭部", "Gin", "ジン", "仁"]
+    static let multiClausePlaceNameSuffixDemotedSurfaces: Set<String> = ["陣", "俗", "方", "西武", "東武", "頭部", "Gin", "ジン", "仁", "件", "後"]
     static let multiClausePlaceNameSuffixDemotedSurfacesID = MultiClauseIDSet(multiClausePlaceNameSuffixDemotedSurfaces)
     // 補助語彙(vin 等)に登録した漢数字入りの固有名(五百万石=酒米)は、同じ読みの 数+助数詞(500万石)より先に(ユーザ指定 3715)。
     // 数のノードは定額 7200、LM に無い補助語彙は 8700 なので、その差を越える幅

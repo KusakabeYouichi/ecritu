@@ -834,6 +834,12 @@ extension KanaKanjiConverter {
         ("きりはあさひとともに", "きりは", "切り羽", "霧は"), ("こいかのさかな", "こいか", "来いか", "鯉科"), ("かものこんふぃ", "かもの", "化物", "鴨の"),
         ("かもやはとなど", "かもやはと", "加茂谷は徒", "鴨や鳩"), ("こうみやしきたく", "こうみや", "光宮", "香味や"), ("ちゃばをせいちし", "せいち", "整地", "静置"),
         ("さんがつよく", "さんがつよく", "三月よく", "酸が強く"),
+        // 一括検査 3765 の再検査で見つかった退行(3774): 川の名+がわ が 側(ドナウ側/ラ・プラタ側/ロワール側)、ボルドー液 が 駅、
+        // 緑の心臓 が ミドリ(リキュールの名)、ぶどう樹は が ぶどう入破、展示品 が 転じひん
+        ("どなうがわ", "どなうがわ", "ドナウ側", "ドナウ川"), ("らぷらたがわ", "らぷらたがわ", "ラ・プラタ側", "ラ・プラタ川"),
+        ("ろわーるがわ", "ろわーるがわ", "ロワール側", "ロワール川"), ("ぼるどーえき", "ぼるどーえき", "ボルドー駅", "ボルドー液"),
+        ("みどりのしんぞう", "みどり", "ミドリの心臓", "緑の心臓"), ("ぶどうじゅは", "ぶどうじゅは", "ぶどう入破", "ぶどう樹は"),
+        ("てんじひんとして", "てんじひん", "転じひん", "展示品"), ("みってるらいん", "みってるらいん", "充ってるLINE", "Mittelrhein"),
         // 2 巡め: には+が の規則のあとに残る 歯(葉)、ビン詰めした都市(年)、雄町、杜松、早摘み など
         ("にはがへんしょく", "にはが", "に歯が", "に葉が"), ("にはのいろがへんしょく", "にはの", "に歯の", "に葉の"), ("すいへいにはがひろが", "にはが", "に歯が", "に葉が"),
         ("にはがようりょくそ", "にはが", "に歯が", "に葉が"), ("なまはにはほぞんせい", "なまはには", "生はには", "生葉には"), ("びんづめしたとし", "とし", "した都市", "した年"),
@@ -5204,14 +5210,17 @@ extension KanaKanjiConverter {
                         // 整数 ID の判定を先に(遷移ごとの文字列走査を避ける。変換速度の予算)
                         let katakanaSuffixPreferred = Self.multiClauseKatakanaSuffixPreferredSurfacesID.contains(node.surfaceID)
                         if katakanaSuffixPreferred || Self.multiClauseKatakanaSuffixDemotedSurfacesID.contains(node.surfaceID),
-                            !prevNode.isKanaIdentity, Self.isKatakanaString(prevNode.surface) {
+                            !prevNode.isKanaIdentity,
+                            // ラテン文字の学名(labrusca種/riparia種)も同じ(ラテン文字を先頭にしてから labrusca酒 になっていた。3774)
+                            Self.isKatakanaString(prevNode.surface)
+                                || (prevNode.surface.unicodeScalars.first.map(Self.isLatinLetterScalar) ?? false) {
                             cost += katakanaSuffixPreferred ? -Self.multiClauseKatakanaSuffixPreferenceBonus : Self.multiClauseKatakanaSuffixPreferenceBonus
                         }
                         // 地名+人(じん)/族/型/西部 等(定数コメント参照。3715)。整数 ID の判定を先に、地名の表引きは後に。
                         // 1 字の地名(塞=さい)は除く(さいせいぶにある が 塞西部 になり、最+西部 の 2880 を崩した)
                         let placeSuffixPreferred = Self.multiClausePlaceNameSuffixPreferredSurfacesID.contains(node.surfaceID)
                             && (node.surfaceID != SID.人 || node.readingID == SID.じん)
-                            && node.reading.first != "け"   // 型(けい)は ボルドー系 を巻き込む
+                            && (node.surface != "型" || node.reading.first != "け")   // 型(けい)は ボルドー系 を巻き込む
                         if placeSuffixPreferred || Self.multiClausePlaceNameSuffixDemotedSurfacesID.contains(node.surfaceID),
                             prevNode.surface.count >= 2, placeNameKindByNodeKey[prevNode.key] != nil {
                             cost += placeSuffixPreferred ? -Self.multiClausePlaceNameSuffixPreferenceBonus : Self.multiClausePlaceNameSuffixPreferenceBonus
@@ -6145,9 +6154,14 @@ extension KanaKanjiConverter {
                         cost -= Self.multiClauseLoanwordObjectYouBonus
                     }
                     // 問題文の型(正解は/北から/または)・固有名の並び(GrecoやAglianico)の後ろの補助語彙の外来語(定数コメント参照。3738)
+                    // 読みが 2 かな以下の語(Tai/Tannat)は、その語で句が終わる・です/だ が続くときだけ(正解はTaiです)。後ろに読みが続くと
+                    // 正解は大正時代です が 正解はTai省時代です、正解は棚仕立てです が 正解はTannat仕立です になった(3774、一括検査の退行)
+                    let frameBonusAllowed = node.reading.count >= 3 || node.end == n || chars[node.end] == "で" || chars[node.end] == "だ"
                     if supplementalLoanwordFlags[idx] {
                         if let frame = Self.multiClauseSupplementalFrameHeads[prevNode.surface], frame.particles.contains("") {
-                            cost -= frame.bonus
+                            if frameBonusAllowed {
+                                cost -= frame.bonus
+                            }
                         } else if prevNode.isKanaIdentity {
                             var headIdx = backPointer[prevIdx]
                             var particleSurface = prevNode.surface
@@ -6160,7 +6174,9 @@ extension KanaKanjiConverter {
                             if let headSurface = prevNode.boundHeadSurface ?? (headIdx >= 0 ? nodes[headIdx].surface : nil) {
                                 if let frame = Self.multiClauseSupplementalFrameHeads[headSurface],
                                     frame.particles.contains(particleSurface) {
-                                    cost -= frame.bonus
+                                    if frameBonusAllowed {
+                                        cost -= frame.bonus
+                                    }
                                 } else if Self.multiClauseSupplementalPairParticles.contains(particleSurface),
                                     prevNode.boundHeadSurface != nil
                                         ? prevNode.boundHeadIsSupplementalLoanword
