@@ -29686,4 +29686,18 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // にっか は連文節でも ニッカ・日課・日華 の順(LM は 日華 が 日課 より安い)。毎日の/朝の の後は 日課(3771、ユーザ指定)
+    func testRegressionNikkaOrderAndMainichi3771() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(
+            Array(converter.multiClauseCandidates(for: "にっかのふろんてぃあ", systemCandidateMode: .surface).prefix(3)),
+            ["ニッカのフロンティア", "日課のフロンティア", "日華のフロンティア"]
+        )
+        XCTAssertEqual(Array(converter.candidates(for: "にっか", limit: 10, systemCandidateMode: .surface).prefix(3)), ["ニッカ", "日課", "日華"])
+        for (reading, expected) in ["まいにちのにっか": "毎日の日課", "まいにちのにっかです": "毎日の日課です", "あさのにっか": "朝の日課"] {
+            XCTAssertEqual(converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).first, expected, reading)
+        }
+    }
+
 }

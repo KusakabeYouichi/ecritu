@@ -677,6 +677,8 @@ extension KanaKanjiConverter {
     // ここに残すのは名詞どうし・形容詞・2 番めの並びの調整だけ
     static let multiClauseAcrossNoCollocationBonuses: [String: Int] = [
         "甲州\t果皮": 2500,
+        // 毎日の日課(まいにちのにっか が 毎日のニッカ。連文節の先頭は ニッカ だが 毎日の の後は 日課。3770、ユーザ指定)
+        "毎日\t日課": 3000, "毎朝\t日課": 3000, "朝\t日課": 3000, "一日\t日課": 3000,
         // 土壌・地質の 粘土(learningBOX 検査 3658、ユーザ指定: 普段の文章では 年度 が先なので 土壌/岩盤 と呼応したときだけ)。
         // 赤い粘土の土壌/硬い粘土の岩盤/粘土を含む が 年度 だった。最南+に+位置する(災難に位置する だった)。
         // 沈澱した滓を取り除く(おりを だった)
@@ -965,6 +967,12 @@ extension KanaKanjiConverter {
     static let multiClauseSupplementalPairBonus = 3000
     // 1字の格助詞(multiClauseCaseParticleSurfaces の1字分)+連体の の
     static let multiClauseSingleTopParticleTails: Set<Character> = ["に", "を", "が", "へ", "と", "で", "は", "も", "の"]
+
+    // seed の 2 番めの語にも小さく加点する読み(3770、ユーザ指定)。にっか は連文節でも ニッカ・日課・日華 の順にする
+    // (LM は 日華 6925 < 日課 7272。Wikipedia の 日華事変 など)。先頭の ニッカ は下の表で加点
+    static let multiClauseSeedSecondNounBonusesByReading: [String: Int] = [
+        "にっか": 700,
+    ]
 
     static let multiClauseSeedOrderNounBonusesByReading: [String: Int] = [
         "にほん": 800, "ほうだい": 800, "おん": 800, "うち": 800, "そうりょう": 4200,

@@ -1835,6 +1835,11 @@ extension KanaKanjiConverter {
                         surface == Self.multiClauseSeed(segmentReading)?.first {
                         seedOrderNounNodeBonuses[spanKeyByStart[start][end] + "-" + surface] = bonus
                     }
+                    // seed の 2 番めにも小さく加点する読み(定数コメント参照。3770)
+                    if let secondBonus = Self.multiClauseSeedSecondNounBonusesByReading[segmentReading],
+                        let seedList = Self.multiClauseSeed(segmentReading), seedList.count >= 2, surface == seedList[1] {
+                        seedOrderNounNodeBonuses[spanKeyByStart[start][end] + "-" + surface] = secondBonus
+                    }
                     // 漢字が seed 先頭の読みのカタカナ兄弟(コメ/ネコ)は容認するが推奨しない(ユーザ方針 3537)。bigram だけで
                     // 漢字(米)を抜かないよう定額で下げる(こめかってた→コメ買ってた)。seed 先頭がカタカナの語(コツ)は対象外
                     // 補助語彙(vin 等)のカタカナ(ガメイ)は外来の固有名で、コメ/ネコ のような和語のカタカナ化ではないので対象外(3693)
