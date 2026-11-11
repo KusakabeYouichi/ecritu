@@ -29505,4 +29505,15 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "かえ"))
     }
 
+    // 3757(ユーザ指定): たつたあげ は 竜田揚げ を先頭に。田嶌(たつた)は読みの誤りなので出さない
+    func testRegressionTatsutaage3757() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let list = converter.candidates(for: "たつたあげ", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(list.first, "竜田揚げ")
+        XCTAssertFalse(list.contains { $0.hasPrefix("田嶌") })
+        XCTAssertFalse(converter.candidates(for: "たつた", limit: 20, systemCandidateMode: .surface).contains("田嶌"))
+        XCTAssertEqual(converter.multiClauseCandidates(for: "たつたあげをたべた", systemCandidateMode: .surface).first, "竜田揚げを食べた")
+    }
+
 }
