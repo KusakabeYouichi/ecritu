@@ -521,6 +521,7 @@
 	<!-- ■ 新潟県 -->
 	<dict><key>phrase</key><string>大洋盛</string><key>shortcut</key><string>たいようざかり</string></dict>	<!-- 大洋酒造 -->
 	<dict><key>phrase</key><string>〆張鶴</string><key>shortcut</key><string>しめはりつる</string></dict>	<!-- 宮尾酒造 -->
+	<dict><key>phrase</key><string>〆張鶴</string><key>shortcut</key><string>しめはりづる</string></dict>
 	<dict><key>phrase</key><string>真野鶴</string><key>shortcut</key><string>まのづる</string></dict>	<!-- 尾畑酒造 -->
 	<dict><key>phrase</key><string>金鶴</string><key>shortcut</key><string>きんつる</string></dict>	<!-- 加藤酒造店 -->
 	<dict><key>phrase</key><string>天領盃</string><key>shortcut</key><string>てんりょうはい</string></dict>	<!-- 佐渡銘醸 -->

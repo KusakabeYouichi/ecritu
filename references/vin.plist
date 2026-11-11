@@ -5393,7 +5393,7 @@
 	<!-- ■ ぶどう以外の果物 -->
 	<dict><key>phrase</key><string>清見</string><key>shortcut</key><string>きよみ</string></dict>	<!-- Sudachiにもある -->
 
-	<!-- ■ 米の品種・芋の品種 -->
+	<!-- ■ 米の品種 -->
 	<dict><key>phrase</key><string>夢の香</string><key>shortcut</key><string>ゆめのかおり</string></dict>	<!-- 福島の酒米(learningBOX 検査 3658、作者確認。銘柄の 夢の香(ゆめのかおり)は sake.plist) -->
 	<dict><key>phrase</key><string>黄金千貫</string><key>shortcut</key><string>こがねせんがん</string></dict>
 	<dict><key>phrase</key><string>M310</string><key>shortcut</key><string>えむさんいちぜろ</string></dict>
@@ -5413,6 +5413,8 @@
 	<dict><key>phrase</key><string>タイ米</string><key>shortcut</key><string>たいまい</string></dict>
 	<dict><key>phrase</key><string>亀ノ尾</string><key>shortcut</key><string>かめのお</string></dict>
 	<dict><key>phrase</key><string>華吹雪</string><key>shortcut</key><string>はなふぶき</string></dict>
+	<dict><key>phrase</key><string>出羽燦々</string><key>shortcut</key><string>でわさんさん</string></dict>
+	<!-- ■芋の品種 -->
 	<dict><key>phrase</key><string>コナホマレ</string><key>shortcut</key><string>こなほまれ</string></dict>
 	<dict><key>phrase</key><string>コガネセンガン</string><key>shortcut</key><string>こがねせんがん</string></dict>
 	<dict><key>phrase</key><string>シロユタカ</string><key>shortcut</key><string>しろゆたか</string></dict>
@@ -7248,7 +7250,6 @@
 	<!-- ■ SAKE -->
 	<dict><key>phrase</key><string>特別本醸造酒</string><key>shortcut</key><string>とくべつほんじょうぞうしゅ</string></dict>
 	<dict><key>phrase</key><string>本醸造酒</string><key>shortcut</key><string>ほんじょうぞうしゅ</string></dict>
-	<dict><key>phrase</key><string>新政</string><key>shortcut</key><string>あらまさ</string></dict>
 	<dict><key>phrase</key><string>新政酵母</string><key>shortcut</key><string>あらまさこうぼ</string></dict>
 	<dict><key>phrase</key><string>6号酵母</string><key>shortcut</key><string>ろくごうこうぼ</string></dict>
 	<dict><key>phrase</key><string>7号酵母</string><key>shortcut</key><string>ななごうこうぼ</string></dict>
@@ -7268,7 +7269,6 @@
 	<dict><key>phrase</key><string>酵母タイプ</string><key>shortcut</key><string>こうぼたいぷ</string></dict>
 	<dict><key>phrase</key><string>酵母菌</string><key>shortcut</key><string>こうぼきん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>酵母培養法</string><key>shortcut</key><string>こうぼばいようほう</string></dict>
-	<dict><key>phrase</key><string>香露</string><key>shortcut</key><string>こうろ</string></dict>
 	<dict><key>phrase</key><string>香露酵母</string><key>shortcut</key><string>こうろこうぼ</string></dict>
 	<dict><key>phrase</key><string>麹</string><key>shortcut</key><string>こうじ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>麹カビ</string><key>shortcut</key><string>こうじかび</string></dict>
@@ -7336,7 +7336,6 @@
 	<dict><key>phrase</key><string>米消費量</string><key>shortcut</key><string>こめしょうひりょう</string></dict>
 	<dict><key>phrase</key><string>米由来</string><key>shortcut</key><string>こめゆらい</string></dict>
 	<dict><key>phrase</key><string>総検査数量</string><key>shortcut</key><string>そうけんさすうりょう</string></dict>
-	<dict><key>phrase</key><string>真澄</string><key>shortcut</key><string>ますみ</string></dict>	<!-- Sudachiにもある -->	<!-- 元: ワイン名 -->
 	<dict><key>phrase</key><string>別名三段仕込</string><key>shortcut</key><string>べつめいさんだんじこみ</string></dict>
 	<dict><key>phrase</key><string>南部杜氏</string><key>shortcut</key><string>なんぶとうじ</string></dict>
 	<dict><key>phrase</key><string>原酒</string><key>shortcut</key><string>げんしゅ</string></dict>	<!-- Sudachiにもある -->
@@ -7361,7 +7360,15 @@
 	<dict><key>phrase</key><string>薩摩焼酎</string><key>shortcut</key><string>さつましょうちゅう</string></dict>
 	<dict><key>phrase</key><string>香竄葡萄酒</string><key>shortcut</key><string>こうざんぶどうしゅ</string></dict>
 	<!-- ■ SAKE 2 -->
+	<dict><key>phrase</key><string>新政</string><key>shortcut</key><string>あらまさ</string></dict>
 	<dict><key>phrase</key><string>〆張鶴</string><key>shortcut</key><string>しめはりつる</string></dict>
+	<dict><key>phrase</key><string>出羽桜</string><key>shortcut</key><string>でわざくら</string></dict>
+	<dict><key>phrase</key><string>天狗舞</string><key>shortcut</key><string>てんぐまい</string></dict>
+	<dict><key>phrase</key><string>浦霞</string><key>shortcut</key><string>うらかすみ</string></dict>
+	<dict><key>phrase</key><string>真澄</string><key>shortcut</key><string>ますみ</string></dict>	<!-- Sudachiにもある -->	<!-- 元: ワイン名 -->
+	<dict><key>phrase</key><string>上喜元</string><key>shortcut</key><string>じょうきげん</string></dict>
+	<dict><key>phrase</key><string>香露</string><key>shortcut</key><string>こうろ</string></dict>
+	<!-- ■ SAKE 3 -->
 	<dict><key>phrase</key><string>こうじ米</string><key>shortcut</key><string>こうじまい</string></dict>
 	<dict><key>phrase</key><string>たかね錦</string><key>shortcut</key><string>たかねにしき</string></dict>
 	<dict><key>phrase</key><string>でんぷん質物</string><key>shortcut</key><string>でんぷんしつぶつ</string></dict>
@@ -7372,21 +7379,17 @@
 	<dict><key>phrase</key><string>一般米</string><key>shortcut</key><string>いっぱんまい</string></dict>
 	<dict><key>phrase</key><string>三倍増醸法</string><key>shortcut</key><string>さんばいぞうじょうほう</string></dict>
 	<dict><key>phrase</key><string>三増酒</string><key>shortcut</key><string>さんぞうしゅ</string></dict>
-	<dict><key>phrase</key><string>上喜元</string><key>shortcut</key><string>じょうきげん</string></dict>
 	<dict><key>phrase</key><string>上燗</string><key>shortcut</key><string>じょうかん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>中生</string><key>shortcut</key><string>なかて</string></dict>
 	<dict><key>phrase</key><string>二次醪</string><key>shortcut</key><string>にじもろみ</string></dict>
 	<dict><key>phrase</key><string>人肌燗</string><key>shortcut</key><string>ひとはだかん</string></dict>
 	<dict><key>phrase</key><string>側板</string><key>shortcut</key><string>がわいた</string></dict>
-	<dict><key>phrase</key><string>出羽桜</string><key>shortcut</key><string>でわざくら</string></dict>
-	<dict><key>phrase</key><string>出羽燦々</string><key>shortcut</key><string>でわさんさん</string></dict>
 	<dict><key>phrase</key><string>千粒重</string><key>shortcut</key><string>せんりゅうじゅう</string></dict>
 	<dict><key>phrase</key><string>含糖質物</string><key>shortcut</key><string>がんとうしつぶつ</string></dict>
 	<dict><key>phrase</key><string>国酒</string><key>shortcut</key><string>こくしゅ</string></dict>
 	<dict><key>phrase</key><string>増醸酒</string><key>shortcut</key><string>ぞうじょうしゅ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>外硬内軟</string><key>shortcut</key><string>がいこうないなん</string></dict>
 	<dict><key>phrase</key><string>多酸酵母</string><key>shortcut</key><string>たさんこうぼ</string></dict>
-	<dict><key>phrase</key><string>天狗舞</string><key>shortcut</key><string>てんぐまい</string></dict>
 	<dict><key>phrase</key><string>好適米</string><key>shortcut</key><string>こうてきまい</string></dict>
 	<dict><key>phrase</key><string>宮水</string><key>shortcut</key><string>みやみず</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>山廃</string><key>shortcut</key><string>やまはい</string></dict>
@@ -7405,7 +7408,6 @@
 	<dict><key>phrase</key><string>樽側板</string><key>shortcut</key><string>たるがわいた</string></dict>
 	<dict><key>phrase</key><string>樽香</string><key>shortcut</key><string>たるこう</string></dict>
 	<dict><key>phrase</key><string>櫂つき</string><key>shortcut</key><string>かいつき</string></dict>
-	<dict><key>phrase</key><string>浦霞</string><key>shortcut</key><string>うらかすみ</string></dict>
 	<dict><key>phrase</key><string>浸漬</string><key>shortcut</key><string>しんし</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>浸漬米</string><key>shortcut</key><string>しんせきまい</string></dict>
 	<dict><key>phrase</key><string>混醸</string><key>shortcut</key><string>こんじょう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
