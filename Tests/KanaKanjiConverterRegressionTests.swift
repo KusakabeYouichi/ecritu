@@ -29516,4 +29516,13 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "たつたあげをたべた", systemCandidateMode: .surface).first, "竜田揚げを食べた")
     }
 
+    // 3758(ユーザ指定): やってないようだ が やって内容だ。やって+ない を優先する。内容 の文脈は保つ
+    func testRegressionYatteNaiYouda3758() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.multiClauseCandidates(for: "やってないようだ", systemCandidateMode: .surface).first, "やってないようだ")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "やってないようです", systemCandidateMode: .surface).first, "やってないようです")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "やってないようをみなおす", systemCandidateMode: .surface).first, "やって内容を見直す")
+    }
+
 }
