@@ -29717,4 +29717,33 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.candidates(for: "たいとる", limit: 10, systemCandidateMode: .surface).first, "タイトル")
     }
 
+    // learningBOX 検査 3697 の確認表の 4 回めの回答(直す 280 行。3773)。専門語が同音の一般語に負ける行は読みの手掛かりで差し替え、
+    // 単独の 酸(敬称の さん ではない位置)、には+が/の、過去の連体形+と+し の分割は規則で直す。ふつうの文はそのまま
+    func testRegressionAuditFourthAnswers3773() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let expectations = [
+            "しんしょうのこていをします": "新梢の固定をします",
+            "げんすいがちかすいいがいのもので": "原水が地下水以外のもので",
+            "たなじたてでたんしょうにせんていしたものです": "棚仕立てで短梢に剪定したものです",
+            "すうねんのうちにきがこししてしまいます": "数年のうちに樹が枯死してしまいます",
+            "ちんでんしたおりをとりのぞくため": "沈澱した滓を取り除くため",
+            "さんがめいかくなわいんとなります": "酸が明確なワインとなります",
+            "もっともさんがたかいぶぶんは": "もっとも酸が高い部分は",
+            "せいいくきかんちゅうにはがようりょくそをうしない": "生育期間中に葉が葉緑素を失い",
+            "せかいいさんにとうろくされたとしです": "世界遺産に登録された年です",
+            // 敬称の さん、に+は+名詞、〜したとしたら/としても はそのまま
+            "たなかさんがきた": "田中さんが来た",
+            "やまださんとはなした": "山田さんと話した",
+            "おとうさんはげんきです": "お父さんは元気です",
+            "かれにはのうりょくがある": "彼には能力がある",
+            "そうだとしたら": "そうだとしたら",
+            "やったとしても": "やったとしても",
+            "おとずれたとしのなまえ": "訪れた都市の名前"
+        ]
+        for (reading, expected) in expectations {
+            XCTAssertEqual(converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).first, expected, reading)
+        }
+    }
+
 }

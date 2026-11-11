@@ -2745,6 +2745,38 @@ extension KanaKanjiConverter {
     // しんせいすると が 神聖(uni 5913)+すると(接続詞のかな 1500)で 申請する(派生)+と に 94 差で勝っていた(ユーザ報告)。
     // 神聖 は形容動詞で 神聖する は非文。読みに サ変の兄弟(申請)が無い語(メールする/ゲームする)は対象外
     static let multiClauseNonSuruSiblingBeforeSuruClusterPenalty = 3000
+    // 単独の名詞の 酸(learningBOX 検査の確認表 4 回め、24 行。3773)。酸が高い/強烈な酸を持つ/生成した酸/ワインの酸 が
+    // さん/サン だった(酸 は 1 字の語で 8994、敬称のかな さん は 5051)。敬称の さん は名詞の直後にしか立たないので、
+    // 文頭・格助詞や な/た/する の直後・活用形の直後で、後ろが助詞か文末の さん は 酸 に寄せ、かな と サン は下げる
+    static let multiClauseStandaloneAcidBonus = 4500
+    static let multiClauseStandaloneSanKanaPenalty = 3500
+    static let multiClauseStandaloneAcidFollowers: Set<Character> = ["が", "を", "は", "と", "で", "も", "な", "の", "に"]
+    static let multiClauseStandaloneAcidPrevKana: Set<String> = ["な", "た", "する", "もっとも", "の"]
+
+    static func standaloneAcidAdjustment(node: MultiClauseNode, prevNode: MultiClauseNode?, chars: [Character], n: Int) -> Int {
+        guard node.readingID == SID.さん, node.end == n || multiClauseStandaloneAcidFollowers.contains(chars[node.end]) else {
+            return 0
+        }
+        if let prevNode {
+            guard prevNode.isInflectionDerived
+                || (prevNode.isKanaIdentity
+                    && (multiClauseCaseParticleSurfaces.contains(prevNode.surface)
+                        || multiClauseStandaloneAcidPrevKana.contains(prevNode.surface))) else {
+                return 0
+            }
+        }
+        if node.surface == "酸" {
+            return -multiClauseStandaloneAcidBonus
+        }
+        return node.isKanaIdentity || node.surface == "サン" ? multiClauseStandaloneSanKanaPenalty : 0
+    }
+
+    // には の直後に格助詞の が/の は続かない(生育期間中に葉が変色し が 生育期間中にはが変色し、水平に葉が広がり が 水平にはが広がり
+    // だった。3773)。に+は と 1 語の には の両方
+    static let multiClauseNiWaBeforeCaseParticlePenalty = 6000
+    // 過去の連体形+と+し で文が終わる・です/も が続く分割(登録された年です が 登録されたとしです、ビン詰めした年も が
+    // ビン詰めしたとしも だった。3773)。〜したとして/したとしても/したとしたら は し の後ろが て/た なので対象外
+    static let multiClausePastAttributiveToShiSplitPenalty = 2600
     // 同じ区間が丸ごと 1 つの用言の活用形なのに、サ変でない漢字名詞+する の付属部のかな に分ける経路への減点(3768)。
     // はなしたい が 花(5287)+したい(かな 1500)で 話したい(派生 7200)に勝っていた(ユーザ報告)。花する は非文
     static let multiClauseNonSuruNounBeforeSuruClusterOverDerivedPenalty = 3000
