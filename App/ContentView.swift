@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20261111151401"
+    private static let editionUpdatedAtRaw: String = "20261111163422"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -550,6 +550,8 @@ struct ContentView: View {
     // ロゴのメニュー(ContentView+LogoMenu.swift)。触れた途端に出て、指を離すと消える
     @GestureState var logoMenuGesture: LogoMenuGestureState = .inactive
     @State var logoMenuFrames: [String: CGRect] = [:]
+    // ロゴの枠(スクロールで毎フレーム変わる)。@State の値にすると書くたびに body を作り直すので、参照の入れ物に置く(3756)
+    @State var logoMenuLogoFrameBox = LogoMenuLogoFrameBox()
     @State var pendingLogoMenuAction: LogoMenuAction?
     @State var logoMenuInfo: LogoMenuInfo?
     // 退避した設定の日時(無ければ nil)。メニューを描くたびに Keychain を読まないよう、起動時と退避・復元のあとに読む
@@ -1759,14 +1761,14 @@ struct ContentView: View {
                                         .shadow(color: Color.black.opacity(0.12), radius: 5, y: 2)
                                         // ロゴに触れた途端にメニュー(初期設定/YAML コピー/退避・復元/について)。
                                         // 指を項目まで滑らせて離すと実行(ContentView+LogoMenu.swift。3648 で長押しから「触れた途端」に変更)
-                                        .background(
-                                            GeometryReader { proxy in
-                                                Color.clear.preference(
-                                                    key: LogoMenuFramePreferenceKey.self,
-                                                    value: [Self.logoMenuLogoFrameKey: proxy.frame(in: .global)]
-                                                )
-                                            }
-                                        )
+                                        // ロゴの枠は再描画を起こさない入れ物へ書く。以前は preference → @State(logoMenuFrames)で、
+                                        // スクロールの 1 フレームごとに枠が変わって ContentView の body 全体(設定の全カード)を作り直していた。
+                                        // 一覧を LazyVStack から全部作る VStack に戻した 3712 から、スクロールが重くなった(3756、ユーザ報告)
+                                        .onGeometryChange(for: CGRect.self) { proxy in
+                                            proxy.frame(in: .global)
+                                        } action: { newValue in
+                                            logoMenuLogoFrameBox.frame = newValue
+                                        }
                                         .highPriorityGesture(logoPressAndDragGesture)
                                         .accessibilityLabel("アプリロゴ")
                                         .accessibilityHint("触れると設定メニューを表示します")

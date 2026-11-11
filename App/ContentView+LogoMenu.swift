@@ -110,6 +110,11 @@ enum LogoMenuGestureState: Equatable {
 }
 
 // ロゴとメニュー項目の枠を同じ座標空間で集める(指の位置との当たり判定用)
+// ロゴの枠の入れ物。書いても再描画を起こさない(メニューを出すときに読むだけ。3756)
+final class LogoMenuLogoFrameBox {
+    var frame: CGRect = .zero
+}
+
 struct LogoMenuFramePreferenceKey: PreferenceKey {
     static let defaultValue: [String: CGRect] = [:]
     static func reduce(value: inout [String: CGRect], nextValue: () -> [String: CGRect]) {
@@ -226,7 +231,6 @@ struct SettingsStash: Codable {
 }
 
 extension ContentView {
-    static let logoMenuLogoFrameKey = "logo"
     static let aboutCopyrightText = "Copyright © 2026 Kusakabe Youichi"
     // App Store/TestFlight に表に出る版(CFBundleShortVersionString=MARKETING_VERSION)。edition(ビルド番号)と別に示す(2899、ユーザ指定)
     static let marketingVersionText: String = {
@@ -696,7 +700,7 @@ extension ContentView {
     @ViewBuilder
     var logoMenuOverlay: some View {
         if logoMenuGesture.isActive {
-            let logoFrame = logoMenuFrames[Self.logoMenuLogoFrameKey] ?? .zero
+            let logoFrame = logoMenuLogoFrameBox.frame
             ZStack(alignment: .top) {
                 Color.black.opacity(0.18)
                 VStack(spacing: 0) {
