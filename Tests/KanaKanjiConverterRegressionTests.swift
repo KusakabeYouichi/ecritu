@@ -29593,4 +29593,22 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "かせんのはんらん", systemCandidateMode: .surface).first, "河川の氾濫")
     }
 
+    // なおしたい/なおしたいなー は、連文節のかな(なお+したい)が先頭に差し込まれ、なお死体/なお支隊 が続いていた(3764、ユーザ報告)。
+    // 読みが 1 つの用言の活用形で、かなの分割が LM で観測されていないときは単文節に任せる(直したい・治したい・療したい・かな)。
+    // 分割が観測されている こう+したい/もう+したい、用言がかな 1 語の やった+ね はそのまま
+    func testRegressionNaoshitai3764() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for reading in ["なおしたい", "なおしたいなー", "なおしたいな"] {
+            XCTAssertEqual(converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface), [], reading)
+            let tail = String(reading.dropFirst(2))
+            let single = converter.candidates(for: reading, limit: 30, systemCandidateMode: .surface)
+            XCTAssertEqual(Array(single.prefix(3)), ["直" + tail, "治" + tail, "療" + tail], reading)
+            XCTAssertEqual(single.last, reading, reading)
+        }
+        for reading in ["こうしたい", "もうしたい", "こうして", "やったね"] {
+            XCTAssertEqual(converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).first, reading, reading)
+        }
+    }
+
 }

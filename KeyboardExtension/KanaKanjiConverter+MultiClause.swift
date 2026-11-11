@@ -6769,6 +6769,35 @@ extension KanaKanjiConverter {
         guard pathIndices.count >= 2 else {
             return []   // 単文節は既存の単文節経路に任せる
         }
+        // 読みの全体(または文末の終助詞を除いた全体)が 1 つの用言の活用形(直したい)なのに、最良が全部かなの分割
+        // (なお+したい)のときも単文節に任せる(3764、ユーザ報告)。なおしたい/なおしたいなー は 単文節の並びが
+        // 直したい・治したい・療したい・なおしたい と正しいのに、連文節のかな(なお+したい 7738 < 直したい 7200+文末)が
+        // 先頭に差し込まれ、なお死体/なお支隊 が続いていた。
+        // かなの分割が LM で観測されているとき(こう→し 158/そう→し/もう→し: こうしたい/もうしたい/こうして)は分割が本物なので
+        // 対象外(抗したい/申したい が先頭になる)。用言の部分がかな 1 語(やった+ね)のときも対象外(演ったね になる)。
+        // かなが正書として登録された語(やって+おいて/やって+ない+けど+ね)で始まる経路も対象外(候補なしになる)
+        if !nodes[pathIndices[0]].isCurated, pathIndices.allSatisfy({ nodes[$0].isKanaIdentity }) {
+            var stemEnd = n
+            var stemNodeCount = pathIndices.count
+            for index in pathIndices.reversed() {
+                guard Self.multiClauseFinalParticleReadings.contains(nodes[index].reading) else {
+                    break
+                }
+                stemEnd = nodes[index].start
+                stemNodeCount -= 1
+            }
+            if stemNodeCount >= 2, nodes.contains(where: {
+                $0.start == 0 && $0.end == stemEnd && $0.isInflectionDerived && containsKanji($0.surface)
+            }) {
+                let head = nodes[pathIndices[0]]
+                let next = nodes[pathIndices[1]]
+                let splitIsAttested = store.wordLMBigramCost(prev: head.surface, cur: next.surface) != nil
+                    || (next.reading.hasPrefix("し") && store.wordLMBigramCost(prev: head.surface, cur: "し") != nil)
+                if !splitIsAttested {
+                    return []
+                }
+            }
+        }
 
         var segments = pathIndices.map { nodes[$0].surface }
         // 仮定の接続助詞「なら」が述語直後で 奈良/楢/ナラ に漢字・カタカナ化した場合は
