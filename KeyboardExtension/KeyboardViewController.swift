@@ -939,18 +939,6 @@ final class KeyboardViewController: UIInputViewController {
             )
             return
         }
-        // 調査3756(実験): メッセージで相手の発言が届くと、打鍵から 25 秒後の textWillChange でここに来て確定し、ホストが
-        // 未確定を掛け直して『あいうえお(確定)+あいうえお(未確定)』になった(実機 2026-11-11 17:33)。そのとき文脈の長さは
-        // 最後に同期した長さと違っていた(before=1、同期時 0)。メモの完了ボタンは文脈そのままで届く(2684)ので、
-        // 長さがずれているときは確定を見送り、ホストに任せた結果を調査用ログで見る。原因判明後に判定を確定させる
-        let beforeLengthNow = (textDocumentProxy.documentContextBeforeInput ?? "").count
-        if beforeLengthNow != lastSynchronizedContextBeforeInputLength {
-            appendKeyboardDiagnosticsLogFromInputHandling(
-                "外部変更確定を文脈のずれのため見送り(調査3756) trigger=\(trigger) before=\(beforeLengthNow) prevBefore=\(lastSynchronizedContextBeforeInputLength) composingLen=\(composingRawText.count)",
-                critical: true
-            )
-            return
-        }
         appendKeyboardDiagnosticsLogFromInputHandling(
             "外部変更の直前に未確定を確定 trigger=\(trigger) composingLen=\(composingRawText.count) active=\(activeConversion != nil)",
             critical: true
@@ -962,6 +950,40 @@ final class KeyboardViewController: UIInputViewController {
         activeConversion = nil
         clearComposingState()
         stopMarkedTextWatchdog()
+        scheduleHostReappliedMarkedTextClearAfterExternalCommit(trigger: trigger)
+    }
+
+    // 調査3756(実験 3): メッセージで相手の発言が届くと、textWillChange で未確定を確定したあとに、ホストが未確定を
+    // 掛け直して『ふむー(確定)+ふむー(未確定)』になる(実機 2026-11-11 17:33/18:29/18:45。écritu は未確定なしと思って
+    // いるので、次の打鍵で下線付きのほうが置き換わる)。掛け直しは通知なしで、確定の 5ms 後にはまだ無い(実験 2 は
+    // 空振り)。0.3 秒後に、キーボードがまだ出ていて・入力欄が生きていて・その間に自前の編集も選択も無ければ、
+    // 掛け直された未確定を空にして消す(未確定が無ければ何も起きない)。文脈の長さでの見送り(実験 1)は外れた
+    static let externalWillChangeCommitRepairDelaySec: TimeInterval = 0.3
+    func scheduleHostReappliedMarkedTextClearAfterExternalCommit(trigger: String) {
+        guard trigger == "textWillChange" else {
+            return
+        }
+        let serialAtCommit = textProxyEditSerial
+        DispatchQueue.main.asyncAfter(deadline: .now() + Self.externalWillChangeCommitRepairDelaySec) { [weak self] in
+            guard let self else {
+                return
+            }
+            let proxy = self.textDocumentProxy
+            let visible = self.viewIfLoaded?.window != nil
+            let untouched = self.textProxyEditSerial == serialAtCommit
+                && self.activeConversion == nil && self.composingRawText.isEmpty
+            let noSelection = (proxy.selectedText ?? "").isEmpty
+            self.appendKeyboardDiagnosticsLogFromInputHandling(
+                "外部変更確定の 0.3 秒後(調査3756) visible=\(visible) untouched=\(untouched) noSelection=\(noSelection) hasText=\(proxy.hasText) before=\(proxy.documentContextBeforeInput?.count ?? -1)",
+                critical: true
+            )
+            guard visible, untouched, noSelection, proxy.hasText else {
+                return
+            }
+            self.markTextProxyEdit()
+            proxy.setMarkedText("", selectedRange: NSRange(location: 0, length: 0))
+            proxy.unmarkText()
+        }
     }
 
     // footprint 最大値をでばぐ表示へ反映する。**レイアウト経路から呼ばないこと**(2921)
