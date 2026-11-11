@@ -29454,4 +29454,13 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(ageta.prefix(4)), ["上げた", "挙げた", "揚げた", "安慶田"], "\(ageta)")
         XCTAssertEqual(converter.multiClauseCandidates(for: "おしえてあげた", systemCandidateMode: .surface).first, "教えてあげた")
     }
+
+    // 3753(ユーザ指定): 断片 にしたい を かな先頭に(辞書は 西平/西田井/西躰 だけ)。にしたいらさん(西平さん)は保つ
+    func testRegressionNishitai3753() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.candidates(for: "にしたい", limit: 10, systemCandidateMode: .surface).first, "にしたい")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "にしたい"))
+        XCTAssertEqual(converter.multiClauseCandidates(for: "にしたいらさん", systemCandidateMode: .surface).first, "西平さん")
+    }
 }
