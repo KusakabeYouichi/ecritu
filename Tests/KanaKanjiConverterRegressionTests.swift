@@ -29545,4 +29545,13 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.candidates(for: "にかする", limit: 10, systemCandidateMode: .surface).first, "二化する")
     }
 
+    // 3761(ユーザ指定): なるべくあんせい が なるべく安政(LM は年号の 安政 が安い)。安静 を連文節でも先頭に
+    func testRegressionNarubekuAnsei3761() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.candidates(for: "あんせい", limit: 10, systemCandidateMode: .surface).first, "安静")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "なるべくあんせい", systemCandidateMode: .surface).first, "なるべく安静")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "あんせいのたいごく", systemCandidateMode: .surface).first, "安政の大獄")
+    }
+
 }
