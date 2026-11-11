@@ -29649,4 +29649,16 @@ extension KanaKanjiConverterRegressionTests {
         )
     }
 
+    // なおりたい は 治りたい を先に(3767、ユーザ指定)。なおる/なおった は 直る が先のまま
+    func testRegressionNaoritai3767() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(
+            Array(converter.candidates(for: "なおりたい", limit: 10, systemCandidateMode: .surface).prefix(2)), ["治りたい", "直りたい"]
+        )
+        XCTAssertEqual(shownCandidates3765("なおりたいな").first, "治りたいな")
+        XCTAssertEqual(converter.candidates(for: "なおる", limit: 10, systemCandidateMode: .surface).first, "直る")
+        XCTAssertEqual(converter.candidates(for: "なおった", limit: 10, systemCandidateMode: .surface).first, "直った")
+    }
+
 }
