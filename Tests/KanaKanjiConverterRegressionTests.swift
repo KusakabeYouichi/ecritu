@@ -29636,4 +29636,17 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.candidates(for: "そまる", limit: 10, systemCandidateMode: .surface).first, "染まる")
     }
 
+    // にっか の候補に ニッっか(Sudachi の誤記 ニッっ+か)が出ていた。にっかのふろんてぃあ では ニッカ が消えて 日課のフロンティア が
+    // 先頭だった(連文節のカタカナ強調の判定が LM だけを見て ニッカ を抑制。3766、ユーザ報告)
+    func testRegressionNikka3766() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let single = converter.candidates(for: "にっか", limit: 30, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(2)), ["ニッカ", "日課"])
+        XCTAssertFalse(single.contains("ニッっか"))
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "にっかのふろんてぃあ", systemCandidateMode: .surface).first, "ニッカのフロンティア"
+        )
+    }
+
 }
