@@ -201,6 +201,7 @@ extension ContentView {
                 backfillUserRegisteredAjoutVocabularyIfNeeded()
                 migrateInitialShortcutVocabularyIfNeeded()
                 migrateShortcutCursorMarkerIfNeeded()
+                deliverNewInitialShortcutVocabularyIfNeeded()
                 migrateInitialSuppressionDictionaryIfNeeded()
                 backfillUserRegisteredSuppressionVocabularyIfNeeded()
                 migrateLearningVocabularySeparationIfNeeded()
@@ -661,6 +662,54 @@ extension ContentView {
         }
 
         defaults.set(true, forKey: SettingsKeys.kanaKanjiInitialShortcutVocabularyMigrated)
+        // ここで配った初期項目を覚える(あとから初期一覧に足した項目だけを配るため。下の deliverNewInitialShortcutVocabularyIfNeeded)
+        defaults.set(initialCandidates, forKey: SettingsKeys.kanaKanjiInitialShortcutVocabularyOffered)
+    }
+
+    // 初期一覧(InitialShortcutVocabMigration.json)にあとから足した項目を、初回の取り込みが済んだ端末にも配る(3769、ユーザ指定)。
+    // 「一度配った初期項目」を覚えておき、初期一覧にあってまだ配っていない項目だけを足す。配ったあとにユーザが消した項目は
+    // 戻さない。この仕組みの前から使っている端末には記録が無いので、仕組みを入れた時点で足した 2 件を除いた初期一覧を
+    // 配り済みとみなす(今後は json に足すだけで、次の起動で全端末に入る)
+    static let initialShortcutEntriesAddedWithDelivery = ["[設定]-[一般]-[‸]-[]", "[設定]-[アプリ]-[‸]-[]"]
+
+    // 足す位置は、初期一覧で前にある項目のうち、今の一覧に残っている最も近いものの直後(無ければ末尾)
+    static func shortcutCandidatesAddingNewInitialEntries(current: [String], bundled: [String], offered: [String]) -> [String] {
+        var updated = current
+        let offeredSet = Set(offered)
+        for (index, entry) in bundled.enumerated() where !offeredSet.contains(entry) && !updated.contains(entry) {
+            if let anchor = bundled[..<index].last(where: { updated.contains($0) }),
+                let anchorIndex = updated.firstIndex(of: anchor) {
+                updated.insert(entry, at: anchorIndex + 1)
+            } else {
+                updated.append(entry)
+            }
+        }
+        return updated
+    }
+
+    func deliverNewInitialShortcutVocabularyIfNeeded() {
+        // 初回の取り込みがまだの端末は、そちらが初期一覧を丸ごと入れて記録する
+        guard let defaults = Self.sharedDefaults,
+            defaults.bool(forKey: SettingsKeys.kanaKanjiInitialShortcutVocabularyMigrated) else {
+            return
+        }
+        let bundled = loadBundledInitialShortcutVocabularyEntries()
+        guard !bundled.isEmpty else {
+            return
+        }
+        let offered = defaults.stringArray(forKey: SettingsKeys.kanaKanjiInitialShortcutVocabularyOffered)
+            ?? bundled.filter { !Self.initialShortcutEntriesAddedWithDelivery.contains($0) }
+        guard offered != bundled else {
+            return
+        }
+        let currentCandidates = loadShortcutVocabularyCandidates()
+        let updatedCandidates = uniqueShortcutCandidatesPreservingOrder(
+            Self.shortcutCandidatesAddingNewInitialEntries(current: currentCandidates, bundled: bundled, offered: offered)
+        )
+        if updatedCandidates != currentCandidates {
+            saveShortcutVocabularyCandidates(updatedCandidates)
+        }
+        defaults.set(bundled, forKey: SettingsKeys.kanaKanjiInitialShortcutVocabularyOffered)
     }
 
     // 初期ショートカットにカーソル位置の印 ‸ を入れた(3735、ユーザ指定)のを、すでに入っている端末にも 1 回だけ当てる。

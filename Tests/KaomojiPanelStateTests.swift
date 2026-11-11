@@ -214,7 +214,8 @@ final class KaomojiPanelStateTests: XCTestCase {
     func testInitialShortcutsUseCursorMarker() throws {
         let url = URL(fileURLWithPath: ecrituRepositoryRoot).appendingPathComponent("KeyboardExtension/InitialShortcutVocabMigration.json")
         let entries = try JSONDecoder().decode([String].self, from: Data(contentsOf: url))
-        for expected in ["(‸)", "『‸』", "[設定]-[‸]-[]", "-[‸]"] {
+        // [設定]-[一般]-… と [設定]-[アプリ]-… は 3769 で追加(既存の端末にも配る。ContentView+Bootstrap の initialShortcutEntriesAddedWithDelivery と同じ文字列)
+        for expected in ["(‸)", "『‸』", "[設定]-[‸]-[]", "[設定]-[一般]-[‸]-[]", "[設定]-[アプリ]-[‸]-[]", "-[‸]"] {
             XCTAssertTrue(entries.contains(expected), expected)
         }
         for old in ["()", "[設定]-[]-[]", "-[]"] {
