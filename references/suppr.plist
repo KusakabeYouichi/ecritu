@@ -8,6 +8,9 @@
 	<dict><key>phrase</key><string>回わる</string><key>shortcut</key><string>まわる</string></dict>	<!-- 回わる/廻わる: 送り仮名の誤り(本則・許容とも 回る/廻る)。いっしゅうまわった の候補に 回わった、まわった に 廻わった が出ていた(ユーザ指摘 3748) -->
 	<dict><key>phrase</key><string>廻わる</string><key>shortcut</key><string>まわる</string></dict>
 	<dict><key>phrase</key><string>田嶌</string><key>shortcut</key><string>たつた</string></dict>	<!-- 田嶌(姓)の読みは たじま(嶌=島)。small_lex の タツタ は読みの誤り。たつたあげ に 田嶌上げ が出ていた(ユーザ指摘 3757) -->
+	<dict><key>phrase</key><string>ニッっ</string><key>shortcut</key><string>にっ</string></dict>	<!-- ニッっ/トッっとと/ビクッっ: Sudachi small_lex.csv の副詞の行(227994/223906/237311 行め)。カタカナの ッ の後にひらがなの っ が重なった誤記で、この形は辞書全体でこの 3 件だけ。にっか の候補に ニッっ+か の ニッっか が出ていた(ユーザ指摘 3766) -->
+	<dict><key>phrase</key><string>トッっとと</string><key>shortcut</key><string>とっとと</string></dict>
+	<dict><key>phrase</key><string>ビクッっ</string><key>shortcut</key><string>びくっ</string></dict>
 	<dict><key>phrase</key><string>日傅</string><key>shortcut</key><string>ではない</string></dict>	<!-- 日傅(姓): Sudachi の core_lex.csv に デハナイ と ヒヅタ の 2 行があり、デハナイ は読みの誤り(本来は ヒヅタ。どこかで「ではない」という文字列が読みの欄に紛れ込んだものと推測。どういう経緯で紛れたのかは確かめていない)。ではない の候補に 日傅 が並んでいた(ユーザ報告 3678)。ひづた は残す -->
 	<dict><key>phrase</key><string>おおお</string><key>shortcut</key><string>おお</string></dict>	<!-- Sudachi の伸ばし表記(おおお)を おお の読みで持つ項目(rank8)。おおさかさん に おお+おさかさん の おおおさかさん が出ていた(ユーザ報告 3661) -->
 	<dict><key>phrase</key><string>不・思・議</string><key>shortcut</key><string>ふしぎ</string></dict>	<!-- Sudachi small_lex の中黒入り装飾表記(不思議)。合成(不・思・議だね)に出ていた(ユーザ報告 3715) -->
@@ -628,6 +631,7 @@
 	<dict><key>phrase</key><string>臥せる</string><key>shortcut</key><string>ふせる</string></dict>
 	<dict><key>phrase</key><string>臥る</string><key>shortcut</key><string>ふせる</string></dict>	<!-- 臥る(ふせる): 同上(臥せる を抑制すると次に 臥られ が出た) -->	<!-- 臥せる(ふせる): 伏せる の稀な表記(病に臥せる は 臥す/伏せる)。辞書順が 臥せる 先頭で、派生ノードの同点も辞書順のため 時間の経過は伏せられ が 臥せられ だった(一括検査 3640、ユーザ指定 3643) -->
 	<dict><key>phrase</key><string>忘る</string><key>shortcut</key><string>わすれる</string></dict>	<!-- 忘る(わすれる): 文語の「忘る」が inflection_classes で一段活用として登録されており、 語幹「忘」から 忘て/忘てる/忘た のような送り仮名を欠いた活用形を派生させていた (とりわすれてる→取り忘てる)。現代語は 忘れる(一段)のみなので基底ごと抑制する -->
+	<dict><key>phrase</key><string>染む</string><key>shortcut</key><string>そむ</string></dict>	<!-- 染む(そむ): 古語。現代の五段動詞のように 染んだ/染んで とは活用しない。そんだよ の先頭に 染んだよ が出ていた(ユーザ指摘 3765)。しむ の 染む は残す -->
 	<dict><key>phrase</key><string>速る</string><key>shortcut</key><string>はやる</string></dict>	<!-- 速る(はやる): 速い(はやい)の形容詞を動詞化した非標準表記。逸る/早る は実在だが 速る は標準では使わない。早る は温存 -->
 
 	<!-- ■ 単漢字・断片が合成を乗っ取るもの(1ノードの安さで正しい分割に勝つ) -->
