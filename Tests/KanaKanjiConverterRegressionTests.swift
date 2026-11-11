@@ -29700,4 +29700,21 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 国名を と で並べる形(3772、ユーザ指定)。たいとちり は たいと塵、たいとかんこく は たいと韓国 だった。
+    // の の後は国名にしない(タイの地理)。国名でない並びはそのまま
+    func testRegressionCountryEnumerationTo3772() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let expectations = [
+            "たいとちり": "タイとチリ", "たいとかんこく": "タイと韓国", "ちりとぺるー": "チリとペルー",
+            "にほんとかんこく": "日本と韓国", "ふらんすといたりあ": "フランスとイタリア",
+            "たいのちり": "タイの地理", "たいとる": nil, "にほんとちがう": "日本と違う", "いたりあといえば": "イタリアといえば",
+            "かんこくとのかんけい": "韓国との関係"
+        ] as [String: String?]
+        for (reading, expected) in expectations {
+            XCTAssertEqual(converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).first, expected, reading)
+        }
+        XCTAssertEqual(converter.candidates(for: "たいとる", limit: 10, systemCandidateMode: .surface).first, "タイトル")
+    }
+
 }

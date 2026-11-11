@@ -5081,15 +5081,15 @@ extension KanaKanjiConverter {
                             placeNameKindByNodeKey[prevNode.key] != nil {
                             cost -= Self.multiClausePlaceNameTerritoryBonus
                         }
-                        // 国名+や+国名(定数コメント参照。3762)。整数 ID の判定を先に、地名の表引きは後に
+                        // 国名+や/と+国名(定数コメント参照。3762、と は 3772)。整数 ID の判定を先に、地名の表引きは後に
                         // 前半: 国名→や で、や の先に国名が始まる。後半: や→国名 で、2 つ前が国名。
                         // 僅差で後ろへ送った国名のカタカナ(チリ)は、ここで減点(6000)も打ち消す
-                        if node.surfaceID == SID.や, node.isKanaIdentity, prevNode.surface.count >= 2,
+                        if node.surfaceID == SID.や || node.surfaceID == SID.と, node.isKanaIdentity, prevNode.surface.count >= 2,
                             countryNameStartPositions.contains(node.end), placeNameKindByNodeKey[prevNode.key] == "国" {
-                            cost -= Self.multiClauseCountryEnumerationBonus
+                            cost -= Self.multiClauseCountryEnumerationLeadBonus
                                 + (countryNameDemotedNodeKeys.contains(prevNode.key) ? 6000 : 0)
                         }
-                        if prevNode.surfaceID == SID.や, prevNode.isKanaIdentity, node.surface.count >= 2,
+                        if prevNode.surfaceID == SID.や || prevNode.surfaceID == SID.と, prevNode.isKanaIdentity, node.surface.count >= 2,
                             placeNameKindByNodeKey[node.key] == "国", backPointer[prevIdx] >= 0 {
                             let prevPrev = nodes[backPointer[prevIdx]]
                             if prevPrev.surface.count >= 2, placeNameKindByNodeKey[prevPrev.key] == "国" {
