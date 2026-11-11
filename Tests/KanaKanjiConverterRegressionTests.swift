@@ -29496,4 +29496,13 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.candidates(for: "だんかいのせだい", limit: 10, systemCandidateMode: .surface).first, "団塊の世代")
     }
 
+    // 3756(ユーザ指定): かえ は 買え を先頭、かな は末尾
+    func testRegressionKae3756() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let list = converter.candidates(for: "かえ", limit: 12, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(3)), ["買え", "変え", "飼え"])
+        XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "かえ"))
+    }
+
 }
