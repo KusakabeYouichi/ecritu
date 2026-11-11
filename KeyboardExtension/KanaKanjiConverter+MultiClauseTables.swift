@@ -2737,6 +2737,9 @@ extension KanaKanjiConverter {
     // しんせいすると が 神聖(uni 5913)+すると(接続詞のかな 1500)で 申請する(派生)+と に 94 差で勝っていた(ユーザ報告)。
     // 神聖 は形容動詞で 神聖する は非文。読みに サ変の兄弟(申請)が無い語(メールする/ゲームする)は対象外
     static let multiClauseNonSuruSiblingBeforeSuruClusterPenalty = 3000
+    // 同じ区間が丸ごと 1 つの用言の活用形なのに、サ変でない漢字名詞+する の付属部のかな に分ける経路への減点(3768)。
+    // はなしたい が 花(5287)+したい(かな 1500)で 話したい(派生 7200)に勝っていた(ユーザ報告)。花する は非文
+    static let multiClauseNonSuruNounBeforeSuruClusterOverDerivedPenalty = 3000
     // サ変名詞の直後の 後(ご)。受諾後/終了後/確認後 は最も生産的な接尾で、語(ご) は 国名+語 以外では立たない。
     // 後(ご) の床免除(rareReadingFloorExempt)だけでは 語→EOS 2114 < 後→EOS 2716 の文末統計で 46 差負ける(3054)
     static let multiClauseSuruNounGoSuffixBonus = 1000

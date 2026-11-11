@@ -29661,4 +29661,15 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.candidates(for: "なおった", limit: 10, systemCandidateMode: .surface).first, "直った")
     }
 
+    // はなしたい が 花したい だった(3768、ユーザ報告)。花(サ変でない名詞)+したい(かな)が、同じ区間の活用形 話したい に勝っていた。
+    // サ変名詞+したい(勉強したい)はそのまま
+    func testRegressionHanashitai3768() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in ["はなしたい": "話したい", "はなして": "話して", "はなしたいな": "話したいな", "べんきょうしたい": "勉強したい"] {
+            XCTAssertEqual(shownCandidates3765(reading).first, expected, reading)
+        }
+        XCTAssertEqual(converter.multiClauseCandidates(for: "はなをかざる", systemCandidateMode: .surface).first, "花を飾る")
+    }
+
 }

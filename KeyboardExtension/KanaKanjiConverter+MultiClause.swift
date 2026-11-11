@@ -2922,6 +2922,12 @@ extension KanaKanjiConverter {
         // 地名+りょう は 領(韓国領/対馬領)の判定に使う
         var placeNameKindByNodeKey: [String: String] = [:]
         var countryNameStartPositions = Set<Int>()
+        // 漢字を含む活用派生ノードの区間(開始×1000+終了)。名詞+したい の分割が、同じ区間の活用形(話したい)と
+        // 競っているかを遷移の中で安く引く(3768)
+        var derivedKanjiSpanKeys = Set<Int>()
+        for node in nodes where node.isInflectionDerived && !node.isKanaIdentity && containsKanji(node.surface) {
+            derivedKanjiSpanKeys.insert(node.start * 1000 + node.end)
+        }
         do {
             var placeNameKindsByReading: [String: [String: String]] = [:]
             for node in nodes where node.isDictWord && !node.isInflectionDerived && !node.isKanaIdentity {
@@ -5619,6 +5625,16 @@ extension KanaKanjiConverter {
                             // 連接を明示して加点している組(当然+する)は口語として認めた形なので対象外
                             Self.multiClauseBigramPairBonuses[prevNode.surface + "\t" + node.surface] == nil {
                             cost += Self.multiClauseNonSuruSiblingBeforeSuruClusterPenalty
+                        }
+                        // 同じ区間が丸ごと 1 つの用言の活用形(話したい)なのに、サ変でない漢字名詞(花)の直後に する の付属部のかな
+                        // (したい)が続く分割も非文(定数コメント参照。3768)。上の規則の「サ変の兄弟」が「同じ区間の活用形」に替わった形
+                        if node.isKanaIdentity, !prevNode.isKanaIdentity, !prevNode.isInflectionDerived, !prevNode.isCurated,
+                            containsKanji(prevNode.surface),
+                            derivedKanjiSpanKeys.contains(prevNode.start * 1000 + node.end),
+                            Self.readingStartsWithSuruCluster(node.reading),
+                            !store.isSuruNoun(reading: prevNode.reading, candidate: prevNode.surface),
+                            Self.multiClauseBigramPairBonuses[prevNode.surface + "\t" + node.surface] == nil {
+                            cost += Self.multiClauseNonSuruNounBeforeSuruClusterOverDerivedPenalty
                         }
                         // サ変名詞+後(ご): 受諾後/終了後/確認後 は最も生産的な接尾で、語(ご) は 国名+語 以外では立たない。
                         // 後(ご) は床免除後も 語→EOS 2114 < 後→EOS 2716 の文末統計で 46 差負けていた(定数コメント参照。3054)
