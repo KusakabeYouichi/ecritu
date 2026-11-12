@@ -1319,6 +1319,8 @@ extension KanaKanjiConverter {
     // 序数として定着した語(番目/代目/丁目 等。ordinalMeEstablishedStemTailCharacters)は触らない
     static let ordinalMeCounterSurfaces: Set<String> = Set(numericCounterSuffixCandidatesByReading.values.joined())
         .filter { surface in surface.last.map { !ordinalMeEstablishedStemTailCharacters.contains($0) } ?? false }
+        // つ(4つ目)は助数詞の表に無いので足す(連文節の結果に つ目 が出たときのため。3789)
+        .union(["つ"])
     static func applyOrdinalMeKanaFirst(to candidates: [String], digitPrefixed: Bool) -> [String] {
         func rewritten(_ text: String) -> String {
             let chars = Array(text)

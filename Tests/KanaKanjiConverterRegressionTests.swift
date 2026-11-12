@@ -29942,4 +29942,25 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertFalse(converter.multiClauseCandidates(for: "さんにあう", systemCandidateMode: .surface).first?.hasPrefix("酸") ?? false)
     }
 
+    // 数字の直後の つめにしか の先頭が つ目にしか だった(3789、ユーザ報告)。数字の直後の つ+動詞 の供給(4つ買うか)が
+    // めにしか を 目にしか に変換して つ目にしか を先頭に足していた。X.14 が『め(ひらがな)が先』なら つめにしか を先に
+    func testRegressionTsuMeAfterDigit3789() throws {
+        let candidates = ["つめにしか", "爪にしか", "詰めにしか"]
+        let tail: (String) -> String? = { $0 == "めにしか" ? "目にしか" : nil }
+        let kanaFirst = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+            candidates, reading: "つめにしか", precedingCharacter: "4", ordinalMeKanaFirst: true, tailConversion: tail
+        )
+        XCTAssertEqual(Array(kanaFirst.prefix(2)), ["つめにしか", "つ目にしか"], "\(kanaFirst)")
+        let kanjiFirst = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+            candidates, reading: "つめにしか", precedingCharacter: "4", ordinalMeKanaFirst: false, tailConversion: tail
+        )
+        XCTAssertEqual(kanjiFirst.first, "つ目にしか", "\(kanjiFirst)")
+        // 4つ買うか(3604)はそのまま
+        let kau = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+            ["使うか"], reading: "つかうか", precedingCharacter: "4", ordinalMeKanaFirst: true,
+            tailConversion: { $0 == "かうか" ? "買うか" : nil }
+        )
+        XCTAssertEqual(kau.first, "つ買うか", "\(kau)")
+    }
+
 }

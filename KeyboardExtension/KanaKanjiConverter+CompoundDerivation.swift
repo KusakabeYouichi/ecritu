@@ -910,6 +910,7 @@ extension KanaKanjiConverter {
         reading: String,
         precedingCharacter: Character?,
         suppressedCandidates: Set<String> = [],
+        ordinalMeKanaFirst: Bool = false,
         tailConversion: ((String) -> String?)? = nil
     ) -> [String] {
         guard let precedingCharacter,
@@ -938,6 +939,11 @@ extension KanaKanjiConverter {
                 let first = converted.first, containsKanjiCandidate(String(first)),
                 converted.contains(where: { ("ぁ"..."ゖ").contains($0) }),
                 !suppressedCandidates.contains("つ" + converted) {
+                // 序数の つめ(4つめにしか)は つ+目にしか でなく X.14(め/目 の先後)に従う。『ひらがなが先』なら つめ… を先に
+                // (4+つめにしか の先頭が つ目にしか だった。つめに だけなら かな が先頭。3789、ユーザ報告)
+                if ordinalMeKanaFirst, tail.hasPrefix("め"), converted.hasPrefix("目") {
+                    boosted.append("つめ" + converted.dropFirst())
+                }
                 boosted.append("つ" + converted)
             }
         }

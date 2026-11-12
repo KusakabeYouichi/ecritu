@@ -429,6 +429,7 @@ extension KeyboardViewController {
             precedingCharacter: textDocumentProxy.documentContextBeforeInput?.last,
             suppressedCandidates: kanaKanjiConverter.store
                 .suppressedCandidatesByReading()[cacheKey.reading] ?? [],
+            ordinalMeKanaFirst: !kanaKanjiConverter.withStateLock { kanaKanjiConverter.ordinalMeKanjiPreferred },
             tailConversion: { [weak self] tail in
                 // 助数詞の後ろの読みを変換した形(しけん→試験、まえの→前の)を合成供給に使う(2645/2700/2820)
                 self?.kanaKanjiConverter.counterTailConversion(tail)
