@@ -29813,4 +29813,14 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // やすく は かな・易く が先で 安く が 3 番めだった(3779、ユーザ指定)。やすい と同じ並びに。分かりやすく はそのまま
+    func testRegressionYasuku3779() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(Array(converter.candidates(for: "やすく", limit: 10, systemCandidateMode: .surface).prefix(2)), ["安く", "易く"])
+        XCTAssertEqual(converter.candidates(for: "やすい", limit: 10, systemCandidateMode: .surface).first, "安い")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "わかりやすく", systemCandidateMode: .surface).first, "分かりやすく")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "やすくなる", systemCandidateMode: .surface).first, "安くなる")
+    }
+
 }
