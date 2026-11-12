@@ -52,6 +52,8 @@
 	<dict><key>phrase</key><string>創●</string><key>shortcut</key><string>そうか</string></dict>	<!-- 2 文字目が U+25CF(黒丸)の壊れたエントリ。伏せ字か記号の取り込み事故で、語として成立しない(ユーザ指摘 2923) -->
 	<dict><key>phrase</key><string>帰える</string><key>shortcut</key><string>かえる</string></dict>	<!-- 帰る の誤った送り仮名(告示の本則・許容のどちらにも無い)。活用形(帰えって/帰えります)まで候補を汚す(ユーザ指摘 2820) -->
 	<dict><key>phrase</key><string>増る</string><key>shortcut</key><string>ふえる</string></dict>	<!-- 増る: 増える の誤った送り仮名(Sudachi の inflection_classes にある誤収録)。ふえた→増た、あたらしくふえた→新しく増た が先頭に出ていた(ユーザ報告 3578) -->
+	<dict><key>phrase</key><string>繋る</string><key>shortcut</key><string>つながる</string></dict>	<!-- 繋る/繫る: 繋がる の送り仮名が足りない形(Sudachi の異表記)。活用形の 繋ってる/繋っている が つながってるほう の 3 番めに出て、かなの つながってる方 を候補の枠から押し出していた(ユーザ指摘 3799) -->
+	<dict><key>phrase</key><string>繫る</string><key>shortcut</key><string>つながる</string></dict>
 	<dict><key>phrase</key><string>新らしい</string><key>shortcut</key><string>あたらしい</string></dict>	<!-- 新らしい: 新しい の誤った送り仮名(告示の本則・許容のどちらにも無い)。活用形の 新らしく まで候補を汚す(ユーザ報告 3578) -->
 	<dict><key>phrase</key><string>重そう</string><key>shortcut</key><string>じゅうそう</string></dict>	<!-- 重そう(じゅうそう): 重そう は おもそう(重い+そう)であり じゅうそう と読む語ではない(ユーザ指摘 2818) -->
 	<dict><key>phrase</key><string>ママぁ</string><key>shortcut</key><string>まま</string></dict>	<!-- 読み違いの誤エントリ(ままぁ であるべき)。まま の候補は seed {ママ、まま、侭、間々} -->
