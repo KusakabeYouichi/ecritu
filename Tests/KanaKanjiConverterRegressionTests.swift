@@ -30140,4 +30140,36 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // こしつなら は 個室なら(単独の 個室、固執 の順と揃える)、ざくろ は 柘榴、石榴、ザクロ、述語の連体形+ほう は 方
+    // (3795〜3797、ユーザ報告)
+    func testRegressionKoshitsuZakuroHou3795() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        converter.invalidateCandidateCache()
+        func shown(_ reading: String) -> [String] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            return multi.isEmpty ? converter.candidates(for: reading, limit: 12, systemCandidateMode: .surface) : multi
+        }
+        XCTAssertEqual(Array(converter.candidates(for: "ざくろ", limit: 12, systemCandidateMode: .surface).prefix(3)), ["柘榴", "石榴", "ザクロ"])
+        for (reading, expected) in [
+            ("こしつなら", "個室なら"), ("こしつで", "個室で"), ("こしつをよやくした", "個室を予約した"),
+            ("こしつする", "固執する"), ("じぶんのいけんにこしつする", "自分の意見に固執する"),
+            ("ざくろをたべる", "柘榴を食べる"),
+            ("やすいほう", "安い方"), ("かったほう", "買った方"), ("おおきいほう", "大きい方"),
+            ("べんきょうほう", "勉強法"), ("かいけつほう", "解決法"),
+        ] {
+            XCTAssertEqual(shown(reading).first, expected, reading)
+        }
+        // 繋がる は かなの つながる より先(3798、ユーザ指定)。活用形と文の中も
+        for (reading, expected) in [
+            ("つながる", "繋がる"), ("つながり", "繋がり"), ("つながっている", "繋がっている"), ("つながらない", "繋がらない"),
+            ("つながっているほう", "繋がっている方"), ("つながってるほうは", "繋がってる方は"), ("ねっとにつながらない", "ネットに繋がらない"),
+            // かなの ほうがいい を先頭にしてある読みは触らない
+            ("やめたほうがいい", "やめたほうがいい"),
+        ] {
+            XCTAssertEqual(shown(reading).first, expected, reading)
+        }
+        XCTAssertEqual(Array(converter.candidates(for: "つながる", limit: 8, systemCandidateMode: .surface).prefix(2)), ["繋がる", "つながる"])
+    }
+
 }
