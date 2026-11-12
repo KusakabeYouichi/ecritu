@@ -978,9 +978,25 @@ extension KanaKanjiConverter {
                 rewritten.replaceSubrange(range, with: rule.to)
             }
         }
-        guard rewritten != candidates.first else { return candidates }
-        return [rewritten] + candidates.filter { $0 != rewritten }
+        var ordered = candidates
+        if rewritten != candidates.first {
+            ordered = [rewritten] + candidates.filter { $0 != rewritten }
+        }
+        // 2 番めの指定(その読みの文だけ。3783): 先頭の一部を置き換えた形を 2 番めに置く
+        for rule in contextCuedSecondCandidates where reading.contains(rule.cue) {
+            guard let top = ordered.first, let range = top.range(of: rule.from) else { continue }
+            let second = top.replacingCharacters(in: range, with: rule.to)
+            ordered = [top, second] + ordered.dropFirst().filter { $0 != second }
+        }
+        return ordered
     }
+
+    // 読みの手掛かりがあるとき、先頭の from を to に替えた形を 2 番めに置く(ユーザ指定 3783)。
+    // ふくすうかいつけられる は 複数回付けられる の次に、同音の字(浸けられる/漬けられる)でなく かなの 複数回つけられる。
+    // 付ける の仲間の並び全体は変えない(この文だけ)
+    static let contextCuedSecondCandidates: [(cue: String, from: String, to: String)] = [
+        ("ふくすうかいつけられる", "複数回付けられる", "複数回つけられる"),
+    ]
 
     // サ変名詞+の+たびに(3710): 先頭が 〜のたびに/〜の度に で 〜の旅に の変種も並ぶとき(DP がサ変名詞の後ろの たび と判断した。
     // multiClauseSuruNounNoTabiTravelPenalty)、〜のたびに・〜の度に を 1・2 番めに置き、旅 はその後ろへ(ユーザ指定)。

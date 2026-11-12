@@ -29846,4 +29846,21 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "うめくってる", systemCandidateMode: .surface).first, "梅食ってる")
     }
 
+    // ふくすうかいつけられる が 複数回つけ羅流(実機)/複数買い付けられる(一括変換)だった(3782、ユーザ報告)。
+    // 複数回付けられる を先頭に。実機は打鍵の途中の読みの候補を使い回すので、途中の読みを先に変換してから確かめる
+    func testRegressionFukusuukaiTsukerareru3782() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let reading = "ふくすうかいつけられる"
+        for end in 4...reading.count {
+            let partial = String(reading.prefix(end))
+            _ = converter.multiClauseCandidates(for: partial, systemCandidateMode: .surface)
+            _ = converter.candidates(for: partial, limit: 30, systemCandidateMode: .surface)
+        }
+        let shown = shownCandidates3765(reading)
+        XCTAssertEqual(Array(shown.prefix(2)), ["複数回付けられる", "複数回つけられる"])
+        XCTAssertFalse(shown.contains { $0.contains("羅流") })
+        XCTAssertEqual(converter.multiClauseCandidates(for: "なまえをつけられる", systemCandidateMode: .surface).first, "名前を付けられる")
+    }
+
 }
