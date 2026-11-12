@@ -249,6 +249,25 @@ extension KanaKanjiConverter {
         "やま": "山", "へや": "部屋", "いろ": "色", "ばん": "晩", "かぶ": "株", "ふさ": "房", "さら": "皿",
         "つつみ": "包み", "つぼ": "坪"
     ]
+    // 日付・日数の和語の読み(ふつか→二日/2日。3793、ユーザ指定: 単語を登録せずにアラビア数字の形も出す)。
+    // いつか(五日)も入れる: アラビア数字の形は漢数字の形(五日)の隣に並ぶだけで、かなの いつか(何時か)の位置は変わらない
+    // (ユーザ指摘で確認)。後ろに続いてよい語は下の表だけ(ふつかめ→2日目、ふつかかん→2日間)
+    static let arabicWagoDayReadings: [(reading: String, value: Int)] = [
+        ("ついたち", 1), ("ふつか", 2), ("みっか", 3), ("よっか", 4), ("いつか", 5), ("むいか", 6), ("なのか", 7), ("ようか", 8),
+        ("ここのか", 9), ("とおか", 10), ("はつか", 20)
+    ]
+    static let arabicWagoDayTailSurfacesByReading: [String: String] = [
+        "": "", "め": "目", "かん": "間", "まえ": "前", "ご": "後", "ぶん": "分", "いない": "以内", "いじょう": "以上"
+    ]
+    // 読みが 日付の読み(+続く語)なら (数, 続く語の表記)
+    static func wagoDayComposition(for reading: String) -> (value: Int, tail: String)? {
+        for (dayReading, value) in arabicWagoDayReadings where reading.hasPrefix(dayReading) {
+            if let tail = arabicWagoDayTailSurfacesByReading[String(reading.dropFirst(dayReading.count))] {
+                return (value, tail)
+            }
+        }
+        return nil
+    }
     static let kanjiNumerals = ["零", "一", "二", "三", "四", "五", "六", "七", "八", "九", "十"]
 
     // 1..9999 を漢数字(二十三/百五/三千)に。十/百/千 の 1 は書かない(十枚、百回)
@@ -335,6 +354,14 @@ extension KanaKanjiConverter {
             bodies = [("", reading)]
         }
         for (ordinalPrefix, body) in bodies {
+            // 日付・日数の和語の読み(ふつか→二日。定義コメント参照。3793)
+            if ordinalPrefix.isEmpty, let day = Self.wagoDayComposition(for: body) {
+                let text = "\(Self.kanjiNumeralString(day.value))日\(day.tail)"
+                if seen.insert(text).inserted {
+                    results.append(text)
+                }
+                continue
+            }
             // 和語数詞+助数詞の漢数字(ひとけた→一桁。算用 1桁 は arabicNumericCompoundCandidates)
             if ordinalPrefix.isEmpty {
                 for (numeralReading, value) in Self.arabicWagoNumeralReadings where body.hasPrefix(numeralReading) {
@@ -401,6 +428,11 @@ extension KanaKanjiConverter {
             bodies = [("", reading)]
         }
         for (ordinalPrefix, body) in bodies {
+            // 日付・日数の和語の読み(ふつか→2日、ふつかめ→2日目。定義コメント参照。3793)
+            if ordinalPrefix.isEmpty, let day = Self.wagoDayComposition(for: body) {
+                emit("\(day.value)日\(day.tail)")
+                continue
+            }
             // 和語数詞+つ(ひとつ→1つ 等)。第 は付かない。
             if ordinalPrefix.isEmpty, let value = Self.arabicWagoTsuReadings[body] {
                 emit("\(value)つ")

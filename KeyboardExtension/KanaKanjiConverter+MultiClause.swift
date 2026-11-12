@@ -344,6 +344,13 @@ extension KanaKanjiConverter {
             }
             candidates = candidates.filter { !isNounPpanashi($0) } + candidates.filter(isNounPpanashi)
         }
+        // 日付の和語の登録語(二日)は、X.18 の順でアラビア数字の形(2日)と並べる(3793)
+        candidates = Self.wagoDayNumeralStyleOrdered(
+            reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates,
+            style: withStateLock { numeralStylePreference },
+            isRegistered: { [initial = store.initialAjoutVocabulary(), manual = store.ajoutVocabulary()] in
+                (initial[$0]?.contains($1) ?? false) || (manual[$0]?.contains($1) ?? false)
+            })
         // X.10 の組(臆測/憶測)はその設定で(3570)
         let (preference, lateStandardized) = withStateLock { (kakikaePreference, lateStandardizedRewritePreference) }
         guard preference != nil || lateStandardized != nil, !candidates.isEmpty else {
@@ -2502,10 +2509,35 @@ extension KanaKanjiConverter {
                     let surfaceCountBeforeNumeral = surfaces.count
                     var suppliedNumeral = false
                     // 算用数字+助数詞(2本/第1回)を漢数字より先に供給(ユーザ方針: 算用優先)。
-                    for surface in numeralCompoundCandidatesForLattice(for: segmentReading)
+                    // 日付の和語の読み(ふつか/なのか/いつか。3793)は、数量語の定額で立てるとかなの言い回しを跨いで勝つ
+                    // (そうなのかー→そう7日ー、はつかうな→20日ウナ、これはつかまえにいく→これ20日前に行く、いつかごいっしょに→5日後一緒に。
+                    // 全網と走査で検出)。読みそのもの(後ろに 間/目 が付かない形)は格子に立てず、登録語(二日)の表記を区切りの後で
+                    // 差し替える(wagoDayNumeralStyleOrdered)。間/目/前/後 が続く形は文頭だけに立てる: 入力の全体のとき(登録語のある読みは
+                    // 加点つき。定数コメント参照)と、登録語のある読み+間 の後ろが助詞のとき
+                    let wagoDay = Self.wagoDayComposition(for: segmentReading)
+                    var wagoDayAllowed = wagoDay == nil
+                    var wagoDayTailBonus = 0
+                    if let wagoDay, !wagoDay.tail.isEmpty, start == 0 {
+                        let dayReading = String(segmentReading.dropLast(Self.wagoDayTailReadingLength(segmentReading)))
+                        let dayKanji = Self.kanjiNumeralString(wagoDay.value) + "日"
+                        if (initialAjoutVocabulary[dayReading]?.contains(dayKanji) ?? false)
+                            || (manualAjoutVocabulary[dayReading]?.contains(dayKanji) ?? false) {
+                            // 文の途中まで立てるのは 間 だけ(二日+感 に負ける形)。前/後/目 は 二日+前 の区切りのまま表記を差し替える
+                            // (ノードを立てると後ろの に+あった の つながりが切れ、みっかまえにあった→3日前似合った になった)
+                            wagoDayAllowed = end == n
+                                || (wagoDay.tail == "間" && Self.multiClauseWagoDayFollowerCharacters.contains(chars[end]))
+                            wagoDayTailBonus = Self.multiClauseWagoDayTailBonus
+                        } else {
+                            wagoDayAllowed = end == n
+                        }
+                    }
+                    for surface in wagoDayAllowed ? numeralCompoundCandidatesForLattice(for: segmentReading) : []
                     where surface != segmentReading {
                         add(surface, isDictWord: true, isCurated: false, isInflectionDerived: true)
                         suppliedNumeral = true
+                        if wagoDayTailBonus > 0 {
+                            seedOrderNounNodeBonuses[spanKeyByStart[start][end] + "-" + surface, default: 0] += wagoDayTailBonus
+                        }
                     }
                     let numeric = numericCounterCompoundCandidates(
                         for: segmentReading,

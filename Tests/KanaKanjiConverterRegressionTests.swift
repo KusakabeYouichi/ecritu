@@ -2521,7 +2521,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
         for (reading, expected) in [
             ("はつかうなとあれほど", "は使うなとあれほど"), ("らいんはつかうなとあれほど", "LINEは使うなとあれほど"),
-            ("はつかにあいましょう", "二十日に会いましょう"), ("ごがつはつか", "五月二十日"),
+            ("はつかにあいましょう", "20日に会いましょう"), ("ごがつはつか", "五月20日"),
             ("どのろご", "どのロゴ"), ("どのみせ", "どの店"), ("どのほん", "どの本"), ("どのちず", "どの地図"),
             ("どのぶどう", "どのぶどう"), ("どのもでる", "どのモデル"), ("どのくらい", "どのくらい"), ("どのように", "どのように"),
             ("このろご", "このロゴ"), ("らいんで", "LINEで"), ("すたーとらいん", "スタートライン"),
@@ -2530,7 +2530,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             XCTAssertEqual(list.first, expected, "\(list.prefix(5))")
         }
         XCTAssertEqual(Array(single("らいん").prefix(3)), ["LINE", "ライン", "Rhein"])
-        XCTAssertEqual(single("はつか").first, "二十日")
+        XCTAssertEqual(Array(single("はつか").prefix(2)), ["20日", "二十日"])
         // Rhin(らん、アルザスの川)は 蘭/欄/乱 より後ろ
         let ran = single("らん")
         XCTAssertGreaterThanOrEqual(ran.firstIndex(of: "Rhin") ?? 99, 3, "\(ran.prefix(8))")
@@ -23274,18 +23274,20 @@ extension KanaKanjiConverterRegressionTests {
             return converter.candidates(for: reading, limit: limit, systemCandidateMode: .surface)
         }
         for (reading, top) in [
-            ("ふつか", "二日"), ("みっか", "三日"), ("よっか", "四日"), ("ようか", "八日"), ("ここのか", "九日"), ("とおか", "十日"),
-            ("はつか", "二十日"), ("にがつ", "二月"), ("さんがつ", "三月"), ("しがつ", "四月"), ("しちがつ", "七月"),
+            // 日付は 3793 から X.18(アラビア数字が先)の順: 2日、二日
+            ("ふつか", "2日"), ("みっか", "3日"), ("よっか", "4日"), ("ようか", "8日"), ("ここのか", "9日"), ("とおか", "10日"),
+            ("はつか", "20日"), ("にがつ", "二月"), ("さんがつ", "三月"), ("しがつ", "四月"), ("しちがつ", "七月"),
             ("はちがつ", "八月"), ("くがつ", "九月"), ("じゅういちがつ", "十一月"), ("じゅうにがつ", "十二月")
         ] {
             XCTAssertEqual(single(reading).first, top, "\(reading) \(single(reading))")
         }
-        XCTAssertEqual(Array(single("ようか").prefix(2)), ["八日", "ヨウ化"])
+        XCTAssertEqual(Array(single("ようか").prefix(3)), ["8日", "八日", "ヨウ化"])
         // いつか は いつの日か を守り、五日 は末尾に出す
         XCTAssertNotEqual(single("いつか").first, "五日")
         XCTAssertTrue(single("いつか", limit: 40).contains("五日"))
         converter.invalidateCandidateCache()
-        XCTAssertEqual(converter.multiClauseCandidates(for: "しがつようか", systemCandidateMode: .surface).first, "四月八日")
+        // 3793 から 日付は X.18 の順(四月8日、四月八日)
+        XCTAssertEqual(Array(converter.multiClauseCandidates(for: "しがつようか", systemCandidateMode: .surface).prefix(2)), ["四月8日", "四月八日"])
         converter.invalidateCandidateCache()
         XCTAssertEqual(converter.multiClauseCandidates(for: "みっかぼうず", systemCandidateMode: .surface).first, "三日坊主")
     }
@@ -30062,6 +30064,58 @@ extension KanaKanjiConverterRegressionTests {
         for (reading, expected) in expectations {
             XCTAssertEqual(converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).first, expected, reading)
         }
+    }
+
+    // ついたち/ふつか/みっか… から アラビア数字の形(1日/2日/3日)も出す(3793、ユーザ指定。単語は登録せず、和語数詞の処理に日付の読みを足す)。
+    // 並びは X.18(数詞の表記)に従う
+    func testRegressionWagoDayArabic3793() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        defer { converter.setNumeralStylePreference(.arabicFirst) }
+        converter.setNumeralStylePreference(.arabicFirst)
+        for (reading, arabic, kanji) in [("ふつか", "2日", "二日"), ("みっか", "3日", "三日"), ("とおか", "10日", "十日"),
+                                         ("はつか", "20日", "二十日"), ("ついたち", "1日", "一日"), ("ふつかかん", "2日間", "二日間")] {
+            let list = converter.candidates(for: reading, limit: 30, systemCandidateMode: .surface)
+            guard let a = list.firstIndex(of: arabic), let k = list.firstIndex(of: kanji) else {
+                XCTFail("\(reading): \(arabic)/\(kanji) が無い \(list.prefix(8))")
+                continue
+            }
+            XCTAssertLessThan(a, k, "\(reading): アラビア数字が先 \(list.prefix(8))")
+        }
+        converter.setNumeralStylePreference(.kanjiFirst)
+        let kanjiFirst = converter.candidates(for: "ふつか", limit: 30, systemCandidateMode: .surface)
+        XCTAssertLessThan(kanjiFirst.firstIndex(of: "二日") ?? 99, kanjiFirst.firstIndex(of: "2日") ?? 0, "\(kanjiFirst.prefix(8))")
+        converter.setNumeralStylePreference(.arabicFirst)
+        // いつか: 5日 は 五日 の隣に出るだけ。文の中の いつか/なのか/はつか はかなの言い回しのまま(日付のノードを格子に立てると
+        // そうなのかー→そう7日ー、はつかうな→20日ウナ、これはつかまえにいく→これ20日前に行く、いつかごいっしょに→5日後一緒に になった)
+        let itsuka = converter.candidates(for: "いつか", limit: 48, systemCandidateMode: .surface)
+        XCTAssertTrue(itsuka.contains("5日"), "\(itsuka)")
+        func shown(_ reading: String) -> [String] {
+            let list = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            return list.isEmpty ? converter.candidates(for: reading, limit: 12, systemCandidateMode: .surface) : list
+        }
+        for (reading, expected) in [
+            ("いつかいきたい", "いつか行きたい"), ("いつかまたあおう", "いつかまた会おう"), ("いつかはわかる", "いつかは分かる"),
+            ("そうなのかー", "そうなのかー"), ("はつかうなとあれほど", "は使うなとあれほど"), ("これはつかまえにいく", "これは捕まえに行く"),
+            ("いつかめがさめる", "いつか目が覚める"), ("いつかかんたんに", "いつか簡単に"),
+            // 語が続く形は漢数字のまま
+            ("みっかぼうず", "三日坊主"), ("はつかだいこん", "二十日大根"), ("よっかいち", "四日市"), ("はつかねずみ", "ハツカネズミ"),
+        ] {
+            XCTAssertEqual(shown(reading).first, expected, reading)
+        }
+        XCTAssertFalse(shown("いつかごいっしょに").contains(where: { $0.contains("5日") }))
+        // 文の中の登録語の日付(二日)は X.18 の順でアラビア数字の形と並ぶ。目/間/前/後 が続く形も
+        for (reading, first, second) in [
+            ("ふつかにいく", "2日に行く", "二日に行く"), ("ごがつふつか", "五月2日", "五月二日"), ("みっかにいちど", "3日に一度", "三日に一度"),
+            ("ふつかかん", "2日間", "二日間"), ("ふつかかんのりょこう", "2日間の旅行", "二日間の旅行"),
+            ("みっかまえにあった", "3日前にあった", "三日前にあった"), ("ふつかぶんのしょくじ", "2日分の食事", "二日分の食事"),
+        ] {
+            XCTAssertEqual(Array(shown(reading).prefix(2)), [first, second], reading)
+        }
+        XCTAssertEqual(Array(shown("ふつかめ").prefix(2)), ["2日目", "2日め"])
+        converter.setNumeralStylePreference(.kanjiFirst)
+        XCTAssertEqual(Array(shown("ふつかにいく").prefix(2)), ["二日に行く", "2日に行く"])
+        converter.setNumeralStylePreference(.arabicFirst)
     }
 
 }

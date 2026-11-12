@@ -608,6 +608,67 @@ extension KanaKanjiConverter {
     // curated の数量語(misc の 二つ/2つ)が同じ読みに両方あるとき、X.18 の順の表記に付ける加点(3708)。
     // 生成でなく登録語なので帯(400/360)の差が付かず、登録順(二つ が先)のままだった(ふたつかって→二つ買って)
     static let multiClauseNumeralStyleCuratedBonus = 500
+    // 日付の和語の後ろがこの字(助詞の頭)か文末のときだけ、アラビア数字の形を並べる(3793)。語が続く形(三日坊主/二十日大根/
+    // 二日酔い/四日市)は漢数字の形だけ
+    static let multiClauseWagoDayFollowerCharacters: Set<Character> = ["に", "は", "が", "も", "を", "の", "で", "か", "ま", "と", "へ", "や", "、", "。"]
+    // 連文節の候補の中の、日付の和語の登録語(二日/三日…。misc の登録語)を、X.18 の順でアラビア数字の形と並べる(3793、ユーザ指摘:
+    // 文の中では 二日に〜 が先頭のままだった)。格子にアラビア数字のノードを足すと、登録語の 二日 に掛かっている個別の扱い(より長い
+    // 辞書語を分断する短い登録語の床外し 等)が付かず、よっかいち→4日一、はつかねずみ→20日ネズミ になったので、区切りが決まった後の
+    // 表記だけを差し替える。対象は上から 3 件、漢数字の形の直前が数字でなく、直後が文末か助詞の頭か 目/間/前/後 などのときだけ
+    // 日付の後ろに続いてよい語の表記(二日目/二日間/二日前)。この形も差し替えの対象
+    static let wagoDayTailSurfaces: [[Character]] = arabicWagoDayTailSurfacesByReading.values.filter { !$0.isEmpty }.map(Array.init)
+    static func wagoDayNumeralStyleOrdered(
+        reading: String, candidates: [String], style: NumeralStylePreference,
+        isRegistered: (_ reading: String, _ surface: String) -> Bool
+    ) -> [String] {
+        guard style.includesArabic, !candidates.isEmpty else { return candidates }
+        let days = arabicWagoDayReadings.filter { reading.contains($0.reading) }
+            .map { (kanji: kanjiNumeralString($0.value) + "日", arabic: "\($0.value)日", reading: $0.reading) }
+            .filter { isRegistered($0.reading, $0.kanji) }
+        guard !days.isEmpty else { return candidates }
+        func arabicVariant(of candidate: String) -> String? {
+            var characters = Array(candidate)
+            var changed = false
+            for day in days {
+                let kanji = Array(day.kanji)
+                var index = 0
+                while index + kanji.count <= characters.count {
+                    let end = index + kanji.count
+                    if Array(characters[index..<end]) == kanji,
+                        index == 0 || !multiClauseNumeralCharacters.contains(characters[index - 1]),
+                        end == characters.count || multiClauseWagoDayFollowerCharacters.contains(characters[end])
+                            || wagoDayTailSurfaces.contains(where: { characters[end...].starts(with: $0) }) {
+                        characters.replaceSubrange(index..<end, with: Array(day.arabic))
+                        changed = true
+                        index += day.arabic.count
+                    } else {
+                        index += 1
+                    }
+                }
+            }
+            return changed ? String(characters) : nil
+        }
+        var result: [String] = []
+        var seen = Set<String>()
+        for (offset, candidate) in candidates.enumerated() {
+            let variant = offset < 3 ? arabicVariant(of: candidate) : nil
+            // アラビア数字だけ の設定では漢数字の形を出さない
+            let pair = variant.map { !style.includesKanji ? [$0] : style.kanjiBeforeArabic ? [candidate, $0] : [$0, candidate] } ?? [candidate]
+            for surface in pair where seen.insert(surface).inserted {
+                result.append(surface)
+            }
+        }
+        return result
+    }
+    // 登録語の日付+間/目/前/後(2日間/二日間)への加点(3793)。定額 7200 から登録語+1 字(二日 1500+感)より安い水準へ
+    static let multiClauseWagoDayTailBonus = 4500
+    // 日付の和語+続く語 の読みの、続く語の部分の長さ(ふつかかん→2)
+    static func wagoDayTailReadingLength(_ reading: String) -> Int {
+        for (dayReading, _) in arabicWagoDayReadings where reading.hasPrefix(dayReading) {
+            return reading.count - dayReading.count
+        }
+        return 0
+    }
     // 数詞+助数詞の直後の活用派生の述語(2枚買って/3本買った/2つください)への加点(3704)。数量語は固定コスト 7200 で
     // 供給されるため、同じ読みの固有名(山本 5414/不達 1500)に先頭を取られ、述語の直前でも 山本買った になっていた。
     // 名詞(2枚組/3本立て)には加点も減点もしない。連用形(組み/立て/入り)は名詞になるので、加点は下の語尾に限る。

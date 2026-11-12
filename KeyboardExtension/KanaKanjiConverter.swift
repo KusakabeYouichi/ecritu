@@ -851,6 +851,15 @@ final class KanaKanjiConverter {
             }
         }
         addCandidates(kanjiNumeralCompound, baseScore: kanjiBand, to: &scores)
+        // 日付・日数の和語の読み(ふつか。3793): 漢数字の形(二日)は misc の登録語や辞書の語として高い点で入っているので、
+        // 生成したアラビア数字の形(2日)をその点に揃え、X.18 の順の分(帯の差)だけ前後させる
+        if numeralStyle.includesArabic, let day = Self.wagoDayComposition(for: reading) {
+            let kanjiForm = "\(Self.kanjiNumeralString(day.value))日\(day.tail)"
+            let arabicForm = "\(day.value)日\(day.tail)"
+            if let kanjiScore = scores[kanjiForm], scores[arabicForm] != nil {
+                scores[arabicForm] = kanjiScore + (arabicBand - kanjiBand)
+            }
+        }
 
         // 漢数字+ケ/ヶ の辞書語(二ケ所/五ケ所/六ヶ所/三ヶ日 等)は地名の収穫で、数詞複合(2か所)が
         // 作れる読みでは地名断片が rank 0 で先頭を取っていた(ユーザ指摘 2814)。生成した複合(2か所/二か所)
