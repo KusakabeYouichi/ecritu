@@ -5437,6 +5437,13 @@ extension KanaKanjiConverter {
                             node.end == n || chars[node.end] == "い" || chars[node.end] == "き" {
                             cost -= Self.multiClauseKatakanaObjectKaiNiBonus
                         }
+                        // 述語の連体形+ほう は 方(定数コメント参照。3797)。整数 ID と長さの判定だけ
+                        // 後ろが が の形(やめたほうがいい)は、かなの ほうがいい を先頭にしてある読みがあるので触らない
+                        if node.surfaceID == SID.方, node.end - node.start == 2,
+                            node.end == n || chars[node.end] != "が",
+                            prevNode.isInflectionDerived || prevNode.isDictionaryFormPredicate {
+                            cost -= Self.multiClauseHouAfterPredicateBonus
+                        }
                         // 形容詞・連体詞+目(定数コメント参照。3791)。整数 ID の判定を先に
                         // 動詞+たい(居たい目)は除くため、辞書形の述語(形容詞の終止・連体形)だけ。後ろは助詞か文末だけ
                         // (いいめがね が いい目がね にならないよう、が は入れない)
@@ -7457,6 +7464,14 @@ extension KanaKanjiConverter {
                         }
                     }
                     nodeBonus += min(frameBonus, Self.multiClauseVariantCollocationBonusCap)
+                }
+                // 述語の連体形+方(3797)も DP と同じく差分に入れる。無いと 法 の兄弟が負の差分になり、同じ語の別の書き方
+                // (繋がっている方)より前に並んだ
+                if pos >= 1, node.surfaceID == SID.方, node.end - node.start == 2, node.end == n || chars[node.end] != "が" {
+                    let prev = nodes[pathIndices[pos - 1]]
+                    if prev.isInflectionDerived || prev.isDictionaryFormPredicate {
+                        nodeBonus += Self.multiClauseHouAfterPredicateBonus
+                    }
                 }
                 // 隣接ペアの接頭一致ボーナス(気+無くし 等)も DP と同じく差分に入れる(3537)。無いと 気+無くし の優位が
                 // 変種の差分に反映されず、兄弟(亡くし/なくし)が負の delta で seed 順より前に並んだ(はいるきなくした)
