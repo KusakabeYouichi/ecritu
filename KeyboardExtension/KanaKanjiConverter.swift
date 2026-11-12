@@ -518,6 +518,18 @@ final class KanaKanjiConverter {
         finalCandidates = Self.applyFormalNounMeKana(
             to: finalCandidates, reading: normalizedReading, enabled: withStateLock { formalNounMeKanaCandidatesEnabled }
         )
+        // 月名・日付の 2 つの形(四月/4月)は、seed の並び(しがつ は 四月 が seed 先頭)より X.18 の順を優先する(3804)
+        if let day = Self.wagoDayComposition(for: normalizedReading) {
+            let style = withStateLock { numeralStylePreference }
+            let kanjiForm = "\(Self.kanjiNumeralString(day.value))\(day.unit)\(day.tail)"
+            let arabicForm = "\(day.value)\(day.unit)\(day.tail)"
+            let (first, second) = style.kanjiBeforeArabic ? (kanjiForm, arabicForm) : (arabicForm, kanjiForm)
+            if let firstIndex = finalCandidates.firstIndex(of: first), let secondIndex = finalCandidates.firstIndex(of: second),
+                secondIndex < firstIndex {
+                finalCandidates.remove(at: firstIndex)
+                finalCandidates.insert(first, at: secondIndex)
+            }
+        }
         // 助数詞+付属語(かい+しか 等)の合成をレア語合成(芥子か 等)より前へ(先頭候補の直後)。
         finalCandidates = Self.counterKanaTailPromotedCandidates(finalCandidates, reading: normalizedReading)
         // 合成中の読みが数字接頭(4まんえん 等。normalizedReading は数字を落とすため元の reading で
@@ -855,8 +867,8 @@ final class KanaKanjiConverter {
         // 日付・日数の和語の読み(ふつか。3793): 漢数字の形(二日)は misc の登録語や辞書の語として高い点で入っているので、
         // 生成したアラビア数字の形(2日)をその点に揃え、X.18 の順の分(帯の差)だけ前後させる
         if numeralStyle.includesArabic, let day = Self.wagoDayComposition(for: reading) {
-            let kanjiForm = "\(Self.kanjiNumeralString(day.value))日\(day.tail)"
-            let arabicForm = "\(day.value)日\(day.tail)"
+            let kanjiForm = "\(Self.kanjiNumeralString(day.value))\(day.unit)\(day.tail)"
+            let arabicForm = "\(day.value)\(day.unit)\(day.tail)"
             if let kanjiScore = scores[kanjiForm], scores[arabicForm] != nil {
                 scores[arabicForm] = kanjiScore + (arabicBand - kanjiBand)
             }

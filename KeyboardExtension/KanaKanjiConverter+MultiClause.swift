@@ -351,6 +351,8 @@ extension KanaKanjiConverter {
             isRegistered: { [initial = store.initialAjoutVocabulary(), manual = store.ajoutVocabulary()] in
                 (initial[$0]?.contains($1) ?? false) || (manual[$0]?.contains($1) ?? false)
             })
+        // 月と日の表記は揃える(五月2日 は出さず、5月2日 か 五月二日。3804、ユーザ指定)
+        candidates = Self.monthDayNumeralStyleUnified(candidates, style: withStateLock { numeralStylePreference })
         // X.10 の組(臆測/憶測)はその設定で(3570)
         let (preference, lateStandardized) = withStateLock { (kakikaePreference, lateStandardizedRewritePreference) }
         guard preference != nil || lateStandardized != nil, !candidates.isEmpty else {

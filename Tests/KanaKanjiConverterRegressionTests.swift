@@ -2521,7 +2521,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
         for (reading, expected) in [
             ("はつかうなとあれほど", "は使うなとあれほど"), ("らいんはつかうなとあれほど", "LINEは使うなとあれほど"),
-            ("はつかにあいましょう", "20日に会いましょう"), ("ごがつはつか", "五月20日"),
+            ("はつかにあいましょう", "20日に会いましょう"), ("ごがつはつか", "5月20日"),
             ("どのろご", "どのロゴ"), ("どのみせ", "どの店"), ("どのほん", "どの本"), ("どのちず", "どの地図"),
             ("どのぶどう", "どのぶどう"), ("どのもでる", "どのモデル"), ("どのくらい", "どのくらい"), ("どのように", "どのように"),
             ("このろご", "このロゴ"), ("らいんで", "LINEで"), ("すたーとらいん", "スタートライン"),
@@ -17412,7 +17412,8 @@ extension KanaKanjiConverterRegressionTests {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
         let single = converter.candidates(for: "なのか", limit: 6, systemCandidateMode: .surface)
-        XCTAssertEqual(Array(single.prefix(2)), ["なのか", "七日"], "single=\(single)")
+        // 3804 から 日付の 2 つの形は X.18 の順(7日、七日)
+        XCTAssertEqual(Array(single.prefix(3)), ["なのか", "7日", "七日"], "single=\(single)")
     }
 }
 
@@ -23276,8 +23277,9 @@ extension KanaKanjiConverterRegressionTests {
         for (reading, top) in [
             // 日付は 3793 から X.18(アラビア数字が先)の順: 2日、二日
             ("ふつか", "2日"), ("みっか", "3日"), ("よっか", "4日"), ("ようか", "8日"), ("ここのか", "9日"), ("とおか", "10日"),
-            ("はつか", "20日"), ("にがつ", "二月"), ("さんがつ", "三月"), ("しがつ", "四月"), ("しちがつ", "七月"),
-            ("はちがつ", "八月"), ("くがつ", "九月"), ("じゅういちがつ", "十一月"), ("じゅうにがつ", "十二月")
+            // 月名も 3804 から X.18 の順: 2月、二月
+            ("はつか", "20日"), ("にがつ", "2月"), ("さんがつ", "3月"), ("しがつ", "4月"), ("しちがつ", "7月"),
+            ("はちがつ", "8月"), ("くがつ", "9月"), ("じゅういちがつ", "11月"), ("じゅうにがつ", "12月")
         ] {
             XCTAssertEqual(single(reading).first, top, "\(reading) \(single(reading))")
         }
@@ -23287,7 +23289,7 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(single("いつか", limit: 40).contains("五日"))
         converter.invalidateCandidateCache()
         // 3793 から 日付は X.18 の順(四月8日、四月八日)
-        XCTAssertEqual(Array(converter.multiClauseCandidates(for: "しがつようか", systemCandidateMode: .surface).prefix(2)), ["四月8日", "四月八日"])
+        XCTAssertEqual(Array(converter.multiClauseCandidates(for: "しがつようか", systemCandidateMode: .surface).prefix(2)), ["4月8日", "四月八日"])
         converter.invalidateCandidateCache()
         XCTAssertEqual(converter.multiClauseCandidates(for: "みっかぼうず", systemCandidateMode: .surface).first, "三日坊主")
     }
@@ -29912,7 +29914,7 @@ extension KanaKanjiConverterRegressionTests {
             "きたのさんがきた": "北野さんが来た",
             "うえのほんをとる": "上の本をとる",
             "なかのひとにきく": "中の人に聞く",
-            "つくえのうえのさんがつ": "机の上の三月"
+            "つくえのうえのさんがつ": "机の上の3月"
         ]
         for (reading, expected) in expectations {
             XCTAssertEqual(converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).first, expected, reading)
@@ -30106,7 +30108,7 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertFalse(shown("いつかごいっしょに").contains(where: { $0.contains("5日") }))
         // 文の中の登録語の日付(二日)は X.18 の順でアラビア数字の形と並ぶ。目/間/前/後 が続く形も
         for (reading, first, second) in [
-            ("ふつかにいく", "2日に行く", "二日に行く"), ("ごがつふつか", "五月2日", "五月二日"), ("みっかにいちど", "3日に一度", "三日に一度"),
+            ("ふつかにいく", "2日に行く", "二日に行く"), ("ごがつふつか", "5月2日", "五月二日"), ("みっかにいちど", "3日に一度", "三日に一度"),
             ("ふつかかん", "2日間", "二日間"), ("ふつかかんのりょこう", "2日間の旅行", "二日間の旅行"),
             ("みっかまえにあった", "3日前にあった", "三日前にあった"), ("ふつかぶんのしょくじ", "2日分の食事", "二日分の食事"),
         ] {
@@ -30220,7 +30222,7 @@ extension KanaKanjiConverterRegressionTests {
             ("みっかいない", "3日以内"), ("とおかいじょう", "10日以上"), ("みっかいのばしょ", "密会の場所"),
             // 意向形+か(八日/ヨウ化 にしない)。日付の 八日 はそのまま
             ("しようかかんがえる", "しようか考える"), ("たべようかまよう", "食べようか迷う"), ("いこうかまよう", "行こうか迷う"),
-            ("しがつようか", "四月8日"), ("ようかにいく", "8日に行く"), ("らいげつようか", "来月8日"), ("ようかまでに", "8日までに"),
+            ("しがつようか", "4月8日"), ("ようかにいく", "8日に行く"), ("らいげつようか", "来月8日"), ("ようかまでに", "8日までに"),
             ("こうかがある", "効果がある"), ("しようする", "使用する"), ("しようしょ", "仕様書"), ("しようほうほう", "使用方法"),
             // しよう(する の意向形)+かな、しようがない、仕様+を+確認する(3801)
             ("しようかな", "しようかな"), ("いこうかな", "行こうかな"), ("しようよ", "しようよ"),
@@ -30229,6 +30231,43 @@ extension KanaKanjiConverterRegressionTests {
         ] {
             XCTAssertEqual(shown(reading).first, expected, reading)
         }
+    }
+
+    // 月名はどれもアラビア数字の形も出す(いちがつ だけ 1月 が出ていた)。月と日の表記は揃える(五月2日 は出さない)。
+    // 3804、ユーザ指定
+    func testRegressionMonthNamesArabic3804() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        converter.setNumeralStylePreference(.arabicFirst)
+        defer { converter.setNumeralStylePreference(.arabicFirst) }
+        converter.invalidateCandidateCache()
+        func shown(_ reading: String) -> [String] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            return multi.isEmpty ? converter.candidates(for: reading, limit: 12, systemCandidateMode: .surface) : multi
+        }
+        let months = ["いちがつ", "にがつ", "さんがつ", "しがつ", "ごがつ", "ろくがつ", "しちがつ", "はちがつ", "くがつ", "じゅうがつ",
+                      "じゅういちがつ", "じゅうにがつ"]
+        for (offset, reading) in months.enumerated() {
+            let list = converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+            XCTAssertEqual(Array(list.prefix(2)), ["\(offset + 1)月", KanaKanjiConverter.kanjiNumeralString(offset + 1) + "月"], reading)
+        }
+        for (reading, first, second) in [
+            ("ごがつふつか", "5月2日", "五月二日"), ("ごがつついたち", "5月1日", "五月一日"), ("さんがつみっか", "3月3日", "三月三日"),
+            ("じゅうにがつにじゅうごにち", "12月25日", "十二月二十五日"), ("ごがつにいく", "5月に行く", "五月に行く"),
+            ("ごがつじょうじゅん", "5月上旬", "五月上旬"), ("ごがつふつかにあう", "5月2日に会う", "五月二日に会う"),
+        ] {
+            let list = shown(reading)
+            XCTAssertEqual(Array(list.prefix(2)), [first, second], reading)
+            // 月と日で数字の種類が違う候補は出さない
+            XCTAssertFalse(list.contains(where: { $0.range(of: "[一二三四五六七八九十]月[0-9]|[0-9]月[一二三四五六七八九十]", options: .regularExpression) != nil }), "\(list)")
+        }
+        for (reading, expected) in [("ごがつびょう", "五月病"), ("ひざしがつよい", "日差しが強い"), ("ごがついつか", "五月いつか")] {
+            XCTAssertEqual(shown(reading).first, expected, reading)
+        }
+        converter.setNumeralStylePreference(.kanjiFirst)
+        converter.invalidateCandidateCache()
+        XCTAssertEqual(Array(converter.candidates(for: "ごがつ", limit: 8, systemCandidateMode: .surface).prefix(2)), ["五月", "5月"])
+        XCTAssertEqual(Array(shown("ごがつふつか").prefix(2)), ["五月二日", "5月2日"])
     }
 
 }

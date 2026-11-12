@@ -624,6 +624,66 @@ extension KanaKanjiConverter {
     // 文の中では 二日に〜 が先頭のままだった)。格子にアラビア数字のノードを足すと、登録語の 二日 に掛かっている個別の扱い(より長い
     // 辞書語を分断する短い登録語の床外し 等)が付かず、よっかいち→4日一、はつかねずみ→20日ネズミ になったので、区切りが決まった後の
     // 表記だけを差し替える。対象は上から 3 件、漢数字の形の直前が数字でなく、直後が文末か助詞の頭か 目/間/前/後 などのときだけ
+    // 月名の後ろに続いてよい字(五月上旬/五月末/五月頃/五月号/五月分/五月度)。五月病 などの語は漢数字のまま
+    static let multiClauseMonthFollowerCharacters: Set<Character> = ["上", "中", "下", "末", "頃", "号", "分", "度"]
+    // 月と日の表記を揃える(3804、ユーザ指定: ごがつふつか で 五月2日 は出さず、5月2日 か 五月二日 だけ)。候補の中の
+    // N月M日 で月と日の数字の種類が違うものを、両方アラビア数字・両方漢数字の 2 つに置き換える(X.18 の順)。
+    // 揃っているものが上位 3 件にあれば、もう一方の表記もすぐ隣に並べる。月 と 日 を含む候補だけ調べる
+    static let monthDayPattern = try? NSRegularExpression(pattern: "([0-9]{1,2}|[一二三四五六七八九十]{1,3})月([0-9]{1,2}|[一二三四五六七八九十]{1,3})日")
+    static func monthDayNumeralStyleUnified(_ candidates: [String], style: NumeralStylePreference) -> [String] {
+        guard let pattern = monthDayPattern, candidates.contains(where: { $0.contains("月") && $0.contains("日") }) else {
+            return candidates
+        }
+        func number(_ text: Substring) -> Int? {
+            if let value = Int(text) { return value }
+            var total = 0
+            var current = 0
+            for character in text {
+                if character == "十" {
+                    total += max(current, 1) * 10
+                    current = 0
+                } else if let digit = kanjiNumerals.firstIndex(of: String(character)), digit >= 1, digit <= 9 {
+                    current = digit
+                } else {
+                    return nil
+                }
+            }
+            return total + current
+        }
+        // (アラビア数字に揃えた形, 漢数字に揃えた形, 元が揃っていたか)
+        func unified(_ candidate: String) -> (arabic: String, kanji: String, wasMixed: Bool)? {
+            let source = candidate as NSString
+            let matches = pattern.matches(in: candidate, range: NSRange(location: 0, length: source.length))
+            guard !matches.isEmpty else { return nil }
+            var arabic = candidate
+            var kanji = candidate
+            var wasMixed = false
+            for match in matches.reversed() {
+                let monthText = source.substring(with: match.range(at: 1))
+                let dayText = source.substring(with: match.range(at: 2))
+                guard let month = number(monthText[...]), let day = number(dayText[...]), (1...12).contains(month), (1...31).contains(day) else {
+                    continue
+                }
+                if (Int(monthText) != nil) != (Int(dayText) != nil) { wasMixed = true }
+                arabic = (arabic as NSString).replacingCharacters(in: match.range, with: "\(month)月\(day)日")
+                kanji = (kanji as NSString).replacingCharacters(in: match.range, with: "\(kanjiNumeralString(month))月\(kanjiNumeralString(day))日")
+            }
+            return arabic == kanji ? nil : (arabic, kanji, wasMixed)
+        }
+        var result: [String] = []
+        var seen = Set<String>()
+        for (offset, candidate) in candidates.enumerated() {
+            var forms = [candidate]
+            if candidate.contains("月"), candidate.contains("日"), let pair = unified(candidate), pair.wasMixed || offset < 3 {
+                forms = !style.includesKanji ? [pair.arabic] : !style.includesArabic ? [pair.kanji]
+                    : style.kanjiBeforeArabic ? [pair.kanji, pair.arabic] : [pair.arabic, pair.kanji]
+            }
+            for surface in forms where seen.insert(surface).inserted {
+                result.append(surface)
+            }
+        }
+        return result
+    }
     // 日付の後ろに続いてよい語の表記(二日目/二日間/二日前)。この形も差し替えの対象
     static let wagoDayTailSurfaces: [[Character]] = arabicWagoDayTailSurfacesByReading.values.filter { !$0.isEmpty }.map(Array.init)
     static func wagoDayNumeralStyleOrdered(
@@ -631,8 +691,11 @@ extension KanaKanjiConverter {
         isRegistered: (_ reading: String, _ surface: String) -> Bool
     ) -> [String] {
         guard style.includesArabic, !candidates.isEmpty else { return candidates }
-        let days = arabicWagoDayReadings.filter { reading.contains($0.reading) }
-            .map { (kanji: kanjiNumeralString($0.value) + "日", arabic: "\($0.value)日", reading: $0.reading) }
+        // 月名(五月)は読みが紛れないので登録語かどうかを問わない。後ろは 助詞・文末 のほか 日付(五月二日)と 上旬/中旬/下旬/末/頃
+        let months = arabicMonthReadings.filter { reading.contains($0.reading) }
+            .map { (kanji: kanjiNumeralString($0.value) + "月", arabic: "\($0.value)月", reading: $0.reading, isMonth: true) }
+        let days = months + arabicWagoDayReadings.filter { reading.contains($0.reading) }
+            .map { (kanji: kanjiNumeralString($0.value) + "日", arabic: "\($0.value)日", reading: $0.reading, isMonth: false) }
             .filter { isRegistered($0.reading, $0.kanji) }
         guard !days.isEmpty else { return candidates }
         func arabicVariant(of candidate: String) -> String? {
@@ -646,7 +709,9 @@ extension KanaKanjiConverter {
                     if Array(characters[index..<end]) == kanji,
                         index == 0 || !multiClauseNumeralCharacters.contains(characters[index - 1]),
                         end == characters.count || multiClauseWagoDayFollowerCharacters.contains(characters[end])
-                            || wagoDayTailSurfaces.contains(where: { characters[end...].starts(with: $0) }) {
+                            || (day.isMonth
+                                ? multiClauseMonthFollowerCharacters.contains(characters[end]) || multiClauseNumeralCharacters.contains(characters[end])
+                                : wagoDayTailSurfaces.contains(where: { characters[end...].starts(with: $0) })) {
                         characters.replaceSubrange(index..<end, with: Array(day.arabic))
                         changed = true
                         index += day.arabic.count
