@@ -488,6 +488,8 @@
 	<dict><key>phrase</key><string>青菜炒め</string><key>shortcut</key><string>あおないため</string></dict>	<!-- 青菜炒め: 青菜 は辞書にあるが 1 語で無く、青+ない+ため が先頭だった(ユーザ報告 3723) -->
 	<dict><key>phrase</key><string>無遅刻</string><key>shortcut</key><string>むちこく</string><key>pos</key><string>名詞</string></dict>	<!-- 無遅刻/無残業: 辞書にも LM にも無い語。むちこく が 鞭+こく、むざんぎょう が 無残+行 になっていた(ユーザ報告 3791)。無欠勤 は 無+欠勤 で出る -->
 	<dict><key>phrase</key><string>無残業</string><key>shortcut</key><string>むざんぎょう</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>二日酔い</string><key>shortcut</key><string>ふつかよい</string><key>pos</key><string>名詞</string></dict>	<!-- 二日酔い: 辞書に無く、ふつかよい が 二日よい だった(日付の走査で検出、ユーザ指定 3800) -->
+	<dict><key>phrase</key><string>三日三晩</string><key>shortcut</key><string>みっかみばん</string><key>pos</key><string>名詞</string></dict>	<!-- 三日三晩: 辞書に無く、みっかみばん が 三日3晩 だった(同上) -->
 
 	<!-- □ 銘柄牛(ユーザ指定 3735: おざきぎゅう が 尾崎ギュウ だった。主な銘柄も合わせて。前沢牛/宮崎牛 は辞書に既存) -->
 	<dict><key>phrase</key><string>尾崎牛</string><key>shortcut</key><string>おざきぎゅう</string></dict>
@@ -906,6 +908,7 @@
 	<dict><key>phrase</key><string>すべきで</string><key>shortcut</key><string>すべきで</string></dict>
 	<dict><key>phrase</key><string>すべきか</string><key>shortcut</key><string>すべきか</string></dict>
 	<dict><key>phrase</key><string>しょうがない</string><key>shortcut</key><string>しょうがない</string></dict>	<!-- 仕様がない のかな。seed しょうが(生姜 先頭)との合成 生姜ない を防ぐ(3711) -->
+	<dict><key>phrase</key><string>しようがない</string><key>shortcut</key><string>しようがない</string><key>pos</key><string>形容詞</string></dict>	<!-- しようがない(どうしようもない の意。かな): しよう が 使用/仕様 に取られ 使用がない だった(ユーザ指定 3801)。仕様がない は 2 番め以降 -->
 	<!-- 名詞+なのでしょう/なのです/なのだ(断定+説明)。1 ノードで無いと かた+な+のでしょう が 刀+の+でしょう に負けていた(おいそがしいかたなのでしょう→お忙しい刀のでしょう。ユーザ報告 3711) -->
 	<dict><key>phrase</key><string>なのでしょう</string><key>shortcut</key><string>なのでしょう</string></dict>
 	<dict><key>phrase</key><string>なのでしょうか</string><key>shortcut</key><string>なのでしょうか</string></dict>
