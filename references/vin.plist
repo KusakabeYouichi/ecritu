@@ -1016,6 +1016,8 @@
 	<dict><key>phrase</key><string>ポルタレグレ</string><key>shortcut</key><string>ぽるたれぐれ</string></dict>
 	<dict><key>phrase</key><string>ポルト</string><key>shortcut</key><string>ぽると</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>マデラ</string><key>shortcut</key><string>までら</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>マデラ島</string><key>shortcut</key><string>までらとう</string></dict>
+	<dict><key>phrase</key><string>マデイラ島</string><key>shortcut</key><string>までいらとう</string></dict>
 	<dict><key>phrase</key><string>モンサォン・イ・メルガッソ</string><key>shortcut</key><string>もんさぉんいめるがっそ</string></dict>
 
 	<!-- □ ドイツ -->
@@ -12057,7 +12059,6 @@
 	<dict><key>phrase</key><string>マチュリテ</string><key>shortcut</key><string>まちゅりて</string></dict>
 	<dict><key>phrase</key><string>マテュザレム</string><key>shortcut</key><string>まてゅざれむ</string></dict>
 	<dict><key>phrase</key><string>マデイラ</string><key>shortcut</key><string>までいら</string></dict>
-	<dict><key>phrase</key><string>マデラ</string><key>shortcut</key><string>までら</string></dict>
 	<dict><key>phrase</key><string>マデール</string><key>shortcut</key><string>までーる</string></dict>
 	<dict><key>phrase</key><string>マドリッド</string><key>shortcut</key><string>まどりっど</string></dict>
 	<dict><key>phrase</key><string>マホガニー</string><key>shortcut</key><string>まほがにー</string></dict>
