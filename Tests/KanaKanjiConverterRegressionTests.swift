@@ -29769,4 +29769,28 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertNotEqual(converter.multiClauseCandidates(for: "さんをつける", systemCandidateMode: .surface).first, "酸をつける")
     }
 
+    // learningBOX 検査 3697 の確認表の 5 回めの回答(固有名詞の節の直す 243 行。3776)。チリ(国名)は連文節でも通常の語に
+    // (チリの気候/正解はチリです が 塵/地理 だった)。塵が積もる/地理に詳しい は読みの手掛かりで守る。
+    // 中之島(なかのし)は Sudachi の誤った読みの行なので抑制(下流の中野市)
+    func testRegressionAuditFifthAnswers3776() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let expectations = [
+            "ちりのきこうをえらんでください": "チリの気候を選んでください",
+            "せいかいはちりです": "正解はチリです",
+            "ちりさいだいのさんち": "チリ最大の産地",
+            "ちりがつもる": "塵が積もる",
+            "ちりもつもればやまとなる": "塵も積もれば山となる",
+            "ちりにくわしい": "地理に詳しい",
+            "ちりのてすと": "地理のテスト",
+            "れきしやちり": "歴史や地理",
+            "じょうりゅうのさくしからかりゅうのなかのしにいちし": "上流の佐久市から下流の中野市に位置し"
+        ]
+        for (reading, expected) in expectations {
+            XCTAssertEqual(converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).first, expected, reading)
+        }
+        XCTAssertFalse(converter.candidates(for: "なかのし", limit: 20, systemCandidateMode: .surface).contains("中之島"))
+        XCTAssertTrue(converter.candidates(for: "なかのしま", limit: 20, systemCandidateMode: .surface).contains("中之島"))
+    }
+
 }
