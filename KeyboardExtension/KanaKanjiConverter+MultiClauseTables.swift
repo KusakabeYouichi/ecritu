@@ -2759,7 +2759,8 @@ extension KanaKanjiConverter {
     static let multiClauseStandaloneAcidBonus = 4500
     static let multiClauseStandaloneSanKanaPenalty = 3500
     static let multiClauseStandaloneAcidFollowers: Set<Character> = ["が", "を", "は", "と", "で", "も", "な", "の", "に"]
-    static let multiClauseStandaloneAcidPrevKana: Set<String> = ["な", "た", "する", "もっとも", "の"]
+    // の は入れない(3784): の で終わる名字+さん(庭野さん/大野さん)が 庭の酸/大の酸 になった。ワインの酸 は読みの手掛かりで差し替える
+    static let multiClauseStandaloneAcidPrevKana: Set<String> = ["な", "た", "する", "もっとも"]
 
     static func standaloneAcidAdjustment(node: MultiClauseNode, prevNode: MultiClauseNode?, chars: [Character], n: Int) -> Int {
         guard node.readingID == SID.さん, node.end == n || multiClauseStandaloneAcidFollowers.contains(chars[node.end]) else {

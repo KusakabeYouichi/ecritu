@@ -29881,4 +29881,22 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 単独の 酸 の規則(3773)の副作用: の で終わる名字+さん(庭野さん/大野さん)が 庭の酸/大の酸 になっていた(3785)。
+    // の の直後は規則の対象から外し、ワインの酸 は読みの手掛かりで差し替える
+    func testRegressionSurnameEndingInNoPlusSan3785() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let expectations = [
+            "にわのさんがきた": "庭野さんが来た",
+            "おおのさんがきた": "大野さんが来た",
+            "ひらのさんとはなした": "平野さんと話した",
+            "まきのさんのいえ": "牧野さんの家",
+            "わいんのさんでふしょくしにくい": "ワインの酸で腐食しにくい",
+            "さんがめいかくなわいんとなります": "酸が明確なワインとなります"
+        ]
+        for (reading, expected) in expectations {
+            XCTAssertEqual(converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).first, expected, reading)
+        }
+    }
+
 }
