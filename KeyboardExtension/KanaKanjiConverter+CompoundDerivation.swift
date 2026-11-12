@@ -1316,6 +1316,11 @@ extension KanaKanjiConverter {
                 case let (me?, kanji?) where me < kanji:
                     result.remove(at: kanji)
                     result.insert(kanjiForm, at: me)
+                // 順は合っているが間に別の語幹の形が挟まっているとき(二日目、仏貨目、二日め)は、組を隣り合わせにする
+                // (ふつかめ が 2日め、2日目、二日め、仏貨め、二日目 だった。ユーザ報告 3803)
+                case let (me?, kanji?) where me > kanji + 1:
+                    result.remove(at: me)
+                    result.insert(meForm, at: kanji + 1)
                 case let (me?, nil):
                     result.insert(kanjiForm, at: me)
                 case let (nil, kanji?):
@@ -1328,6 +1333,9 @@ extension KanaKanjiConverter {
                 case let (me?, kanji?) where kanji < me:
                     result.remove(at: me)
                     result.insert(meForm, at: kanji)
+                case let (me?, kanji?) where kanji > me + 1:
+                    result.remove(at: kanji)
+                    result.insert(kanjiForm, at: me + 1)
                 case let (nil, kanji?):
                     result.insert(meForm, at: kanji)
                 case let (me?, nil):

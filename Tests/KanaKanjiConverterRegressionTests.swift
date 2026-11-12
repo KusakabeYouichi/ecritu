@@ -30195,6 +30195,15 @@ extension KanaKanjiConverterRegressionTests {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
         converter.invalidateCandidateCache()
+        // め(ひらがな)が先 の設定でも、同じ語幹の め/目 の組は隣り合う(2日め、2日目、二日め、仏貨め、二日目 だった。3803)
+        converter.setOrdinalMeKanjiPreferred(false)
+        converter.invalidateCandidateCache()
+        let futsukaMe = converter.candidates(for: "ふつかめ", limit: 12, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(futsukaMe.prefix(4)), ["2日め", "2日目", "二日め", "二日目"], "\(futsukaMe)")
+        converter.setOrdinalMeKanjiPreferred(true)
+        converter.invalidateCandidateCache()
+        // 単文節の先頭も 3日以内(密会+ない の合成 1260 に負けていた。3802)。みっかいないに の 2 番めに合成が割り込まない
+        XCTAssertEqual(Array(converter.candidates(for: "みっかいない", limit: 8, systemCandidateMode: .surface).prefix(2)), ["3日以内", "三日以内"])
         func shown(_ reading: String) -> [String] {
             let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
             return multi.isEmpty ? converter.candidates(for: reading, limit: 12, systemCandidateMode: .surface) : multi
@@ -30208,6 +30217,7 @@ extension KanaKanjiConverterRegressionTests {
             ("ふつかにあう", "2日に会う"), ("みっかごにあう", "3日後に会う"), ("ひどいめにあう", "ひどい目に遭う"), ("じこにあう", "事故に遭う"),
             // 日付+以内
             ("みっかいないに", "3日以内に"), ("みっかいないにとどく", "3日以内に届く"), ("みっかいがある", "密会がある"),
+            ("みっかいない", "3日以内"), ("とおかいじょう", "10日以上"), ("みっかいのばしょ", "密会の場所"),
             // 意向形+か(八日/ヨウ化 にしない)。日付の 八日 はそのまま
             ("しようかかんがえる", "しようか考える"), ("たべようかまよう", "食べようか迷う"), ("いこうかまよう", "行こうか迷う"),
             ("しがつようか", "四月8日"), ("ようかにいく", "8日に行く"), ("らいげつようか", "来月8日"), ("ようかまでに", "8日までに"),
