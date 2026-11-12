@@ -2869,6 +2869,17 @@ extension KanaKanjiConverter {
     // 数量語+おきに(二日おきに/3時間おきに)の おき はかな(3800、ユーザ指定)。ふつかおきに が 二日沖に だった
     // (二日→沖 7295 < 二日→おき 9214)
     static let multiClauseOkiAfterNumericBonus = 2500
+    // 八日(ようか)は、意向形の ようか(しようか/食べようか/やめようか)と同じ読み。登録語で安い(1500)ので、
+    // しようかかんがえる が し+八日+考える になっていた(3800、ユーザ指定)。日付が来る位置(文頭、月/助詞/あと の後ろ)で
+    // ないときは減点する
+    static let multiClauseYoukaAfterStemPenalty = 4000
+    static let multiClauseYoukaAllowedPrevTails: Set<Character> = [
+        "月", "は", "が", "の", "に", "も", "で", "と", "ら", "り", "や", "を", "、", "。", "日", "年", "後"
+    ]
+    // 意向形(しよう/食べよう/行こう)+か への加点(3800)。八日 を減点しても ヨウ化/八鹿/養家 が し の後ろで勝つので
+    // (し+ヨウ化+考える)、正しい区切り(しよう+か+考える)の側を上げる
+    static let multiClauseKaAfterVolitionalBonus = 3000
+    static let multiClauseVolitionalOColumn: Set<Character> = ["こ", "ご", "そ", "と", "の", "ぼ", "も", "ろ", "お"]
     // 形容詞の終止・連体形(〜い)や連体詞(こんな/そんな/同じ)の直後の 目(め)への加点(3791、ユーザ案)。
     // いたいめにあった が 遺体目に遭った だった(遺体 5704 < 痛い 7302)。名詞+目(遺体目)より 形容詞+目(痛い目/ひどい目/つらい目/
     // 赤い目)のほうがふつうの形なので、個別の組でなく形で上げる
@@ -4538,6 +4549,8 @@ extension KanaKanjiConverter {
             // 形容詞・連体詞+目(3791)
             add("目")
             add("おき")
+            add("かな")
+            add("八日")
             // 名詞+並み の接尾(3725)
             for s in ["なみ", "並み", "並"] { add(s) }
             // その分+形容動詞・形容詞(3726)
@@ -4829,6 +4842,8 @@ extension KanaKanjiConverter {
         static let や = MultiClauseSymbols.id("や")
         static let 目 = MultiClauseSymbols.id("目")
         static let おき = MultiClauseSymbols.id("おき")
+        static let かな = MultiClauseSymbols.id("かな")
+        static let 八日 = MultiClauseSymbols.id("八日")
         static let よう = MultiClauseSymbols.id("よう")
         static let よ = MultiClauseSymbols.id("よ")
         static let ね = MultiClauseSymbols.id("ね")

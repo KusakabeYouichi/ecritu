@@ -734,6 +734,9 @@ extension KanaKanjiConverter {
         ("せきしゅつ", "しゅせき", "首席", "酒石"), ("せきしゅつ", "しゅせき", "主席", "酒石"), ("せきしゅつ", "しゅせき", "酒席", "酒石"),
         ("ふなづみ", "せんめい", "鮮明", "船名"), ("ふなづみ", "せんめい", "宣明", "船名"),
         ("とくゆうな", "ほうこう", "方向", "芳香"),
+        // しようがない の活用形(しようがなかった/しようがなく)。misc の登録語 しようがない は終止形だけ先頭になり、活用形は
+        // 使用+が+なかった が先頭だった(ユーザ指定 3801)。使用がなかった は 2 番め
+        ("しようがなか", "しようがなか", "使用がなか", "しようがなか"), ("しようがなく", "しようがなく", "使用がなく", "しようがなく"),
         ("かじゅう", "かひ", "可否", "果皮"), ("かじゅう", "かひ", "歌碑", "果皮"),
         // 北から+冷たい(風/空気)。来たから+冷たい はまれ(きたからつめたいかぜ が 来たから冷たい風 だった。ユーザ報告 3697)。
         // かぜ だけ(台風が来たから風が強い)は手掛かりにしない。の が続く形(来たからの)は連文節の規則(3697)で直る
@@ -2616,7 +2619,10 @@ extension KanaKanjiConverter {
                     || Self.isOruAuxiliaryReading(segmentReading)
                     // 長音で終わる終助詞クラスタ(よねー/ねー/なー)も常設 — 辞書にカタカナ(ヨネー)だけがあると素通り補完が走らず、
                     // 嬉しい+よね+ー(長音 1 字は高額)になって 宇連+強いよ+ねー に負けていた(うれしいよねー/ほしいよねー。3768、ユーザ報告)
-                    || (segmentReading.hasSuffix("ー") && Self.multiClauseFinalParticleReadings.contains(segmentReading)) {
+                    || (segmentReading.hasSuffix("ー") && Self.multiClauseFinalParticleReadings.contains(segmentReading))
+                    // する の意向形 しよう も常設 — 辞書は 使用/仕様/試用 だけでかなのノードが立たず、しようか考える が
+                    // し+ヨウ化+考える、しようかな が 使用かな になっていた(3800。後ろの か への加点と組で効く)
+                    || (len == 3 && segmentReading == "しよう") {
                     add(segmentReading, isDictWord: false, isCurated: false)
                 }
 
@@ -5450,6 +5456,20 @@ extension KanaKanjiConverter {
                         if node.surfaceID == SID.おき, node.isKanaIdentity, Self.isNumericCompoundSurface(prevNode.surface) {
                             cost -= Self.multiClauseOkiAfterNumericBonus
                         }
+                        // 意向形の ようか と同じ読みの 八日(定数コメント参照。3800)。整数 ID の判定を先に
+                        if node.surfaceID == SID.八日, let prevTail = prevNode.surface.last,
+                            !Self.multiClauseYoukaAllowedPrevTails.contains(prevTail) {
+                            cost += Self.multiClauseYoukaAfterStemPenalty
+                        }
+                        // 意向形+か(定数コメント参照。3800)。整数 ID と 1 字の比較だけ
+                        // する の意向形 しよう はかなの語として立つ(活用派生でない)ので、表記で見る
+                        // かな(しようかな/行こうかな)も同じ(3801: しようかな が 使用かな だった)
+                        if node.surfaceID == SID.か || node.surfaceID == SID.かな, node.isKanaIdentity,
+                            prevNode.isInflectionDerived || prevNode.surfaceID == SID.しよう,
+                            node.start >= 2, chars[node.start - 1] == "う",
+                            chars[node.start - 2] == "よ" || Self.multiClauseVolitionalOColumn.contains(chars[node.start - 2]) {
+                            cost -= Self.multiClauseKaAfterVolitionalBonus
+                        }
                         // 述語の連体形+ほう は 方(定数コメント参照。3797)。整数 ID と長さの判定だけ
                         // 後ろが が の形(やめたほうがいい)は、かなの ほうがいい を先頭にしてある読みがあるので触らない
                         if node.surfaceID == SID.方, node.end - node.start == 2,
@@ -7338,6 +7358,11 @@ extension KanaKanjiConverter {
             for index in pathIndices {
                 let node = nodes[index]
                 guard node.isKanaIdentity, node.reading.count >= 2, !node.isCurated else {
+                    continue
+                }
+                // する の意向形 しよう(常設のかなノード)は、seed の しよう(使用 が先頭)とは別の語なので非正書と見なさない
+                // (しようかな が全かなとして捨てられ、使用かな が先頭だった。3801)
+                if node.surfaceID == SID.しよう {
                     continue
                 }
                 // seed 宣言のある読みは人手の並びが正。かなが先頭でなければ非正書(ちかく=近く が先頭)。
