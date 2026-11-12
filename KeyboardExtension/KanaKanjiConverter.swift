@@ -859,6 +859,14 @@ final class KanaKanjiConverter {
             if let kanjiScore = scores[kanjiForm], scores[arabicForm] != nil {
                 scores[arabicForm] = kanjiScore + (arabicBand - kanjiBand)
             }
+            // かなが先頭の読み(いつか。seed の先頭がかな)では、日付の 2 つの形をかなのすぐ次へ(ユーザ指定 3794: 人名の いつか さんは
+            // 滅多にいないので、人名 28 件の後ろでなく いつか、5日、五日、人名… の順に)
+            if KanaKanjiSeedDictionary.seed[reading]?.first == reading, let kanaScore = scores[reading] {
+                let ordered = numeralStyle.kanjiBeforeArabic ? [kanjiForm, arabicForm] : [arabicForm, kanjiForm]
+                for (offset, form) in ordered.filter({ scores[$0] != nil }).enumerated() {
+                    scores[form] = kanaScore - 1 - offset
+                }
+            }
         }
 
         // 漢数字+ケ/ヶ の辞書語(二ケ所/五ケ所/六ヶ所/三ヶ日 等)は地名の収穫で、数詞複合(2か所)が

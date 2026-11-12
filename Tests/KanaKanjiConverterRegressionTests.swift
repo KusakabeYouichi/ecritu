@@ -30118,4 +30118,26 @@ extension KanaKanjiConverterRegressionTests {
         converter.setNumeralStylePreference(.arabicFirst)
     }
 
+    // いつか 単独は かなの いつか が先頭(3794、ユーザ報告: 人名が 20 件並んだ後ろの 24 番めだった)。五日/5日 も候補に残る
+    func testRegressionItsukaKanaLeads3794() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        converter.invalidateCandidateCache()
+        let list = converter.candidates(for: "いつか", limit: 48, systemCandidateMode: .surface)
+        // 日付の形はかなのすぐ次(X.18 の順)。人名(伊津佳/一香…)はその後ろ
+        XCTAssertEqual(Array(list.prefix(3)), ["いつか", "5日", "五日"], "\(list.prefix(6))")
+        converter.setNumeralStylePreference(.kanjiFirst)
+        defer { converter.setNumeralStylePreference(.arabicFirst) }
+        converter.invalidateCandidateCache()
+        XCTAssertEqual(Array(converter.candidates(for: "いつか", limit: 48, systemCandidateMode: .surface).prefix(3)), ["いつか", "五日", "5日"])
+        converter.setNumeralStylePreference(.arabicFirst)
+        converter.invalidateCandidateCache()
+        for (reading, expected) in ["いつかいきたい": "いつか行きたい", "いつかはわかる": "いつかは分かる", "それはいつか": "それはいつか",
+                                    "いつかかん": "5日間"] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            let shown = multi.isEmpty ? converter.candidates(for: reading, limit: 12, systemCandidateMode: .surface) : multi
+            XCTAssertEqual(shown.first, expected, reading)
+        }
+    }
+
 }
