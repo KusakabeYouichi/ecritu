@@ -4,8 +4,9 @@
 入力の列: 読み, 期待, 文番号, 印, 先頭の候補, ok/ng, 期待が候補列に有るか, 上位 6 件
 出力:
   c_ok.tsv        正しく変換できた(先頭が期待と一致)
-  c_near.tsv      ほぼ一致(3775、ユーザ指定): 違いが「カタカナで書くか原語で書くか」だけ(語彙に同じ読みで両方が載る語。near_match.py)。
-                  何番めにあるかは問わない。確認表には出さない。読みが同じ別の語(コナ⇔粉)は入らない
+  c_near.tsv      ほぼ一致(3775、ユーザ指定): 違いが「カタカナで書くか原語で書くか」(語彙に同じ読みで両方が載る語)・作る/造る・
+                  書きかえの組(蒸溜/蒸留)・漢数字/算用数字 だけ(near_match.py の NEAR_KINDS)。何番めにあるかは問わない。
+                  確認表には出さない。読みが同じ別の語(コナ⇔粉)は入らない
   c_policy.tsv    先頭は違うが écritu の表記方針(かなで書く言葉)の範囲(事→こと 等)。直さない
   c_style.tsv     期待(書き手)がかな書きで écritu は漢字(あと→後、みそ汁→味噌汁)。書き手の流儀なので直さない
   a_register.tsv  期待の表記が候補列に無い(語の登録が要る見込み。読みの推定違いも混ざる)
@@ -114,7 +115,7 @@ def main():
         if expected in top.split("|")[:2] and latin_katakana_only_difference(expected, first):
             buckets["c_ok"].append([reading, expected, first, top])
             continue
-        # ほぼ一致: カタカナで書くか原語で書くかだけの違い(何か所あっても、何番めでも。3775)
+        # ほぼ一致: カタカナで書くか原語で書くか・作る/造る・書きかえ・数字 だけの違い(何か所あっても、何番めでも。3775)
         if first and near_match.is_near_match(expected, first, vocab_readings, kakikae_pairs):
             buckets["c_near"].append([reading, expected, first, top])
             continue

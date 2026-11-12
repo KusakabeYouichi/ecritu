@@ -13,7 +13,7 @@
   hira_kata   ひらがなかカタカナか(りんご⇔リンゴ、びん⇔ビン)
   kana_kanji  片方がひらがな、片方が漢字を含む(よい⇔良い、こと⇔事。酸⇔さん のような取り違えも混ざるので、許すかは別に判断する)
   other       上のどれでもない(別の語・区切りの違い)
-classify.py は latin_kana だけで違う行を c_near.tsv に分け、確認表には出さない。"""
+classify.py は latin_kana・tsukuru・kakikae・number だけで違う行(NEAR_KINDS)を c_near.tsv に分け、確認表には出さない。"""
 import difflib
 import os
 import re
@@ -27,7 +27,7 @@ KAKIKAE_ENTRY = re.compile(r"<key>before</key><string>([^<]+)</string><key>after
 # 原語とカタカナの両方が載る語彙(ワイン・酒・一般の固有名)
 VOCAB_FILES = ["vin.plist", "vin-latin-candidates.plist", "vin-acronyme.plist", "sake.plist", "misc.plist", "it.plist",
                "compenser.plist", "acronymes.plist"]
-ORDER = ["latin_kana", "tsukuru", "kakikae", "okurigana", "number", "hira_kata", "kana_kanji"]
+ORDER = ["latin_kana", "tsukuru", "kakikae", "number", "okurigana", "hira_kata", "kana_kanji"]
 KANJI_DIGITS = set("〇一二三四五六七八九十百千万億")
 MAKE = set("作造創")
 
@@ -183,7 +183,12 @@ def pair_ok(x, y, readings):
         is_latin(x) and is_katakana(y) and same_word_in_two_scripts(y, x, readings))
 
 
-def is_near_match(expected, first, readings, kakikae, allowed=("latin_kana",)):
+# 『ほぼ一致』として許す種類(ユーザ指定 2026-11-12)。取り違えが混ざらない 4 つ。送り仮名・ひらがな/カタカナ・かな/漢字 は
+# 変換できていない行(マデラ→までら、酸→さん)が混ざるので入れない
+NEAR_KINDS = ("latin_kana", "tsukuru", "kakikae", "number")
+
+
+def is_near_match(expected, first, readings, kakikae, allowed=NEAR_KINDS):
     kinds = kinds_of_line(expected, first, readings, kakikae)
     return bool(kinds) and all(kind in allowed for kind in kinds)
 
