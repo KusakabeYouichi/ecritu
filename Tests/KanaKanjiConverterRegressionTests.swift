@@ -29784,7 +29784,11 @@ extension KanaKanjiConverterRegressionTests {
             "ちりにくわしい": "地理に詳しい",
             "ちりのてすと": "地理のテスト",
             "れきしやちり": "歴史や地理",
-            "じょうりゅうのさくしからかりゅうのなかのしにいちし": "上流の佐久市から下流の中野市に位置し"
+            "じょうりゅうのさくしからかりゅうのなかのしにいちし": "上流の佐久市から下流の中野市に位置し",
+            // ルエダ は人名の 瑠江+だ より先(語の値段の上限。3776・3777、ユーザ指定)
+            "るえだが": "ルエダが",
+            "るえださんのわいん": "ルエダ産のワイン",
+            "ばんはるえだ": "ばんはRueda"
         ]
         for (reading, expected) in expectations {
             XCTAssertEqual(converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).first, expected, reading)
