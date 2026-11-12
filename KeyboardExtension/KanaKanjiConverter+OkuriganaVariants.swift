@@ -24,6 +24,29 @@ extension KanaKanjiConverter {
         // 送り仮名が正しい方だけ。本則だけ の設定のときに 茹った を出さない)
         "茹だ"
     ]
+    // 告示の許容の表には無いが、辞書に同じ型の組がある語(3805、ユーザ指定: 送り仮名が本則でない候補は抑制する)。
+    // 辞書の全読みを走査し、漢字列が同じで語幹の中のかな 1 字だけが違う組(700 型余り)のうち、2 つ以上の読みに現れ、
+    // 向きが確かなものを挙げる。上の 2 つの表と違い、省かれたかなの後ろにかなが続くときだけ照合する(語末の 1 字を省く形
+    // (受け/受、分け/分)は名詞化や人名・部首名の供給と重なり、省かれたかなの後ろが漢字の形(振る舞う/振舞う)は複合語の
+    // 前部要素の設定で扱うため)。
+    // 平ら(平らか/平か)は 西平らさん/西平さん(姓)を巻き込むので入れない。
+    // 短い方が本則でない(合す/上る(あがる)/掛る/過す/逃す(にがす)/立る/繋る)
+    static let okuriganaStemShortVariantExtraPairs: Set<String> = [
+        "合わ", "上が", "掛か", "明か", "替わ", "曲が", "下が", "止ま", "分か", "詰ま", "下ろ", "溜ま", "泊ま", "向こ", "預か",
+        "過ご", "締ま", "逃が", "込め", "住ま", "尽く", "計ら", "兼ね", "飛ば", "揺る", "晴ら", "焦が", "懸か", "延ば", "立て",
+        "冷や", "交わ", "覚ま", "澄ま", "留ま", "伸ば", "慣ら", "馴ら", "集ま", "降ろ", "上げ", "決ま", "振る", "散ら", "換え",
+        "混じ", "滅ぼ", "恐ろ", "損な", "鳴ら", "抜け", "剥が", "剝が", "醒ま", "透か", "果た", "結わ", "敢え", "聞か", "忌ま",
+        "埋も", "悔や", "惜し", "及ぼ", "分け", "掛け", "恥ず", "少な", "済ま", "停ま", "楽し", "替え", "柔ら", "軟ら", "沸か",
+        "揚が", "味わ", "暖か", "受け", "大き", "納ま", "関わ", "固ま", "汚ら", "加わ", "枯ら", "肥や", "逆ら", "定ま", "親し",
+        "払え", "焦れ", "頼も", "過ぎ", "忙し", "費や", "囚わ", "情け", "懐か", "悩ま", "賑わ", "励ま", "始ま", "巡ら",
+        "更か", "膨ら", "踏ま", "隔た", "笑ま", "紛ら", "纏ま", "揺ら", "宜し", "繋が", "摑ま", "掴ま", "転が"
+    ]
+    // 長い方が本則でない(回わす/返えす/汚ない/輝やく/驚ろく/困まる/働らき)
+    static let okuriganaStemLongVariantExtraPairs: Set<String> = [
+        "回わ", "廻わ", "返え", "帰え", "汚な", "汚ね", "汚た", "止ど", "輝や", "慎し", "労わ", "顕わ", "擽ぐ", "喋べ", "珍ら",
+        "嘲け", "新ら", "誤ま", "訝か", "失な", "寛ろ", "陥い", "驚ろ", "難か", "困ま", "叫け", "触わ", "叱か", "湿め", "企ら",
+        "呟や", "働ら", "開ら", "閃め", "辱し"
+    ]
     // 通則4 の許容: 活用のある語から転じた名詞で末尾の送り仮名を省ける語(届け/願い/狩り/答え/問い/祭り/群れ。
     // 曇り/晴れ も告示にあるが天気の 曇/晴 が固定表記なので慣用語として触らない)。長い方(送った方)が本則。
     // 「末尾のかなが省かれた組」を機械的に拾うと 甘い/甘(部首名の供給)、勇む/勇・茂る/茂・渡り/渡(人名)、
@@ -150,6 +173,16 @@ extension KanaKanjiConverter {
         if removed.count == 1, removed[0] > 0,
             okuriganaTsusoku2ShortVariantPairs.contains(String(long[(removed[0] - 1)...removed[0]])) {
             return OkuriganaVariantRelation(standard: longString, variant: shortString, group: .stemInternal)
+        }
+        // 告示の表に無い、語幹の中の組(定数コメント参照。3805)。省かれたかなの後ろにかなが続くときだけ
+        if removed.count == 1, removed[0] > 0, removed[0] + 1 < long.count, isHiragana(long[removed[0] + 1]) {
+            let key = String(long[(removed[0] - 1)...removed[0]])
+            if okuriganaStemShortVariantExtraPairs.contains(key) {
+                return OkuriganaVariantRelation(standard: longString, variant: shortString, group: .stemInternal)
+            }
+            if okuriganaStemLongVariantExtraPairs.contains(key) {
+                return OkuriganaVariantRelation(standard: shortString, variant: longString, group: .stemInternal)
+            }
         }
         // 複合語の前部要素: 省略字の直後に漢字が続く(取り|扱う、打ち|合わせ)。長い方が本則
         if removed.contains(where: { index in index + 1 < long.count && isKanji(long[index + 1]) }) {

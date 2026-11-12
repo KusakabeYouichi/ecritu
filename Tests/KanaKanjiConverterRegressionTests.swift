@@ -5468,7 +5468,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             ("かいから", ["回から", "会から", "貝殻"]),
             ("そしきない", ["組織内"]),
             ("かわない", ["買わない", "飼わない", "川内", "かわない"]),
-            ("きたない", ["汚い", "きたない", "汚ない", "汚たない", "キタナイ"]),
+            // 3805 から 汚ない/汚たない(送り仮名が本則でない形)は出さない
+            ("きたない", ["汚い", "きたない", "キタナイ"]),
             ("ぎたない", ["汚い", "ぎたない"]),
             ("ほっかいどうない", ["北海道内"]),
             ("こうない", ["構内", "校内"]),
@@ -16914,8 +16915,8 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(rel("終わる", "終る").map { "\($0.0)|\($0.1)|\($0.2)" }, "終わる|終る|stemInternal")
         XCTAssertEqual(rel("食い終ってる", "食い終わってる").map { "\($0.0)|\($0.1)|\($0.2)" }, "食い終わってる|食い終ってる|stemInternal")
         XCTAssertEqual(rel("当たり", "当り").map { "\($0.0)|\($0.2)" }, "当たり|stemInternal")
-        // リスト外の語幹の中のゆれ(辞書の誤表記 困まる/謝まる/為め)は触らない
-        XCTAssertNil(rel("困まった", "困った"))
+        // 困まる は 3805 から長い方が本則でない組。リスト外の語幹の中のゆれ(辞書の誤表記 謝まる/為め)は触らない
+        XCTAssertEqual(rel("困まった", "困った").map { "\($0.0)|\($0.2)" }, "困った|stemInternal")
         XCTAssertNil(rel("謝まって", "謝って"))
         XCTAssertNil(rel("為め", "為"))
         XCTAssertEqual(rel("代わり", "代り").map { "\($0.0)|\($0.2)" }, "代わり|stemInternal")
@@ -25161,7 +25162,8 @@ extension KanaKanjiConverterRegressionTests {
             ("しんこく", ["深刻", "申告", "清国", "神国", "新穀"], ["親告", "新国", "秦国"]),
             ("はすう", ["端数", "歯数", "波数"], ["羽数"]),
             ("ぐんせい", ["群生", "軍政", "郡制", "軍制"], ["群棲", "群星"]),
-            ("くみあわせ", ["組み合わせ", "組み合せ", "組合せ", "組合わせ"], ["組みあわせ"]),
+            // 3805 から 合せ(合わせ の送り仮名が足りない形)は 本則だけ の設定で出さない
+            ("くみあわせ", ["組み合わせ", "組合わせ"], ["組みあわせ"]),
             ("こみち", ["小道", "小径", "径"], ["小途"]),
             ("しろう", ["四郎", "士郎"], ["屍蝋", "指弄", "死臘"]),
             ("ちゅうしん", ["中心", "中信", "注進", "忠臣", "中進"], ["中新", "中震", "忠心"]),
@@ -30273,6 +30275,30 @@ extension KanaKanjiConverterRegressionTests {
         }
         // 意向形一般の加点は上げない(縁+退こう+か にしない)
         XCTAssertFalse(converter.multiClauseCandidates(for: "えんのこうか", systemCandidateMode: .surface).first?.contains("退こう") ?? true)
+    }
+
+    // 3805(ユーザ指定): 送り仮名が本則でない候補(合せる/過した/回わした/困まった/情ない)は 本則だけ の設定で出さない
+    func testRegressionOkuriganaExtraPairs3805() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        defer { converter.setOkuriganaVariantPreference(.default) }
+        converter.setOkuriganaVariantPreference(.default)
+        for (reading, kept, dropped) in [
+            ("あわせる", "合わせる", ["合せる"]), ("すごした", "過ごした", ["過した"]), ("まわした", "回した", ["回わした", "廻わした"]),
+            ("かえした", "返した", ["返えした"]), ("きたない", "汚い", ["汚ない", "汚たない"]), ("おどろいた", "驚いた", ["驚ろいた"]),
+            ("こまった", "困った", ["困まった"]), ("とまった", "止まった", ["止った", "泊った", "停った", "留った"]),
+            ("なさけない", "情けない", ["情ない"]), ("たのしい", "楽しい", ["楽い"]), ("うけた", "受けた", ["受た"]),
+            ("いたわる", "労る", ["労わる"]), ("むこうがわ", "向こう側", ["向う側"]),
+        ] {
+            let list = converter.candidates(for: reading, limit: 30, systemCandidateMode: .surface)
+            XCTAssertTrue(list.contains(kept), "\(reading) \(list.prefix(8))")
+            for surface in dropped {
+                XCTAssertFalse(list.contains(surface), "\(reading) \(surface)")
+            }
+        }
+        // 語末の 1 字を省く形・後ろが漢字の形はこの表では触らない
+        XCTAssertEqual(KanaKanjiConverter.okuriganaVariantRelation("振る舞う", "振舞う")?.group, .compoundFront)
+        XCTAssertNil(KanaKanjiConverter.okuriganaVariantRelation("引き分け", "引き分"))
     }
 
     // 月名はどれもアラビア数字の形も出す(いちがつ だけ 1月 が出ていた)。月と日の表記は揃える(五月2日 は出さない)。
