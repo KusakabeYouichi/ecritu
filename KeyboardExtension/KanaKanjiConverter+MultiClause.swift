@@ -941,6 +941,8 @@ extension KanaKanjiConverter {
         ("こうじをつくるためににほんしゅづくりのこうていで", "こうじをつくるためににほんしゅづくりのこうていで", "^工事を", "麹を"), ("もるどゔぁなどをとおりこっかいへつづくかわです", "もるどゔぁなどをとおりこっかいへつづくかわです", "り国会へ", "り黒海へ"),
         // は+ルエダ が人名の 春枝(はるえだ)に割れる(番はRueda が ばん春枝 だった。3777、ユーザ指定: 瑠江/春枝 より ルエダ)
         ("ばんはるえだ", "はるえだ", "春枝", "はRueda"),
+        // 象の鼻は長い(3784)
+        ("ぞうのはなはなが", "ぞうのはなは", "像のは那覇長", "象の鼻は長"),
         // チリ(国名)を連文節でも通常の語にした(3776)ので、塵/地理 の言い回しを守る
         ("ちりもつも", "ちりも", "チリも積も", "塵も積も"), ("ちりがつも", "ちりが", "チリが積も", "塵が積も"), ("ちりひとつ", "ちりひとつ", "チリ1つ", "塵一つ"),
         ("ちりひとつ", "ちりひとつ", "チリ一つ", "塵一つ"), ("ちりにくわし", "ちりに", "チリに詳", "地理に詳"), ("ちりのてすと", "ちりの", "チリのテスト", "地理のテスト"),
@@ -6127,6 +6129,21 @@ extension KanaKanjiConverter {
                             prevNode.isKanaIdentity,
                             Self.multiClauseCaseParticleSurfacesID.contains(prevNode.surfaceID) {
                             cost = min(cost, prevCost + Self.multiClauseFinalParticleAfterPredicateCost)
+                        }
+                        // 連体の の+は+文末の な(定数コメント参照。3784)。上の底上げ(1200)の後に置く。の+は と 1 語の のは の両方
+                        // の の前が用言(言ったのはな/行くのはな)のときは の が準体助詞なので対象外
+                        if node.isKanaIdentity, node.end == n, node.surface == "な", prevNode.isKanaIdentity {
+                            var noHeadIndex = -2
+                            if prevNode.surface == "のは" {
+                                noHeadIndex = backPointer[prevIdx]
+                            } else if prevNode.surfaceID == SID.は, backPointer[prevIdx] >= 0,
+                                nodes[backPointer[prevIdx]].isKanaIdentity, nodes[backPointer[prevIdx]].surfaceID == SID.の {
+                                noHeadIndex = backPointer[backPointer[prevIdx]]
+                            }
+                            if noHeadIndex >= 0, !nodes[noHeadIndex].isInflectionDerived, !nodes[noHeadIndex].isDictionaryFormPredicate,
+                                !nodes[noHeadIndex].isKanaIdentity {
+                                cost += Self.multiClauseNoWaSentenceFinalNaPenalty
+                            }
                         }
                         // 文末の終助詞「な」直前が非述語(地名/名詞)なら減点(三田な を避け 見た+な を優先)。
                         // 助詞(から/まで 等)直後の な は正当(遅いからな)なので免除する。

@@ -29863,4 +29863,22 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "なまえをつけられる", systemCandidateMode: .surface).first, "名前を付けられる")
     }
 
+    // さくらのはな が 桜のはな、うめのはな が 梅のはな だった(3784、ユーザ指定)。名詞+の+は+文末の な の分割を下げる。
+    // 用言+のは+な(言ったのはな)と それはな はそのまま
+    func testRegressionNoHana3784() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(shownCandidates3765("さくらのはな").first, "桜の花")
+        XCTAssertEqual(shownCandidates3765("うめのはな").first, "梅の花")
+        XCTAssertEqual(shownCandidates3765("ばらのはな").first, "薔薇の花")
+        XCTAssertEqual(shownCandidates3765("にわのはな").first, "庭の花")
+        XCTAssertEqual(shownCandidates3765("ぞうのはな").first, "象の鼻")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "ぞうのはなはながい", systemCandidateMode: .surface).first, "象の鼻は長い")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "さくらのはながさく", systemCandidateMode: .surface).first, "桜の花が咲く")
+        for reading in ["いったのはな", "それはな"] {
+            let top = shownCandidates3765(reading).first ?? ""
+            XCTAssertTrue(top.hasSuffix("はな"), "\(reading) → \(top)")
+        }
+    }
+
 }
