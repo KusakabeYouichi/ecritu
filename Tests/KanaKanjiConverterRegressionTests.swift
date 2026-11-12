@@ -29915,8 +29915,11 @@ extension KanaKanjiConverterRegressionTests {
         for (reading, expected) in expectations {
             XCTAssertEqual(converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).first, expected, reading)
         }
-        XCTAssertTrue(converter.multiClauseCandidates(for: "うえのさんにあう", systemCandidateMode: .surface).first?.hasPrefix("上野さんに") ?? false)
-        XCTAssertEqual(converter.multiClauseCandidates(for: "にしたいらさん", systemCandidateMode: .surface).first, "西平さん")
+        // 人+に/と+会う(連語表。3787、ユーザ指定)。条件に合う/気が合う はそのまま
+        for (reading, expected) in ["うえのさんにあう": "上野さんに会う", "ともだちとあった": "友達と会った", "かれにあいたい": "彼に会いたい",
+                                    "じょうけんにあう": "条件に合う", "かのじょとはきがあう": "彼女とは気が合う"] {
+            XCTAssertEqual(converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).first, expected, reading)
+        }
     }
 
 }
