@@ -29832,4 +29832,18 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "すしくってる", systemCandidateMode: .surface).first, "寿司食ってる")
     }
 
+    // うめ は命令形(生め/産め…)が先で 梅 が 9 番めだった。ならしうんてん は 奈良市運転 が先頭だった(3781、ユーザ指定)
+    func testRegressionUmeAndNarashiUnten3781() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(
+            Array(converter.candidates(for: "うめ", limit: 20, systemCandidateMode: .surface).prefix(4)), ["梅", "うめ", "生め", "産め"]
+        )
+        let narashi = shownCandidates3765("ならしうんてん")
+        XCTAssertEqual(Array(narashi.prefix(2)), ["慣らし運転", "ならし運転"])
+        XCTAssertEqual(converter.multiClauseCandidates(for: "ならしうんてんをする", systemCandidateMode: .surface).first, "慣らし運転をする")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "ならしにすんでいる", systemCandidateMode: .surface).first, "奈良市に住んでいる")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "うめくってる", systemCandidateMode: .surface).first, "梅食ってる")
+    }
+
 }
