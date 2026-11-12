@@ -30172,4 +30172,22 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(converter.candidates(for: "つながる", limit: 8, systemCandidateMode: .surface).prefix(2)), ["繋がる", "つながる"])
     }
 
+    // 繋がる の活用形のかな(つながってる)は 2 番め(3799、ユーザ指定)。送り仮名が足りない 繋る/繫る は出さない
+    func testRegressionTsunagaruKanaSecond3799() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        converter.invalidateCandidateCache()
+        for (reading, first, second) in [
+            ("つながってるほう", "繋がってる方", "つながってる方"), ("つながってるほうは", "繋がってる方は", "つながってる方は"),
+            ("つながっているほう", "繋がっている方", "つながっている方"), ("でんわがつながっている", "電話が繋がっている", "電話がつながっている"),
+        ] {
+            let list = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(Array(list.prefix(2)), [first, second], reading)
+            XCTAssertFalse(list.contains(where: { $0.contains("繋って") || $0.contains("繫") }), "\(list)")
+        }
+        let single = converter.candidates(for: "つながってる", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(2)), ["繋がってる", "つながってる"])
+        XCTAssertFalse(single.contains(where: { $0.contains("繋って") || $0.contains("繫") }), "\(single)")
+    }
+
 }

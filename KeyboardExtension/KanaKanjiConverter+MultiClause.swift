@@ -2302,21 +2302,28 @@ extension KanaKanjiConverter {
                     inflectedSurfacesBySpan[spanKeyByStart[start][end]] = Set(inflected)
                     // このスパンを脱活用した基底読みが seed順ボーナス allowlist に含まれるか。
                     // (つかえた/つかえ→つかえる 等。含まれる時だけ先頭活用形にボーナス)
-                    let spanBaseInSeedOrderAllowlist: Bool = {
+                    // 同じ走査で、かなの活用形も載せる基底の読み(繋がる。定数コメント参照。3799)かも見る
+                    let (spanBaseInSeedOrderAllowlist, spanBaseSuppliesKanaSecond): (Bool, Bool) = {
                         guard let lastChar = segmentReading.last,
                             let ruleIndices = Self.deinflectionRulesByReadingLastCharacter[lastChar] else {
-                            return false
+                            return (false, false)
                         }
+                        var inAllowlist = false
+                        var suppliesKana = false
                         for index in ruleIndices {
                             let rule = Self.allInflectionRules[index]
                             guard !rule.readingSuffix.isEmpty, segmentReading.hasSuffix(rule.readingSuffix) else { continue }
                             let stem = segmentReading.dropLast(rule.readingSuffix.count)
                             guard !stem.isEmpty else { continue }
-                            if Self.multiClauseSeedOrderInflectionBaseReadings.contains(stem + rule.baseReadingSuffix) {
-                                return true
+                            let base = String(stem) + rule.baseReadingSuffix
+                            if Self.multiClauseSeedOrderInflectionBaseReadings.contains(base) {
+                                inAllowlist = true
+                            }
+                            if Self.multiClauseKanaSecondInflectionBaseReadings.contains(base) {
+                                suppliesKana = true
                             }
                         }
-                        return false
+                        return (inAllowlist, suppliesKana)
                     }()
                     // かな識別(surface==読み)は原則除外(かなエコー防止)。ただし活用エンジンが
                     // かなを第1候補に据えた場合=基底並べ替えが isLMKanaPreferred でかな基底を
@@ -2342,6 +2349,7 @@ extension KanaKanjiConverter {
                         // みやすくなった が 見+やすく+なった で割高になり 宮+酸くなった に負けた(定数コメント参照。3653)
                         || Self.isAuxiliaryAdjectiveKanaInflectionReading(segmentReading)
                         || (Self.multiClauseSeed(segmentReading)?.contains(segmentReading) ?? false)
+                        || spanBaseSuppliesKanaSecond
                         || (len <= 3 && Self.ichidanRenyouSuppliedForEmptyStem(segmentReading, wordCostsAreNegligible: { Self.wordCostsAreNegligible(costMap) }))
                     // 関西方言の ている→とる 縮約形(騙しとった/欺しとった/瞞しとった)は標準形の後ろに回してから
                     // topK を採る。surface モードは 欺す/瞞す の異体が残るため縮約形だけで枠が埋まり、
