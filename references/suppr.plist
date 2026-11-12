@@ -129,6 +129,7 @@
 	<dict><key>phrase</key><string>二タ</string><key>shortcut</key><string>ふた</string><key>pos</key><string>名詞</string></dict>	<!-- 二タ(二+カタカナの タ): Sudachi core_lex.csv 114814 行の地名(二タ又/二タ子/二タ見 等の ふた の書き方)。単独で ふた と打って選ぶ語ではなく、ふた の先頭に出ていた(ユーザ報告 3739) -->
 
 	<!-- ■ 収穫ノイズ: レア人名・レア姓(1ノードで安く、合成や連文節を汚す) -->
+	<dict><key>phrase</key><string>羅流</string><key>shortcut</key><string>らる</string></dict>	<!-- 羅流(らる): Sudachi の人名(名)。ふくすうかいつけられる の候補に 複数回つけ羅流 が出ていた(ユーザ報告 3782) -->
 	<dict><key>phrase</key><string>亜璃</string><key>shortcut</key><string>ある</string><key>pos</key><string>名詞</string></dict>	<!-- 亜璃/亜留/阿留(ある): レア人名の収穫。あるな の候補に 亜璃な/亜留な/阿留な の意味のない合成が並んでいた(ユーザ指定 3748) -->
 	<dict><key>phrase</key><string>亜留</string><key>shortcut</key><string>ある</string><key>pos</key><string>名詞</string></dict>
 	<dict><key>phrase</key><string>阿留</string><key>shortcut</key><string>ある</string><key>pos</key><string>名詞</string></dict>

@@ -820,6 +820,7 @@
 	<dict><key>phrase</key><string>しか知らない</string><key>shortcut</key><string>しかしらない</string></dict>	<!-- しか知らない(副助詞しか+知らない の慣用連語): 占い師+かしら+ないが 等の誤区切りに勝たせる -->
 	<dict><key>phrase</key><string>顔</string><key>shortcut</key><string>かお</string></dict>	<!-- 顔: curated のか(疑問形)が 〜のかお を のか+お に分断し 顔 のスパンが消える(あんたのかおなんかいもみたい→あんたのかお南海揉みたい、変種に 乃佳お 等)。ろーまにいたる事件の処方箋どおり、分断される側の 顔 も curated 化して同床で文節数の少ない区切りを勝たせる -->	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>正規化</string><key>shortcut</key><string>せいきか</string></dict>	<!-- 正規化: 単文節では先頭だが、連文節で 世紀+か(疑問)に分断されて 世紀か が先頭だった(ユーザ報告 3602) -->
+	<dict><key>phrase</key><string>慣らし運転</string><key>shortcut</key><string>ならしうんてん</string><key>pos</key><string>名詞</string></dict>	<!-- 慣らし運転: 奈良市+運転 に分断されて 奈良市運転 が先頭だった(ユーザ報告 3781)。LM に 1 語で無い常用語 -->
 
 	<!-- ■ 同音・同読みの優先順の是正(コーパスのコスト/バイアスを頻度実感に寄せる) -->
 	<dict><key>phrase</key><string>吉野家</string><key>shortcut</key><string>よしのや</string></dict>	<!-- 吉野家: Sudachi に有るが wc10000(収穫底値)で 吉野屋/吉ノ谷 と同列に後ろへ回され、吉野+や の合成が先頭だった(ユーザ報告 3380)。牛丼チェーンの社名 -->	<!-- Sudachiにもある -->
