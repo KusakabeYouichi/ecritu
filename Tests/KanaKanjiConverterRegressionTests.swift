@@ -29899,4 +29899,24 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // うえのさんにあう が 上のさんに遭う、なかのさんはげんきです が 中のさんは元気です だった(3786、ユーザ指定)。
+    // seed に人名が載る読み(うえの: 上の・上野)でも、seed で先頭の人名は敬称の前で優先する。上の本/中の人 はそのまま
+    func testRegressionUenoSan3786() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let expectations = [
+            "うえのさんにきく": "上野さんに聞く",
+            "なかのさんはげんきです": "中野さんは元気です",
+            "きたのさんがきた": "北野さんが来た",
+            "うえのほんをとる": "上の本をとる",
+            "なかのひとにきく": "中の人に聞く",
+            "つくえのうえのさんがつ": "机の上の三月"
+        ]
+        for (reading, expected) in expectations {
+            XCTAssertEqual(converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).first, expected, reading)
+        }
+        XCTAssertTrue(converter.multiClauseCandidates(for: "うえのさんにあう", systemCandidateMode: .surface).first?.hasPrefix("上野さんに") ?? false)
+        XCTAssertEqual(converter.multiClauseCandidates(for: "にしたいらさん", systemCandidateMode: .surface).first, "西平さん")
+    }
+
 }

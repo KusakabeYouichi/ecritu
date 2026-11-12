@@ -5244,9 +5244,16 @@ extension KanaKanjiConverter {
                             // seed が「この人名の並び」を決めている(ゆずか: 柚花→柚香 = seed に漢字の人名が載る)ときはその読み全体を
                             // seed に委ねる(載っていない 柚佳 だけ持ち上げると seed の並びが崩れる)。かな のように seed が
                             // かな識別と 仮名/カナ を並べているだけの読みでは、人名(佳奈)は seed の外なので優先してよい(2893)
-                            !(KanaKanjiSeedDictionary.seed[prevNode.reading]?.contains(where: { seeded in
+                            // ただし seed に載る人名のうち先頭のものは、seed の並びどおりなので優先してよい(3786)。うえの の seed は
+                            // 上の・上野・うえの で、上野 が人名の先頭。これまでは seed に人名が載るだけで加点が止まり、
+                            // うえのさんにあう が 上のさんに遭う、なかのさんは が 中のさんは だった(ユーザ指定)
+                            (KanaKanjiSeedDictionary.seed[prevNode.reading]?.first(where: { seeded in
                                 containsKanji(seeded) && personNameKindByNodeKey["\(prevNode.start)-\(prevNode.end)-\(seeded)"] != nil
-                            }) ?? false),
+                            }).map { seedFirstName in
+                                // 人名が 2 つ続く形(西+平良+さん)には広げない(にしたいらさん が 西平さん から 西平良さん になった)
+                                seedFirstName == prevNode.surface
+                                    && !(backPointer[prevIdx] >= 0 && personNameKindByNodeKey[nodes[backPointer[prevIdx]].key] != nil)
+                            } ?? true),
                             !occupationalYaSpanKeys.contains(prevNode.spanKey) {
                             cost -= Self.multiClausePersonNameBeforeHonorificBonus
                             // 収穫底値の 2 かな人名(佳奈/加奈 wc 11358)は短span床でその wc に張り付き、かな(7276)に届かない。
