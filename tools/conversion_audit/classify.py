@@ -4,6 +4,8 @@
 入力の列: 読み, 期待, 文番号, 印, 先頭の候補, ok/ng, 期待が候補列に有るか, 上位 6 件
 出力:
   c_ok.tsv        正しく変換できた(先頭が期待と一致)
+  c_near.tsv      ほぼ一致(3775、ユーザ指定): 違いが「カタカナで書くか原語で書くか」だけ(語彙に同じ読みで両方が載る語。near_match.py)。
+                  何番めにあるかは問わない。確認表には出さない。読みが同じ別の語(コナ⇔粉)は入らない
   c_policy.tsv    先頭は違うが écritu の表記方針(かなで書く言葉)の範囲(事→こと 等)。直さない
   c_style.tsv     期待(書き手)がかな書きで écritu は漢字(あと→後、みそ汁→味噌汁)。書き手の流儀なので直さない
   a_register.tsv  期待の表記が候補列に無い(語の登録が要る見込み。読みの推定違いも混ざる)
@@ -16,6 +18,9 @@ a/b には 段階(1=直すべし 2=できたら直すべし 3=直さなくてい
 """
 import os
 import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import near_match  # noqa: E402
 
 # écritu がかなで書く(漢字を先頭に出さない)語。期待側の漢字をかなに正規化して比べる
 KANA_POLICY = [
@@ -94,8 +99,9 @@ def diff_core(a, b):
 def main():
     src, outdir = sys.argv[1:3]
     os.makedirs(outdir, exist_ok=True)
-    buckets = {"c_ok": [], "c_policy": [], "c_style": [], "a_register": [], "b_logic": []}
+    buckets = {"c_ok": [], "c_near": [], "c_policy": [], "c_style": [], "a_register": [], "b_logic": []}
     lm = load_lm_surfaces()
+    vocab_readings, kakikae_pairs = near_match.load_tables()
     for line in open(src, encoding="utf-8"):
         cols = line.rstrip("\n").split("\t")
         if len(cols) < 8:
@@ -107,6 +113,10 @@ def main():
         # ラテン文字とカタカナの違いだけなら 2 番目までに入っていれば一致(ユーザ指定 3657。ラテン文字が先、カタカナが 2 番目)
         if expected in top.split("|")[:2] and latin_katakana_only_difference(expected, first):
             buckets["c_ok"].append([reading, expected, first, top])
+            continue
+        # ほぼ一致: カタカナで書くか原語で書くかだけの違い(何か所あっても、何番めでも。3775)
+        if first and near_match.is_near_match(expected, first, vocab_readings, kakikae_pairs):
+            buckets["c_near"].append([reading, expected, first, top])
             continue
         if policy_normalize(expected) == policy_normalize(first) or policy_normalize(expected) == first:
             buckets["c_policy"].append([reading, expected, first, top])
@@ -136,6 +146,7 @@ def main():
         buckets["a_register" if found == "no" else "b_logic"].append(row)
     headers = {
         "c_ok": "読み\t期待\t先頭\t上位6",
+        "c_near": "読み\t期待\t先頭\t上位6",
         "c_policy": "読み\t期待\t先頭\t上位6",
         "c_style": "読み\t期待\t先頭\t違い(期待→先頭)\t上位6",
         "a_register": "段階\t理由\t読み\t期待\t先頭\t違い(期待→先頭)\t印\t上位6",
