@@ -891,6 +891,15 @@ final class KanaKanjiConverter {
             }
         }
 
+        // 月名+日付の和語(ごがついつか→5月5日/五月五日。3805)も、生成の帯のままでは合成に負けるので同じ点に置く
+        if let monthDay = Self.monthWagoDayByReading[reading] {
+            for (form, band) in [(monthDay.arabic, arabicBand), (monthDay.surface, kanjiBand)] {
+                if let score = scores[form] {
+                    scores[form] = max(score, CandidateScore.wagoDayTailCompound + band)
+                }
+            }
+        }
+
         // 漢数字+ケ/ヶ の辞書語(二ケ所/五ケ所/六ヶ所/三ヶ日 等)は地名の収穫で、数詞複合(2か所)が
         // 作れる読みでは地名断片が rank 0 で先頭を取っていた(ユーザ指摘 2814)。生成した複合(2か所/二か所)
         // より後ろへ下げる。六ヶ所村/五ヶ所湾 のような完全な地名は読みが違うので無傷

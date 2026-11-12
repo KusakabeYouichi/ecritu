@@ -684,6 +684,21 @@ extension KanaKanjiConverter {
         }
         return result
     }
+    // 月名+日付の和語(ごがついつか/ごがつむいか/ごがつなのか)は 1 つのノードで立てる(3805、ユーザ指定: ごがついつか で 5月5日)。
+    // 日付だけの読みは格子に立てない(いつか/なのか はかなの言い回し)ので、五月+いつか のままだった。むいか は 語が+紡いか、
+    // なのか+に は ごがつなの下に に崩れていた。月名が前にあれば日付と決まる。入力の全体がこの読みのときは単文節の生成で出す。なのか だけは 五月なのか(疑問)があるので、後ろが下の字のときだけ
+    // 立てる(文末は 五月なのか のまま。入力の全体のときは 五月なのか の次に日付)
+    static let monthWagoDayByReading: [String: (surface: String, arabic: String, dayReading: String)] = {
+        var table: [String: (surface: String, arabic: String, dayReading: String)] = [:]
+        for (monthReading, month) in arabicMonthReadings {
+            for (dayReading, day) in arabicWagoDayReadings {
+                table[monthReading + dayReading] = (kanjiNumeralString(month) + "月" + kanjiNumeralString(day) + "日", "\(month)月\(day)日", dayReading)
+            }
+        }
+        return table
+    }()
+    static let multiClauseMonthWagoDayBonus = 4500
+    static let multiClauseMonthNanokaFollowerCharacters: Set<Character> = ["に", "の", "ま", "で", "、", "。"]
     // 日付の後ろに続いてよい語の表記(二日目/二日間/二日前)。この形も差し替えの対象
     static let wagoDayTailSurfaces: [[Character]] = arabicWagoDayTailSurfacesByReading.values.filter { !$0.isEmpty }.map(Array.init)
     static func wagoDayNumeralStyleOrdered(

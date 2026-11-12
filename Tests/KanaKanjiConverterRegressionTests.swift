@@ -23289,7 +23289,8 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(single("いつか", limit: 40).contains("五日"))
         converter.invalidateCandidateCache()
         // 3793 から 日付は X.18 の順(四月8日、四月八日)
-        XCTAssertEqual(Array(converter.multiClauseCandidates(for: "しがつようか", systemCandidateMode: .surface).prefix(2)), ["4月8日", "四月八日"])
+        // 3805 から 月名+日付の和語 は 1 語として単文節の生成で出る(連文節は空)
+        XCTAssertEqual(Array(single("しがつようか").prefix(2)), ["4月8日", "四月八日"])
         converter.invalidateCandidateCache()
         XCTAssertEqual(converter.multiClauseCandidates(for: "みっかぼうず", systemCandidateMode: .surface).first, "三日坊主")
     }
@@ -30233,6 +30234,30 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3805(ユーザ指定): ごがついつか は 5月5日(月名の直後の いつか/むいか/なのか は日付)。むいか は 語がつむいか、なのか+に は
+    // ごがつなの下に に崩れていた。文末の なのか は疑問(誕生日は五月なのか)のまま
+    func testRegressionMonthWagoDay3805() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        converter.setNumeralStylePreference(.arabicFirst)
+        defer { converter.setNumeralStylePreference(.arabicFirst) }
+        converter.invalidateCandidateCache()
+        func shown(_ reading: String) -> [String] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            return multi.isEmpty ? converter.candidates(for: reading, limit: 12, systemCandidateMode: .surface) : multi
+        }
+        for (reading, first, second) in [
+            ("ごがついつか", "5月5日", "五月五日"), ("ごがつむいか", "5月6日", "五月六日"), ("ごがつようか", "5月8日", "五月八日"),
+            ("ごがついつかに", "5月5日に", "五月五日に"), ("ごがつなのかに", "5月7日に", "五月七日に"),
+            ("ろくがついつかにあう", "6月5日に会う", "六月五日に会う"), ("じゅうにがつとおかまで", "12月10日まで", "十二月十日まで"),
+            ("ごがつはつかにいく", "5月20日に行く", "五月二十日に行く"), ("しがつようか", "4月8日", "四月八日"),
+        ] {
+            XCTAssertEqual(Array(shown(reading).prefix(2)), [first, second], reading)
+        }
+        XCTAssertEqual(shown("たんじょうびはごがつなのか").first, "誕生日は五月なのか")
+        XCTAssertEqual(shown("いつかいきたい").first, "いつか行きたい")
+    }
+
     // 月名はどれもアラビア数字の形も出す(いちがつ だけ 1月 が出ていた)。月と日の表記は揃える(五月2日 は出さない)。
     // 3804、ユーザ指定
     func testRegressionMonthNamesArabic3804() throws {
@@ -30261,7 +30286,7 @@ extension KanaKanjiConverterRegressionTests {
             // 月と日で数字の種類が違う候補は出さない
             XCTAssertFalse(list.contains(where: { $0.range(of: "[一二三四五六七八九十]月[0-9]|[0-9]月[一二三四五六七八九十]", options: .regularExpression) != nil }), "\(list)")
         }
-        for (reading, expected) in [("ごがつびょう", "五月病"), ("ひざしがつよい", "日差しが強い"), ("ごがついつか", "五月いつか")] {
+        for (reading, expected) in [("ごがつびょう", "五月病"), ("ひざしがつよい", "日差しが強い")] {
             XCTAssertEqual(shown(reading).first, expected, reading)
         }
         converter.setNumeralStylePreference(.kanjiFirst)

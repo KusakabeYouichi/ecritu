@@ -2527,8 +2527,14 @@ extension KanaKanjiConverter {
                     // 全網と走査で検出)。読みそのもの(後ろに 間/目 が付かない形)は格子に立てず、登録語(二日)の表記を区切りの後で
                     // 差し替える(wagoDayNumeralStyleOrdered)。間/目/前/後 が続く形は文頭だけに立てる: 入力の全体のとき(登録語のある読みは
                     // 加点つき。定数コメント参照)と、登録語のある読み+間 の後ろが助詞のとき
+                    // 月名+日付の和語(ごがついつか→5月5日/五月五日。定数コメント参照、3805)。なのか は後ろが決まった字のときだけ立てる
+                    let monthDay = len >= 6 ? Self.monthWagoDayByReading[segmentReading] : nil
+                    let monthDayAllowed = monthDay.map {
+                        $0.dayReading != "なのか" || (start == 0 && end == n)
+                            || (end < n && Self.multiClauseMonthNanokaFollowerCharacters.contains(chars[end]))
+                    } ?? true
                     let wagoDay = Self.wagoDayComposition(for: segmentReading)
-                    var wagoDayAllowed = wagoDay == nil
+                    var wagoDayAllowed = wagoDay == nil && monthDayAllowed
                     var wagoDayTailBonus = 0
                     if let wagoDay, !wagoDay.tail.isEmpty, start == 0 {
                         let dayReading = String(segmentReading.dropLast(Self.wagoDayTailReadingLength(segmentReading)))
@@ -2551,6 +2557,9 @@ extension KanaKanjiConverter {
                         suppliedNumeral = true
                         if wagoDayTailBonus > 0 {
                             seedOrderNounNodeBonuses[spanKeyByStart[start][end] + "-" + surface, default: 0] += wagoDayTailBonus
+                        }
+                        if monthDay != nil {
+                            seedOrderNounNodeBonuses[spanKeyByStart[start][end] + "-" + surface, default: 0] += Self.multiClauseMonthWagoDayBonus
                         }
                     }
                     let numeric = numericCounterCompoundCandidates(

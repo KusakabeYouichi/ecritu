@@ -364,6 +364,13 @@ extension KanaKanjiConverter {
             bodies = [("", reading)]
         }
         for (ordinalPrefix, body) in bodies {
+            // 月名+日付の和語(ごがついつか→五月五日。3805)
+            if ordinalPrefix.isEmpty, let monthDay = Self.monthWagoDayByReading[body] {
+                if seen.insert(monthDay.surface).inserted {
+                    results.append(monthDay.surface)
+                }
+                continue
+            }
             // 日付・日数の和語の読み(ふつか→二日。定義コメント参照。3793)
             if ordinalPrefix.isEmpty, let day = Self.wagoDayComposition(for: body) {
                 let text = "\(Self.kanjiNumeralString(day.value))\(day.unit)\(day.tail)"
@@ -438,6 +445,11 @@ extension KanaKanjiConverter {
             bodies = [("", reading)]
         }
         for (ordinalPrefix, body) in bodies {
+            // 月名+日付の和語(ごがついつか→5月5日。3805)
+            if ordinalPrefix.isEmpty, let monthDay = Self.monthWagoDayByReading[body] {
+                emit(monthDay.arabic)
+                continue
+            }
             // 日付・日数の和語の読み(ふつか→2日、ふつかめ→2日目。定義コメント参照。3793)
             if ordinalPrefix.isEmpty, let day = Self.wagoDayComposition(for: body) {
                 emit("\(day.value)\(day.unit)\(day.tail)")
