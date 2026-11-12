@@ -29823,4 +29823,13 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "やすくなる", systemCandidateMode: .surface).first, "安くなる")
     }
 
+    // うめくってる の候補が うめくってる/う捲ってる だけで 梅食ってる が無かった(3780、ユーザ報告)
+    func testRegressionUmeKutteru3780() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.multiClauseCandidates(for: "うめくってる", systemCandidateMode: .surface).first, "梅食ってる")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "うめくった", systemCandidateMode: .surface).first, "梅食った")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "すしくってる", systemCandidateMode: .surface).first, "寿司食ってる")
+    }
+
 }
