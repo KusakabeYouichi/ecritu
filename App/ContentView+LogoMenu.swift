@@ -1314,6 +1314,10 @@ extension ContentView {
     // 薄くする・滑らせるで補っていたが、着いたあとに上下へ動くのが残った(ユーザ指定で素直なスクロールに)。
     // 一覧を作り終える前(起動直後)に選ばれたら、残りの塊を一度に作ってから飛ぶ。作るのは次の描画なので、
     // すぐに飛ぶとまだ無いカードへの scrollTo が空振りする。0.05 秒おく(描画で主スレッドが埋まっている間は待たされる)
+    // 起動して間もないうちは、飛んでいる間に手前のカードの高さが伸びて(中身が後から入る)、1 つ手前のカードに着くことが
+    // あった(X.15 を選んで X.14、X.18 を選んで X.17。何度か試すと正しく着く。3779、ユーザ報告。高さが伸びる、は推定)。
+    // 着いたあとにもう一度同じ目印へ合わせる。高さが落ち着いていれば 2 回目は動かない(全部のカードを作る VStack なので
+    // 位置は正確。LazyVStack のころの「着いたあとに上下へ動く」は起きない)
     func startSettingsJump(_ request: SettingsJumpRequest, proxy: ScrollViewProxy) {
         SettingsJumpHighlight.shared.anchorID = nil
         guard settingsCardStagesBuilt >= Self.settingsCardStageCount else {
@@ -1333,6 +1337,9 @@ extension ContentView {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
             guard settingsJumpRequest == request else {
                 return
+            }
+            withAnimation(.easeOut(duration: 0.2)) {
+                proxy.scrollTo(targetID, anchor: .top)
             }
             withAnimation(.easeOut(duration: 0.15)) {
                 SettingsJumpHighlight.shared.anchorID = targetID
