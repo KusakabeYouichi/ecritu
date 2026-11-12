@@ -377,6 +377,7 @@ final class KanaKanjiConverter {
         // 丁寧接頭辞(1100)/序数/数値単位との上下が入れ替わり、同じ おすし が お寿司 先頭のときと 押すし 先頭の
         // ときがあった(実機トレース 3443、Mac でも温めたキャッシュで再現)。2509/2513/3256 も同じ原因の個別対処だった(3534)
         static let bfsPostfix = 1040            // postfix(BFS完全探索)
+        static let wagoDayTailCompound = 1300   // 日付の和語+目/間/前/後/以内(3日以内)。数詞の帯(400/360)を足し、後段の減点(260)を引いても合成(1260)より上に
         static let quickPostfix = bfsPostfix    // postfix(語幹キャッシュ利用)
         static let nounKanjiAffix = 1000        // 名詞+漢字接辞(課/可/別 等)
         static let inflection = 980             // 活用形派生
@@ -858,6 +859,15 @@ final class KanaKanjiConverter {
             let arabicForm = "\(day.value)日\(day.tail)"
             if let kanjiScore = scores[kanjiForm], scores[arabicForm] != nil {
                 scores[arabicForm] = kanjiScore + (arabicBand - kanjiBand)
+            }
+            // 目/間/前/後/以内 が続く形(3日以内/2日間)は生成の帯(400/360)のままだと、かな接尾の合成(密会+ない 1260)に負ける
+            // (みっかいない が 密会ない、みっかいないに の 2 番めに 3日ないに。ユーザ報告 3802)。合成より上の点に置く
+            if !day.tail.isEmpty {
+                for (form, band) in [(arabicForm, arabicBand), (kanjiForm, kanjiBand)] {
+                    if let score = scores[form] {
+                        scores[form] = max(score, CandidateScore.wagoDayTailCompound + band)
+                    }
+                }
             }
             // かなが先頭の読み(いつか。seed の先頭がかな)では、日付の 2 つの形をかなのすぐ次へ(ユーザ指定 3794: 人名の いつか さんは
             // 滅多にいないので、人名 28 件の後ろでなく いつか、5日、五日、人名… の順に)
