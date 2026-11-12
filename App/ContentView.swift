@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20261112213812"
+    private static let editionUpdatedAtRaw: String = "20261112220253"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -1929,6 +1929,11 @@ struct ContentView: View {
                 syncContactCandidatesCacheFromContainerApp()
             }
             .onChange(of: scenePhase) { _, newPhase in
+                // トーストは、消える前に他のアプリへ切り替えると、戻ったときにまだ出ていた(消すタイマーは止められた
+                // プロセスでは進まない。ユーザ報告 3783)。前面を離れたらその場で消す
+                if newPhase != .active, settingsToastMessage != nil {
+                    settingsToastMessage = nil
+                }
                 guard newPhase == .active else {
                     return
                 }
