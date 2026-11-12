@@ -29922,4 +29922,24 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // じゃいあんとかいに が ジャイアント会に、ひどいめにあう が 酷い目に合う、さんにあう が 酸に会う だった(3788、ユーザ報告)
+    func testRegressionKaiNiAndMeNiAu3788() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let expectations = [
+            "じゃいあんとかいに": "ジャイアント買いに",
+            "ぱんかいにいく": "パン買いに行く",
+            "てにすかいにでる": "テニス会に出る",
+            "あにめかいでは": "アニメ界では",
+            "ひどいめにあう": "ひどい目に遭う",
+            "じょうけんにあう": "条件に合う",
+            "うえのさんにあう": "上野さんに会う",
+            "さんがめいかくなわいんとなります": "酸が明確なワインとなります"
+        ]
+        for (reading, expected) in expectations {
+            XCTAssertEqual(converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).first, expected, reading)
+        }
+        XCTAssertFalse(converter.multiClauseCandidates(for: "さんにあう", systemCandidateMode: .surface).first?.hasPrefix("酸") ?? false)
+    }
+
 }

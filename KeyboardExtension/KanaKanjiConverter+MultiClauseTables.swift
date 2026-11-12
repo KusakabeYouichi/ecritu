@@ -2758,7 +2758,8 @@ extension KanaKanjiConverter {
     // 文頭・格助詞や な/た/する の直後・活用形の直後で、後ろが助詞か文末の さん は 酸 に寄せ、かな と サン は下げる
     static let multiClauseStandaloneAcidBonus = 4500
     static let multiClauseStandaloneSanKanaPenalty = 3500
-    static let multiClauseStandaloneAcidFollowers: Set<Character> = ["が", "を", "は", "と", "で", "も", "な", "の", "に"]
+    // に は入れない(3788): さんにあう(敬称の話)が 酸に会う になった。確認表の 酸 の行に 酸に〜 の形は無い
+    static let multiClauseStandaloneAcidFollowers: Set<Character> = ["が", "を", "は", "と", "で", "も", "な", "の"]
     // の は入れない(3784): の で終わる名字+さん(庭野さん/大野さん)が 庭の酸/大の酸 になった。ワインの酸 は読みの手掛かりで差し替える
     static let multiClauseStandaloneAcidPrevKana: Set<String> = ["な", "た", "する", "もっとも"]
 
@@ -2786,6 +2787,9 @@ extension KanaKanjiConverter {
 
     // には の直後に格助詞の が/の は続かない(生育期間中に葉が変色し が 生育期間中にはが変色し、水平に葉が広がり が 水平にはが広がり
     // だった。3773)。に+は と 1 語の には の両方
+    // カタカナの名詞+買いに(を が落ちた形。3788、ユーザ報告)。じゃいあんとかいに が ジャイアント会に だった
+    // (会 11894+に < 買いに 14138)。買いに で終わるか 行く/来る が続くときだけ(テニス会に出る はそのまま)
+    static let multiClauseKatakanaObjectKaiNiBonus = 3000
     static let multiClauseNiWaBeforeCaseParticlePenalty = 6000
     // 名詞+の+は+な で文が終わる分割(さくらのはな が 桜のはな、にわのはな が 庭野はな だった。3784、ユーザ指定)。
     // 文末の は+な(終助詞)が 花(の→花+文末)より 840 安かった。〜のはな、と言いさす形はまれで、の+花/鼻 のほうがふつう

@@ -945,6 +945,8 @@ extension KanaKanjiConverter {
         ("わいんのさんを", "のさんを", "のサンを", "の酸を"), ("わいんのさんで", "のさんで", "のサンで", "の酸で"),
         ("わいんのさんを", "のさんを", "のさんを", "の酸を"), ("わいんのさんで", "のさんで", "のさんで", "の酸で"),
         ("ぞうのはなはなが", "ぞうのはなは", "像のは那覇長", "象の鼻は長"),
+        // ひどい目に遭う(酷い目 でなく かな。単独の ひどい は かな が先頭。3788、ユーザ指定)
+        ("ひどいめにあ", "ひどいめ", "酷い目", "ひどい目"),
         // チリ(国名)を連文節でも通常の語にした(3776)ので、塵/地理 の言い回しを守る
         ("ちりもつも", "ちりも", "チリも積も", "塵も積も"), ("ちりがつも", "ちりが", "チリが積も", "塵が積も"), ("ちりひとつ", "ちりひとつ", "チリ1つ", "塵一つ"),
         ("ちりひとつ", "ちりひとつ", "チリ一つ", "塵一つ"), ("ちりにくわし", "ちりに", "チリに詳", "地理に詳"), ("ちりのてすと", "ちりの", "チリのテスト", "地理のテスト"),
@@ -5319,6 +5321,13 @@ extension KanaKanjiConverter {
                                     && nodes[backPointer[prevIdx]].isKanaIdentity && nodes[backPointer[prevIdx]].surface == "に") {
                             cost += Self.multiClauseNiWaBeforeCaseParticlePenalty
                         }
+                        // カタカナの名詞+買いに(定数コメント参照。3788)
+                        // 文字列の比較は、長さ(3 かな)の整数の判定の後に(変換速度の予算)
+                        if node.isInflectionDerived, node.end - node.start == 3, node.reading == "かいに", node.surface == "買いに",
+                            !prevNode.isKanaIdentity, prevNode.isDictWord, Self.isKatakanaString(prevNode.surface),
+                            node.end == n || chars[node.end] == "い" || chars[node.end] == "き" {
+                            cost -= Self.multiClauseKatakanaObjectKaiNiBonus
+                        }
                         // 過去の連体形+と+し で終わる分割(定数コメント参照。3773)
                         if node.isKanaIdentity, node.surfaceID == SID.し, prevNode.isKanaIdentity, prevNode.surfaceID == SID.と,
                             backPointer[prevIdx] >= 0, nodes[backPointer[prevIdx]].surface.hasSuffix("た"),
@@ -6141,7 +6150,7 @@ extension KanaKanjiConverter {
                         }
                         // 連体の の+は+文末の な(定数コメント参照。3784)。上の底上げ(1200)の後に置く。の+は と 1 語の のは の両方
                         // の の前が用言(言ったのはな/行くのはな)のときは の が準体助詞なので対象外
-                        if node.isKanaIdentity, node.end == n, node.surface == "な", prevNode.isKanaIdentity {
+                        if node.isKanaIdentity, node.end == n, node.end - node.start == 1, node.surface == "な", prevNode.isKanaIdentity {
                             var noHeadIndex = -2
                             if prevNode.surface == "のは" {
                                 noHeadIndex = backPointer[prevIdx]
