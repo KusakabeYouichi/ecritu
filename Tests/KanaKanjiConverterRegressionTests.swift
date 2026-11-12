@@ -30190,4 +30190,27 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertFalse(single.contains(where: { $0.contains("繋って") || $0.contains("繫") }), "\(single)")
     }
 
+    // 日付の走査で見つけた誤り(3800、ユーザ指定)
+    func testRegressionWagoDaySweep3800() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        converter.invalidateCandidateCache()
+        func shown(_ reading: String) -> [String] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            return multi.isEmpty ? converter.candidates(for: reading, limit: 12, systemCandidateMode: .surface) : multi
+        }
+        for (reading, expected) in [
+            // 登録(misc)
+            ("ふつかよい", "二日酔い"), ("ふつかよいでつらい", "二日酔いでつらい"), ("みっかみばん", "三日三晩"),
+            // 数量語+おきに はかな
+            ("ふつかおきに", "2日おきに"), ("さんじかんおきに", "3時間おきに"), ("いちにちおきにのむ", "1日おきに飲む"),
+            // 日付+に+あう は 会う。ひどい目/事故 は 遭う のまま
+            ("ふつかにあう", "2日に会う"), ("みっかごにあう", "3日後に会う"), ("ひどいめにあう", "ひどい目に遭う"), ("じこにあう", "事故に遭う"),
+            // 日付+以内
+            ("みっかいないに", "3日以内に"), ("みっかいないにとどく", "3日以内に届く"), ("みっかいがある", "密会がある"),
+        ] {
+            XCTAssertEqual(shown(reading).first, expected, reading)
+        }
+    }
+
 }

@@ -2533,7 +2533,8 @@ extension KanaKanjiConverter {
                             // 文の途中まで立てるのは 間 だけ(二日+感 に負ける形)。前/後/目 は 二日+前 の区切りのまま表記を差し替える
                             // (ノードを立てると後ろの に+あった の つながりが切れ、みっかまえにあった→3日前似合った になった)
                             wagoDayAllowed = end == n
-                                || (wagoDay.tail == "間" && Self.multiClauseWagoDayFollowerCharacters.contains(chars[end]))
+                                || (Self.multiClauseWagoDayMidSentenceTails.contains(wagoDay.tail)
+                                    && Self.multiClauseWagoDayFollowerCharacters.contains(chars[end]))
                             wagoDayTailBonus = Self.multiClauseWagoDayTailBonus
                         } else {
                             wagoDayAllowed = end == n
@@ -5445,6 +5446,10 @@ extension KanaKanjiConverter {
                             node.end == n || chars[node.end] == "い" || chars[node.end] == "き" {
                             cost -= Self.multiClauseKatakanaObjectKaiNiBonus
                         }
+                        // 数量語+おきに の おき はかな(定数コメント参照。3800)。整数 ID の判定を先に
+                        if node.surfaceID == SID.おき, node.isKanaIdentity, Self.isNumericCompoundSurface(prevNode.surface) {
+                            cost -= Self.multiClauseOkiAfterNumericBonus
+                        }
                         // 述語の連体形+ほう は 方(定数コメント参照。3797)。整数 ID と長さの判定だけ
                         // 後ろが が の形(やめたほうがいい)は、かなの ほうがいい を先頭にしてある読みがあるので触らない
                         if node.surfaceID == SID.方, node.end - node.start == 2,
@@ -5479,7 +5484,8 @@ extension KanaKanjiConverter {
                             // 1 語の 二回目/3人目 と、二回+目 のように 目 が別の語になっている形の両方
                             let ordinal = nodes[backPointer[prevIdx]]
                             var numberHead: Character? = nil
-                            if ordinal.surface.last == "目" {
+                            // 日付・日数(2日/三日/3日後/三日前)+に+あう も 会う(3800、ユーザ指定: ふつかにあう が 2日に遭う だった)
+                            if let last = ordinal.surface.last, last == "目" || last == "日" || last == "後" || last == "前" {
                                 if ordinal.end - ordinal.start >= 2 {
                                     numberHead = ordinal.surface.first
                                 } else if backPointer[backPointer[prevIdx]] >= 0 {

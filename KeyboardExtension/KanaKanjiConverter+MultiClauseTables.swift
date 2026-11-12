@@ -619,7 +619,7 @@ extension KanaKanjiConverter {
     static let multiClauseHouAfterPredicateBonus = 1000
     // 日付の和語の後ろがこの字(助詞の頭)か文末のときだけ、アラビア数字の形を並べる(3793)。語が続く形(三日坊主/二十日大根/
     // 二日酔い/四日市)は漢数字の形だけ
-    static let multiClauseWagoDayFollowerCharacters: Set<Character> = ["に", "は", "が", "も", "を", "の", "で", "か", "ま", "と", "へ", "や", "、", "。"]
+    static let multiClauseWagoDayFollowerCharacters: Set<Character> = ["に", "は", "が", "も", "を", "の", "で", "か", "ま", "と", "へ", "や", "お", "、", "。"]
     // 連文節の候補の中の、日付の和語の登録語(二日/三日…。misc の登録語)を、X.18 の順でアラビア数字の形と並べる(3793、ユーザ指摘:
     // 文の中では 二日に〜 が先頭のままだった)。格子にアラビア数字のノードを足すと、登録語の 二日 に掛かっている個別の扱い(より長い
     // 辞書語を分断する短い登録語の床外し 等)が付かず、よっかいち→4日一、はつかねずみ→20日ネズミ になったので、区切りが決まった後の
@@ -671,6 +671,8 @@ extension KanaKanjiConverter {
     }
     // 登録語の日付+間/目/前/後(2日間/二日間)への加点(3793)。定額 7200 から登録語+1 字(二日 1500+感)より安い水準へ
     static let multiClauseWagoDayTailBonus = 4500
+    // 文の途中まで(後ろが助詞のとき)立てる 日付+続く語。間 は 二日+感 に、以内 は 密会+ない に負ける形(みっかいないに)
+    static let multiClauseWagoDayMidSentenceTails: Set<String> = ["間", "以内", "以上"]
     // 日付の和語+続く語 の読みの、続く語の部分の長さ(ふつかかん→2)
     static func wagoDayTailReadingLength(_ reading: String) -> Int {
         for (dayReading, _) in arabicWagoDayReadings where reading.hasPrefix(dayReading) {
@@ -2864,6 +2866,9 @@ extension KanaKanjiConverter {
     // カタカナの名詞+買いに(を が落ちた形。3788、ユーザ報告)。じゃいあんとかいに が ジャイアント会に だった
     // (会 11894+に < 買いに 14138)。買いに で終わるか 行く/来る が続くときだけ(テニス会に出る はそのまま)
     static let multiClauseKatakanaObjectKaiNiBonus = 3000
+    // 数量語+おきに(二日おきに/3時間おきに)の おき はかな(3800、ユーザ指定)。ふつかおきに が 二日沖に だった
+    // (二日→沖 7295 < 二日→おき 9214)
+    static let multiClauseOkiAfterNumericBonus = 2500
     // 形容詞の終止・連体形(〜い)や連体詞(こんな/そんな/同じ)の直後の 目(め)への加点(3791、ユーザ案)。
     // いたいめにあった が 遺体目に遭った だった(遺体 5704 < 痛い 7302)。名詞+目(遺体目)より 形容詞+目(痛い目/ひどい目/つらい目/
     // 赤い目)のほうがふつうの形なので、個別の組でなく形で上げる
@@ -4532,6 +4537,7 @@ extension KanaKanjiConverter {
             add("事")
             // 形容詞・連体詞+目(3791)
             add("目")
+            add("おき")
             // 名詞+並み の接尾(3725)
             for s in ["なみ", "並み", "並"] { add(s) }
             // その分+形容動詞・形容詞(3726)
@@ -4822,6 +4828,7 @@ extension KanaKanjiConverter {
         static let もう = MultiClauseSymbols.id("もう")
         static let や = MultiClauseSymbols.id("や")
         static let 目 = MultiClauseSymbols.id("目")
+        static let おき = MultiClauseSymbols.id("おき")
         static let よう = MultiClauseSymbols.id("よう")
         static let よ = MultiClauseSymbols.id("よ")
         static let ね = MultiClauseSymbols.id("ね")
