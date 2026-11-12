@@ -3296,6 +3296,10 @@ extension KanaKanjiConverter {
                 }
                 if let kind = placeNameKindsByReading[node.reading]?[node.surface] {
                     placeNameKindByNodeKey[node.key] = kind
+                    // 手で補った地名(定数コメント参照。3806)
+                    if kind == Self.registeredPlaceNameKind {
+                        seedOrderNounNodeBonuses[node.key, default: 0] += Self.multiClauseRegisteredPlaceNameBonus
+                    }
                     // 2 字以上の国名が始まる位置(国名+や+国名 の加点で、や の先に国名があるかを見る。3762)
                     if kind == "国", node.surface.count >= 2 {
                         countryNameStartPositions.insert(node.start)
@@ -5279,7 +5283,9 @@ extension KanaKanjiConverter {
                             cost += Self.multiClauseParticleReadingKanjiAtClauseHeadPenalty
                         }
                         // 文頭の稀な「名」が一般語の分割を割る(定数コメント参照。2917)
-                        if personNameKindByNodeKey[node.key] == "名", node.end < n, node.reading.count >= 3,
+                        // 手で補った地名でもある名(開南。3806)は対象外。Sudachi の地名一般まで外すと あさおきた が 麻生+来た になる
+                        if personNameKindByNodeKey[node.key] == "名", placeNameKindByNodeKey[node.key] != Self.registeredPlaceNameKind,
+                            node.end < n, node.reading.count >= 3,
                             (node.wordCost ?? 0) >= Self.multiClauseSentenceInitialGivenNameWordCostFloor {
                             cost += Self.multiClauseSentenceInitialGivenNameSplitPenalty
                         }

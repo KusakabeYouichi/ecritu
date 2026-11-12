@@ -30236,6 +30236,24 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3806(ユーザ指定): 開南 に地名の属性を持たせ(references/place_names_add.json)、かいなんてん は 開南店(会難点/海難点/会南天 だった)。
+    // 地名の直後の てん は 店。海難事故/海難救助/海南島 はそのまま
+    func testRegressionKainanTen3806() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("かいなんてん", "開南店"), ("かいなんてんにいく", "開南店に行く"), ("かいなんしょうがっこう", "開南小学校"),
+            ("かいなんじこ", "海難事故"), ("かいなんきゅうじょ", "海難救助"), ("かいなんとう", "海南島"), ("かいなんし", "海南市"),
+            ("なはてん", "那覇店"), ("ちゅうおうてん", "中央店"), ("さっぽろてんき", "札幌天気"), ("ふくおかてんじん", "福岡天神"),
+            ("とうきょうてんもんだい", "東京天文台"), ("よこはまてんしゅ", "横浜店主"),
+        ] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            let list = multi.isEmpty ? converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface) : multi
+            XCTAssertEqual(list.first, expected, "\(reading) \(list.prefix(4))")
+        }
+        XCTAssertEqual(converter.multiClauseCandidates(for: "あさおきた", systemCandidateMode: .surface).first, "朝起きた")
+    }
+
     // 3805(ユーザ指定): ごがついつか は 5月5日(月名の直後の いつか/むいか/なのか は日付)。むいか は 語がつむいか、なのか+に は
     // ごがつなの下に に崩れていた。文末の なのか は疑問(誕生日は五月なのか)のまま
     func testRegressionMonthWagoDay3805() throws {

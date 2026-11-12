@@ -75,6 +75,12 @@ def parse_args() -> argparse.Namespace:
         help="Optional reading->candidate->地名区分(国/一般) JSON (repeatable, 3633)",
     )
     parser.add_argument(
+        "--place-names-add-json",
+        action="append",
+        default=[],
+        help="Optional reading->candidate->地名区分(国/一般) JSON (repeatable)。LM の収録で絞らずに入れる手書きの補い(3806)",
+    )
+    parser.add_argument(
         "--word-lm-json",
         help="Optional word n-gram LM JSON({unigram,bigram,params})(連文節/案1用)",
     )
@@ -274,6 +280,7 @@ def build_sqlite(
     word_lm=None,
     person_names: Dict[str, Dict[str, str]] = {},
     place_names: Dict[str, Dict[str, str]] = {},
+    place_names_add: Dict[str, Dict[str, str]] = {},
     trailing_pairs: Set[Tuple[str, str]] = set(),
 ) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -415,6 +422,14 @@ def build_sqlite(
                 continue
             for candidate, kind in candidate_map.items():
                 if candidate in allowed_candidates and (lm_surfaces is None or candidate in lm_surfaces):
+                    place_rows.append((reading, candidate, kind))
+        # 手で補った地名(references/place_names_add.json)は LM に無くても入れる(開南 は Sudachi の地名だが LM に無く、上の絞り込みで
+        # 落ちていた。3806)
+        seen_places = {(reading, candidate) for reading, candidate, _ in place_rows}
+        for reading, candidate_map in place_names_add.items():
+            allowed_candidates = dictionary_candidate_set.get(reading) or ()
+            for candidate, kind in candidate_map.items():
+                if candidate in allowed_candidates and (reading, candidate) not in seen_places:
                     place_rows.append((reading, candidate, kind))
         if place_rows:
             conn.executemany(
@@ -573,6 +588,7 @@ def main() -> int:
     # 形が inflections(reading->candidate->str)と同じなので merge_inflections を流用
     person_names = merge_inflections(person_name_paths)
     place_names = merge_inflections(place_name_paths)
+    place_names_add = merge_inflections([Path(path) for path in args.place_names_add_json])
 
     word_lm = None
     if args.word_lm_json:
@@ -595,6 +611,7 @@ def main() -> int:
         word_lm=word_lm,
         person_names=person_names,
         place_names=place_names,
+        place_names_add=place_names_add,
         trailing_pairs=trailing_pairs,
     )
     return 0

@@ -68,6 +68,7 @@ TMP_COSTS="$ROOT_DIR/tmp/kana_kanji_word_costs.json"
 TMP_PERSON_NAMES="$ROOT_DIR/tmp/kana_kanji_person_names.json"
 TMP_PLACE_NAMES="$ROOT_DIR/tmp/kana_kanji_place_names.json"
 REF_PERSON_NAMES_ADD="$ROOT_DIR/references/person_names_add.json"
+REF_PLACE_NAMES_ADD="$ROOT_DIR/references/place_names_add.json"
 TMP_WORD_LM="$ROOT_DIR/tmp/word_lm.json"
 TMP_EMOJI_READING="$ROOT_DIR/tmp/EmojiReadingVocab.json"
 TMP_LATIN_SUPPL="$ROOT_DIR/tmp/LatinSuggestionSupplemental.txt"
@@ -387,6 +388,10 @@ needs_sqlite_regeneration() {
     return 0
   fi
 
+  if [[ -f "$REF_PLACE_NAMES_ADD" && "$REF_PLACE_NAMES_ADD" -nt "$TMP_SQLITE" ]]; then
+    return 0
+  fi
+
   # 病名の入り/抜けが前回と違えば作り直す(TestFlight 用の作業コピーは tmp を共有するので、
   # 手元で入れた病名が抜けないまま配られないようにする)
   if [[ "$(cat "$TMP_MEDICAUX_STATE" 2>/dev/null)" != "$(medicaux_state)" ]]; then
@@ -503,6 +508,12 @@ regenerate_sqlite_if_possible() {
   # 桃原さん が負けていた。3112)。reading→candidate→姓/名 の JSON、dictionary_entries に載る候補だけ有効
   if [[ -f "$REF_PERSON_NAMES_ADD" ]]; then
     sqlite_args+=(--person-names-json "$REF_PERSON_NAMES_ADD")
+  fi
+
+  # 地名の表から外れている地名の補い(開南(かいなん)=那覇の地名。Sudachi では地名だが LM に無く、頻度の絞り込みで落ちる。地名+店/人/県 などの判定に使う。3806)。
+  # reading→candidate→登録 の JSON(区分 登録 は連文節で LM に無い語の定額から下げる)
+  if [[ -f "$REF_PLACE_NAMES_ADD" ]]; then
+    sqlite_args+=(--place-names-add-json "$REF_PLACE_NAMES_ADD")
   fi
 
   if [[ -f "$TMP_SECOND_INFLECTIONS" ]]; then

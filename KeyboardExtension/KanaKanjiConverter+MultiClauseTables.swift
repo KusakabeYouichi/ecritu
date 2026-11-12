@@ -3303,9 +3303,15 @@ extension KanaKanjiConverter {
     // 地名(place_names)の直後の 人(じん)/族/型/西部 等 は接尾(トラキア人/ケルト族/ブルゴーニュ型/ハンガリー西部)。陣/俗/方/西武 だった
     // (learningBOX 検査 3697 の [直す]、3715)。カタカナ語一般に広げると コーチ陣/キャスト陣 を壊すので地名の直後に限る。
     // 西武 は読みごと下げると 西武が勝った が 西部 になるので、地名の直後だけ
+    // 手で補った地名(references/place_names_add.json、区分 登録。3806、ユーザ指定: 開南 に地名の属性を持たせ、かいなんてん を 開南店 に)。
+    // Sudachi の地名でも LM に無い語は表を作るときに落とし、格子でも LM に無い語の定額(8700)で立つので、会+難点(12132)や
+    // 海難(7308)に負ける。実在が確かな地名として定額から下げる(開南 5700+店 < 会+難点)
+    static let registeredPlaceNameKind = "登録"
+    static let multiClauseRegisteredPlaceNameBonus = 3000
     static let multiClausePlaceNameSuffixPreferenceBonus = 2000
     // 県/語 は 3774 で追加(正解はシエナ県です が シエナ件、ドイツ語 が ドイツ後 だった。一括検査の退行)
-    static let multiClausePlaceNameSuffixPreferredSurfaces: Set<String> = ["人", "族", "型", "西部", "東部", "南部", "北部", "県", "語"]
+    // 店 は 3806 で追加(ユーザ指定: かいなんてん は 開南店。会+難点/海+難点 だった)
+    static let multiClausePlaceNameSuffixPreferredSurfaces: Set<String> = ["人", "族", "型", "西部", "東部", "南部", "北部", "県", "語", "店"]
     static let multiClausePlaceNameSuffixPreferredSurfacesID = MultiClauseIDSet(multiClausePlaceNameSuffixPreferredSurfaces)
     // Gin/ジン/仁 も地名の直後には来ない(Gin を 陣 と同じ水準に上げたら トラキアGin/トラキアジン になった。3739)
     static let multiClausePlaceNameSuffixDemotedSurfaces: Set<String> = ["陣", "俗", "方", "西武", "東武", "頭部", "Gin", "ジン", "仁", "件", "後"]
