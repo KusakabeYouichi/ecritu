@@ -5405,6 +5405,28 @@ extension KanaKanjiConverter {
                             node.end == n || chars[node.end] == "い" || chars[node.end] == "き" {
                             cost -= Self.multiClauseKatakanaObjectKaiNiBonus
                         }
+                        // 形容詞・連体詞+目(定数コメント参照。3791)。整数 ID の判定を先に
+                        // 動詞+たい(居たい目)は除くため、辞書形の述語(形容詞の終止・連体形)だけ。後ろは助詞か文末だけ
+                        // (いいめがね が いい目がね にならないよう、が は入れない)
+                        if node.surfaceID == SID.目, node.end - node.start == 1,
+                            node.end == n || Self.multiClauseAdjectiveBeforeMeFollowers.contains(chars[node.end]),
+                            Self.multiClauseAdnominalBeforeMeSurfacesID.contains(prevNode.surfaceID)
+                                || (prevNode.isDictionaryFormPredicate && !prevNode.isInflectionDerived && prevNode.surface.hasSuffix("い")) {
+                            cost -= Self.multiClauseAdjectiveBeforeMeBonus
+                        }
+                        // 形容詞・連体詞+目+に+あう は 遭う(ひどい目に遭う/こんな目に遭う。定数コメント参照。3791)。連語表に素の 目 を
+                        // 載せると 2回目に会う/3人目に会った まで 遭う になったので、目 の前が形容詞・連体詞のときだけここで上げる
+                        if prevNode.surfaceID == SID.に, prevNode.isKanaIdentity, node.surface.first == "遭", backPointer[prevIdx] >= 0 {
+                            let meNode = nodes[backPointer[prevIdx]]
+                            if meNode.surfaceID == SID.目, meNode.end - meNode.start == 1,
+                                backPointer[backPointer[prevIdx]] >= 0 {
+                                let head = nodes[backPointer[backPointer[prevIdx]]]
+                                if Self.multiClauseAdnominalBeforeMeSurfacesID.contains(head.surfaceID)
+                                    || (head.isDictionaryFormPredicate && !head.isInflectionDerived && head.surface.hasSuffix("い")) {
+                                    cost -= Self.multiClauseAdjectiveMeNiAuBonus
+                                }
+                            }
+                        }
                         // 過去の連体形+と+し で終わる分割(定数コメント参照。3773)
                         if node.isKanaIdentity, node.surfaceID == SID.し, prevNode.isKanaIdentity, prevNode.surfaceID == SID.と,
                             backPointer[prevIdx] >= 0, nodes[backPointer[prevIdx]].surface.hasSuffix("た"),

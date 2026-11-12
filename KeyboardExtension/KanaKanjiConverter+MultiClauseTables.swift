@@ -2790,6 +2790,15 @@ extension KanaKanjiConverter {
     // カタカナの名詞+買いに(を が落ちた形。3788、ユーザ報告)。じゃいあんとかいに が ジャイアント会に だった
     // (会 11894+に < 買いに 14138)。買いに で終わるか 行く/来る が続くときだけ(テニス会に出る はそのまま)
     static let multiClauseKatakanaObjectKaiNiBonus = 3000
+    // 形容詞の終止・連体形(〜い)や連体詞(こんな/そんな/同じ)の直後の 目(め)への加点(3791、ユーザ案)。
+    // いたいめにあった が 遺体目に遭った だった(遺体 5704 < 痛い 7302)。名詞+目(遺体目)より 形容詞+目(痛い目/ひどい目/つらい目/
+    // 赤い目)のほうがふつうの形なので、個別の組でなく形で上げる
+    static let multiClauseAdjectiveBeforeMeBonus = 2500
+    // 形容詞・連体詞+目+に の後ろの 遭う/遭った への加点(連語表の 〜に遭う と同じ 3000)
+    static let multiClauseAdjectiveMeNiAuBonus = 3000
+    static let multiClauseAdnominalBeforeMeSurfaces: Set<String> = ["こんな", "そんな", "あんな", "どんな", "同じ", "おなじ"]
+    static let multiClauseAdjectiveBeforeMeFollowers: Set<Character> = ["に", "を", "で", "は", "も", "の"]
+    static let multiClauseAdnominalBeforeMeSurfacesID = MultiClauseIDSet(multiClauseAdnominalBeforeMeSurfaces)
     static let multiClauseNiWaBeforeCaseParticlePenalty = 6000
     // 名詞+の+は+な で文が終わる分割(さくらのはな が 桜のはな、にわのはな が 庭野はな だった。3784、ユーザ指定)。
     // 文末の は+な(終助詞)が 花(の→花+文末)より 840 安かった。〜のはな、と言いさす形はまれで、の+花/鼻 のほうがふつう
@@ -4443,6 +4452,8 @@ extension KanaKanjiConverter {
             for s in ["ら", "かた", "方"] { add(s) }
             // 文頭の 事+助詞(3713)
             add("事")
+            // 形容詞・連体詞+目(3791)
+            add("目")
             // 名詞+並み の接尾(3725)
             for s in ["なみ", "並み", "並"] { add(s) }
             // その分+形容動詞・形容詞(3726)
@@ -4543,6 +4554,7 @@ extension KanaKanjiConverter {
             for s in KanaKanjiConverter.multiClauseKatakanaSuffixPreferredSurfaces.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseKatakanaSuffixDemotedSurfaces.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClausePlaceNameSuffixPreferredSurfaces.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseAdnominalBeforeMeSurfaces.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClausePlaceNameSuffixDemotedSurfaces.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseErroneousAttributiveSurfaces.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseKaraKanjiSurfaces.sorted() { add(s) }
@@ -4731,6 +4743,7 @@ extension KanaKanjiConverter {
         static let も = MultiClauseSymbols.id("も")
         static let もう = MultiClauseSymbols.id("もう")
         static let や = MultiClauseSymbols.id("や")
+        static let 目 = MultiClauseSymbols.id("目")
         static let よう = MultiClauseSymbols.id("よう")
         static let よ = MultiClauseSymbols.id("よ")
         static let ね = MultiClauseSymbols.id("ね")

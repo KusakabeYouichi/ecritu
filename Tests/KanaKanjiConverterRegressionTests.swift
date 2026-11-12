@@ -30015,4 +30015,38 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // むちこく が 鞭こく、むざんぎょう が 無残行、いたいめにあった が 遺体目に遭った だった(3791、ユーザ報告)。
+    // 痛い目 は、形容詞の終止・連体形や連体詞の直後の 目 に加点する形で直す
+    func testRegressionMuchikokuAndItaiMe3791() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(shownCandidates3765("むちこく").first, "無遅刻")
+        XCTAssertEqual(shownCandidates3765("むざんぎょう").first, "無残業")
+        XCTAssertEqual(shownCandidates3765("むけっきん").first, "無欠勤")
+        let expectations = [
+            "むちこくむけっきん": "無遅刻無欠勤",
+            "いたいめにあった": "痛い目に遭った",
+            "いたいめをみる": "痛い目を見る",
+            "いたいをはこぶ": "遺体を運ぶ",
+            "むざんなすがた": "無残な姿",
+            // 形容詞・連体詞+目 は 名詞+目 より先(個別の組でなく形で。ユーザ案)
+            "つらいめにあった": "つらい目に遭った",
+            "こわいめにあう": "怖い目に遭う",
+            "こんなめにあうとは": "こんな目に遭うとは",
+            "あかいめをしている": "赤い目をしている",
+            "ひどいめにあう": "ひどい目に遭う",
+            "おなじめにあう": "同じ目に遭う",
+            "いいめがね": "いい眼鏡",
+            "たべたいめにゅー": "食べたいメニュー"
+        ]
+        for (reading, expected) in expectations {
+            XCTAssertEqual(converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).first, expected, reading)
+        }
+        // 序数の 〜目+に+あう は 遭う にしない(連語表に素の 目 を載せた 3788 の副作用を直す)
+        for reading in ["にかいめにあう", "さんにんめにあった", "みっかめにあった"] {
+            let top = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).first ?? ""
+            XCTAssertFalse(top.contains("遭"), "\(reading) → \(top)")
+        }
+    }
+
 }
