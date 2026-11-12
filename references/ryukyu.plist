@@ -4041,7 +4041,7 @@
 	<dict><key>phrase</key><string>中野</string><key>shortcut</key><string>なかの</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>仲御神</string><key>shortcut</key><string>なかのうがん</string></dict>
 	<dict><key>phrase</key><string>仲御神島</string><key>shortcut</key><string>なかのうがんじま</string></dict>
-	<dict><key>phrase</key><string>中の島ビーチ</string><key>shortcut</key><string>なかのしま</string></dict>
+	<dict><key>phrase</key><string>中の島ビーチ</string><key>shortcut</key><string>なかのしまびーち</string></dict>
 	<dict><key>phrase</key><string>中之橋</string><key>shortcut</key><string>なかのはし</string></dict>
 	<dict><key>phrase</key><string>中野ビーチ</string><key>shortcut</key><string>なかのびーち</string></dict>
 	<dict><key>phrase</key><string>中の町</string><key>shortcut</key><string>なかのまち</string></dict>
