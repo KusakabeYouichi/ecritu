@@ -958,5 +958,34 @@
 	        <dict><key>phrase</key><string>印相</string><key>shortcut</key><string>いんぞう</string></dict>
 	        <dict><key>phrase</key><string>Vairocana</string><key>shortcut</key><string>ゔぁいろーちゃな</string></dict>
 	        <dict><key>phrase</key><string>ヴァイローチャナ</string><key>shortcut</key><string>ゔぁいろーちゃな</string></dict>
+	<!-- 高山祭の屋台 -->
+	<!-- 春の高山祭(山王祭):12台 -->
+	        <dict><key>phrase</key><string>神楽台</string><key>shortcut</key><string>かぐらたい</string></dict>
+	        <dict><key>phrase</key><string>三番叟</string><key>shortcut</key><string>さんばそう</string></dict>
+	        <dict><key>phrase</key><string>麒麟台</string><key>shortcut</key><string>きりんたい</string></dict>
+	        <dict><key>phrase</key><string>石橋台</string><key>shortcut</key><string>しゃっきょうたい</string></dict>
+	        <dict><key>phrase</key><string>五台山</string><key>shortcut</key><string>ごたいさん</string></dict>
+	        <dict><key>phrase</key><string>鳳凰台</string><key>shortcut</key><string>ほうおうたい</string></dict>
+	        <dict><key>phrase</key><string>恵比須台</string><key>shortcut</key><string>えびすたい</string></dict>
+	        <dict><key>phrase</key><string>龍神台</string><key>shortcut</key><string>りゅうじんたい</string></dict>
+	        <dict><key>phrase</key><string>崑崗台</string><key>shortcut</key><string>こんこうたい</string></dict>
+	        <dict><key>phrase</key><string>琴高台</string><key>shortcut</key><string>きんこうたい</string></dict>
+	        <dict><key>phrase</key><string>大国台</string><key>shortcut</key><string>だいこくたい</string></dict>
+	        <dict><key>phrase</key><string>青龍台</string><key>shortcut</key><string>せいりゅうたい</string></dict>
+	<!-- 秋の高山祭(八幡祭):11台 -->
+	        <dict><key>phrase</key><string>神楽台</string><key>shortcut</key><string>かぐらたい</string></dict>
+	        <dict><key>phrase</key><string>布袋台</string><key>shortcut</key><string>ほていたい</string></dict>
+	        <dict><key>phrase</key><string>金鳳台</string><key>shortcut</key><string>きんぽうたい</string></dict>
+	        <dict><key>phrase</key><string>大八台</string><key>shortcut</key><string>だいはちたい</string></dict>
+	        <dict><key>phrase</key><string>鳩峯車</string><key>shortcut</key><string>きゅうほうしゃ</string></dict>
+	        <dict><key>phrase</key><string>神馬台</string><key>shortcut</key><string>じんまたい</string></dict>
+	        <dict><key>phrase</key><string>仙人台</string><key>shortcut</key><string>せんにんたい</string></dict>
+	        <dict><key>phrase</key><string>行神台</string><key>shortcut</key><string>ぎょうじんたい</string></dict>
+	        <dict><key>phrase</key><string>宝珠台</string><key>shortcut</key><string>ほうじゅたい</string></dict>
+	        <dict><key>phrase</key><string>豊明台</string><key>shortcut</key><string>ほうめいたい</string></dict>
+	        <dict><key>phrase</key><string>鳳凰台</string><key>shortcut</key><string>ほうおうたい</string></dict>
+	<!-- 高山屋台保存会に所属する残り2台 -->
+	        <dict><key>phrase</key><string>飛騨総社 神楽台</string><key>shortcut</key><string>ひだそうしゃ かぐらたい</string></dict>
+	        <dict><key>phrase</key><string>東山白山神社 神楽台</string><key>shortcut</key><string>ひがしやまはくさんじんじゃ かぐらたい</string></dict>
 </array>
 </plist>

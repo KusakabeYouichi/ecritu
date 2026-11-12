@@ -322,5 +322,7 @@
 	<dict><key>phrase</key><string>フォステックス</string><key>shortcut</key><string>ふぉすてっくす</string></dict>
 	<dict><key>phrase</key><string>エレヴォイ</string><key>shortcut</key><string>えれゔぉい</string></dict>
 	<dict><key>phrase</key><string>Electro-Voice</string><key>shortcut</key><string>えれくとろゔぉいす</string></dict>
+	<dict><key>phrase</key><string>sonos</string><key>shortcut</key><string>そのす</string></dict>
+	<dict><key>phrase</key><string>roam</string><key>shortcut</key><string>ろーむ</string></dict>
 </array>
 </plist>
