@@ -29797,4 +29797,20 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(converter.candidates(for: "なかのしま", limit: 20, systemCandidateMode: .surface).contains("中之島"))
     }
 
+    // ほしょうきかん が 保証機関 だった(3778、ユーザ報告)。保証期間 を先頭に(保証機関 は 2〜3 番め)
+    func testRegressionHoshouKikan3778() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let expectations = [
+            "ほしょうきかん": "保証期間",
+            "いちねんのほしょうきかん": "一年の保証期間",
+            "むりょうほしょうきかん": "無料保証期間",
+            "ほしょうきかんがきれた": "保証期間が切れた",
+            "ほしょうきかんちゅう": "保証期間中"
+        ]
+        for (reading, expected) in expectations {
+            XCTAssertEqual(converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).first, expected, reading)
+        }
+    }
+
 }
