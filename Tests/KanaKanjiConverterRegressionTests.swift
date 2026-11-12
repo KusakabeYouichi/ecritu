@@ -30258,6 +30258,23 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(shown("いつかいきたい").first, "いつか行きたい")
     }
 
+    // 3805(ユーザ報告): しようね が 使用ね、しようぜ が 使用ぜ、しようか が しヨウ化/使用か だった
+    func testRegressionShiyouFinalParticles3805() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("しようね", "しようね"), ("しようぜ", "しようぜ"), ("しようか", "しようか"), ("しようよ", "しようよ"),
+            ("しようかな", "しようかな"), ("しようかかんがえる", "しようか考える"), ("しようぜといった", "しようぜといった"),
+            ("このしようね", "この仕様ね"), ("しようをかくにんする", "仕様を確認する"), ("しようかんきょう", "使用環境"),
+            ("しようねんすう", "使用年数"), ("しようが", "使用が"), ("しようする", "使用する"),
+        ] {
+            let list = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(list.first, expected, "\(reading) \(list.prefix(4))")
+        }
+        // 意向形一般の加点は上げない(縁+退こう+か にしない)
+        XCTAssertFalse(converter.multiClauseCandidates(for: "えんのこうか", systemCandidateMode: .surface).first?.contains("退こう") ?? true)
+    }
+
     // 月名はどれもアラビア数字の形も出す(いちがつ だけ 1月 が出ていた)。月と日の表記は揃える(五月2日 は出さない)。
     // 3804、ユーザ指定
     func testRegressionMonthNamesArabic3804() throws {

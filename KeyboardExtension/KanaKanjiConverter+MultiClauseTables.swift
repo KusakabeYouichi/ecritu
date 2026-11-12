@@ -2959,6 +2959,12 @@ extension KanaKanjiConverter {
     // 意向形(しよう/食べよう/行こう)+か への加点(3800)。八日 を減点しても ヨウ化/八鹿/養家 が し の後ろで勝つので
     // (し+ヨウ化+考える)、正しい区切り(しよう+か+考える)の側を上げる
     static let multiClauseKaAfterVolitionalBonus = 3000
+    // 文頭の しよう+か は、上の加点だけでは入力の全体が しようか のとき し+ヨウ化(登録語 1500)に 453 負ける(3805)。
+    // 意向形一般の加点を上げると えんのこうか が 縁+退こう+か になるので、文頭の しよう に限って足す
+    static let multiClauseKaAfterInitialShiyouExtraBonus = 1000
+    // 文頭の しよう+ね/ぜ は する の意向形(3805、ユーザ報告: しようね が 使用ね、しようぜ が 使用ぜ)。使用/仕様 は語の頻度で
+    // かなの しよう より安く、終助詞とのつながりでは逆転しない。前に語があるとき(この仕様ね)は触らない
+    static let multiClauseFinalParticleAfterShiyouBonus = 3000
     static let multiClauseVolitionalOColumn: Set<Character> = ["こ", "ご", "そ", "と", "の", "ぼ", "も", "ろ", "お"]
     // 形容詞の終止・連体形(〜い)や連体詞(こんな/そんな/同じ)の直後の 目(め)への加点(3791、ユーザ案)。
     // いたいめにあった が 遺体目に遭った だった(遺体 5704 < 痛い 7302)。名詞+目(遺体目)より 形容詞+目(痛い目/ひどい目/つらい目/
@@ -4630,6 +4636,7 @@ extension KanaKanjiConverter {
             add("目")
             add("おき")
             add("かな")
+            add("ぜ")
             add("八日")
             // 名詞+並み の接尾(3725)
             for s in ["なみ", "並み", "並"] { add(s) }
@@ -4923,6 +4930,7 @@ extension KanaKanjiConverter {
         static let 目 = MultiClauseSymbols.id("目")
         static let おき = MultiClauseSymbols.id("おき")
         static let かな = MultiClauseSymbols.id("かな")
+        static let ぜ = MultiClauseSymbols.id("ぜ")
         static let 八日 = MultiClauseSymbols.id("八日")
         static let よう = MultiClauseSymbols.id("よう")
         static let よ = MultiClauseSymbols.id("よ")

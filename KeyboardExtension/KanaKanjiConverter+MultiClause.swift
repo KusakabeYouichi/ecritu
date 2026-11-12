@@ -5480,6 +5480,13 @@ extension KanaKanjiConverter {
                             node.start >= 2, chars[node.start - 1] == "う",
                             chars[node.start - 2] == "よ" || Self.multiClauseVolitionalOColumn.contains(chars[node.start - 2]) {
                             cost -= Self.multiClauseKaAfterVolitionalBonus
+                            if node.start == 3, prevNode.surfaceID == SID.しよう {
+                                cost -= Self.multiClauseKaAfterInitialShiyouExtraBonus
+                            }
+                        }
+                        // 文頭の しよう+ね/ぜ(定数コメント参照。3805)
+                        if node.start == 3, node.surfaceID == SID.ね || node.surfaceID == SID.ぜ, prevNode.surfaceID == SID.しよう {
+                            cost -= Self.multiClauseFinalParticleAfterShiyouBonus
                         }
                         // 述語の連体形+ほう は 方(定数コメント参照。3797)。整数 ID と長さの判定だけ
                         // 後ろが が の形(やめたほうがいい)は、かなの ほうがいい を先頭にしてある読みがあるので触らない
@@ -7398,6 +7405,9 @@ extension KanaKanjiConverter {
             && !pathIndices.contains(where: { nodes[$0].isCurated })
             && !lastIsKanaFinalParticleEffective
             && !allNodesAreDictWordsEffective
+            // 文頭が する の意向形 しよう の全かな(しようか/しようねといった)は素通りでなく、かなが正書(3805。しようか が捨てられ
+            // 使用か が先頭だった。しよう は常設のかなノードで辞書語でなく、か は終助詞の表に無い)
+            && !pathIndices.contains(where: { nodes[$0].start == 0 && nodes[$0].surfaceID == SID.しよう })
             // て/で+授受補助動詞のかな連鎖で終わる全かな(してくれないかな 等)はかなが正書。
             // b4 常設ノードが くれないかな を1スパン化すると末尾ノードの終助詞免除が
             // 外れるため、joined 全体の一般判定で免除する(keepKana 側と同じ述語)
