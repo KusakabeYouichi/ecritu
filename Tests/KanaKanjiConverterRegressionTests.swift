@@ -27177,7 +27177,7 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(single("ごはんと").prefix(3)), ["ご飯と", "御飯と", "午飯と"], "\(single("ごはんと"))")
         XCTAssertEqual(multi("ごはんとみそしる").first, "ご飯と味噌汁")
 
-        // 和語数詞も X.19 の設定(テストの既定は アラビア数字が先)に従う(3702)
+        // 和語数詞も X.18 の設定(テストの既定は アラビア数字が先)に従う(3702)
         for (reading, expected) in [("ひとけた", ["1桁", "一桁"]), ("ふたけた", ["2桁", "二桁"]), ("みけた", ["3桁", "三桁"]),
                                     ("ひとくみ", ["1組", "一組"]), ("いつつぶ", ["5粒", "五粒"])] {
             XCTAssertEqual(Array(single(reading).prefix(2)), expected, reading)
@@ -27229,7 +27229,7 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(KanaKanjiConverter.kanjiNumeralString(10), "十")
     }
 
-    // 3702: 数詞の表記(X.19)。漢語数詞(にまい)も和語数詞(ひとけた)も序数(だいにかい)も、単文節・連文節とも設定どおりの順と有無
+    // 3702: 数詞の表記(X.18)。漢語数詞(にまい)も和語数詞(ひとけた)も序数(だいにかい)も、単文節・連文節とも設定どおりの順と有無
     func testRegressionNumeralStylePreferenceOrdersAndFilters() throws {
         try prepareRealLMDictionary()
         defer { converter.setNumeralStylePreference(.arabicFirst) }
@@ -27320,7 +27320,7 @@ extension KanaKanjiConverterRegressionTests {
             let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
             XCTAssertEqual(multi.first, expected, "\(reading): \(multi.prefix(4))")
         }
-        // curated の 二つ/2つ も X.19 の順(3708)。単文節・連文節とも
+        // curated の 二つ/2つ も X.18 の順(3708)。単文節・連文節とも
         defer { converter.setNumeralStylePreference(.arabicFirst) }
         for (style, single, multi) in [(NumeralStylePreference.arabicFirst, ["2つ", "二つ"], "2つ買って"),
                                        (.kanjiFirst, ["二つ", "2つ"], "二つ買って")] {
@@ -28573,7 +28573,7 @@ extension KanaKanjiConverterRegressionTests {
             }
             converter.setOkuriganaVariantPreference(OkuriganaVariantPreference(modes: modes))
         }
-        // AUDIT_ADJME=1 で X.15 の 目(形状名詞化 め の漢字)をオンにする(実機の adjectiveMeKanjiCandidatesEnabled。3740)
+        // AUDIT_ADJME=1 で X.14 の 目(形状名詞化 め の漢字)をオンにする(実機の adjectiveMeKanjiCandidatesEnabled。3740)
         if ProcessInfo.processInfo.environment["AUDIT_ADJME"] != nil {
             converter.setAdjectiveMeKanjiCandidatesEnabled(true)
         }
@@ -29961,6 +29961,58 @@ extension KanaKanjiConverterRegressionTests {
             tailConversion: { $0 == "かうか" ? "買うか" : nil }
         )
         XCTAssertEqual(kau.first, "つ買うか", "\(kau)")
+    }
+
+    // X.14 のサブ項目 形式名詞化(3790、ユーザ指定)。形式名詞の 目(ひどい目に遭う/痛い目を見る)は、オンなら 目 の次に め の形も出し、
+    // オフなら め の形を出さない。体の 目(そんな目で見る/悲しい目をして)、目つき、めでたい の め は対象外
+    func testRegressionFormalNounMeKana3790() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        defer { converter.setFormalNounMeKanaCandidatesEnabled(true) }
+        converter.setFormalNounMeKanaCandidatesEnabled(true)
+        let on = converter.multiClauseCandidates(for: "ひどいめにあう", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(on.prefix(2)), ["ひどい目に遭う", "ひどいめに遭う"], "\(on)")
+        let singleOn = converter.candidates(for: "いたいめ", limit: 30, systemCandidateMode: .surface)
+        if let kanji = singleOn.firstIndex(of: "痛い目") {
+            XCTAssertEqual(singleOn.firstIndex(of: "痛いめ"), kanji + 1, "\(singleOn)")
+        } else {
+            XCTFail("痛い目 が候補に無い: \(singleOn)")
+        }
+        converter.setFormalNounMeKanaCandidatesEnabled(false)
+        let off = converter.multiClauseCandidates(for: "ひどいめにあう", systemCandidateMode: .surface)
+        XCTAssertEqual(off.first, "ひどい目に遭う", "\(off)")
+        XCTAssertFalse(off.contains("ひどいめに遭う"), "\(off)")
+        let singleOff = converter.candidates(for: "いたいめ", limit: 30, systemCandidateMode: .surface)
+        XCTAssertTrue(singleOff.contains("痛い目"), "\(singleOff)")
+        XCTAssertFalse(singleOff.contains("痛いめ"), "設定を切り替えたらキャッシュも作り直す: \(singleOff)")
+        // 処理そのもの(並びと対象の絞り込み)
+        typealias C = KanaKanjiConverter
+        XCTAssertEqual(
+            C.applyFormalNounMeKana(to: ["痛い目を見る", "遺体目を見る", "いたいめをみる"], reading: "いたいめをみる", enabled: true),
+            ["痛い目を見る", "痛いめを見る", "遺体目を見る", "いたいめをみる"]
+        )
+        // め の形が先に並んでいても、目 の形の直後に置き直す
+        XCTAssertEqual(
+            C.applyFormalNounMeKana(to: ["ひどいめに遭う", "ひどい目に遭う"], reading: "ひどいめにあう", enabled: true),
+            ["ひどい目に遭う", "ひどいめに遭う"]
+        )
+        XCTAssertEqual(
+            C.applyFormalNounMeKana(to: ["痛い目を見る", "痛いめを見る", "いたいめをみる"], reading: "いたいめをみる", enabled: false),
+            ["痛い目を見る", "いたいめをみる"]
+        )
+        // 対象外: 体の 目、目つき、めでたい、語の途中の いい(かわいい)。オンでもオフでも入力のまま
+        for (reading, list) in [
+            ("そんなめでみる", ["そんな目で見る", "そんなめで見る"]),
+            ("かなしいめをして", ["悲しい目をして"]),
+            ("こわいめつき", ["怖い目つき"]),
+            ("そんなめでたいひに", ["そんなめでたい日に", "そんな目出度い日に"]),
+            ("かわいいめをみる", ["かわいい目を見る"]),
+            ("あかいめにあう", ["赤い目に遭う"]),
+            ("おなじ", ["同じ目"])
+        ] {
+            XCTAssertEqual(C.applyFormalNounMeKana(to: list, reading: reading, enabled: true), list, reading)
+            XCTAssertEqual(C.applyFormalNounMeKana(to: list, reading: reading, enabled: false), list, reading)
+        }
     }
 
 }

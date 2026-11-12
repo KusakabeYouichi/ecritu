@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20261112151240"
+    private static let editionUpdatedAtRaw: String = "20261112155723"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -403,6 +403,13 @@ struct ContentView: View {
     )
     private var adjectiveMeKanjiCandidatesEnabled = false
 
+    // 形式名詞の 目 に ひらがなの め の候補も出す(X.14 のサブ項目。3790)。組み込みの値(戦略的)はオン
+    @AppStorage(
+        SettingsKeys.formalNounMeKanaCandidatesEnabled,
+        store: Self.sharedDefaults
+    )
+    private var formalNounMeKanaCandidatesEnabled = true
+
     @AppStorage(
         SettingsKeys.suspendMemorySlimmingEnabled,
         store: Self.sharedDefaults
@@ -705,6 +712,7 @@ struct ContentView: View {
             String(kakikaeEverydayException),
             lateStandardizedRewritePreferenceRawValue,
             String(adjectiveMeKanjiCandidatesEnabled),
+            String(formalNounMeKanaCandidatesEnabled),
             String(suspendMemorySlimmingEnabled),
             String(kaomojiCandidateDisplayEnabled),
             String(historicalKanaCandidatesEnabled),
@@ -843,11 +851,12 @@ struct ContentView: View {
         str(SettingsKeys.lateStandardizedRewritePreference, lateStandardizedRewritePreferenceRawValue, "常用漢字による書きかえ(後に追加): beforeOnly(本来の漢字だけ)/afterOnly(常用漢字だけ)/bothBeforeFirst(両方、前を先に)/bothAfterFirst(両方、後を先に)")
         bool(SettingsKeys.emojiCandidateDisplayEnabled, emojiCandidateDisplayEnabled, "emojis & les émoticônes: emoji 😀")
         str(SettingsKeys.radicalStrokeCountStyle, radicalStrokeCountStyleRawValue, "部首の画数の数え方")
-        bool(SettingsKeys.ordinalMeKanjiPreferred, ordinalMeKanjiPreferred, "序数化suffixe – me(première…): 順序の『目』を漢字で先に")
+        bool(SettingsKeys.ordinalMeKanjiPreferred, ordinalMeKanjiPreferred, "suffixe – me(め/目)の 序数化(première…): 順序の『目』を漢字で先に")
         str(SettingsKeys.kaCounterVariantPreference, kaCounterVariantPreferenceRawValue, "助数詞型suffixe / 数詞類別suffixe – ka(un endroit…): か の表記(出す表記と順。- は出さない)")
         str(SettingsKeys.numeralStylePreference, numeralStylePreferenceRawValue, "数詞の表記 – chiffres: arabicFirst(アラビア数字が先)/kanjiFirst(漢数字が先)/arabicOnly(アラビア数字だけ)/kanjiOnly(漢数字だけ)")
         str(SettingsKeys.okuriganaVariantPreference, okuriganaVariantPreferenceRawValue, "送り仮名の許容形 – orthographe: 語幹の中(stem)/複合語の前部要素(compound)/名詞化(noun)ごとに standardOnly(本則だけ)/standardFirst(本則を先に)/permittedFirst(許容を先に)")
-        bool(SettingsKeys.adjectiveMeKanjiCandidatesEnabled, adjectiveMeKanjiCandidatesEnabled, "形状名詞化suffixe / 傾向派生suffixe – me(un peu …): 形容詞語幹の『目』候補も出す")
+        bool(SettingsKeys.adjectiveMeKanjiCandidatesEnabled, adjectiveMeKanjiCandidatesEnabled, "suffixe – me(め/目)の 形状名詞化 / 傾向派生(un peu …): 形容詞語幹の『目』候補も出す")
+        bool(SettingsKeys.formalNounMeKanaCandidatesEnabled, formalNounMeKanaCandidatesEnabled, "suffixe – me(め/目)の 形式名詞化(nom vide): 形式名詞の『目』に『め』の候補も出す")
         bool(SettingsKeys.suspendMemorySlimmingEnabled, suspendMemorySlimmingEnabled, "キーボードが閉じたときにメモリを整理")
         bool(SettingsKeys.kaomojiCandidateDisplayEnabled, kaomojiCandidateDisplayEnabled, "emojis & les émoticônes: émoticône (^_^)")
         str(SettingsKeys.contactCandidateDisplayMode, contactCandidateDisplayModeRawValue, "iOSの連絡先の姓、名、会社名")
@@ -1546,30 +1555,33 @@ struct ContentView: View {
         OkuriganaVariantSettingsSection(rawValue: $okuriganaVariantPreferenceRawValue)
             .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.13"))
 
-        // X.14 と X.15 は 1 つの型の中の 2 枚。目印は型の中でそれぞれのカードに付ける(外に付けると X.15 にも X.14 の目印が被さった)
+        // X.14 は め/目 の 3 つのサブ項目(序数化・形式名詞化・形状名詞化/傾向派生)を 1 枚にまとめたカード(3790、ユーザ指定)。
+        // 3790 までは X.14(序数化)と X.15(形状名詞化)の 2 枚で、後ろの項目の番号も 1 つずつ大きかった
         MeSuffixCandidateSettingsSection(
             ordinalKanjiPreferred: $ordinalMeKanjiPreferred,
+            formalNounKanaEnabled: $formalNounMeKanaCandidatesEnabled,
             adjectiveKanjiEnabled: $adjectiveMeKanjiCandidatesEnabled
         )
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.14"))
 
         EmojiKaomojiCandidateSettingsSection(
             enablesEmojiCandidates: $emojiCandidateDisplayEnabled,
             enablesKaomojiCandidates: $kaomojiCandidateDisplayEnabled
         )
-        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.16"))
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.15"))
 
         ContactCandidateDisplaySettingsSection(
             selection: contactCandidateDisplayModeSelection
         )
-        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.17"))
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.16"))
 
         UserDictionaryCandidateDisplaySettingsSection(
             selection: userDictionaryCandidateDisplayModeSelection
         )
-        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.18"))
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.17"))
 
         NumeralStyleSettingsSection(selection: numeralStyleSelection)
-            .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.19"))
+            .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.18"))
     }
 
     @ViewBuilder

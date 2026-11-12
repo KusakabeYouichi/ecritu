@@ -283,7 +283,8 @@ extension ContentView {
         SettingsKeys.kanaGakiSuppressAdverb, SettingsKeys.kanaGakiSuppressConjunction, SettingsKeys.kanaGakiSuppressAuxiliary,
         SettingsKeys.kanaGakiSuppressFormalNoun, SettingsKeys.kanaGakiSuppressDemonstrative, SettingsKeys.kanaGakiSuppressAdverbKanaFirst,
         SettingsKeys.emojiCandidateDisplayEnabled, SettingsKeys.radicalStrokeCountStyle,
-        SettingsKeys.ordinalMeKanjiPreferred, SettingsKeys.adjectiveMeKanjiCandidatesEnabled, SettingsKeys.kaCounterVariantPreference,
+        SettingsKeys.ordinalMeKanjiPreferred, SettingsKeys.adjectiveMeKanjiCandidatesEnabled, SettingsKeys.formalNounMeKanaCandidatesEnabled,
+        SettingsKeys.kaCounterVariantPreference,
         SettingsKeys.numeralStylePreference,
         SettingsKeys.okuriganaVariantPreference,
         SettingsKeys.kakikaePreference,
@@ -375,6 +376,7 @@ extension ContentView {
         SettingsKeys.radicalStrokeCountStyle: "",
         SettingsKeys.ordinalMeKanjiPreferred: true,
         SettingsKeys.adjectiveMeKanjiCandidatesEnabled: false,
+        SettingsKeys.formalNounMeKanaCandidatesEnabled: true,   // 戦略的=オン(め も出す。ユーザ指定 3790)
         SettingsKeys.kaCounterVariantPreference: KaCounterVariantPreference.default.encoded,
         SettingsKeys.numeralStylePreference: NumeralStylePreference.strategicDefault.rawValue,   // 戦略的=アラビア数字だけ(3702)
         SettingsKeys.okuriganaVariantPreference: OkuriganaVariantPreference.default.encoded,
@@ -471,6 +473,7 @@ extension ContentView {
         SettingsKeys.kakikaeEverydayException: true,   // 保守的=オン(ユーザ指定 3644)
         SettingsKeys.lateStandardizedRewritePreference: KakikaePreference.bothAfterFirst.rawValue,  // 保守的=X.9 と同じ(ユーザ指定 3570)
         SettingsKeys.adjectiveMeKanjiCandidatesEnabled: true,
+        SettingsKeys.formalNounMeKanaCandidatesEnabled: false,   // 保守的=オフ(目 だけ。ユーザ指定 3790)
         SettingsKeys.suspendMemorySlimmingEnabled: true,
         SettingsKeys.shortcutVocabularyRecentsFirst: true,
         SettingsKeys.kaomojiCandidateDisplayEnabled: true,
@@ -562,6 +565,7 @@ extension ContentView {
         SettingsKeys.kakikaeEverydayException: true,   // 現代的=オン(ユーザ指定 3644)
         SettingsKeys.lateStandardizedRewritePreference: KakikaePreference.bothBeforeFirst.rawValue,  // 現代的=X.9 と同じ(ユーザ指定 3570)
         SettingsKeys.adjectiveMeKanjiCandidatesEnabled: true,
+        SettingsKeys.formalNounMeKanaCandidatesEnabled: true,   // 現代的=オン(め も出す。ユーザ指定 3790)
         SettingsKeys.suspendMemorySlimmingEnabled: true,
         SettingsKeys.shortcutVocabularyRecentsFirst: true,
         SettingsKeys.kaomojiCandidateDisplayEnabled: true,
@@ -835,7 +839,7 @@ extension ContentView {
     // 同音の漢字による書きかえ(3422)の値がまだ無い端末(この設定より前から使っている人)に 1 回だけ 両方(本来の漢字を先に)を書く。
     // 組み込みの標準値(戦略的初期設定)は 本来の漢字だけ なので、書かないとアップデートした途端に 回転→廻転 等になる。
     // 初めてインストールした端末は直前の applyInitialPresetIfFreshInstall が 両方(本来の漢字を先に) を書いているので素通り
-    // 数詞の表記(X.19。3702)の値が無い端末は、基準の初期設定ごとの値を書く(戦略的=アラビア数字だけ、保守的=漢数字が先、現代的=アラビア数字が先)
+    // 数詞の表記(X.18。3702)の値が無い端末は、基準の初期設定ごとの値を書く(戦略的=アラビア数字だけ、保守的=漢数字が先、現代的=アラビア数字が先)
     func applyNumeralStyleDefaultForExistingInstallIfNeeded() {
         guard let defaults = Self.sharedDefaults,
             defaults.object(forKey: SettingsKeys.numeralStylePreference) == nil else {
@@ -848,6 +852,17 @@ extension ContentView {
         case .contemporary: value = .contemporaryDefault
         }
         defaults.set(value.rawValue, forKey: SettingsKeys.numeralStylePreference)
+        SettingsSyncNotification.postSettingsDidChange()
+    }
+
+    // 形式名詞の め(X.14 のサブ項目。3790)の値が無い端末は、基準の初期設定ごとの値を書く(保守的=オフ、戦略的・現代的=オン)。
+    // 書かないと、保守的初期設定の端末がアップデートでオン(組み込みの値)になり、触っていないのに X.14 に『変更あり』の印が付く
+    func applyFormalNounMeDefaultForExistingInstallIfNeeded() {
+        guard let defaults = Self.sharedDefaults,
+            defaults.object(forKey: SettingsKeys.formalNounMeKanaCandidatesEnabled) == nil else {
+            return
+        }
+        defaults.set(Self.currentBasePreset != .conservative, forKey: SettingsKeys.formalNounMeKanaCandidatesEnabled)
         SettingsSyncNotification.postSettingsDidChange()
     }
 
@@ -995,9 +1010,9 @@ extension ContentView {
 }
 
 // ──── 題字(écritu)のメニュー(3699、ユーザ指定) ────
-// 題字に触れた途端に、設定の各項目(L.1〜X.19)へ飛ぶだけのメニューを題字の真下に出す。操作はアイコンのメニューと同じで、
+// 題字に触れた途端に、設定の各項目(L.1〜X.18)へ飛ぶだけのメニューを題字の真下に出す。操作はアイコンのメニューと同じで、
 // 指を項目まで滑らせて離すとその項目へスクロールする。項目の外で離せば何もしない。題字の上で離したとき(ふつうのタップ)は
-// 従来どおり一番上へ戻る(3205)。項目は 42 あるので、1 行の高さは画面に収まるよう縮め、それでも入らない横画面は 2〜3 列にする。
+// 従来どおり一番上へ戻る(3205)。項目は 41 あるので、1 行の高さは画面に収まるよう縮め、それでも入らない横画面は 2〜3 列にする。
 // 開発ビルド(#if DEBUG。TestFlight の版も Debug 構成でアーカイブしているので含む)では先頭に[学習リセット+変換キャッシュクリア]を置く。
 // 題字はツールバーの中(別のホスティング)なので、その .global はウィンドウ座標と原点が違いうる。題字のウィンドウ上の枠を
 // UIKit で取り(WindowFrameReader)、指の位置をウィンドウ座標に直してからメニューの行(ルートの overlay の .global)と比べる
@@ -1063,9 +1078,9 @@ enum SettingsJumpMenu {
         ("X.1", "句読点入力時の自動確定候補"), ("X.2", "かな漢字候補モード"), ("X.3", "旧仮名遣い候補"), ("X.4", "仮名の踊り字候補"),
         ("X.5", "カタカナ強調表記の候補"), ("X.6", "交ぜ書きの候補"), ("X.7", "旧字体・異体字の候補"), ("X.8", "かなで書く言葉の候補"),
         ("X.9", "常用漢字による書きかえ"), ("X.10", "常用漢字による書きかえ(後に追加)"), ("X.11", "部首の画数の数え方"),
-        ("X.12", "助数詞型suffixe / 数詞類別suffixe – ka"), ("X.13", "送り仮名の許容形 – orthographe"), ("X.14", "序数化suffixe – me"),
-        ("X.15", "形状名詞化suffixe / 傾向派生suffixe – me"), ("X.16", "emojis & les émoticônes"),
-        ("X.17", "iOSの連絡先の姓、名、会社名"), ("X.18", "iOSのユーザ辞書の単語"), ("X.19", "数詞の表記 – chiffres")
+        ("X.12", "助数詞型suffixe / 数詞類別suffixe – ka"), ("X.13", "送り仮名の許容形 – orthographe"), ("X.14", "suffixe – me (め/目)"),
+        ("X.15", "emojis & les émoticônes"),
+        ("X.16", "iOSの連絡先の姓、名、会社名"), ("X.17", "iOSのユーザ辞書の単語"), ("X.18", "数詞の表記 – chiffres")
     ]
 
     // 群の名前(設定の一覧の区分と同じ)
@@ -1546,7 +1561,7 @@ struct SettingsJumpMenuOverlayView: View {
         let isModified = entry.number.map(modifiedNumbers.contains) ?? false
         return HStack(spacing: 6) {
             if let number = entry.number {
-                // 番号は右寄せで ● のすぐ左に付け、欄の幅は X.19 が収まる分だけ(番号と ● と見出しの間を詰めて、見出しの
+                // 番号は右寄せで ● のすぐ左に付け、欄の幅は X.18 が収まる分だけ(番号と ● と見出しの間を詰めて、見出しの
                 // 末尾が … になるのを減らす。3740、ユーザ指定)。印の無い行も ● の幅を取り、見出しの頭をそろえる
                 HStack(spacing: 1) {
                     Text(number)

@@ -85,7 +85,7 @@ final class KanaKanjiConverter {
     var lateStandardizedRewritePreference: KakikaePreference?
     // 書きかえの例外グループ(KakikaePreference.everydayAfterFirstPairs)を設定にかかわらず常用漢字先にする(3644)
     var kakikaeEverydayException = true
-    // 変換候補に絵文字を出すか。コンテナーの emoji 候補(X.16)に従う(3423)。読みからの絵文字(ねこ→🐱)はキーボード側で
+    // 変換候補に絵文字を出すか。コンテナーの emoji 候補(X.15)に従う(3423)。読みからの絵文字(ねこ→🐱)はキーボード側で
     // 止めているが、国旗(drapeaux の 🇫🇷 等は辞書に入っている)と学習した絵文字はここで止める。
     // 追加語彙(ショートカット)の絵文字はこの設定に関わらず出す
     var emojiCandidatesEnabled = true
@@ -95,11 +95,14 @@ final class KanaKanjiConverter {
     var ordinalMeKanjiPreferred: Bool = true
     // 助数詞「か」の表記(1か所/数か月)の表示順とオン/オフ(コンテナー設定。2816)
     var kaCounterVariantPreference: KaCounterVariantPreference = .default
-    // 数詞+助数詞の表記(アラビア数字/漢数字の順と有無。コンテナー設定 X.19。3702)。テスト(設定なし)は両方・アラビア数字が先
+    // 数詞+助数詞の表記(アラビア数字/漢数字の順と有無。コンテナー設定 X.18。3702)。テスト(設定なし)は両方・アラビア数字が先
     var numeralStylePreference: NumeralStylePreference = .arabicFirst
     // 送り仮名の許容形(終る/取扱う/届)の扱い(コンテナー設定。2820)
     var okuriganaVariantPreference: OkuriganaVariantPreference = .default
     var adjectiveMeKanjiCandidatesEnabled: Bool = false
+    // 形式名詞の 目(ひどい目に遭う/痛い目を見る)に ひらがなの め の候補も出す(コンテナー設定 X.14 のサブ項目。3790)。
+    // true=目 の次に め の形も出す(組み込みの値)。false=め の形は出さない(applyFormalNounMeKana 参照)
+    var formalNounMeKanaCandidatesEnabled: Bool = true
 
     init(store: KanaKanjiStore) {
         self.store = store
@@ -173,6 +176,16 @@ final class KanaKanjiConverter {
                 return
             }
             adjectiveMeKanjiCandidatesEnabled = enabled
+            invalidateCandidateCache()
+        }
+    }
+
+    func setFormalNounMeKanaCandidatesEnabled(_ enabled: Bool) {
+        withStateLock {
+            guard formalNounMeKanaCandidatesEnabled != enabled else {
+                return
+            }
+            formalNounMeKanaCandidatesEnabled = enabled
             invalidateCandidateCache()
         }
     }
@@ -501,6 +514,9 @@ final class KanaKanjiConverter {
         }
         // め終わり読みの『め/目』選好(序数/形容詞語幹。設定に応じたペア整列・補生成・除去)。
         finalCandidates = applyMeSuffixPreferences(reading: normalizedReading, to: finalCandidates)
+        finalCandidates = Self.applyFormalNounMeKana(
+            to: finalCandidates, reading: normalizedReading, enabled: withStateLock { formalNounMeKanaCandidatesEnabled }
+        )
         // 助数詞+付属語(かい+しか 等)の合成をレア語合成(芥子か 等)より前へ(先頭候補の直後)。
         finalCandidates = Self.counterKanaTailPromotedCandidates(finalCandidates, reading: normalizedReading)
         // 合成中の読みが数字接頭(4まんえん 等。normalizedReading は数字を落とすため元の reading で
@@ -805,7 +821,7 @@ final class KanaKanjiConverter {
         )
         addCandidates(numericUnitFallback, baseScore: CandidateScore.numericUnitFallback, to: &scores)
 
-        // 数詞+助数詞の表記の設定(X.19。3702): アラビア数字/漢数字のどちらを先の帯(400)に置くか、片方だけにするか
+        // 数詞+助数詞の表記の設定(X.18。3702): アラビア数字/漢数字のどちらを先の帯(400)に置くか、片方だけにするか
         let numeralStyle = withStateLock { numeralStylePreference }
         let arabicBand = numeralStyle.kanjiBeforeArabic ? CandidateScore.numericCounterCompound : CandidateScore.numericArabicCompound
         let kanjiBand = numeralStyle.kanjiBeforeArabic ? CandidateScore.numericArabicCompound : CandidateScore.numericCounterCompound
@@ -826,7 +842,7 @@ final class KanaKanjiConverter {
         let kanjiNumeralCompound = numeralStyle.includesKanji
             ? kanjiNumeralCompoundCandidates(for: reading).filter { scores[$0] == nil }
             : []
-        // curated の数量語(misc の 二つ/2つ)が両方あるときは、生成と同じ帯を足して X.19 の順にする(3708)
+        // curated の数量語(misc の 二つ/2つ)が両方あるときは、生成と同じ帯を足して X.18 の順にする(3708)
         let curatedNumeric = Self.curatedNumeralStylePairs(context.userCandidates)
         if !curatedNumeric.isEmpty {
             let generated = Set(arabicNumericCompound + numericCounterCompound + kanjiNumeralCompound)

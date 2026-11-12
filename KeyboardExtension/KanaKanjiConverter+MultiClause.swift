@@ -315,6 +315,11 @@ extension KanaKanjiConverter {
         candidates = Self.liquorCategoryOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.brewingTsukuruOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.contextCuedHomophoneOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
+        // 形式名詞の 目/め(X.14 のサブ項目。3790)。読みの手掛かりの差し替え(酷い目→ひどい目)の後に置き、先頭の 目 の直後に め の形を足す
+        candidates = Self.applyFormalNounMeKana(
+            to: candidates, reading: KanaTextNormalizer.normalizedReading(reading),
+            enabled: withStateLock { formalNounMeKanaCandidatesEnabled }
+        )
         candidates = Self.suruNounTabiOrdered(candidates)
         candidates = Self.nankaKanaSecondOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.tareSauceSecondOrdered(candidates)
@@ -1313,6 +1318,76 @@ extension KanaKanjiConverter {
         }
     }
 
+    // X.14 のサブ項目 形式名詞化(3790、ユーザ指定)。経験や境遇を表す形式名詞の 目(ひどい目に遭う/痛い目を見る/憂き目)。
+    // オン: 目 の形の直後に、目 を め にした形(ひどいめに遭う)を足す(目 が先。上位 2 つの 目 の形まで)。
+    // オフ: 目 の形と対になっている め の形を出さない(読みそのままの全部かなは残す)。
+    // 体の 目(そんな目で見る/悲しい目をして)と 語が続く 目(目つき)、めでたい の め を巻き込まないよう、
+    // 前は下の表の言い回し、後ろは に遭う/を見る の形か候補の末尾だけ。読みに 言い回しの読み+め が無ければ何もしない
+    static let formalNounMeHeads: [(surface: String, reading: String)] = [
+        ("ひどい", "ひどい"), ("酷い", "ひどい"), ("痛い", "いたい"), ("いたい", "いたい"), ("つらい", "つらい"), ("辛い", "つらい"),
+        ("怖い", "こわい"), ("こわい", "こわい"), ("恐ろしい", "おそろしい"), ("危ない", "あぶない"), ("えらい", "えらい"),
+        ("苦しい", "くるしい"), ("悲しい", "かなしい"), ("恥ずかしい", "はずかしい"), ("嫌な", "いやな"), ("いやな", "いやな"),
+        ("散々な", "さんざんな"), ("さんざんな", "さんざんな"), ("大変な", "たいへんな"), ("惨めな", "みじめな"), ("みじめな", "みじめな"),
+        ("こんな", "こんな"), ("そんな", "そんな"), ("あんな", "あんな"), ("どんな", "どんな"), ("同じ", "おなじ"), ("憂き", "うき"),
+        ("いい", "いい"), ("良い", "いい"), ("良い", "よい"), ("おいしい", "おいしい"), ("美味しい", "おいしい"),
+    ]
+    // 読みの門(言い回しの読み+め)。変換のたびに通るので、候補を見る前にここで落とす(変換速度の予算)
+    static let formalNounMeGateReadings: [String] = Array(Set(formalNounMeHeads.map { $0.reading + "め" })).sorted()
+    // 目/め の後ろに続いてよい形(に遭う/に会う/に合う/を見る と、その かな)。これ以外は体の 目 や別の語
+    static let formalNounMeTails: [String] = ["に遭", "に会", "に合", "に逢", "にあ", "にも遭", "にも会", "にもあ", "を見", "をみ"]
+    // 語の途中にも現れる かなの言い回し(かわいい の いい、いたい)は、候補の先頭か、直前がひらがなでないときだけ
+    static let formalNounMeBoundaryHeads: Set<String> = ["いい", "いたい", "えらい", "こわい", "つらい"]
+
+    // 候補の中の 形式名詞の 目/め の位置を探す。見つからなければ nil
+    static func formalNounMeRange(in text: String, me: Character) -> Range<String.Index>? {
+        guard text.contains(me) else { return nil }
+        for (head, _) in formalNounMeHeads {
+            var searchStart = text.startIndex
+            while let headRange = text.range(of: head, range: searchStart..<text.endIndex) {
+                searchStart = text.index(after: headRange.lowerBound)
+                let meIndex = headRange.upperBound
+                guard meIndex < text.endIndex, text[meIndex] == me else { continue }
+                if formalNounMeBoundaryHeads.contains(head), headRange.lowerBound > text.startIndex {
+                    let before = text[text.index(before: headRange.lowerBound)]
+                    if ("ぁ"..."ゖ").contains(before) { continue }
+                }
+                let after = text.index(after: meIndex)
+                if after == text.endIndex || formalNounMeTails.contains(where: { text[after...].hasPrefix($0) }) {
+                    return meIndex..<after
+                }
+            }
+        }
+        return nil
+    }
+
+    static func applyFormalNounMeKana(to candidates: [String], reading: String, enabled: Bool) -> [String] {
+        guard reading.contains("め"), formalNounMeGateReadings.contains(where: { reading.contains($0) }) else {
+            return candidates
+        }
+        // 目 の形と、その 目 を め にした形の対(上位 2 つまで)
+        var kanaFormByKanjiForm: [String: String] = [:]
+        var kanaForms = Set<String>()
+        for candidate in candidates {
+            guard kanaFormByKanjiForm.count < 2, let range = formalNounMeRange(in: candidate, me: "目") else { continue }
+            let kanaForm = candidate.replacingCharacters(in: range, with: "め")
+            kanaFormByKanjiForm[candidate] = kanaForm
+            kanaForms.insert(kanaForm)
+        }
+        guard !kanaForms.isEmpty else { return candidates }
+        var output: [String] = []
+        for candidate in candidates {
+            // 対になっている め の形は、オンなら 目 の形の直後に置き直し、オフなら出さない。読みそのままは触らない
+            if kanaForms.contains(candidate), candidate != reading {
+                continue
+            }
+            output.append(candidate)
+            if enabled, let kanaForm = kanaFormByKanjiForm[candidate], kanaForm != reading {
+                output.append(kanaForm)
+            }
+        }
+        return output
+    }
+
     // X.14(序数の め)が『ひらがなが先』のとき、連文節の 助数詞+目(10日目の)を 日め に差し替え、目 の形をその後ろに並べる(3750)。
     // 単文節は applyMeSuffixPreferences が並べるが、連文節の結果には効いておらず 10+にちめのきょう が 日目の… だった(ユーザ報告)。
     // 人目/役目 のような語を巻き込まないよう、数字の直後(文頭)か、候補の中で数字の後ろにある 助数詞+目 だけ。
@@ -1515,7 +1590,7 @@ extension KanaKanjiConverter {
         let initialAjoutVocabulary = store.initialAjoutVocabulary()
         let learnedDictionary = store.learnedDictionary()
         let manualAjoutVocabulary = store.ajoutVocabulary()
-        // 数詞の表記(X.19)。curated の 二つ/2つ の順に使う(3708)
+        // 数詞の表記(X.18)。curated の 二つ/2つ の順に使う(3708)
         let numeralStyleForLattice = withStateLock { numeralStylePreference }
         // 1 区間の上限(12 字)を超える追加語彙の読みの長さ(3505。定義コメント参照)
         let curatedLongReadingLengths = n > Self.multiClauseMaxSegmentReadingCount ? store.curatedLongReadingLengths() : []
@@ -2459,7 +2534,7 @@ extension KanaKanjiConverter {
                         let first = numeric.first(where: { $0.hasPrefix("数") }) {
                         seedOrderNounNodeBonuses[spanKeyByStart[start][end] + "-" + first] = Self.multiClauseSuuCounterCompoundBonus
                     }
-                    // curated の数量語(二つ/2つ)が両方あるとき、X.19 の順の表記に加点(定数コメント参照。3708)
+                    // curated の数量語(二つ/2つ)が両方あるとき、X.18 の順の表記に加点(定数コメント参照。3708)
                     let curatedNumeric = Self.curatedNumeralStylePairs(surfaces.filter { $0.isCurated }.map { $0.surface })
                     for surface in curatedNumeric
                     where Self.startsWithArabicDigit(surface) != numeralStyleForLattice.kanjiBeforeArabic {

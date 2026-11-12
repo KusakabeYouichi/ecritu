@@ -67,12 +67,13 @@ enum SettingsCardKeys {
         "X.11": [SettingsKeys.radicalStrokeCountStyle],
         "X.12": [SettingsKeys.kaCounterVariantPreference],
         "X.13": [SettingsKeys.okuriganaVariantPreference],
-        "X.14": [SettingsKeys.ordinalMeKanjiPreferred],
-        "X.15": [SettingsKeys.adjectiveMeKanjiCandidatesEnabled],
-        "X.16": [SettingsKeys.emojiCandidateDisplayEnabled, SettingsKeys.kaomojiCandidateDisplayEnabled],
-        "X.17": [SettingsKeys.contactCandidateDisplayMode],
-        "X.18": [SettingsKeys.userDictionaryCandidateDisplayMode],
-        "X.19": [SettingsKeys.numeralStylePreference]
+        // X.14 は め/目 の 3 つのサブ項目(3790。それまでの X.15 形状名詞化 を取り込み、後ろの番号を 1 つずつ繰り上げた)
+        "X.14": [SettingsKeys.ordinalMeKanjiPreferred, SettingsKeys.formalNounMeKanaCandidatesEnabled,
+                 SettingsKeys.adjectiveMeKanjiCandidatesEnabled],
+        "X.15": [SettingsKeys.emojiCandidateDisplayEnabled, SettingsKeys.kaomojiCandidateDisplayEnabled],
+        "X.16": [SettingsKeys.contactCandidateDisplayMode],
+        "X.17": [SettingsKeys.userDictionaryCandidateDisplayMode],
+        "X.18": [SettingsKeys.numeralStylePreference]
     ]
 
     // 見出しの先頭の番号(「X.9 常用漢字による書きかえ」→ X.9)

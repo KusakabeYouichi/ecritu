@@ -55,7 +55,7 @@ extension KeyboardViewController {
         }
         kanaKanjiConverter.setKanaGakiSuppressedCategories(kanaGakiSuppressed)
 
-        // 国旗・学習した絵文字も emoji 候補(X.16)に従う(3423)
+        // 国旗・学習した絵文字も emoji 候補(X.15)に従う(3423)
         kanaKanjiConverter.setEmojiCandidatesEnabled(currentEmojiCandidateDisplayEnabled(from: sharedDefaults))
 
         // 同音の漢字による書きかえ(3422)。値が無い(アプリを開く前の更新直後)ときは 両方(前を先に。KakikaePreference.existingInstallDefault)
@@ -96,6 +96,14 @@ extension KeyboardViewController {
                 from: sharedDefaults,
                 key: SharedDefaultsKeys.adjectiveMeKanjiCandidatesEnabled,
                 fallback: false
+            )
+        )
+        // 形式名詞の 目 に め の候補も出す(X.14 のサブ項目。3790)。値が無い端末は組み込みの値(オン)
+        kanaKanjiConverter.setFormalNounMeKanaCandidatesEnabled(
+            sharedBoolValue(
+                from: sharedDefaults,
+                key: SharedDefaultsKeys.formalNounMeKanaCandidatesEnabled,
+                fallback: true
             )
         )
         // サスペンド時スリム化(キャッシュ破棄+ページ返却)。既定オン(2640)

@@ -56,7 +56,7 @@ struct ContactCandidateDisplaySettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SettingsCardHeadline("X.17 iOSの連絡先の姓、名、会社名")
+            SettingsCardHeadline("X.16 iOSの連絡先の姓、名、会社名")
 
             VStack(spacing: 8) {
                 ForEach(ContactCandidateDisplayModeOption.allCases) { option in
@@ -126,7 +126,7 @@ struct UserDictionaryCandidateDisplaySettingsSection: View {
 
     var body: some View {
         SegmentedSettingsCard(
-            title: "X.18 iOSのユーザ辞書の単語",
+            title: "X.17 iOSのユーザ辞書の単語",
             pickerTitle: "iOSのユーザ辞書の単語",
             selection: $selection,
             options: Array(UserDictionaryCandidateDisplayModeOption.allCases),
@@ -201,8 +201,10 @@ enum OrdinalMePreferenceOption: String, CaseIterable {
     }
 }
 
+// X.14 suffixe – me(め/目)。3 つのサブ項目を 1 枚のカードにまとめる(3790、ユーザ指定。それまでは X.14 序数化 と X.15 形状名詞化 の 2 枚)
 struct MeSuffixCandidateSettingsSection: View {
     @Binding var ordinalKanjiPreferred: Bool
+    @Binding var formalNounKanaEnabled: Bool
     @Binding var adjectiveKanjiEnabled: Bool
 
     private var ordinalSelection: Binding<OrdinalMePreferenceOption> {
@@ -213,30 +215,44 @@ struct MeSuffixCandidateSettingsSection: View {
     }
 
     var body: some View {
-        SegmentedSettingsCard(
-            title: "X.14 序数化suffixe – me",
-            subtitle: "première、deuxième、troisième、…",
-            pickerTitle: "順序の『め/目』",
-            selection: ordinalSelection,
-            options: Array(OrdinalMePreferenceOption.allCases),
-            optionTitle: { $0.title },
-            footnote: "助数詞の後に付いて順序を表す『〜目』(二日目/三番目/7回目 など)で、漢字の『目』とひらがなの『め』のどちらを先に出すかを選びます。戦略的初期設定は『目(漢字)が先』、現代的初期設定と保守的初期設定は『め(ひらがな)が先』です。\n\n1973年の内閣告示第2号『送り仮名の付け方』の【通則4】の中に、助数詞の後に付いて順序を表す『二日目』、『三番目』などの言葉の例が挙げられ、『目』と漢字で書かれています。"
-        )
-        // 題字のメニューの飛び先の目印(この型は 2 枚のカードを返すので、カードごとに付ける。3699/3703)
-        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.14"))
+        VStack(alignment: .leading, spacing: 12) {
+            SettingsCardTitle(title: "X.14 suffixe – me (め/目)", subtitle: "序数化 / 形式名詞化 / 形状名詞化・傾向派生")
 
-        VStack(alignment: .leading, spacing: 10) {
-            SettingsCardTitle(title: "X.15 形状名詞化suffixe / 傾向派生suffixe – me", subtitle: "un peu …")
+            subsectionTitle("序数化 – première、deuxième、troisième、…")
+            Picker("順序の『め/目』", selection: ordinalSelection) {
+                ForEach(OrdinalMePreferenceOption.allCases, id: \.self) { option in
+                    Text(option.title).tag(option)
+                }
+            }
+            .pickerStyle(.segmented)
+            footnote("助数詞の後に付いて順序を表す『〜目』(二日目/三番目/7回目 など)で、漢字の『目』とひらがなの『め』のどちらを先に出すかを選びます。戦略的初期設定は『目(漢字)が先』、現代的初期設定と保守的初期設定は『め(ひらがな)が先』です。\n\n1973年の内閣告示第2号『送り仮名の付け方』の【通則4】の中に、助数詞の後に付いて順序を表す『二日目』、『三番目』などの言葉の例が挙げられ、『目』と漢字で書かれています。")
 
+            Divider()
+
+            subsectionTitle("形式名詞化 – nom vide")
+            Toggle("形式名詞の『目』にひらがな『め』の候補も出す", isOn: $formalNounKanaEnabled)
+                .toggleStyle(.switch)
+            footnote("経験や境遇を表す形式名詞の『目』(ひどい目に遭う/痛い目を見る/こんな目に など)で、ひらがなの『め』の候補(ひどいめ など)も出します。その場合も漢字の候補のほうが先です。オフにすると『め』の候補は出しません(読みをそのままひらがなにした候補は出ます)。現代的初期設定と戦略的初期設定はオン、保守的初期設定はオフです。")
+
+            Divider()
+
+            subsectionTitle("形状名詞化 / 傾向派生 – un peu …")
             Toggle("程度の『め』に漢字『目』の候補も出す", isOn: $adjectiveKanjiEnabled)
                 .toggleStyle(.switch)
-
-            Text("形容詞の語幹に付いて程度や傾向を表す『〜め』(多め/少なめ/固め など)で、漢字の『目』の候補(多目 など)も出します。その場合もひらがなの候補のほうが先です。オフにすると『目』の候補は出しません。現代的初期設定と保守的初期設定はオン、戦略的初期設定はオフです。\n\n1973年の内閣告示第2号『送り仮名の付け方』の【付表の語1(送り仮名を付ける語に関するもの)】の中に、形容詞の語幹に付いて程度や傾向を表す場合の『多め』、『少なめ』という言葉の例があげられ、そこでは『め』とひらがなになっています。")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
+            footnote("形容詞の語幹に付いて程度や傾向を表す『〜め』(多め/少なめ/固め など)で、漢字の『目』の候補(多目 など)も出します。その場合もひらがなの候補のほうが先です。オフにすると『目』の候補は出しません。現代的初期設定と保守的初期設定はオン、戦略的初期設定はオフです。\n\n1973年の内閣告示第2号『送り仮名の付け方』の【付表の語1(送り仮名を付ける語に関するもの)】の中に、形容詞の語幹に付いて程度や傾向を表す場合の『多め』、『少なめ』という言葉の例があげられ、そこでは『め』とひらがなになっています。")
         }
         .settingsCardStyle()
-        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.15"))
+    }
+
+    private func subsectionTitle(_ text: String) -> some View {
+        Text(text)
+            .font(.subheadline.weight(.semibold))
+    }
+
+    private func footnote(_ text: String) -> some View {
+        Text(text)
+            .font(.footnote)
+            .foregroundStyle(.secondary)
     }
 }
 
@@ -246,7 +262,7 @@ struct EmojiKaomojiCandidateSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SettingsCardHeadline("X.16 emojis & les émoticônes")
+            SettingsCardHeadline("X.15 emojis & les émoticônes")
 
             VStack(spacing: 10) {
                 Toggle("emoji 😀", isOn: $enablesEmojiCandidates)
@@ -752,13 +768,13 @@ struct OkuriganaVariantSettingsSection: View {
     }
 }
 
-// 数詞+助数詞の表記(X.19。3702): アラビア数字(2枚)と漢数字(二枚)のどちらを先に出すか、片方だけにするか
+// 数詞+助数詞の表記(X.18。3702): アラビア数字(2枚)と漢数字(二枚)のどちらを先に出すか、片方だけにするか
 struct NumeralStyleSettingsSection: View {
     @Binding var selection: NumeralStylePreference
 
     var body: some View {
         SegmentedSettingsCard(
-            title: "X.19 数詞の表記 – chiffres",
+            title: "X.18 数詞の表記 – chiffres",
             subtitle: "2枚 / 二枚",
             pickerTitle: "数詞の表記",
             selection: $selection,
