@@ -5427,6 +5427,22 @@ extension KanaKanjiConverter {
                                 }
                             }
                         }
+                        // 序数(2回目/3人目/三日目)+に+あう は 会う(定数コメント参照。3792)。整数 ID の判定を先に
+                        if prevNode.surfaceID == SID.に, prevNode.isKanaIdentity, node.surface.first == "会", backPointer[prevIdx] >= 0 {
+                            // 1 語の 二回目/3人目 と、二回+目 のように 目 が別の語になっている形の両方
+                            let ordinal = nodes[backPointer[prevIdx]]
+                            var numberHead: Character? = nil
+                            if ordinal.surface.last == "目" {
+                                if ordinal.end - ordinal.start >= 2 {
+                                    numberHead = ordinal.surface.first
+                                } else if backPointer[backPointer[prevIdx]] >= 0 {
+                                    numberHead = nodes[backPointer[backPointer[prevIdx]]].surface.first
+                                }
+                            }
+                            if let numberHead, numberHead.isNumber || Self.multiClauseOrdinalHeadCharacters.contains(numberHead) {
+                                cost -= Self.multiClauseOrdinalNiAuBonus
+                            }
+                        }
                         // 過去の連体形+と+し で終わる分割(定数コメント参照。3773)
                         if node.isKanaIdentity, node.surfaceID == SID.し, prevNode.isKanaIdentity, prevNode.surfaceID == SID.と,
                             backPointer[prevIdx] >= 0, nodes[backPointer[prevIdx]].surface.hasSuffix("た"),

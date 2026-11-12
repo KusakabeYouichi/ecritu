@@ -30049,4 +30049,19 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // にかいめにあう が 2回目に合う、さんにんめにあった が 三人目にあった だった(3792、ユーザ指定)。序数+に+あう は 会う。
+    // 形容詞+目+に は 遭う、条件に は 合う のまま
+    func testRegressionOrdinalNiAu3792() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for reading in ["にかいめにあう", "さんにんめにあった", "みっかめにあった", "ふつかめにあいましょう"] {
+            let top = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).first ?? ""
+            XCTAssertTrue(top.contains("目に会") || top.contains("めに会"), "\(reading) → \(top)")
+        }
+        let expectations = ["ひどいめにあう": "ひどい目に遭う", "じょうけんにあう": "条件に合う", "うえのさんにあう": "上野さんに会う"]
+        for (reading, expected) in expectations {
+            XCTAssertEqual(converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).first, expected, reading)
+        }
+    }
+
 }

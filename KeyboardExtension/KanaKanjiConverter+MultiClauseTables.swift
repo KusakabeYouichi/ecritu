@@ -2796,6 +2796,10 @@ extension KanaKanjiConverter {
     static let multiClauseAdjectiveBeforeMeBonus = 2500
     // 形容詞・連体詞+目+に の後ろの 遭う/遭った への加点(連語表の 〜に遭う と同じ 3000)
     static let multiClauseAdjectiveMeNiAuBonus = 3000
+    // 序数(数+助数詞+目)+に の後ろの 会う/会った への加点(3792、ユーザ指定)。にかいめにあう が 2回目に合う、
+    // さんにんめにあった が 三人目にあった だった。2回目に会う/3人目に会った/三日目に会う がふつうの読み
+    static let multiClauseOrdinalNiAuBonus = 3000
+    static let multiClauseOrdinalHeadCharacters: Set<Character> = ["一", "二", "三", "四", "五", "六", "七", "八", "九", "十", "何", "数"]
     static let multiClauseAdnominalBeforeMeSurfaces: Set<String> = ["こんな", "そんな", "あんな", "どんな", "同じ", "おなじ"]
     static let multiClauseAdjectiveBeforeMeFollowers: Set<Character> = ["に", "を", "で", "は", "も", "の"]
     static let multiClauseAdnominalBeforeMeSurfacesID = MultiClauseIDSet(multiClauseAdnominalBeforeMeSurfaces)
