@@ -30272,6 +30272,27 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3793(ユーザ報告): いりの は 入りの、そばこ は そば粉・蕎麦粉(ソバ粉 は出さない)、そばこいりの は そば粉入りの(そば小入野 だった)、
+    // つかうからー は 使うからー(使うカラー だった)
+    func testRegressionUserReports3793() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let irino = converter.candidates(for: "いりの", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(irino.prefix(2)), ["入りの", "入野"], "\(irino)")
+        let sobako = converter.candidates(for: "そばこ", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(sobako.prefix(2)), ["そば粉", "蕎麦粉"], "\(sobako)")
+        XCTAssertFalse(sobako.contains("ソバ粉"), "\(sobako)")
+        for (reading, expected) in [
+            ("そばこいりの", "そば粉入りの"), ("たまごいりの", "卵入りの"), ("ぎゅうにゅういりのこーひー", "牛乳入りのコーヒー"),
+            ("いりのさん", "入野さん"), ("そばこをまぜる", "そば粉を混ぜる"),
+            ("つかうからー", "使うからー"), ("いくからー", "行くからー"), ("たべるからー", "食べるからー"), ("つかうから", "使うから"),
+            ("あかいからー", "赤いカラー"), ("このからーがすき", "このカラーが好き"), ("てれびのからー", "テレビのカラー"),
+        ] {
+            let list = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(list.first, expected, "\(reading) \(list.prefix(4))")
+        }
+    }
+
     // 3792(ユーザ報告 12 件): いるのだし/さいていぎし/やるようにし/ふく/ふくしゅと/のなかに/かれーやさん/さんなくなって/
     // はんざいにんじゃなかったりする/そんだけないようが/いたみにたえて
     func testRegressionUserReports3792() throws {

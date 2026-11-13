@@ -2986,6 +2986,14 @@ extension KanaKanjiConverter {
     // かなの ね+と より安かった。寝 を下げると 根、根 を下げると 値 が出るので、正しい区切りの側を上げる。2 かな以上の語の直後だけ
     static let multiClauseNeBeforeQuotativeBonus = 3500
     static let multiClauseSayAfterNeToBonus = 1500
+    // 動詞の終止形+からー(使うからー/行くからー)は 理由の から を伸ばした言い方(3793、ユーザ報告: つかうからー が 使うカラー)。
+    // カラー は辞書の点が 979 と安い。文末で動詞の直後のときだけ、カラー を下げ かなの からー を上げる。
+    // 形容詞の直後(赤いカラー)と文の途中(このカラーが好き)は変えない
+    // 名詞+入り+の(そば粉入りの/牛乳入りの)の 入り への加点(3793、ユーザ報告: そばこいりの が そば粉+入野(姓・地名)。
+    // 入り+の は 入野 に 200 ほど負けていた)。漢字・カタカナの語の直後で、後ろが の のときだけ(入野さん はそのまま)
+    static let multiClauseIriNoAfterNounBonus = 2500
+    static let multiClauseKaraLongAfterVerbPenalty = 6000
+    static let multiClauseKaraLongAfterVerbBonus = 5000
     // 敬称の さん の直後の なくなって/なくなった は 亡くなる(3791、ユーザ指定: さんなくなって は断片で打つことを考えて
     // さん亡くなって を先頭に。無くなって/なくなって が先だった)
     static let multiClauseNakunaruAfterSanBonus = 3000
@@ -4693,6 +4701,9 @@ extension KanaKanjiConverter {
             add("おき")
             add("かな")
             add("ぜ")
+            add("入り")
+            add("カラー")
+            add("からー")
             add("って")
             add("八日")
             // 名詞+並み の接尾(3725)
@@ -4988,6 +4999,9 @@ extension KanaKanjiConverter {
         static let おき = MultiClauseSymbols.id("おき")
         static let かな = MultiClauseSymbols.id("かな")
         static let ぜ = MultiClauseSymbols.id("ぜ")
+        static let 入り = MultiClauseSymbols.id("入り")
+        static let カラー = MultiClauseSymbols.id("カラー")
+        static let からー = MultiClauseSymbols.id("からー")
         static let って = MultiClauseSymbols.id("って")
         static let 八日 = MultiClauseSymbols.id("八日")
         static let よう = MultiClauseSymbols.id("よう")

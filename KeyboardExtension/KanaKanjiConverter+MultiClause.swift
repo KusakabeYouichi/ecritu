@@ -5534,6 +5534,19 @@ extension KanaKanjiConverter {
                                 cost += Self.multiClauseDashiNounAfterPredicateNoPenalty
                             }
                         }
+                        // 名詞+入り+の(定数コメント参照。3793)。整数 ID の判定を先に
+                        if node.surfaceID == SID.入り, node.end - node.start == 2, node.end < n, chars[node.end] == "の",
+                            prevNode.end - prevNode.start >= 2, prevNode.isDictWord, !prevNode.isKanaIdentity, !prevNode.isInflectionDerived,
+                            // 敬称が続くなら姓の 入野(田中入野さん)
+                            !(node.end + 2 < n && chars[node.end + 1] == "さ" && chars[node.end + 2] == "ん") {
+                            cost -= Self.multiClauseIriNoAfterNounBonus
+                        }
+                        // 動詞の終止形+文末の からー(定数コメント参照。3793)。整数 ID の判定を先に
+                        if node.end == n, node.surfaceID == SID.カラー || node.surfaceID == SID.からー, node.start >= 2,
+                            prevNode.isInflectionDerived || prevNode.isDictionaryFormPredicate,
+                            Self.multiClauseVerbEndingKana.contains(chars[node.start - 1]) {
+                            cost += node.surfaceID == SID.カラー ? Self.multiClauseKaraLongAfterVerbPenalty : -Self.multiClauseKaraLongAfterVerbBonus
+                        }
                         // 終助詞の ね+引用の と/って(定数コメント参照。3789)。整数 ID の判定を先に
                         // 〜ておく の縮約(寝といた/寝といて/寝とけ/寝とく)は 寝 のままにするので、と の後ろが いた/いて/け/く/こ の形は除く
                         if node.surfaceID == SID.ね, node.isKanaIdentity, node.end < n, prevNode.end - prevNode.start >= 2,
