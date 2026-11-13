@@ -102,6 +102,20 @@ final class KeyboardModeTransitionTests: XCTestCase {
         print(String(format: "DIAGKANAPERF 旧=%.3fµs/字 新=%.3fµs/字 比=%.1f倍", legacy, current, legacy / current))
     }
 
+    // 削除キーの空振り(3794、ユーザ報告: 続けて押すとたまに消えない)。遅れて届いた SwiftUI のドラッグ判定を
+    // 「生タッチ側が実行済みの接触」として捨てるのは、触れた時刻が合うときか、面の直近の接触を生タッチが実行済みのときだけ。
+    // 以前は生タッチの実行から 1 秒以内なら無条件に捨てていて、生タッチが拾えなかった次のタップが空振りになった
+    func testRepeatKeySwiftUIDragIsDroppedOnlyForSameContact() {
+        let same = ActionKeyButton.isSameContactAsRawPress
+        // 同じ接触: 触れた時刻がほぼ同じ(SwiftUI の通知の時刻は生タッチより 15〜25ms 早い)
+        XCTAssertTrue(same(1000.000, 1000.020, false))
+        XCTAssertTrue(same(1000.000, 1000.020, true))
+        // 別の接触: 0.25 秒あとのタップを生タッチが拾えなかった → 捨てずに実行する
+        XCTAssertFalse(same(1000.250, 1000.000, false))
+        // 触れた時刻が合わなくても、直近の接触を生タッチが実行済みなら捨てる(2 文字消える側へ倒さない)
+        XCTAssertTrue(same(1000.250, 1000.000, true))
+    }
+
     // 3291: 削除キー(押し続けるとリピートするキー)は 1 打鍵で 1 回だけ実行する
     func testRepeatKeyButtonActionRunsOncePerTouch() {
         let suppress = ActionKeyButton.shouldSuppressRepeatKeyButtonAction

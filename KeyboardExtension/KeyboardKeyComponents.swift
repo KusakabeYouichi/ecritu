@@ -195,6 +195,24 @@ struct ActionKeyButton: View {
     let action: () -> Void
     // 生タッチ側で 1 回めを実行した時刻。遅れて届く SwiftUI のドラッグ判定はこの時刻から 1 秒以内なら同じ接触とみなす
     @State private var lastRawPressAt: CFAbsoluteTime = 0
+    // 遅れて届いた SwiftUI のドラッグ判定を、生タッチ側が実行済みの接触として捨てるかどうか(3794)。接触ごとに 1 回だけ決める
+    // (0 = 未決定、1 = 生タッチが実行済みなので捨てる、2 = 生タッチが実行していない接触なのでここで実行する)。
+    // 以前は「生タッチの実行から 1 秒以内に届いたら同じ接触」としていたので、生タッチ側が拾えなかった次のタップ
+    // (実機ログ: 連打の約 3 割が生タッチでなく SwiftUI 経由)を、直前のタップと同じ接触とみなして捨て、空振りになっていた
+    // (ユーザ報告: 削除キーを続けて押すとたまに消えない)。指が触れた時刻どうしを比べて見分ける
+    @State private var dragRouteDecision = 0
+    private static let sameContactTouchTimeTolerance: TimeInterval = 0.06
+
+    // 遅れて届いた SwiftUI のドラッグ判定が、生タッチ側が実行済みの接触と同じか(3794)。触れた時刻が合えば同じ接触。
+    // 合わなくても、面の直近の接触がこのキーで .press を流していて 1 秒以内なら同じ接触とみなす(従来の安全側の扱い。
+    // 2 文字消える側へ倒さない)。「直近の接触を生タッチが拾わなかった」と分かるときだけ別の接触として実行する
+    static func isSameContactAsRawPress(
+        touchBeganAt: TimeInterval,
+        rawPressTouchTimestamp: TimeInterval,
+        rawHandledLatestTouch: Bool
+    ) -> Bool {
+        abs(touchBeganAt - rawPressTouchTimestamp) < sameContactTouchTimeTolerance || rawHandledLatestTouch
+    }
     @State private var didTriggerLongPress = false
     @State private var pendingSingleTapWorkItem: DispatchWorkItem?
     @State private var lastImmediateSingleTapAt: Date?
@@ -304,15 +322,30 @@ struct ActionKeyButton: View {
                             repeatsWhileHolding else {
                         return
                     }
-                    // 生タッチ側が先に実行済みの接触(門番に握られて遅れて届いた)。実行も予約もしない
-                    if rawTouchKeyID != nil,
-                        CFAbsoluteTimeGetCurrent() - lastRawPressAt < Self.repeatTapSuppressionWindow {
-                        return
+                    // 生タッチ側が先に実行済みの接触(門番に握られて遅れて届いた)。実行も予約もしない。
+                    // 同じ接触かどうかは、この判定の最初の通知の時刻(=指が触れた時刻)と、生タッチが .press を流した接触の
+                    // 触れた時刻を比べて決める(状態のコメント参照。3794)
+                    if rawTouchKeyID != nil {
+                        if dragRouteDecision == 0 {
+                            let touchBeganAt = value.time.timeIntervalSinceReferenceDate
+                            let rawHandledLatest = RawTouchLongPress.lastBeganPressedKeyID == rawTouchKeyID
+                                && CFAbsoluteTimeGetCurrent() - lastRawPressAt < Self.repeatTapSuppressionWindow
+                            let sameContact = Self.isSameContactAsRawPress(
+                                touchBeganAt: touchBeganAt,
+                                rawPressTouchTimestamp: RawTouchLongPress.lastPressTouchTimestamp,
+                                rawHandledLatestTouch: rawHandledLatest
+                            )
+                            dragRouteDecision = sameContact ? 1 : 2
+                        }
+                        if dragRouteDecision == 1 {
+                            return
+                        }
                     }
 
                     beginRepeatingActionIfNeeded(touchTime: value.time, route: "SwiftUI")
                 }
                 .onEnded { _ in
+                    dragRouteDecision = 0
                     repeatDragEndedAt = CFAbsoluteTimeGetCurrent()
                     cancelRepeatingActionStart()
                     stopRepeatingAction()
@@ -323,6 +356,7 @@ struct ActionKeyButton: View {
             guard !active, repeatsWhileHolding else {
                 return
             }
+            dragRouteDecision = 0
             // onEnded と同じ更新で届くことがあるので、次の周回で片づける
             DispatchQueue.main.async {
                 cancelRepeatingActionStart()
@@ -438,6 +472,12 @@ struct ActionKeyButton: View {
             KeyboardStuckTouchDiagnostics.onTouchForensics?(
                 "削除キー計測 面=\(touchProbeLabel) 経路=\(route) 配送遅れ=\(deliveryMs)ms 生タッチから=\(rawMs)ms 実行=\(actionMs)ms"
                     + String(format: " 指y=%.0f(面の上端から)", fingerY)
+                    + (route == "SwiftUI"
+                        ? String(format: " 生タッチ見送り=%@ 指x=%.0f 枠=%@",
+                            RawTouchLongPress.lastBeganSkipReason.isEmpty ? "なし" : RawTouchLongPress.lastBeganSkipReason,
+                            KeyboardStuckTouchDiagnostics.rawTouchBeganPoint?.x ?? -1,
+                            rawTouchKeyID.flatMap { RawTouchLongPress.registeredFrame(for: $0) }.map { NSCoder.string(for: $0) } ?? "未登録")
+                        : "")
             )
             scheduleRepeatingActionStartIfNeeded()
             return

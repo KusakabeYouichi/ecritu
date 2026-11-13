@@ -126,11 +126,24 @@ enum RawTouchLongPress {
         touchDownKeyIDs.remove(keyID)
     }
 
+    // 調査用: 登録してある枠(削除キーの空振りの切り分け。3794)
+    static func registeredFrame(for keyID: String) -> CGRect? {
+        frames[keyID]
+    }
+
     static var registeredKeyCount: Int {
         frames.count
     }
 
-    static func touchBegan(id: ObjectIdentifier, at point: CGPoint) {
+    // .press を流した接触の、指が触れた時刻(UITouch.timestamp。稼働時間基準)。受け手(削除キー)が、遅れて届く SwiftUI の
+    // ドラッグ判定が同じ接触かどうかを、触れた時刻どうしで見分けるのに使う(3794)
+    static var lastPressTouchTimestamp: TimeInterval = 0
+    // 直近の接触で .press を流さなかった理由(調査用。空なら流した)
+    static var lastBeganSkipReason = ""
+    // 直近の接触で .press を流したキー(流さなかったら nil)
+    static var lastBeganPressedKeyID: String?
+
+    static func touchBegan(id: ObjectIdentifier, at point: CGPoint, timestamp: TimeInterval? = nil) {
         #if DEBUG
         // 調査用ログ(削除キーの 1 文字め 3524): 枠に入らない touch も記録する(削除キーは枠を登録しない)
         KeyboardStuckTouchDiagnostics.rawTouchBeganUptime = uptimeNow()
@@ -138,20 +151,26 @@ enum RawTouchLongPress {
         #endif
         consumedKeyID = nil
         consumedAt = nil
+        lastBeganPressedKeyID = nil
         // UITouch は UIKit が使い回すので、同じ id で began が来たら新しい接触として扱う(終わりを取りこぼした保険)。
         // 別の id なら 2 本目の指なので無視する
         guard trackedTouchID == nil || trackedTouchID == id else {
+            lastBeganSkipReason = "別の接触を追跡中"
             return
         }
         trackedTouchID = id
         lastGlobalX = point.x
         cancelPending()
         guard let keyID = frames.first(where: { $0.value.contains(point) })?.key else {
+            lastBeganSkipReason = "枠外"
             return
         }
+        lastBeganSkipReason = ""
         if touchDownKeyIDs.contains(keyID) {
             // 触れた瞬間に流す(削除キー 3525)。離すまで追跡し、.end/.cancel も同じ keyID へ流す
             activeKeyID = keyID
+            lastPressTouchTimestamp = timestamp ?? uptimeNow()
+            lastBeganPressedKeyID = keyID
             // 高さも渡す(国旗の一覧が指の下の項目を求める。3699)
             events.send(Event(keyID: keyID, globalX: point.x, kind: .press, globalY: point.y))
             return
@@ -292,7 +311,7 @@ final class RawTouchLongPressGestureRecognizer: UIGestureRecognizer {
             let point = touch.location(in: view)
             switch phase {
             case .began:
-                RawTouchLongPress.touchBegan(id: id, at: point)
+                RawTouchLongPress.touchBegan(id: id, at: point, timestamp: touch.timestamp)
             case .moved:
                 RawTouchLongPress.touchMoved(id: id, to: point)
             case .ended:
