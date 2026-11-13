@@ -30251,6 +30251,16 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3787(ユーザ指定): さいが は 才が、差異が、菜が、賽が の順。カタカナの サイガ(Sudachi の固有名詞、点 3896 で先頭だった)は後ろ
+    func testRegressionSaiga3787() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let list = converter.candidates(for: "さいが", limit: 12, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(4)), ["才が", "差異が", "菜が", "賽が"], "\(list)")
+        XCTAssertGreaterThan(list.firstIndex(of: "サイガ") ?? Int.max, 6, "\(list)")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "さいがさん", systemCandidateMode: .surface).first, "雑賀さん")
+    }
+
     // 3806(ユーザ指定): 開南 に地名の属性を持たせ(references/place_names_add.json)、かいなんてん は 開南店(会難点/海難点/会南天 だった)。
     // 地名の直後の てん は 店。海難事故/海難救助/海南島 はそのまま
     func testRegressionKainanTen3806() throws {
