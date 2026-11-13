@@ -16670,6 +16670,7 @@ extension KanaKanjiConverterRegressionTests {
         KanaKanjiStore.diagnosticsLMBigramFetched = 0
         var incrementalMs = 0.0
         var incrementalCount = 0
+        let incrementalCPUStart = clock_gettime_nsec_np(CLOCK_THREAD_CPUTIME_ID)
         for _ in 0..<max(1, rounds / 3) { for r in readings {
             converter.invalidateCandidateCache()
             let chars = Array(r)
@@ -16683,6 +16684,8 @@ extension KanaKanjiConverterRegressionTests {
             }
         } }
         print(String(format: "PERF incremental (keystroke simulation, multi+single) avg per keystroke=%.1fms (n=%d)", incrementalMs / Double(incrementalCount), incrementalCount))
+        // 機械の負荷に左右されにくい指標として、このスレッドの CPU 時間も出す(3787)
+        print(String(format: "PERF incremental cpu per keystroke=%.1fms", Double(clock_gettime_nsec_np(CLOCK_THREAD_CPUTIME_ID) - incrementalCPUStart) / 1_000_000 / Double(incrementalCount)))
         print("PERF symbol registry count=\(KanaKanjiConverter.MultiClauseSymbols.count)")
         print("PERF incremental bigram queries requested=\(KanaKanjiStore.diagnosticsLMBigramRequested) fetchedFromSQLite=\(KanaKanjiStore.diagnosticsLMBigramFetched)")
     }
