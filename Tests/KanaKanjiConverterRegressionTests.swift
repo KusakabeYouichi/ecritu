@@ -30269,6 +30269,20 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3789(ユーザ報告): しようねといった が 使用寝といった、やろうねといった が やろう寝といった だった。終助詞の ね+引用の と
+    func testRegressionNeBeforeQuotative3789() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("しようねといった", "しようねと言った"), ("やろうねといった", "やろうねと言った"), ("そうだねといった", "そうだねと言った"),
+            ("しようねとはなした", "しようねと話した"), ("たべてねといた", "食べて寝といた"), ("はやくねとけ", "早く寝とけ"),
+            ("ひるねといった", "昼寝といった"), ("おかねとじかん", "お金と時間"), ("あねとあに", "姉と兄"), ("やねといった", "屋根といった"),
+        ] {
+            let list = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(list.first, expected, "\(reading) \(list.prefix(4))")
+        }
+    }
+
     // 3787(ユーザ指定): さいが は 才が、差異が、菜が、賽が の順。カタカナの サイガ(Sudachi の固有名詞、点 3896 で先頭だった)は後ろ
     func testRegressionSaiga3787() throws {
         try prepareRealLMDictionary()

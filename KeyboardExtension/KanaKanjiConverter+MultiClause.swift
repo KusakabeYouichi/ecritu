@@ -5510,6 +5510,18 @@ extension KanaKanjiConverter {
                         if node.start == 3, node.surfaceID == SID.ね || node.surfaceID == SID.ぜ, prevNode.surfaceID == SID.しよう {
                             cost -= Self.multiClauseFinalParticleAfterShiyouBonus
                         }
+                        // 終助詞の ね+引用の と/って(定数コメント参照。3789)。整数 ID の判定を先に
+                        // 〜ておく の縮約(寝といた/寝といて/寝とけ/寝とく)は 寝 のままにするので、と の後ろが いた/いて/け/く/こ の形は除く
+                        if node.surfaceID == SID.ね, node.isKanaIdentity, node.end < n, prevNode.end - prevNode.start >= 2,
+                            (chars[node.end] == "と" && !Self.multiClauseTokuContractionFollows(chars, node.end + 1, n))
+                                || (chars[node.end] == "っ" && node.end + 1 < n && chars[node.end + 1] == "て") {
+                            cost -= Self.multiClauseNeBeforeQuotativeBonus
+                        }
+                        // ね+と の後ろの いった/いって/いう は 言う(行った が先だった)。整数 ID の判定を先に
+                        if prevNode.surfaceID == SID.と, prevNode.isKanaIdentity, node.isInflectionDerived, node.surface.first == "言",
+                            backPointer[prevIdx] >= 0, nodes[backPointer[prevIdx]].surfaceID == SID.ね, nodes[backPointer[prevIdx]].isKanaIdentity {
+                            cost -= Self.multiClauseSayAfterNeToBonus
+                        }
                         // 述語の連体形+ほう は 方(定数コメント参照。3797)。整数 ID と長さの判定だけ
                         // 後ろが が の形(やめたほうがいい)は、かなの ほうがいい を先頭にしてある読みがあるので触らない
                         if node.surfaceID == SID.方, node.end - node.start == 2,

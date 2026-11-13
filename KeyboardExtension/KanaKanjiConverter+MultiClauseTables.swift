@@ -2976,6 +2976,16 @@ extension KanaKanjiConverter {
     // 文頭の しよう+ね/ぜ は する の意向形(3805、ユーザ報告: しようね が 使用ね、しようぜ が 使用ぜ)。使用/仕様 は語の頻度で
     // かなの しよう より安く、終助詞とのつながりでは逆転しない。前に語があるとき(この仕様ね)は触らない
     static let multiClauseFinalParticleAfterShiyouBonus = 3000
+    // 終助詞の ね に引用の と/って が続く形(〜しようねといった/〜だねって)への加点(3789、ユーザ報告: しようねといった が
+    // 使用寝といった、やろうねといった が やろう寝といった、いこうねといった が 以降寝といった)。寝/根/値+といった のつながりが
+    // かなの ね+と より安かった。寝 を下げると 根、根 を下げると 値 が出るので、正しい区切りの側を上げる。2 かな以上の語の直後だけ
+    static let multiClauseNeBeforeQuotativeBonus = 3500
+    static let multiClauseSayAfterNeToBonus = 1500
+    static func multiClauseTokuContractionFollows(_ chars: [Character], _ index: Int, _ n: Int) -> Bool {
+        guard index < n else { return false }
+        if chars[index] == "け" || chars[index] == "く" || chars[index] == "こ" { return true }
+        return chars[index] == "い" && index + 1 < n && (chars[index + 1] == "た" || chars[index + 1] == "て")
+    }
     static let multiClauseVolitionalOColumn: Set<Character> = ["こ", "ご", "そ", "と", "の", "ぼ", "も", "ろ", "お"]
     // 形容詞の終止・連体形(〜い)や連体詞(こんな/そんな/同じ)の直後の 目(め)への加点(3791、ユーザ案)。
     // いたいめにあった が 遺体目に遭った だった(遺体 5704 < 痛い 7302)。名詞+目(遺体目)より 形容詞+目(痛い目/ひどい目/つらい目/
