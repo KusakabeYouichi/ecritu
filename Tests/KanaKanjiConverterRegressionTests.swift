@@ -1505,7 +1505,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
         let list = converter.candidates(for: "はまった", limit: 6, systemCandidateMode: .surface)
-        XCTAssertEqual(Array(list.prefix(3)), ["はまった", "ハマった", "嵌った"], "\(list)")
+        // 3789 から 嵌った(嵌まった の送り仮名が足りない形)は出さない(ユーザ指定)
+        XCTAssertEqual(Array(list.prefix(3)), ["はまった", "ハマった", "嵌まった"], "\(list)")
     }
 
     // 述語+のだけど は述語側を上げる(いらんのだけど が イランのだけど だった。ユーザ指定 3653)
@@ -5298,7 +5299,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             ("うけ", ["うけ", "受け"]),
             ("じつぎょうか", ["実業家", "実業科", "実業課", "実業か"]),
             ("いでんし", ["遺伝子", "遺伝し"]),
-            ("あきらか", ["明らか", "あきらか", "彰か", "明か"]),
+            // 3789 から 明か(明らか の送り仮名が足りない形)は出さない
+            ("あきらか", ["明らか", "あきらか", "彰か"]),
             ("そう", ["そう", "層", "総", "想"]),
             ("みん", ["明", "民", "みん", "泯"]),
             ("いけだ", ["池田", "イケダ", "いけだ", "池だ"]),
@@ -5442,7 +5444,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
         let expectations: [(String, [String])] = [
             ("こくない", ["国内", "濃くない"]),
-            ("みずから", ["みずから", "水から", "自ら", "自から", "美豆から"]),
+            // 3789 から 自から(送り仮名が本則でない形)は出さない
+            ("みずから", ["みずから", "水から", "自ら", "美豆から"]),
             ("おこない", ["行ない", "行い"]),  // 行ない は通則1 の許容形だが 行なう は出荷時の追加語彙に登録してあり、追加語彙として先頭(2820)
             ("しゃない", ["社内", "車内"]),
             ("あきない", ["商い", "商", "あきない", "飽きない", "厭きない", "倦きない"]),
@@ -16918,9 +16921,9 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(rel("終わる", "終る").map { "\($0.0)|\($0.1)|\($0.2)" }, "終わる|終る|stemInternal")
         XCTAssertEqual(rel("食い終ってる", "食い終わってる").map { "\($0.0)|\($0.1)|\($0.2)" }, "食い終わってる|食い終ってる|stemInternal")
         XCTAssertEqual(rel("当たり", "当り").map { "\($0.0)|\($0.2)" }, "当たり|stemInternal")
-        // 困まる は 3805 から長い方が本則でない組。リスト外の語幹の中のゆれ(辞書の誤表記 謝まる/為め)は触らない
+        // 困まる は 3805、謝まる は 3789 から長い方が本則でない組。リスト外の語幹の中のゆれ(為め)は触らない
         XCTAssertEqual(rel("困まった", "困った").map { "\($0.0)|\($0.2)" }, "困った|stemInternal")
-        XCTAssertNil(rel("謝まって", "謝って"))
+        XCTAssertEqual(rel("謝まって", "謝って").map { "\($0.0)|\($0.2)" }, "謝って|stemInternal")
         XCTAssertNil(rel("為め", "為"))
         XCTAssertEqual(rel("代わり", "代り").map { "\($0.0)|\($0.2)" }, "代わり|stemInternal")
         XCTAssertEqual(rel("取り扱う", "取扱う").map { "\($0.0)|\($0.1)|\($0.2)" }, "取り扱う|取扱う|compoundFront")
@@ -30281,6 +30284,40 @@ extension KanaKanjiConverterRegressionTests {
             let list = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
             XCTAssertEqual(list.first, expected, "\(reading) \(list.prefix(4))")
         }
+    }
+
+    // 3789(ユーザ指定): 送り仮名の残りの組(籠る/嵌る/吊す/跨る/癒す、上る(あがる)/分る/逃す(にがす) など)も 本則だけ の設定で出さない。
+    // 複合語の後部要素(組み合せ/打ち合せ)は複合語の設定で扱う
+    func testRegressionOkuriganaRemainingPairs3789() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        defer { converter.setOkuriganaVariantPreference(.default) }
+        converter.setOkuriganaVariantPreference(.default)
+        for (reading, kept, dropped) in [
+            ("こもる", "籠もる", ["籠る", "篭る"]), ("はまる", "嵌まる", ["嵌る"]), ("つるす", "吊るす", ["吊す"]),
+            ("またがる", "跨がる", ["跨る"]), ("いやす", "癒やす", ["癒す"]), ("あがって", "上がって", ["上って", "揚って"]),
+            ("わかった", "分かった", ["分った"]), ("にがした", "逃がした", ["逃した"]), ("あかるい", "明るい", ["明かるい"]),
+            ("よろこぶ", "喜ぶ", ["喜こぶ"]), ("わるい", "悪い", ["悪るい"]), ("なげる", "投げる", ["投る"]),
+            ("あらわに", "露わに", []), ("あずかる", "預かる", ["預る"]), ("かかった", "罹った", []),
+            ("むかい", "向い", []), ("むかう", "向かう", ["向う"]), ("うかぶ", "浮かぶ", ["浮ぶ"]),
+        ] {
+            let list = converter.candidates(for: reading, limit: 30, systemCandidateMode: .surface)
+            XCTAssertTrue(list.contains(kept), "\(reading) \(list.prefix(8))")
+            for surface in dropped {
+                XCTAssertFalse(list.contains(surface), "\(reading) \(surface)")
+            }
+        }
+        typealias C = KanaKanjiConverter
+        XCTAssertEqual(C.okuriganaVariantRelation("組み合わせ", "組み合せ")?.group, .compoundFront)
+        XCTAssertEqual(C.okuriganaVariantRelation("打ち合わせ", "打ち合せ")?.group, .compoundFront)
+        XCTAssertEqual(C.okuriganaVariantRelation("合わせる", "合せる")?.group, .stemInternal)
+        // 下一段の語幹のかなを省いた形は複合語でも許容にしない
+        XCTAssertEqual(C.okuriganaVariantRelation("取り上げる", "取り上る")?.group, .stemInternal)
+        // 複合語は 本則を先に の設定で 2 番め以降に出る
+        converter.setOkuriganaVariantPreference(.conservative)
+        let kumi = converter.candidates(for: "くみあわせ", limit: 12, systemCandidateMode: .surface)
+        XCTAssertEqual(kumi.first, "組み合わせ")
+        XCTAssertTrue(kumi.contains("組み合せ") && kumi.contains("組合せ"), "\(kumi)")
     }
 
     // 3787(ユーザ指定): さいが は 才が、差異が、菜が、賽が の順。カタカナの サイガ(Sudachi の固有名詞、点 3896 で先頭だった)は後ろ
