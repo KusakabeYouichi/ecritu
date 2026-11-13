@@ -30273,6 +30273,33 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3796(ユーザ報告): おおさかか が 大坂夏(夏 の音読み か が 大坂→夏(大坂夏の陣)の点を借りる)、だいたいそこにある が 代替そこにある、
+    // そこになれれば が かな先頭、こうべ/きょうと のかなは末尾の候補だけに
+    func testRegressionUserReports3796() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("おおさかか", "大阪か"), ("おおさかかな", "大阪かな"),
+            ("だいたいそこにある", "大体そこにある"), ("よくつかうのはだいたい", "よく使うのは大体"), ("だいたいのひと", "大体の人"),
+            ("だいたいあん", "代替案"), ("だいたいえねるぎー", "代替エネルギー"), ("だいたいしゅだん", "代替手段"), ("だいたいする", "代替する"),
+            ("そこになれれば", "そこに慣れれば"), ("しごとになれた", "仕事に慣れた"), ("ここになれる", "ここに慣れる"),
+            ("きょうしになれて", "教師になれて"),
+            ("こうべにいく", "神戸に行く"), ("きょうとにいく", "京都に行く"), ("きょうとふ", "京都府"),
+        ] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            let list = multi.isEmpty ? converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface) : multi
+            XCTAssertEqual(list.first, expected, "\(reading) \(list.prefix(4))")
+        }
+        XCTAssertFalse(converter.multiClauseCandidates(for: "おおさかか", systemCandidateMode: .surface).contains("大坂夏"))
+        // かな は変換の候補の上位に出さず、かな先頭の判定も立てない(候補欄では末尾のかなの候補だけになる)
+        for (reading, top) in [("こうべ", "神戸"), ("きょうと", "京都")] {
+            let list = converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+            XCTAssertEqual(list.first, top, "\(list)")
+            XCTAssertFalse(list.contains(reading), "\(list)")
+            XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: reading), reading)
+        }
+    }
+
     // 3793(ユーザ報告): いりの は 入りの、そばこ は そば粉・蕎麦粉(ソバ粉 は出さない)、そばこいりの は そば粉入りの(そば小入野 だった)、
     // つかうからー は 使うからー(使うカラー だった)
     func testRegressionUserReports3793() throws {

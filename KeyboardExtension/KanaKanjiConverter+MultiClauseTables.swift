@@ -1154,6 +1154,10 @@ extension KanaKanjiConverter {
         "けさ": 1500,
         // 個室(seed 先頭)。単独は 個室、固執 の順なのに、こしつなら は 固執なら が先頭だった(3795、ユーザ報告)
         "こしつ": 1500,
+        // 大体(seed 先頭)。LM は 代替(5388)が 大体(6831)より安く、だいたいそこにある が 代替そこにある、
+        // よくつかうのはだいたい が よく使うのは代替 だった(3796、ユーザ報告)。代替案/代替物/代替エネルギー/代替手段/代替する は
+        // 1 語または活用形で 代替 のまま(回帰テストで確認)
+        "だいたい": 2500,
         // 柘榴(seed 先頭、ユーザ指定 3796)。文の中でも ザクロ(補助語彙)より先に
         "ざくろ": 4200,
         // 銀杏の木(seed 先頭、ユーザ指定 3752)。misc の 胃腸 が安く、いちょうのきが が 胃腸+の+木+が だった(1500 では届かない)
@@ -2986,6 +2990,11 @@ extension KanaKanjiConverter {
     // かなの ね+と より安かった。寝 を下げると 根、根 を下げると 値 が出るので、正しい区切りの側を上げる。2 かな以上の語の直後だけ
     static let multiClauseNeBeforeQuotativeBonus = 3500
     static let multiClauseSayAfterNeToBonus = 1500
+    // 夏 を 1 かな(か/げ)で読むノードは連文節では下げる(3796、ユーザ報告: おおさかか が 大坂夏)。LM は表記だけで数えるので、
+    // 大坂→夏(大坂夏の陣 の なつ。点 1548)を音読みの か が借りて 大阪+か(助詞)に勝っていた。抑制語彙に入れると、
+    // 単文節の か の候補(seed でユーザが並べた 12 番めの 夏)まで消えるので、連文節のノードだけ下げる。
+    // 夏期/夏季/初夏/立夏 は 1 語で辞書にある
+    static let multiClauseSingleKanaSummerPenalty = 6000
     // 動詞の終止形+からー(使うからー/行くからー)は 理由の から を伸ばした言い方(3793、ユーザ報告: つかうからー が 使うカラー)。
     // カラー は辞書の点が 979 と安い。文末で動詞の直後のときだけ、カラー を下げ かなの からー を上げる。
     // 形容詞の直後(赤いカラー)と文の途中(このカラーが好き)は変えない
@@ -4701,6 +4710,7 @@ extension KanaKanjiConverter {
             add("おき")
             add("かな")
             add("ぜ")
+            add("夏")
             add("入り")
             add("カラー")
             add("からー")
@@ -4999,6 +5009,7 @@ extension KanaKanjiConverter {
         static let おき = MultiClauseSymbols.id("おき")
         static let かな = MultiClauseSymbols.id("かな")
         static let ぜ = MultiClauseSymbols.id("ぜ")
+        static let 夏 = MultiClauseSymbols.id("夏")
         static let 入り = MultiClauseSymbols.id("入り")
         static let カラー = MultiClauseSymbols.id("カラー")
         static let からー = MultiClauseSymbols.id("からー")

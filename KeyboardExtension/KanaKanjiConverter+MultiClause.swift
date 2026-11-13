@@ -5534,6 +5534,10 @@ extension KanaKanjiConverter {
                                 cost += Self.multiClauseDashiNounAfterPredicateNoPenalty
                             }
                         }
+                        // 夏 を 1 かなで読むノード(定数コメント参照。3796)
+                        if node.surfaceID == SID.夏, node.end - node.start == 1 {
+                            cost += Self.multiClauseSingleKanaSummerPenalty
+                        }
                         // 名詞+入り+の(定数コメント参照。3793)。整数 ID の判定を先に
                         if node.surfaceID == SID.入り, node.end - node.start == 2, node.end < n, chars[node.end] == "の",
                             prevNode.end - prevNode.start >= 2, prevNode.isDictWord, !prevNode.isKanaIdentity, !prevNode.isInflectionDerived,
