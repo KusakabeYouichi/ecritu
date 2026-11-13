@@ -204,6 +204,9 @@
 
 	<!-- ■ かな正書の語・句(かな識別 curated。漢字化・カタカナ化・全かなエコー抑制から守る) -->
 	<dict><key>phrase</key><string>そば粉</string><key>shortcut</key><string>そばこ</string><key>pos</key><string>名詞</string></dict>	<!-- そば粉: 辞書では 3 番め(点 9213)で、文の中では そば+小 に割れていた(そばこいりの が そば小入野。ユーザ報告 3793) -->
+	<dict><key>phrase</key><string>夏期講習</string><key>shortcut</key><string>かきこうしゅう</string><key>pos</key><string>名詞</string></dict>	<!-- 夏期講習/冬期講習/春期講習: 辞書に 1 語では無く、かきこうしゅう が 火器+甲州 だった(夏期 は かき の 17 番め。ユーザ指定 3797) -->
+	<dict><key>phrase</key><string>冬期講習</string><key>shortcut</key><string>とうきこうしゅう</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>春期講習</string><key>shortcut</key><string>しゅんきこうしゅう</string><key>pos</key><string>名詞</string></dict>
 	<dict><key>phrase</key><string>副首都</string><key>shortcut</key><string>ふくしゅと</string><key>pos</key><string>名詞</string></dict>	<!-- 副首都: 辞書に無い(ユーザ指定 3791: 1 語で登録) -->
 	<dict><key>phrase</key><string>再定義</string><key>shortcut</key><string>さいていぎ</string><key>pos</key><string>名詞</string></dict>	<!-- 再定義: 名詞の形も(サ変の活用は ■ 活用の供給 の 再定義する) -->
 	<dict><key>phrase</key><string>うどんすき</string><key>shortcut</key><string>うどんすき</string><key>pos</key><string>名詞</string></dict>	<!-- うどんすき(美々卯の登録商標の鍋料理、かな表記が正式): 辞書に無く うどん好き/うどん隙 の合成ばかりだった(ユーザ指定 3329) -->

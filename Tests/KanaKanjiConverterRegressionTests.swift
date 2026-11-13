@@ -30273,6 +30273,22 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3797(ユーザ指定): かきこうしゅう は 夏期講習(火器甲州 だった)、おおさかかきょうとか は 大阪か京都か(大阪架橋とか だった)
+    func testRegressionUserReports3797() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("かきこうしゅう", "夏期講習"), ("とうきこうしゅう", "冬期講習"), ("かきこうしゅうにいく", "夏期講習に行く"),
+            ("おおさかかきょうとか", "大阪か京都か"), ("きょうとかこうべ", "京都か神戸"), ("ふくおかかながさき", "福岡か長崎"),
+            ("とうきょうかおおさかにいく", "東京か大阪に行く"),
+            ("おおさかかんじょうせん", "大阪環状線"), ("とうきょうかんこう", "東京観光"), ("とうきょうかながわ", "東京神奈川"),
+        ] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            let list = multi.isEmpty ? converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface) : multi
+            XCTAssertEqual(list.first, expected, "\(reading) \(list.prefix(4))")
+        }
+    }
+
     // 3796(ユーザ報告): おおさかか が 大坂夏(夏 の音読み か が 大坂→夏(大坂夏の陣)の点を借りる)、だいたいそこにある が 代替そこにある、
     // そこになれれば が かな先頭、こうべ/きょうと のかなは末尾の候補だけに
     func testRegressionUserReports3796() throws {
