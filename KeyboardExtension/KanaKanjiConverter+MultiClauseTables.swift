@@ -2981,6 +2981,8 @@ extension KanaKanjiConverter {
     // かなの ね+と より安かった。寝 を下げると 根、根 を下げると 値 が出るので、正しい区切りの側を上げる。2 かな以上の語の直後だけ
     static let multiClauseNeBeforeQuotativeBonus = 3500
     static let multiClauseSayAfterNeToBonus = 1500
+    static let multiClauseNeAfterVolitionalExtraBonus = 4000
+    static let multiClauseQuotativeTteAfterNeBonus = 5000
     static func multiClauseTokuContractionFollows(_ chars: [Character], _ index: Int, _ n: Int) -> Bool {
         guard index < n else { return false }
         if chars[index] == "け" || chars[index] == "く" || chars[index] == "こ" { return true }
@@ -4675,6 +4677,7 @@ extension KanaKanjiConverter {
             add("おき")
             add("かな")
             add("ぜ")
+            add("って")
             add("八日")
             // 名詞+並み の接尾(3725)
             for s in ["なみ", "並み", "並"] { add(s) }
@@ -4969,6 +4972,7 @@ extension KanaKanjiConverter {
         static let おき = MultiClauseSymbols.id("おき")
         static let かな = MultiClauseSymbols.id("かな")
         static let ぜ = MultiClauseSymbols.id("ぜ")
+        static let って = MultiClauseSymbols.id("って")
         static let 八日 = MultiClauseSymbols.id("八日")
         static let よう = MultiClauseSymbols.id("よう")
         static let よ = MultiClauseSymbols.id("よ")

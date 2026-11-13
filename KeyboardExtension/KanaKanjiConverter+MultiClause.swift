@@ -5520,9 +5520,21 @@ extension KanaKanjiConverter {
                             (chars[node.end] == "と" && !Self.multiClauseTokuContractionFollows(chars, node.end + 1, n))
                                 || (chars[node.end] == "っ" && node.end + 1 < n && chars[node.end + 1] == "て") {
                             cost -= Self.multiClauseNeBeforeQuotativeBonus
+                            // 意向形(行こう/やろう)の直後なら、同じ読みの名詞(以降+ね)より先に(いこうねといった が 以降ねと言った だった。3790)
+                            if prevNode.isInflectionDerived, node.start >= 2, chars[node.start - 1] == "う",
+                                chars[node.start - 2] == "よ" || Self.multiClauseVolitionalOColumn.contains(chars[node.start - 2]) {
+                                cost -= Self.multiClauseNeAfterVolitionalExtraBonus
+                            }
+                        }
+                        // ね の直後の引用の って(しようねっていった が 使用+練っていった だった。3790)
+                        // ね の前が 2 かな以上の語のときだけ(小麦粉を+練っていった は変えない)
+                        if node.surfaceID == SID.って, node.isKanaIdentity, prevNode.surfaceID == SID.ね, prevNode.isKanaIdentity,
+                            backPointer[prevIdx] >= 0, nodes[backPointer[prevIdx]].end - nodes[backPointer[prevIdx]].start >= 2 {
+                            cost -= Self.multiClauseQuotativeTteAfterNeBonus
                         }
                         // ね+と の後ろの いった/いって/いう は 言う(行った が先だった)。整数 ID の判定を先に
-                        if prevNode.surfaceID == SID.と, prevNode.isKanaIdentity, node.isInflectionDerived, node.surface.first == "言",
+                        if prevNode.surfaceID == SID.と || prevNode.surfaceID == SID.って, prevNode.isKanaIdentity,
+                            node.isInflectionDerived, node.surface.first == "言",
                             backPointer[prevIdx] >= 0, nodes[backPointer[prevIdx]].surfaceID == SID.ね, nodes[backPointer[prevIdx]].isKanaIdentity {
                             cost -= Self.multiClauseSayAfterNeToBonus
                         }
