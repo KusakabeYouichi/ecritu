@@ -30282,6 +30282,8 @@ extension KanaKanjiConverterRegressionTests {
             ("おおさかかきょうとか", "大阪か京都か"), ("きょうとかこうべ", "京都か神戸"), ("ふくおかかながさき", "福岡か長崎"),
             ("とうきょうかおおさかにいく", "東京か大阪に行く"),
             ("おおさかかんじょうせん", "大阪環状線"), ("とうきょうかんこう", "東京観光"), ("とうきょうかながわ", "東京神奈川"),
+            // せきすう は 席数 が先頭(積数、隻数、席数 の順だった。ユーザ指定 3798)
+            ("せきすう", "席数"), ("せきすうがおおい", "席数が多い"),
         ] {
             let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
             let list = multi.isEmpty ? converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface) : multi
