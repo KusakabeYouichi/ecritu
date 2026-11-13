@@ -2946,6 +2946,8 @@ extension KanaKanjiConverter {
     // カタカナの名詞+買いに(を が落ちた形。3788、ユーザ報告)。じゃいあんとかいに が ジャイアント会に だった
     // (会 11894+に < 買いに 14138)。買いに で終わるか 行く/来る が続くときだけ(テニス会に出る はそのまま)
     static let multiClauseKatakanaObjectKaiNiBonus = 3000
+    // かいに を別に学習しているとき(会に)に足す幅(学習した語の 1500 と 買いに の差を越える)
+    static let multiClauseKatakanaObjectKaiNiLearnedExtraBonus = 10000
     // 数量語+おきに(二日おきに/3時間おきに)の おき はかな(3800、ユーザ指定)。ふつかおきに が 二日沖に だった
     // (二日→沖 7295 < 二日→おき 9214)
     static let multiClauseOkiAfterNumericBonus = 2500

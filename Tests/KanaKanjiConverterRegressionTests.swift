@@ -29949,6 +29949,21 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertFalse(converter.multiClauseCandidates(for: "さんにあう", systemCandidateMode: .surface).first?.hasPrefix("酸") ?? false)
     }
 
+    // 3788 の続き(ユーザ報告): かいに=会に を別に学習していると ジャイアント会に行く に戻っていた
+    func testRegressionKaiNiWithLearnedKaiNi3787() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        converter.learn(reading: "かいに", candidate: "会に")
+        converter.invalidateCandidateCache()
+        for (reading, expected) in [
+            ("じゃいあんとかいにいく", "ジャイアント買いに行く"), ("じゃいあんとかいに", "ジャイアント買いに"),
+            ("ぱんかいにいく", "パン買いに行く"), ("てにすかいにでる", "テニス会に出る"),
+        ] {
+            let list = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(list.first, expected, "\(reading) \(list.prefix(4))")
+        }
+    }
+
     // 数字の直後の つめにしか の先頭が つ目にしか だった(3789、ユーザ報告)。数字の直後の つ+動詞 の供給(4つ買うか)が
     // めにしか を 目にしか に変換して つ目にしか を先頭に足していた。X.14 が『め(ひらがな)が先』なら つめにしか を先に
     func testRegressionTsuMeAfterDigit3789() throws {

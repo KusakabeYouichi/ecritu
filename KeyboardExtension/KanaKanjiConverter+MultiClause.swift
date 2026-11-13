@@ -1601,6 +1601,7 @@ extension KanaKanjiConverter {
         // 追加語彙(sacoche/misc.plist 等の手動キュレーション)と学習語彙。どちらもユーザ意図なので優遇する。
         let initialAjoutVocabulary = store.initialAjoutVocabulary()
         let learnedDictionary = store.learnedDictionary()
+        let hasLearnedKaiNiHomophone = learnedDictionary["かいに"]?.contains(where: { $0 != "買いに" && $0 != "かいに" }) ?? false
         let manualAjoutVocabulary = store.ajoutVocabulary()
         // 数詞の表記(X.18)。curated の 二つ/2つ の順に使う(3708)
         let numeralStyleForLattice = withStateLock { numeralStylePreference }
@@ -5468,6 +5469,11 @@ extension KanaKanjiConverter {
                             !prevNode.isKanaIdentity, prevNode.isDictWord, Self.isKatakanaString(prevNode.surface),
                             node.end == n || chars[node.end] == "い" || chars[node.end] == "き" {
                             cost -= Self.multiClauseKatakanaObjectKaiNiBonus
+                            // かいに を別に学習していると(会に)、学習した語は登録語の扱い(1500)で格子に入り、ジャイアント+買いに が
+                            // ジャイアン+と+会に に負けて元に戻っていた(ユーザ報告 3787)。学習があるときだけ加点を足す
+                            if hasLearnedKaiNiHomophone {
+                                cost -= Self.multiClauseKatakanaObjectKaiNiLearnedExtraBonus
+                            }
                         }
                         // 数量語+おきに の おき はかな(定数コメント参照。3800)。整数 ID の判定を先に
                         if node.surfaceID == SID.おき, node.isKanaIdentity, Self.isNumericCompoundSurface(prevNode.surface) {
