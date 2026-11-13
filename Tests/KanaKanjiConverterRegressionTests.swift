@@ -30362,6 +30362,13 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(moSuru.prefix(4)), ["も並行する", "も閉口する", "も平行する", "も併行する"], "\(moSuru)")
         let moShiyou = converter.multiClauseCandidates(for: "もへいこうしよう", systemCandidateMode: .surface)
         XCTAssertEqual(Array(moShiyou.prefix(4)), ["も並行しよう", "も閉口しよう", "も平行しよう", "も併行しよう"], "\(moShiyou)")
+        // した/して/してる/しない も同じ順(3791、ユーザ指定)
+        for form in ["した", "して", "してる", "しない"] {
+            let single = converter.candidates(for: "へいこう" + form, limit: 10, systemCandidateMode: .surface)
+            XCTAssertEqual(Array(single.prefix(6)), ["並行", "閉口", "平行", "併行", "閉校", "並航"].map { $0 + form }, "\(single)")
+            let multi = converter.multiClauseCandidates(for: "もへいこう" + form, systemCandidateMode: .surface)
+            XCTAssertEqual(Array(multi.prefix(4)), ["も並行", "も閉口", "も平行", "も併行"].map { $0 + form }, "\(multi)")
+        }
         // サ変形状詞可能 の語の活用形
         for (reading, expected) in [("あんしんしよう", "安心しよう"), ("しんぱいした", "心配した"), ("はんたいしよう", "反対しよう"), ("どくりつする", "独立する")] {
             XCTAssertEqual(converter.candidates(for: reading, limit: 4, systemCandidateMode: .surface).first, expected, reading)
