@@ -957,9 +957,11 @@ final class KeyboardViewController: UIInputViewController {
     // 調査3756(実験 3): メッセージで相手の発言が届くと、textWillChange で未確定を確定したあとに、ホストが未確定を
     // 掛け直して『ふむー(確定)+ふむー(未確定)』になる(実機 2026-11-11 17:33/18:29/18:45。écritu は未確定なしと思って
     // いるので、次の打鍵で下線付きのほうが置き換わる)。掛け直しは通知なしで、確定の 5ms 後にはまだ無い(実験 2 は
-    // 空振り)。0.3 秒後に、キーボードがまだ出ていて・入力欄が生きていて・その間に自前の編集も選択も無ければ、
+    // 空振り)。少し待ってから、キーボードがまだ出ていて・入力欄が生きていて・その間に自前の編集も選択も無ければ、
     // 掛け直された未確定を空にして消す(未確定が無ければ何も起きない)。文脈の長さでの見送り(実験 1)は外れた
-    static let externalWillChangeCommitRepairDelaySec: TimeInterval = 0.3
+    // 待ち時間は 0.3 秒で収まることを実機で確認(2026-11-13)。画面のちらつき(確定→掛け直し→消去 が見える)を短くするため
+    // 0.15 秒に(ユーザ指定 3789)。ホストの掛け直しより先に消しに行くと取りこぼすので、二重表示が戻ったら 0.3 に戻す
+    static let externalWillChangeCommitRepairDelaySec: TimeInterval = 0.15
     func scheduleHostReappliedMarkedTextClearAfterExternalCommit(trigger: String) {
         guard trigger == "textWillChange" else {
             return
@@ -975,7 +977,7 @@ final class KeyboardViewController: UIInputViewController {
                 && self.activeConversion == nil && self.composingRawText.isEmpty
             let noSelection = (proxy.selectedText ?? "").isEmpty
             self.appendKeyboardDiagnosticsLogFromInputHandling(
-                "外部変更確定の 0.3 秒後(調査3756) visible=\(visible) untouched=\(untouched) noSelection=\(noSelection) hasText=\(proxy.hasText) before=\(proxy.documentContextBeforeInput?.count ?? -1)",
+                "外部変更確定の \(Self.externalWillChangeCommitRepairDelaySec) 秒後(調査3756) visible=\(visible) untouched=\(untouched) noSelection=\(noSelection) hasText=\(proxy.hasText) before=\(proxy.documentContextBeforeInput?.count ?? -1)",
                 critical: true
             )
             guard visible, untouched, noSelection, proxy.hasText else {
