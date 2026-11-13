@@ -5514,6 +5514,26 @@ extension KanaKanjiConverter {
                         if node.start == 3, node.surfaceID == SID.ね || node.surfaceID == SID.ぜ, prevNode.surfaceID == SID.しよう {
                             cost -= Self.multiClauseFinalParticleAfterShiyouBonus
                         }
+                        // 敬称の さん の直後の なくなる は 亡くなる(定数コメント参照。3791)。整数 ID の判定を先に
+                        if prevNode.surfaceID == SID.さん, prevNode.isKanaIdentity, node.isInflectionDerived, node.surface.first == "亡" {
+                            // 文頭の さん(断片)は 酸 に取られるので、その分も足す
+                            cost -= prevNode.start == 0 ? Self.multiClauseNakunaruAfterInitialSanBonus : Self.multiClauseNakunaruAfterSanBonus
+                        }
+                        // カタカナの名詞+や+さん の や は 屋(定数コメント参照。3791)。整数 ID の判定を先に
+                        if node.surfaceID == SID.屋, node.end - node.start == 1, node.end + 1 < n, chars[node.end] == "さ", chars[node.end + 1] == "ん",
+                            prevNode.end - prevNode.start >= 2, prevNode.isDictWord, Self.isKatakanaString(prevNode.surface) {
+                            cost -= Self.multiClauseKatakanaShopYaBonus
+                        }
+                        // 述語+の+だし は のだ+し(定数コメント参照。3791)。整数の判定を先に、読みの比較は最後
+                        if node.end - node.start == 2, !node.isKanaIdentity, prevNode.surfaceID == SID.の, prevNode.isKanaIdentity,
+                            backPointer[prevIdx] >= 0, node.reading == "だし" {
+                            let head = nodes[backPointer[prevIdx]]
+                            if head.isInflectionDerived || head.isDictionaryFormPredicate
+                                || (head.isKanaIdentity && head.end - head.start >= 2
+                                    && Self.multiClauseVerbEndingKana.contains(chars[head.end - 1])) {
+                                cost += Self.multiClauseDashiNounAfterPredicateNoPenalty
+                            }
+                        }
                         // 終助詞の ね+引用の と/って(定数コメント参照。3789)。整数 ID の判定を先に
                         // 〜ておく の縮約(寝といた/寝といて/寝とけ/寝とく)は 寝 のままにするので、と の後ろが いた/いて/け/く/こ の形は除く
                         if node.surfaceID == SID.ね, node.isKanaIdentity, node.end < n, prevNode.end - prevNode.start >= 2,

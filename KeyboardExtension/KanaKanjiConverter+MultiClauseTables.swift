@@ -2986,6 +2986,17 @@ extension KanaKanjiConverter {
     // かなの ね+と より安かった。寝 を下げると 根、根 を下げると 値 が出るので、正しい区切りの側を上げる。2 かな以上の語の直後だけ
     static let multiClauseNeBeforeQuotativeBonus = 3500
     static let multiClauseSayAfterNeToBonus = 1500
+    // 敬称の さん の直後の なくなって/なくなった は 亡くなる(3791、ユーザ指定: さんなくなって は断片で打つことを考えて
+    // さん亡くなって を先頭に。無くなって/なくなって が先だった)
+    static let multiClauseNakunaruAfterSanBonus = 3000
+    static let multiClauseNakunaruAfterInitialSanBonus = 7500
+    // カタカナの名詞+や+さん(カレー屋さん/クリーニング屋さん)の や は 屋(3791、ユーザ報告: かれーやさん が カレー爺さん。
+    // 爺 の誤った読み や は抑制したが、残りは カレー+や(かな)+さん だった。ケーキ屋/パン屋 のように 1 語で辞書にある語は元から 屋)
+    static let multiClauseKatakanaShopYaBonus = 3000
+    // 述語+の+だし(いるのだし/あるのだし)は のだ+し。の→山車/出汁/出し の連接が安く 居るの山車 になっていた(3791、ユーザ報告)。
+    // 述語(活用形・辞書形、かなの動詞)+の の直後の名詞 だし を下げる。名詞+の+だし(祭りの山車/鰹の出汁)はそのまま。
+    // のだし を登録語にする案は、鰹のだし/祭りのだし が全部かなになったので採らない
+    static let multiClauseDashiNounAfterPredicateNoPenalty = 5000
     static let multiClauseNeAfterVolitionalExtraBonus = 4000
     static let multiClauseQuotativeTteAfterNeBonus = 5000
     static func multiClauseTokuContractionFollows(_ chars: [Character], _ index: Int, _ n: Int) -> Bool {

@@ -30272,6 +30272,41 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3792(ユーザ報告 12 件): いるのだし/さいていぎし/やるようにし/ふく/ふくしゅと/のなかに/かれーやさん/さんなくなって/
+    // はんざいにんじゃなかったりする/そんだけないようが/いたみにたえて
+    func testRegressionUserReports3792() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func shown(_ reading: String) -> [String] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            return multi.isEmpty ? converter.candidates(for: reading, limit: 20, systemCandidateMode: .surface) : multi
+        }
+        for (reading, expected) in [
+            ("さいていぎし", "再定義し"), ("さいていぎする", "再定義する"), ("やるようにし", "やるようにし"), ("ふくしゅと", "副首都"),
+            ("のなかに", "の中に"), ("へやのなかに", "部屋の中に"), ("かれーやさん", "カレー屋さん"), ("くりーにんぐやさん", "クリーニング屋さん"),
+            ("さんなくなって", "さん亡くなって"), ("たなかさんなくなった", "田中さん亡くなった"),
+            ("はんざいにんじゃなかった", "犯罪人じゃなかった"), ("はんざいにんじゃなかったりする", "犯罪人じゃなかったりする"),
+            ("そんだけないようがしっかりしてるのかな", "そんだけ内容がしっかりしてるのかな"),
+            ("いたみにたえて", "痛みに耐えて"), ("くつうにたえる", "苦痛に耐える"), ("いきがたえる", "息が絶える"),
+            // 述語+の+だし は のだ+し。名詞+の+だし と 出し入れ はそのまま
+            ("あるのだし", "あるのだし"), ("たべるのだし", "食べるのだし"), ("たかいのだし", "高いのだし"),
+            ("まつりのだし", "祭の山車"), ("にもつのだしいれ", "荷物の出し入れ"),
+            ("かぜがふく", "風が吹く"), ("ふくをきる", "服を着る"), ("とまとやさんま", "トマトやさんま"),
+        ] {
+            XCTAssertEqual(shown(reading).first, expected, "\(reading) \(shown(reading).prefix(4))")
+        }
+        let fuku = converter.candidates(for: "ふく", limit: 20, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(fuku.prefix(7)), ["福", "服", "副", "吹く", "拭く", "葺く", "噴く"], "\(fuku)")
+        XCTAssertGreaterThan(fuku.firstIndex(of: "ふく") ?? Int.max, 7, "\(fuku)")
+        // いるのだし は かな が先頭(単文節の先頭+表示のかな先頭の判定)。さんなくなって は seed が漢字先頭なのでかな先頭にしない
+        XCTAssertEqual(converter.candidates(for: "いるのだし", limit: 6, systemCandidateMode: .surface).first, "いるのだし")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "いるのだし"))
+        XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "さんなくなって"))
+        XCTAssertFalse(shown("いるのだし").contains(where: { $0.contains("山車") || $0.contains("出汁") }), "\(shown("いるのだし"))")
+        // 爺 の誤った読み や は出さない
+        XCTAssertFalse(shown("かれーやさん").contains("カレー爺さん"))
+    }
+
     // 3789(ユーザ報告): しようねといった が 使用寝といった、やろうねといった が やろう寝といった だった。終助詞の ね+引用の と
     func testRegressionNeBeforeQuotative3789() throws {
         try prepareRealLMDictionary()

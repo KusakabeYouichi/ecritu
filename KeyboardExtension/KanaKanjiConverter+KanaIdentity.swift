@@ -113,6 +113,8 @@ extension KanaKanjiConverter {
         return true
     }
 
+    static let kanaIdentityLeadingDeniedReadings: Set<String> = ["さんなくなって"]
+
     func computeShouldKeepKanaIdentityLeading(normalized: String) -> Bool {
         if hasLearnedKanaIdentity(for: normalized) || hasCuratedKanaIdentity(for: normalized) {
             return keepKanaGround("L107")
@@ -120,6 +122,12 @@ extension KanaKanjiConverter {
         // 漢字正書の名詞のかな収穫(ひつよう/ほけん。定数コメント参照。2902)。辞書にかな表層があるだけの根拠
         // (systemCandidates.contains)や活用形解釈(ほけ+ん→ほける)で立つのを、学習・curated の直後で止める
         if Self.kanaHarvestDemotedReadings.contains(normalized) {
+            return false
+        }
+        // seed で漢字を先頭にした句のうち、後半が登録語のかな(なくなって)という根拠でかな先頭の判定が立ってしまう読み(3792)。
+        // さんなくなって は さん亡くなって を先頭にする(ユーザ指定)。seed のある読み全体に広げると、かなを 2 番めに置いた seed
+        // (あったが/いまだとまだ/どうかね など)の表示が変わるので(全テストで 16 件)、読みを挙げる
+        if Self.kanaIdentityLeadingDeniedReadings.contains(normalized) {
             return false
         }
         // 活用形でも漢字を先頭にする基底(あぶない。derivedKanjiLeadBaseReadings)の語幹で始まる かな(あぶなくなる/
