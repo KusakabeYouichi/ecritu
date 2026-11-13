@@ -2990,6 +2990,10 @@ extension KanaKanjiConverter {
     // かなの ね+と より安かった。寝 を下げると 根、根 を下げると 値 が出るので、正しい区切りの側を上げる。2 かな以上の語の直後だけ
     static let multiClauseNeBeforeQuotativeBonus = 3500
     static let multiClauseSayAfterNeToBonus = 1500
+    // 地名+か+地名(大阪か京都か/東京か大阪)の か は選択の助詞(3797、ユーザ報告: おおさかかきょうとか が 大阪架橋とか)。
+    // 国名+や/と+国名(3762)と同じ形で、2 字以上の地名どうしの間の か に加点する
+    static let multiClausePlaceKaPlaceLeadBonus = 2500
+    static let multiClausePlaceKaPlaceBonus = 2500
     // 夏 を 1 かな(か/げ)で読むノードは連文節では下げる(3796、ユーザ報告: おおさかか が 大坂夏)。LM は表記だけで数えるので、
     // 大坂→夏(大坂夏の陣 の なつ。点 1548)を音読みの か が借りて 大阪+か(助詞)に勝っていた。抑制語彙に入れると、
     // 単文節の か の候補(seed でユーザが並べた 12 番めの 夏)まで消えるので、連文節のノードだけ下げる。

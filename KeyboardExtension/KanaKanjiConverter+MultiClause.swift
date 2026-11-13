@@ -3294,6 +3294,8 @@ extension KanaKanjiConverter {
         // 地名+りょう は 領(韓国領/対馬領)の判定に使う
         var placeNameKindByNodeKey: [String: String] = [:]
         var countryNameStartPositions = Set<Int>()
+        // 2 字以上の地名(国に限らない)が始まる位置(地名+か+地名+か の加点に使う。3797)
+        var placeNameStartPositions = Set<Int>()
         // 漢字を含む活用派生ノードの区間(開始×1000+終了)。名詞+したい の分割が、同じ区間の活用形(話したい)と
         // 競っているかを遷移の中で安く引く(3768)
         var derivedKanjiSpanKeys = Set<Int>()
@@ -3317,6 +3319,9 @@ extension KanaKanjiConverter {
                     // 2 字以上の国名が始まる位置(国名+や+国名 の加点で、や の先に国名があるかを見る。3762)
                     if kind == "国", node.surface.count >= 2 {
                         countryNameStartPositions.insert(node.start)
+                    }
+                    if node.surface.count >= 2 {
+                        placeNameStartPositions.insert(node.start)
                     }
                 }
             }
@@ -5642,6 +5647,24 @@ extension KanaKanjiConverter {
                             if prevPrev.surface.count >= 2, placeNameKindByNodeKey[prevPrev.key] == "国" {
                                 cost -= Self.multiClauseCountryEnumerationBonus
                                     + (countryNameDemotedNodeKeys.contains(node.key) ? 6000 : 0)
+                            }
+                        }
+                        // 地名+か+地名(大阪か京都か。定数コメント参照。3797)。整数 ID の判定を先に、地名の表引きは後に
+                        if node.surfaceID == SID.か, node.isKanaIdentity, prevNode.surface.count >= 2,
+                            placeNameStartPositions.contains(node.end), placeNameKindByNodeKey[prevNode.key] != nil {
+                            cost -= Self.multiClausePlaceKaPlaceLeadBonus
+                        }
+                        // 後ろの か(大阪か京都+か): 地名の前が か なら、この か も選択の助詞
+                        if node.surfaceID == SID.か, node.isKanaIdentity, prevNode.surface.count >= 2, backPointer[prevIdx] >= 0,
+                            nodes[backPointer[prevIdx]].surfaceID == SID.か, nodes[backPointer[prevIdx]].isKanaIdentity,
+                            placeNameKindByNodeKey[prevNode.key] != nil {
+                            cost -= Self.multiClausePlaceKaPlaceBonus
+                        }
+                        if prevNode.surfaceID == SID.か, prevNode.isKanaIdentity, node.surface.count >= 2,
+                            placeNameKindByNodeKey[node.key] != nil, backPointer[prevIdx] >= 0 {
+                            let prevPrev = nodes[backPointer[prevIdx]]
+                            if prevPrev.surface.count >= 2, placeNameKindByNodeKey[prevPrev.key] != nil {
+                                cost -= Self.multiClausePlaceKaPlaceBonus
                             }
                         }
                         // カタカナ語+種/州(定数コメント参照。3662)
