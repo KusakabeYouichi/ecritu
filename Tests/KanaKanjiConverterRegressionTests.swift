@@ -30276,6 +30276,25 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "さいがさん", systemCandidateMode: .surface).first, "雑賀さん")
     }
 
+    // 3787(ユーザ報告・指定): へいこうする/へいこうしよう/もへいこうする/もへいこうしよう は 並行、閉口、平行、併行、閉校、並航 の順
+    // (単独の へいこうする だけ 閉口 が先頭)。もへいこうしよう に 並行しよう が無かった(サ変形状詞可能 の語をサ変として扱っていなかった)
+    func testRegressionHeikouSuru3787() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let suru = converter.candidates(for: "へいこうする", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(suru.prefix(6)), ["閉口する", "並行する", "平行する", "併行する", "閉校する", "並航する"], "\(suru)")
+        let shiyou = converter.candidates(for: "へいこうしよう", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(shiyou.prefix(6)), ["並行しよう", "閉口しよう", "平行しよう", "併行しよう", "閉校しよう", "並航しよう"], "\(shiyou)")
+        let moSuru = converter.multiClauseCandidates(for: "もへいこうする", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(moSuru.prefix(4)), ["も並行する", "も閉口する", "も平行する", "も併行する"], "\(moSuru)")
+        let moShiyou = converter.multiClauseCandidates(for: "もへいこうしよう", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(moShiyou.prefix(4)), ["も並行しよう", "も閉口しよう", "も平行しよう", "も併行しよう"], "\(moShiyou)")
+        // サ変形状詞可能 の語の活用形
+        for (reading, expected) in [("あんしんしよう", "安心しよう"), ("しんぱいした", "心配した"), ("はんたいしよう", "反対しよう"), ("どくりつする", "独立する")] {
+            XCTAssertEqual(converter.candidates(for: reading, limit: 4, systemCandidateMode: .surface).first, expected, reading)
+        }
+    }
+
     // 3806(ユーザ指定): 開南 に地名の属性を持たせ(references/place_names_add.json)、かいなんてん は 開南店(会難点/海難点/会南天 だった)。
     // 地名の直後の てん は 店。海難事故/海難救助/海南島 はそのまま
     func testRegressionKainanTen3806() throws {

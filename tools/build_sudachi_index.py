@@ -79,7 +79,10 @@ def extract_inflection_class(row: List[str], reading: str, candidate: str) -> Op
         if value.strip() and value.strip() != "*"
     ]
 
-    if any("サ変可能" in value for value in pos_details):
+    # サ変形状詞可能(並行/平行/安心/心配/独立/反対 など約 150 語。する も な も付く)もサ変として扱う(3787)。
+    # サ変可能 だけを見ていたので、連文節で 並行しよう が活用形として作られず、もへいこうしよう が 閉口しよう/閉校しよう/並航しよう
+    # だけになっていた(ユーザ報告)
+    if any("サ変可能" in value or "サ変形状詞可能" in value for value in pos_details):
         return "suru"
 
     if "サ行変格" in inflection_type or "サ変" in inflection_type:

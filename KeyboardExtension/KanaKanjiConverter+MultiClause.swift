@@ -1624,6 +1624,8 @@ extension KanaKanjiConverter {
         var preferredInflectedNodeKeys = Set<String>()
         // 名詞 seed 順 opt-in の読み別ボーナス(multiClauseSeedOrderNounBonusesByReading)
         var seedOrderNounNodeBonuses: [String: Int] = [:]
+        // 文の中の候補の順を表で決める読みの加点(3787)。別候補の点数でも上限なしで効かせるので別に持つ
+        var sentenceOrderNodeBonuses: [String: Int] = [:]
         // 先頭の語+格助詞1字のとき、先頭文節の単文節先頭候補に与えるボーナス(定数コメント参照。2720)
         var singleTopLeadNodeBonuses: [String: Int] = [:]
         // (b5) 連用形+に(目的)ノードのキー。直後の移動動詞(来る/行く)を優先するのに使う。
@@ -2157,6 +2159,13 @@ extension KanaKanjiConverter {
                         seedFirst != surface, containsKanji(seedFirst),
                         !supplementalSystemDictionary.contains(reading: segmentReading, surface: surface) {
                         seedOrderNounNodeBonuses[spanKeyByStart[start][end] + "-" + surface, default: 0] -= Self.multiClauseKatakanaSeedSiblingDemotion
+                    }
+                }
+
+                // 文の中の候補の順を表で決める読み(定数コメント参照。3787)。ノードがどの経路で立っても効くよう、区間に対して付ける
+                if len >= 6, let order = Self.multiClauseSentenceOrderBonusesByReading[segmentReading] {
+                    for (surface, bonus) in order {
+                        sentenceOrderNodeBonuses[spanKeyByStart[start][end] + "-" + surface] = bonus
                     }
                 }
 
@@ -5191,6 +5200,7 @@ extension KanaKanjiConverter {
                         ? Self.multiClausePreferredInflectionBonus
                         : 0)
                         + (seedOrderNounNodeBonuses[nodeKeySV] ?? 0)
+                        + (sentenceOrderNodeBonuses.isEmpty ? 0 : sentenceOrderNodeBonuses[nodeKeySV] ?? 0)
                         + (singleTopLeadNodeBonuses[nodeKeySV] ?? 0)
                         + naAdjectiveSaStemBonus
                     let nodeIsShortCuratedFragment = shortCuratedFragmentNodeKeys.contains(nodeKeySV)
@@ -7510,6 +7520,7 @@ extension KanaKanjiConverter {
                 // seed 順ボーナスは変種の差分では上限付き(みな/いくつ の 3300 級をそのまま足すと 幾つ の漢字変種が許容差を超えて消える。
                 // 郡(800)を負値から 200 の刻みに戻すには 600 で足りる)
                 var nodeBonus = min(seedOrderNounNodeBonuses[nodeKey] ?? 0, Self.multiClauseVariantSeedBonusCap)
+                    + (sentenceOrderNodeBonuses.isEmpty ? 0 : sentenceOrderNodeBonuses[nodeKey] ?? 0)
                 // 連語ボーナスは変種の差分では上限(定数コメント参照)付き。4500 の連語(米国→送)をそのまま足すと
                 // 同区間の兄弟(遅れれば/後れれば)の delta が変種上限 4000 を超えて 1 件も残らなかった(ユーザ報告 3537)
                 if Self.multiClauseCollocationBridgeParticles.contains(prevSurface), pos >= 2,
