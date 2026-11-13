@@ -30236,6 +30236,21 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3787(ユーザ報告): かれの が 枯れ野、枯野、彼の の順だった(辞書の語 枯野 が先で、彼+の の合成は後ろ。かれは と同じ型)
+    func testRegressionKareNo3787() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let single = converter.candidates(for: "かれの", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(3)), ["彼の", "かれの", "枯れ野"], "\(single)")
+        for (reading, expected) in [
+            ("かれのいえ", "彼の家"), ("かれのことば", "彼の言葉"), ("かれのいうとおり", "彼の言うとおり"), ("それはかれの", "それは彼の"),
+            ("かれのをみる", "彼のを見る"), ("かれのだ", "彼のだ"),
+        ] {
+            let list = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(list.first, expected, "\(reading) \(list.prefix(4))")
+        }
+    }
+
     // 3806(ユーザ指定): 開南 に地名の属性を持たせ(references/place_names_add.json)、かいなんてん は 開南店(会難点/海難点/会南天 だった)。
     // 地名の直後の てん は 店。海難事故/海難救助/海南島 はそのまま
     func testRegressionKainanTen3806() throws {
