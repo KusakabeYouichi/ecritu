@@ -260,6 +260,7 @@
 	<dict><key>phrase</key><string>集</string><key>shortcut</key><string>あつまり</string></dict>	<!-- 集(あつまり): 単漢字の訓読み収穫。同上(ユーザ指定 3506) -->
 
 	<!-- ■ カタカナ収穫・カタカナ強調(かな/漢字の正書を勝たせる) -->
+	<dict><key>phrase</key><string>ソバ粉</string><key>shortcut</key><string>そばこ</string></dict>	<!-- ソバ粉: そば粉/蕎麦粉 があれば要らない(ユーザ指定 3793) -->
 	<dict><key>phrase</key><string>マックオーエス</string><key>shortcut</key><string>まっくおーえす</string></dict>	<!-- macOS のカタカナ読み。出さない(ユーザ指定 3674) -->
 	<dict><key>phrase</key><string>ザット</string><key>shortcut</key><string>ざっと</string></dict>	<!-- ザット: 英語 that の読み(Sudachi の収穫)。that をカタカナで書く用事は無く、副詞 ざっと の候補を汚す(ざっとめをとおす→ザット目を通す。ユーザ指定 3582) -->
 	<dict><key>phrase</key><string>カッタ</string><key>shortcut</key><string>かった</string></dict>	<!-- カッタ: Sudachi のカタカナ収穫(wc 2344 と極端に安い)。かった の先頭を取り 買った/勝った を押し下げていた(ユーザ報告 3388) -->
