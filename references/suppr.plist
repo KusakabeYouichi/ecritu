@@ -5,6 +5,7 @@
 	<!-- 変換抑制の語彙(キーボードが直接読む。アプリの抑制語彙UIには非表示)。『■ 』で始まる行がグループ見出し(直前に空行)。エントリ行の後ろのコメントはその語の個別理由。『※ 』で始まる行は、対応するエントリが今は無い補足メモ。 -->
 
 	<!-- ■ 誤エントリ: 辞書の誤った読み・存在しない表記(学習でも古語でもなく明確な誤り) -->
+	<dict><key>phrase</key><string>爺</string><key>shortcut</key><string>や</string></dict>	<!-- 爺(や): 爺や(じいや)の や を 爺 の読みにした誤り。かれーやさん が カレー爺さん になっていた(ユーザ報告 3791) -->
 	<dict><key>phrase</key><string>回わる</string><key>shortcut</key><string>まわる</string></dict>	<!-- 回わる/廻わる: 送り仮名の誤り(本則・許容とも 回る/廻る)。いっしゅうまわった の候補に 回わった、まわった に 廻わった が出ていた(ユーザ指摘 3748) -->
 	<dict><key>phrase</key><string>廻わる</string><key>shortcut</key><string>まわる</string></dict>
 	<dict><key>phrase</key><string>中之島</string><key>shortcut</key><string>なかのし</string></dict>	<!-- 中之島 の読みは なかのしま。Sudachi の core_lex に 読み ナカノシ の行がある(ナカノシマ の行とは別)。下流の中野市に位置し が 中之島に位置し になっていた(ユーザ指摘 3776) -->

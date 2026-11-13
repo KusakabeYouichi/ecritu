@@ -9,6 +9,7 @@
 	<dict><key>phrase</key><string>気にする</string><key>shortcut</key><string>きにする</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>失くす</string><key>shortcut</key><string>なくす</string><key>pos</key><string>五段</string></dict>	<!-- 失くす: Sudachi に語(rank 4)はあるが活用クラスが無く 失くし/失くして が作られない。はいるきなくした の変種に 入る気失くした が出なかった(ユーザ報告 3537)。た形の並びは seed なくした(失くした 先頭)のまま -->
 	<dict><key>phrase</key><string>日が暮れる</string><key>shortcut</key><string>ひがくれる</string><key>pos</key><string>一段</string></dict>	<!-- 日が暮れる: 連文節は 比→が の bigram(1076。Wikipedia の 〜の比が)が 日→が(2959)より安く、ひがくれて→比がくれて/比が暮れて になっていた。が→くれて/暮れて は同点でかなが勝つので 日が+暮れ* を句で供給する(ユーザ報告 3527) -->
+	<dict><key>phrase</key><string>再定義する</string><key>shortcut</key><string>さいていぎする</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 再定義(する): 辞書にも LM にも無く さいていぎし が 最低技師/最低義士 だった(ユーザ報告 3791) -->
 	<dict><key>phrase</key><string>気がする</string><key>shortcut</key><string>きがする</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 気がする: 単独では供給経路が無い(気が+する はサ変名詞と見なされず、逆に 帰臥/起臥 の2字漢語がサ変推論で 帰臥した 等を作る)。きがした→帰臥した 対策。気が 単独の curated は 危害(きがい)/着替え(きがえ)/気軽(きがる)/飢餓 を分断するため句で登録する -->
 	<dict><key>phrase</key><string>言い間違い</string><key>shortcut</key><string>いいまちがい</string></dict>	<!-- 言い間違い/言い間違え: Sudachi に無く、言い(五段連用形)のノードも立たないため いい間違い になる。連用形単独の一般供給は いい→言い の退行 19 件で撤回し、語で登録(2880、ユーザ報告) -->
 	<dict><key>phrase</key><string>言い間違え</string><key>shortcut</key><string>いいまちがえ</string></dict>
@@ -202,6 +203,8 @@
 	<dict><key>phrase</key><string>売ってしまう</string><key>shortcut</key><string>うってしまう</string></dict>
 
 	<!-- ■ かな正書の語・句(かな識別 curated。漢字化・カタカナ化・全かなエコー抑制から守る) -->
+	<dict><key>phrase</key><string>副首都</string><key>shortcut</key><string>ふくしゅと</string><key>pos</key><string>名詞</string></dict>	<!-- 副首都: 辞書に無い(ユーザ指定 3791: 1 語で登録) -->
+	<dict><key>phrase</key><string>再定義</string><key>shortcut</key><string>さいていぎ</string><key>pos</key><string>名詞</string></dict>	<!-- 再定義: 名詞の形も(サ変の活用は ■ 活用の供給 の 再定義する) -->
 	<dict><key>phrase</key><string>うどんすき</string><key>shortcut</key><string>うどんすき</string><key>pos</key><string>名詞</string></dict>	<!-- うどんすき(美々卯の登録商標の鍋料理、かな表記が正式): 辞書に無く うどん好き/うどん隙 の合成ばかりだった(ユーザ指定 3329) -->
 	<dict><key>phrase</key><string>のなのか</string><key>shortcut</key><string>のなのか</string></dict>	<!-- のなのか: 所有の の+なのか(アジアのなのか/誰のなのか)。の→名(な)の連接が安く アジアの名のか になっていた(ユーザ報告 3366)。なのか 単独で登録すると 七日(なのか)を押しのけるので の ごと 1 語にする -->
 	<dict><key>phrase</key><string>おじさん</string><key>shortcut</key><string>おじさん</string></dict>	<!-- おじさん: かなが正書の呼び名なので伯父さん/叔父さん より先(ユーザ報告 3604)。お持参/お自賛 は登録でなく お+ の規則で作らない(3606) -->
@@ -258,6 +261,12 @@
 	<dict><key>phrase</key><string>すべし</string><key>shortcut</key><string>すべし</string></dict>	<!-- する+べし(〜にすべし)。かな すべし が語として立たず(かな素通り 21000)、ふらんすごにすべし→フランス語に素べし だった(ユーザ報告 3778) -->
 	<dict><key>phrase</key><string>しなかったり</string><key>shortcut</key><string>しなかったり</string></dict>	<!-- 否定の並列 しなかったり(する/した/して)。かな表層は活用供給から除外されるため素通り(7000/字)になり、再現したり+しなかったりする が 再現したりしなかった+利する に負けていた(ユーザ報告 2757) -->
 	<dict><key>phrase</key><string>しなかったりする</string><key>shortcut</key><string>しなかったりする</string></dict>
+	<dict><key>phrase</key><string>じゃなかったり</string><key>shortcut</key><string>じゃなかったり</string></dict>	<!-- 否定の並列 じゃなかったり(する/した/して)。はんざいにんじゃなかったりする が 犯罪+忍者+なかったりする に崩れていた(じゃなかった までは 犯罪人じゃなかった。ユーザ報告 3791) -->
+	<dict><key>phrase</key><string>じゃなかったりする</string><key>shortcut</key><string>じゃなかったりする</string></dict>
+	<dict><key>phrase</key><string>じゃなかったりして</string><key>shortcut</key><string>じゃなかったりして</string></dict>
+	<dict><key>phrase</key><string>じゃなかったりした</string><key>shortcut</key><string>じゃなかったりした</string></dict>
+	<dict><key>phrase</key><string>ようにし</string><key>shortcut</key><string>ようにし</string></dict>	<!-- ように+し(やるようにし/できるようにし)。文末で止めると よう+西 になっていた(ユーザ報告 3791) -->
+	<dict><key>phrase</key><string>そんだけ</string><key>shortcut</key><string>そんだけ</string></dict>	<!-- そんだけ(「それだけ」の口語。かな): 辞書に無く 損だけ内容が になっていた(ユーザ報告 3791) -->
 	<dict><key>phrase</key><string>しなかったりした</string><key>shortcut</key><string>しなかったりした</string></dict>
 	<dict><key>phrase</key><string>しなかったりして</string><key>shortcut</key><string>しなかったりして</string></dict>
 	<dict><key>phrase</key><string>してたら</string><key>shortcut</key><string>してたら</string></dict>
