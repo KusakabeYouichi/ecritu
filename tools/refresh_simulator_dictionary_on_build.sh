@@ -392,6 +392,11 @@ needs_sqlite_regeneration() {
     return 0
   fi
 
+  # 補助語彙(琉球)の地名を地名の表に入れるので、その plist と生成スクリプトが新しければ作り直す(3789)
+  if [[ "$REF_RYUKYU_PLIST" -nt "$TMP_SQLITE" || "$ROOT_DIR/tools/build_supplement_place_names.py" -nt "$TMP_SQLITE" ]]; then
+    return 0
+  fi
+
   # 病名の入り/抜けが前回と違えば作り直す(TestFlight 用の作業コピーは tmp を共有するので、
   # 手元で入れた病名が抜けないまま配られないようにする)
   if [[ "$(cat "$TMP_MEDICAUX_STATE" 2>/dev/null)" != "$(medicaux_state)" ]]; then
@@ -514,6 +519,12 @@ regenerate_sqlite_if_possible() {
   # reading→candidate→登録 の JSON(区分 登録 は連文節で LM に無い語の定額から下げる)
   if [[ -f "$REF_PLACE_NAMES_ADD" ]]; then
     sqlite_args+=(--place-names-add-json "$REF_PLACE_NAMES_ADD")
+  fi
+
+  # 補助語彙(琉球)に登録済みで Sudachi が地名とする語も、同じ区分で入れる(安謝/泡瀬/伊祖 など約 480 語が絞り込みで落ちていた。3789)
+  if [[ -f "$TMP_PLACE_NAMES" && -f "$REF_RYUKYU_PLIST" ]]; then
+    python3 "$ROOT_DIR/tools/build_supplement_place_names.py" "$TMP_PLACE_NAMES" "$ROOT_DIR/tmp/kana_kanji_place_names_supplement.json" "$REF_RYUKYU_PLIST"
+    sqlite_args+=(--place-names-add-json "$ROOT_DIR/tmp/kana_kanji_place_names_supplement.json")
   fi
 
   if [[ -f "$TMP_SECOND_INFLECTIONS" ]]; then

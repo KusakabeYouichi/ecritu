@@ -30320,6 +30320,22 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(kumi.contains("組み合せ") && kumi.contains("組合せ"), "\(kumi)")
     }
 
+    // 3789(ユーザ指定): 補った地名(開南)への加点は 店/小学校/バス停 などが続くときだけ(かいなんのじこ は 海難の事故)。
+    // 琉球の補助語彙の地名(泡瀬/伊祖/安謝 など)も地名の表に入れる
+    func testRegressionRegisteredPlaceNames3789() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("かいなんのじこ", "海難の事故"), ("かいなんにいく", "海難に行く"), ("かいなんてん", "開南店"),
+            ("かいなんしょうがっこう", "開南小学校"), ("かいなんばすてい", "開南バス停"), ("あわせてん", "泡瀬店"),
+            ("あわせてください", "合わせてください"), ("あわせにいく", "合わせに行く"), ("あさおきた", "朝起きた"),
+            ("いじをはる", "意地を張る"), ("いしきがある", "意識がある"),
+        ] {
+            let list = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(list.first, expected, "\(reading) \(list.prefix(4))")
+        }
+    }
+
     // 3787(ユーザ指定): さいが は 才が、差異が、菜が、賽が の順。カタカナの サイガ(Sudachi の固有名詞、点 3896 で先頭だった)は後ろ
     func testRegressionSaiga3787() throws {
         try prepareRealLMDictionary()

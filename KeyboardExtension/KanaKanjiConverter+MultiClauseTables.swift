@@ -3329,6 +3329,13 @@ extension KanaKanjiConverter {
     // 海難(7308)に負ける。実在が確かな地名として定額から下げる(開南 5700+店 < 会+難点)
     static let registeredPlaceNameKind = "登録"
     static let multiClauseRegisteredPlaceNameBonus = 3000
+    // 補った地名への加点は、後ろにこの読みが続くときだけ(3789、ユーザ指定: かいなんのじこ/かいなんにいく は 海難 が先のまま、
+    // 開南店/開南小学校/開南バス停 は 開南)。地名だと分かる続き方に限る
+    static let multiClausePlaceFacilitySuffixReadings: [[Character]] = [
+        "てん", "しょうがっこう", "ちゅうがっこう", "こうこう", "えき", "ばすてい", "こうさてん", "どおり", "ほんどおり",
+        "こうえん", "いりぐち", "ちく", "しょうてんがい", "こうみんかん", "ほいくえん", "ようちえん", "ゆうびんきょく", "こうばん",
+        "ししょ", "してん", "えいぎょうしょ", "だんち", "いちば", "びょういん", "けいゆ"
+    ].map(Array.init)
     static let multiClausePlaceNameSuffixPreferenceBonus = 2000
     // 県/語 は 3774 で追加(正解はシエナ県です が シエナ件、ドイツ語 が ドイツ後 だった。一括検査の退行)
     // 店 は 3806 で追加(ユーザ指定: かいなんてん は 開南店。会+難点/海+難点 だった)

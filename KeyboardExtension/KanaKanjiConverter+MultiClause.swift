@@ -1250,9 +1250,11 @@ extension KanaKanjiConverter {
         guard candidates.count >= 2, normalized.count >= 4, normalized.hasSuffix("さん") else {
             return candidates
         }
-        let places = Set(store.placeNameKinds(for: String(normalized.dropLast(2))).keys.filter {
-            containsKanji($0) || Self.isKatakanaString($0)
-        })
+        // 補った地名(区分 登録。琉球の地名など)は名字と同じ表記が多いので、地名+さん の並べ替えには使わない
+        // (はなしろさん が 玻名城さん になり 花城さん が後ろへ回った。3789)
+        let places = Set(store.placeNameKinds(for: String(normalized.dropLast(2)))
+            .filter { $0.value != Self.registeredPlaceNameKind }.keys
+            .filter { containsKanji($0) || Self.isKatakanaString($0) })
         guard places.contains(where: { containsKanji($0) }),
             // 読み全体が辞書の一語(たくさん=沢山/けいさん=計算)なら触らない
             !store.wordCosts(for: normalized).keys.contains(where: { !$0.hasSuffix("さん") && !$0.hasSuffix("産") && !$0.hasSuffix("サン") }) else {
@@ -3307,7 +3309,9 @@ extension KanaKanjiConverter {
                 if let kind = placeNameKindsByReading[node.reading]?[node.surface] {
                     placeNameKindByNodeKey[node.key] = kind
                     // 手で補った地名(定数コメント参照。3806)
-                    if kind == Self.registeredPlaceNameKind {
+                    // 後ろに施設・場所の語(店/小学校/駅/バス停…)が続くときだけ(かいなんのじこ は 海難の事故 のまま。3789)
+                    if kind == Self.registeredPlaceNameKind,
+                        Self.multiClausePlaceFacilitySuffixReadings.contains(where: { chars[node.end...].starts(with: $0) }) {
                         seedOrderNounNodeBonuses[node.key, default: 0] += Self.multiClauseRegisteredPlaceNameBonus
                     }
                     // 2 字以上の国名が始まる位置(国名+や+国名 の加点で、や の先に国名があるかを見る。3762)

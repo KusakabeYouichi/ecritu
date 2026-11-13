@@ -115,7 +115,8 @@ extension KanaKanjiConverter {
             return
         }
         let stemReading = String(reading.dropLast(2))
-        let places = Set(store.placeNameKinds(for: stemReading).keys.filter { containsKanji($0) || Self.isKatakanaString($0) })
+        let places = Set(store.placeNameKinds(for: stemReading).filter { $0.value != Self.registeredPlaceNameKind }.keys
+            .filter { containsKanji($0) || Self.isKatakanaString($0) })
         guard places.contains(where: { containsKanji($0) }) else {
             return
         }
