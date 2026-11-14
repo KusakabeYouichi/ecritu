@@ -30291,6 +30291,25 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3800(一括検査 3767 の確認表の [直す]、1 回め): 連用形が名詞としても辞書にある述語(持たせ/呼ばれ)が LM 未収録の辞書語になり
+    // 派生の兄弟(持せ/喚ばれ)に負けていた、にて が 烹て、〜化など が かな+どの、〜中や が 昼夜、の割に が 割りに、に沿った が かな、
+    // コク/青み の並び、熟成を図る/プロシュートと合う。変えないもの(似ている/煮て/水割り)も守る
+    func testRegressionAuditAnswers3767FirstBatch3800() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("あじにこくをもたせ", "味にコクを持たせ"), ("これもよばれ", "これも呼ばれ"), ("たんくにてじゅくせい", "タンクにて熟成"),
+            ("しきそのあんていかなどのこうかがあります", "色素の安定化などの効果があります"), ("いどのわりにはすずしい", "緯度の割には涼しい"),
+            ("まいんがわにそったちいき", "マイン川に沿った地域"), ("じゅくせいをはかります", "熟成を図ります"),
+            ("ふちにあおみがみえます", "縁に青みが見えます"),
+            ("ぷろしゅーととあいます", "プロシュートと合います"), ("るぷりんのはたらきにより", "ルプリンの働きにより"),
+            ("かおがにている", "顔が似ている"), ("やさいをにてたべる", "野菜を煮て食べる"), ("たんさんすいわり", "炭酸水割り"),
+            ("かれもよばれた", "彼も呼ばれた"), ("そんなにへんかな", "そんなに変かな"),
+        ] {
+            XCTAssertEqual(converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).first, expected, reading)
+        }
+    }
+
     // 3800(ユーザ指定): しなのまる は 信濃丸 が先頭(しな乃丸 だった)。補助語彙の店名 しな乃(登録語の点数)+丸 が
     // LM の 信濃+丸 より安かった。信濃丸 を 1 語で登録する
     func testRegressionShinanomaru3800() throws {

@@ -1830,6 +1830,21 @@ extension KanaKanjiConverter {
                         // (seed の 2 番目以降(かけて の 欠けて)や辞書語(取れ立て)まで派生扱いにすると、定額の派生コストで
                         // seed 先頭のかな(かけて/採れたて)を抜いてしまう)
                         surfaces[index].isInflectionDerived = true
+                    } else if isInflectionDerived,
+                        let index = surfaces.firstIndex(where: { $0.surface == surface }),
+                        !surfaces[index].isInflectionDerived, !surfaces[index].isCurated,
+                        surfaces[index].wordCost != nil,
+                        segmentReading.count >= 3,
+                        containsKanji(surface),
+                        // た形・て形は対象外(出来た に合流させると できたてで が 出来た+手で になった。全テストで発覚)
+                        let last = surface.last, !"ただてで".contains(last),
+                        Self.multiClauseSeed(segmentReading) == nil,
+                        store.wordLMUnigramCosts(for: [surface]).isEmpty {
+                        // 連用形が名詞としても辞書にある述語(持たせ/呼ばれ)は辞書の行が先着し、活用派生のコピーが dedupe で死んで
+                        // LM 未収録の辞書語(8700)になる。派生の兄弟(持せ=持す の命令形、喚ばれ)は定額(7200、助詞の後ろ 5000)なので
+                        // あじにこくをもたせ→味に濃くを持せ、ともよばれ→とも喚ばれ になっていた(3800、一括検査 3767)。
+                        // LM に無く seed も無い読みに限って派生フラグを合流させる(seed のある読みは上の 3252 の条件のまま)
+                        surfaces[index].isInflectionDerived = true
                     }
                 }
 
@@ -4051,6 +4066,17 @@ extension KanaKanjiConverter {
             if readingID == SID.ほうが, surfaceID == SID.方が, prevID == SID.の {
                 base -= Self.multiClauseHouGaKanjiAfterNoBonus
             }
+            // 〜化+など、〜中+や(定数コメント参照。3800)
+            if readingID == SID.など, isKanaIdentity, prev.count >= 3, prev.hasSuffix("化") {
+                base -= Self.multiClauseNadoAfterKaSuffixBonus
+            }
+            if readingID == SID.や, isKanaIdentity, prevID == SID.中 {
+                base -= Self.multiClauseYaAfterChuuSuffixBonus
+            }
+            // に+沿う(川に沿って/道に沿った)は漢字を先に(かな そって/そった と同点で かな が先だった。3800、一括検査 3767)
+            if prevID == SID.に, isInflectionDerived, surface.hasPrefix("沿"), reading.hasPrefix("そ") {
+                base -= Self.multiClauseHouGaKanjiAfterNoBonus
+            }
             // 述語の直後・文頭の 自体 を下げる(定数コメント参照。3798)
             if readingID == SID.じたい, surfaceID == SID.自体,
                 prevIsBOS || prevIsDictionaryFormPredicate || prevIsInflectionDerived
@@ -4648,7 +4674,8 @@ extension KanaKanjiConverter {
             }
             // 割合の 割(わり)は数の後ろ(3割/何割/一割)。名詞の後ろの わり は 割り(水割り/炭酸水割り)。LM は 割 5072 < 割り 6427
             // で、たんさんすいわり が 炭酸水割 だった(3748、ユーザ指定)
-            if surfaceID == SID.割, readingID == SID.わり, !prevIsBOS, let last = prev.last,
+            // の の後ろ(緯度の割には/年の割に)は 割 のまま(いどのわりには が 緯度の割りには だった。3800、一括検査 3767)
+            if surfaceID == SID.割, readingID == SID.わり, !prevIsBOS, prevID != SID.の, let last = prev.last,
                 !last.isNumber, !"一二三四五六七八九十百千万何数幾".contains(last) {
                 penalty += Self.multiClauseNonNumeralWariPenalty
             }
