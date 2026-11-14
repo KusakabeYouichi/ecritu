@@ -7,6 +7,8 @@
   c_near.tsv      ほぼ一致(3775、ユーザ指定): 違いが「カタカナで書くか原語で書くか」(語彙に同じ読みで両方が載る語)・作る/造る・
                   書きかえの組(蒸溜/蒸留)・漢数字/算用数字 だけ(near_match.py の NEAR_KINDS)。何番めにあるかは問わない。
                   確認表には出さない。読みが同じ別の語(コナ⇔粉)は入らない
+  c_ignored.tsv   ユーザが『気にしなくていい』と決めた違い(ignored_pairs.tsv。3801)と、上のほぼ一致の違いだけの行。
+                  違いは diff_pairs.py で箇所ごとに切り出して 1 つずつ見る。確認表には出さない
   c_policy.tsv    先頭は違うが écritu の表記方針(かなで書く言葉)の範囲(事→こと 等)。直さない
   c_style.tsv     期待(書き手)がかな書きで écritu は漢字(あと→後、みそ汁→味噌汁)。書き手の流儀なので直さない
   a_register.tsv  期待の表記が候補列に無い(語の登録が要る見込み。読みの推定違いも混ざる)
@@ -22,6 +24,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import near_match  # noqa: E402
+import diff_pairs  # noqa: E402
 
 # écritu がかなで書く(漢字を先頭に出さない)語。期待側の漢字をかなに正規化して比べる
 KANA_POLICY = [
@@ -100,9 +103,13 @@ def diff_core(a, b):
 def main():
     src, outdir = sys.argv[1:3]
     os.makedirs(outdir, exist_ok=True)
-    buckets = {"c_ok": [], "c_near": [], "c_policy": [], "c_style": [], "a_register": [], "b_logic": []}
+    buckets = {"c_ok": [], "c_near": [], "c_ignored": [], "c_policy": [], "c_style": [], "a_register": [], "b_logic": []}
     lm = load_lm_surfaces()
     vocab_readings, kakikae_pairs = near_match.load_tables()
+    ignored = diff_pairs.load_ignored()
+
+    def near(a, b):
+        return near_match.is_near_match(a, b, vocab_readings, kakikae_pairs)
     for line in open(src, encoding="utf-8"):
         cols = line.rstrip("\n").split("\t")
         if len(cols) < 8:
@@ -118,6 +125,11 @@ def main():
         # ほぼ一致: カタカナで書くか原語で書くか・作る/造る・書きかえ・数字 だけの違い(何か所あっても、何番めでも。3775)
         if first and near_match.is_near_match(expected, first, vocab_readings, kakikae_pairs):
             buckets["c_near"].append([reading, expected, first, top])
+            continue
+        # 気にしなくていい違い(と、ほぼ一致)だけの行。残った違いは a/b の「違い」の列に出す
+        rest = diff_pairs.remaining_spans(expected, first, ignored, near) if first else None
+        if rest is not None and not rest:
+            buckets["c_ignored"].append([reading, expected, first, top])
             continue
         if policy_normalize(expected) == policy_normalize(first) or policy_normalize(expected) == first:
             buckets["c_policy"].append([reading, expected, first, top])
@@ -143,11 +155,14 @@ def main():
             level, why = "1", empty + "LM 収録の一般語句"
         else:
             level, why = "2", empty + "長い句(入力の単位として稀)"
+        if rest:
+            core = " ".join((a or "(なし)") + "→" + (b or "(なし)") for a, b in rest)
         row = [level, why, reading, expected, first, core, flags, top]
         buckets["a_register" if found == "no" else "b_logic"].append(row)
     headers = {
         "c_ok": "読み\t期待\t先頭\t上位6",
         "c_near": "読み\t期待\t先頭\t上位6",
+        "c_ignored": "読み\t期待\t先頭\t上位6",
         "c_policy": "読み\t期待\t先頭\t上位6",
         "c_style": "読み\t期待\t先頭\t違い(期待→先頭)\t上位6",
         "a_register": "段階\t理由\t読み\t期待\t先頭\t違い(期待→先頭)\t印\t上位6",

@@ -28605,6 +28605,47 @@ extension KanaKanjiConverterRegressionTests {
             let reading = String(cols[0])
             let expected = String(cols[1])
             converter.invalidateCandidateCache()
+            // 数字を含む読み(せいかいは1716ねんです)は、実機と同じく数字を確定済みの文字として扱う(3801)。数字の連なりで読みを
+            // 切り、かなの部分を 1 つずつ変換する(直前の数字は precedingCharacter と単文節の数字接頭で渡す)。上位は先頭の連結だけ
+            if reading.contains(where: { $0.isASCII && $0.isNumber }) {
+                var pieces: [(digits: String, kana: String)] = []
+                var digits = ""
+                var kana = ""
+                for ch in reading {
+                    if ch.isASCII && (ch.isNumber || ((ch == "." || ch == ",") && kana.isEmpty && !digits.isEmpty)) {
+                        if !kana.isEmpty { pieces.append((digits, kana)); digits = ""; kana = "" }
+                        digits.append(ch)
+                    } else {
+                        kana.append(ch)
+                    }
+                }
+                pieces.append((digits, kana))
+                let limit = Int(ProcessInfo.processInfo.environment["AUDIT_LIMIT"] ?? "") ?? 30
+                var joined = ""
+                for piece in pieces {
+                    joined += piece.digits
+                    guard !piece.kana.isEmpty else { continue }
+                    converter.invalidateCandidateCache()
+                    let multi = converter.multiClauseCandidates(for: piece.kana, systemCandidateMode: .surface, precedingCharacter: piece.digits.last)
+                    // 単文節は数字接頭つきの読みで引く(3か月)。数字を呑んだ候補(3かこく→参加国)は、かなだけの読みの候補に無ければ捨てる
+                    let kanaOnly = piece.digits.isEmpty ? [] : converter.candidates(for: piece.kana, limit: limit, systemCandidateMode: .surface)
+                    let single = converter.candidates(for: piece.digits + piece.kana, limit: limit, systemCandidateMode: .surface)
+                        .compactMap { candidate -> String? in
+                            if piece.digits.isEmpty { return candidate }
+                            if candidate.hasPrefix(piece.digits) { return String(candidate.dropFirst(piece.digits.count)) }
+                            return kanaOnly.contains(candidate) ? candidate : nil
+                        }
+                    var shown = piece.kana.count >= 4 ? multi : []
+                    if let top = single.first, !shown.contains(top) {
+                        shown.insert(top, at: shown.count >= 2 && KanaKanjiConverter.keepsSecondAgainstSingleBest(shown[0], shown[1]) ? 2 : min(1, shown.count))
+                    }
+                    joined += shown.first ?? piece.kana
+                }
+                let ok = joined == expected
+                if ok { okCount += 1 }
+                out.append(line + "\t" + joined + "\t" + (ok ? "ok" : "ng") + "\t" + (ok ? "yes" : "no") + "\t" + joined)
+                continue
+            }
             let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
             // AUDIT_LIMIT=48 で実機の候補欄と同じ上限にする(上限で点数の経路が変わることがある。3688)
             let single = converter.candidates(for: reading, limit: Int(ProcessInfo.processInfo.environment["AUDIT_LIMIT"] ?? "") ?? 30, systemCandidateMode: .surface)
