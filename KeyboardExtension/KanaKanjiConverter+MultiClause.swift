@@ -4024,6 +4024,22 @@ extension KanaKanjiConverter {
                 (prev.hasSuffix("て") || prev.hasSuffix("で")) {
                 base = min(base, Self.multiClauseKanaAdverbCost)
             }
+            // て形直後の くる の漢字(来た/北)を下げる(定数コメント参照。3798)
+            if !isKanaIdentity, !prevIsBOS, Self.multiClauseTeKuruAuxiliaryReadingsID.contains(readingID),
+                prev.hasSuffix("て") || prev.hasSuffix("で") {
+                if surfaceID == SID.北 {
+                    base += Self.multiClauseTeKuruNorthPenalty
+                } else if surface.hasPrefix("来") {
+                    base = max(base, Self.multiClauseKanaAdverbCost + Self.multiClauseTeKuruKanjiMargin)
+                }
+            }
+            // 述語の直後・文頭の 自体 を下げる(定数コメント参照。3798)
+            if readingID == SID.じたい, surfaceID == SID.自体,
+                prevIsBOS || prevIsDictionaryFormPredicate || prevIsInflectionDerived
+                    // かなの形容詞(やばい/ひどい)は述語の印が付かない
+                    || (prevIsKanaIdentity && prev.count >= 3 && prev.hasSuffix("い")) {
+                base += Self.multiClauseJitaiAfterPredicatePenalty
+            }
             // 様態の そう(かな)は形容動詞語幹の直後が正書(便利そう/元気そう/静かそう)。
             // 形容動詞かどうかは LM の分布で判定する: prev→な の bigram コストが十分低い
             // (便利→な491/静か→な425/元気→な1129 等、強い連体接続)ことが「形容動詞語幹」の

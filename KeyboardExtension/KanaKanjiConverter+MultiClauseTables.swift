@@ -2668,6 +2668,16 @@ extension KanaKanjiConverter {
     static let multiClauseTeKuruAuxiliaryReadings: Set<String> = [
         "くる", "きた", "きて", "きます", "きました", "きません", "こない", "こなかった", "きたら", "くるの", "きたの", "くるから", "きたから", "きてる", "きている", "きてた"
     ]
+    // て形直後の くる の漢字(来た/来て)は、かな より後ろへ(3798、ユーザ指定: やばいじたいになってきた が なって来た 先頭だった)。
+    // かな側の上限(multiClauseKanaAdverbCost 4000)は、になって→来た の bigram(1500)より高く、かなを上限まで下げるだけでは
+    // 負ける。漢字側を、かなの上限のすぐ後ろ(+本値)まで上げる。定額の減点だと、ほかの同音語の入れ替え(事態/字体 の差 549)より
+    // 差が大きくなり、2 番めが なって来た でなく 字体になってきた になる(ユーザ指定は 2 番めに なって来た)。
+    // 方角の 北 は て形の直後に続かないので、候補から落ちるだけ下げる(なって北。ユーザ指定)
+    static let multiClauseTeKuruKanjiMargin = 300
+    static let multiClauseTeKuruNorthPenalty = 8000
+    // 自体 は名詞・代名詞の後ろに付く語(それ自体/存在自体)。述語の直後と文頭では 事態 を先に(3798、ユーザ指定:
+    // やばいじたい が やばい自体 だった。LM は 自体 が 事態 より安い)
+    static let multiClauseJitaiAfterPredicatePenalty = 3000
     // 引用の と/とも/とは の直後の 言う は、いいます/いえば/いうか をかなに(learningBOX 検査 3693。教材は
     // といい 31:と言い 8、といわ 46:と言わ 34、といえ 14:と言え 5)。かな の活用ノードが無い形(いわれる/いえます)もあるので、
     // 言 だけでなく漢字の述語を同じだけ下げる(言 だけ下げると 癒えます/云われる に流れた)。かな が無ければ並びは変わらない。
@@ -4703,6 +4713,9 @@ extension KanaKanjiConverter {
             add("")
             add(KanaKanjiConverter.multiClauseBOSMarker)
             add(KanaKanjiConverter.multiClauseEOSMarker)
+            // て形直後の補助動詞 くる の漢字の減点(3798)、述語の直後・文頭の 自体(3798)
+            for s in KanaKanjiConverter.multiClauseTeKuruAuxiliaryReadings { add(s) }
+            for s in ["北", "じたい", "自体"] { add(s) }
             // 名詞+欄/製/性 の接尾(3123、性 は 3570)
             for s in ["らん", "せい", "欄", "製", "性"] { add(s) }
             // 方角の直後の ら(3705)、形容詞の直後の 方(かた。3711)
@@ -5040,6 +5053,9 @@ extension KanaKanjiConverter {
         static let 待ち = MultiClauseSymbols.id("待ち")
         static let 感 = MultiClauseSymbols.id("感")
         static let 来た = MultiClauseSymbols.id("来た")
+        static let 北 = MultiClauseSymbols.id("北")
+        static let じたい = MultiClauseSymbols.id("じたい")
+        static let 自体 = MultiClauseSymbols.id("自体")
         static let 漢字 = MultiClauseSymbols.id("漢字")
         static let 産 = MultiClauseSymbols.id("産")
         static let 様 = MultiClauseSymbols.id("様")
@@ -5075,6 +5091,7 @@ extension KanaKanjiConverter {
     static let multiClauseFinalKanaParticlesBeforeContentWordID = MultiClauseIDSet(multiClauseFinalKanaParticlesBeforeContentWord)
     static let multiClauseFinalParticleAfterConditionalToReadingsID = MultiClauseIDSet(multiClauseFinalParticleAfterConditionalToReadings)
     static let multiClauseFinalParticleReadingsID = MultiClauseIDSet(multiClauseFinalParticleReadings)
+    static let multiClauseTeKuruAuxiliaryReadingsID = MultiClauseIDSet(multiClauseTeKuruAuxiliaryReadings)
     static let multiClauseTeFormConjunctiveReadingsID = MultiClauseIDSet(multiClauseTeFormConjunctiveReadings)
     static let multiClauseIruAuxiliaryReadingsID = MultiClauseIDSet(multiClauseIruAuxiliaryReadings)
     static let multiClauseKanaVerbStemDemotedReadingsID = MultiClauseIDSet(multiClauseKanaVerbStemDemotedReadings)

@@ -30273,6 +30273,26 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3798(ユーザ指定): やばいじたいになってきた は やばい事態になってきた、やばい事態になって来た の順(やばい自体になって来た だった)。
+    // なって北 は出さない。自体 は名詞の後ろ(存在自体/違い自体)ではそのまま
+    func testRegressionYabaiJitaiTeKita3798() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let list = converter.multiClauseCandidates(for: "やばいじたいになってきた", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(2)), ["やばい事態になってきた", "やばい事態になって来た"], "\(list.prefix(5))")
+        XCTAssertFalse(list.contains { $0.hasSuffix("北") }, "\(list)")
+        for (reading, expected) in [
+            ("じたいになってきた", "事態になってきた"), ("ひどいじたいになった", "ひどい事態になった"), ("こまったじたいだ", "困った事態だ"),
+            ("やばいことになってきた", "やばいことになってきた"), ("さむくなってきた", "寒くなってきた"), ("でてきた", "出てきた"),
+            ("そんざいじたいがあやしい", "存在自体が怪しい"), ("それじたいはいい", "それ自体はいい"), ("ちがいじたいはちいさい", "違い自体は小さい"),
+            ("ともだちがきた", "友達が来た"),
+        ] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            let list = multi.isEmpty ? converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface) : multi
+            XCTAssertEqual(list.first, expected, "\(reading) \(list.prefix(4))")
+        }
+    }
+
     // 3797(ユーザ指定): かきこうしゅう は 夏期講習(火器甲州 だった)、おおさかかきょうとか は 大阪か京都か(大阪架橋とか だった)
     func testRegressionUserReports3797() throws {
         try prepareRealLMDictionary()
