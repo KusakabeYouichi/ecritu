@@ -418,7 +418,6 @@
 	<dict><key>phrase</key><string>Saint-Bris</string><key>shortcut</key><string>さんぶり</string></dict>
 	<dict><key>phrase</key><string>Saint-Chinian</string><key>shortcut</key><string>さんしにあん</string></dict>
 	<dict><key>phrase</key><string>Saint-Émilion</string><key>shortcut</key><string>さんてみりおん</string></dict>	<!-- アクセント付きを先に(learningBOX 検査 3684、ユーザ指定) -->
-	<dict><key>phrase</key><string>Saint-Emilion</string><key>shortcut</key><string>さんてみりおん</string></dict>
 	<dict><key>phrase</key><string>Saint-Émilion Grand Cru</string><key>shortcut</key><string>さんてみりおんぐらんくりゅ</string></dict>
 	<dict><key>phrase</key><string>Saint-Estèphe</string><key>shortcut</key><string>さんてすてふ</string></dict>
 	<dict><key>phrase</key><string>Saint-Georges Saint-Émilion</string><key>shortcut</key><string>さんじょるじゅさんてみりおん</string></dict>
@@ -4719,7 +4718,7 @@
 	<dict><key>phrase</key><string>Ruchè</string><key>shortcut</key><string>るけ</string></dict>
 	<dict><key>phrase</key><string>Ruländer</string><key>shortcut</key><string>るーれんだー</string></dict>
 	<dict><key>phrase</key><string>Sagrantino</string><key>shortcut</key><string>さぐらんてぃーの</string></dict>
-	<dict><key>phrase</key><string>Saint-Emilion des Charentes</string><key>shortcut</key><string>さんてみりおんでしゃらんと</string></dict>
+	<dict><key>phrase</key><string>Saint-Émilion des Charentes</string><key>shortcut</key><string>さんてみりおんでしゃらんと</string></dict>
 	<dict><key>phrase</key><string>Samsó</string><key>shortcut</key><string>さむそ</string></dict>
 	<dict><key>phrase</key><string>Sangiovese</string><key>shortcut</key><string>さんじょゔぇーぜ</string></dict>
 	<dict><key>phrase</key><string>Sankt Laurent</string><key>shortcut</key><string>ざんくとらうれんと</string></dict>
@@ -5262,7 +5261,6 @@
 	<dict><key>phrase</key><string>キャンベル・アーリー</string><key>shortcut</key><string>きゃんべるあーりー</string></dict>
 	<dict><key>phrase</key><string>グラウブルグンダー</string><key>shortcut</key><string>ぐらうぶるぐんだー</string></dict>
 	<dict><key>phrase</key><string>グラシェヴィナ</string><key>shortcut</key><string>ぐらしぇゔぃな</string></dict>
-	<dict><key>phrase</key><string>グリューナーヴェルトリーナー</string><key>shortcut</key><string>ぐりゅーなーゔぇるとりーなー</string></dict>
 	<dict><key>phrase</key><string>グレカニコ</string><key>shortcut</key><string>ぐれかにこ</string></dict>
 	<dict><key>phrase</key><string>グレケット</string><key>shortcut</key><string>ぐれけっと</string></dict>
 	<dict><key>phrase</key><string>グロレアル</string><key>shortcut</key><string>ぐろれある</string></dict>
@@ -8588,7 +8586,7 @@
 	<dict><key>phrase</key><string>Kouglof</string><key>shortcut</key><string>くーぐろふ</string></dict>
 	<dict><key>phrase</key><string>Kriecherl</string><key>shortcut</key><string>くりーひぇるる</string></dict>
 	<dict><key>phrase</key><string>Lamproie</string><key>shortcut</key><string>らんぷろわ</string></dict>
-	<dict><key>phrase</key><string>Macarons de Saint-Emilion</string><key>shortcut</key><string>まかろんどさんてみりおん</string></dict>
+	<dict><key>phrase</key><string>Macarons de Saint-Émilion</string><key>shortcut</key><string>まかろんどさんてみりおん</string></dict>
 	<dict><key>phrase</key><string>Maccheroni alla Chitarra</string><key>shortcut</key><string>まっけろーにあっらきたーら</string></dict>
 	<dict><key>phrase</key><string>Marillenknödel</string><key>shortcut</key><string>まりれんくねーでる</string></dict>
 	<dict><key>phrase</key><string>Medieval de Ourém</string><key>shortcut</key><string>めでぃえゔぁうでおうれん</string></dict>
