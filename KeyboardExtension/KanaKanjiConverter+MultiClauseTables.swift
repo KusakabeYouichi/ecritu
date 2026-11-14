@@ -2675,6 +2675,10 @@ extension KanaKanjiConverter {
     // 方角の 北 は て形の直後に続かないので、候補から落ちるだけ下げる(なって北。ユーザ指定)
     static let multiClauseTeKuruKanjiMargin = 300
     static let multiClauseTeKuruNorthPenalty = 8000
+    // 地名・言語名の直後の なまり は 訛り(フランス訛り/東北訛り/英語訛り。3799、ユーザ指定: ふらんすなまりの が フランス鉛の だった。
+    // LM は 鉛 が 訛り より安い)。訛り、なまり、鉛 の順になるよう、区間のノードへ加点・減点する(変種の許容差 4000 に収まる幅)。
+    // 文頭の なまり(鉛の塊)と 鉛中毒 は変えない
+    static let multiClauseAccentAfterPlaceBonusesBySurface: [String: Int] = ["訛り": 2000, "なまり": 2000, "鉛": -2500]
     // 自体 は名詞・代名詞の後ろに付く語(それ自体/存在自体)。述語の直後と文頭では 事態 を先に(3798、ユーザ指定:
     // やばいじたい が やばい自体 だった。LM は 自体 が 事態 より安い)
     static let multiClauseJitaiAfterPredicatePenalty = 3000
@@ -4716,6 +4720,8 @@ extension KanaKanjiConverter {
             // て形直後の補助動詞 くる の漢字の減点(3798)、述語の直後・文頭の 自体(3798)
             for s in KanaKanjiConverter.multiClauseTeKuruAuxiliaryReadings { add(s) }
             for s in ["北", "じたい", "自体"] { add(s) }
+            // 地名・言語名+なまり(3799)
+            add("なまり")
             // 名詞+欄/製/性 の接尾(3123、性 は 3570)
             for s in ["らん", "せい", "欄", "製", "性"] { add(s) }
             // 方角の直後の ら(3705)、形容詞の直後の 方(かた。3711)
@@ -5054,6 +5060,7 @@ extension KanaKanjiConverter {
         static let 感 = MultiClauseSymbols.id("感")
         static let 来た = MultiClauseSymbols.id("来た")
         static let 北 = MultiClauseSymbols.id("北")
+        static let なまり = MultiClauseSymbols.id("なまり")
         static let じたい = MultiClauseSymbols.id("じたい")
         static let 自体 = MultiClauseSymbols.id("自体")
         static let 漢字 = MultiClauseSymbols.id("漢字")

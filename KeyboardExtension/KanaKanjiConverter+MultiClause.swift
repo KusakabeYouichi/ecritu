@@ -3296,6 +3296,7 @@ extension KanaKanjiConverter {
         var countryNameStartPositions = Set<Int>()
         // 2 字以上の地名(国に限らない)が始まる位置(地名+か+地名+か の加点に使う。3797)
         var placeNameStartPositions = Set<Int>()
+        var placeOrLanguageNameEndPositions = Set<Int>()
         // 漢字を含む活用派生ノードの区間(開始×1000+終了)。名詞+したい の分割が、同じ区間の活用形(話したい)と
         // 競っているかを遷移の中で安く引く(3768)
         var derivedKanjiSpanKeys = Set<Int>()
@@ -3322,6 +3323,19 @@ extension KanaKanjiConverter {
                     }
                     if node.surface.count >= 2 {
                         placeNameStartPositions.insert(node.start)
+                        placeOrLanguageNameEndPositions.insert(node.end)
+                    }
+                }
+            }
+            // 地名・言語名の直後の なまり(定数コメント参照。3799)。遷移の規則だと変種の採点に入らず フランス鉛の が 2 番めに残るので、
+            // ノードへの加点にする
+            for node in nodes where node.surface.count >= 2 && node.isDictWord && !node.isKanaIdentity && node.surface.hasSuffix("語") {
+                placeOrLanguageNameEndPositions.insert(node.end)
+            }
+            if !placeOrLanguageNameEndPositions.isEmpty {
+                for node in nodes where node.readingID == SID.なまり && placeOrLanguageNameEndPositions.contains(node.start) {
+                    if let bonus = Self.multiClauseAccentAfterPlaceBonusesBySurface[node.surface] {
+                        sentenceOrderNodeBonuses[node.key, default: 0] += bonus
                     }
                 }
             }

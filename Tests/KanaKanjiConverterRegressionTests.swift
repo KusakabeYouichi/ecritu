@@ -30273,6 +30273,23 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3799(ユーザ指定): きせいみやげに は 帰省みやげに、帰省土産に の順(規制土産に だった)、ふらんすなまりの は フランス訛りの、フランスなまりの の順
+    // (フランス鉛の だった)、そそぎぐちが は 注ぎ口が(曽々木ぐちが だった)、きせんすぺくとる は 輝線スペクトル
+    func testRegressionUserReports3799() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("きせいみやげに", ["帰省みやげに", "帰省土産に"]), ("ふらんすなまりの", ["フランス訛りの", "フランスなまりの"]),
+            ("とうほくなまり", ["東北訛り", "東北なまり"]), ("えいごなまりの", ["英語訛りの", "英語なまりの"]),
+            ("そそぎぐちが", ["注ぎ口が"]), ("きせんすぺくとる", ["輝線スペクトル"]),
+            ("なまりのかたまり", ["鉛の塊"]), ("なまりちゅうどく", ["鉛中毒"]), ("きせいらっしゅ", ["規制ラッシュ"]), ("きせいかんわ", ["規制緩和"]),
+        ] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            let list = multi.isEmpty ? converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface) : multi
+            XCTAssertEqual(Array(list.prefix(expected.count)), expected, "\(reading) \(list.prefix(4))")
+        }
+    }
+
     // 3798(ユーザ指定): やばいじたいになってきた は やばい事態になってきた、やばい事態になって来た の順(やばい自体になって来た だった)。
     // なって北 は出さない。自体 は名詞の後ろ(存在自体/違い自体)ではそのまま
     func testRegressionYabaiJitaiTeKita3798() throws {
