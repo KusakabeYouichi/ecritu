@@ -623,6 +623,11 @@ extension KanaKanjiConverter {
     // その分も足す(別候補の点数は供給順に 100 ずつ下がるので、閉口する はさらに 300)。しよう/した/して/してる/しない の形は
     // 全部同じ点なので段差だけ(3791、ユーザ指定: した/して も同じ順に)
     static let multiClauseSentenceOrderBonusesByReading: [String: [(surface: String, bonus: Int)]] = [
+        // 開けたて/焼きたて(seed 先頭)。活用から組んだ 空けたて/嫉きたて(定額 7200)が、辞書の 開けたて(LM 未収録 8700)・
+        // 焼きたて(8384)より安く、あけたてのほうが が 空けたて→開けた手 に、やきたてのぱん が 嫉きたてのパン になっていた(3799、ユーザ指定)。
+        // seed 順の加点(変種の採点では上限つき)だと 空けたての〜 が 2 番めに残るので、こちらの表で付ける
+        "あけたて": [("開けたて", 2500)],
+        "やきたて": [("焼きたて", 2500)],
         "へいこうする": [("並行する", 1000), ("閉口する", 4300), ("平行する", 400), ("併行する", 300), ("閉校する", 3700), ("並航する", 3600)],
         "へいこうした": [("並行した", 600), ("閉口した", 500), ("平行した", 400), ("併行した", 300), ("閉校した", 200), ("並航した", 100)],
         "へいこうして": [("並行して", 600), ("閉口して", 500), ("平行して", 400), ("併行して", 300), ("閉校して", 200), ("並航して", 100)],
@@ -2679,6 +2684,9 @@ extension KanaKanjiConverter {
     // LM は 鉛 が 訛り より安い)。訛り、なまり、鉛 の順になるよう、区間のノードへ加点・減点する(変種の許容差 4000 に収まる幅)。
     // 文頭の なまり(鉛の塊)と 鉛中毒 は変えない
     static let multiClauseAccentAfterPlaceBonusesBySurface: [String: Int] = ["訛り": 2000, "なまり": 2000, "鉛": -2500]
+    // の の直後の ほうが は 方が を先に(3799、ユーザ指定: あけたてのほうが は 開けたての方が、開けたてのほうが の順)。かな と同点で、
+    // 文末では かな が先、後ろに語が続くと 方が が先(こっちの方がいい)と揺れていた。同点を崩すだけの小さな加点
+    static let multiClauseHouGaKanjiAfterNoBonus = 50
     // 自体 は名詞・代名詞の後ろに付く語(それ自体/存在自体)。述語の直後と文頭では 事態 を先に(3798、ユーザ指定:
     // やばいじたい が やばい自体 だった。LM は 自体 が 事態 より安い)
     static let multiClauseJitaiAfterPredicatePenalty = 3000
@@ -4722,6 +4730,7 @@ extension KanaKanjiConverter {
             for s in ["北", "じたい", "自体"] { add(s) }
             // 地名・言語名+なまり(3799)
             add("なまり")
+            add("方が")
             // 名詞+欄/製/性 の接尾(3123、性 は 3570)
             for s in ["らん", "せい", "欄", "製", "性"] { add(s) }
             // 方角の直後の ら(3705)、形容詞の直後の 方(かた。3711)
@@ -5061,6 +5070,7 @@ extension KanaKanjiConverter {
         static let 来た = MultiClauseSymbols.id("来た")
         static let 北 = MultiClauseSymbols.id("北")
         static let なまり = MultiClauseSymbols.id("なまり")
+        static let 方が = MultiClauseSymbols.id("方が")
         static let じたい = MultiClauseSymbols.id("じたい")
         static let 自体 = MultiClauseSymbols.id("自体")
         static let 漢字 = MultiClauseSymbols.id("漢字")

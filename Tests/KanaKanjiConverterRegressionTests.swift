@@ -12974,7 +12974,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         )
         XCTAssertEqual(
             converter.multiClauseCandidates(for: "こっちのほうが", systemCandidateMode: .surface).first,
-            "こっちのほうが"
+            // の の直後は 方が を先に(3799、ユーザ指定の あけたてのほうが→開けたての方が に合わせた。以前は かな と同点で かな が先)
+            "こっちの方が"
         )
         XCTAssertEqual(
             converter.multiClauseCandidates(for: "しずかなほうが", systemCandidateMode: .surface).first,
@@ -30283,6 +30284,23 @@ extension KanaKanjiConverterRegressionTests {
             ("とうほくなまり", ["東北訛り", "東北なまり"]), ("えいごなまりの", ["英語訛りの", "英語なまりの"]),
             ("そそぎぐちが", ["注ぎ口が"]), ("きせんすぺくとる", ["輝線スペクトル"]),
             ("なまりのかたまり", ["鉛の塊"]), ("なまりちゅうどく", ["鉛中毒"]), ("きせいらっしゅ", ["規制ラッシュ"]), ("きせいかんわ", ["規制緩和"]),
+        ] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            let list = multi.isEmpty ? converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface) : multi
+            XCTAssertEqual(Array(list.prefix(expected.count)), expected, "\(reading) \(list.prefix(4))")
+        }
+    }
+
+    // 3799(ユーザ指定): あけたてのほうが は 開けたての方が、開けたてのほうが の順(開けた手の方が だった)。活用から組んだ 空けたて が
+    // 辞書の 開けたて より安く、LM に無い たて複合 として 開けた+手 に割られていた。やきたてのぱん も 嫉きたてのパン だった
+    func testRegressionAketateNoHouGa3799() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("あけたてのほうが", ["開けたての方が", "開けたてのほうが"]), ("あけたてのわいん", ["開けたてのワイン"]),
+            ("やきたてのぱん", ["焼きたてのパン"]), ("やきたてのほうが", ["焼きたての方が", "焼きたてのほうが"]),
+            ("こっちのほうが", ["こっちの方が", "こっちのほうが"]), ("こっちのほうがいい", ["こっちの方がいい"]),
+            ("ぬれたてで", ["濡れた手で", "濡れたてで"]), ("あけたて", ["開けたて"]),
         ] {
             let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
             let list = multi.isEmpty ? converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface) : multi

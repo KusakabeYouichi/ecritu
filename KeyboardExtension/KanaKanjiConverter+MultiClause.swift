@@ -2165,7 +2165,7 @@ extension KanaKanjiConverter {
                 }
 
                 // 文の中の候補の順を表で決める読み(定数コメント参照。3787)。ノードがどの経路で立っても効くよう、区間に対して付ける
-                if len >= 6, let order = Self.multiClauseSentenceOrderBonusesByReading[segmentReading] {
+                if len >= 4, let order = Self.multiClauseSentenceOrderBonusesByReading[segmentReading] {
                     for (surface, bonus) in order {
                         sentenceOrderNodeBonuses[spanKeyByStart[start][end] + "-" + surface] = bonus
                     }
@@ -4046,6 +4046,10 @@ extension KanaKanjiConverter {
                 } else if surface.hasPrefix("来") {
                     base = max(base, Self.multiClauseKanaAdverbCost + Self.multiClauseTeKuruKanjiMargin)
                 }
+            }
+            // の+方が(定数コメント参照。3799)
+            if readingID == SID.ほうが, surfaceID == SID.方が, prevID == SID.の {
+                base -= Self.multiClauseHouGaKanjiAfterNoBonus
             }
             // 述語の直後・文頭の 自体 を下げる(定数コメント参照。3798)
             if readingID == SID.じたい, surfaceID == SID.自体,
@@ -7185,7 +7189,9 @@ extension KanaKanjiConverter {
                 }
                 // たて複合が LM 未収録(濡れたて)なら、た形+名詞(濡れた手で)を最良にして元の経路を第2候補に(ユーザ指定 3553)。
                 // 出来たて/焼きたて のような常用の たて複合は LM にあるので従来どおり
-                if node.reading.hasSuffix("たて"), unigramCosts[node.surface] == nil {
+                // seed の先頭に置いた たて複合(開けたて)は人が選んだ語なので割らない(3799、ユーザ指定: あけたてのほうが が 開けた手の方が だった)
+                if node.reading.hasSuffix("たて"), unigramCosts[node.surface] == nil,
+                    KanaKanjiSeedDictionary.seed[node.reading]?.first != node.surface {
                     let originalJoined = bestJoined
                     best = alternative.best
                     backPointer = alternative.backPointer
