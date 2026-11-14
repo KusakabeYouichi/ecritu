@@ -207,6 +207,10 @@
 	<dict><key>phrase</key><string>夏期講習</string><key>shortcut</key><string>かきこうしゅう</string><key>pos</key><string>名詞</string></dict>	<!-- 夏期講習/冬期講習/春期講習: 辞書に 1 語では無く、かきこうしゅう が 火器+甲州 だった(夏期 は かき の 17 番め。ユーザ指定 3797) -->
 	<dict><key>phrase</key><string>冬期講習</string><key>shortcut</key><string>とうきこうしゅう</string><key>pos</key><string>名詞</string></dict>
 	<dict><key>phrase</key><string>春期講習</string><key>shortcut</key><string>しゅんきこうしゅう</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>帰省みやげ</string><key>shortcut</key><string>きせいみやげ</string><key>pos</key><string>名詞</string></dict>	<!-- 帰省みやげ/帰省土産: きせいみやげに が 規制土産に/寄生土産に で、帰省 は 4 番めだった(ユーザ指定 3799) -->
+	<dict><key>phrase</key><string>帰省土産</string><key>shortcut</key><string>きせいみやげ</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>注ぎ口</string><key>shortcut</key><string>そそぎぐち</string><key>pos</key><string>名詞</string></dict>	<!-- 注ぎ口: 辞書に 1 語では無く、そそぎぐちが が 曽々木(地名)+ぐち+が だった(ユーザ報告 3799) -->
+	<dict><key>phrase</key><string>輝線スペクトル</string><key>shortcut</key><string>きせんすぺくとる</string><key>pos</key><string>名詞</string></dict>	<!-- 輝線スペクトル: 1 語で持つ(ユーザ指定 3799) -->
 	<dict><key>phrase</key><string>副首都</string><key>shortcut</key><string>ふくしゅと</string><key>pos</key><string>名詞</string></dict>	<!-- 副首都: 辞書に無い(ユーザ指定 3791: 1 語で登録) -->
 	<dict><key>phrase</key><string>再定義</string><key>shortcut</key><string>さいていぎ</string><key>pos</key><string>名詞</string></dict>	<!-- 再定義: 名詞の形も(サ変の活用は ■ 活用の供給 の 再定義する) -->
 	<dict><key>phrase</key><string>うどんすき</string><key>shortcut</key><string>うどんすき</string><key>pos</key><string>名詞</string></dict>	<!-- うどんすき(美々卯の登録商標の鍋料理、かな表記が正式): 辞書に無く うどん好き/うどん隙 の合成ばかりだった(ユーザ指定 3329) -->
