@@ -1,13 +1,11 @@
 # 一括検査で『気にしなくていい』とユーザが決めた違いの組(3801、2026-11-14 の確認ページ)。
 # 形式: 元の表記<TAB>先頭候補。切り出しは diff_pairs.py の spans()。この組(と near_match のほぼ一致)だけで違う行は c_ignored に入る。
 # #で始まる行は注記。片方が空の組(記号が無いだけ)は 2 列めを空にする
-Abricot	炙子
 Asado	アサード
 Auckland	オークランド
 Barolo	バローロ
 Canelé	cannelé
 Cape Town	ケープタウン
-Cassoulet	掠れ
 Chenin	シュナン
 Crus	Cru
 Emilia Romagna	エミリア・ロマーニャ
@@ -114,7 +112,6 @@ sec	Sec
 ウドン粉病	ウドンコ病
 エ	絵
 エビ	えび
-オランダジン	オランダ人
 カケル	欠ける
 カッコ	括弧
 カベルネ・フラン	Cabernet Franc
@@ -140,7 +137,6 @@ sec	Sec
 ピノ・ノワール	Pinot Noir
 フランチャコルタ	Franciacorta
 ブライテングラート	Breitengrad 51
-ブレゴヴィタ	ブレ後ヴィタ
 ホウレン草	ホウレンソウ
 マグロ	まぐろ
 マスカット・ベイリー	Muscat Bailey 
@@ -169,7 +165,6 @@ sec	Sec
 分	わ
 初	はじ
 化	か
-北	来た
 北海道	Hokkaido
 単式蒸溜しょうちゅう	単式蒸溜焼酎
 取	取り
