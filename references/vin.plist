@@ -7883,6 +7883,7 @@
 	<dict><key>phrase</key><string>フェノール</string><key>shortcut</key><string>ふぇのーる</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>フェノール化合物</string><key>shortcut</key><string>ふぇのーるかごうぶつ</string></dict>
 	<dict><key>phrase</key><string>ブドウ糖</string><key>shortcut</key><string>ぶどうとう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>ブドウ糖度</string><key>shortcut</key><string>ぶどうとうど</string></dict>	<!-- ブドウ糖度: ぶどう+糖度 に割れて ぶどう糖度 になっていた(一括検査 3767 の確認表、ユーザ指定) -->
 	<dict><key>phrase</key><string>ベノミル</string><key>shortcut</key><string>べのみる</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ベントナイト</string><key>shortcut</key><string>べんとないと</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ベンレート</string><key>shortcut</key><string>べんれーと</string></dict>
@@ -9319,6 +9320,10 @@
 	<dict><key>phrase</key><string>果実香</string><key>shortcut</key><string>かじつこう</string></dict>
 	<dict><key>phrase</key><string>欠陥臭</string><key>shortcut</key><string>けっかんしゅう</string></dict>
 	<dict><key>phrase</key><string>泡持</string><key>shortcut</key><string>あわもち</string></dict>
+	<dict><key>phrase</key><string>泡持ち</string><key>shortcut</key><string>あわもち</string></dict>	<!-- 泡持ち: 送り仮名のある形(一括検査 3767 の確認表、ユーザ判定) -->
+	<dict><key>phrase</key><string>絞り粕</string><key>shortcut</key><string>しぼりかす</string></dict>	<!-- 絞り粕/絞り滓: ワイン・ぶどうの しぼりかす(一括検査 3767 の確認表、ユーザ判定) -->
+	<dict><key>phrase</key><string>絞り滓</string><key>shortcut</key><string>しぼりかす</string></dict>
+	<dict><key>phrase</key><string>ルプリン</string><key>shortcut</key><string>るぷりん</string></dict>	<!-- ルプリン: ホップの成分(るプリン になっていた。一括検査 3767 の確認表、ユーザ判定) -->
 	<dict><key>phrase</key><string>浮遊物</string><key>shortcut</key><string>ふゆうぶつ</string></dict>
 	<dict><key>phrase</key><string>滋味深い</string><key>shortcut</key><string>じみぶかい</string></dict>
 	<dict><key>phrase</key><string>濃縮度</string><key>shortcut</key><string>のうしゅくど</string></dict>

@@ -212,6 +212,8 @@
 	<dict><key>phrase</key><string>注ぎ口</string><key>shortcut</key><string>そそぎぐち</string><key>pos</key><string>名詞</string></dict>	<!-- 注ぎ口: 辞書に 1 語では無く、そそぎぐちが が 曽々木(地名)+ぐち+が だった(ユーザ報告 3799) -->
 	<dict><key>phrase</key><string>輝線スペクトル</string><key>shortcut</key><string>きせんすぺくとる</string><key>pos</key><string>名詞</string></dict>	<!-- 輝線スペクトル: 1 語で持つ(ユーザ指定 3799) -->
 	<dict><key>phrase</key><string>信濃丸</string><key>shortcut</key><string>しなのまる</string><key>pos</key><string>名詞</string></dict>	<!-- 信濃丸: 補助語彙の しな乃+丸 に負けていた(ユーザ指定 3800) -->
+	<dict><key>phrase</key><string>木骨組み</string><key>shortcut</key><string>もっこつぐみ</string><key>pos</key><string>名詞</string></dict>	<!-- 木骨組み(もっこつぐみ): 木骨 の建物の造り(一括検査 3767 の確認表、ユーザ指定) -->
+	<dict><key>phrase</key><string>平打ち</string><key>shortcut</key><string>ひらうち</string><key>pos</key><string>名詞</string></dict>	<!-- 平打ち: 麺の形(ひらうちほそめん が 平内細めん だった。一括検査 3767 の確認表、ユーザ判定) -->
 	<dict><key>phrase</key><string>副首都</string><key>shortcut</key><string>ふくしゅと</string><key>pos</key><string>名詞</string></dict>	<!-- 副首都: 辞書に無い(ユーザ指定 3791: 1 語で登録) -->
 	<dict><key>phrase</key><string>再定義</string><key>shortcut</key><string>さいていぎ</string><key>pos</key><string>名詞</string></dict>	<!-- 再定義: 名詞の形も(サ変の活用は ■ 活用の供給 の 再定義する) -->
 	<dict><key>phrase</key><string>うどんすき</string><key>shortcut</key><string>うどんすき</string><key>pos</key><string>名詞</string></dict>	<!-- うどんすき(美々卯の登録商標の鍋料理、かな表記が正式): 辞書に無く うどん好き/うどん隙 の合成ばかりだった(ユーザ指定 3329) -->
