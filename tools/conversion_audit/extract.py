@@ -20,7 +20,10 @@ SPLIT_CHARS = set("。、「」『』（）()〈〉《》【】〔〕［］[]：
 # ラテン文字の語の間なら切らない記号(空白・ハイフン・ドット・アポストロフィ)
 LATIN_JOINERS = set(" -.'’")
 LATIN = re.compile(r"[A-Za-zÀ-ÖØ-öø-ÿŒœ]")
-JA = re.compile(r"^[ぁ-ゖァ-ヺー々一-鿿・A-Za-zÀ-ÖØ-öø-ÿŒœ '’.\-]+$")
+# 数字では切らない(3800、ユーザ指定)。3か国 のような断片も検査に入れる。数字の間の小数点・桁区切りも切らない
+JA = re.compile(r"^[ぁ-ゖァ-ヺー々一-鿿・A-Za-zÀ-ÖØ-öø-ÿŒœ0-9 '’.,\-]+$")
+DIGIT = re.compile(r"[0-9]")
+DIGITS_ONLY = re.compile(r"^[0-9.,]+$")
 HAS_TARGET = re.compile(r"[一-鿿ァ-ヺA-Za-zÀ-ÖØ-öø-ÿŒœ]")
 
 
@@ -40,6 +43,9 @@ def split_fragments(sent):
                 j += 1
             next_latin = j < len(sent) and bool(LATIN.match(sent[j]))
             if c in LATIN_JOINERS and prev_latin and next_latin:
+                current.append(c)
+                continue
+            if c in ".," and i > 0 and i + 1 < len(sent) and DIGIT.match(sent[i - 1]) and DIGIT.match(sent[i + 1]):
                 current.append(c)
                 continue
             out.append("".join(current))
@@ -132,6 +138,8 @@ def main():
     overrides = load_reading_overrides(override_files)
     tok = Dictionary().create()
     text = open(src, encoding="utf-8").read()
+    # いわゆる全角の数字は算用数字に寄せる(変換の出力と同じ形で比べる)
+    text = text.translate(str.maketrans("".join(chr(0xFF10 + d) for d in range(10)), "0123456789"))
     sentences = re.split(r"[。\n]", text)
     if sample_sentences is not None and len(sentences) > sample_sentences:
         rng = random.Random(seed)
@@ -159,6 +167,10 @@ def main():
                 # ラテン文字の語と語の間の記号は読みを持たず、語は語彙の上書きでだけ読みが付く(None のまま残れば捨てる)
                 if LATIN.search(m.surface()) or m.surface().strip(" -.'’") == "":
                     morphemes.append((m.surface(), None))
+                    continue
+                # 数字はそのまま読みに置く(キーボードでも数字を打ってから読みを続ける)
+                if DIGITS_ONLY.match(m.surface()):
+                    morphemes.append((m.surface(), m.surface()))
                     continue
                 r = kata2hira(m.reading_form())
                 if not r or not HIRA.match(r) or pos[0] in ("補助記号", "空白"):
