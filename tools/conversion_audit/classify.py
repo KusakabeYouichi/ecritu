@@ -13,6 +13,8 @@
   c_style.tsv     期待(書き手)がかな書きで écritu は漢字(あと→後、みそ汁→味噌汁)。書き手の流儀なので直さない
   a_register.tsv  期待の表記が候補列に無い(語の登録が要る見込み。読みの推定違いも混ざる)
   b_logic.tsv     期待の表記は候補列に有るが先頭でない(並び・区切りのロジック。segments.py で 区切り を b_segment.tsv に分ける)
+  d_number.tsv    読みに数字を含む断片の不一致(3802、ユーザ指定)。数字は確定済みの文字として扱われ、かなは数字の前後で切れて
+                  別々に変換されるので(第→台、軒→件、級→球)、区切り・同音語の誤りとは別の区分にする。列は a/b と同じ
 a/b には 段階(1=直すべし 2=できたら直すべし 3=直さなくていい)と理由を付ける。段階は機械的な目安:
   固有名詞を含む断片は 3。違う部分がカタカナなら 語 LM に有れば 2、無ければ 3(人名・作品名の見込み)。
   漢字を含む違いは 語 LM に有って期待が 10 字以下なら 1、長ければ 2、LM に無ければ 2(稀な語か読みの推定違い)。
@@ -103,7 +105,7 @@ def diff_core(a, b):
 def main():
     src, outdir = sys.argv[1:3]
     os.makedirs(outdir, exist_ok=True)
-    buckets = {"c_ok": [], "c_near": [], "c_ignored": [], "c_policy": [], "c_style": [], "a_register": [], "b_logic": []}
+    buckets = {"c_ok": [], "c_near": [], "c_ignored": [], "c_policy": [], "c_style": [], "a_register": [], "b_logic": [], "d_number": []}
     lm = load_lm_surfaces()
     vocab_readings, kakikae_pairs = near_match.load_tables()
     ignored = diff_pairs.load_ignored()
@@ -131,12 +133,13 @@ def main():
         if rest is not None and not rest:
             buckets["c_ignored"].append([reading, expected, first, top])
             continue
-        if policy_normalize(expected) == policy_normalize(first) or policy_normalize(expected) == first:
+        has_digit = any(c.isdigit() for c in reading)
+        if not has_digit and (policy_normalize(expected) == policy_normalize(first) or policy_normalize(expected) == first):
             buckets["c_policy"].append([reading, expected, first, top])
             continue
         core = diff_core(expected, first)
         exp_part, got_part = core.split("→", 1)
-        if is_hiragana(exp_part) and not is_hiragana(got_part) and got_part != "(なし)" and first:
+        if not has_digit and is_hiragana(exp_part) and not is_hiragana(got_part) and got_part != "(なし)" and first:
             buckets["c_style"].append([reading, expected, first, core, top])
             continue
         proper = "固有名詞" in flags
@@ -158,7 +161,7 @@ def main():
         if rest:
             core = " ".join((a or "(なし)") + "→" + (b or "(なし)") for a, b in rest)
         row = [level, why, reading, expected, first, core, flags, top]
-        buckets["a_register" if found == "no" else "b_logic"].append(row)
+        buckets["d_number" if has_digit else ("a_register" if found == "no" else "b_logic")].append(row)
     headers = {
         "c_ok": "読み\t期待\t先頭\t上位6",
         "c_near": "読み\t期待\t先頭\t上位6",
@@ -167,9 +170,10 @@ def main():
         "c_style": "読み\t期待\t先頭\t違い(期待→先頭)\t上位6",
         "a_register": "段階\t理由\t読み\t期待\t先頭\t違い(期待→先頭)\t印\t上位6",
         "b_logic": "段階\t理由\t読み\t期待\t先頭\t違い(期待→先頭)\t印\t上位6",
+        "d_number": "段階\t理由\t読み\t期待\t先頭\t違い(期待→先頭)\t印\t上位6",
     }
     for name, rows in buckets.items():
-        if name.startswith(("a_", "b_")):
+        if name.startswith(("a_", "b_", "d_")):
             rows.sort(key=lambda r: (r[0], r[3]))
         with open(os.path.join(outdir, name + ".tsv"), "w", encoding="utf-8") as f:
             f.write(headers[name] + "\n")

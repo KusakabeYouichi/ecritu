@@ -20,6 +20,8 @@
    a/b の「違い」の列には、気にしなくていい組を除いた残りの違いだけを出す。
    組の一覧を作り直すとき: python3 -I tools/conversion_audit/diff_pairs.py <audit_out.tsv> <pairs.json> [--fix <直すと回答した 読み+期待 の tsv>]
    → 確認ページ(db collection "pairs"、doc id は p-<元+先頭の sha1>、mark = ignore/count)で選んでもらい、ignore の組を ignored_pairs.tsv に足す
+   d_number(数字まわり。3802、ユーザ指定): 読みに数字を含む断片の不一致は a/b/c に入れず、この区分にまとめる(確認表には出す)。
+   検査用テストは実機と同じく数字を確定済みの文字として扱い、かなを数字の前後で切って別々に変換する。数字の行の上位は先頭 1 件だけ
 3b. 区切りの分離(3696、ユーザ指定): b_logic.tsv の 読み<TAB>期待 を入力に、testDiagnosticConversionAudit を
    TEST_RUNNER_MULTI_TRACE=1 を付けて回し(ログ全体を保存)、
    python3 -I tools/conversion_audit/segments.py <ログ> references/conversion_audit/<edition>/
