@@ -2523,7 +2523,6 @@
 	<dict><key>phrase</key><string>Rhein</string><key>shortcut</key><string>らいん</string></dict>	<!-- ライン川(ドイツ語)。LINE/ライン の次(seed で並びを指定。ユーザ指定 3720) -->
 	<dict><key>phrase</key><string>Rhin</string><key>shortcut</key><string>らん</string></dict>
 	<dict><key>phrase</key><string>Río Oja</string><key>shortcut</key><string>りおおは</string></dict>	<!-- アクセント付きを先に(learningBOX 検査 3684、ユーザ指定) -->
-	<dict><key>phrase</key><string>Rio Oja</string><key>shortcut</key><string>りおおは</string></dict>
 	<dict><key>phrase</key><string>Saale</string><key>shortcut</key><string>ざーれ</string></dict>
 	<dict><key>phrase</key><string>Unstrut</string><key>shortcut</key><string>うんすとるーと</string></dict>
 	<dict><key>phrase</key><string>ドナウ</string><key>shortcut</key><string>どなう</string></dict>	<!-- Sudachiにもある -->
@@ -9317,7 +9316,6 @@
 	<dict><key>phrase</key><string>果実系</string><key>shortcut</key><string>かじつけい</string></dict>
 	<dict><key>phrase</key><string>果実香</string><key>shortcut</key><string>かじつこう</string></dict>
 	<dict><key>phrase</key><string>欠陥臭</string><key>shortcut</key><string>けっかんしゅう</string></dict>
-	<dict><key>phrase</key><string>泡持</string><key>shortcut</key><string>あわもち</string></dict>
 	<dict><key>phrase</key><string>泡持ち</string><key>shortcut</key><string>あわもち</string></dict>	<!-- 泡持ち: 送り仮名のある形(一括検査 3767 の確認表、ユーザ判定) -->
 	<dict><key>phrase</key><string>絞り粕</string><key>shortcut</key><string>しぼりかす</string></dict>	<!-- 絞り粕/絞り滓: ワイン・ぶどうの しぼりかす(一括検査 3767 の確認表、ユーザ判定) -->
 	<dict><key>phrase</key><string>絞り滓</string><key>shortcut</key><string>しぼりかす</string></dict>
