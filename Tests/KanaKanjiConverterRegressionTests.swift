@@ -30351,6 +30351,33 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3804(一括検査 3801 の確認表の [直す]): misc の登録語(耕地/胃腸/ブレ/ランソン)が連文節で安すぎた、数字の直後の 芽/万回、
+    // 一例 の登録、同じ読みの日常語が無い固有名の上限、前後の語を手掛かりにした同音語の差し替え、正解は+語。
+    // 変えないもの(胃腸が弱い/手ぶれ/一礼して/耕地を耕す)も守る
+    func testRegressionAuditAnswers3801FirstBatch3804() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("こうちでぶどうさいばいがさかんである", "高地でぶどう栽培が盛んである"), ("こうちをたがやす", "耕地を耕す"),
+            ("いちょうがよわい", "胃腸が弱い"), ("てぶれがひどい", "手ぶれがひどい"), ("ふかくいちれいする", "深く一礼する"),
+            ("ゔぃのろっくはがらすせんのいちれいです", "Vinolokはガラス栓の一例です"), ("いちれいをあげる", "一例を挙げる"),
+            ("ごぶれはかぶじたてです", "Gobeletは株仕立てです"), ("あんぶれは", "Ambréは"), ("じゅらんそんは", "Jurançonは"),
+            ("せんていはたいゆ", "剪定はTaille"),
+            ("かひをつけこむこうていです", "果皮を漬け込む工程です"), ("まっしろなきじとなるのもとくちょうです", "真っ白な生地となるのも特徴です"),
+            ("せいかいはしょとうからそうしゅんです", "正解は初冬から早春です"), ("せいかいはこっかいです", "正解は黒海です"),
+            ("せいかいはせいしゅです", "正解は清酒です"), ("せいかいはしゅしです", "正解は種子です"),
+            ("ぶんめいをはんえいさせ", "文明を繁栄させ"), ("つかむような", "掴むような"),
+            ("あわもちをよくするせいぶんをえらんでください", "泡持ちを良くする成分を選んでください"),
+        ] {
+            XCTAssertEqual(converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).first, expected, reading)
+        }
+        // 数字の直後(確定済みの数字が前にある): 2+めの→芽の、1+まんかい→万回
+        XCTAssertEqual(converter.multiClauseCandidates(for: "めのたんしょうをのこして", systemCandidateMode: .surface, precedingCharacter: "2").first, "芽の短梢を残して")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "まんかいをこえる", systemCandidateMode: .surface, precedingCharacter: "1").first, "万回を超える")
+        // 数字が無ければ 満開
+        XCTAssertEqual(converter.multiClauseCandidates(for: "まんかいのさくら", systemCandidateMode: .surface).first, "満開の桜")
+    }
+
     // 3804(一括検査 3801): 中黒つきの語の後ろに は と わ で始まる語が続くと、候補が 1 つも出なかった
     // (あらんめどうずはわいんひょうろんか→候補なし)。旧仮名の判定が 中黒 に読みを 1 文字割り当て、は を わ に当てていた
     func testRegressionNakaguroNotHistoricalKana3804() throws {
