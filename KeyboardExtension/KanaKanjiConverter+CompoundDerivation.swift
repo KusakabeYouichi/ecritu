@@ -566,7 +566,7 @@ extension KanaKanjiConverter {
         "てき": ["滴"],
         "そう": ["艘", "槽"],
         "き": ["機", "基"],
-        "きゅう": ["球", "級"],
+        "きゅう": ["級", "球"],  // 3級 を先に(3球 が先だった。ユーザ指定 3806)
         "い": ["位"],
         "だんめ": ["段目"],
         "こめ": ["個目"],
@@ -590,7 +590,7 @@ extension KanaKanjiConverter {
         "かじ": ["ヶ寺", "箇寺", "ヵ寺"],
         "かじょう": ["箇条", "か条", "ヶ条", "カ条", "ヵ条", "ケ条", "ヶ條", "個条"],
         "かそう": ["ヵ荘", "箇荘"],
-        "かそん": ["ヶ村", "か村", "ヵ村", "カ村", "箇村"],
+        "かそん": ["か村", "ヶ村", "ヵ村", "カ村", "箇村"],  // か を先に(か月/か国 と同じ並び。17ヶ村 が先頭だった。3806)
         "かた": ["方"],
         "かちょう": ["ヵ町", "箇町"],
         "かにち": ["か日", "箇日"],
@@ -844,6 +844,10 @@ extension KanaKanjiConverter {
         // 1+まんかい は 万回(満開 だった)、3+めいじょう は 芽以上(名城 だった。一括検査 3801 の確認表、ユーザ指定 3804)
         "まんかい": ["万回"],
         "めいじょう": ["芽以上"],
+        // 3+ぶんの(1)は 分の(文の だった)、3+げんしゅ は 原種(元首 だった。台木の3原種)。数字の直後に 文の/元首 はまず来ない
+        // (一括検査 3801 の確認表、ユーザ指定 3806)
+        "ぶんの": ["分の"],
+        "げんしゅ": ["原種"],
         // 3+つのうち は つのうち、つの内 の順(連文節は つの家 を 2 番めに置く。ユーザ指定 3640)
         "つのうち": ["つのうち", "つの内"],
         // 数量+後(1年後/2週間後/3か月後/5日後/2時間後/10分後/30秒後。ユーザ報告 3589)。1ねんご が 年呉、2しゅうかんご が
@@ -953,6 +957,17 @@ extension KanaKanjiConverter {
     // 助詞を残した形を優先する(まえの の先頭は姓 前野(rank0)で 年前野 を作ってしまう。2820)
     static let counterTailParticleCharacters: Set<Character> = Set("のにでをがはもとへ")
     func counterTailConversion(_ tail: String) -> String? {
+        // 助詞で始まる長い末尾(をきそい)は、助詞の後ろだけを変換して助詞を付け直す(3806)。助詞ごと連文節に掛けると、
+        // 文頭の助詞として割られた形(を機沿い)が返り、2+いをきそい が 位を機沿い だった
+        if tail.count >= 4, let particle = tail.first, Self.counterTailParticleCharacters.contains(particle) {
+            let rest = String(tail.dropFirst())
+            // 短い活用形(きそい=競い)は単文節に無いことがあるので、連文節を短い読みでも試す
+            let converted = multiClauseCandidates(for: rest, systemCandidateMode: .surface, minReadingCountOverride: 2).first
+                ?? candidates(for: rest, limit: 6, systemCandidateMode: .surface).first
+            if let converted, converted != rest {
+                return String(particle) + converted
+            }
+        }
         if tail.count >= 4, let multi = multiClauseCandidates(for: tail, systemCandidateMode: .surface).first {
             return multi
         }
@@ -1037,6 +1052,9 @@ extension KanaKanjiConverter {
             // 読み全体が助詞(まで/から/など)なら、助数詞+助詞の合成(間+で)は作らない。23:00+まで が 間で 先頭だった(3746、ユーザ報告)
             let readingIsParticle = Self.isParticleLikeReading(reading)
             let readingHasSeedWord = KanaKanjiSeedDictionary.seed[reading] != nil
+            // 読み全体がカタカナの語(シャトー/ドリンク)なら、助数詞+かな末尾の合成(社+とー、度+りんく)は作らない。
+            // 14+しゃとー が 14社とー、1+どりんく が 1度リンク だった(一括検査 3801、3806)
+            let readingHasKatakanaWord = candidates.contains { $0.count >= 3 && KanaKanjiConverter.isKatakanaString($0) }
             // 末尾に助詞 1 字が付いた形(いがい+に)も同じ。ただし助数詞の読みが seed 語の途中で切るとき
             // (い|がいに → 位がいに)だけ止める。助数詞の読みが seed 語そのもの(かい+に → 回に)は残す(ユーザ報告 3455)
             let seedStemBeforeParticle: String? = {
@@ -1069,6 +1087,14 @@ extension KanaKanjiConverter {
                 // 上限があり、かいもおしたこと(6)は通るのに かいもおしたことない(8)が漏れていた
                 // (4→6 は ふんぐらいかな 対策 2643。上限を上げ続ける設計をやめる)
                 guard tail.allSatisfy({ ("ぁ"..."ゖ").contains($0) || $0 == "ー" }) else {
+                    continue
+                }
+                // 読み全体がカタカナの語のときは、助詞 1 字の末尾(はい+と→杯と、えん+で→円で)だけ合成する
+                if readingHasKatakanaWord, tail.count >= 2 {
+                    continue
+                }
+                // 末尾が小書きのかな・長音で始まる切り方は語の途中(ねんじ+ゅくせい→年次ゅくせい。3806)
+                if let head = tail.first, "ぁぃぅぇぉゃゅょゎっー".contains(head) {
                     continue
                 }
                 // 1字のかな末尾は助詞(で/に/も…)か付属語の頭だけ許す。それ以外の1字(る/す/ら 等)は
@@ -1179,8 +1205,14 @@ extension KanaKanjiConverter {
         case "ば", "び", "ぶ", "べ", "ぼ": row = "b"
         default: return candidates
         }
+        // 分数・分量の 分(ぶん: 3分の1/3人分)は 時間の 分(ふん/ぷん)とは別の語で、連濁の規則に掛からない(3806)。
+        // 3+ぶんの が 3 に合う読み(ぷん)でないとして 分の を外され、3文の1 になっていた
+        let isFractionBun = reading.hasPrefix("ぶん")
         return candidates.filter { candidate in
             guard let first = candidate.first, let rows = counterRendakuRowsByDigit[String(first)]?[value] else {
+                return true
+            }
+            if isFractionBun, first == "分" {
                 return true
             }
             return row == "h" || rows.contains(row)

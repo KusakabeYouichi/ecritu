@@ -277,6 +277,13 @@ extension KanaKanjiConverter {
             }
         }
         candidates = singleTopLeadBeforeParticle(reading: reading, candidates: candidates, systemCandidateMode: systemCandidateMode)
+        // 確定済みの数字の直後で、読み全体がカタカナの 1 語(ドリンク/シャトー)なら、その語を先頭に(3806)。文頭の助数詞の持ち上げで
+        // 度+リンク(1度リンク)、社+とー(14社とー)が最良になっていた
+        if precedingCharacter.map(Self.isCounterBoostDigit) ?? false, let top = candidates.first,
+            let whole = self.candidates(for: reading, limit: 1, systemCandidateMode: systemCandidateMode).first,
+            whole != top, whole.count >= 3, Self.isKatakanaString(whole) {
+            candidates = [whole] + candidates.filter { $0 != whole }
+        }
         // 読み全体が補助語彙(vin 等)の一語で、単文節の先頭もその語なら、連文節でも先頭に(learningBOX 検査 3658)。
         // めるろー が メル+ろー の メルろー、ゆめのか が 夢のか、ぐりゅなーゔぇるとりーなー が 具リュなー… だった。
         // 単文節の先頭は補助語彙の昇格判定(同読みに LM 実在の一般語があれば昇格しない)を通っている
@@ -805,7 +812,6 @@ extension KanaKanjiConverter {
         ("ひとごこちはながの", "ひとごこち", "人心地", "ひとごこち"),
         ("たるやたんく", "たるや", "樽屋", "樽や"),
         ("ぼなるだしゅや", "しゅや", "主夜", "種や"),
-        ("ひじょうにとみ", "とみ", "非常に富", "非常に富み"),
         ("いちばんちゃです", "いちばんちゃです", "1番チャデス", "一番茶です"),
         ("かっしょくはぶらんです", "ぶらんです", "ブランデス", "Brunです"),
         ("りょうりにかすれ", "かすれ", "掠れ", "Cassoulet"),
@@ -818,6 +824,11 @@ extension KanaKanjiConverter {
         ("からちかく", "ちかく", "ちかく", "近く"),
         ("がめいぶつの", "がめいぶつ", "^Gamay物", "が名物"), ("がめいしょうに", "がめいしょう", "^Gamay省", "が名称"),
         ("あわもちをよくし", "よくし", "抑止", "良くし"),
+        // 〜に+とみ で終わる句は 富み(変化に富み/芳香性に非常に富み。富 で止まっていた。に の後ろは動詞。ユーザ指定 3806)。
+        // 富む の連用形 富み は格子に立たない(名詞 富 と同じ読みの連用形は作らない)ので、末尾だけ差し替える
+        ("にとみ", "にとみ", "に富$", "に富み"),
+        // 数字+年にかけて(1968年にかけて が 年に欠けて/年に掛けて。3806)
+        ("ねんにかけて", "ねんにかけて", "年に欠けて", "年にかけて"), ("ねんにかけて", "ねんにかけて", "年に掛けて", "年にかけて"),
         ("きたがめどっく", "きたが", "^来たが", "北が"), ("きたがららんど", "きたが", "^来たが", "北が"), ("せんたくしはきたから", "きたから", "来たから", "北から"),
         ("しっとりしあがる", "しあがる", "し上がる", "仕上がる"),
         ("はじめのとしは", "とし", "都市", "年"),
@@ -1100,6 +1111,12 @@ extension KanaKanjiConverter {
                 let head = rule.from.dropFirst()
                 if rewritten.hasPrefix(head) {
                     rewritten = rule.to + rewritten.dropFirst(head.count)
+                }
+            } else if rule.from.hasSuffix("$") {
+                // 末尾だけを差し替える($ で終わる from。3806)
+                let tail = rule.from.dropLast()
+                if rewritten.hasSuffix(tail) {
+                    rewritten = rewritten.dropLast(tail.count) + rule.to
                 }
             } else if let range = rewritten.range(of: rule.from) {
                 rewritten.replaceSubrange(range, with: rule.to)
@@ -5493,8 +5510,9 @@ extension KanaKanjiConverter {
                             cost += Self.multiClauseSentenceInitialGivenNameSplitPenalty
                         }
                         // 確定済み数字の直後は文頭の助数詞を持ち上げる(2+じしけんが→時試験が。定数コメント参照。2887)
-                        if digitPrefixed, Self.digitBoostCounterSurfaces(for: node.reading)?.contains(node.surface) ?? false {
-                            cost -= Self.multiClauseDigitContextCounterBonus
+                        if digitPrefixed, let counterIndex = Self.digitBoostCounterSurfaces(for: node.reading)?.firstIndex(of: node.surface) {
+                            // 表の並び(人手の優先順)の後ろの助数詞は少し高く(27+しゅのやくそう が 首の薬草 だった。種 が先。3806)
+                            cost -= Self.multiClauseDigitContextCounterBonus - min(counterIndex, 3) * Self.multiClauseDigitContextCounterOrderStep
                         } else if digitPrefixed, Self.digitContextPreferredSurfacesByReading[node.reading]?.contains(node.surface) ?? false {
                             cost -= Self.multiClauseDigitContextCounterBonus
                         }
@@ -6813,6 +6831,24 @@ extension KanaKanjiConverter {
                     if prevNode.surfaceID == SID.を, node.isInflectionDerived, backPointer[prevIdx] >= 0,
                         supplementalLoanwordFlags[backPointer[prevIdx]], node.surface.hasPrefix("擁") {
                         cost -= Self.multiClauseLoanwordObjectYouBonus
+                    }
+                    // 文頭の と+名詞・数(定数コメント参照。3806)
+                    if prevNode.start == 0, prevNode.surfaceID == SID.と, prevNode.isKanaIdentity, !node.isKanaIdentity,
+                        (node.surface.first?.isNumber ?? false)
+                            || (!node.isInflectionDerived && !node.isDictionaryFormPredicate && containsKanji(node.surface)) {
+                        cost += Self.multiClauseSentenceInitialToNounPenalty
+                    }
+                    // 補助語彙の固有名+句の終わりの や(定数コメント参照。3806)
+                    if node.surfaceID == SID.や, node.isKanaIdentity, node.end == n, supplementalLoanwordFlags[prevIdx],
+                        // 日常語でもあるカタカナ語(ニンニク。にんにくや は かな が先の指定 3570)は対象外
+                        (unigramCosts[prevNode.surface] ?? Int.max) >= Self.multiClauseSupplementalPairHeadMinUnigram {
+                        cost -= Self.multiClauseLoanwordThenFinalYaBonus
+                    }
+                    // サ変の連用形+です(定数コメント参照。3806)
+                    if node.surfaceID == SID.です, prevNode.isInflectionDerived, prevNode.surface.count >= 3,
+                        prevNode.surface.hasSuffix("し"), prevNode.reading.hasSuffix("し"),
+                        store.isSuruNoun(reading: String(prevNode.reading.dropLast()), candidate: String(prevNode.surface.dropLast())) {
+                        cost += Self.multiClauseSuruRenyouThenDesuPenalty
                     }
                     // 問題文の型(正解は/北から/または)・固有名の並び(GrecoやAglianico)の後ろの補助語彙の外来語(定数コメント参照。3738)
                     // 読みが 2 かな以下の語(Tai/Tannat)は、その語で句が終わる・です/だ が続くときだけ(正解はTaiです)。後ろに読みが続くと

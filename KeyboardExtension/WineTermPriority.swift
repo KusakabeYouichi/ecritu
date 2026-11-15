@@ -51,7 +51,14 @@ enum WineTermPriority {
         uniquingKeysWith: { first, _ in first }
     )
 
-    // 候補の並びの先頭に、表の語(読み全体)か 表の語+助詞 を置く。表に無い読みは触らない
+    static let entriesByReading: [String: Entry] = Dictionary(entries.map { ($0.reading, $0) }, uniquingKeysWith: { first, _ in first })
+    // 表の語がサ変名詞のとき、この活用が付いた形も先頭に置く
+    static let suruTails: [String] = [
+        "させられる", "させます", "させない", "させる", "させて", "させた", "されます", "されない", "される", "されて", "された",
+        "します", "しない", "する", "して", "した",
+    ]
+
+    // 候補の並びの先頭に、表の語(読み全体)か 表の語+助詞・サ変の活用 を置く。表に無い読みは触らない
     static func ordered(reading: String, candidates: [String]) -> [String] {
         if let surfaces = surfacesByReading[reading] {
             return surfaces + candidates.filter { !surfaces.contains($0) }
@@ -59,6 +66,14 @@ enum WineTermPriority {
         for particle in trailingParticles where reading.count > particle.count && reading.hasSuffix(particle) {
             guard let surfaces = surfacesByReading[String(reading.dropLast(particle.count))] else { continue }
             let lead = surfaces.map { $0 + particle }
+            return lead + candidates.filter { !lead.contains($0) }
+        }
+        // サ変の形(らっかさせる→落果させる。落下させる が先だった。ユーザ指定 3806): 読みが 表の読み+する の活用で、候補に
+        // 一般語+その活用 があれば、一般語の所をワイン用語に替えた形を先頭に置く
+        for tail in suruTails where reading.count > tail.count && reading.hasSuffix(tail) {
+            guard let entry = entriesByReading[String(reading.dropLast(tail.count))],
+                let general = candidates.first(where: { $0 == entry.displacedGeneral + tail }) else { continue }
+            let lead = entry.wineSurfaces.map { $0 + general.dropFirst(entry.displacedGeneral.count) }
             return lead + candidates.filter { !lead.contains($0) }
         }
         return candidates
@@ -271,4 +286,5 @@ enum WineTermPriority {
     """
     // END GENERATED TABLE
 }
+
 #endif

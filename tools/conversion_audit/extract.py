@@ -181,6 +181,9 @@ def main():
                     morphemes.append((m.surface(), unit.group(1) + "".join(NUMERAL_UNIT_READINGS[c] for c in unit.group(2))))
                     continue
                 r = kata2hira(m.reading_form())
+                # 数字の直後の 日 は にち(Sudachi は 2日 を ふつか と見て 日=か と返す。数字のまま打つなら 2+にち。3806)
+                if m.surface() == "日" and r == "か" and morphemes and DIGITS_ONLY.match(morphemes[-1][0]):
+                    r = "にち"
                 if not r or not HIRA.match(r) or pos[0] in ("補助記号", "空白"):
                     ok = False
                     break

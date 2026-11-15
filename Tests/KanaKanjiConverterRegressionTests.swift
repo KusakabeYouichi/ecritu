@@ -28633,17 +28633,28 @@ extension KanaKanjiConverterRegressionTests {
                     guard !piece.kana.isEmpty else { continue }
                     converter.invalidateCandidateCache()
                     let multi = converter.multiClauseCandidates(for: piece.kana, systemCandidateMode: .surface, precedingCharacter: piece.digits.last)
-                    // 単文節は数字接頭つきの読みで引く(3か月)。数字を呑んだ候補(3かこく→参加国)は、かなだけの読みの候補に無ければ捨てる
-                    let kanaOnly = piece.digits.isEmpty ? [] : converter.candidates(for: piece.kana, limit: limit, systemCandidateMode: .surface)
-                    let single = converter.candidates(for: piece.digits + piece.kana, limit: limit, systemCandidateMode: .surface)
-                        .compactMap { candidate -> String? in
-                            if piece.digits.isEmpty { return candidate }
-                            if candidate.hasPrefix(piece.digits) { return String(candidate.dropFirst(piece.digits.count)) }
-                            return kanaOnly.contains(candidate) ? candidate : nil
-                        }
+                    // 単文節も、実機と同じくかなだけの読みで引く(数字は確定済みで読みに入らない。3806)
+                    let single = converter.candidates(for: piece.kana, limit: limit, systemCandidateMode: .surface)
                     var shown = piece.kana.count >= 4 ? multi : []
                     if let top = single.first, !shown.contains(top) {
                         shown.insert(top, at: shown.count >= 2 && KanaKanjiConverter.keepsSecondAgainstSingleBest(shown[0], shown[1]) ? 2 : min(1, shown.count))
+                    }
+                    // 数字の直後は、実機の表示側(KeyboardViewController+CandidatePresentation)と同じく助数詞を持ち上げ、か の表記を
+                    // 設定順にする(6+かげつ が 花月、17+かそん が 夏村 と出ていたのは検査側がこの段を通していなかったため。3806)
+                    if let digit = piece.digits.last {
+                        for candidate in single.dropFirst() where !shown.contains(candidate) {
+                            shown.append(candidate)
+                        }
+                        let boosted = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+                            shown, reading: piece.kana, precedingCharacter: digit,
+                            suppressedCandidates: converter.store.suppressedCandidatesByReading()[piece.kana] ?? [],
+                            ordinalMeKanaFirst: !converter.withStateLock { converter.ordinalMeKanjiPreferred },
+                            tailConversion: { self.converter.counterTailConversion($0) }
+                        )
+                        shown = converter.applyOkuriganaVariantPreference(
+                            reading: piece.kana,
+                            to: converter.applyKaCounterVariantPreference(reading: piece.kana, to: boosted, precedingCharacter: digit)
+                        )
                     }
                     joined += shown.first ?? piece.kana
                 }
@@ -30357,6 +30368,70 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3806(一括検査 3801 の数字まわり、ユーザ指定): 数字の直後の 分の(3分の1 が 3文の1)、原種(3元首)、種(27首の薬草)、
+    // か村(17ヶ村)、カタカナ語(14社とー/1度リンク)、年にかけて。樹齢(寿齢)、食糧(食料 より先。食料品 はそのまま)、〜に富み(富)
+    func testRegressionDigitContextAndGeneralWords3806() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func single(_ r: String) -> [String] { converter.candidates(for: r, limit: 12, systemCandidateMode: .surface) }
+        func multi(_ r: String, after digit: Character? = nil) -> [String] {
+            converter.multiClauseCandidates(for: r, systemCandidateMode: .surface, precedingCharacter: digit)
+        }
+        // 実機の表示側と同じ: 数字の直後の助数詞の持ち上げ
+        // (候補欄は 連文節の候補+単文節の候補 に対して持ち上げを掛ける)
+        func boosted(_ r: String, after digit: Character) -> [String] {
+            var merged = r.count >= 4 ? multi(r, after: digit) : []
+            for candidate in single(r) where !merged.contains(candidate) { merged.append(candidate) }
+            return KanaKanjiConverter.digitContextCounterBoostedCandidates(
+                merged, reading: r, precedingCharacter: digit, tailConversion: { self.converter.counterTailConversion($0) })
+        }
+        XCTAssertEqual(boosted("ぶんの", after: "3").first, "分の")
+        XCTAssertEqual(boosted("ぶんの", after: "8").first, "分の")
+        XCTAssertEqual(boosted("ぷん", after: "3").first, "分")
+        XCTAssertEqual(boosted("げんしゅ", after: "3").first, "原種")
+        XCTAssertEqual(boosted("かそん", after: "7").first, "か村")
+        XCTAssertEqual(boosted("かげつ", after: "6").first, "か月")
+        XCTAssertEqual(boosted("きゅう", after: "3").first, "級")
+        XCTAssertEqual(boosted("しゅのやくそう", after: "7").first, "種の薬草")
+        XCTAssertEqual(Array(boosted("しゃとー", after: "4").prefix(2)), ["Château", "シャトー"])
+        XCTAssertEqual(boosted("どりんく", after: "1").first, "ドリンク")
+        XCTAssertEqual(multi("ねんにかけて", after: "8").first, "年にかけて")
+        // 数字が無ければ今までどおり
+        XCTAssertEqual(single("げんしゅ").first, "元首")
+        // 一般語
+        XCTAssertEqual(single("じゅれい").first, "樹齢")
+        XCTAssertEqual(Array(single("しょくりょう").prefix(2)), ["食糧", "食料"])
+        XCTAssertEqual(single("しょくりょうひん").first, "食料品")
+        XCTAssertEqual(multi("しょくりょうをかう").first, "食糧を買う")
+        XCTAssertEqual(multi("しょくりょうひんをかう").first, "食料品を買う")
+        XCTAssertEqual(multi("へんかにとみ").first, "変化に富み")
+        XCTAssertEqual(multi("ほうこうせいにひじょうにとみ").first, "芳香性に非常に富み")
+        XCTAssertEqual(multi("きょまんのとみ").first, "巨万の富")
+        // 植物の ナス/茄子 を 成す より先に、パイ を 牌 より先に(動詞の なす と 麻雀の 牌 は文脈で残る)
+        XCTAssertEqual(Array(single("なす").prefix(3)), ["ナス", "茄子", "成す"])
+        XCTAssertEqual(multi("なすのすらいす").first, "ナスのスライス")
+        XCTAssertEqual(multi("むれをなす").first, "群れを成す")
+        XCTAssertEqual(multi("いみをなさない").first, "意味を成さない")
+        XCTAssertEqual(Array(single("ぱい").prefix(2)), ["パイ", "牌"])
+        XCTAssertEqual(multi("ちーずのぱいです").first, "チーズのパイです")
+        XCTAssertEqual(multi("あっぷるぱいをやく").first, "アップルパイを焼く")
+        XCTAssertEqual(multi("まーじゃんのぱい").first, "麻雀の牌")
+        XCTAssertEqual(multi("さかなをやく").first, "魚を焼く")
+        // 文頭の と+名詞・数 は 1 語を割らない(と海は/と6件は)。と思う/という は変えない
+        XCTAssertEqual(multi("とかいは").first, "都会は")
+        XCTAssertEqual(multi("とろっけんは").first, "Trockenは")
+        XCTAssertEqual(multi("とかいにすむ").first, "都会に住む")
+        XCTAssertEqual(multi("というのは").first, "というのは")
+        XCTAssertEqual(multi("となりのいえ").first, "隣の家")
+        // 固有名+句の終わりの や、サ変の連用形+です
+        XCTAssertEqual(multi("らまんちゃや").first, "ラ・マンチャや")
+        XCTAssertEqual(multi("せいかいはしゅしです").first, "正解は種子です")
+        XCTAssertEqual(multi("はなしです").first, "話です")
+        // 前菜 は文の中でも 前妻 より先(単独は 3619 から 前菜 が先。ユーザ指定 3806)
+        XCTAssertEqual(multi("ぜんさいにする").first, "前菜にする")
+        XCTAssertEqual(multi("ぜんさいをたべる").first, "前菜を食べる")
+    }
+
     // 3805(ユーザ指定): ワイン用語優先(デバッグ版専用のスイッチ)。オンのとき、表(WineTermPriority)の読みは全部、ワイン用語が
     // 同じ読みの一般語より先(どうろ→Douro、たな→Tannat、こな→Kona)。助詞が 1 つ付いた形(どうろは)も。文の中では、読みが
     // 3 かな以上で日常の文にまず出ない語だけ(ドウロを擁します)。オフ(変換の本体の初期値。ほかのテストは全部この状態)では
@@ -30403,6 +30478,10 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("かいだんをのぼる").first, "階段を上る")
         XCTAssertEqual(multi("もんだいがはっせいした").first, "問題が発生した")
         XCTAssertEqual(multi("こうかがあります").first, "効果があります")
+        // サ変の形(落下させる→落果させる。ユーザ指定 3806)
+        XCTAssertEqual(top("らっかさせる"), "落果させる")
+        XCTAssertEqual(top("らっかさせます"), "落果させます")
+        XCTAssertEqual(top("しゅせきは"), "酒石は")
         // 表に無い読みは変わらない
         XCTAssertEqual(top("わいん"), "ワイン")
         XCTAssertEqual(multi("きょうはいいてんきです").first, "今日はいい天気です")
