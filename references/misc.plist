@@ -1132,6 +1132,10 @@
 	<dict><key>phrase</key><string>にさそう</string><key>shortcut</key><string>にさそう</string></dict>
 	<!-- 東京府: 辞書に無く とうきょうふ が 等恐怖/塔恐怖… だった(ユーザ指定 3665) -->
 	<dict><key>phrase</key><string>東京府</string><key>shortcut</key><string>とうきょうふ</string></dict>
+	<!-- 人感センサー: 辞書に無く じんかんせんさー が 腎管センサー だった(ユーザ指定 3810) -->
+	<dict><key>phrase</key><string>人感センサー</string><key>shortcut</key><string>じんかんせんさー</string><key>pos</key><string>名詞</string></dict>
+	<!-- 持ち込み料: もちこみりょう が 持ち込み量/漁/領/寮 だった(ユーザ指定 3810) -->
+	<dict><key>phrase</key><string>持ち込み料</string><key>shortcut</key><string>もちこみりょう</string><key>pos</key><string>名詞</string></dict>
 
 </array>
 </plist>
