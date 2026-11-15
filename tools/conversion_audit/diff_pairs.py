@@ -110,14 +110,30 @@ def load_ignored(path=IGNORED_PATH):
         if line.startswith("#") or not line.strip():
             continue
         cols = line.rstrip("\n").split("\t")
-        pairs.add((cols[0], cols[1] if len(cols) > 1 else ""))
+        a, b = cols[0], cols[1] if len(cols) > 1 else ""
+        pairs.add((a, b))
+        # 『・』の有無は気にしない(3803)ので、落とした形でも引けるようにする
+        pairs.add((a.replace("・", ""), b.replace("・", "")))
     return pairs
 
 
 def remaining_spans(expected, first, ignored, near=None):
     """『気にしなくていい』組と、near(部分ごとのほぼ一致の判定)に当たらない違いだけを返す。"""
-    return [(a, b) for a, b in spans(expected, first)
-            if (a, b) not in ignored and not (near and a and b and near(a, b))]
+    def fine(a, b):
+        return a == b or (a, b) in ignored or bool(near and a and b and near(a, b))
+
+    # 『・』の有無は気にしない(3803、ユーザ指定)。切り出しは『・』を残したまま行い(語の切れ目になる)、組を引くときに落とす。
+    # 『・』を挟んでつながった組(味・甘み・/味甘味)は、落としてから切り出し直す
+    rest = []
+    for a, b in spans(expected, first):
+        a2, b2 = a.replace("・", ""), b.replace("・", "")
+        if fine(a, b) or fine(a2, b2):
+            continue
+        if (a2, b2) != (a, b):
+            rest.extend((x, y) for x, y in spans(a2, b2) if not fine(x, y))
+        else:
+            rest.append((a, b))
+    return rest
 
 
 def main():
@@ -136,7 +152,9 @@ def main():
         i = next((j for j in range(2, len(cols)) if cols[j] in ("ok", "ng")), None)
         if i is None or cols[i] != "ng" or not cols[i - 1]:
             continue
-        reading, expected, first = cols[0], cols[1], cols[i - 1]
+        reading, expected, first = cols[0], cols[1].replace("・", ""), cols[i - 1].replace("・", "")
+        if expected == first:
+            continue
         rows += 1
         kind = "fix" if reading + "\t" + expected in fix else "ok"
         for a, b in spans(expected, first):

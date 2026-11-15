@@ -124,23 +124,26 @@ def main():
         if expected in top.split("|")[:2] and latin_katakana_only_difference(expected, first):
             buckets["c_ok"].append([reading, expected, first, top])
             continue
+        # 『・』の有無は気にしない(3803、ユーザ指定)。以降の比べ方は『・』を落とした形で見る(出力の列は元のまま)
+        shown_expected, shown_first = expected, first
+        expected, first = expected.replace("・", ""), first.replace("・", "")
         # ほぼ一致: カタカナで書くか原語で書くか・作る/造る・書きかえ・数字 だけの違い(何か所あっても、何番めでも。3775)
         if first and near_match.is_near_match(expected, first, vocab_readings, kakikae_pairs):
-            buckets["c_near"].append([reading, expected, first, top])
+            buckets["c_near"].append([reading, shown_expected, shown_first, top])
             continue
         # 気にしなくていい違い(と、ほぼ一致)だけの行。残った違いは a/b の「違い」の列に出す
-        rest = diff_pairs.remaining_spans(expected, first, ignored, near) if first else None
+        rest = diff_pairs.remaining_spans(shown_expected, shown_first, ignored, near) if first else None
         if rest is not None and not rest:
-            buckets["c_ignored"].append([reading, expected, first, top])
+            buckets["c_ignored"].append([reading, shown_expected, shown_first, top])
             continue
         has_digit = any(c.isdigit() for c in reading)
         if not has_digit and (policy_normalize(expected) == policy_normalize(first) or policy_normalize(expected) == first):
-            buckets["c_policy"].append([reading, expected, first, top])
+            buckets["c_policy"].append([reading, shown_expected, shown_first, top])
             continue
         core = diff_core(expected, first)
         exp_part, got_part = core.split("→", 1)
         if not has_digit and is_hiragana(exp_part) and not is_hiragana(got_part) and got_part != "(なし)" and first:
-            buckets["c_style"].append([reading, expected, first, core, top])
+            buckets["c_style"].append([reading, shown_expected, shown_first, core, top])
             continue
         proper = "固有名詞" in flags
         in_lm = exp_part in lm or expected in lm
@@ -160,7 +163,7 @@ def main():
             level, why = "2", empty + "長い句(入力の単位として稀)"
         if rest:
             core = " ".join((a or "(なし)") + "→" + (b or "(なし)") for a, b in rest)
-        row = [level, why, reading, expected, first, core, flags, top]
+        row = [level, why, reading, shown_expected, shown_first, core, flags, top]
         buckets["d_number" if has_digit else ("a_register" if found == "no" else "b_logic")].append(row)
     headers = {
         "c_ok": "読み\t期待\t先頭\t上位6",
