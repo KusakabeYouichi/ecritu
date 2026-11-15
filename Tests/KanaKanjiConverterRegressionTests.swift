@@ -30492,6 +30492,15 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(top("らっかさせる"), "落果させる")
         XCTAssertEqual(top("らっかさせます"), "落果させます")
         XCTAssertEqual(top("しゅせきは"), "酒石は")
+        // サ変でない語(地名)に する は付けない。サ変名詞の一般語が先頭のまま(甲斐市する/佐久市した だった。ユーザ指摘 3808)
+        for (reading, expected) in [
+            ("かいしする", "開始する"), ("かいしします", "開始します"), ("かいしした", "開始した"), ("かいしされた", "開始された"),
+            ("さくしする", "作詞する"), ("さくしした", "作詞した"),
+        ] {
+            XCTAssertEqual(top(reading), expected, reading)
+            XCTAssertEqual(single(reading).first, expected, reading)
+        }
+        XCTAssertEqual(top("かいしで"), "甲斐市で")
         // 表に無い読みは変わらない
         XCTAssertEqual(top("わいん"), "ワイン")
         XCTAssertEqual(multi("きょうはいいてんきです").first, "今日はいい天気です")

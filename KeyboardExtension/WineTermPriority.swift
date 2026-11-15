@@ -59,7 +59,9 @@ enum WineTermPriority {
     ]
 
     // 候補の並びの先頭に、表の語(読み全体)か 表の語+助詞・サ変の活用 を置く。表に無い読みは触らない
-    static func ordered(reading: String, candidates: [String]) -> [String] {
+    // isSuruNoun(読み, 語): その語がサ変名詞か。地名など サ変でない語に する を付けた形は作らない(かいしする が 甲斐市する、
+    // さくしした が 佐久市した になった。ユーザ指摘 3808)。サ変名詞の一般語(開始/作詞)がそのまま先頭に残る
+    static func ordered(reading: String, candidates: [String], isSuruNoun: (String, String) -> Bool) -> [String] {
         if let surfaces = surfacesByReading[reading] {
             return surfaces + candidates.filter { !surfaces.contains($0) }
         }
@@ -73,7 +75,9 @@ enum WineTermPriority {
         for tail in suruTails where reading.count > tail.count && reading.hasSuffix(tail) {
             guard let entry = entriesByReading[String(reading.dropLast(tail.count))],
                 let general = candidates.first(where: { $0 == entry.displacedGeneral + tail }) else { continue }
-            let lead = entry.wineSurfaces.map { $0 + general.dropFirst(entry.displacedGeneral.count) }
+            let suruSurfaces = entry.wineSurfaces.filter { isSuruNoun(entry.reading, $0) }
+            guard !suruSurfaces.isEmpty else { continue }
+            let lead = suruSurfaces.map { $0 + general.dropFirst(entry.displacedGeneral.count) }
             return lead + candidates.filter { !lead.contains($0) }
         }
         return candidates

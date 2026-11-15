@@ -332,7 +332,7 @@ extension KanaKanjiConverter {
         #if DEBUG
         // ワイン用語優先(デバッグ版専用。3805): 読み全体・読み+助詞 が表の語なら先頭に
         if withStateLock({ wineTermPriorityEnabled }) {
-            candidates = WineTermPriority.ordered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
+            candidates = WineTermPriority.ordered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates, isSuruNoun: { self.store.isSuruNoun(reading: $0, candidate: $1) })
         }
         #endif
         candidates = Self.suruNounTabiOrdered(candidates)

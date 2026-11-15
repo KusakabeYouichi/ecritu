@@ -579,7 +579,7 @@ final class KanaKanjiConverter {
         // ワイン用語優先(デバッグ版専用。3805)。ほかの並べ替え(送り仮名・書きかえ・可能動詞)の後、最後に掛ける
         #if DEBUG
         if withStateLock({ wineTermPriorityEnabled }) {
-            finalCandidates = WineTermPriority.ordered(reading: normalizedReading, candidates: finalCandidates)
+            finalCandidates = WineTermPriority.ordered(reading: normalizedReading, candidates: finalCandidates, isSuruNoun: { self.store.isSuruNoun(reading: $0, candidate: $1) })
         }
         #endif
 
