@@ -4176,6 +4176,8 @@
 	<dict><key>phrase</key><string>保存料ラベル表示</string><key>shortcut</key><string>ほぞんりょうらべるひょうじ</string></dict>
 	<dict><key>phrase</key><string>八ヶ岳西麓ワイン特区</string><key>shortcut</key><string>やつがたけせいろくわいんとっく</string></dict>
 	<dict><key>phrase</key><string>かみのやまワイン特区</string><key>shortcut</key><string>かみのやまわいんとっく</string></dict>	<!-- 山形県上山市。特区名はひらがな(learningBOX 検査 3693、上山ワイン特区 だった) -->
+	<dict><key>phrase</key><string>ぶどうの里なんよう</string><key>shortcut</key><string>ぶどうのさとなんよう</string></dict>	<!-- 山形県南陽市。特区名『ぶどうの里なんようワイン特区』はひらがな(ユーザ指定 3808、南陽 になった) -->
+	<dict><key>phrase</key><string>なんようワイン特区</string><key>shortcut</key><string>なんようわいんとっく</string></dict>
 	<dict><key>phrase</key><string>原産国名</string><key>shortcut</key><string>げんさんこくめい</string></dict>
 	<dict><key>phrase</key><string>品種分類</string><key>shortcut</key><string>ひんしゅぶんるい</string></dict>
 	<dict><key>phrase</key><string>品種名</string><key>shortcut</key><string>ひんしゅめい</string></dict>
