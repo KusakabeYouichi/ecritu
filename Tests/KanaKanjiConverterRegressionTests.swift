@@ -30468,6 +30468,17 @@ extension KanaKanjiConverterRegressionTests {
                 merged, reading: r, precedingCharacter: digit, tailConversion: { self.converter.counterTailConversion($0) },
                 isCommonWord: { self.converter.isCommonWordForCounterBlock($0) })
         }
+        // 補助動詞 ておきなさい は かな、単独・副詞の後ろは 起きなさい(3812)
+        XCTAssertEqual(top("おぼえておきなさい"), "覚えておきなさい")
+        XCTAssertEqual(top("しらべておきなさい"), "調べておきなさい")
+        XCTAssertEqual(top("はやくおきなさい"), "早く起きなさい")
+        XCTAssertEqual(single("おきなさい").first, "起きなさい")
+        XCTAssertEqual(top("ねておきたら"), "寝て起きたら")
+        // かんそう の並びと、意志形を持たない 関す(関そう。3812)
+        XCTAssertEqual(Array(single("かんそう").prefix(5)), ["感想", "乾燥", "間奏", "完走", "換装"])
+        XCTAssertFalse(single("かんそう").contains("関そう"))
+        XCTAssertFalse(single("かんそう").contains("關そう"))
+        XCTAssertEqual(top("かんそうしよう"), "乾燥しよう")
         // 副助詞 しか+否定(友達+視界+ない。3811)。視界/司会 の普通の文は崩さない
         XCTAssertEqual(top("ともだちしかいない"), "友達しかいない")
         XCTAssertEqual(top("わたししかいない"), "私しかいない")

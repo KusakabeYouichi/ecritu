@@ -2545,6 +2545,13 @@ extension KanaKanjiConverter {
                             break
                         }
                     }
+                    // 補助動詞 おく の活用で かなが上位の枠に入らなかったとき(おきなさい は 置き/擱き/起き で埋まる)も、
+                    // かなを立てる(覚えて起きなさい。3812、ユーザ指摘)
+                    if suppliesKanaForOkuAuxiliary, Self.isOkuAuxiliaryReading(segmentReading),
+                        !suppliedInflectionSurfaces.contains(segmentReading), inflected.contains(segmentReading) {
+                        add(segmentReading, isDictWord: true, isCurated: false, isInflectionDerived: true)
+                        suppliedInflectionSurfaces.insert(segmentReading)
+                    }
                     // 連語の動詞側の優先表層(消息を+たった→絶った)が取得幅(辞書 rank 順の topK×2)から漏れると、
                     // 選好以前にノードが立たない(消息を立った/経った/建った/足った だけが並ぶ)。このスパンだけ
                     // 広く取得して 1 件を明示供給する(3773)。かなを優先する組(時間が+かかった、3776)は読みそのものが優先表層
@@ -6208,7 +6215,9 @@ extension KanaKanjiConverter {
                             let head = node.surface.first,
                             prevNode.surface.hasSuffix("て") || prevNode.surface.hasSuffix("で"),
                             (node.isInflectionDerived
-                                && Self.multiClauseOkuKanjiHeads.contains(head)
+                                && (Self.multiClauseOkuKanjiHeads.contains(head)
+                                    // 起きなさい(〜て起きなさい は まれ。覚えて起きなさい。3812、ユーザ指摘)。寝て起きたら は触らない
+                                    || (head == "起" && node.reading.hasSuffix("なさい")))
                                 && Self.isOkuAuxiliaryReading(node.reading))
                                 // おる 側は活用派生に限らず表記も限定しない(2877): 折り/檻/オリ が
                                 // いずれも辞書にあり、派生でないノードとして立つ(乾燥して折り)。

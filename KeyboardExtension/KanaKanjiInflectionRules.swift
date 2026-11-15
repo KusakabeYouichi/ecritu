@@ -271,8 +271,9 @@ extension KanaKanjiConverter {
     // 命令形+引用 って を組む一段動詞の word_cost 上限(3771。定義箇所のコメント参照)
     static let ichidanImperativeQuoteMaxBaseWordCost = 9500
     // 意志を持てない動詞(原因・根拠を表す よる 族、要る)。意志形(因ろう/要ろう)は文法上は組めても意味的にありえないので、
-    // 活用派生で作らない(ユーザ指摘 3255)。選る/寄る/撚る/縒る 等の意志動詞は対象外
-    static let nonVolitionalVerbSurfaces: Set<String> = ["因る", "由る", "縁る", "依る", "拠る", "據る", "要る"]
+    // 活用派生で作らない(ユーザ指摘 3255)。選る/寄る/撚る/縒る 等の意志動詞は対象外。
+    // 関す(〜に関する)も行為ではないので意志形を持たない(関そう。ユーザ指摘 3812)
+    static let nonVolitionalVerbSurfaces: Set<String> = ["因る", "由る", "縁る", "依る", "拠る", "據る", "要る", "関す", "關す"]
     // 意志形の活用尾(五段 o段+う、一段 よう)。readingSuffix がこれで始まる規則(ろう/ろうか/ろうと…)が意志形
     static let volitionalReadingSuffixHeads: [String] = godanPatterns.map { $0.oForm + "う" } + ["よう"]
 
