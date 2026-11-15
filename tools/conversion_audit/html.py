@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """一括検査の a/b(と c_policy/c_style)を 1 枚の確認表(Artifact)にする。
-使い方: python3 -I tools/conversion_audit/html.py [--previous <decisions.json>]... <out.html> <items.json> <結果ディレクトリ>...
+使い方: python3 -I tools/conversion_audit/html.py [--previous <decisions.json>]... [--heading <条件>] <out.html> <items.json> <結果ディレクトリ>...
+  --heading: 見出しに添える条件(『3809。ワイン用語優先オン』。最初の 。 までをタブのタイトルにも使う)。見出しには作った日時(最終更新)も入る
   --previous: 前回の確認表の判定(decisions.py export の出力)。期待の表記が同じ行に「前回: 直す/このままでよい・備考」を添える(3676)
   結果ディレクトリは references/conversion_audit/<edition>/(a_register.tsv 等が有る所)。複数なら読み+期待が同じ行は 1 つにまとめる。
   items.json は decisions.py export が doc id(k-<読み+期待の sha1>)と行を突き合わせるのに使う(並びは html と同じ)。
 Artifact は capabilities db+user、collection "audit"。判定は fix(直す)/ok(このままでよい)、備考は自由記入。
 """
+import datetime
 import hashlib
 import json
 import os
@@ -53,6 +55,10 @@ def main():
             if x.get("mark") or x.get("note"):
                 previous[x["expected"]] = {"mark": x.get("mark", ""), "note": x.get("note", "")}
         args = args[2:]
+    heading = ""
+    if args and args[0] == "--heading":
+        heading = args[1]
+        args = args[2:]
     out_html, out_items, dirs = args[0], args[1], args[2:]
     rows = {}
     for d in dirs:
@@ -74,6 +80,12 @@ def main():
     html = html.replace("__CLASSES__", json.dumps(CLASSES, ensure_ascii=False))
     html = html.replace("__STAGES__", json.dumps(STAGE_LABEL, ensure_ascii=False))
     html = html.replace("__SAMPLES__", json.dumps(samples, ensure_ascii=False))
+    # 見出しにビルド番号などの条件と、ページを作った日時を入れる(古いページを見分けるため。ユーザ指定 3809)
+    stamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+    title = "変換の一括検査" + (" " + heading.split("。")[0] if heading else "")
+    html = html.replace("<title>変換の一括検査</title>", "<title>" + title + "</title>", 1)
+    html = html.replace("<h1>変換の一括検査</h1>",
+                        "<h1>変換の一括検査(" + (heading + "。" if heading else "") + "最終更新 " + stamp + ")</h1>", 1)
     open(out_html, "w", encoding="utf-8").write(html)
     print(len(data), "rows", len(html), "bytes", file=sys.stderr)
 
