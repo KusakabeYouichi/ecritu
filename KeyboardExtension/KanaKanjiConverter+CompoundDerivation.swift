@@ -956,6 +956,12 @@ extension KanaKanjiConverter {
     // 4 かな以上は連文節の最良(もおしたことない→も押したことない、2700)。短い末尾は単文節だが、末尾が助詞なら
     // 助詞を残した形を優先する(まえの の先頭は姓 前野(rank0)で 年前野 を作ってしまう。2820)
     static let counterTailParticleCharacters: Set<Character> = Set("のにでをがはもとへ")
+    // 数字直後の合成を止める「常用の語」の判定(語 LM の値段がこの値以下。世紀 4000 台/以上 3000 台/木曜日 6000 前後)
+    static let counterBlockingCommonWordMaxUnigram = 6500
+    func isCommonWordForCounterBlock(_ surface: String) -> Bool {
+        (store.wordLMUnigramCosts(for: [surface])[surface] ?? Int.max) <= Self.counterBlockingCommonWordMaxUnigram
+    }
+
     func counterTailConversion(_ tail: String) -> String? {
         // 助詞で始まる長い末尾(をきそい)は、助詞の後ろだけを変換して助詞を付け直す(3806)。助詞ごと連文節に掛けると、
         // 文頭の助詞として割られた形(を機沿い)が返り、2+いをきそい が 位を機沿い だった
@@ -985,7 +991,9 @@ extension KanaKanjiConverter {
         precedingCharacter: Character?,
         suppressedCandidates: Set<String> = [],
         ordinalMeKanaFirst: Bool = false,
-        tailConversion: ((String) -> String?)? = nil
+        tailConversion: ((String) -> String?)? = nil,
+        // 語が常用か(語 LM の値段が低いか)。読み全体の本来の語より 助数詞+かな の合成を前に出さない判定に使う(3807)
+        isCommonWord: ((String) -> Bool)? = nil
     ) -> [String] {
         guard let precedingCharacter,
             isCounterBoostDigit(precedingCharacter) else {
@@ -1089,10 +1097,32 @@ extension KanaKanjiConverter {
                 guard tail.allSatisfy({ ("ぁ"..."ゖ").contains($0) || $0 == "ー" }) else {
                     continue
                 }
-                // 読み全体がカタカナの語のときは、助詞 1 字の末尾(はい+と→杯と、えん+で→円で)だけ合成する
-                if readingHasKatakanaWord, tail.count >= 2 {
+                // 読み全体がカタカナの語のときは、助詞 1 字の末尾(はい+と→杯と、えん+で→円で)と、助詞で始まる末尾
+                // (い+である→位である)だけ合成する。語の途中で切る形(ど+りんく、しゃ+とー)は作らない
+                if readingHasKatakanaWord, tail.count >= 2,
+                    tail.contains("ー") || !(tail.first.map { "もはがをにでとへのやか".contains($0) } ?? false) {
                     continue
                 }
+                // 読み全体の本来の語が候補の先頭にあるとき、助数詞+かな末尾の合成をその前に出さない(3807)。14+せいき が 畝いき、
+                // 4+いじょう が 位じょう、3+もくようび が 目ようび/目曜日、7つ+にんていされています が 人ていされています だった。
+                // 付属語・助詞で始まる末尾(かい+しか→回しか、えん+だけどな→円だけどな、かい+も…)は語の切れ目なので今までどおり。
+                // 先頭がこの助数詞の字で始まる語(時試験 に対する 次試験)も今までどおり
+                let tailIsBound = (tail.first.map { "もはがをにでとへのやかだ".contains($0) } ?? false)
+                    || counterPromotableKanaTails.contains(where: { tail.hasPrefix($0) })
+                let topIsOtherWord: Bool = {
+                    guard let top = candidates.first, top != reading, let head = top.first,
+                        containsKanjiCandidate(String(head)) else { return false }
+                    return !surfaces.contains(where: { top.hasPrefix($0) })
+                }()
+                // (1) 先頭が全部漢字の常用の語(世紀/以上/木曜日。語 LM の値段で判定)なら、合成(変換形も)を作らない。
+                //     常用でない語(米中/開始か/時試験)は対象外(枚中/回しか/次試験 を先に出す)
+                if topIsOtherWord, !tailIsBound, let top = candidates.first, top.count >= 2,
+                    KanaKanjiConverter.isAllKanjiSurface(top), isCommonWord?(top) ?? false {
+                    continue
+                }
+                // (2) 先頭が漢字で始まる別の語で、末尾が 3 かな以上の付属語でないかな(あついじょう/ていされています)なら、
+                //     かなのままの合成(機あついじょう/人ていされています)は作らない
+                let skipsRawKanaComposition = topIsOtherWord && !tailIsBound && tail.count >= 3
                 // 末尾が小書きのかな・長音で始まる切り方は語の途中(ねんじ+ゅくせい→年次ゅくせい。3806)
                 if let head = tail.first, "ぁぃぅぇぉゃゅょゎっー".contains(head) {
                     continue
@@ -1151,7 +1181,7 @@ extension KanaKanjiConverter {
                         // 助数詞が辞書 rank 圏外だと合成候補自体が立たない(回ぐらい 等)。
                         // 数字文脈なら 助数詞+かな末尾 を合成供給する(抑制済みは復活させない)
                         let synthesized = surface + tail
-                        if !candidates.contains(synthesized),
+                        if !skipsRawKanaComposition, !candidates.contains(synthesized),
                             !suppressedCandidates.contains(synthesized),
                             !matched.contains(synthesized) {
                             matched.append(synthesized)

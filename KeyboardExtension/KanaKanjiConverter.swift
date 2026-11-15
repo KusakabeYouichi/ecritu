@@ -553,7 +553,8 @@ final class KanaKanjiConverter {
                 finalCandidates,
                 reading: normalizedReading,
                 precedingCharacter: digit,
-                suppressedCandidates: context.suppressedCandidatesByReading[normalizedReading] ?? []
+                suppressedCandidates: context.suppressedCandidatesByReading[normalizedReading] ?? [],
+                isCommonWord: { [self] in isCommonWordForCounterBlock($0) }
             )
         }
         // 助数詞「か」の表記(1か所/数か月/何か国)を設定順に並べ、出さない表記を外す(2816)

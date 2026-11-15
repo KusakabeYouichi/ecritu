@@ -279,9 +279,11 @@ extension KanaKanjiConverter {
         candidates = singleTopLeadBeforeParticle(reading: reading, candidates: candidates, systemCandidateMode: systemCandidateMode)
         // 確定済みの数字の直後で、読み全体がカタカナの 1 語(ドリンク/シャトー)なら、その語を先頭に(3806)。文頭の助数詞の持ち上げで
         // 度+リンク(1度リンク)、社+とー(14社とー)が最良になっていた
+        // 先頭が 助数詞の字+カタカナ・長音の切れ端(度+リンク)のときだけ(位である は 位+である で正しい。イデアル にしない)
         if precedingCharacter.map(Self.isCounterBoostDigit) ?? false, let top = candidates.first,
             let whole = self.candidates(for: reading, limit: 1, systemCandidateMode: systemCandidateMode).first,
-            whole != top, whole.count >= 3, Self.isKatakanaString(whole) {
+            whole != top, whole.count >= 3, Self.isKatakanaString(whole),
+            top.count >= 2, top.dropFirst().allSatisfy({ ("ァ"..."ヺ").contains($0) || $0 == "ー" }) {
             candidates = [whole] + candidates.filter { $0 != whole }
         }
         // 読み全体が補助語彙(vin 等)の一語で、単文節の先頭もその語なら、連文節でも先頭に(learningBOX 検査 3658)。

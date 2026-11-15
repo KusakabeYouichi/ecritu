@@ -433,6 +433,9 @@ extension KeyboardViewController {
             tailConversion: { [weak self] tail in
                 // 助数詞の後ろの読みを変換した形(しけん→試験、まえの→前の)を合成供給に使う(2645/2700/2820)
                 self?.kanaKanjiConverter.counterTailConversion(tail)
+            },
+            isCommonWord: { [weak self] surface in
+                self?.kanaKanjiConverter.isCommonWordForCounterBlock(surface) ?? false
             }
         )
         // 助数詞「か」の表記(1か所/数か月)を設定順に(連文節混じりの一覧にも一様に効かせる。2816)

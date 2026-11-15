@@ -28649,7 +28649,8 @@ extension KanaKanjiConverterRegressionTests {
                             shown, reading: piece.kana, precedingCharacter: digit,
                             suppressedCandidates: converter.store.suppressedCandidatesByReading()[piece.kana] ?? [],
                             ordinalMeKanaFirst: !converter.withStateLock { converter.ordinalMeKanjiPreferred },
-                            tailConversion: { self.converter.counterTailConversion($0) }
+                            tailConversion: { self.converter.counterTailConversion($0) },
+                            isCommonWord: { self.converter.isCommonWordForCounterBlock($0) }
                         )
                         shown = converter.applyOkuriganaVariantPreference(
                             reading: piece.kana,
@@ -30383,7 +30384,8 @@ extension KanaKanjiConverterRegressionTests {
             var merged = r.count >= 4 ? multi(r, after: digit) : []
             for candidate in single(r) where !merged.contains(candidate) { merged.append(candidate) }
             return KanaKanjiConverter.digitContextCounterBoostedCandidates(
-                merged, reading: r, precedingCharacter: digit, tailConversion: { self.converter.counterTailConversion($0) })
+                merged, reading: r, precedingCharacter: digit, tailConversion: { self.converter.counterTailConversion($0) },
+                isCommonWord: { self.converter.isCommonWordForCounterBlock($0) })
         }
         XCTAssertEqual(boosted("ぶんの", after: "3").first, "分の")
         XCTAssertEqual(boosted("ぶんの", after: "8").first, "分の")
@@ -30396,6 +30398,14 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(boosted("しゃとー", after: "4").prefix(2)), ["Château", "シャトー"])
         XCTAssertEqual(boosted("どりんく", after: "1").first, "ドリンク")
         XCTAssertEqual(multi("ねんにかけて", after: "8").first, "年にかけて")
+        // 本来の語があるときは 助数詞+かな の合成を前に出さない(3807。14+せいき が 畝いき、4+いじょう が 位じょう、
+        // 3+もくようび が 目ようび、7つ+にんていされています が 人ていされています だった)。助詞で始まる末尾は今までどおり
+        XCTAssertEqual(boosted("せいき", after: "4").first, "世紀")
+        XCTAssertEqual(boosted("いじょう", after: "7").first, "以上")
+        XCTAssertEqual(boosted("もくようび", after: "3").first, "木曜日")
+        XCTAssertEqual(boosted("にんていされています", after: "7").first, "認定されています")
+        XCTAssertEqual(boosted("いである", after: "3").first, "位である")
+        XCTAssertEqual(single("4せいき").first, "世紀")
         // 数字が無ければ今までどおり
         XCTAssertEqual(single("げんしゅ").first, "元首")
         // 一般語
