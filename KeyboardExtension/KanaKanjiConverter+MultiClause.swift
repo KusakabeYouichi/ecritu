@@ -320,6 +320,12 @@ extension KanaKanjiConverter {
             to: candidates, reading: KanaTextNormalizer.normalizedReading(reading),
             enabled: withStateLock { formalNounMeKanaCandidatesEnabled }
         )
+        #if DEBUG
+        // ワイン用語優先(デバッグ版専用。3805): 読み全体・読み+助詞 が表の語なら先頭に
+        if withStateLock({ wineTermPriorityEnabled }) {
+            candidates = WineTermPriority.ordered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
+        }
+        #endif
         candidates = Self.suruNounTabiOrdered(candidates)
         candidates = Self.nankaKanaSecondOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.tareSauceSecondOrdered(candidates)
@@ -1672,6 +1678,9 @@ extension KanaKanjiConverter {
         guard store.hasWordLMMetadata else {
             return []
         }
+        #if DEBUG
+        let wineTermPrioritySurfaces: [String: [String]]? = withStateLock({ wineTermPriorityEnabled }) ? WineTermPriority.inSentenceSurfacesByReading : nil
+        #endif
         let normalized = KanaTextNormalizer.normalizedReading(reading)
         let chars = Array(normalized)
         let n = chars.count
@@ -3969,6 +3978,13 @@ extension KanaKanjiConverter {
             if let supplementalCap = Self.multiClauseSupplementalWordCostCapsByID[surfaceID] {
                 base = min(base, supplementalCap)
             }
+            #if DEBUG
+            // ワイン用語優先(デバッグ版専用。3805): 表の語は文の中でも一般語より先に(ドウロを擁します)。読みが 2 かな以下の語
+            // (Gin=じん、Dão=だん)と日常語でもある語(帰還/発声)は表の側で外してある(普通の文が軒並み崩れる)
+            if let wineTermPrioritySurfaces, wineTermPrioritySurfaces[reading]?.contains(surface) ?? false {
+                base = min(base, WineTermPriority.inSentenceWordCostCap)
+            }
+            #endif
             // seed 先頭語のコスト救済(2662→2677): seed がその読みの先頭に指定した表層が、
             // seed 掲載の兄弟より LM で高い(または LM 未収録=dictUnknown)ために連文節で必ず
             // 負けるのを是正する。紫蘇(Wikipedia 未収録で 始祖 に負けた)、正解(Sudachi は

@@ -106,6 +106,12 @@ extension KeyboardViewController {
                 fallback: true
             )
         )
+        #if DEBUG
+        // ワイン用語優先(デバッグ版専用。3805)。値が無い端末はオン
+        kanaKanjiConverter.setWineTermPriorityEnabled(
+            sharedBoolValue(from: sharedDefaults, key: WineTermPriority.sharedDefaultsKey, fallback: true)
+        )
+        #endif
         // サスペンド時スリム化(キャッシュ破棄+ページ返却)。既定オン(2640)
         isSuspendMemorySlimmingEnabled = sharedBoolValue(
             from: sharedDefaults,

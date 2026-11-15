@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20261115151411"
+    private static let editionUpdatedAtRaw: String = "20261115154933"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -1713,6 +1713,8 @@ struct ContentView: View {
         // キーボード診断ログは開発ビルド専用(キーボード側の記録も
         // DEBUG 専用のため、リリースでは常に空。審査ガイドライン2.2対策)
         #if DEBUG
+        // ワイン用語優先(デバッグ版専用。3805)。メニューには出さない
+        WineTermPrioritySettingsSection()
         KeyboardDiagnosticsSection(
             isSessionActive: keyboardDiagnosticsSessionActive,
             failSafeProfile: keyboardDiagnosticsFailSafeProfile,

@@ -28592,6 +28592,12 @@ extension KanaKanjiConverterRegressionTests {
         if ProcessInfo.processInfo.environment["AUDIT_ADJME"] != nil {
             converter.setAdjectiveMeKanjiCandidatesEnabled(true)
         }
+        // AUDIT_WINE=1 で ワイン用語優先(デバッグ版専用。3805)をオンにする(実機のデバッグ版の初期設定と同じ条件)
+        #if DEBUG
+        if ProcessInfo.processInfo.environment["AUDIT_WINE"] != nil {
+            converter.setWineTermPriorityEnabled(true)
+        }
+        #endif
         // AUDIT_KANAGAKI=adverb,conjunction,… で X.8 かなで書く言葉 の分類を実機と揃える(3688)
         if let raw = ProcessInfo.processInfo.environment["AUDIT_KANAGAKI"] {
             converter.setKanaGakiSuppressedCategories(Set(raw.split(separator: ",").compactMap { KanaGakiCategory(rawValue: String($0)) }))
@@ -30350,6 +30356,62 @@ extension KanaKanjiConverterRegressionTests {
             XCTAssertEqual(converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).first, expected, reading)
         }
     }
+
+    // 3805(ユーザ指定): ワイン用語優先(デバッグ版専用のスイッチ)。オンのとき、表(WineTermPriority)の読みは全部、ワイン用語が
+    // 同じ読みの一般語より先(どうろ→Douro、たな→Tannat、こな→Kona)。助詞が 1 つ付いた形(どうろは)も。文の中では、読みが
+    // 3 かな以上で日常の文にまず出ない語だけ(ドウロを擁します)。オフ(変換の本体の初期値。ほかのテストは全部この状態)では
+    // 今までどおり一般語が先
+    #if DEBUG
+    func testWineTermPriority3805() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func single(_ r: String) -> [String] { converter.candidates(for: r, limit: 12, systemCandidateMode: .surface) }
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        // 候補バーの先頭(一括検査と同じ: 読み 4 字以上は連文節の最良、それ以外は単文節の先頭)
+        func top(_ r: String) -> String? { (r.count >= 4 ? multi(r).first : nil) ?? single(r).first }
+        let entries = WineTermPriority.entries
+        XCTAssertGreaterThan(entries.count, 100)
+        for reading in ["どうろ", "だん", "じん", "こな", "たな", "とかい", "いんど", "ぶどうか", "きふきん", "かいし", "さくし"] {
+            XCTAssertNotNil(WineTermPriority.surfacesByReading[reading], reading)
+        }
+        // オフ: 一般語が先(表を作ったときの先頭のまま)
+        XCTAssertEqual(top("どうろ"), "道路")
+        XCTAssertEqual(top("たな"), "棚")
+        XCTAssertEqual(top("きふきん"), "寄付金")
+        XCTAssertEqual(top("どうろがこんでいる"), "道路が混んでいる")
+        // オン: 表の全読みでワイン用語が先頭
+        converter.setWineTermPriorityEnabled(true)
+        defer { converter.setWineTermPriorityEnabled(false) }
+        for entry in entries {
+            XCTAssertEqual(single(entry.reading).first, entry.wineSurfaces[0], entry.reading)
+            XCTAssertEqual(top(entry.reading), entry.wineSurfaces[0], entry.reading)
+            XCTAssertEqual(Array(single(entry.reading).prefix(entry.wineSurfaces.count)), entry.wineSurfaces, entry.reading)
+        }
+        // 助詞が 1 つ付いた形
+        for (reading, expected) in [
+            ("どうろは", "Douroは"), ("たなは", "Tannatは"), ("とかいは", "Tokajは"), ("なうさは", "Naoussaは"),
+            ("きふきんが", "貴腐菌が"), ("ぶどうかの", "ブドウ科の"), ("さくしには", "佐久市には"), ("かいしで", "甲斐市で"),
+        ] {
+            XCTAssertEqual(top(reading), expected, reading)
+        }
+        // 文の中: 読みが 3 かな以上で日常の文にまず出ない語は一般語より先
+        XCTAssertEqual(multi("どうろをようします").first, "Douroを擁します")
+        XCTAssertEqual(multi("きふきんがついたぶどう").first?.hasPrefix("貴腐菌が"), true)
+        XCTAssertEqual(multi("しんしょうがのびる").first?.hasPrefix("新梢が"), true)
+        // 文の中: 2 かな以下の語(Gin=じん、Dão=だん)と日常語でもある語(発声/帰還/高価)は上げない
+        XCTAssertEqual(multi("にほんじんがおおい").first, "日本人が多い")
+        XCTAssertEqual(multi("かいだんをのぼる").first, "階段を上る")
+        XCTAssertEqual(multi("もんだいがはっせいした").first, "問題が発生した")
+        XCTAssertEqual(multi("こうかがあります").first, "効果があります")
+        // 表に無い読みは変わらない
+        XCTAssertEqual(top("わいん"), "ワイン")
+        XCTAssertEqual(multi("きょうはいいてんきです").first, "今日はいい天気です")
+        // オフに戻すと元の並び
+        converter.setWineTermPriorityEnabled(false)
+        XCTAssertEqual(top("どうろ"), "道路")
+        XCTAssertEqual(multi("どうろがこんでいる").first, "道路が混んでいる")
+    }
+    #endif
 
     // 3804(一括検査 3801 の確認表の [直す]): misc の登録語(耕地/胃腸/ブレ/ランソン)が連文節で安すぎた、数字の直後の 芽/万回、
     // 一例 の登録、同じ読みの日常語が無い固有名の上限、前後の語を手掛かりにした同音語の差し替え、正解は+語。

@@ -103,6 +103,10 @@ final class KanaKanjiConverter {
     // 形式名詞の 目(ひどい目に遭う/痛い目を見る)に ひらがなの め の候補も出す(コンテナー設定 X.14 のサブ項目。3790)。
     // true=目 の次に め の形も出す(組み込みの値)。false=め の形は出さない(applyFormalNounMeKana 参照)
     var formalNounMeKanaCandidatesEnabled: Bool = true
+    // ワイン用語優先(デバッグ版専用。3805、ユーザ指定)。true のとき WineTermPriority の表の語を、同じ読みの一般語より先にする
+    // (どうろ→Douro/ドウロ、たな→Tannat)。変換の本体の初期値は false(テストは今までどおりの並びで動く)。
+    // デバッグ版のキーボードが設定(初期値オン)を読んで true にする。リリース版では表も処理も入らない
+    var wineTermPriorityEnabled: Bool = false
 
     init(store: KanaKanjiStore) {
         self.store = store
@@ -176,6 +180,16 @@ final class KanaKanjiConverter {
                 return
             }
             adjectiveMeKanjiCandidatesEnabled = enabled
+            invalidateCandidateCache()
+        }
+    }
+
+    func setWineTermPriorityEnabled(_ enabled: Bool) {
+        withStateLock {
+            guard wineTermPriorityEnabled != enabled else {
+                return
+            }
+            wineTermPriorityEnabled = enabled
             invalidateCandidateCache()
         }
     }
@@ -561,6 +575,12 @@ final class KanaKanjiConverter {
                 everydayException: withStateLock { kakikaeEverydayException }
             )
         }
+        // ワイン用語優先(デバッグ版専用。3805)。ほかの並べ替え(送り仮名・書きかえ・可能動詞)の後、最後に掛ける
+        #if DEBUG
+        if withStateLock({ wineTermPriorityEnabled }) {
+            finalCandidates = WineTermPriority.ordered(reading: normalizedReading, candidates: finalCandidates)
+        }
+        #endif
 
         if !finalCandidates.isEmpty {
             withStateLock {

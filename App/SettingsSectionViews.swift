@@ -419,6 +419,41 @@ struct ConversionCacheSettingsSection: View {
 
 // キーボード/コンテナー診断の表示・コピー UI。開発ビルド専用(Release には型ごと存在しない。2785)
 #if DEBUG
+// ワイン用語優先(デバッグ版専用。3805、ユーザ指定)。設定の末尾に置き、メニューには出さない。対象の語は表(WineTermPriority)から
+// 全部出す(代表例だけにしない)
+struct WineTermPrioritySettingsSection: View {
+    @AppStorage(WineTermPriority.sharedDefaultsKey, store: ContentView.sharedDefaults)
+    private var isEnabled = true
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("ワイン用語優先(デバッグ版専用)")
+                .font(.headline)
+
+            Toggle("ワイン用語を一般語より先に", isOn: $isEnabled)
+                .toggleStyle(.switch)
+                .onChange(of: isEnabled) { _, _ in
+                    SettingsSyncNotification.postSettingsDidChange()
+                }
+
+            Text("オンのとき、下の読みではワイン用語を同じ読みの一般語より先に出します(一般語の変換は崩れることがあります)。読み全体がその語のときと、助詞が 1 つ付いた形(〜は/〜が/〜を など)で先頭になります。文の中では、下の一覧で『※文の中でも』と付いた語(読みが \(WineTermPriority.inSentenceMinReadingCount) 文字以上で、日常の文にまず出ない語)だけ一般語より先になります。デバッグ版の初期設定はオンで、リリース版にはこの機能はありません。")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+
+            Divider()
+
+            Text("対象の語(全 \(WineTermPriority.entries.count) 読み。読み: ワイン用語(押しのける一般語))")
+                .font(.footnote.weight(.semibold))
+
+            Text(WineTermPriority.descriptionLines.joined(separator: "\n"))
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .textSelection(.enabled)
+        }
+        .settingsCardStyle()
+    }
+}
+
 struct KeyboardDiagnosticsSection: View {
     let isSessionActive: Bool
     let failSafeProfile: String

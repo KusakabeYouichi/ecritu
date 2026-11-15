@@ -18,6 +18,7 @@
 		64FB5EC99542D089A621A371 /* GenitiveReadingTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA01C057F9A1DD796E628B03 /* GenitiveReadingTable.swift */; };
 		0DE7B13833F2917EFD596F15 /* KaCounterVariantPreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3AF807717D293F1CFC3598 /* KaCounterVariantPreference.swift */; };
 		0DE7B13833F2917EFD596F21 /* NumeralStylePreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3AF807717D293F1CFC35A1 /* NumeralStylePreference.swift */; };
+		0DE7B13833F2917EFD597A21 /* WineTermPriority.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3AF807717D293F1CFC36A1 /* WineTermPriority.swift */; };
 		C1E5DB422C47D25880BCC0D8 /* OkuriganaVariantPreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D934D40B6494AEA0275382 /* OkuriganaVariantPreference.swift */; };
 		1B042B69834DF2F3F95B5F5E /* KakikaeTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 066C630D82063E19AB061BB3 /* KakikaeTable.swift */; };
 		364D785880653A6640998D1B /* KakikaePreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = F786A277D18B8FAFAC9D0A82 /* KakikaePreference.swift */; };
@@ -166,6 +167,7 @@
 		1A2DF34C7023D52226A2370B /* GenitiveReadingTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA01C057F9A1DD796E628B03 /* GenitiveReadingTable.swift */; };
 		4A33C802ABCB82C4980C79A3 /* KaCounterVariantPreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3AF807717D293F1CFC3598 /* KaCounterVariantPreference.swift */; };
 		4A33C802ABCB82C4980C79B1 /* NumeralStylePreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3AF807717D293F1CFC35A1 /* NumeralStylePreference.swift */; };
+		4A33C802ABCB82C4980C7AB1 /* WineTermPriority.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3AF807717D293F1CFC36A1 /* WineTermPriority.swift */; };
 		18CDA1EACCF5CD1A23660FEC /* OkuriganaVariantPreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D934D40B6494AEA0275382 /* OkuriganaVariantPreference.swift */; };
 		9865EBB09826029AF6A08953 /* KakikaeTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 066C630D82063E19AB061BB3 /* KakikaeTable.swift */; };
 		389BC5A7039D69E23021D5CE /* KakikaePreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = F786A277D18B8FAFAC9D0A82 /* KakikaePreference.swift */; };
@@ -204,6 +206,7 @@
 		4A7582E34500715CC08E6A98 /* GenitiveReadingTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA01C057F9A1DD796E628B03 /* GenitiveReadingTable.swift */; };
 		CDF448E37D898133E60724A8 /* KaCounterVariantPreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3AF807717D293F1CFC3598 /* KaCounterVariantPreference.swift */; };
 		CDF448E37D898133E60724B1 /* NumeralStylePreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3AF807717D293F1CFC35A1 /* NumeralStylePreference.swift */; };
+		CDF448E37D898133E60725B1 /* WineTermPriority.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3AF807717D293F1CFC36A1 /* WineTermPriority.swift */; };
 		5912EF241EFFCF00FE3C59AE /* OkuriganaVariantPreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D934D40B6494AEA0275382 /* OkuriganaVariantPreference.swift */; };
 		051FCD3A6136F426F1108795 /* KakikaeTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 066C630D82063E19AB061BB3 /* KakikaeTable.swift */; };
 		714E1DB43EC46C87D0EDC265 /* KakikaePreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = F786A277D18B8FAFAC9D0A82 /* KakikaePreference.swift */; };
@@ -288,6 +291,7 @@
 		CA01C057F9A1DD796E628B03 /* GenitiveReadingTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenitiveReadingTable.swift; sourceTree = "<group>"; };
 		3C3AF807717D293F1CFC3598 /* KaCounterVariantPreference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaCounterVariantPreference.swift; sourceTree = "<group>"; };
 		3C3AF807717D293F1CFC35A1 /* NumeralStylePreference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumeralStylePreference.swift; sourceTree = "<group>"; };
+		3C3AF807717D293F1CFC36A1 /* WineTermPriority.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WineTermPriority.swift; sourceTree = "<group>"; };
 		81D934D40B6494AEA0275382 /* OkuriganaVariantPreference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OkuriganaVariantPreference.swift; sourceTree = "<group>"; };
 		066C630D82063E19AB061BB3 /* KakikaeTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KakikaeTable.swift; sourceTree = "<group>"; };
 		F786A277D18B8FAFAC9D0A82 /* KakikaePreference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KakikaePreference.swift; sourceTree = "<group>"; };
@@ -478,6 +482,7 @@
 				CA01C057F9A1DD796E628B03 /* GenitiveReadingTable.swift */,
 				3C3AF807717D293F1CFC3598 /* KaCounterVariantPreference.swift */,
 				3C3AF807717D293F1CFC35A1 /* NumeralStylePreference.swift */,
+				3C3AF807717D293F1CFC36A1 /* WineTermPriority.swift */,
 				81D934D40B6494AEA0275382 /* OkuriganaVariantPreference.swift */,
 				066C630D82063E19AB061BB3 /* KakikaeTable.swift */,
 				F786A277D18B8FAFAC9D0A82 /* KakikaePreference.swift */,
@@ -909,6 +914,7 @@
 				64FB5EC99542D089A621A371 /* GenitiveReadingTable.swift in Sources */,
 				0DE7B13833F2917EFD596F15 /* KaCounterVariantPreference.swift in Sources */,
 				0DE7B13833F2917EFD596F21 /* NumeralStylePreference.swift in Sources */,
+				0DE7B13833F2917EFD597A21 /* WineTermPriority.swift in Sources */,
 				C1E5DB422C47D25880BCC0D8 /* OkuriganaVariantPreference.swift in Sources */,
 				1B042B69834DF2F3F95B5F5E /* KakikaeTable.swift in Sources */,
 				364D785880653A6640998D1B /* KakikaePreference.swift in Sources */,
@@ -1003,6 +1009,7 @@
 				4A7582E34500715CC08E6A98 /* GenitiveReadingTable.swift in Sources */,
 				CDF448E37D898133E60724A8 /* KaCounterVariantPreference.swift in Sources */,
 				CDF448E37D898133E60724B1 /* NumeralStylePreference.swift in Sources */,
+				CDF448E37D898133E60725B1 /* WineTermPriority.swift in Sources */,
 				5912EF241EFFCF00FE3C59AE /* OkuriganaVariantPreference.swift in Sources */,
 				051FCD3A6136F426F1108795 /* KakikaeTable.swift in Sources */,
 				714E1DB43EC46C87D0EDC265 /* KakikaePreference.swift in Sources */,
@@ -1037,6 +1044,7 @@
 				1A2DF34C7023D52226A2370B /* GenitiveReadingTable.swift in Sources */,
 				4A33C802ABCB82C4980C79A3 /* KaCounterVariantPreference.swift in Sources */,
 				4A33C802ABCB82C4980C79B1 /* NumeralStylePreference.swift in Sources */,
+				4A33C802ABCB82C4980C7AB1 /* WineTermPriority.swift in Sources */,
 				18CDA1EACCF5CD1A23660FEC /* OkuriganaVariantPreference.swift in Sources */,
 				9865EBB09826029AF6A08953 /* KakikaeTable.swift in Sources */,
 				389BC5A7039D69E23021D5CE /* KakikaePreference.swift in Sources */,
