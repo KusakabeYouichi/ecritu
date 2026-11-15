@@ -4664,6 +4664,10 @@ extension KanaKanjiConverter {
     // 実績の無い組も禁止にはならず、し はどの語の後ろでも安い。3810、ユーザ指摘)。対象は、漢字・カタカナで終わる 2 字以上・
     // 読み 3 かな以上の辞書の名詞だけ。1 字の語幹(化し/達し/視し)、かなで終わる語、活用する語、助詞の後ろはそのまま
     static let multiClauseMidSentenceShiAfterNonSuruNounPenalty = 4000
+    // 副助詞の しか は否定と組になる(〜しかいない/しかない/しかなかった)。いない の値段が高く(7200)、友達+しか+いない が
+    // 友達+視界+ない に負けていた(私しかいない/先生しかいない も同じ。3811、ユーザ指摘)。かなで終わる否定の述語だけに加点する
+    static let multiClauseShikaThenNegativeBonus = 6500
+    static let multiClauseNegativeTailsAfterShika: [String] = ["ない", "なかった", "ません", "ませんでした", "なく", "なくて"]
     // 動詞て形(活用派生)直後の いって は補助動詞連結「〜ていく」で 行って が正書。
     // 辞書の いって は名詞 一手(wc5771)だけで、行って/言って は派生OOV(7200)のため
     // 連れて一手/連れて言って が上位に出ていた(2628)。行って をクランプで勝たせ、
@@ -5157,6 +5161,7 @@ extension KanaKanjiConverter {
         static let ご = MultiClauseSymbols.id("ご")
         static let ごと = MultiClauseSymbols.id("ごと")
         static let さ = MultiClauseSymbols.id("さ")
+        static let しか = MultiClauseSymbols.id("しか")
         static let さん = MultiClauseSymbols.id("さん")
         static let し = MultiClauseSymbols.id("し")
         static let した = MultiClauseSymbols.id("した")

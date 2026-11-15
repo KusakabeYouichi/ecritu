@@ -6161,6 +6161,12 @@ extension KanaKanjiConverter {
                             !store.isSuruNoun(reading: prevNode.reading, candidate: prevNode.surface) {
                             cost += Self.multiClauseMidSentenceShiAfterNonSuruNounPenalty
                         }
+                        // 副助詞 しか+否定の述語(定数コメント参照。3811、ユーザ指摘)
+                        if prevNode.readingID == SID.しか, prevNode.surfaceID == SID.しか,
+                            node.surface.last.map({ ("ぁ"..."ゖ").contains($0) }) ?? false,
+                            Self.multiClauseNegativeTailsAfterShika.contains(where: { node.reading.hasSuffix($0) }) {
+                            cost -= Self.multiClauseShikaThenNegativeBonus
+                        }
                         // 述語(活用派生・辞書形)直後の形式名詞・副助詞はかな表記が正書
                         // (行ったとき/貸し出すだけ 等)。漢字表記に減点。
                         // 連体詞(こんな/そんな/あんな/どんな)直後も同じ(そんなことしない/こんなときは)。

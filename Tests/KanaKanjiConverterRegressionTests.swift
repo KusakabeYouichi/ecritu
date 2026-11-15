@@ -30468,6 +30468,14 @@ extension KanaKanjiConverterRegressionTests {
                 merged, reading: r, precedingCharacter: digit, tailConversion: { self.converter.counterTailConversion($0) },
                 isCommonWord: { self.converter.isCommonWordForCounterBlock($0) })
         }
+        // 副助詞 しか+否定(友達+視界+ない。3811)。視界/司会 の普通の文は崩さない
+        XCTAssertEqual(top("ともだちしかいない"), "友達しかいない")
+        XCTAssertEqual(top("わたししかいない"), "私しかいない")
+        XCTAssertEqual(top("せんせいしかいない"), "先生しかいない")
+        XCTAssertEqual(top("みずしかのまなかった"), "水しか飲まなかった")
+        XCTAssertEqual(top("しかいがひろい"), "視界が広い")
+        XCTAssertEqual(top("しかいをつとめる"), "司会を務める")
+        XCTAssertEqual(top("しかいしゃがいない"), "司会者がいない")
         // に+入り(はいり)。気に入り はそのまま
         XCTAssertEqual(top("たてものにはいり"), "建物に入り")
         XCTAssertEqual(top("へやにはいり"), "部屋に入り")
