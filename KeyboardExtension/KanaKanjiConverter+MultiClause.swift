@@ -4002,6 +4002,16 @@ extension KanaKanjiConverter {
             // (Gin=じん、Dão=だん)と日常語でもある語(帰還/発声)は表の側で外してある(普通の文が軒並み崩れる)
             if let wineTermPrioritySurfaces, wineTermPrioritySurfaces[reading]?.contains(surface) ?? false {
                 base = min(base, WineTermPriority.inSentenceWordCostCap)
+            } else if let wineTermPrioritySurfaces, isDictWord, !isKanaIdentity, reading.count >= 4 {
+                // 表の語で始まるもっと長い語(酒石酸)も同じ上限に。短い語(酒石)だけ安いと、長い語を割った経路が勝つ
+                // (しゅせきさんがおおい が 酒石+3+… だった。3809)
+                for prefixCount in WineTermPriority.inSentenceMinReadingCount..<reading.count {
+                    if let heads = wineTermPrioritySurfaces[String(reading.prefix(prefixCount))],
+                        heads.contains(where: { surface.count > $0.count && surface.hasPrefix($0) }) {
+                        base = min(base, WineTermPriority.inSentenceWordCostCap)
+                        break
+                    }
+                }
             }
             #endif
             // seed 先頭語のコスト救済(2662→2677): seed がその読みの先頭に指定した表層が、
@@ -5518,6 +5528,10 @@ extension KanaKanjiConverter {
                         } else if digitPrefixed, Self.digitContextPreferredSurfacesByReading[node.reading]?.contains(node.surface) ?? false {
                             cost -= Self.multiClauseDigitContextCounterBonus
                         }
+                        // 数字の直後でない文頭の 台(定数コメント参照。3809)
+                        if !digitPrefixed, node.reading.count == 2, node.end < n, node.surface == "台", node.reading == "だい" {
+                            cost += Self.multiClauseDaiCounterWithoutNumberPenalty
+                        }
                         // 列挙の といった(定数コメント参照。2878)。文頭は直前が述語になり得ないので無条件
                         if Self.isEnumerationToIttaKanaNode(surface: node.surface, reading: node.reading),
                             !Self.isToIttaFollowedByPredicateTail(chars: chars, from: node.end, n: n) {
@@ -6845,6 +6859,64 @@ extension KanaKanjiConverter {
                         // 日常語でもあるカタカナ語(ニンニク。にんにくや は かな が先の指定 3570)は対象外
                         (unigramCosts[prevNode.surface] ?? Int.max) >= Self.multiClauseSupplementalPairHeadMinUnigram {
                         cost -= Self.multiClauseLoanwordThenFinalYaBonus
+                    }
+                    #if DEBUG
+                    // ワイン用語優先: サ変名詞+は/が/も の後ろで、同じ読みにサ変名詞の一般語があるとき(補糖は+きんし→禁止)は、
+                    // サ変でないワイン用語(菌糸)の値段の上限を打ち消す(補糖は菌糸 だった。行為+は+禁止/許可 の型。3809、ユーザ指摘)
+                    if let wineTermPrioritySurfaces, prevNode.start > 0, prevNode.isKanaIdentity,
+                        prevNode.surfaceID == SID.は || prevNode.surface == "が" || prevNode.surface == "も",
+                        wineTermPrioritySurfaces[node.reading]?.contains(node.surface) ?? false,
+                        !store.isSuruNoun(reading: node.reading, candidate: node.surface), store.hasSuruNoun(reading: node.reading) {
+                        let prevPrev = nodes[backPointer[prevIdx]]
+                        if store.isSuruNoun(reading: prevPrev.reading, candidate: prevPrev.surface) {
+                            cost += Self.multiClauseWineTermAfterSuruNounTopicPenalty
+                        }
+                    }
+                    // ワイン用語優先: 上限を掛けた語(酒石)の直後の敬称 さん は無い(ワイン用語は人ではない)。正解は酒石酸です が
+                    // 酒石+さん+です だった(酒石酸 の 1 語より 上限 3000 の 酒石+さん が安かった。3809、ユーザ指摘)
+                    if let wineTermPrioritySurfaces, node.isKanaIdentity, node.reading.count == 2, node.surface == "さん",
+                        wineTermPrioritySurfaces[prevNode.reading]?.contains(prevNode.surface) ?? false {
+                        cost += Self.multiClauseWineTermAfterSuruNounTopicPenalty
+                    }
+                    #endif
+                    // 形容詞の連用形+漢字の活用形の動詞(定数コメント参照。3809)
+                    // 前の語の表記(速く/早く、凄く/すごく)では差を付けない(かなで終わる く なら同じ加点。前の語の選び方を動かさない)。
+                    // 〜くなる(優しくなれて/見やすくなった)は かな の なる が正しいので、な で始まる語は対象外
+                    if node.isInflectionDerived, !node.isKanaIdentity, prevNode.reading.count >= 3, prevNode.surface.hasSuffix("く"),
+                        node.reading.first != "な", !(node.reading.last.map { $0 == "い" } ?? false) {
+                        cost -= Self.multiClauseAdjectiveKuThenVerbBonus
+                    }
+                    // 名詞・が/は の後ろの 減酸、減酸+こく…/ち…(定数コメント参照。3809)
+                    if node.reading.count == 4, node.surface == "減酸",
+                        !prevNode.isKanaIdentity || prevNode.surface == "が" || prevNode.surfaceID == SID.は {
+                        cost += Self.multiClauseGensanAfterNounPenalty
+                    }
+                    if prevNode.reading.count == 4, prevNode.surface == "減酸",
+                        node.reading.hasPrefix("こく") || node.reading.hasPrefix("ち") {
+                        cost += Self.multiClauseGensanSplitPenalty
+                    }
+                    if node.reading.count == 2 {
+                        // を+下(定数コメント参照。3809)
+                        if prevNode.surfaceID == SID.を, node.surface == "下", node.reading == "した",
+                            node.end == n || !Self.multiClauseWoThenShitaNounAllowedNextCharacters.contains(chars[node.end]) {
+                            cost += Self.multiClauseWoThenShitaNounPenalty
+                        }
+                        // 数でない語の直後の 台(定数コメント参照。3809)
+                        if node.surface == "台", node.reading == "だい",
+                            !(prevNode.surface.last.map { Self.multiClauseNumberTailCharacters.contains($0) } ?? false) {
+                            cost += Self.multiClauseDaiCounterWithoutNumberPenalty
+                        }
+                    }
+                    // 数字の直後の 大+名詞(定数コメント参照。3809)
+                    // 数字の直後の 助数詞+以内/以上…(定数コメント参照。3809)
+                    if digitPrefixed, prevNode.start == 0, node.surface.count == 2, Self.multiClauseRangeWordsAfterCounter.contains(node.surface),
+                        Self.digitBoostCounterSurfaces(for: prevNode.reading)?.contains(prevNode.surface) ?? false {
+                        cost -= Self.multiClauseDigitCounterThenRangeWordBonus
+                    }
+                    if digitPrefixed, prevNode.start == 0, prevNode.reading.count == 2, prevNode.surface == "大", prevNode.reading == "だい",
+                        node.reading.count >= 2, node.surface.count >= 2, !node.isKanaIdentity, !node.isInflectionDerived, !node.isDictionaryFormPredicate,
+                        !Self.multiClauseDaiCounterFollowingWords.contains(node.surface) {
+                        cost -= Self.multiClauseDigitThenDaiPrefixNounBonus
                     }
                     // サ変の連用形+です(定数コメント参照。3806)
                     if node.surfaceID == SID.です, prevNode.isInflectionDerived, prevNode.surface.count >= 3,

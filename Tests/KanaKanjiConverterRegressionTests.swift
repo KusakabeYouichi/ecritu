@@ -28618,7 +28618,7 @@ extension KanaKanjiConverterRegressionTests {
                 var digits = ""
                 var kana = ""
                 for ch in reading {
-                    if ch.isASCII && (ch.isNumber || ((ch == "." || ch == ",") && kana.isEmpty && !digits.isEmpty)) {
+                    if ch.isASCII && (ch.isNumber || ((ch == "." || ch == "," || ch == "/") && kana.isEmpty && !digits.isEmpty)) {
                         if !kana.isEmpty { pieces.append((digits, kana)); digits = ""; kana = "" }
                         digits.append(ch)
                     } else {
@@ -30371,6 +30371,87 @@ extension KanaKanjiConverterRegressionTests {
 
     // 3806(一括検査 3801 の数字まわり、ユーザ指定): 数字の直後の 分の(3分の1 が 3文の1)、原種(3元首)、種(27首の薬草)、
     // か村(17ヶ村)、カタカナ語(14社とー/1度リンク)、年にかけて。樹齢(寿齢)、食糧(食料 より先。食料品 はそのまま)、〜に富み(富)
+    // 3809(一括検査 3807 の確認ページからの指摘、ユーザ指定): 形容詞の連用形+動詞(薄く切って)、色をした、数の直後の を占め・
+    // 大+名詞・気圧・度以内、数でない語の直後の 台、受け身の 施行、熟成、名称に改称
+    func testRegressionAuditPageReports3809() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func single(_ r: String) -> [String] { converter.candidates(for: r, limit: 12, systemCandidateMode: .surface) }
+        func multi(_ r: String, after digit: Character? = nil) -> [String] {
+            converter.multiClauseCandidates(for: r, systemCandidateMode: .surface, precedingCharacter: digit)
+        }
+        func boosted(_ r: String, after digit: Character) -> [String] {
+            var merged = r.count >= 4 ? multi(r, after: digit) : []
+            for candidate in single(r) where !merged.contains(candidate) { merged.append(candidate) }
+            return KanaKanjiConverter.digitContextCounterBoostedCandidates(
+                merged, reading: r, precedingCharacter: digit, tailConversion: { self.converter.counterTailConversion($0) },
+                isCommonWord: { self.converter.isCommonWordForCounterBlock($0) })
+        }
+        // 形容詞の連用形+漢字の活用形の動詞
+        XCTAssertEqual(multi("うすくきってぜんさいにするか").first, "薄く切って前菜にするか")
+        XCTAssertEqual(multi("こまかくきってまぜる").first, "細かく切って混ぜる")
+        XCTAssertEqual(multi("あたらしくきってをかう").first, "新しく切手を買う")
+        XCTAssertEqual(multi("はやくいえにかえる").first, "早く家に帰る")
+        // を+した は する の過去形。を下に/下から は名詞のまま
+        XCTAssertEqual(multi("ほそくてしろっぽいいろをしたそーせーじ").first, "細くて白っぽい色をしたソーセージ")
+        XCTAssertEqual(multi("あかいいろをしたはな").first, "赤い色をした花")
+        XCTAssertEqual(multi("めをしたにむける").first, "目を下に向ける")
+        XCTAssertEqual(multi("つくえのしたにある").first, "机の下にある")
+        // 数の直後の を占め
+        XCTAssertEqual(boosted("わりをしめています", after: "2").first, "割を占めています")
+        XCTAssertEqual(boosted("わりをしめる", after: "8").first, "割を占める")
+        XCTAssertEqual(boosted("わりをしめ", after: "2").first, "割を占め")
+        XCTAssertEqual(boosted("をしめ", after: "2").first, "を占め")
+        XCTAssertEqual(boosted("をしめます", after: "3").first, "を占めます")
+        // 数の直後の 大+名詞。活用する語・助詞・以上 の前は 台
+        XCTAssertEqual(boosted("だいういすきーのなかで", after: "5").first, "大ウイスキーの中で")
+        XCTAssertEqual(boosted("だいきふわいんは", after: "3").first, "大貴腐ワインは")
+        XCTAssertEqual(boosted("だいひんしゅ", after: "3").first, "大品種")
+        XCTAssertEqual(boosted("だいさんち", after: "4").first, "大産地")
+        XCTAssertEqual(boosted("だいうれた", after: "3").first, "台売れた")
+        XCTAssertEqual(boosted("だいもっている", after: "2").first, "台持っている")
+        XCTAssertEqual(boosted("だいのくるま", after: "3").first, "台の車")
+        XCTAssertEqual(boosted("だいいじょう", after: "3").first, "台以上")
+        XCTAssertEqual(boosted("だい", after: "3").first, "台")
+        // 数でない語の直後の だい は 第 が先(後ろに 2位 を打つ)。代 の語はそのまま
+        XCTAssertEqual(multi("こくないさいばいめんせきだい").first, "国内栽培面積第")
+        XCTAssertEqual(single("がそりんだい").first, "ガソリン代")
+        XCTAssertEqual(multi("てんぼうだいにのぼる").first?.hasPrefix("展望台に"), true)
+        // 気圧(機+圧以上 にしない)、度以内(土居+ない にしない)
+        XCTAssertEqual(boosted("きあついじょう", after: "2").first, "気圧以上")
+        XCTAssertEqual(boosted("きあつ", after: "3").first, "気圧")
+        XCTAssertEqual(boosted("どいないとなる", after: "9").first, "度以内となる")
+        XCTAssertEqual(boosted("どいない", after: "5").first, "度以内")
+        // 受け身の 施行、熟成、名称に改称
+        XCTAssertEqual(multi("しこうされたのは").first, "施行されたのは")
+        XCTAssertEqual(multi("ほうりつがしこうされた").first, "法律が施行された")
+        XCTAssertEqual(single("しこうする").first, "思考する")
+        XCTAssertEqual(boosted("ねんじゅくせいは", after: "6").first, "年熟成は")
+        XCTAssertEqual(multi("じゅくせいは").first, "熟成は")
+        XCTAssertEqual(single("じゅくせい").contains("塾生"), true)
+        XCTAssertEqual(multi("げんめいしょうにかいしょうしました").first, "現名称に改称しました")
+        XCTAssertEqual(multi("ふまんをかいしょうした").first, "不満を解消した")
+        XCTAssertEqual(multi("もんだいはかいしょうしました").first, "問題は解消しました")
+        // 名詞・が の後ろは 原産、文頭・を/の の後ろは 減酸。原産国 を 減酸+コク に割らない
+        XCTAssertEqual(multi("ふらんすがげんさんで").first, "フランスが原産で")
+        XCTAssertEqual(multi("もるどゔぁこうこくげんさんで").first, "モルドヴァ公国原産で")
+        XCTAssertEqual(multi("うーぞのげんさんこくをえらんでください").first?.hasSuffix("の原産国を選んでください"), true)
+        XCTAssertEqual(multi("げんさんをおこなう").first, "減酸を行なう")
+        XCTAssertEqual(multi("わいんのげんさんをおこなう").first, "ワインの減酸を行なう")
+        // ぶどう+果房、や+房(8房/八房 にしない)、酸が(3芽 にしない)、北杜市
+        XCTAssertEqual(multi("しゅうかくしたぶどうかぼうを").first, "収穫したぶどう果房を")
+        XCTAssertEqual(multi("しんしょうやふさのかんりがちょくせんてきになり").first?.hasSuffix("や房の管理が直線的になり"), true)
+        // 形容詞の連用形の加点は、前の語の表記と 〜くなる を動かさない
+        XCTAssertEqual(multi("やさしくなれて").first, "優しくなれて")
+        XCTAssertEqual(multi("みやすくなった").first, "見やすくなった")
+        XCTAssertEqual(multi("すごくやすかった").first, "すごく安かった")
+        XCTAssertEqual(multi("はやくねとけ").first, "早く寝とけ")
+        XCTAssertEqual(multi("かじつこうやさんがしっかりとしており").first, "果実香や酸がしっかりとしており")
+        XCTAssertEqual(multi("さんがたかい").first, "酸が高い")
+        XCTAssertEqual(Array(single("ほくとし").prefix(2)), ["北杜市", "北斗市"])
+        XCTAssertEqual(multi("ほくとしにある").first, "北杜市にある")
+    }
+
     func testRegressionDigitContextAndGeneralWords3806() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
@@ -30501,6 +30582,17 @@ extension KanaKanjiConverterRegressionTests {
             XCTAssertEqual(single(reading).first, expected, reading)
         }
         XCTAssertEqual(top("かいしで"), "甲斐市で")
+        // サ変名詞+は の後ろは、サ変名詞の一般語(禁止)が先(補糖は菌糸 だった)。そうでなければ 菌糸 のまま(3809、ユーザ指摘)
+        XCTAssertEqual(multi("ほとうはきんし").first, "補糖は禁止")
+        XCTAssertEqual(multi("ほとうはきんしされています").first, "補糖は禁止されています")
+        XCTAssertEqual(multi("きんしがのびる").first, "菌糸が伸びる")
+        XCTAssertEqual(multi("かびのきんしは").first, "カビの菌糸は")
+        // 上限を掛けた語+さん にしない(正解は酒石さんです だった。3809、ユーザ指摘)
+        XCTAssertEqual(multi("せいかいはしゅせきさんです").first, "正解は酒石酸です")
+        XCTAssertEqual(multi("しゅせきさんがおおい").first, "酒石酸が多い")
+        XCTAssertEqual(multi("げんさんしょりをする").first, "減酸処理をする")
+        XCTAssertEqual(multi("しんしょうやふさのかんりがちょくせんてきになり").first, "新梢や房の管理が直線的になり")
+        XCTAssertEqual(multi("とぅあがわはどうろがわのしりゅう").first, "トゥア川はドウロ川の支流")
         // 表に無い読みは変わらない
         XCTAssertEqual(top("わいん"), "ワイン")
         XCTAssertEqual(multi("きょうはいいてんきです").first, "今日はいい天気です")

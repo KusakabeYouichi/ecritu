@@ -242,7 +242,9 @@ extension KanaKanjiConverter {
     // 漢数字(一桁)を先、算用(1桁)を次に出す。いちけた 等の漢語数詞側は従来の算用複合(japaneseNumberReadingValue)が担う
     static let arabicWagoNumeralReadings: [(reading: String, value: Int)] = [
         ("ここの", 9), ("なな", 7), ("ひと", 1), ("ふた", 2), ("いつ", 5), ("とお", 10),
-        ("み", 3), ("よ", 4), ("む", 6), ("や", 8)
+        // や(8)は載せない: 助詞の や と同じ読みで、新梢や房の管理 が 新梢8房の管理 だった(や+ふさ=8房。3809、ユーザ報告)。
+        // 今は や で数えることはまず無い(八つ/八重 は 1 語として辞書にある)
+        ("み", 3), ("よ", 4), ("む", 6)
     ]
     static let arabicWagoCounterSurfacesByReading: [String: String] = [
         "けた": "桁", "くみ": "組", "つぶ": "粒", "きれ": "切れ", "ふくろ": "袋", "はこ": "箱", "たば": "束",
@@ -848,6 +850,15 @@ extension KanaKanjiConverter {
         // (一括検査 3801 の確認表、ユーザ指定 3806)
         "ぶんの": ["分の"],
         "げんしゅ": ["原種"],
+        // 2+きあつ(いじょう)は 気圧(機+あつ… の 2機圧以上 だった。機圧 という語は無い。3809、ユーザ指摘)
+        "きあつ": ["気圧"],
+        // 数の直後の を+しめ は 占め(約2割を占めています/3分の2を占め が 閉め/染め/しめ だった。数量を 閉める/締める はまず無い。
+        // 3809、ユーザ指摘)。2割を… のように助数詞が前に付く読みは、助数詞ごと変換した形を使う(下の合成)
+        "をしめ": ["を占め"],
+        "をしめる": ["を占める"],
+        "をしめて": ["を占めて"],
+        "をしめた": ["を占めた"],
+        "をしめます": ["を占めます"],
         // 3+つのうち は つのうち、つの内 の順(連文節は つの家 を 2 番めに置く。ユーザ指定 3640)
         "つのうち": ["つのうち", "つの内"],
         // 数量+後(1年後/2週間後/3か月後/5日後/2時間後/10分後/30秒後。ユーザ報告 3589)。1ねんご が 年呉、2しゅうかんご が
@@ -1123,6 +1134,16 @@ extension KanaKanjiConverter {
                 // (2) 先頭が漢字で始まる別の語で、末尾が 3 かな以上の付属語でないかな(あついじょう/ていされています)なら、
                 //     かなのままの合成(機あついじょう/人ていされています)は作らない
                 let skipsRawKanaComposition = topIsOtherWord && !tailIsBound && tail.count >= 3
+                // 数字の直後の 大+名詞(3大貴腐ワイン)は連文節が 大 で始まる形を先頭にしている。台+末尾 の合成をその前に出さない(3809)
+                if counterReading == "だい", candidates.first?.hasPrefix("大") ?? false {
+                    break
+                }
+                // 数字の直後に先頭へ置く語(気圧)で始まる読みは、その語を割る合成(機+圧以上)を作らない(3809)
+                if digitContextPreferredSurfacesByReading.contains(where: { key, preferred in
+                    key.count > counterReading.count && reading.hasPrefix(key) && preferred.contains(where: { candidates.first?.hasPrefix($0) ?? false })
+                }) {
+                    break
+                }
                 // 末尾が小書きのかな・長音で始まる切り方は語の途中(ねんじ+ゅくせい→年次ゅくせい。3806)
                 if let head = tail.first, "ぁぃぅぇぉゃゅょゎっー".contains(head) {
                     continue
@@ -1157,9 +1178,22 @@ extension KanaKanjiConverter {
                     let hasDictionaryCompoundWithSurface = candidates.contains {
                         $0.count > surface.count && $0.hasPrefix(surface) && KanaKanjiConverter.isAllKanjiSurface($0)
                     }
+                    // 助詞で始まる末尾は、まず助数詞ごと変換して助数詞の字で始まる形を使う(わり+をしめる→割を占める。末尾だけを
+                    // 変換すると 割 が手掛かりにならず を閉める/を染め だった。3809、ユーザ指摘)。助数詞の字で始まらなければ今までどおり
+                    let contextualTail: String? = {
+                        guard particleLedTail, let whole = tailConversion?(counterReading + tail),
+                            whole.hasPrefix(surface), whole.dropFirst(surface.count).first == tail.first else { return nil }
+                        let converted = String(whole.dropFirst(surface.count))
+                        // 数量+を+しめ… は 占め(2割を染め/8割を閉める だった。上の表の をしめ と同じ理由)
+                        if tail.hasPrefix("をしめ"), converted.count >= 3, converted.hasPrefix("を"),
+                            converted.dropFirst(2).first == "め", "閉染締絞〆しシ".contains(converted.dropFirst().first ?? " ") {
+                            return "を占" + converted.dropFirst(2)
+                        }
+                        return converted
+                    }()
                     if !hasDictionaryCompoundWithSurface,
                         !counterPromotableKanaTails.contains(tail),
-                        let convertedTail = tailConversion?(tail),
+                        let convertedTail = contextualTail ?? tailConversion?(tail),
                         convertedTail != tail,
                         keepsLeadingParticle(convertedTail),
                         KanaKanjiConverter.isAllKanjiSurface(convertedTail)
