@@ -1309,7 +1309,8 @@
 	<dict><key>phrase</key><string>クロアチアン・アップランド</string><key>shortcut</key><string>くろあちあんあっぷらんど</string></dict>
 	<dict><key>phrase</key><string>クロアチアン・ドナウ</string><key>shortcut</key><string>くろあちあんどなう</string></dict>
 	<dict><key>phrase</key><string>スラヴォニア イ フルヴァツコ ポドゥナヴィエ</string><key>shortcut</key><string>すらぼにあいふるばつこぽどぅなびえ</string></dict>
-	<dict><key>phrase</key><string>スレディシュニャ ブレゴヴィタ フルヴァツカ</string><key>shortcut</key><string>すれでぃしゅにゃぶれごびたふるばつか</string></dict>
+	<dict><key>phrase</key><string>スレディシュニャ・ブレゴヴィタ・フルヴァツカ</string><key>shortcut</key><string>すれでぃしゅにゃぶれごゔぃたふるゔぁっか</string></dict>
+	<dict><key>phrase</key><string>ブレゴヴィタ</string><key>shortcut</key><string>ぶれごゔぃた</string></dict>
 	<dict><key>phrase</key><string>フルヴァツカ・イストラ</string><key>shortcut</key><string>ふるゔぁつかいすとら</string></dict>
 	<dict><key>phrase</key><string>フルヴァツコ・ポドゥナヴィエ</string><key>shortcut</key><string>ふるゔぁつこぽどぅなゔぃえ</string></dict>
 	<dict><key>phrase</key><string>フルヴァツカ・イストラ イ クヴァルネル</string><key>shortcut</key><string>ふるばつかいすとらいくばるねる</string></dict>
