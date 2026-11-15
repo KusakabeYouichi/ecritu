@@ -21,9 +21,9 @@ SPLIT_CHARS = set("。、「」『』（）()〈〉《》【】〔〕［］[]：
 LATIN_JOINERS = set(" -.'’")
 LATIN = re.compile(r"[A-Za-zÀ-ÖØ-öø-ÿŒœ]")
 # 数字では切らない(3800、ユーザ指定)。3か国 のような断片も検査に入れる。数字の間の小数点・桁区切りも切らない
-JA = re.compile(r"^[ぁ-ゖァ-ヺー々一-鿿・A-Za-zÀ-ÖØ-öø-ÿŒœ0-9 '’.,\-]+$")
+JA = re.compile(r"^[ぁ-ゖァ-ヺー々一-鿿・A-Za-zÀ-ÖØ-öø-ÿŒœ0-9 '’.,/\-]+$")
 DIGIT = re.compile(r"[0-9]")
-DIGITS_ONLY = re.compile(r"^[0-9.,]+$")
+DIGITS_ONLY = re.compile(r"^[0-9.,/]+$")
 DIGITS_WITH_UNIT = re.compile(r"^([0-9.,]+)([十百千万億兆]+)$")
 NUMERAL_UNIT_READINGS = {"十": "じゅう", "百": "ひゃく", "千": "せん", "万": "まん", "億": "おく", "兆": "ちょう"}
 HAS_TARGET = re.compile(r"[一-鿿ァ-ヺA-Za-zÀ-ÖØ-öø-ÿŒœ]")
@@ -47,7 +47,8 @@ def split_fragments(sent):
             if c in LATIN_JOINERS and prev_latin and next_latin:
                 current.append(c)
                 continue
-            if c in ".," and i > 0 and i + 1 < len(sent) and DIGIT.match(sent[i - 1]) and DIGIT.match(sent[i + 1]):
+            # 数字に挟まれた . , と、分数の /(1/3。ユーザ指定 3809)では切らない
+            if c in ".,/" and i > 0 and i + 1 < len(sent) and DIGIT.match(sent[i - 1]) and DIGIT.match(sent[i + 1]):
                 current.append(c)
                 continue
             out.append("".join(current))
@@ -171,7 +172,9 @@ def main():
                     morphemes.append((m.surface(), None))
                     continue
                 # 数字はそのまま読みに置く(キーボードでも数字を打ってから読みを続ける)
-                if DIGITS_ONLY.match(m.surface()):
+                # 分数の /(1/3)は数字の一部としてそのまま置く(切り出しで 数字/数字 のときだけ残っている。3809、ユーザ指定)
+                if DIGITS_ONLY.match(m.surface()) and (DIGIT.search(m.surface())
+                                                       or (morphemes and DIGITS_ONLY.match(morphemes[-1][0]))):
                     morphemes.append((m.surface(), m.surface()))
                     continue
                 # 数字+数の単位(200万、1,000万)は Sudachi が 1 語にして数字を 1 桁ずつ読む(にれいれいまん)。数字はそのまま、
