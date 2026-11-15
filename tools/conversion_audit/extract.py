@@ -24,6 +24,8 @@ LATIN = re.compile(r"[A-Za-zÀ-ÖØ-öø-ÿŒœ]")
 JA = re.compile(r"^[ぁ-ゖァ-ヺー々一-鿿・A-Za-zÀ-ÖØ-öø-ÿŒœ0-9 '’.,\-]+$")
 DIGIT = re.compile(r"[0-9]")
 DIGITS_ONLY = re.compile(r"^[0-9.,]+$")
+DIGITS_WITH_UNIT = re.compile(r"^([0-9.,]+)([十百千万億兆]+)$")
+NUMERAL_UNIT_READINGS = {"十": "じゅう", "百": "ひゃく", "千": "せん", "万": "まん", "億": "おく", "兆": "ちょう"}
 HAS_TARGET = re.compile(r"[一-鿿ァ-ヺA-Za-zÀ-ÖØ-öø-ÿŒœ]")
 
 
@@ -171,6 +173,12 @@ def main():
                 # 数字はそのまま読みに置く(キーボードでも数字を打ってから読みを続ける)
                 if DIGITS_ONLY.match(m.surface()):
                     morphemes.append((m.surface(), m.surface()))
+                    continue
+                # 数字+数の単位(200万、1,000万)は Sudachi が 1 語にして数字を 1 桁ずつ読む(にれいれいまん)。数字はそのまま、
+                # 単位だけ読みにする(200まん。3804、ユーザ指摘)
+                unit = DIGITS_WITH_UNIT.match(m.surface())
+                if unit:
+                    morphemes.append((m.surface(), unit.group(1) + "".join(NUMERAL_UNIT_READINGS[c] for c in unit.group(2))))
                     continue
                 r = kata2hira(m.reading_form())
                 if not r or not HIRA.match(r) or pos[0] in ("補助記号", "空白"):
