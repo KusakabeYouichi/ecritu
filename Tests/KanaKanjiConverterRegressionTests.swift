@@ -30351,6 +30351,24 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3804(一括検査 3801): 中黒つきの語の後ろに は と わ で始まる語が続くと、候補が 1 つも出なかった
+    // (あらんめどうずはわいんひょうろんか→候補なし)。旧仮名の判定が 中黒 に読みを 1 文字割り当て、は を わ に当てていた
+    func testRegressionNakaguroNotHistoricalKana3804() throws {
+        XCTAssertFalse(KanaKanjiConverter.isHistoricalKanaSpelling("アラン・メドウズはワイン評論家", reading: "あらんめどうずはわいんひょうろんか"))
+        XCTAssertFalse(KanaKanjiConverter.isHistoricalKanaSpelling("ナパ・カウンティは西側マヤカマス山脈", reading: "なぱかうんてぃはにしがわまやかますさんみゃく"))
+        XCTAssertTrue(KanaKanjiConverter.isHistoricalKanaSpelling("なほ更", reading: "なおさら"))
+        XCTAssertTrue(KanaKanjiConverter.isHistoricalKanaSpelling("言ひ分", reading: "いいぶん"))
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("あらんめどうずはわいんひょうろんか", "アラン・メドウズはワイン評論家"),
+            ("なぱかうんてぃはにしがわまやかますさんみゃく", "ナパ・カウンティは西側マヤカマス山脈"),
+        ] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertTrue(multi.prefix(2).contains(expected), "\(reading) \(multi.prefix(4))")
+        }
+    }
+
     // 3800(ユーザ指定): しなのまる は 信濃丸 が先頭(しな乃丸 だった)。補助語彙の店名 しな乃(登録語の点数)+丸 が
     // LM の 信濃+丸 より安かった。信濃丸 を 1 語で登録する
     func testRegressionShinanomaru3800() throws {

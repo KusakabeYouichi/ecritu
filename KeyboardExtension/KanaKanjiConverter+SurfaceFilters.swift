@@ -812,7 +812,9 @@ extension KanaKanjiConverter {
                         result = false
                     }
                 } else {
-                    var found = false
+                    // 中黒は読みを持たない(アラン・メドウズ=あらんめどうず)。1 文字以上を割り当てると後ろのひらがながずれ、
+                    // アラン・メドウズはワイン評論家 の は が わいん の わ に当たって旧仮名と判定され、候補が 1 つも出なかった(3804)
+                    var found = surface[i] == "・" && go(i + 1, j)
                     var k = j + 1
                     while !found, k <= readingCharacters.count {
                         found = go(i + 1, k)
