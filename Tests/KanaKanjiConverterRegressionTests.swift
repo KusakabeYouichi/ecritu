@@ -3195,7 +3195,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(converter.candidates(for: "いっとう", limit: 6, systemCandidateMode: .surface).prefix(3)),
                        ["一頭", "一棟", "一等"])
         let boosted = KanaKanjiConverter.digitContextCounterBoostedCandidates([], reading: "とう", precedingCharacter: "3")
-        XCTAssertEqual(Array(boosted.prefix(3)), ["頭", "棟", "等"], "\(boosted)")
+        // 灯 を追加(ユーザ指定 3810)。等 は最後のまま
+        XCTAssertEqual(Array(boosted.prefix(4)), ["頭", "棟", "灯", "等"], "\(boosted)")
         for (reading, expected) in [("なんとう", "何頭"), ("すうとう", "数頭")] {
             let list = converter.candidates(for: reading, limit: 40, systemCandidateMode: .surface)
             XCTAssertTrue(list.contains(expected), "reading=\(reading) list=\(list)")
@@ -5320,7 +5321,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             ("まっく", ["Mac", "マック"]),
             ("うた", ["歌", "詩", "唄", "うた"]),
             ("らくごか", ["落語家", "落語か"]),
-            ("しゅう", ["週", "集", "周"]),
+            ("しゅう", ["週", "州", "集", "衆", "周"]),  // 州/衆 を前へ(ユーザ指定 3810)
             ("ちょうこくか", ["彫刻家", "彫刻か"]),
             ("わだ", ["和田", "輪だ", "和だ"]),
             ("しそうか", ["思想家"]),
@@ -25281,7 +25282,7 @@ extension KanaKanjiConverterRegressionTests {
             ("はんこう", ["犯行", "反抗", "反攻"], ["版行", "反航", "板行", "藩侯", "藩公"]),
             ("ひさん", ["悲惨", "飛散", "ヒ酸"], ["砒酸", "悲酸"]),
             ("ようこ", ["陽子", "容子", "葉子", "妖狐"], ["養狐", "陽虎"]),
-            ("さんば", ["産婆", "産馬", "三馬"], ["山馬", "三番"]),
+            ("さんば", ["サンバ", "産婆", "産馬", "三馬"], ["山馬", "三番"]),  // サンバ を先頭に(ユーザ指定 3810)
             ("とうごく", ["東国", "投獄"], ["党獄"]),
             ("こうだん", ["公団", "講談", "後段", "高段", "光弾", "巷談"], ["絞断", "高談"]),
             ("たいけい", ["体系", "体型", "大径", "大慶"], ["太谿", "体刑", "大計", "対景"]),
@@ -30436,8 +30437,7 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("ふらんすがげんさんで").first, "フランスが原産で")
         XCTAssertEqual(multi("もるどゔぁこうこくげんさんで").first, "モルドヴァ公国原産で")
         XCTAssertEqual(multi("うーぞのげんさんこくをえらんでください").first?.hasSuffix("の原産国を選んでください"), true)
-        XCTAssertEqual(multi("げんさんをおこなう").first, "減酸を行なう")
-        XCTAssertEqual(multi("わいんのげんさんをおこなう").first, "ワインの減酸を行なう")
+        XCTAssertEqual(multi("よーろっぱげんさんだが").first, "ヨーロッパ原産だが")
         // ぶどう+果房、や+房(8房/八房 にしない)、酸が(3芽 にしない)、北杜市
         XCTAssertEqual(multi("しゅうかくしたぶどうかぼうを").first, "収穫したぶどう果房を")
         XCTAssertEqual(multi("しんしょうやふさのかんりがちょくせんてきになり").first?.hasSuffix("や房の管理が直線的になり"), true)
@@ -30450,6 +30450,94 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("さんがたかい").first, "酸が高い")
         XCTAssertEqual(Array(single("ほくとし").prefix(2)), ["北杜市", "北斗市"])
         XCTAssertEqual(multi("ほくとしにある").first, "北杜市にある")
+    }
+
+    // 3810(ユーザ指定の一般語と、一括検査 3809 の確認ページからの指摘)
+    func testRegressionGeneralWordsAndAuditReports3810() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func single(_ r: String) -> [String] { converter.candidates(for: r, limit: 12, systemCandidateMode: .surface) }
+        func multi(_ r: String, after digit: Character? = nil) -> [String] {
+            converter.multiClauseCandidates(for: r, systemCandidateMode: .surface, precedingCharacter: digit)
+        }
+        func top(_ r: String) -> String? { (r.count >= 4 ? multi(r).first : nil) ?? single(r).first }
+        func boosted(_ r: String, after digit: Character) -> [String] {
+            var merged = r.count >= 4 ? multi(r, after: digit) : []
+            for candidate in single(r) where !merged.contains(candidate) { merged.append(candidate) }
+            return KanaKanjiConverter.digitContextCounterBoostedCandidates(
+                merged, reading: r, precedingCharacter: digit, tailConversion: { self.converter.counterTailConversion($0) },
+                isCommonWord: { self.converter.isCommonWordForCounterBlock($0) })
+        }
+        // に+入り(はいり)。気に入り はそのまま
+        XCTAssertEqual(top("たてものにはいり"), "建物に入り")
+        XCTAssertEqual(top("へやにはいり"), "部屋に入り")
+        XCTAssertEqual(top("おきにいり"), "お気に入り")
+        // 登録・並び
+        XCTAssertEqual(top("じんかんせんさー"), "人感センサー")
+        XCTAssertEqual(single("さんば").first, "サンバ")
+        XCTAssertEqual(top("さんばを"), "サンバを")
+        XCTAssertEqual(Array(single("くいにいく").prefix(2)), ["食いに行く", "食いにいく"])
+        XCTAssertEqual(top("やきにくとしょうちくばい")?.hasSuffix("松竹梅"), true)
+        XCTAssertEqual(top("くいにいった"), "食いに行った")
+        XCTAssertEqual(Array(single("しゅう").prefix(5)), ["週", "州", "集", "衆", "周"])
+        XCTAssertEqual(Array(single("とう").prefix(9)), ["とう", "等", "問う", "塔", "糖", "党", "唐", "当", "頭"])
+        XCTAssertEqual(top("もちこみりょう"), "持ち込み料")
+        XCTAssertFalse(multi("もちこみりょう").contains("持ち込み漁"))
+        XCTAssertEqual(top("からあげだ"), "唐揚げだ")
+        XCTAssertEqual(single("いかの").first, "以下の")
+        XCTAssertEqual(Array(single("しゅし").prefix(4)), ["趣旨", "主旨", "種子", "手指"])
+        XCTAssertEqual(top("こうしゅうなど"), "甲州など")
+        // 外の地名の 〜州 だけを下げる(読みごとの表)。欧州 は対象外
+        XCTAssertEqual(top("こうしゅうのわいん"), "甲州のワイン")
+        // 受ける/行なう/開く の前は 講習(ユーザ指定)
+        XCTAssertEqual(top("こうしゅうをうける"), "講習を受ける")
+        XCTAssertEqual(top("こうしゅうをうけました"), "講習を受けました")
+        XCTAssertEqual(top("こうしゅうをおこなう"), "講習を行なう")
+        XCTAssertEqual(top("こうしゅうをひらく"), "講習を開く")
+        // 同じ読みで都道府県の違う市は、近くの都道府県名で見分ける(ユーザ指定)
+        for (reading, expected) in [
+            ("やまなしけんほくとし", "山梨県北杜市"), ("ほっかいどうほくとし", "北海道北斗市"), ("かごしまけんいずみし", "鹿児島県出水市"),
+            ("おおさかふいずみし", "大阪府和泉市"), ("さがけんかしまし", "佐賀県鹿島市"), ("いばらきけんかしまし", "茨城県鹿嶋市"),
+            ("あいちけんこうなんし", "愛知県江南市"), ("こうちけんこうなんし", "高知県香南市"), ("いばらきけんこがし", "茨城県古河市"),
+            ("ふくおかけんこがし", "福岡県古賀市"), ("おおさかふさかいし", "大阪府堺市"), ("ふくいけんさかいし", "福井県坂井市"),
+            ("ちばけんさくらし", "千葉県佐倉市"), ("とちぎけんさくらし", "栃木県さくら市"), ("あいちけんつしまし", "愛知県津島市"),
+            ("ながさきけんつしまし", "長崎県対馬市"), ("ひろしまけんみよしし", "広島県三次市"), ("とくしまけんみよしし", "徳島県三好市"),
+            ("あいちけんみよしし", "愛知県みよし市"), ("やまがたけんやまがたし", "山形県山形市"), ("ぎふけんやまがたし", "岐阜県山県市"),
+            ("いばらきけんかしまぐん", "茨城県鹿島郡"),
+        ] {
+            XCTAssertEqual(top(reading), expected, reading)
+        }
+        XCTAssertEqual(single("おうしゅう").first, "欧州")
+        XCTAssertEqual(top("おうしゅうれんごう"), "欧州連合")
+        // 文の途中の し は サ変名詞か助詞の後ろ。サ変でない名詞+し にしない(甲州+し+勝沼町。ユーザ指摘)
+        XCTAssertEqual(top("こうしゅうしかつぬまちょうに"), "甲州市勝沼町に")
+        XCTAssertEqual(top("さぎょうをかいししました"), "作業を開始しました")
+        XCTAssertEqual(top("べんきょうしまくり"), "勉強しまくり")
+        XCTAssertEqual(top("もくひょうとしがんばる"), "目標とし頑張る")
+        XCTAssertEqual(top("かんたんかしやすい"), "簡単化しやすい")
+        XCTAssertEqual(top("たてものしかない"), "建物しかない")
+        XCTAssertEqual(top("せいさんりょうさいしょう"), "生産量最少")
+        XCTAssertEqual(top("さいしょうげんにおさえる"), "最小限に抑える")
+        XCTAssertEqual(top("くちにふくむりょうは"), "口に含む量は")
+        XCTAssertEqual(top("しょうちくにわかれる"), "小地区に分かれる")
+        // み+に+行く/来る は 見に、身に は 付ける/染みる の前
+        XCTAssertEqual(top("けしきをみにいく"), "景色を見に行く")
+        XCTAssertEqual(top("えいがをみにいく"), "映画を見に行く")
+        XCTAssertEqual(top("みにきた"), "見に来た")
+        XCTAssertEqual(top("みにつける")?.hasPrefix("身に"), true)
+        XCTAssertEqual(top("みにしみる")?.hasPrefix("身に"), true)
+        // 五段(う)の連用形の言い切り
+        XCTAssertEqual(single("きそい").first, "競い")
+        XCTAssertEqual(top("じゅんいをきそい"), "順位を競い")
+        XCTAssertEqual(boosted("いをきそい", after: "2").first, "位を競い")
+        XCTAssertEqual(single("やしない").first, "養い")
+        // 数字の直後: 助数詞+に で始まる語(認定)を に+… に割らない、助詞+ラテン文字の語、の+小地区
+        XCTAssertEqual(boosted("ねんにんていです", after: "1").first, "年認定です")
+        XCTAssertEqual(boosted("いはせれさ", after: "2").first, "位はCereza")
+        XCTAssertEqual(boosted("のしょうちく", after: "2").first, "の小地区")
+        // 助数詞に 灯
+        XCTAssertEqual(boosted("とう", after: "3").contains("灯"), true)
+        XCTAssertEqual(boosted("とう", after: "3").first, "頭")
     }
 
     func testRegressionDigitContextAndGeneralWords3806() throws {
@@ -30535,6 +30623,7 @@ extension KanaKanjiConverterRegressionTests {
         func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
         // 候補バーの先頭(一括検査と同じ: 読み 4 字以上は連文節の最良、それ以外は単文節の先頭)
         func top(_ r: String) -> String? { (r.count >= 4 ? multi(r).first : nil) ?? single(r).first }
+        func top2(_ r: String) -> ArraySlice<String> { multi(r).prefix(2) }
         let entries = WineTermPriority.entries
         XCTAssertGreaterThan(entries.count, 100)
         for reading in ["どうろ", "だん", "じん", "こな", "たな", "とかい", "いんど", "ぶどうか", "きふきん", "かいし", "さくし"] {
@@ -30590,9 +30679,23 @@ extension KanaKanjiConverterRegressionTests {
         // 上限を掛けた語+さん にしない(正解は酒石さんです だった。3809、ユーザ指摘)
         XCTAssertEqual(multi("せいかいはしゅせきさんです").first, "正解は酒石酸です")
         XCTAssertEqual(multi("しゅせきさんがおおい").first, "酒石酸が多い")
-        XCTAssertEqual(multi("げんさんしょりをする").first, "減酸処理をする")
+        // 表から外した読み(弧状/減酸/イカ)と差し替えた読み(しゅし=種子)。ユーザ指定 3810
+        XCTAssertEqual(multi("ろわーるがわぞいのこじょうは").first?.hasSuffix("の古城は"), true)
+        XCTAssertEqual(multi("よーろっぱげんさんだが").first, "ヨーロッパ原産だが")
+        XCTAssertEqual(single("いかの").first, "以下の")
+        XCTAssertEqual(multi("あにすのしゅし").first, "アニスの種子")
+        XCTAssertEqual(single("しゅし").first, "種子")
+        // 文の中でも上げる語は格子に必ず立てる(口中 が 鋼+中 だった)
+        XCTAssertEqual(multi("こうちゅうでのたいりゅうじかんは").first, "口中での滞留時間は")
+        XCTAssertEqual(multi("せいかいはしんしょうのこていです").first, "正解は新梢の固定です")
         XCTAssertEqual(multi("しんしょうやふさのかんりがちょくせんてきになり").first, "新梢や房の管理が直線的になり")
         XCTAssertEqual(multi("とぅあがわはどうろがわのしりゅう").first, "トゥア川はドウロ川の支流")
+        // 読みの終わりの きょうかい は ひらがな が先頭(きょうかい6号。ユーザ決定 3810)。名詞に続く 協会 と文の途中はそのまま
+        XCTAssertEqual(top2("せいかいはきょうかい").first, "正解はきょうかい")
+        XCTAssertEqual(top2("せいかいはきょうかい").last?.hasPrefix("正解は"), true)
+        XCTAssertEqual(single("きょうかい").first, "きょうかい")
+        XCTAssertEqual(multi("せいさんしゃきょうかい").first ?? single("せいさんしゃきょうかい").first, "生産者協会")
+        XCTAssertEqual(multi("きょうかいにはいる").first?.hasPrefix("きょうかい"), false)
         // 表に無い読みは変わらない
         XCTAssertEqual(top("わいん"), "ワイン")
         XCTAssertEqual(multi("きょうはいいてんきです").first, "今日はいい天気です")

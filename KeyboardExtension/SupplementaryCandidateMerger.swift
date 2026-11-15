@@ -47,7 +47,8 @@ enum SupplementaryCandidateMerger {
 
     // seed の途中に絵文字を出す読み(読み → 絵文字の前に並べる seed の数)。たこ は 蛸/タコ/凧/鮹/章魚 の次に 🐙、
     // その後ろに 胼胝/胝/…/たこ/多古 を並べる(3749、ユーザ指定)
-    static let emojiWindowIndexOverrides: [String: Int] = ["たこ": 5]
+    // とう は とう/等/問う/塔/糖/党/唐 の次に絵文字、その後ろに 当/頭(3810、ユーザ指定)
+    static let emojiWindowIndexOverrides: [String: Int] = ["たこ": 5, "とう": 7]
 
     private static func applyEmojiWindow(
         to mergedCandidates: inout [String],

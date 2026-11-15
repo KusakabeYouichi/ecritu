@@ -35,6 +35,12 @@ HIRAGANA = re.compile(r"[ぁ-ゖ]")
 # 日常語でもある語は、文の中まで上げると普通の文が崩れすぎるので、読み全体・読み+助詞 のときだけ先頭にする
 IN_SENTENCE_MIN_UNIGRAM = 7000
 LM_SQLITE = os.path.join(ROOT, "tmp", "kana_kanji_dictionary.sqlite")
+# 表に入れない読み(ユーザ指定 3810): こじょう=弧状(古城は が 弧状は。弧状 は は に続きにくい)、げんさん=減酸(原産 が先。地名+原産)、
+# いか=イカ(以下の が イカの。一般語でも 以下 が先)
+EXCLUDED_READINGS = {"こじょう", "げんさん", "いか"}
+# 拾った語を差し替える読み(ユーザ指定 3810): しゅし は 手指 でなく 種子 を先に(アニスの種子 が アニスの手指)。
+# 読み → (先頭に置く語, 説明に出す一般語)
+OVERRIDES = {"しゅし": (["種子"], "趣旨")}
 
 
 def vin_surfaces_by_reading():
@@ -93,6 +99,10 @@ def write_table(src):
             continue
         # ラテン文字の表記を先、カタカナ・漢字を後(feedback: ラテン先・カタカナ2位)
         ordered = [s for s in surfaces if LATIN.search(s)] + [s for s in surfaces if not LATIN.search(s)]
+        if reading in EXCLUDED_READINGS:
+            continue
+        if reading in OVERRIDES:
+            ordered, top = OVERRIDES[reading]
         rows.append((reading, ordered, top))
     rows.sort(key=lambda r: r[0])
     body = "".join("    " + reading + "\t" + "|".join(surfaces) + "\t" + top + "\t"

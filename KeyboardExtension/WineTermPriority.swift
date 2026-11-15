@@ -65,6 +65,17 @@ enum WineTermPriority {
         if let surfaces = surfacesByReading[reading] {
             return surfaces + candidates.filter { !surfaces.contains($0) }
         }
+        // 読みの終わりの きょうかい は ひらがな を先頭に(清酒酵母の きょうかい6号/7号。後ろに数字を打つ時点では前が確定済みで、
+        // 変換のときは数字が来ることが分からない。ユーザ決定 3810)。読み全体か、助詞の直後(正解はきょうかい)だけ。
+        // 生産者協会/日本醸造協会 のように名詞に続く形はそのまま
+        if reading.hasSuffix(trailingKanaReading), let top = candidates.first,
+            let general = trailingKanaGeneralSurfaces.first(where: { top.hasSuffix($0) }) {
+            let head = top.dropLast(general.count)
+            if head.isEmpty || trailingKanaLeadingParticles.contains(head.last!) {
+                let lead = head + trailingKanaReading
+                return [String(lead)] + candidates.filter { $0 != lead }
+            }
+        }
         for particle in trailingParticles where reading.count > particle.count && reading.hasSuffix(particle) {
             guard let surfaces = surfacesByReading[String(reading.dropLast(particle.count))] else { continue }
             let lead = surfaces.map { $0 + particle }
@@ -88,8 +99,13 @@ enum WineTermPriority {
         entries.map { entry in
             let inSentence = entry.reading.count >= inSentenceMinReadingCount && !entry.inSentenceSurfaces.isEmpty
             return "\(entry.reading): \(entry.wineSurfaces.joined(separator: "、"))(一般語: \(entry.displacedGeneral))\(inSentence ? " ※文の中でも" : "")"
-        }
+        } + ["\(trailingKanaReading): \(trailingKanaReading)(一般語: 協会) ※読みの終わりだけ(きょうかい6号)"]
     }
+
+    // 読みの終わりで ひらがな を先頭にする語(ordered 参照)
+    static let trailingKanaReading = "きょうかい"
+    static let trailingKanaGeneralSurfaces = ["協会", "教会", "境界"]
+    static let trailingKanaLeadingParticles: Set<Character> = ["は", "の", "が", "を", "に", "で", "と", "も", "や"]
 
     // 読み<TAB>ワイン用語(| 区切り。先頭に置く順)<TAB>表を作ったときの先頭の一般語<TAB>文の中でも上げる語(| 区切り)。
     // 手で書き換えない(tools/build_wine_term_priority_table.py で作り直す)
@@ -97,7 +113,6 @@ enum WineTermPriority {
     static let table = """
     あい	Aÿ|アイ	愛	Aÿ
     あし	葦	足	
-    いか	イカ	以下	
     いき	壱岐	行き	
     いしょう	意匠	衣裳	
     いたく	委託	いたく	
@@ -147,7 +162,6 @@ enum WineTermPriority {
     げんかん	厳寒	玄関	厳寒
     げんきん	厳禁	現金	厳禁
     げんこう	元寇	現行	
-    げんさん	減酸	原産	減酸
     げんしゅ	原酒	元首	原酒
     げんすい	原水	減衰	原水
     こい	鯉	来い	
@@ -164,7 +178,6 @@ enum WineTermPriority {
     こうてき	好適	公的	好適
     こく	コク	濃く	コク
     こし	漉|枯死	こし	漉
-    こじょう	弧状	古城	弧状
     こっかい	黒海	国会	
     ことなり	コトナリ	異なり	コトナリ
     こな	Kona|コナ	粉	Kona|コナ
@@ -191,7 +204,7 @@ enum WineTermPriority {
     しゅうかん	習慣	週間	
     しゅうきょう	州境	宗教	州境
     しゅうりょう	収量	終了	
-    しゅし	手指	趣旨	手指
+    しゅし	種子	趣旨	種子
     しゅせき	酒石	主席	酒石
     しゅるい	酒類	種類	
     しょうこう	紹興	商工	紹興

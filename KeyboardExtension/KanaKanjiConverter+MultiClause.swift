@@ -801,7 +801,6 @@ extension KanaKanjiConverter {
         ("あまみあるこーる", "あまみ", "奄美", "甘み"),
         ("かぶなんぶのいりえ", "かぶなんぶ", "株南部", "下部南部"),
         ("かいそううみのかおり", "かいそう", "階層", "海藻"),
-        ("せいさんりょうさいしょう", "さいしょう", "最少", "最小"),
         ("きってぜんさい", "きってぜんさい", "切手前妻", "切って前菜"),
         ("をふくんだ", "ふくんだ", "吹くんだ", "含んだ"),
         ("つかいかため", "つかいかため", "遣い方目", "使い固め"),
@@ -2763,6 +2762,16 @@ extension KanaKanjiConverter {
                 }
                 // 数字の直後なら先頭に来るべき語(1+まんかい→万回、3+めいじょう→芽以上)も文頭に立てる(3804)。単文節の提示では
                 // 前置されるが、連文節では 満開/名城 の 1 語が勝っていた(1満開を超える/3名城の子して)
+                #if DEBUG
+                // ワイン用語優先: 文の中でも上げる語は、供給の上限で切られていても格子に立てる(こうちゅうでの が 鋼+中+での。
+                // 口中 は語コスト順の上限で落ちていて、値段の上限を掛ける相手が無かった。3810、ユーザ報告)
+                if let wineSurfaces = wineTermPrioritySurfaces?[segmentReading] {
+                    for surface in wineSurfaces {
+                        add(surface, isDictWord: true, isCurated: false, exemptDecorative: true, isInflectionDerived: false,
+                            wordCost: WineTermPriority.inSentenceWordCostCap)
+                    }
+                }
+                #endif
                 if digitPrefixed, start == 0, let preferred = Self.digitContextPreferredSurfacesByReading[segmentReading] {
                     for surface in preferred where surface != segmentReading {
                         add(surface, isDictWord: true, isCurated: false, exemptDecorative: true, isInflectionDerived: false,
@@ -3474,6 +3483,29 @@ extension KanaKanjiConverter {
                         placeNameStartPositions.insert(node.start)
                         placeOrLanguageNameEndPositions.insert(node.end)
                     }
+                }
+            }
+            // 国内の旧国名の 〜州(甲州/信州/紀州)と同じ読み・同じ区間に立つ外の地名の 〜州(広州/杭州/貴州)を下げる(定数コメント参照。3810)。
+            // 地名どうしの間だけの順で、地名でない同音語(講習/公衆)には触れない
+            for node in nodes where node.surface.count == 2 && node.surface.hasSuffix("州")
+                && (Self.multiClauseForeignShuPlaceNamesByReading[node.reading]?.contains(node.surface) ?? false) {
+                seedOrderNounNodeBonuses[node.key, default: 0] -= Self.multiClauseForeignShuPlaceSiblingPenalty
+            }
+            // 同じ読みで都道府県の違う市(北杜市/北斗市、堺市/坂井市)は、近くの都道府県名で見分ける(定数コメント参照。3810)
+            let homophoneCityPrefectures = Self.multiClauseHomophoneCityPrefectureReadings
+            for node in nodes where homophoneCityPrefectures[node.surface] != nil {
+                // 語幹(北杜)は直後が し(市)のときだけ。鹿島郡/鹿島神宮(茨城)のような 市 でない語は動かさない
+                guard let own = homophoneCityPrefectures[node.surface],
+                    node.surface.hasSuffix("市") || (node.end < n && chars[node.end] == "し") else { continue }
+                let window = Self.multiClauseHomophoneCityContextWindow
+                let before = Self.spanString(chars, max(0, node.start - window)..<node.start)
+                let after = Self.spanString(chars, node.end..<min(n, node.end + window))
+                func mentioned(_ prefecture: String) -> Bool { before.contains(prefecture) || after.contains(prefecture) }
+                if mentioned(own) {
+                    seedOrderNounNodeBonuses[node.key, default: 0] += Self.multiClauseHomophoneCityPrefectureBonus
+                } else if let rivals = Self.multiClauseHomophoneCityRivalPrefecturesBySurface[node.surface],
+                    rivals.contains(where: mentioned) {
+                    seedOrderNounNodeBonuses[node.key, default: 0] -= Self.multiClauseHomophoneCityPrefectureBonus
                 }
             }
             // 地名・言語名の直後の なまり(定数コメント参照。3799)。遷移の規則だと変種の採点に入らず フランス鉛の が 2 番めに残るので、
@@ -6121,6 +6153,14 @@ extension KanaKanjiConverter {
                                 || prevNode.surfaceID == SID.を && prevNode.readingID == SID.を) && prevNode.start > 0) {
                             cost += Self.multiClauseKanaShiAfterNonPredicatePenalty
                         }
+                        // 文の途中の 名詞+し(定数コメント参照。3810、ユーザ指摘)
+                        if node.end < n, node.readingID == SID.し, node.surfaceID == SID.し,
+                            prevNode.isDictWord, !prevNode.isKanaIdentity, !prevNode.isInflectionDerived, !prevNode.isDictionaryFormPredicate,
+                            prevNode.surface.count >= 2, prevNode.reading.count >= 3,
+                            !(prevNode.surface.last.map { ("ぁ"..."ゖ").contains($0) } ?? false),
+                            !store.isSuruNoun(reading: prevNode.reading, candidate: prevNode.surface) {
+                            cost += Self.multiClauseMidSentenceShiAfterNonSuruNounPenalty
+                        }
                         // 述語(活用派生・辞書形)直後の形式名詞・副助詞はかな表記が正書
                         // (行ったとき/貸し出すだけ 等)。漢字表記に減点。
                         // 連体詞(こんな/そんな/あんな/どんな)直後も同じ(そんなことしない/こんなときは)。
@@ -6866,9 +6906,14 @@ extension KanaKanjiConverter {
                     if let wineTermPrioritySurfaces, prevNode.start > 0, prevNode.isKanaIdentity,
                         prevNode.surfaceID == SID.は || prevNode.surface == "が" || prevNode.surface == "も",
                         wineTermPrioritySurfaces[node.reading]?.contains(node.surface) ?? false,
-                        !store.isSuruNoun(reading: node.reading, candidate: node.surface), store.hasSuruNoun(reading: node.reading) {
+                        !store.isSuruNoun(reading: node.reading, candidate: node.surface),
+                        // 押しのけている一般語(禁止)そのものがサ変名詞のときだけ。問題文の 正解は+語 は対象外
+                        // (正解は新梢の固定です が 正解+歯+新梢 になった。正解 もサ変名詞。3810、ユーザ報告)
+                        let general = WineTermPriority.entriesByReading[node.reading]?.displacedGeneral,
+                        store.isSuruNoun(reading: node.reading, candidate: general) {
                         let prevPrev = nodes[backPointer[prevIdx]]
-                        if store.isSuruNoun(reading: prevPrev.reading, candidate: prevPrev.surface) {
+                        if Self.multiClauseSupplementalFrameHeads[prevPrev.surface] == nil,
+                            store.isSuruNoun(reading: prevPrev.reading, candidate: prevPrev.surface) {
                             cost += Self.multiClauseWineTermAfterSuruNounTopicPenalty
                         }
                     }
@@ -6894,6 +6939,17 @@ extension KanaKanjiConverter {
                     if prevNode.reading.count == 4, prevNode.surface == "減酸",
                         node.reading.hasPrefix("こく") || node.reading.hasPrefix("ち") {
                         cost += Self.multiClauseGensanSplitPenalty
+                    }
+                    // み+に+行く/来る は 見に(景色を見に行く/映画を見に行く が 身に行く だった。身に は 付ける/着ける/染みる の前。
+                    // 3810、ユーザ指定)。に の後ろの読みが いく/くる の活用で始まるときだけ
+                    if node.surfaceID == SID.に, node.isKanaIdentity, prevNode.reading.count == 1, node.end + 1 < n,
+                        prevNode.surface == "見" || prevNode.surface == "身" {
+                        let next = chars[node.end], after = chars[node.end + 1]
+                        let motionVerbFollows = (next == "い" && "くっきかけこ".contains(after)) || (next == "く" && after == "る")
+                            || (next == "き" && "たてま".contains(after)) || (next == "こ" && "なよら".contains(after))
+                        if motionVerbFollows {
+                            cost += prevNode.surface == "見" ? -Self.multiClauseMiNiMotionVerbBonus : Self.multiClauseMiNiMotionVerbBonus
+                        }
                     }
                     if node.reading.count == 2 {
                         // を+下(定数コメント参照。3809)

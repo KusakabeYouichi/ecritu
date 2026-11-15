@@ -689,7 +689,8 @@ extension KanaKanjiConverter {
         "てい": ["艇"],
         "てん": ["点", "點"],
         // 頭(動物)を先頭に。順位の 等 は今は使用が減ったので最後(ユーザ指定 3645: いっとう→一頭 が出なかった)
-        "とう": ["頭", "棟", "等"],
+        // 灯(街灯・照明の数。3810、ユーザ指定で追加)
+        "とう": ["頭", "棟", "灯", "等"],
         "とおり": ["通り", "通"],
         "とん": ["トン", "瓲", "噸"],
         // 温度(36ど→36度/36°C/36°F)。字形(°C/℃)は提示層の設定 degré で置換(2773)
@@ -976,7 +977,10 @@ extension KanaKanjiConverter {
     func counterTailConversion(_ tail: String) -> String? {
         // 助詞で始まる長い末尾(をきそい)は、助詞の後ろだけを変換して助詞を付け直す(3806)。助詞ごと連文節に掛けると、
         // 文頭の助詞として割られた形(を機沿い)が返り、2+いをきそい が 位を機沿い だった
-        if tail.count >= 4, let particle = tail.first, Self.counterTailParticleCharacters.contains(particle) {
+        // 次の字が ん・小書き・長音 なら先頭の 1 字は助詞ではない(にんていです=認定です。に+んていです と見て 年にんて胃です
+        // だった。2011+ねんにんていです。3810、ユーザ報告)
+        if tail.count >= 4, let particle = tail.first, Self.counterTailParticleCharacters.contains(particle),
+            !"んぁぃぅぇぉゃゅょゎっー".contains(tail[tail.index(after: tail.startIndex)]) {
             let rest = String(tail.dropFirst())
             // 短い活用形(きそい=競い)は単文節に無いことがあるので、連文節を短い読みでも試す
             let converted = multiClauseCandidates(for: rest, systemCandidateMode: .surface, minReadingCountOverride: 2).first
@@ -1197,7 +1201,9 @@ extension KanaKanjiConverter {
                         convertedTail != tail,
                         keepsLeadingParticle(convertedTail),
                         KanaKanjiConverter.isAllKanjiSurface(convertedTail)
-                            || (particleLedTail && containsKanjiCandidate(convertedTail)) {
+                            || (particleLedTail && containsKanjiCandidate(convertedTail))
+                            // 助詞の後ろがラテン文字の語(2+いはせれさ→位はCereza。かなのまま 位はせれさ だった。3810、ユーザ報告)
+                            || (particleLedTail && convertedTail.dropFirst().contains(where: { $0.isASCII && $0.isLetter })) {
                         let convertedForm = surface + convertedTail
                         if !suppressedCandidates.contains(convertedForm),
                             !matched.contains(convertedForm) {
