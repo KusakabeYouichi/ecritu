@@ -748,6 +748,8 @@ extension KanaKanjiConverter {
     // (落下させる+病害、首席+として+析出、鮮明 と 船積みされた)
     static let contextCuedHomophoneRewrites: [(cue: String, targetReading: String, from: String, to: String)] = [
         ("びょうがい", "らっか", "落下", "落果"),
+        // 面積の話は 最小(面積・生産量最小 が 生産量+最少。生産量だけなら 最少 のまま。3812、ユーザ指摘)
+        ("めんせき", "さいしょう", "最少", "最小"),
         // 一括検査 3801 の確認表の [直す](3804、ユーザ判定)。前後の語が決め手になる同音語と、区切りが崩れていた句
         ("こうちをたがや", "こうち", "高地", "耕地"),
         ("つけこむ", "かひ", "可否", "果皮"), ("るもんたーじゅ", "かひ", "可否", "果皮"), ("かにくかひ", "かひしゅくき", "か脾腫茎", "果皮種茎"),
@@ -3498,6 +3500,10 @@ extension KanaKanjiConverter {
                 && (Self.multiClauseForeignShuPlaceNamesByReading[node.reading]?.contains(node.surface) ?? false) {
                 seedOrderNounNodeBonuses[node.key, default: 0] -= Self.multiClauseForeignShuPlaceSiblingPenalty
             }
+            // 文頭の 等(とう)(定数コメント参照。3812)
+            for node in nodes where node.start == 0 && node.surface == "等" && node.reading == "とう" {
+                seedOrderNounNodeBonuses[node.key, default: 0] -= Self.multiClauseSentenceInitialToSuffixPenalty
+            }
             // 同じ読みで都道府県の違う市(北杜市/北斗市、堺市/坂井市)は、近くの都道府県名で見分ける(定数コメント参照。3810)
             let homophoneCityPrefectures = Self.multiClauseHomophoneCityPrefectureReadings
             for node in nodes where homophoneCityPrefectures[node.surface] != nil {
@@ -6165,8 +6171,15 @@ extension KanaKanjiConverter {
                             prevNode.isDictWord, !prevNode.isKanaIdentity, !prevNode.isInflectionDerived, !prevNode.isDictionaryFormPredicate,
                             prevNode.surface.count >= 2, prevNode.reading.count >= 3,
                             !(prevNode.surface.last.map { ("ぁ"..."ゖ").contains($0) } ?? false),
-                            !store.isSuruNoun(reading: prevNode.reading, candidate: prevNode.surface) {
+                            !store.isSuruNoun(reading: prevNode.reading, candidate: prevNode.surface),
+                            // し+ます/て/た/ない… と する の続きなら辞書に印の無いサ変名詞(防除します が 暮雨+除します。3812)
+                            !Self.readingStartsWithSuruCluster(Self.spanString(chars, node.start..<min(n, node.start + 3))) {
                             cost += Self.multiClauseMidSentenceShiAfterNonSuruNounPenalty
+                        }
+                        // ラテン文字の語の直後の 側(定数コメント参照。3812)
+                        if prevNode.surface.last.map({ $0.isASCII && $0.isLetter }) ?? false,
+                            node.surface == "側", node.reading == "がわ" {
+                            cost += Self.multiClauseGawaSideAfterLatinPenalty
                         }
                         // 副助詞 しか+否定の述語(定数コメント参照。3811、ユーザ指摘)
                         if prevNode.readingID == SID.しか, prevNode.surfaceID == SID.しか,
@@ -6937,6 +6950,24 @@ extension KanaKanjiConverter {
                     if let wineTermPrioritySurfaces, node.isKanaIdentity, node.reading.count == 2, node.surface == "さん",
                         wineTermPrioritySurfaces[prevNode.reading]?.contains(prevNode.surface) ?? false {
                         cost += Self.multiClauseWineTermAfterSuruNounTopicPenalty
+                    }
+                    if let wineTermPrioritySurfaces, wineTermPrioritySurfaces[node.reading]?.contains(node.surface) ?? false {
+                        // ワイン用語優先: 助詞でない 1 字のかなの直後には立てない(ごとに+さ+神蔵 が 酒蔵 に勝った。3812、ユーザ指摘)
+                        if prevNode.isKanaIdentity, prevNode.reading.count == 1,
+                            !Self.multiClauseWineTermAllowedPrecedingKana.contains(prevNode.surface) {
+                            cost += Self.multiClauseWineTermAfterStrayKanaPenalty
+                        }
+                        // ワイン用語優先: 文脈で一般語に決まる読み(川の+かこう は 河口。果梗 だった。3812、ユーザ指摘)
+                        // 直前の語と、その前の語(ロワール川+の、ジロンド川+際)の表記で見る
+                        if let cues = Self.multiClauseWineTermGeneralContextCues[node.reading] {
+                            var context = prevNode.surface
+                            if prevNode.start > 0 {
+                                context = nodes[backPointer[prevIdx]].surface + context
+                            }
+                            if cues.contains(where: { context.contains($0) }) {
+                                cost += Self.multiClauseWineTermAfterStrayKanaPenalty
+                            }
+                        }
                     }
                     #endif
                     // 形容詞の連用形+漢字の活用形の動詞(定数コメント参照。3809)
