@@ -30501,6 +30501,15 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(boosted("とうのうちのひとつ", after: "4").first, "頭のうちのひとつ")
         XCTAssertTrue(boosted("とう", after: "4").contains("島"))
         XCTAssertEqual(boosted("つのさと", after: "5").first, "つの里")
+        // 3821: 人体の骨・筋肉の名前(misc と seed)。よく使う語と読みが同じものは今までどおり
+        for (reading, expected) in [("かんこつ", "寛骨"), ("じょこつ", "鋤骨"), ("つちこつ", "ツチ骨"), ("かんつい", "環椎"),
+                                    ("ゆうこうこつ", "有鉤骨"), ("せんこつ", "仙骨"), ("きょうこつ", "胸骨"), ("しこつ", "指骨"),
+                                    ("きょうさにゅうとつきん", "胸鎖乳突筋"), ("ちょうようきん", "腸腰筋"), ("かいせんきんけんばん", "回旋筋腱板")] {
+            XCTAssertEqual(top(reading), expected, reading)
+        }
+        XCTAssertTrue(single("しこつ").contains("篩骨"))
+        XCTAssertEqual(top("ちゅうとうじょうせい"), "中東情勢")
+        XCTAssertEqual(top("けんぽうかいせい"), "憲法改正")
         // 3819: 似る は勧める言い方に付かない、あやまって、覚えて〜 の 2 番めは 憶えて〜、押す場所、よく似ている
         XCTAssertEqual(top("にるといいよ"), "煮るといいよ")
         XCTAssertEqual(Array(single("あやまって").prefix(3)), ["誤って", "謝って", "過って"])
