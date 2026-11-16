@@ -468,9 +468,13 @@
 	<dict><key>phrase</key><string>どんだけ</string><key>shortcut</key><string>どんだけ</string></dict>	<!-- どんだけ(どれだけ の口語。かな正書の副詞): 辞書にも LM にも 1 語で無く、ドン+だけ/丼+だけ に割れて どんだけあぶないか が ドンだけあぶないか だった(ユーザ報告 3731) -->
 
 	<!-- ■ 供給欠落の補充(Sudachi 未収録の複合語・固有名。そもそも候補が作れない) -->
+	<!-- 生物の分類の 〜科 は カタカナ(漢字の 鯉科/牛科 などは suppr で抑制。カタカナの形が辞書に無かったもの。ユーザ指定 3813) -->
+	<dict><key>phrase</key><string>コイ科</string><key>shortcut</key><string>こいか</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>ウシ科</string><key>shortcut</key><string>うしか</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>サケ科</string><key>shortcut</key><string>さけか</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>ラン科</string><key>shortcut</key><string>らんか</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>ヤシ科</string><key>shortcut</key><string>やしか</string><key>pos</key><string>名詞</string></dict>
 	<dict><key>phrase</key><string>ブレ</string><key>shortcut</key><string>ぶれ</string><key>pos</key><string>名詞</string></dict>	<!-- 味にブレが/手ブレ の ブレ。LM に無くカタカナ化の減点(+100000)で消え、あじにぶれが→味に触れが/味鈍れが だった(ユーザ報告 3778) -->
-	<dict><key>phrase</key><string>サイドブレイキ</string><key>shortcut</key><string>さいどぶれいき</string><key>pos</key><string>名詞</string></dict>	<!-- サイド+ブレイキ の合成は 再度ブレイキ が先頭だった(ユーザ指定 3778) -->
-	<dict><key>phrase</key><string>ブレイキ</string><key>shortcut</key><string>ぶれいき</string><key>pos</key><string>名詞</string></dict>	<!-- ブレーキ の -エイ- 表記(グラデイション/アップデイト と同じ書き方)。部励起/部冷気 だった(ユーザ指定 3778) -->
 	<!-- learningBOX 確認表(3697)の [直す](3736、ユーザ判定): 辞書に無い複合語 -->
 	<dict><key>phrase</key><string>仕立て方</string><key>shortcut</key><string>したてかた</string><key>pos</key><string>名詞</string></dict>	<!-- 仕立て方: したてかたです が 四縦型です/し縦型です だった -->
 	<dict><key>phrase</key><string>仕立て法</string><key>shortcut</key><string>したてほう</string><key>pos</key><string>名詞</string></dict>	<!-- 仕立て法: 四縦方 だった -->
@@ -682,7 +686,6 @@
 	<dict><key>phrase</key><string>主回線</string><key>shortcut</key><string>しゅかいせん</string></dict>	<!-- 主回線: 辞書に無く 酒海戦/主海戦 だった -->
 	<dict><key>phrase</key><string>貯め方</string><key>shortcut</key><string>ためかた</string></dict>	<!-- 貯め方/溜め方: 辞書に無く 単語のため方は だった(貯め方 を先頭に) -->
 	<dict><key>phrase</key><string>溜め方</string><key>shortcut</key><string>ためかた</string></dict>
-	<dict><key>phrase</key><string>メイルアドレス</string><key>shortcut</key><string>めいるあどれす</string></dict>	<!-- メイルアドレス: めい+る に分断されて 名るアドレス だった(ユーザ指定の表記) -->
 	<!-- 一括検査 3640b の判定(ユーザ指定 3641)。辞書に無く候補列に出なかった語 -->
 	<dict><key>phrase</key><string>件名</string><key>shortcut</key><string>けんめい</string><key>pos</key><string>名詞</string></dict>	<!-- 件名(けんめい): LM には有る(7792)が辞書に無く、件名の先頭に が 県名の先頭に だった -->
 	<dict><key>phrase</key><string>平行四辺形</string><key>shortcut</key><string>へいこうしへんけい</string><key>pos</key><string>名詞</string></dict>	<!-- 平行四辺形: しへんけい の辞書は 趾変形 だけで 平行趾変形 だった -->
@@ -1028,6 +1031,33 @@
 
 	<!-- ギリシャ文字 -->
 	        <dict><key>phrase</key><string>μ</string><key>shortcut</key><string>まいくろ</string></dict>
+
+	<!-- 表記 -->
+	<!-- 二重母音eiの別表記 -->
+	        <dict><key>phrase</key><string>モデレイター</string><key>shortcut</key><string>もでれいたー</string></dict>
+	        <dict><key>phrase</key><string>ケイス</string><key>shortcut</key><string>けいす</string></dict>	<!-- Sudachiにもある -->
+	        <dict><key>phrase</key><string>テイプ</string><key>shortcut</key><string>ていぷ</string></dict>
+	        <dict><key>phrase</key><string>テイブル</string><key>shortcut</key><string>ていぶる</string></dict>
+	        <dict><key>phrase</key><string>ペイス</string><key>shortcut</key><string>ぺいす</string></dict>
+	        <dict><key>phrase</key><string>ペイパー</string><key>shortcut</key><string>ぺいぱー</string></dict>
+	        <dict><key>phrase</key><string>メイカー</string><key>shortcut</key><string>めいかー</string></dict>
+	        <dict><key>phrase</key><string>ネイミング</string><key>shortcut</key><string>ねいみんぐ</string></dict>
+	        <dict><key>phrase</key><string>モノレイル</string><key>shortcut</key><string>ものれいる</string></dict>
+	        <dict><key>phrase</key><string>シュガー・ベイブ</string><key>shortcut</key><string>しゅがーべいぶ</string></dict>
+	<!--既存<dict><key>phrase</key><string>グラデイション</string><key>shortcut</key><string>ぐらでいしょん</string></dict> -->
+	<!--既存<dict><key>phrase</key><string>ケイブル</string><key>shortcut</key><string>けいぶる</string></dict> -->
+	        <dict><key>phrase</key><string>アプリケイション</string><key>shortcut</key><string>あぷりけいしょん</string></dict>
+	        <dict><key>phrase</key><string>ネイム</string><key>shortcut</key><string>ねいむ</string></dict>	<!-- ユーザ指定 3252 -->
+	        <dict><key>phrase</key><string>フルネイム</string><key>shortcut</key><string>ふるねいむ</string></dict>
+	        <dict><key>phrase</key><string>トレイニング</string><key>shortcut</key><string>とれいにんぐ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- トレイニングする/した/して をサ変で組む(ユーザ指定 3251) -->
+	        <dict><key>phrase</key><string>メイルアドレス</string><key>shortcut</key><string>めいるあどれす</string></dict>	<!-- メイルアドレス: めい+る に分断されて 名るアドレス だった(ユーザ指定の表記) -->
+	        <dict><key>phrase</key><string>サイドブレイキ</string><key>shortcut</key><string>さいどぶれいき</string><key>pos</key><string>名詞</string></dict>	<!-- サイド+ブレイキ の合成は 再度ブレイキ が先頭だった(ユーザ指定 3778) -->
+	        <dict><key>phrase</key><string>ブレイキ</string><key>shortcut</key><string>ぶれいき</string><key>pos</key><string>名詞</string></dict>	<!-- ブレーキ の -エイ- 表記(グラデイション/アップデイト と同じ書き方)。部励起/部冷気 だった(ユーザ指定 3778) -->
+	<!-- 子音vの別表記 -->
+	        <dict><key>phrase</key><string>コンヴィニ</string><key>shortcut</key><string>こんゔぃに</string></dict>
+	        <dict><key>phrase</key><string>インヴォイス</string><key>shortcut</key><string>いんゔぉいす</string></dict>
+	        <dict><key>phrase</key><string>デヴァイス</string><key>shortcut</key><string>でゔぁいす</string></dict>
+
 	<!-- ■ 追加語彙(sacoche)から移した語(一覧で確認・削除する必要のない地名・人名の表記。ユーザ指定 2026-10-04) -->
 	<dict><key>phrase</key><string>礼華</string><key>shortcut</key><string>あやか</string></dict>	<!-- 髙橋礼華・山本礼華 など公人の名の表記 -->
 	<dict><key>phrase</key><string>小金澤</string><key>shortcut</key><string>こがねざわ</string></dict>	<!-- 陸前国本吉郡小金沢の地名由来(姓にもある)。Sudachiにもある(姓、コスト9770で基底2位。小金沢 の後ろ) -->

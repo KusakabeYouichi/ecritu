@@ -87,26 +87,6 @@
 	        <dict><key>phrase</key><string>Philips Hue</string><key>shortcut</key><string>ふぃりっぷすひゅー</string></dict>
 	        <dict><key>phrase</key><string>Philips</string><key>shortcut</key><string>ふぃりっぷす</string></dict>
 	        <dict><key>phrase</key><string>nanoleaf</string><key>shortcut</key><string>なのりーふ</string></dict>
-	<!-- 表記 -->
-	        <dict><key>phrase</key><string>モデレイター</string><key>shortcut</key><string>もでれいたー</string></dict>
-	        <dict><key>phrase</key><string>ケイス</string><key>shortcut</key><string>けいす</string></dict>	<!-- Sudachiにもある -->
-	        <dict><key>phrase</key><string>コンヴィニ</string><key>shortcut</key><string>こんゔぃに</string></dict>
-	        <dict><key>phrase</key><string>テイプ</string><key>shortcut</key><string>ていぷ</string></dict>
-	        <dict><key>phrase</key><string>テイブル</string><key>shortcut</key><string>ていぶる</string></dict>
-	        <dict><key>phrase</key><string>ペイス</string><key>shortcut</key><string>ぺいす</string></dict>
-	        <dict><key>phrase</key><string>ペイパー</string><key>shortcut</key><string>ぺいぱー</string></dict>
-	        <dict><key>phrase</key><string>メイカー</string><key>shortcut</key><string>めいかー</string></dict>
-	        <dict><key>phrase</key><string>ネイミング</string><key>shortcut</key><string>ねいみんぐ</string></dict>
-	        <dict><key>phrase</key><string>デヴァイス</string><key>shortcut</key><string>でゔぁいす</string></dict>
-	        <dict><key>phrase</key><string>モノレイル</string><key>shortcut</key><string>ものれいる</string></dict>
-	        <dict><key>phrase</key><string>シュガー・ベイブ</string><key>shortcut</key><string>しゅがーべいぶ</string></dict>
-	<!--既存<dict><key>phrase</key><string>グラデイション</string><key>shortcut</key><string>ぐらでいしょん</string></dict> -->
-	<!--既存<dict><key>phrase</key><string>ケイブル</string><key>shortcut</key><string>けいぶる</string></dict> -->
-	        <dict><key>phrase</key><string>インヴォイス</string><key>shortcut</key><string>いんゔぉいす</string></dict>
-	        <dict><key>phrase</key><string>アプリケイション</string><key>shortcut</key><string>あぷりけいしょん</string></dict>
-	        <dict><key>phrase</key><string>ネイム</string><key>shortcut</key><string>ねいむ</string></dict>	<!-- ユーザ指定 3252 -->
-	        <dict><key>phrase</key><string>フルネイム</string><key>shortcut</key><string>ふるねいむ</string></dict>
-	        <dict><key>phrase</key><string>トレイニング</string><key>shortcut</key><string>とれいにんぐ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- トレイニングする/した/して をサ変で組む(ユーザ指定 3251) -->
 	<!-- 動詞の送り仮名で本則以外のを使うための例外 -->
 	        <dict><key>phrase</key><string>行なう</string><key>shortcut</key><string>おこなう</string></dict>
 </array>

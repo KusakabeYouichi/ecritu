@@ -290,6 +290,59 @@
 	<dict><key>phrase</key><string>ノカ</string><key>shortcut</key><string>のか</string></dict>	<!-- ノカ: Sudachi の片仮名固有名詞(のか=野花 等の別表記)。のかな の 1 位を ノカな が取っていた(ユーザ指定 3564)。のか/のかな は かな先頭 -->
 	<!-- ※ イイね: 今どき流行らない書き方(イイ=カタカナ強調)。いい+ね 合成由来なので読み いいね の直接ペアで抑制(イイ感じ 等、他の読みでの イイ は温存)。※踊り字 いゝね は旧仮名・踊り字トグルのフィルタで制御(個別抑制は撤去) -->
 
+	<!-- ■ 生物の分類の 〜科 は カタカナで書く(コイ科/バラ科。漢字・ひらがなの 鯉科/ばら科 は出さない。ユーザ指定 3813)。
+	     辞書の 〜科(読みが 〜か)281 件から動物・植物の分類名を選んだもの。診療科・学科(内科/英語科)と 亜科/同科 は対象外。
+	     短い読み(こいか/まつか/しそか)は 1 ノードで安く、他の変換を割る -->
+	<dict><key>phrase</key><string>鯉科</string><key>shortcut</key><string>こいか</string></dict>	<!-- LM の値段が安く、色素の濃い果汁 が 色素の鯉科中 だった(一括検査 3812) -->
+	<dict><key>phrase</key><string>蚊科</string><key>shortcut</key><string>かか</string></dict>
+	<dict><key>phrase</key><string>犬科</string><key>shortcut</key><string>いぬか</string></dict>
+	<dict><key>phrase</key><string>牛科</string><key>shortcut</key><string>うしか</string></dict>
+	<dict><key>phrase</key><string>罌粟科</string><key>shortcut</key><string>けしか</string></dict>
+	<dict><key>phrase</key><string>鮭科</string><key>shortcut</key><string>さけか</string></dict>
+	<dict><key>phrase</key><string>紫蘇科</string><key>shortcut</key><string>しそか</string></dict>
+	<dict><key>phrase</key><string>茄子科</string><key>shortcut</key><string>なすか</string></dict>
+	<dict><key>phrase</key><string>薔薇科</string><key>shortcut</key><string>ばらか</string></dict>
+	<dict><key>phrase</key><string>松科</string><key>shortcut</key><string>まつか</string></dict>
+	<dict><key>phrase</key><string>豆科</string><key>shortcut</key><string>まめか</string></dict>
+	<dict><key>phrase</key><string>荳科</string><key>shortcut</key><string>まめか</string></dict>
+	<dict><key>phrase</key><string>まめ科</string><key>shortcut</key><string>まめか</string></dict>
+	<dict><key>phrase</key><string>椰子科</string><key>shortcut</key><string>やしか</string></dict>
+	<dict><key>phrase</key><string>百合科</string><key>shortcut</key><string>ゆりか</string></dict>
+	<dict><key>phrase</key><string>ゆり科</string><key>shortcut</key><string>ゆりか</string></dict>
+	<dict><key>phrase</key><string>蘭科</string><key>shortcut</key><string>らんか</string></dict>
+	<dict><key>phrase</key><string>茜草科</string><key>shortcut</key><string>あかねか</string></dict>
+	<dict><key>phrase</key><string>花鶏科</string><key>shortcut</key><string>あとりか</string></dict>
+	<dict><key>phrase</key><string>菖蒲科</string><key>shortcut</key><string>あやめか</string></dict>
+	<dict><key>phrase</key><string>藺草科</string><key>shortcut</key><string>いぐさか</string></dict>
+	<dict><key>phrase</key><string>殻斗科</string><key>shortcut</key><string>かくとか</string></dict>
+	<dict><key>phrase</key><string>禾本科</string><key>shortcut</key><string>かほんか</string></dict>
+	<dict><key>phrase</key><string>鴎科</string><key>shortcut</key><string>かもめか</string></dict>
+	<dict><key>phrase</key><string>胡桃科</string><key>shortcut</key><string>くるみか</string></dict>
+	<dict><key>phrase</key><string>躑躅科</string><key>shortcut</key><string>つつじか</string></dict>
+	<dict><key>phrase</key><string>椿科</string><key>shortcut</key><string>つばきか</string></dict>
+	<dict><key>phrase</key><string>つばき科</string><key>shortcut</key><string>つばきか</string></dict>
+	<dict><key>phrase</key><string>菜種科</string><key>shortcut</key><string>なたねか</string></dict>
+	<dict><key>phrase</key><string>鼠科</string><key>shortcut</key><string>ねずみか</string></dict>
+	<dict><key>phrase</key><string>蜜柑科</string><key>shortcut</key><string>みかんか</string></dict>
+	<dict><key>phrase</key><string>楊柳科</string><key>shortcut</key><string>やなぎか</string></dict>
+	<dict><key>phrase</key><string>赤花科</string><key>shortcut</key><string>あかばなか</string></dict>
+	<dict><key>phrase</key><string>油菜科</string><key>shortcut</key><string>あぶらなか</string></dict>
+	<dict><key>phrase</key><string>磯松科</string><key>shortcut</key><string>いそまつか</string></dict>
+	<dict><key>phrase</key><string>裏白科</string><key>shortcut</key><string>うらじろか</string></dict>
+	<dict><key>phrase</key><string>裏星科</string><key>shortcut</key><string>うらぼしか</string></dict>
+	<dict><key>phrase</key><string>車前科</string><key>shortcut</key><string>おおばこか</string></dict>
+	<dict><key>phrase</key><string>桔梗科</string><key>shortcut</key><string>ききょうか</string></dict>
+	<dict><key>phrase</key><string>里芋科</string><key>shortcut</key><string>さといもか</string></dict>
+	<dict><key>phrase</key><string>散形科</string><key>shortcut</key><string>さんけいか</string></dict>
+	<dict><key>phrase</key><string>唇形科</string><key>shortcut</key><string>しんけいか</string></dict>
+	<dict><key>phrase</key><string>唐綿科</string><key>shortcut</key><string>とうわたか</string></dict>
+	<dict><key>phrase</key><string>昼顔科</string><key>shortcut</key><string>ひるがおか</string></dict>
+	<dict><key>phrase</key><string>熊葛科</string><key>shortcut</key><string>くまつづらか</string></dict>
+	<dict><key>phrase</key><string>忍冬科</string><key>shortcut</key><string>すいかずらか</string></dict>
+	<dict><key>phrase</key><string>葛藤科</string><key>shortcut</key><string>つづらふじか</string></dict>
+	<dict><key>phrase</key><string>薯蕷科</string><key>shortcut</key><string>やまのいもか</string></dict>
+	<dict><key>phrase</key><string>莎草科</string><key>shortcut</key><string>かやつりぐさか</string></dict>
+
 	<!-- ■ 交ぜ書き・表記ゆれの収穫(石ユ/ぜい金 等、意味のない混ぜ表記) -->
 	<dict><key>phrase</key><string>捕そく</string><key>shortcut</key><string>ほそく</string></dict>	<!-- 捕捉 の交ぜ書き(捉 が常用漢字に入る前の表記)。ほそくできる の 5 番めに 捕そくできる が出ていた(ユーザ指定 3747) -->
 	<dict><key>phrase</key><string>仕こみ</string><key>shortcut</key><string>じこみ</string></dict>	<!-- 仕込み の交ぜ書き(辞書の じこみ 1 位)。きおけじこみ が 木桶仕こみ だった(ユーザ報告 3678) -->
