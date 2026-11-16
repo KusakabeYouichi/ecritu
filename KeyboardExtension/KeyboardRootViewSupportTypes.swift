@@ -1038,6 +1038,8 @@ extension KeyboardRootView {
         let conversionCandidates: [String]
         let selectedConversionCandidateIndex: Int?
         let kanaCandidateHeaderTopPadding: CGFloat
+        // チップの当たり判定を見た目の下へ広げる幅(定数コメント参照。3818)
+        var tapExtension: CGFloat = 0
         let onSelectConversionCandidate: (Int) -> Void
         let onComposingTextCommitTap: () -> Void
         let onComposingTextCommitLongPress: () -> Void
@@ -1101,6 +1103,9 @@ extension KeyboardRootView {
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel(candidate)
+                .reportsCandidateChipFrame(enabled: tapExtension > 0 && index < CandidateChipTapExtensionStrip.maxChips) { frame in
+                    chipFrames[index] = frame
+                }
                 // かな識別(候補==入力かな)は末尾のかな確定チップと同様に
                 // ロングタップでカタカナ確定できるようにする(挙動の一貫性)。
                 .simultaneousGesture(
@@ -1261,7 +1266,19 @@ extension KeyboardRootView {
             }
             .modifier(KeyboardScrollEdgeEffectHiddenModifier())
             }
+            .reportsCandidateChipFrame(enabled: tapExtension > 0) { headerFrame = $0 }
+            .overlay(alignment: .topLeading) {
+                if tapExtension > 0 {
+                    CandidateChipTapExtensionStrip(
+                        chipFrames: chipFrames.filter { $0.key < conversionCandidates.count },
+                        headerFrame: headerFrame, extent: tapExtension, onSelect: onSelectConversionCandidate)
+                }
+            }
         }
+
+        // 候補チップと候補欄の位置(.global)。チップの下の当たり判定に使う(3818)
+        @State private var chipFrames: [Int: CGRect] = [:]
+        @State private var headerFrame: CGRect = .zero
     }
 
     struct KeyboardRootLatinSuggestionHeaderView: View {
@@ -1271,6 +1288,7 @@ extension KeyboardRootView {
         var reservesCompositionRow: Bool = true
         let keyLabelColor: Color
         let kanaCandidateHeaderTopPadding: CGFloat
+        var tapExtension: CGFloat = 0
         let onSelectConversionCandidate: (Int) -> Void
 
         var body: some View {
@@ -1311,6 +1329,9 @@ extension KeyboardRootView {
                         }
                         .buttonStyle(.plain)
                         .accessibilityLabel(candidate)
+                        .reportsCandidateChipFrame(enabled: tapExtension > 0 && index < CandidateChipTapExtensionStrip.maxChips) { frame in
+                            chipFrames[index] = frame
+                        }
                     }
                 }
                 .padding(.horizontal, 2)
@@ -1321,7 +1342,18 @@ extension KeyboardRootView {
             }
             // かな側(3095)と同じく iOS 26 以降のスクロール縁のぼかしを切る。欧文面だけ残っていた(ユーザ報告 3119、iOS 27)
             .modifier(KeyboardScrollEdgeEffectHiddenModifier())
+            .reportsCandidateChipFrame(enabled: tapExtension > 0) { headerFrame = $0 }
+            .overlay(alignment: .topLeading) {
+                if tapExtension > 0 {
+                    CandidateChipTapExtensionStrip(
+                        chipFrames: chipFrames.filter { $0.key < latinSuggestions.count },
+                        headerFrame: headerFrame, extent: tapExtension, onSelect: onSelectConversionCandidate)
+                }
+            }
         }
+
+        @State private var chipFrames: [Int: CGRect] = [:]
+        @State private var headerFrame: CGRect = .zero
     }
 
 // パネル(絵文字/顔文字/記号/漢字ピッカー/書式化数値)下段の 🌐。地球儀キーが要る機種
@@ -1342,5 +1374,55 @@ struct PanelAdvanceKeyboardKey: View {
             )
             .frame(height: height)
         }
+    }
+}
+
+extension View {
+    // 候補チップの位置(.global)を受け取る。当たり判定を下へ広げるときだけ測る(測ると横スクロールのたびに呼ばれるため)
+    @ViewBuilder
+    func reportsCandidateChipFrame(enabled: Bool, _ action: @escaping (CGRect) -> Void) -> some View {
+        if enabled {
+            onGeometryChange(for: CGRect.self) { proxy in
+                proxy.frame(in: .global)
+            } action: { frame in
+                action(frame)
+            }
+        } else {
+            self
+        }
+    }
+}
+
+// 候補チップの真下にだけ置く透明な当たり判定(ユーザ報告 3818)。右手の親指で左上の第一候補を押すと、接触の中心が下へずれて
+// 最上段の あ に入っていた。チップの下端から、候補欄の枠の下端までの余白(約 2pt)と、枠とキーの間の隙間(段の間隔 5〜6pt)を
+// 通って、キーの上端から決めた幅まで(extent = 段の間隔+キーに食い込む幅)を、見えているチップの幅で覆う。
+// 候補欄の枠(横スクロール)は延ばさない(延ばすとチップの無い所でもキーの上端を奪う)。座標は .global でそろえる
+struct CandidateChipTapExtensionStrip: View {
+    // 測るチップの数(先頭から。押し間違いが起きるのは画面の左寄りの候補)
+    static let maxChips = 8
+    let chipFrames: [Int: CGRect]
+    let headerFrame: CGRect
+    let extent: CGFloat
+    let onSelect: (Int) -> Void
+
+    var body: some View {
+        ZStack(alignment: .topLeading) {
+            ForEach(chipFrames.keys.sorted(), id: \.self) { index in
+                if let chip = chipFrames[index] {
+                    let minX = max(chip.minX, headerFrame.minX)
+                    let maxX = min(chip.maxX, headerFrame.maxX)
+                    let top = min(max(chip.maxY - headerFrame.minY, 0), headerFrame.height)
+                    if maxX - minX > 1 {
+                        Color.clear
+                            .contentShape(Rectangle())
+                            .frame(width: maxX - minX, height: headerFrame.height - top + extent)
+                            .offset(x: minX - headerFrame.minX, y: top)
+                            .onTapGesture { onSelect(index) }
+                            .accessibilityHidden(true)
+                    }
+                }
+            }
+        }
+        .frame(width: headerFrame.width, height: headerFrame.height, alignment: .topLeading)
     }
 }

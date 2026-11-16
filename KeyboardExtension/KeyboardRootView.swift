@@ -1517,7 +1517,9 @@ struct KeyboardRootView: View {
                         }
                     }
                 } else {
+                    // 候補欄はチップの当たり判定を最上段のキーに重ねるので手前に(candidateChipTapExtension。3818)
                     topHeaderView
+                        .zIndex(1)
                     keyboardMainContent
                 }
             }
