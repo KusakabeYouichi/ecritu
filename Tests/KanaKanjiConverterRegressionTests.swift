@@ -30501,6 +30501,14 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(boosted("とうのうちのひとつ", after: "4").first, "頭のうちのひとつ")
         XCTAssertTrue(boosted("とう", after: "4").contains("島"))
         XCTAssertEqual(boosted("つのさと", after: "5").first, "つの里")
+        // 3817: 先代+の+社長、飲み物+を+注ぐ、鳥飼いたい
+        XCTAssertEqual(top("せんだいのしゃちょう"), "先代の社長")
+        XCTAssertEqual(top("せんだいのぎゅうたん"), "仙台の牛タン")
+        XCTAssertEqual(top("おちゃをついで"), "お茶を注いで")
+        XCTAssertEqual(top("とりかいたい"), "鳥飼いたい")
+        // 取り+買う は複合動詞にならない(取り忘れている の加点を掛けない。3817)
+        XCTAssertEqual(top("とりかってきた"), "鳥買ってきた")
+        XCTAssertEqual(top("とりわすれている"), "取り忘れている")
         // 飼う動物+(を を省いた)飼う(犬+解体。3815)。買ってきた は 買う のまま
         XCTAssertEqual(top("いぬかいたい"), "犬飼いたい")
         XCTAssertEqual(top("ねこかいたい"), "猫飼いたい")
@@ -30768,6 +30776,8 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("しあげかこうでばいせんをつよくする").first, "仕上げ加工で焙煎を強くする")
         XCTAssertEqual(multi("かこうをとりのぞく").first, "果梗を取り除く")
         XCTAssertEqual(multi("かりゅうがおおきい").first, "果粒が大きい")
+        // 除梗 を表に足す(除梗してから が 徐行してから。3817)
+        XCTAssertEqual(multi("じょこうしてから").first, "除梗してから")
         XCTAssertEqual(multi("しんしょうやふさのかんりがちょくせんてきになり").first, "新梢や房の管理が直線的になり")
         XCTAssertEqual(multi("とぅあがわはどうろがわのしりゅう").first, "トゥア川はドウロ川の支流")
         // 読みの終わりの きょうかい は ひらがな が先頭(きょうかい6号。ユーザ決定 3810)。名詞に続く 協会 と文の途中はそのまま

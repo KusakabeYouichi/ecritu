@@ -2919,6 +2919,9 @@ extension KanaKanjiConverter {
     static let multiClauseCompoundVerbRenyouStemReadings: Set<String> = ["とり", "はり", "のせ", "のみ"]
 
     static let multiClauseCompoundVerbRenyouBonus = 3000
+    // 上の連用形(取り/張り/乗せ/飲み)の後ろに来ても複合動詞にならない動詞の頭の字(取り買う/取り飼う/飲み勝つ は無い)。
+    // 加点の代わりに同じ幅を減点する(とりかってきた が 取り+買ってきた だった。鳥買ってきた が正しい。3817、ユーザ報告)
+    static let multiClauseNonCompoundingVerbHeads: Set<Character> = ["買", "飼", "勝"]
     // 後部要素が連用形名詞(飲み始め/取り忘れ/書き直し)のときも複合動詞として優遇する。辞書ではこれらは
     // 名詞ノード(始め rank1)で、動詞判定(派生/辞書形述語)に掛からなかった(3119)
     static let multiClauseCompoundVerbTailRenyouNounSurfaces: Set<String> = ["始め", "終わり", "過ぎ", "忘れ", "直し", "込み"]
@@ -4688,7 +4691,8 @@ extension KanaKanjiConverter {
     // 飼う動物の直後(を を省いた話し言葉)の 飼う の活用形に加点(犬飼いたい が 犬+解体、犬飼ってる が 犬+買ってる。3815、ユーザ指摘)。
     // 連語の表(犬を飼う/猫を飼う)は を の後ろだけなので、ここで補う。〜ってきた/〜ってくる は 買ってきた がふつうなので除く。
     // 魚 は食べ物として買う方が多いので表に入れない
-    static let multiClauseKeptAnimalThenKauBonus = 3500
+    // 3500 では 鳥+飼いたい(10327)が 取り+買いたい(10305)に 22 だけ負けた(とりかいたい。3817)
+    static let multiClauseKeptAnimalThenKauBonus = 4000
     // に+ついで は 次いで(ボルドーに次いで2位。継いで/ついで だった。継ぐ は を を取る: 家業を継いで。3815、ユーザ指定)。
     // 次いで に加点し、ほかの表記(継いで/ついで/接いで)に同じ幅で減点する
     static let multiClauseNiTsuideBonus = 3000

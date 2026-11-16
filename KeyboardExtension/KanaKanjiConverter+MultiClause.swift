@@ -766,6 +766,11 @@ extension KanaKanjiConverter {
     // (落下させる+病害、首席+として+析出、鮮明 と 船積みされた)
     static let contextCuedHomophoneRewrites: [(cue: String, targetReading: String, from: String, to: String)] = [
         ("びょうがい", "らっか", "落下", "落果"),
+        // 先代+の+社長/当主 ほか(せんだい を 仙台 先頭にした副作用で 仙台の社長 だった。3817)
+        ("せんだいのしゃちょう", "せんだい", "仙台", "先代"), ("せんだいのとうしゅ", "せんだい", "仙台", "先代"),
+        ("せんだいのかいちょう", "せんだい", "仙台", "先代"), ("せんだいのいえもと", "せんだい", "仙台", "先代"),
+        ("せんだいのおかみ", "せんだい", "仙台", "先代"), ("せんだいのしゅじん", "せんだい", "仙台", "先代"),
+        ("せんだいからの", "せんだい", "仙台から", "先代から"), ("せんだいがきずいた", "せんだい", "仙台", "先代"),
         // 面積の話は 最小(面積・生産量最小 が 生産量+最少。生産量だけなら 最少 のまま。3812、ユーザ指摘)
         ("めんせき", "さいしょう", "最少", "最小"),
         // 一括検査 3801 の確認表の [直す](3804、ユーザ判定)。前後の語が決め手になる同音語と、区切りが崩れていた句
@@ -6679,7 +6684,12 @@ extension KanaKanjiConverter {
                         if compoundVerbRenyouNodeKeys.contains(prevNode.key),
                             node.isInflectionDerived || node.isDictionaryFormPredicate
                                 || Self.multiClauseCompoundVerbTailRenyouNounSurfaces.contains(node.surface) {
-                            cost -= Self.multiClauseCompoundVerbRenyouBonus
+                            // 複合動詞にならない後ろの動詞(取り+買ってきた。鳥買ってきた が正しい。3817)は加点せず減点する
+                            if let head = node.surface.first, Self.multiClauseNonCompoundingVerbHeads.contains(head) {
+                                cost += Self.multiClauseCompoundVerbRenyouBonus
+                            } else {
+                                cost -= Self.multiClauseCompoundVerbRenyouBonus
+                            }
                         }
                         // 格助詞 に 直後のカ変(来る)活用は移動の到着点用法で最頻(職場に来て/こっちに来た)。
                         // 同読みの一段 着る はを格が普通(服を着て)なので、に 直後に限り来る側を押し上げる。
