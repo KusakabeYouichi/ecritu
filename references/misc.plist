@@ -1053,6 +1053,7 @@
 	        <dict><key>phrase</key><string>メイルアドレス</string><key>shortcut</key><string>めいるあどれす</string></dict>	<!-- メイルアドレス: めい+る に分断されて 名るアドレス だった(ユーザ指定の表記) -->
 	        <dict><key>phrase</key><string>サイドブレイキ</string><key>shortcut</key><string>さいどぶれいき</string><key>pos</key><string>名詞</string></dict>	<!-- サイド+ブレイキ の合成は 再度ブレイキ が先頭だった(ユーザ指定 3778) -->
 	        <dict><key>phrase</key><string>ブレイキ</string><key>shortcut</key><string>ぶれいき</string><key>pos</key><string>名詞</string></dict>	<!-- ブレーキ の -エイ- 表記(グラデイション/アップデイト と同じ書き方)。部励起/部冷気 だった(ユーザ指定 3778) -->
+	        <dict><key>phrase</key><string>レギュレイション</string><key>shortcut</key><string>れぎゅれいしょん</string><key>pos</key><string>名詞</string></dict>
 	<!-- 子音vの別表記 -->
 	        <dict><key>phrase</key><string>コンヴィニ</string><key>shortcut</key><string>こんゔぃに</string></dict>
 	        <dict><key>phrase</key><string>インヴォイス</string><key>shortcut</key><string>いんゔぉいす</string></dict>
