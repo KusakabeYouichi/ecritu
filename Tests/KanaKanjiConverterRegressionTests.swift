@@ -30507,6 +30507,11 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(multi("おぼえておきなさい").prefix(2)), ["覚えておきなさい", "憶えておきなさい"])
         XCTAssertEqual(top("おすばしょ"), "押す場所")
         XCTAssertEqual(top("よくにている"), "よく似ている")
+        // 2 番めは よく煮ている、欲にている は出さない、を の後ろは 煮る(3820)
+        XCTAssertEqual(Array(multi("よくにている").prefix(2)), ["よく似ている", "よく煮ている"])
+        XCTAssertFalse(multi("よくにている").contains("欲にている"))
+        XCTAssertEqual(multi("にんじんをよくにている").first?.hasSuffix("をよく煮ている"), true)
+        XCTAssertEqual(top("ちちによくにている"), "父によく似ている")
         // 3817: 先代+の+社長、飲み物+を+注ぐ、鳥飼いたい
         XCTAssertEqual(top("せんだいのしゃちょう"), "先代の社長")
         XCTAssertEqual(top("せんだいのぎゅうたん"), "仙台の牛タン")
