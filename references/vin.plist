@@ -77,6 +77,7 @@
 	<dict><key>phrase</key><string>Bas-Armagnac</string><key>shortcut</key><string>ばあるまにゃっく</string></dict>
 	<dict><key>phrase</key><string>Bâtard-Montrachet</string><key>shortcut</key><string>ばたーるもんらっしぇ</string></dict>
 	<dict><key>phrase</key><string>Beaujolais Nouveau</string><key>shortcut</key><string>ぼーじょれぬーゔぉー</string></dict>
+	<dict><key>phrase</key><string>Beaujolais-Villages</string><key>shortcut</key><string>ぼーじょれゔぃらーじゅ</string></dict>
 	<dict><key>phrase</key><string>Beaujolais Villages</string><key>shortcut</key><string>ぼーじょれゔぃらーじゅ</string></dict>
 	<dict><key>phrase</key><string>Beaumes de Venise</string><key>shortcut</key><string>ぼーむどゔにーず</string></dict>
 	<dict><key>phrase</key><string>Beaune</string><key>shortcut</key><string>ぼーぬ</string></dict>
@@ -4321,6 +4322,7 @@
 	<dict><key>phrase</key><string>新ドイツワイン法</string><key>shortcut</key><string>しんどいつわいんほう</string></dict>
 	<dict><key>phrase</key><string>新ルクセンブルクワイン法</string><key>shortcut</key><string>しんるくせんぶるくわいんほう</string></dict>
 	<dict><key>phrase</key><string>新ワイン法</string><key>shortcut</key><string>しんわいんほう</string></dict>
+	<dict><key>phrase</key><string>ワイン法</string><key>shortcut</key><string>わいんほう</string></dict>	<!-- 2008年にワイン法が改定され が ワイン方 だった(ユーザ指定 3815) -->
 	<dict><key>phrase</key><string>旧ワイン法</string><key>shortcut</key><string>きゅうわいんほう</string></dict>
 	<dict><key>phrase</key><string>スペインワイン法</string><key>shortcut</key><string>すぺいんわいんほう</string></dict>
 	<dict><key>phrase</key><string>スロヴェニアワイン法</string><key>shortcut</key><string>すろゔぇにあわいんほう</string></dict>
@@ -6170,9 +6172,9 @@
 	<dict><key>phrase</key><string>ギヨ式剪定法</string><key>shortcut</key><string>ぎよしきせんていほう</string></dict>
 	<dict><key>phrase</key><string>一文字型短梢剪定</string><key>shortcut</key><string>いちもんじがたたんしょうせんてい</string></dict>
 	<dict><key>phrase</key><string>夏季剪定</string><key>shortcut</key><string>かきせんてい</string></dict>
-	<dict><key>phrase</key><string>短梢剪定</string><key>shortcut</key><string>たんしょうせんてい</string></dict>
+	<dict><key>phrase</key><string>短梢剪定</string><key>shortcut</key><string>たんしょうせんてい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>短梢剪定方法</string><key>shortcut</key><string>たんしょうせんていほうほう</string></dict>
-	<dict><key>phrase</key><string>長梢剪定</string><key>shortcut</key><string>ちょうしょうせんてい</string></dict>
+	<dict><key>phrase</key><string>長梢剪定</string><key>shortcut</key><string>ちょうしょうせんてい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>長梢剪定方法</string><key>shortcut</key><string>ちょうしょうせんていほうほう</string></dict>
 	<dict><key>phrase</key><string>剪定</string><key>shortcut</key><string>せんてい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>剪定方法</string><key>shortcut</key><string>せんていほうほう</string></dict>
@@ -6315,7 +6317,7 @@
 	<dict><key>phrase</key><string>ビン内2次醗酵製法</string><key>shortcut</key><string>びんないにじはっこうせいほう</string></dict>
 	<dict><key>phrase</key><string>ビン内最低熟成期間</string><key>shortcut</key><string>びんないさいていじゅくせいきかん</string></dict>
 	<dict><key>phrase</key><string>ビン内熟成</string><key>shortcut</key><string>びんないじゅくせい</string></dict>
-	<dict><key>phrase</key><string>ビン熟成</string><key>shortcut</key><string>びんじゅくせい</string></dict>
+	<dict><key>phrase</key><string>ビン熟成</string><key>shortcut</key><string>びんじゅくせい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>ビン貯蔵・熟成期間</string><key>shortcut</key><string>びんちょぞうじゅくせいきかん</string></dict>
 	<dict><key>phrase</key><string>ビール醸造</string><key>shortcut</key><string>びーるじょうぞう</string></dict>
 	<dict><key>phrase</key><string>ブランデー蒸溜所</string><key>shortcut</key><string>ぶらんでーじょうりゅうしょ</string></dict>
@@ -9794,7 +9796,7 @@
 	<dict><key>phrase</key><string>クルラ</string><key>shortcut</key><string>くるら</string></dict>
 	<dict><key>phrase</key><string>コルク型</string><key>shortcut</key><string>こるくがた</string></dict>
 	<dict><key>phrase</key><string>コルク栓置</string><key>shortcut</key><string>こるくせんおき</string></dict>
-	<dict><key>phrase</key><string>サーヴ</string><key>shortcut</key><string>さーゔ</string></dict>
+	<dict><key>phrase</key><string>サーヴ</string><key>shortcut</key><string>さーゔ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>デカンタージュ→ホスト</string><key>shortcut</key><string>でかんたーじゅほすと</string></dict>
 	<dict><key>phrase</key><string>バイザグラス・プロモーション等</string><key>shortcut</key><string>ばいざぐらすぷろもーしょんとう</string></dict>
 	<dict><key>phrase</key><string>バルーン型グラス</string><key>shortcut</key><string>ばるーんがたぐらす</string></dict>
