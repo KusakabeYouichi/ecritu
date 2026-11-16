@@ -41,6 +41,9 @@ EXCLUDED_READINGS = {"こじょう", "げんさん", "いか"}
 # 拾った語を差し替える読み(ユーザ指定 3810): しゅし は 手指 でなく 種子 を先に(アニスの種子 が アニスの手指)。
 # 読み → (先頭に置く語, 説明に出す一般語)
 OVERRIDES = {"しゅし": (["種子"], "趣旨")}
+# 読みだけなら先頭がワイン用語なので拾われないが、文の中では一般語が勝つ読み(ユーザ指定 3817): じょこう=除梗(除梗してから が
+# 徐行してから)。読み → (先頭に置く語, 説明に出す一般語)。変換の結果に関係なく表に入れる
+ADDITIONS = {"じょこう": (["除梗"], "徐行")}
 
 
 def vin_surfaces_by_reading():
@@ -104,6 +107,9 @@ def write_table(src):
         if reading in OVERRIDES:
             ordered, top = OVERRIDES[reading]
         rows.append((reading, ordered, top))
+    for reading, (ordered, top) in ADDITIONS.items():
+        if all(r[0] != reading for r in rows):
+            rows.append((reading, ordered, top))
     rows.sort(key=lambda r: r[0])
     body = "".join("    " + reading + "\t" + "|".join(surfaces) + "\t" + top + "\t"
                    + "|".join(s for s in surfaces if in_sentence(s)) + "\n" for reading, surfaces, top in rows)
