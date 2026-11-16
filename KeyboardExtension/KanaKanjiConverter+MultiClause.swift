@@ -6181,6 +6181,10 @@ extension KanaKanjiConverter {
                             node.surface == "側", node.reading == "がわ" {
                             cost += Self.multiClauseGawaSideAfterLatinPenalty
                         }
+                        // 〜科+じゅう(定数コメント参照。3813)
+                        if prevNode.surface.last == "科", node.reading == "じゅう" {
+                            cost += Self.multiClauseKaThenJuuPenalty
+                        }
                         // 副助詞 しか+否定の述語(定数コメント参照。3811、ユーザ指摘)
                         if prevNode.readingID == SID.しか, prevNode.surfaceID == SID.しか,
                             node.surface.last.map({ ("ぁ"..."ゖ").contains($0) }) ?? false,
