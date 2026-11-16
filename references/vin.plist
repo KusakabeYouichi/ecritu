@@ -2267,7 +2267,7 @@
 	<dict><key>phrase</key><string>伝道師</string><key>shortcut</key><string>でんどうし</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>修道士</string><key>shortcut</key><string>しゅうどうし</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>元寇</string><key>shortcut</key><string>げんこう</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>南蛮貿易</string><key>shortcut</key><string>なんばんぼうえき</string></dict>
+	<dict><key>phrase</key><string>南蛮貿易</string><key>shortcut</key><string>なんばんぼうえき</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>古代イタリア中部</string><key>shortcut</key><string>こだいいたりあちゅうぶ</string></dict>
 	<dict><key>phrase</key><string>古代ギリシャ</string><key>shortcut</key><string>こだいぎりしゃ</string></dict>
 	<dict><key>phrase</key><string>古代バビロニア</string><key>shortcut</key><string>こだいばびろにあ</string></dict>
@@ -2281,10 +2281,10 @@
 	<dict><key>phrase</key><string>大帝国</string><key>shortcut</key><string>だいていこく</string></dict>
 	<dict><key>phrase</key><string>大帝国内</string><key>shortcut</key><string>だいていこくない</string></dict>
 	<dict><key>phrase</key><string>大正初期</string><key>shortcut</key><string>たいしょうしょき</string></dict>
-	<dict><key>phrase</key><string>宗教的迫害</string><key>shortcut</key><string>しゅうきょうてきはくがい</string></dict>
-	<dict><key>phrase</key><string>宗教迫害</string><key>shortcut</key><string>しゅうきょうはくがい</string></dict>
-	<dict><key>phrase</key><string>政権崩壊</string><key>shortcut</key><string>せいけんほうかい</string></dict>
-	<dict><key>phrase</key><string>日明貿易</string><key>shortcut</key><string>にちみんぼうえき</string></dict>
+	<dict><key>phrase</key><string>宗教的迫害</string><key>shortcut</key><string>しゅうきょうてきはくがい</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>宗教迫害</string><key>shortcut</key><string>しゅうきょうはくがい</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>政権崩壊</string><key>shortcut</key><string>せいけんほうかい</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>日明貿易</string><key>shortcut</key><string>にちみんぼうえき</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>旧ソビエト</string><key>shortcut</key><string>きゅうそびえと</string></dict>
 	<dict><key>phrase</key><string>旧ソ連</string><key>shortcut</key><string>きゅうそれん</string></dict>
 	<dict><key>phrase</key><string>旧モルドヴァ公国</string><key>shortcut</key><string>きゅうもるどゔぁこうこく</string></dict>
@@ -2296,14 +2296,14 @@
 	<dict><key>phrase</key><string>植民地開拓者</string><key>shortcut</key><string>しょくみんちかいたくしゃ</string></dict>
 	<dict><key>phrase</key><string>殖産興業政策</string><key>shortcut</key><string>しょくさんこうぎょうせいさく</string></dict>
 	<dict><key>phrase</key><string>洞窟住居</string><key>shortcut</key><string>どうくつじゅうきょ</string></dict>
-	<dict><key>phrase</key><string>海洋交易</string><key>shortcut</key><string>かいようこうえき</string></dict>
+	<dict><key>phrase</key><string>海洋交易</string><key>shortcut</key><string>かいようこうえき</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>独裁体制</string><key>shortcut</key><string>どくさいたいせい</string></dict>
 	<dict><key>phrase</key><string>禁酒政策</string><key>shortcut</key><string>きんしゅせいさく</string></dict>
 	<dict><key>phrase</key><string>英国宮廷</string><key>shortcut</key><string>えいこくきゅうてい</string></dict>
 	<dict><key>phrase</key><string>近代イタリア</string><key>shortcut</key><string>きんだいいたりあ</string></dict>
 	<dict><key>phrase</key><string>近代国家イタリア王国</string><key>shortcut</key><string>きんだいこっかいたりあおうこく</string></dict>
 	<dict><key>phrase</key><string>鎌倉幕府</string><key>shortcut</key><string>かまくらばくふ</string></dict>
-	<dict><key>phrase</key><string>黒船来航</string><key>shortcut</key><string>くろふねらいこう</string></dict>
+	<dict><key>phrase</key><string>黒船来航</string><key>shortcut</key><string>くろふねらいこう</string><key>pos</key><string>サ変名詞</string></dict>
 
 	<!-- ■ 時代 -->
 	<dict><key>phrase</key><string>オックスフォーディアン</string><key>shortcut</key><string>おっくすふぉーでぃあん</string></dict>
@@ -3443,20 +3443,20 @@
 	<dict><key>phrase</key><string>Sekt b.A.</string><key>shortcut</key><string>ぜくとべーあー</string></dict>
 	<dict><key>phrase</key><string>Qualitätsschaumwein b.A.</string><key>shortcut</key><string>くゔぁりてーつしゃうむばいんべーあー</string></dict>
 	<dict><key>phrase</key><string>長野県原産地呼称管理制度</string><key>shortcut</key><string>ながのけんげんさんちこしょうかんりせいど</string></dict>
-	<dict><key>phrase</key><string>原産地保護</string><key>shortcut</key><string>げんさんちほご</string></dict>
+	<dict><key>phrase</key><string>原産地保護</string><key>shortcut</key><string>げんさんちほご</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>原産地名</string><key>shortcut</key><string>げんさんちめい</string></dict>
-	<dict><key>phrase</key><string>原産地名称保護</string><key>shortcut</key><string>げんさんちめいしょうほご</string></dict>
-	<dict><key>phrase</key><string>原産地呼称</string><key>shortcut</key><string>げんさんちこしょう</string></dict>
-	<dict><key>phrase</key><string>原産地呼称保護</string><key>shortcut</key><string>げんさんちこしょうほご</string></dict>
+	<dict><key>phrase</key><string>原産地名称保護</string><key>shortcut</key><string>げんさんちめいしょうほご</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>原産地呼称</string><key>shortcut</key><string>げんさんちこしょう</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>原産地呼称保護</string><key>shortcut</key><string>げんさんちこしょうほご</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>原産地呼称制度</string><key>shortcut</key><string>げんさんちこしょうせいど</string></dict>
 	<dict><key>phrase</key><string>原産地呼称法</string><key>shortcut</key><string>げんさんちこしょうほう</string></dict>
 	<dict><key>phrase</key><string>原産地呼称管理法</string><key>shortcut</key><string>げんさんちこしょうかんりほう</string></dict>
-	<dict><key>phrase</key><string>原産地呼称統制</string><key>shortcut</key><string>げんさんちこしょうとうせい</string></dict>
+	<dict><key>phrase</key><string>原産地呼称統制</string><key>shortcut</key><string>げんさんちこしょうとうせい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>原産地呼称統制制度</string><key>shortcut</key><string>げんさんちこしょうとうせいせいど</string></dict>
-	<dict><key>phrase</key><string>原産地呼称表示</string><key>shortcut</key><string>げんさんちこしょうひょうじ</string></dict>
-	<dict><key>phrase</key><string>原産地統制呼称</string><key>shortcut</key><string>げんさんちとうせいこしょう</string></dict>
-	<dict><key>phrase</key><string>原産地表示</string><key>shortcut</key><string>げんさんちひょうじ</string></dict>
-	<dict><key>phrase</key><string>原産地表記</string><key>shortcut</key><string>げんさんちひょうき</string></dict>
+	<dict><key>phrase</key><string>原産地呼称表示</string><key>shortcut</key><string>げんさんちこしょうひょうじ</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>原産地統制呼称</string><key>shortcut</key><string>げんさんちとうせいこしょう</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>原産地表示</string><key>shortcut</key><string>げんさんちひょうじ</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>原産地表記</string><key>shortcut</key><string>げんさんちひょうき</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>原産地表記付</string><key>shortcut</key><string>げんさんちひょうきつき</string></dict>
 	<dict><key>phrase</key><string>Districtus Hungaricus Controllatus</string><key>shortcut</key><string>でぃすとりくとぅすふんがりくすこんとろっらーとぅす</string></dict>
 	<dict><key>phrase</key><string>Appellation d'Origine Contrôlée</string><key>shortcut</key><string>あぺらしおんどりじーぬこんとろーれ</string></dict>
@@ -3494,11 +3494,11 @@
 	<dict><key>phrase</key><string>Weißherbst</string><key>shortcut</key><string>ゔぁいすへるぷすと</string></dict>
 	<dict><key>phrase</key><string>エプモーソ</string><key>shortcut</key><string>えぷもーそ</string></dict>
 	<dict><key>phrase</key><string>G.I.制度</string><key>shortcut</key><string>じーあいせいど</string></dict>
-	<dict><key>phrase</key><string>G.I.指定</string><key>shortcut</key><string>じーあいしてい</string></dict>
+	<dict><key>phrase</key><string>G.I.指定</string><key>shortcut</key><string>じーあいしてい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>G.I.未指定</string><key>shortcut</key><string>じーあいみしてい</string></dict>
-	<dict><key>phrase</key><string>G.I.登録</string><key>shortcut</key><string>じーあいとうろく</string></dict>
+	<dict><key>phrase</key><string>G.I.登録</string><key>shortcut</key><string>じーあいとうろく</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>G.I.登録数</string><key>shortcut</key><string>じーあいとうろくすう</string></dict>
-	<dict><key>phrase</key><string>G.I.認定</string><key>shortcut</key><string>じーあいにんてい</string></dict>
+	<dict><key>phrase</key><string>G.I.認定</string><key>shortcut</key><string>じーあいにんてい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>G.I. Zone</string><key>shortcut</key><string>じーあいぞーん</string></dict>
 	<dict><key>phrase</key><string>A.O.C.</string><key>shortcut</key><string>あーおーせー</string></dict>
 	<dict><key>phrase</key><string>A.O.C.</string><key>shortcut</key><string>えーおーしー</string></dict>
@@ -3526,12 +3526,12 @@
 	<dict><key>phrase</key><string>村名アペラシオン</string><key>shortcut</key><string>そんめいあぺらしおん</string></dict>
 	<dict><key>phrase</key><string>村名ワイン</string><key>shortcut</key><string>そんめいわいん</string></dict>
 	<dict><key>phrase</key><string>地方ワイン</string><key>shortcut</key><string>ちほうわいん</string></dict>
-	<dict><key>phrase</key><string>地方呼称</string><key>shortcut</key><string>ちほうこしょう</string></dict>
+	<dict><key>phrase</key><string>地方呼称</string><key>shortcut</key><string>ちほうこしょう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>地方全体</string><key>shortcut</key><string>ちほうぜんたい</string></dict>
 	<dict><key>phrase</key><string>地方名</string><key>shortcut</key><string>ちほうめい</string></dict>
 	<dict><key>phrase</key><string>統制保証原産地呼称ワイン</string><key>shortcut</key><string>とうせいほしょうげんさんちこしょうわいん</string></dict>
 	<dict><key>phrase</key><string>統制保証原産地産上級ワイン</string><key>shortcut</key><string>とうせいほしょうげんさんちさんじょうきゅうわいん</string></dict>
-	<dict><key>phrase</key><string>特選原産地呼称</string><key>shortcut</key><string>とくせんげんさんちこしょう</string></dict>
+	<dict><key>phrase</key><string>特選原産地呼称</string><key>shortcut</key><string>とくせんげんさんちこしょう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>特選原産地呼称ワイン</string><key>shortcut</key><string>とくせんげんさんちこしょうわいん</string></dict>
 	<dict><key>phrase</key><string>特定ワイン生産地域</string><key>shortcut</key><string>とくていわいんせいさんちいき</string></dict>
 	<dict><key>phrase</key><string>特定ワイン生産地域以外</string><key>shortcut</key><string>とくていわいんせいさんちいきいがい</string></dict>
@@ -3542,7 +3542,7 @@
 	<dict><key>phrase</key><string>Gewürztraminer Vendanges Tardives</string><key>shortcut</key><string>げゔゅるつとらみねーるゔぁんだんじゅたるでぃーゔ</string></dict>
 	<dict><key>phrase</key><string>Pinot Gris Sélection de Grains Nobles</string><key>shortcut</key><string>ぴのぐりせれくしおんどぐらんのーぶる</string></dict>
 	<dict><key>phrase</key><string>Tokaj Aszú</string><key>shortcut</key><string>とかいあすー</string></dict>
-	<dict><key>phrase</key><string>V.Q.A.規定</string><key>shortcut</key><string>ぶいきゅーえいきてい</string></dict>
+	<dict><key>phrase</key><string>V.Q.A.規定</string><key>shortcut</key><string>ぶいきゅーえいきてい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>Amtliche Prüfungsnummer</string><key>shortcut</key><string>あむとりっひぇぷりゅーふんぐすぬんまー</string></dict>
 	<dict><key>phrase</key><string>Anbaugebiet</string><key>shortcut</key><string>あんばうげびーと</string></dict>
 	<dict><key>phrase</key><string>Apera</string><key>shortcut</key><string>あぺら</string></dict>
@@ -3726,8 +3726,8 @@
 	<dict><key>phrase</key><string>Reserva</string><key>shortcut</key><string>れせるば</string></dict>
 	<dict><key>phrase</key><string>Reserva Especial</string><key>shortcut</key><string>れせるばえすぺしある</string></dict>
 	<dict><key>phrase</key><string>Reserva Privada</string><key>shortcut</key><string>れせるばぷりばーだ</string></dict>
-	<dict><key>phrase</key><string>Reserva表示</string><key>shortcut</key><string>れせるばひょうじ</string></dict>
-	<dict><key>phrase</key><string>Reserva表記</string><key>shortcut</key><string>れせるばひょうき</string></dict>
+	<dict><key>phrase</key><string>Reserva表示</string><key>shortcut</key><string>れせるばひょうじ</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>Reserva表記</string><key>shortcut</key><string>れせるばひょうき</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>Retsina</string><key>shortcut</key><string>れつぃーな</string></dict>
 	<dict><key>phrase</key><string>Rezervă</string><key>shortcut</key><string>れぜるゔぁ</string></dict>
 	<dict><key>phrase</key><string>Rose Port</string><key>shortcut</key><string>ろぜぽると</string></dict>
@@ -3951,13 +3951,13 @@
 	<dict><key>phrase</key><string>Clarete</string><key>shortcut</key><string>くられて</string></dict>
 	<dict><key>phrase</key><string>Erzeugerabfüllung</string><key>shortcut</key><string>えあつぉいがーあぷふゅるんぐ</string></dict>
 	<dict><key>phrase</key><string>Estate Bottled</string><key>shortcut</key><string>えすていとぼとるど</string></dict>
-	<dict><key>phrase</key><string>Estate Bottled表記</string><key>shortcut</key><string>えすていとぼとるどひょうき</string></dict>
+	<dict><key>phrase</key><string>Estate Bottled表記</string><key>shortcut</key><string>えすていとぼとるどひょうき</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>エアツォイガーアプフュルング</string><key>shortcut</key><string>えあつぉいがーあぷふゅるんぐ</string></dict>
 	<dict><key>phrase</key><string>カダストロ</string><key>shortcut</key><string>かだすとろ</string></dict>
 	<dict><key>phrase</key><string>デノミナシオン・デ・オリヘン</string><key>shortcut</key><string>でのみなしおんでおりへん</string></dict>
 	<dict><key>phrase</key><string>ネゴシアン・マニピュラン</string><key>shortcut</key><string>ねごしあんまにぴゅらん</string></dict>
 	<dict><key>phrase</key><string>認定酒</string><key>shortcut</key><string>にんていしゅ</string></dict>
-	<dict><key>phrase</key><string>2次的産地表示</string><key>shortcut</key><string>にじてきさんちひょうじ</string></dict>
+	<dict><key>phrase</key><string>2次的産地表示</string><key>shortcut</key><string>にじてきさんちひょうじ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>Argent classe</string><key>shortcut</key><string>あるじゃんくらす</string></dict>
 	<dict><key>phrase</key><string>Bronze classe</string><key>shortcut</key><string>ぶろんずくらす</string></dict>
 	<dict><key>phrase</key><string>C-Ⅰ</string><key>shortcut</key><string>しーいち</string></dict>
@@ -4121,11 +4121,11 @@
 	<dict><key>phrase</key><string>ヴィンテージ・ポルト</string><key>shortcut</key><string>ゔぃんてーじぽると</string></dict>
 	<dict><key>phrase</key><string>ヴィンテージ・ポート</string><key>shortcut</key><string>ゔぃんてーじぽーと</string></dict>
 	<dict><key>phrase</key><string>ヴィン・サント</string><key>shortcut</key><string>ゔぃんさんと</string></dict>
-	<dict><key>phrase</key><string>伝統的特産品保証</string><key>shortcut</key><string>でんとうてきとくさんひんほしょう</string></dict>
+	<dict><key>phrase</key><string>伝統的特産品保証</string><key>shortcut</key><string>でんとうてきとくさんひんほしょう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>低価格ワイン</string><key>shortcut</key><string>ていかかくわいん</string></dict>
 	<dict><key>phrase</key><string>優良品質ワイン</string><key>shortcut</key><string>ゆうりょうひんしつわいん</string></dict>
-	<dict><key>phrase</key><string>品質分類</string><key>shortcut</key><string>ひんしつぶんるい</string></dict>
-	<dict><key>phrase</key><string>品質区分</string><key>shortcut</key><string>ひんしつくぶん</string></dict>
+	<dict><key>phrase</key><string>品質分類</string><key>shortcut</key><string>ひんしつぶんるい</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>品質区分</string><key>shortcut</key><string>ひんしつくぶん</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>品質認証制度</string><key>shortcut</key><string>ひんしつにんしょうせいど</string></dict>
 	<dict><key>phrase</key><string>白ワイン</string><key>shortcut</key><string>しろわいん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>辛口ワイン</string><key>shortcut</key><string>からくちわいん</string></dict>
@@ -4137,13 +4137,13 @@
 	<dict><key>phrase</key><string>地理的表示制度</string><key>shortcut</key><string>ちりてきひょうじせいど</string></dict>
 	<dict><key>phrase</key><string>天然甘口ワイン</string><key>shortcut</key><string>てんねんあまくちわいん</string></dict>
 	<dict><key>phrase</key><string>アペラシオンレンジ</string><key>shortcut</key><string>あぺらしおんれんじ</string></dict>
-	<dict><key>phrase</key><string>オーガニック認証</string><key>shortcut</key><string>おーがにっくにんしょう</string></dict>
+	<dict><key>phrase</key><string>オーガニック認証</string><key>shortcut</key><string>おーがにっくにんしょう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>オーガニック認証制度</string><key>shortcut</key><string>おーがにっくにんしょうせいど</string></dict>
 	<dict><key>phrase</key><string>オーガニック認証機関</string><key>shortcut</key><string>おーがにっくにんしょうきかん</string></dict>
 	<dict><key>phrase</key><string>オーガニック農産物</string><key>shortcut</key><string>おーがにっくのうさんぶつ</string></dict>
 	<dict><key>phrase</key><string>クライス</string><key>shortcut</key><string>くらいす</string></dict>
-	<dict><key>phrase</key><string>サステイナビリティ認定保証</string><key>shortcut</key><string>さすていなびりてぃにんていほしょう</string></dict>
-	<dict><key>phrase</key><string>サステイナビリティ認証</string><key>shortcut</key><string>さすていなびりてぃにんしょう</string></dict>
+	<dict><key>phrase</key><string>サステイナビリティ認定保証</string><key>shortcut</key><string>さすていなびりてぃにんていほしょう</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>サステイナビリティ認証</string><key>shortcut</key><string>さすていなびりてぃにんしょう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>サステイナブル認証制度</string><key>shortcut</key><string>さすていなぶるにんしょうせいど</string></dict>
 	<dict><key>phrase</key><string>サブエリア</string><key>shortcut</key><string>さぶえりあ</string></dict>
 	<dict><key>phrase</key><string>サブゾーン</string><key>shortcut</key><string>さぶぞーん</string></dict>
@@ -4171,44 +4171,44 @@
 	<dict><key>phrase</key><string>ロンドンタイプ</string><key>shortcut</key><string>ろんどんたいぷ</string></dict>
 	<dict><key>phrase</key><string>ワイン・リージョン</string><key>shortcut</key><string>わいんりーじょん</string></dict>
 	<dict><key>phrase</key><string>ワイン特区</string><key>shortcut</key><string>わいんとっく</string></dict>
-	<dict><key>phrase</key><string>ヴィンテージ表記</string><key>shortcut</key><string>ゔぃんてーじひょうき</string></dict>
+	<dict><key>phrase</key><string>ヴィンテージ表記</string><key>shortcut</key><string>ゔぃんてーじひょうき</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>ヴィーニョ</string><key>shortcut</key><string>ゔぃーにょ</string></dict>
 	<dict><key>phrase</key><string>任意記載事項</string><key>shortcut</key><string>にんいきさいじこう</string></dict>
-	<dict><key>phrase</key><string>保存料ラベル表示</string><key>shortcut</key><string>ほぞんりょうらべるひょうじ</string></dict>
+	<dict><key>phrase</key><string>保存料ラベル表示</string><key>shortcut</key><string>ほぞんりょうらべるひょうじ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>八ヶ岳西麓ワイン特区</string><key>shortcut</key><string>やつがたけせいろくわいんとっく</string></dict>
 	<dict><key>phrase</key><string>かみのやまワイン特区</string><key>shortcut</key><string>かみのやまわいんとっく</string></dict>	<!-- 山形県上山市。特区名はひらがな(learningBOX 検査 3693、上山ワイン特区 だった) -->
 	<dict><key>phrase</key><string>ぶどうの里なんよう</string><key>shortcut</key><string>ぶどうのさとなんよう</string></dict>	<!-- 山形県南陽市。特区名『ぶどうの里なんようワイン特区』はひらがな(ユーザ指定 3808、南陽 になった) -->
 	<dict><key>phrase</key><string>なんようワイン特区</string><key>shortcut</key><string>なんようわいんとっく</string></dict>
 	<dict><key>phrase</key><string>原産国名</string><key>shortcut</key><string>げんさんこくめい</string></dict>
-	<dict><key>phrase</key><string>品種分類</string><key>shortcut</key><string>ひんしゅぶんるい</string></dict>
+	<dict><key>phrase</key><string>品種分類</string><key>shortcut</key><string>ひんしゅぶんるい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>品種名</string><key>shortcut</key><string>ひんしゅめい</string></dict>
-	<dict><key>phrase</key><string>品種名表示</string><key>shortcut</key><string>ひんしゅめいひょうじ</string></dict>
+	<dict><key>phrase</key><string>品種名表示</string><key>shortcut</key><string>ひんしゅめいひょうじ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>品種最低使用割合</string><key>shortcut</key><string>ひんしゅさいていしようわりあい</string></dict>
-	<dict><key>phrase</key><string>品種規定</string><key>shortcut</key><string>ひんしゅきてい</string></dict>
+	<dict><key>phrase</key><string>品種規定</string><key>shortcut</key><string>ひんしゅきてい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>品質判定条件</string><key>shortcut</key><string>ひんしつはんていじょうけん</string></dict>
 	<dict><key>phrase</key><string>品質基準</string><key>shortcut</key><string>ひんしつきじゅん</string></dict>
-	<dict><key>phrase</key><string>品質表示</string><key>shortcut</key><string>ひんしつひょうじ</string></dict>
+	<dict><key>phrase</key><string>品質表示</string><key>shortcut</key><string>ひんしつひょうじ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>品質表示ガイドライン</string><key>shortcut</key><string>ひんしつひょうじがいどらいん</string></dict>
 	<dict><key>phrase</key><string>地域名付</string><key>shortcut</key><string>ちいきなづけ</string></dict>
 	<dict><key>phrase</key><string>地域名称</string><key>shortcut</key><string>ちいきめいしょう</string></dict>
-	<dict><key>phrase</key><string>地域表示</string><key>shortcut</key><string>ちいきひょうじ</string></dict>
+	<dict><key>phrase</key><string>地域表示</string><key>shortcut</key><string>ちいきひょうじ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>地理的名称</string><key>shortcut</key><string>ちりてきめいしょう</string></dict>
-	<dict><key>phrase</key><string>地理的呼称</string><key>shortcut</key><string>ちりてきこしょう</string></dict>
+	<dict><key>phrase</key><string>地理的呼称</string><key>shortcut</key><string>ちりてきこしょう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>地理的呼称地域</string><key>shortcut</key><string>ちりてきこしょうちいき</string></dict>
 	<dict><key>phrase</key><string>地理的呼称委員会</string><key>shortcut</key><string>ちりてきこしょういいんかい</string></dict>
 	<dict><key>phrase</key><string>地理的呼称範囲</string><key>shortcut</key><string>ちりてきこしょうはんい</string></dict>
-	<dict><key>phrase</key><string>地理的表示</string><key>shortcut</key><string>ちりてきひょうじ</string></dict>
-	<dict><key>phrase</key><string>地理的表示保護</string><key>shortcut</key><string>ちりてきひょうじほご</string></dict>
+	<dict><key>phrase</key><string>地理的表示</string><key>shortcut</key><string>ちりてきひょうじ</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>地理的表示保護</string><key>shortcut</key><string>ちりてきひょうじほご</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>地理的表示制定法</string><key>shortcut</key><string>ちりてきひょうじせいていほう</string></dict>
 	<dict><key>phrase</key><string>地理的階層</string><key>shortcut</key><string>ちりてきかいそう</string></dict>
 	<dict><key>phrase</key><string>地理的領域</string><key>shortcut</key><string>ちりてきりょういき</string></dict>
-	<dict><key>phrase</key><string>地理表示</string><key>shortcut</key><string>ちりひょうじ</string></dict>
-	<dict><key>phrase</key><string>年数表記</string><key>shortcut</key><string>ねんすうひょうき</string></dict>
-	<dict><key>phrase</key><string>度数表示</string><key>shortcut</key><string>どすうひょうじ</string></dict>
+	<dict><key>phrase</key><string>地理表示</string><key>shortcut</key><string>ちりひょうじ</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>年数表記</string><key>shortcut</key><string>ねんすうひょうき</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>度数表示</string><key>shortcut</key><string>どすうひょうじ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>微発泡ワイン</string><key>shortcut</key><string>びはっぽうわいん</string></dict>
 	<dict><key>phrase</key><string>指定添加物</string><key>shortcut</key><string>していてんかぶつ</string></dict>
 	<dict><key>phrase</key><string>指定義務</string><key>shortcut</key><string>していぎむ</string></dict>
-	<dict><key>phrase</key><string>政府認定</string><key>shortcut</key><string>せいふにんてい</string></dict>
+	<dict><key>phrase</key><string>政府認定</string><key>shortcut</key><string>せいふにんてい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>数値基準</string><key>shortcut</key><string>すうちきじゅん</string></dict>
 	<dict><key>phrase</key><string>日常ワイン</string><key>shortcut</key><string>にちじょうわいん</string></dict>
 	<dict><key>phrase</key><string>日本ワイン</string><key>shortcut</key><string>にほんわいん</string></dict>
@@ -4222,17 +4222,17 @@
 	<dict><key>phrase</key><string>最高級クラス</string><key>shortcut</key><string>さいこうきゅうくらす</string></dict>
 	<dict><key>phrase</key><string>最高級格付</string><key>shortcut</key><string>さいこうきゅうかくづけ</string></dict>
 	<dict><key>phrase</key><string>有機ワイン</string><key>shortcut</key><string>ゆうきわいん</string></dict>
-	<dict><key>phrase</key><string>有機認証</string><key>shortcut</key><string>ゆうきにんしょう</string></dict>
+	<dict><key>phrase</key><string>有機認証</string><key>shortcut</key><string>ゆうきにんしょう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>松脂ワイン</string><key>shortcut</key><string>まつやにわいん</string></dict>
-	<dict><key>phrase</key><string>正式呼称</string><key>shortcut</key><string>せいしきこしょう</string></dict>
-	<dict><key>phrase</key><string>残糖量表示</string><key>shortcut</key><string>ざんとうりょうひょうじ</string></dict>
+	<dict><key>phrase</key><string>正式呼称</string><key>shortcut</key><string>せいしきこしょう</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>残糖量表示</string><key>shortcut</key><string>ざんとうりょうひょうじ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>氷河ワイン</string><key>shortcut</key><string>ひょうがわいん</string></dict>
 	<dict><key>phrase</key><string>法定アルコール度数</string><key>shortcut</key><string>ほうていあるこーるどすう</string></dict>
 	<dict><key>phrase</key><string>法定最低アルコール度数</string><key>shortcut</key><string>ほうていさいていあるこーるどすう</string></dict>
 	<dict><key>phrase</key><string>法定最低使用比率</string><key>shortcut</key><string>ほうていさいていしようひりつ</string></dict>
 	<dict><key>phrase</key><string>法定最低度数</string><key>shortcut</key><string>ほうていさいていどすう</string></dict>
 	<dict><key>phrase</key><string>法的数値基準</string><key>shortcut</key><string>ほうてきすうちきじゅん</string></dict>
-	<dict><key>phrase</key><string>注意表示</string><key>shortcut</key><string>ちゅういひょうじ</string></dict>
+	<dict><key>phrase</key><string>注意表示</string><key>shortcut</key><string>ちゅういひょうじ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>レバノン法典</string><key>shortcut</key><string>ればのんほうてん</string></dict>
 	<dict><key>phrase</key><string>指定地域</string><key>shortcut</key><string>していちいき</string></dict>
 	<dict><key>phrase</key><string>淡色タイプ</string><key>shortcut</key><string>たんしょくたいぷ</string></dict>
@@ -4243,7 +4243,7 @@
 	<dict><key>phrase</key><string>特定名称酒全体</string><key>shortcut</key><string>とくていめいしょうしゅぜんたい</string></dict>
 	<dict><key>phrase</key><string>特定地域</string><key>shortcut</key><string>とくていちいき</string></dict>
 	<dict><key>phrase</key><string>特定用語</string><key>shortcut</key><string>とくていようご</string></dict>
-	<dict><key>phrase</key><string>特定表示</string><key>shortcut</key><string>とくていひょうじ</string></dict>
+	<dict><key>phrase</key><string>特定表示</string><key>shortcut</key><string>とくていひょうじ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>特級区画</string><key>shortcut</key><string>とっきゅうくかく</string></dict>
 	<dict><key>phrase</key><string>独自商標</string><key>shortcut</key><string>どくじしょうひょう</string></dict>
 	<dict><key>phrase</key><string>独自格付</string><key>shortcut</key><string>どくじかくづけ</string></dict>
@@ -4260,8 +4260,8 @@
 	<dict><key>phrase</key><string>生産可能タイプ</string><key>shortcut</key><string>せいさんかのうたいぷ</string></dict>
 	<dict><key>phrase</key><string>生産可能ワイン</string><key>shortcut</key><string>せいさんかのうわいん</string></dict>
 	<dict><key>phrase</key><string>生産条件</string><key>shortcut</key><string>せいさんじょうけん</string></dict>
-	<dict><key>phrase</key><string>生産統制</string><key>shortcut</key><string>せいさんとうせい</string></dict>
-	<dict><key>phrase</key><string>生産規定</string><key>shortcut</key><string>せいさんきてい</string></dict>
+	<dict><key>phrase</key><string>生産統制</string><key>shortcut</key><string>せいさんとうせい</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>生産規定</string><key>shortcut</key><string>せいさんきてい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>生産認定地域</string><key>shortcut</key><string>せいさんにんていちいき</string></dict>
 	<dict><key>phrase</key><string>発泡ロゼ</string><key>shortcut</key><string>はっぽうろぜ</string></dict>
 	<dict><key>phrase</key><string>発泡ワイン</string><key>shortcut</key><string>はっぽうわいん</string></dict>
@@ -4280,11 +4280,11 @@
 	<dict><key>phrase</key><string>表示義務事項</string><key>shortcut</key><string>ひょうじぎむじこう</string></dict>
 	<dict><key>phrase</key><string>製法品質表示基準</string><key>shortcut</key><string>せいほうひんしつひょうじきじゅん</string></dict>
 	<dict><key>phrase</key><string>規定アルコール含有量</string><key>shortcut</key><string>きていあるこーるがんゆうりょう</string></dict>
-	<dict><key>phrase</key><string>規定・制約</string><key>shortcut</key><string>きていせいやく</string></dict>
-	<dict><key>phrase</key><string>規定以上使用</string><key>shortcut</key><string>きていいじょうしよう</string></dict>
-	<dict><key>phrase</key><string>規定変更</string><key>shortcut</key><string>きていへんこう</string></dict>
+	<dict><key>phrase</key><string>規定・制約</string><key>shortcut</key><string>きていせいやく</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>規定以上使用</string><key>shortcut</key><string>きていいじょうしよう</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>規定変更</string><key>shortcut</key><string>きていへんこう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>許容使用量</string><key>shortcut</key><string>きょようしようりょう</string></dict>
-	<dict><key>phrase</key><string>評価・分類</string><key>shortcut</key><string>ひょうかぶんるい</string></dict>
+	<dict><key>phrase</key><string>評価・分類</string><key>shortcut</key><string>ひょうかぶんるい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>評価区分</string><key>shortcut</key><string>ひょうかくぶん</string></dict>
 	<dict><key>phrase</key><string>認定単位</string><key>shortcut</key><string>にんていたんい</string></dict>
 	<dict><key>phrase</key><string>認定地域</string><key>shortcut</key><string>にんていちいき</string></dict>
@@ -4302,7 +4302,7 @@
 	<dict><key>phrase</key><string>辛口赤</string><key>shortcut</key><string>からくちあか</string></dict>
 	<dict><key>phrase</key><string>辛口赤ワイン</string><key>shortcut</key><string>からくちあかわいん</string></dict>
 	<dict><key>phrase</key><string>農産物規格規程</string><key>shortcut</key><string>のうさんぶつきかくきてい</string></dict>
-	<dict><key>phrase</key><string>酒類分類</string><key>shortcut</key><string>しゅるいぶんるい</string></dict>
+	<dict><key>phrase</key><string>酒類分類</string><key>shortcut</key><string>しゅるいぶんるい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>酸化ワイン</string><key>shortcut</key><string>さんかわいん</string></dict>
 	<dict><key>phrase</key><string>銘醸ワイン</string><key>shortcut</key><string>めいじょうわいん</string></dict>
 	<dict><key>phrase</key><string>骨格フルボディー</string><key>shortcut</key><string>こっかくふるぼでぃー</string></dict>
@@ -4317,7 +4317,7 @@
 	<dict><key>phrase</key><string>アペレイション名</string><key>shortcut</key><string>あぺれいしょんめい</string></dict>
 	<dict><key>phrase</key><string>グラン・クリュ名</string><key>shortcut</key><string>ぐらんくりゅめい</string></dict>
 	<dict><key>phrase</key><string>グラン・クリュ数</string><key>shortcut</key><string>ぐらんくりゅすう</string></dict>
-	<dict><key>phrase</key><string>グラン・クリュ表記</string><key>shortcut</key><string>ぐらんくりゅひょうき</string></dict>
+	<dict><key>phrase</key><string>グラン・クリュ表記</string><key>shortcut</key><string>ぐらんくりゅひょうき</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>ワイン・アペレイション</string><key>shortcut</key><string>わいんあぺれいしょん</string></dict>
 	<dict><key>phrase</key><string>新ドイツワイン法</string><key>shortcut</key><string>しんどいつわいんほう</string></dict>
 	<dict><key>phrase</key><string>新ルクセンブルクワイン法</string><key>shortcut</key><string>しんるくせんぶるくわいんほう</string></dict>
@@ -4333,38 +4333,38 @@
 	<dict><key>phrase</key><string>酒税法</string><key>shortcut</key><string>しゅぜいほう</string></dict>
 	<dict><key>phrase</key><string>酒税法上</string><key>shortcut</key><string>しゅぜいほうじょう</string></dict>
 	<dict><key>phrase</key><string>食品衛生法</string><key>shortcut</key><string>しょくひんえいせいほう</string></dict>
-	<dict><key>phrase</key><string>アイスワイン規定</string><key>shortcut</key><string>あいすわいんきてい</string></dict>
+	<dict><key>phrase</key><string>アイスワイン規定</string><key>shortcut</key><string>あいすわいんきてい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>イストラ品質</string><key>shortcut</key><string>いすとらひんしつ</string></dict>
 	<dict><key>phrase</key><string>グレイディング</string><key>shortcut</key><string>ぐれいでぃんぐ</string></dict>
 	<dict><key>phrase</key><string>フェーダーヴァイサー</string><key>shortcut</key><string>ふぇーだーゔぁいさー</string></dict>
 	<dict><key>phrase</key><string>モルドヴァワイン</string><key>shortcut</key><string>もるどゔぁわいん</string></dict>
 	<dict><key>phrase</key><string>ワインベース</string><key>shortcut</key><string>わいんべーす</string></dict>
-	<dict><key>phrase</key><string>公式登録</string><key>shortcut</key><string>こうしきとうろく</string></dict>
+	<dict><key>phrase</key><string>公式登録</string><key>shortcut</key><string>こうしきとうろく</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>品種個性</string><key>shortcut</key><string>ひんしゅこせい</string></dict>
-	<dict><key>phrase</key><string>品種構成</string><key>shortcut</key><string>ひんしゅこうせい</string></dict>
+	<dict><key>phrase</key><string>品種構成</string><key>shortcut</key><string>ひんしゅこうせい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>品種特性</string><key>shortcut</key><string>ひんしゅとくせい</string></dict>
-	<dict><key>phrase</key><string>品種由来</string><key>shortcut</key><string>ひんしゅゆらい</string></dict>
-	<dict><key>phrase</key><string>品質劣化</string><key>shortcut</key><string>ひんしつれっか</string></dict>
-	<dict><key>phrase</key><string>品質検査</string><key>shortcut</key><string>ひんしつけんさ</string></dict>
-	<dict><key>phrase</key><string>品質管理</string><key>shortcut</key><string>ひんしつかんり</string></dict>
-	<dict><key>phrase</key><string>品質維持</string><key>shortcut</key><string>ひんしついじ</string></dict>
-	<dict><key>phrase</key><string>品質調整</string><key>shortcut</key><string>ひんしつちょうせい</string></dict>
+	<dict><key>phrase</key><string>品種由来</string><key>shortcut</key><string>ひんしゅゆらい</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>品質劣化</string><key>shortcut</key><string>ひんしつれっか</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>品質検査</string><key>shortcut</key><string>ひんしつけんさ</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>品質管理</string><key>shortcut</key><string>ひんしつかんり</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>品質維持</string><key>shortcut</key><string>ひんしついじ</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>品質調整</string><key>shortcut</key><string>ひんしつちょうせい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>土地台帳</string><key>shortcut</key><string>とちだいちょう</string></dict>
 	<dict><key>phrase</key><string>土地台帳制度</string><key>shortcut</key><string>とちだいちょうせいど</string></dict>
-	<dict><key>phrase</key><string>申請・承認</string><key>shortcut</key><string>しんせいしょうにん</string></dict>
+	<dict><key>phrase</key><string>申請・承認</string><key>shortcut</key><string>しんせいしょうにん</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>登録形態</string><key>shortcut</key><string>とうろくけいたい</string></dict>
 	<dict><key>phrase</key><string>登録業態</string><key>shortcut</key><string>とうろくぎょうたい</string></dict>
 	<dict><key>phrase</key><string>白ワイン同様</string><key>shortcut</key><string>しろわいんどうよう</string></dict>
-	<dict><key>phrase</key><string>白ワイン生産</string><key>shortcut</key><string>しろわいんせいさん</string></dict>
+	<dict><key>phrase</key><string>白ワイン生産</string><key>shortcut</key><string>しろわいんせいさん</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>白・ロゼ</string><key>shortcut</key><string>しろろぜ</string></dict>
 	<dict><key>phrase</key><string>白・ロゼワイン</string><key>shortcut</key><string>しろろぜわいん</string></dict>
 	<dict><key>phrase</key><string>白・赤</string><key>shortcut</key><string>しろあか</string></dict>
 	<dict><key>phrase</key><string>白・赤・生産国</string><key>shortcut</key><string>しろあかせいさんこく</string></dict>
 	<dict><key>phrase</key><string>白生産可能</string><key>shortcut</key><string>しろせいさんかのう</string></dict>
-	<dict><key>phrase</key><string>白発泡</string><key>shortcut</key><string>しろはっぽう</string></dict>
-	<dict><key>phrase</key><string>米国政府認定</string><key>shortcut</key><string>べいこくせいふにんてい</string></dict>
-	<dict><key>phrase</key><string>自主規制</string><key>shortcut</key><string>じしゅきせい</string></dict>
-	<dict><key>phrase</key><string>認証活動</string><key>shortcut</key><string>にんしょうかつどう</string></dict>
+	<dict><key>phrase</key><string>白発泡</string><key>shortcut</key><string>しろはっぽう</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>米国政府認定</string><key>shortcut</key><string>べいこくせいふにんてい</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>自主規制</string><key>shortcut</key><string>じしゅきせい</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>認証活動</string><key>shortcut</key><string>にんしょうかつどう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>赤ロゼ</string><key>shortcut</key><string>あかろぜ</string></dict>
 	<dict><key>phrase</key><string>赤ワイン・白ワイン</string><key>shortcut</key><string>あかわいんしろわいん</string></dict>
 	<dict><key>phrase</key><string>赤・ 白・ロゼ</string><key>shortcut</key><string>あかしろろぜ</string></dict>
@@ -4376,7 +4376,7 @@
 	<dict><key>phrase</key><string>赤・白ワイン</string><key>shortcut</key><string>あかしろわいん</string></dict>
 	<dict><key>phrase</key><string>赤・白・ロゼワイン</string><key>shortcut</key><string>あかしろろぜわいん</string></dict>
 	<dict><key>phrase</key><string>赤白両方</string><key>shortcut</key><string>あかしろりょうほう</string></dict>
-	<dict><key>phrase</key><string>辛口ワイン生産</string><key>shortcut</key><string>からくちわいんせいさん</string></dict>
+	<dict><key>phrase</key><string>辛口ワイン生産</string><key>shortcut</key><string>からくちわいんせいさん</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>辛口需要</string><key>shortcut</key><string>からくちじゅよう</string></dict>
 	<dict><key>phrase</key><string>Vinho</string><key>shortcut</key><string>ゔぃーにょ</string></dict>
 	<dict><key>phrase</key><string>Wine</string><key>shortcut</key><string>わいん</string></dict>
@@ -5182,7 +5182,7 @@
 	<dict><key>phrase</key><string>古代品種</string><key>shortcut</key><string>こだいひんしゅ</string></dict>
 	<dict><key>phrase</key><string>台木原種</string><key>shortcut</key><string>だいぎげんしゅ</string></dict>
 	<dict><key>phrase</key><string>台木品種</string><key>shortcut</key><string>だいぎひんしゅ</string></dict>
-	<dict><key>phrase</key><string>品種交配</string><key>shortcut</key><string>ひんしゅこうはい</string></dict>
+	<dict><key>phrase</key><string>品種交配</string><key>shortcut</key><string>ひんしゅこうはい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>国際品種</string><key>shortcut</key><string>こくさいひんしゅ</string></dict>
 	<dict><key>phrase</key><string>土着品種</string><key>shortcut</key><string>どちゃくひんしゅ</string></dict>
 	<dict><key>phrase</key><string>在来品種</string><key>shortcut</key><string>ざいらいひんしゅ</string></dict>
@@ -5621,7 +5621,7 @@
 	<dict><key>phrase</key><string>西ローマ皇帝</string><key>shortcut</key><string>にしろーまこうてい</string></dict>
 
 	<!-- ■ 栽培技術 -->
-	<dict><key>phrase</key><string>光合成</string><key>shortcut</key><string>こうごうせい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>光合成</string><key>shortcut</key><string>こうごうせい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>テロワール</string><key>shortcut</key><string>てろわーる</string></dict>
 	<dict><key>phrase</key><string>2芽</string><key>shortcut</key><string>にが</string></dict>
 	<dict><key>phrase</key><string>3芽</string><key>shortcut</key><string>さんが</string></dict>
@@ -5634,16 +5634,16 @@
 	<dict><key>phrase</key><string>Spur Pruning</string><key>shortcut</key><string>すぱーぷるーにんぐ</string></dict>
 	<dict><key>phrase</key><string>Summer pruning</string><key>shortcut</key><string>さまーぷるーにんぐ</string></dict>
 	<dict><key>phrase</key><string>アメリカ系台木</string><key>shortcut</key><string>あめりかけいだいぎ</string></dict>
-	<dict><key>phrase</key><string>オーガニック栽培</string><key>shortcut</key><string>おーがにっくさいばい</string></dict>
+	<dict><key>phrase</key><string>オーガニック栽培</string><key>shortcut</key><string>おーがにっくさいばい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>キャノピー・マネジメント</string><key>shortcut</key><string>きゃのぴーまねじめんと</string></dict>
 	<dict><key>phrase</key><string>クローン</string><key>shortcut</key><string>くろーん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>クローン技術</string><key>shortcut</key><string>くろーんぎじゅつ</string></dict>
-	<dict><key>phrase</key><string>クローン選抜</string><key>shortcut</key><string>くろーんせんばつ</string></dict>
+	<dict><key>phrase</key><string>クローン選抜</string><key>shortcut</key><string>くろーんせんばつ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>グラン・クリュ畑</string><key>shortcut</key><string>ぐらんくりゅばたけ</string></dict>
-	<dict><key>phrase</key><string>ドリップ灌漑</string><key>shortcut</key><string>どりっぷかんがい</string></dict>
-	<dict><key>phrase</key><string>ナチュラル灌漑</string><key>shortcut</key><string>なちゅらるかんがい</string></dict>
-	<dict><key>phrase</key><string>フラッド灌漑</string><key>shortcut</key><string>ふらっどかんがい</string></dict>
-	<dict><key>phrase</key><string>ワイン栽培</string><key>shortcut</key><string>わいんさいばい</string></dict>
+	<dict><key>phrase</key><string>ドリップ灌漑</string><key>shortcut</key><string>どりっぷかんがい</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>ナチュラル灌漑</string><key>shortcut</key><string>なちゅらるかんがい</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>フラッド灌漑</string><key>shortcut</key><string>ふらっどかんがい</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>ワイン栽培</string><key>shortcut</key><string>わいんさいばい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>ワイン栽培エリア</string><key>shortcut</key><string>わいんさいばいえりあ</string></dict>
 	<dict><key>phrase</key><string>ワイン栽培地域</string><key>shortcut</key><string>わいんさいばいちいき</string></dict>
 	<dict><key>phrase</key><string>ワイン畑</string><key>shortcut</key><string>わいんばたけ</string></dict>
@@ -5651,19 +5651,19 @@
 	<dict><key>phrase</key><string>優良畑</string><key>shortcut</key><string>ゆうりょうばたけ</string></dict>
 	<dict><key>phrase</key><string>全栽培農家</string><key>shortcut</key><string>ぜんさいばいのうか</string></dict>
 	<dict><key>phrase</key><string>全栽培面積</string><key>shortcut</key><string>ぜんさいばいめんせき</string></dict>
-	<dict><key>phrase</key><string>冷涼地栽培</string><key>shortcut</key><string>れいりょうちさいばい</string></dict>
+	<dict><key>phrase</key><string>冷涼地栽培</string><key>shortcut</key><string>れいりょうちさいばい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>北米台木</string><key>shortcut</key><string>ほくべいだいぎ</string></dict>
 	<dict><key>phrase</key><string>単一収穫年</string><key>shortcut</key><string>たんいつしゅうかくねん</string></dict>
 	<dict><key>phrase</key><string>単一畑</string><key>shortcut</key><string>たんいつばたけ</string></dict>
 	<dict><key>phrase</key><string>単一畑ワイン</string><key>shortcut</key><string>たんいつばたけわいん</string></dict>
 	<dict><key>phrase</key><string>単一畑主義</string><key>shortcut</key><string>たんいつばたけしゅぎ</string></dict>
 	<dict><key>phrase</key><string>収穫</string><key>shortcut</key><string>しゅうかく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>収穫・選別</string><key>shortcut</key><string>しゅうかくせんべつ</string></dict>
+	<dict><key>phrase</key><string>収穫・選別</string><key>shortcut</key><string>しゅうかくせんべつ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>収穫前</string><key>shortcut</key><string>しゅうかくまえ</string></dict>
 	<dict><key>phrase</key><string>収穫地</string><key>shortcut</key><string>しゅうかくち</string></dict>
 	<dict><key>phrase</key><string>収穫地名</string><key>shortcut</key><string>しゅうかくちめい</string></dict>
 	<dict><key>phrase</key><string>収穫年</string><key>shortcut</key><string>しゅうかくねん</string></dict>
-	<dict><key>phrase</key><string>収穫年度表示</string><key>shortcut</key><string>しゅうかくねんどひょうじ</string></dict>
+	<dict><key>phrase</key><string>収穫年度表示</string><key>shortcut</key><string>しゅうかくねんどひょうじ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>収穫年無表示</string><key>shortcut</key><string>しゅうかくねんむひょうじ</string></dict>
 	<dict><key>phrase</key><string>収穫後</string><key>shortcut</key><string>しゅうかくご</string></dict>
 	<dict><key>phrase</key><string>収穫時</string><key>shortcut</key><string>しゅうかくじ</string></dict>
@@ -5674,30 +5674,30 @@
 	<dict><key>phrase</key><string>収穫翌年</string><key>shortcut</key><string>しゅうかくよくねん</string></dict>
 	<dict><key>phrase</key><string>収穫量</string><key>shortcut</key><string>しゅうかくりょう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>収量</string><key>shortcut</key><string>しゅうりょう</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>収量制限</string><key>shortcut</key><string>しゅうりょうせいげん</string></dict>
+	<dict><key>phrase</key><string>収量制限</string><key>shortcut</key><string>しゅうりょうせいげん</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>収量多</string><key>shortcut</key><string>しゅうりょうた</string></dict>
 	<dict><key>phrase</key><string>収量少</string><key>shortcut</key><string>しゅうりょうしょう</string></dict>
 	<dict><key>phrase</key><string>台木</string><key>shortcut</key><string>だいぎ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>同一畑</string><key>shortcut</key><string>どういつばたけ</string></dict>
 	<dict><key>phrase</key><string>地域別栽培面積</string><key>shortcut</key><string>ちいきべつさいばいめんせき</string></dict>
-	<dict><key>phrase</key><string>契約栽培</string><key>shortcut</key><string>けいやくさいばい</string></dict>
+	<dict><key>phrase</key><string>契約栽培</string><key>shortcut</key><string>けいやくさいばい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>契約栽培畑</string><key>shortcut</key><string>けいやくさいばいばたけ</string></dict>
-	<dict><key>phrase</key><string>展葉</string><key>shortcut</key><string>てんよう</string></dict>
+	<dict><key>phrase</key><string>展葉</string><key>shortcut</key><string>てんよう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>当該収穫年</string><key>shortcut</key><string>とうがいしゅうかくねん</string></dict>
 	<dict><key>phrase</key><string>徒長</string><key>shortcut</key><string>とちょう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>徒長性</string><key>shortcut</key><string>とちょうせい</string></dict>
 	<dict><key>phrase</key><string>急斜面畑</string><key>shortcut</key><string>きゅうしゃめんばたけ</string></dict>
-	<dict><key>phrase</key><string>手収穫</string><key>shortcut</key><string>てしゅうかく</string></dict>
+	<dict><key>phrase</key><string>手収穫</string><key>shortcut</key><string>てしゅうかく</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>最大収穫量</string><key>shortcut</key><string>さいだいしゅうかくりょう</string></dict>
 	<dict><key>phrase</key><string>最大収量</string><key>shortcut</key><string>さいだいしゅうりょう</string></dict>
 	<dict><key>phrase</key><string>最大栽培面積</string><key>shortcut</key><string>さいだいさいばいめんせき</string></dict>
-	<dict><key>phrase</key><string>有機栽培</string><key>shortcut</key><string>ゆうきさいばい</string></dict>
+	<dict><key>phrase</key><string>有機栽培</string><key>shortcut</key><string>ゆうきさいばい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>有機栽培農家</string><key>shortcut</key><string>ゆうきさいばいのうか</string></dict>
 	<dict><key>phrase</key><string>東京収穫ワイン</string><key>shortcut</key><string>とうきょうしゅうかくわいん</string></dict>
-	<dict><key>phrase</key><string>栽培作業</string><key>shortcut</key><string>さいばいさぎょう</string></dict>
+	<dict><key>phrase</key><string>栽培作業</string><key>shortcut</key><string>さいばいさぎょう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>栽培割合</string><key>shortcut</key><string>さいばいわりあい</string></dict>
 	<dict><key>phrase</key><string>栽培北限</string><key>shortcut</key><string>さいばいほくげん</string></dict>
-	<dict><key>phrase</key><string>栽培収穫</string><key>shortcut</key><string>さいばいしゅうかく</string></dict>
+	<dict><key>phrase</key><string>栽培収穫</string><key>shortcut</key><string>さいばいしゅうかく</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>栽培地</string><key>shortcut</key><string>さいばいち</string></dict>
 	<dict><key>phrase</key><string>栽培地域</string><key>shortcut</key><string>さいばいちいき</string></dict>
 	<dict><key>phrase</key><string>栽培地域ゾーン区分</string><key>shortcut</key><string>さいばいちいきぞーんくぶん</string></dict>
@@ -5714,35 +5714,35 @@
 	<dict><key>phrase</key><string>栽培者協同組合</string><key>shortcut</key><string>さいばいしゃきょうどうくみあい</string></dict>
 	<dict><key>phrase</key><string>栽培農家</string><key>shortcut</key><string>さいばいのうか</string></dict>
 	<dict><key>phrase</key><string>栽培適性</string><key>shortcut</key><string>さいばいてきせい</string></dict>
-	<dict><key>phrase</key><string>栽培適性調査</string><key>shortcut</key><string>さいばいてきせいちょうさ</string></dict>
+	<dict><key>phrase</key><string>栽培適性調査</string><key>shortcut</key><string>さいばいてきせいちょうさ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>栽培量</string><key>shortcut</key><string>さいばいりょう</string></dict>
 	<dict><key>phrase</key><string>栽培面積</string><key>shortcut</key><string>さいばいめんせき</string></dict>
-	<dict><key>phrase</key><string>棚式栽培</string><key>shortcut</key><string>たなしきさいばい</string></dict>
+	<dict><key>phrase</key><string>棚式栽培</string><key>shortcut</key><string>たなしきさいばい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>植樹</string><key>shortcut</key><string>しょくじゅ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>植樹密度</string><key>shortcut</key><string>しょくじゅみつど</string></dict>
 	<dict><key>phrase</key><string>植樹年</string><key>shortcut</key><string>しょくじゅねん</string></dict>
-	<dict><key>phrase</key><string>機械収穫</string><key>shortcut</key><string>きかいしゅうかく</string></dict>
+	<dict><key>phrase</key><string>機械収穫</string><key>shortcut</key><string>きかいしゅうかく</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>段々畑</string><key>shortcut</key><string>だんだんばたけ</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>減農薬栽培</string><key>shortcut</key><string>げんのうやくさいばい</string></dict>
+	<dict><key>phrase</key><string>減農薬栽培</string><key>shortcut</key><string>げんのうやくさいばい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>灌漑</string><key>shortcut</key><string>かんがい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>灌漑システム</string><key>shortcut</key><string>かんがいしすてむ</string></dict>
 	<dict><key>phrase</key><string>灌漑不要</string><key>shortcut</key><string>かんがいふよう</string></dict>
 	<dict><key>phrase</key><string>灌漑方法</string><key>shortcut</key><string>かんがいほうほう</string></dict>
-	<dict><key>phrase</key><string>灌漑施設</string><key>shortcut</key><string>かんがいしせつ</string></dict>
+	<dict><key>phrase</key><string>灌漑施設</string><key>shortcut</key><string>かんがいしせつ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>灌漑用水</string><key>shortcut</key><string>かんがいようすい</string></dict>
 	<dict><key>phrase</key><string>灌漑用水路</string><key>shortcut</key><string>かんがいようすいろ</string></dict>
-	<dict><key>phrase</key><string>点滴灌漑</string><key>shortcut</key><string>てんてきかんがい</string></dict>
+	<dict><key>phrase</key><string>点滴灌漑</string><key>shortcut</key><string>てんてきかんがい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>特級畑</string><key>shortcut</key><string>とっきゅうばたけ</string></dict>
 	<dict><key>phrase</key><string>生産量</string><key>shortcut</key><string>せいさんりょう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>畑名</string><key>shortcut</key><string>はたけめい</string></dict>
-	<dict><key>phrase</key><string>畑名表示</string><key>shortcut</key><string>はたけめいひょうじ</string></dict>
+	<dict><key>phrase</key><string>畑名表示</string><key>shortcut</key><string>はたけめいひょうじ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>畑限定ワイン</string><key>shortcut</key><string>はたけげんていわいん</string></dict>
 	<dict><key>phrase</key><string>畑面積</string><key>shortcut</key><string>はたけめんせき</string></dict>
 	<dict><key>phrase</key><string>病害</string><key>shortcut</key><string>びょうがい</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>病害虫</string><key>shortcut</key><string>びょうがいちゅう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>病害被害</string><key>shortcut</key><string>びょうがいひがい</string></dict>
 	<dict><key>phrase</key><string>短梢</string><key>shortcut</key><string>たんしょう</string></dict>
-	<dict><key>phrase</key><string>穀物栽培</string><key>shortcut</key><string>こくもつさいばい</string></dict>
+	<dict><key>phrase</key><string>穀物栽培</string><key>shortcut</key><string>こくもつさいばい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>節間</string><key>shortcut</key><string>せっかん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>結実</string><key>shortcut</key><string>けつじつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>総収穫量</string><key>shortcut</key><string>そうしゅうかくりょう</string></dict>
@@ -5757,7 +5757,7 @@
 	<dict><key>phrase</key><string>落花</string><key>shortcut</key><string>らっか</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>落葉</string><key>shortcut</key><string>らくよう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>葉巻型</string><key>shortcut</key><string>はまきがた</string></dict>
-	<dict><key>phrase</key><string>試験栽培</string><key>shortcut</key><string>しけんさいばい</string></dict>
+	<dict><key>phrase</key><string>試験栽培</string><key>shortcut</key><string>しけんさいばい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>該当収穫年</string><key>shortcut</key><string>がいとうしゅうかくねん</string></dict>
 	<dict><key>phrase</key><string>遅霜</string><key>shortcut</key><string>おそじも</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>銘醸畑</string><key>shortcut</key><string>めいじょうばたけ</string></dict>
@@ -5766,8 +5766,8 @@
 	<dict><key>phrase</key><string>開花後</string><key>shortcut</key><string>かいかご</string></dict>
 	<dict><key>phrase</key><string>開花時</string><key>shortcut</key><string>かいかじ</string></dict>
 	<dict><key>phrase</key><string>開花期</string><key>shortcut</key><string>かいかき</string></dict>
-	<dict><key>phrase</key><string>間断灌漑</string><key>shortcut</key><string>かんだんかんがい</string></dict>
-	<dict><key>phrase</key><string>防除</string><key>shortcut</key><string>ぼうじょ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>間断灌漑</string><key>shortcut</key><string>かんだんかんがい</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>防除</string><key>shortcut</key><string>ぼうじょ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>防除策</string><key>shortcut</key><string>ぼうじょさく</string></dict>
 	<dict><key>phrase</key><string>集合畑</string><key>shortcut</key><string>しゅうごうばたけ</string></dict>
 	<dict><key>phrase</key><string>集合畑名ワイン</string><key>shortcut</key><string>しゅうごうばたけめいわいん</string></dict>
@@ -5848,7 +5848,7 @@
 	<dict><key>phrase</key><string>成熟期</string><key>shortcut</key><string>せいじゅくき</string></dict>
 	<dict><key>phrase</key><string>手摘み</string><key>shortcut</key><string>てづみ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>接木苗</string><key>shortcut</key><string>つぎきなえ</string></dict>
-	<dict><key>phrase</key><string>早摘</string><key>shortcut</key><string>はやづみ</string></dict>
+	<dict><key>phrase</key><string>早摘</string><key>shortcut</key><string>はやづみ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>早熟性</string><key>shortcut</key><string>そうじゅくせい</string></dict>
 	<dict><key>phrase</key><string>晩熟型</string><key>shortcut</key><string>ばんじゅくがた</string></dict>
 	<dict><key>phrase</key><string>晩熟性</string><key>shortcut</key><string>ばんじゅくせい</string></dict>
@@ -5861,18 +5861,18 @@
 	<dict><key>phrase</key><string>着色・成熟期</string><key>shortcut</key><string>ちゃくしょくせいじゅくき</string></dict>
 	<dict><key>phrase</key><string>着色期</string><key>shortcut</key><string>ちゃくしょくき</string></dict>
 	<dict><key>phrase</key><string>突然変異種</string><key>shortcut</key><string>とつぜんへんいしゅ</string></dict>
-	<dict><key>phrase</key><string>粒摘</string><key>shortcut</key><string>つぶづみ</string></dict>
-	<dict><key>phrase</key><string>粒選</string><key>shortcut</key><string>つぶより</string></dict>
+	<dict><key>phrase</key><string>粒摘</string><key>shortcut</key><string>つぶづみ</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>粒選</string><key>shortcut</key><string>つぶより</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>耐冷性</string><key>shortcut</key><string>たいれいせい</string></dict>
 	<dict><key>phrase</key><string>耐塩性</string><key>shortcut</key><string>たいえんせい</string></dict>
 	<dict><key>phrase</key><string>腐敗・ミイラ化</string><key>shortcut</key><string>ふはいみいらか</string></dict>
-	<dict><key>phrase</key><string>花振</string><key>shortcut</key><string>はなぶるい</string></dict>
+	<dict><key>phrase</key><string>花振</string><key>shortcut</key><string>はなぶるい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>貴腐化</string><key>shortcut</key><string>きふか</string></dict>
 	<dict><key>phrase</key><string>農事暦</string><key>shortcut</key><string>のうじれき</string></dict>
 	<dict><key>phrase</key><string>遺伝子組</string><key>shortcut</key><string>いでんしくみ</string></dict>
 	<dict><key>phrase</key><string>高樹齢</string><key>shortcut</key><string>こうじゅれい</string></dict>
 	<dict><key>phrase</key><string>Agriculture biologique</string><key>shortcut</key><string>あぐりきゅるちゅーるびおろじっく</string></dict>
-	<dict><key>phrase</key><string>ベンレート剤散布</string><key>shortcut</key><string>べんれーとざいさんぷ</string></dict>
+	<dict><key>phrase</key><string>ベンレート剤散布</string><key>shortcut</key><string>べんれーとざいさんぷ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>世界6大植物区系</string><key>shortcut</key><string>せかいろくだいしょくぶつくけい</string></dict>
 	<dict><key>phrase</key><string>傾斜面</string><key>shortcut</key><string>けいしゃめん</string></dict>
 	<dict><key>phrase</key><string>全有機</string><key>shortcut</key><string>ぜんゆうき</string></dict>
@@ -5902,7 +5902,7 @@
 	<dict><key>phrase</key><string>気候的</string><key>shortcut</key><string>きこうてき</string></dict>
 	<dict><key>phrase</key><string>気候風土</string><key>shortcut</key><string>きこうふうど</string></dict>
 	<dict><key>phrase</key><string>気候風土的影響</string><key>shortcut</key><string>きこうふうどてきえいきょう</string></dict>
-	<dict><key>phrase</key><string>気候変動</string><key>shortcut</key><string>きこうへんどう</string></dict>
+	<dict><key>phrase</key><string>気候変動</string><key>shortcut</key><string>きこうへんどう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>高山気候</string><key>shortcut</key><string>こうざんきこう</string></dict>
 	<dict><key>phrase</key><string>山地気候</string><key>shortcut</key><string>さんちきこう</string></dict>
 	<dict><key>phrase</key><string>大陸性気候</string><key>shortcut</key><string>たいりくせいきこう</string></dict>
@@ -5974,14 +5974,14 @@
 	<dict><key>phrase</key><string>日較差</string><key>shortcut</key><string>にっこうさ</string></dict>
 	<dict><key>phrase</key><string>梅雨時期</string><key>shortcut</key><string>つゆじき</string></dict>
 	<dict><key>phrase</key><string>比較的冷涼</string><key>shortcut</key><string>ひかくてきれいりょう</string></dict>
-	<dict><key>phrase</key><string>気温上昇</string><key>shortcut</key><string>きおんじょうしょう</string></dict>
+	<dict><key>phrase</key><string>気温上昇</string><key>shortcut</key><string>きおんじょうしょう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>気温条件</string><key>shortcut</key><string>きおんじょうけん</string></dict>
 	<dict><key>phrase</key><string>気象条件</string><key>shortcut</key><string>きしょうじょうけん</string></dict>
-	<dict><key>phrase</key><string>気象統計</string><key>shortcut</key><string>きしょうとうけい</string></dict>
-	<dict><key>phrase</key><string>温度変化</string><key>shortcut</key><string>おんどへんか</string></dict>
+	<dict><key>phrase</key><string>気象統計</string><key>shortcut</key><string>きしょうとうけい</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>温度変化</string><key>shortcut</key><string>おんどへんか</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>温度格差</string><key>shortcut</key><string>おんどかくさ</string></dict>
 	<dict><key>phrase</key><string>温暖化対策</string><key>shortcut</key><string>おんだんかたいさく</string></dict>
-	<dict><key>phrase</key><string>高温乾燥</string><key>shortcut</key><string>こうおんかんそう</string></dict>
+	<dict><key>phrase</key><string>高温乾燥</string><key>shortcut</key><string>こうおんかんそう</string><key>pos</key><string>サ変名詞</string></dict>
 
 	<!-- ■ 風 -->
 	<dict><key>phrase</key><string>ソンダ</string><key>shortcut</key><string>そんだ</string></dict>
@@ -6033,7 +6033,7 @@
 	<dict><key>phrase</key><string>乾燥土壌</string><key>shortcut</key><string>かんそうどじょう</string></dict>
 	<dict><key>phrase</key><string>凝灰岩土壌</string><key>shortcut</key><string>ぎょうかいがんどじょう</string></dict>
 	<dict><key>phrase</key><string>土壌</string><key>shortcut</key><string>どじょう</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>土壌分析</string><key>shortcut</key><string>どじょうぶんせき</string></dict>
+	<dict><key>phrase</key><string>土壌分析</string><key>shortcut</key><string>どじょうぶんせき</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>土壌名</string><key>shortcut</key><string>どじょうめい</string></dict>
 	<dict><key>phrase</key><string>土壌名称</string><key>shortcut</key><string>どじょうめいしょう</string></dict>
 	<dict><key>phrase</key><string>土壌的</string><key>shortcut</key><string>どじょうてき</string></dict>
@@ -6165,13 +6165,13 @@
 	<dict><key>phrase</key><string>垣根</string><key>shortcut</key><string>かきね</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>垣根仕立て</string><key>shortcut</key><string>かきねじたて</string></dict>
 	<dict><key>phrase</key><string>垣根方式</string><key>shortcut</key><string>かきねほうしき</string></dict>
-	<dict><key>phrase</key><string>垣根栽培</string><key>shortcut</key><string>かきねさいばい</string></dict>
+	<dict><key>phrase</key><string>垣根栽培</string><key>shortcut</key><string>かきねさいばい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>Guyot式剪定法</string><key>shortcut</key><string>ぎよしきせんていほう</string></dict>
-	<dict><key>phrase</key><string>H字型短梢剪定</string><key>shortcut</key><string>えいちじがたたんしょうせんてい</string></dict>
-	<dict><key>phrase</key><string>X字型剪定</string><key>shortcut</key><string>えっくすじがたせんてい</string></dict>
+	<dict><key>phrase</key><string>H字型短梢剪定</string><key>shortcut</key><string>えいちじがたたんしょうせんてい</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>X字型剪定</string><key>shortcut</key><string>えっくすじがたせんてい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>ギヨ式剪定法</string><key>shortcut</key><string>ぎよしきせんていほう</string></dict>
-	<dict><key>phrase</key><string>一文字型短梢剪定</string><key>shortcut</key><string>いちもんじがたたんしょうせんてい</string></dict>
-	<dict><key>phrase</key><string>夏季剪定</string><key>shortcut</key><string>かきせんてい</string></dict>
+	<dict><key>phrase</key><string>一文字型短梢剪定</string><key>shortcut</key><string>いちもんじがたたんしょうせんてい</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>夏季剪定</string><key>shortcut</key><string>かきせんてい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>短梢剪定</string><key>shortcut</key><string>たんしょうせんてい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>短梢剪定方法</string><key>shortcut</key><string>たんしょうせんていほうほう</string></dict>
 	<dict><key>phrase</key><string>長梢剪定</string><key>shortcut</key><string>ちょうしょうせんてい</string><key>pos</key><string>サ変名詞</string></dict>
@@ -6252,9 +6252,9 @@
 	<dict><key>phrase</key><string>Pas Dosé</string><key>shortcut</key><string>ぱどぜ</string></dict>
 	<dict><key>phrase</key><string>カルボニック・マセレイション</string><key>shortcut</key><string>かるぼにっくませれいしょん</string></dict>
 	<dict><key>phrase</key><string>カルボニック・マセレーション</string><key>shortcut</key><string>かるぼにっくませれーしょん</string></dict>
-	<dict><key>phrase</key><string>1回蒸溜</string><key>shortcut</key><string>いっかいじょうりゅう</string></dict>
+	<dict><key>phrase</key><string>1回蒸溜</string><key>shortcut</key><string>いっかいじょうりゅう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>1次醗酵</string><key>shortcut</key><string>いちじはっこう</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>2回蒸溜</string><key>shortcut</key><string>にかいじょうりゅう</string></dict>
+	<dict><key>phrase</key><string>2回蒸溜</string><key>shortcut</key><string>にかいじょうりゅう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>2次醗酵</string><key>shortcut</key><string>にじはっこう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>Aging</string><key>shortcut</key><string>えいじんぐ</string></dict>
 	<dict><key>phrase</key><string>Alcoholic fermentation</string><key>shortcut</key><string>あるこほりっくふぁーめんていしょん</string></dict>
@@ -6300,7 +6300,7 @@
 	<dict><key>phrase</key><string>アルコール醗酵終了後</string><key>shortcut</key><string>あるこーるはっこうしゅうりょうご</string></dict>
 	<dict><key>phrase</key><string>アルコール醗酵途上</string><key>shortcut</key><string>あるこーるはっこうとじょう</string></dict>
 	<dict><key>phrase</key><string>クヴェヴリ醗酵</string><key>shortcut</key><string>くゔぇゔりはっこう</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>クヴェヴリ醸造</string><key>shortcut</key><string>くゔぇゔりじょうぞう</string></dict>
+	<dict><key>phrase</key><string>クヴェヴリ醸造</string><key>shortcut</key><string>くゔぇゔりじょうぞう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>ケープ・ブレンド</string><key>shortcut</key><string>けーぷぶれんど</string></dict>
 	<dict><key>phrase</key><string>コニャック型蒸溜器</string><key>shortcut</key><string>こにゃっくがたじょうりゅうき</string></dict>
 	<dict><key>phrase</key><string>シャラント型蒸溜器</string><key>shortcut</key><string>しゃらんとがたじょうりゅうき</string></dict>
@@ -6316,10 +6316,10 @@
 	<dict><key>phrase</key><string>ビン内2次醗酵方式</string><key>shortcut</key><string>びんないにじはっこうほうしき</string></dict>
 	<dict><key>phrase</key><string>ビン内2次醗酵製法</string><key>shortcut</key><string>びんないにじはっこうせいほう</string></dict>
 	<dict><key>phrase</key><string>ビン内最低熟成期間</string><key>shortcut</key><string>びんないさいていじゅくせいきかん</string></dict>
-	<dict><key>phrase</key><string>ビン内熟成</string><key>shortcut</key><string>びんないじゅくせい</string></dict>
+	<dict><key>phrase</key><string>ビン内熟成</string><key>shortcut</key><string>びんないじゅくせい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>ビン熟成</string><key>shortcut</key><string>びんじゅくせい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>ビン貯蔵・熟成期間</string><key>shortcut</key><string>びんちょぞうじゅくせいきかん</string></dict>
-	<dict><key>phrase</key><string>ビール醸造</string><key>shortcut</key><string>びーるじょうぞう</string></dict>
+	<dict><key>phrase</key><string>ビール醸造</string><key>shortcut</key><string>びーるじょうぞう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>ブランデー蒸溜所</string><key>shortcut</key><string>ぶらんでーじょうりゅうしょ</string></dict>
 	<dict><key>phrase</key><string>ブレンド</string><key>shortcut</key><string>ぶれんど</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ブレンドワイン</string><key>shortcut</key><string>ぶれんどわいん</string></dict>
@@ -6333,12 +6333,12 @@
 	<dict><key>phrase</key><string>マルチ・リージョナル・ブレンド</string><key>shortcut</key><string>まるちりーじょなるぶれんど</string></dict>
 	<dict><key>phrase</key><string>マロラクティック</string><key>shortcut</key><string>まろらくてぃっく</string></dict>
 	<dict><key>phrase</key><string>マロラクティック醗酵</string><key>shortcut</key><string>まろらくてぃっくはっこう</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>ヨーロッパ式醸造</string><key>shortcut</key><string>よーろっぱしきじょうぞう</string></dict>
+	<dict><key>phrase</key><string>ヨーロッパ式醸造</string><key>shortcut</key><string>よーろっぱしきじょうぞう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>ルミュアージュ</string><key>shortcut</key><string>るみゅあーじゅ</string></dict>
 	<dict><key>phrase</key><string>ローヌ・ブレンド</string><key>shortcut</key><string>ろーぬぶれんど</string></dict>
 	<dict><key>phrase</key><string>ワイン熟成用</string><key>shortcut</key><string>わいんじゅくせいよう</string></dict>
 	<dict><key>phrase</key><string>ワイン用圧搾機</string><key>shortcut</key><string>わいんようあっさくき</string></dict>
-	<dict><key>phrase</key><string>ワイン醸造</string><key>shortcut</key><string>わいんじょうぞう</string></dict>
+	<dict><key>phrase</key><string>ワイン醸造</string><key>shortcut</key><string>わいんじょうぞう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>ワイン醸造学</string><key>shortcut</key><string>わいんじょうぞうがく</string></dict>
 	<dict><key>phrase</key><string>ワイン醸造工程</string><key>shortcut</key><string>わいんじょうぞうこうてい</string></dict>
 	<dict><key>phrase</key><string>ワイン醸造用語</string><key>shortcut</key><string>わいんじょうぞうようご</string></dict>
@@ -6355,33 +6355,33 @@
 	<dict><key>phrase</key><string>乳酸醗酵</string><key>shortcut</key><string>にゅうさんはっこう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>低温醗酵</string><key>shortcut</key><string>ていおんはっこう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>全醸造量</string><key>shortcut</key><string>ぜんじょうぞうりょう</string></dict>
-	<dict><key>phrase</key><string>再度蒸溜</string><key>shortcut</key><string>さいどじょうりゅう</string></dict>
-	<dict><key>phrase</key><string>再蒸溜</string><key>shortcut</key><string>さいじょうりゅう</string></dict>
+	<dict><key>phrase</key><string>再度蒸溜</string><key>shortcut</key><string>さいどじょうりゅう</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>再蒸溜</string><key>shortcut</key><string>さいじょうりゅう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>再醗酵</string><key>shortcut</key><string>さいはっこう</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>冷却・濾過</string><key>shortcut</key><string>れいきゃくろか</string></dict>
+	<dict><key>phrase</key><string>冷却・濾過</string><key>shortcut</key><string>れいきゃくろか</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>冷浸漬法</string><key>shortcut</key><string>れいしんせきほう</string></dict>
-	<dict><key>phrase</key><string>単式蒸溜</string><key>shortcut</key><string>たんしきじょうりゅう</string></dict>
+	<dict><key>phrase</key><string>単式蒸溜</string><key>shortcut</key><string>たんしきじょうりゅう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>単式蒸溜器</string><key>shortcut</key><string>たんしきじょうりゅうき</string></dict>
 	<dict><key>phrase</key><string>単式蒸溜焼酎</string><key>shortcut</key><string>たんしきじょうりゅうしょうちゅう</string></dict>
 	<dict><key>phrase</key><string>単行複醗酵</string><key>shortcut</key><string>たんこうふくはっこう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>単醗酵</string><key>shortcut</key><string>たんはっこう</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>収穫・圧搾</string><key>shortcut</key><string>しゅうかくあっさく</string></dict>
+	<dict><key>phrase</key><string>収穫・圧搾</string><key>shortcut</key><string>しゅうかくあっさく</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>吟醸造り</string><key>shortcut</key><string>ぎんじょうづくり</string></dict>
 	<dict><key>phrase</key><string>圧搾</string><key>shortcut</key><string>あっさく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>圧搾コルク</string><key>shortcut</key><string>あっさくこるく</string></dict>
-	<dict><key>phrase</key><string>圧搾・醸造</string><key>shortcut</key><string>あっさくじょうぞう</string></dict>
+	<dict><key>phrase</key><string>圧搾・醸造</string><key>shortcut</key><string>あっさくじょうぞう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>圧搾前</string><key>shortcut</key><string>あっさくまえ</string></dict>
 	<dict><key>phrase</key><string>圧搾後</string><key>shortcut</key><string>あっさくご</string></dict>
 	<dict><key>phrase</key><string>圧搾機</string><key>shortcut</key><string>あっさくき</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>圧搾法</string><key>shortcut</key><string>あっさくほう</string></dict>
-	<dict><key>phrase</key><string>夏熟成</string><key>shortcut</key><string>なつじゅくせい</string></dict>
-	<dict><key>phrase</key><string>委託醸造</string><key>shortcut</key><string>いたくじょうぞう</string></dict>
-	<dict><key>phrase</key><string>常圧蒸溜</string><key>shortcut</key><string>じょうあつじょうりゅう</string></dict>
+	<dict><key>phrase</key><string>夏熟成</string><key>shortcut</key><string>なつじゅくせい</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>委託醸造</string><key>shortcut</key><string>いたくじょうぞう</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>常圧蒸溜</string><key>shortcut</key><string>じょうあつじょうりゅう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>常圧蒸溜焼酎</string><key>shortcut</key><string>じょうあつじょうりゅうしょうちゅう</string></dict>
 	<dict><key>phrase</key><string>平均熟成年数</string><key>shortcut</key><string>へいきんじゅくせいねんすう</string></dict>
-	<dict><key>phrase</key><string>後加熱熟成</string><key>shortcut</key><string>こうかねつじゅくせい</string></dict>
+	<dict><key>phrase</key><string>後加熱熟成</string><key>shortcut</key><string>こうかねつじゅくせい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>後醗酵</string><key>shortcut</key><string>こうはっこう</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>打栓</string><key>shortcut</key><string>だせん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>打栓</string><key>shortcut</key><string>だせん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>打栓工程</string><key>shortcut</key><string>だせんこうてい</string></dict>
 	<dict><key>phrase</key><string>数種類ブレンド</string><key>shortcut</key><string>すうしゅるいぶれんど</string></dict>
 	<dict><key>phrase</key><string>最低ビン内熟成期間</string><key>shortcut</key><string>さいていびんないじゅくせいきかん</string></dict>
@@ -6393,29 +6393,29 @@
 	<dict><key>phrase</key><string>未破砕</string><key>shortcut</key><string>みはさい</string></dict>
 	<dict><key>phrase</key><string>未醗酵</string><key>shortcut</key><string>みはっこう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>果汁清澄</string><key>shortcut</key><string>かじゅうせいちょう</string></dict>
-	<dict><key>phrase</key><string>栽培・ワイン醸造</string><key>shortcut</key><string>さいばいわいんじょうぞう</string></dict>
+	<dict><key>phrase</key><string>栽培・ワイン醸造</string><key>shortcut</key><string>さいばいわいんじょうぞう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>栽培・ワイン醸造技術</string><key>shortcut</key><string>さいばいわいんじょうぞうぎじゅつ</string></dict>
-	<dict><key>phrase</key><string>栽培・醸造</string><key>shortcut</key><string>さいばいじょうぞう</string></dict>
+	<dict><key>phrase</key><string>栽培・醸造</string><key>shortcut</key><string>さいばいじょうぞう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>栽培・醸造方法</string><key>shortcut</key><string>さいばいじょうぞうほうほう</string></dict>
 	<dict><key>phrase</key><string>栽培・醸造面</string><key>shortcut</key><string>さいばいじょうぞうめん</string></dict>
 	<dict><key>phrase</key><string>栽培家</string><key>shortcut</key><string>さいばいか</string></dict>
 	<dict><key>phrase</key><string>栽培醸造家</string><key>shortcut</key><string>さいばいじょうぞうか</string></dict>
 	<dict><key>phrase</key><string>栽培醸造技術</string><key>shortcut</key><string>さいばいじょうぞうぎじゅつ</string></dict>
 	<dict><key>phrase</key><string>栽培醸造研究所</string><key>shortcut</key><string>さいばいじょうぞうけんきゅうじょ</string></dict>
-	<dict><key>phrase</key><string>樽・タンク育成</string><key>shortcut</key><string>たるたんくいくせい</string></dict>
+	<dict><key>phrase</key><string>樽・タンク育成</string><key>shortcut</key><string>たるたんくいくせい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>樽熟成</string><key>shortcut</key><string>たるじゅくせい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 樽熟成した ワイン が 樽熟成下ワイン だった(品詞が無く した が付かない。learningBOX 検査 3693) -->
 	<dict><key>phrase</key><string>樽醗酵</string><key>shortcut</key><string>たるはっこう</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>氷果凍結圧搾</string><key>shortcut</key><string>ひょうかとうけつあっさく</string></dict>
+	<dict><key>phrase</key><string>氷果凍結圧搾</string><key>shortcut</key><string>ひょうかとうけつあっさく</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>沈澱</string><key>shortcut</key><string>ちんでん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>法的最低熟成期間</string><key>shortcut</key><string>ほうてきさいていじゅくせいきかん</string></dict>
 	<dict><key>phrase</key><string>浸漬</string><key>shortcut</key><string>しんせき</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>清澄</string><key>shortcut</key><string>せいちょう</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>清澄・濾過</string><key>shortcut</key><string>せいちょうろか</string></dict>
-	<dict><key>phrase</key><string>清澄作業</string><key>shortcut</key><string>せいちょうさぎょう</string></dict>
+	<dict><key>phrase</key><string>清澄</string><key>shortcut</key><string>せいちょう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>清澄・濾過</string><key>shortcut</key><string>せいちょうろか</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>清澄作業</string><key>shortcut</key><string>せいちょうさぎょう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>清澄剤</string><key>shortcut</key><string>せいちょうざい</string></dict>
 	<dict><key>phrase</key><string>清澄化</string><key>shortcut</key><string>せいちょうか</string></dict>
 	<dict><key>phrase</key><string>清澄度</string><key>shortcut</key><string>せいちょうど</string></dict>
-	<dict><key>phrase</key><string>減圧蒸溜</string><key>shortcut</key><string>げんあつじょうりゅう</string></dict>
+	<dict><key>phrase</key><string>減圧蒸溜</string><key>shortcut</key><string>げんあつじょうりゅう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>減圧蒸溜焼酎</string><key>shortcut</key><string>げんあつじょうりゅうしょうちゅう</string></dict>
 	<dict><key>phrase</key><string>減酸</string><key>shortcut</key><string>げんさん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>温浸漬法</string><key>shortcut</key><string>おんしんせきほう</string></dict>
@@ -6440,7 +6440,7 @@
 	<dict><key>phrase</key><string>熟成場所</string><key>shortcut</key><string>じゅくせいばしょ</string></dict>
 	<dict><key>phrase</key><string>熟成容器</string><key>shortcut</key><string>じゅくせいようき</string></dict>
 	<dict><key>phrase</key><string>熟成年数</string><key>shortcut</key><string>じゅくせいねんすう</string></dict>
-	<dict><key>phrase</key><string>熟成年数表示</string><key>shortcut</key><string>じゅくせいねんすうひょうじ</string></dict>
+	<dict><key>phrase</key><string>熟成年数表示</string><key>shortcut</key><string>じゅくせいねんすうひょうじ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>熟成度</string><key>shortcut</key><string>じゅくせいど</string></dict>
 	<dict><key>phrase</key><string>熟成度合</string><key>shortcut</key><string>じゅくせいどあい</string></dict>
 	<dict><key>phrase</key><string>熟成庫</string><key>shortcut</key><string>じゅくせいこ</string></dict>
@@ -6449,21 +6449,21 @@
 	<dict><key>phrase</key><string>熟成方法</string><key>shortcut</key><string>じゅくせいほうほう</string></dict>
 	<dict><key>phrase</key><string>熟成期間</string><key>shortcut</key><string>じゅくせいきかん</string></dict>
 	<dict><key>phrase</key><string>熟成期間中</string><key>shortcut</key><string>じゅくせいきかんちゅう</string></dict>
-	<dict><key>phrase</key><string>熟成期間表示</string><key>shortcut</key><string>じゅくせいきかんひょうじ</string></dict>
+	<dict><key>phrase</key><string>熟成期間表示</string><key>shortcut</key><string>じゅくせいきかんひょうじ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>熟成状態</string><key>shortcut</key><string>じゅくせいじょうたい</string></dict>
 	<dict><key>phrase</key><string>熟成用</string><key>shortcut</key><string>じゅくせいよう</string></dict>
-	<dict><key>phrase</key><string>熟成由来</string><key>shortcut</key><string>じゅくせいゆらい</string></dict>
+	<dict><key>phrase</key><string>熟成由来</string><key>shortcut</key><string>じゅくせいゆらい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>熟成義務</string><key>shortcut</key><string>じゅくせいぎむ</string></dict>
 	<dict><key>phrase</key><string>熟成能力</string><key>shortcut</key><string>じゅくせいのうりょく</string></dict>
-	<dict><key>phrase</key><string>熟成表示</string><key>shortcut</key><string>じゅくせいひょうじ</string></dict>
-	<dict><key>phrase</key><string>熟成規定</string><key>shortcut</key><string>じゅくせいきてい</string></dict>
+	<dict><key>phrase</key><string>熟成表示</string><key>shortcut</key><string>じゅくせいひょうじ</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>熟成規定</string><key>shortcut</key><string>じゅくせいきてい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>熟成規定名称</string><key>shortcut</key><string>じゅくせいきていめいしょう</string></dict>
 	<dict><key>phrase</key><string>熟成過程</string><key>shortcut</key><string>じゅくせいかてい</string></dict>
 	<dict><key>phrase</key><string>珪藻土濾過器</string><key>shortcut</key><string>けいそうどろかき</string></dict>
-	<dict><key>phrase</key><string>瓶詰</string><key>shortcut</key><string>びんづめ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>瓶詰</string><key>shortcut</key><string>びんづめ</string></dict>	<!-- Sudachiにもある。サ変名詞の印は付けない(付けると ワインをビン詰めして が 瓶詰めして になる。3661 の指定。3821) -->
 	<dict><key>phrase</key><string>瓶詰期間</string><key>shortcut</key><string>びんづめきかん</string></dict>
-	<dict><key>phrase</key><string>白ワイン醸造</string><key>shortcut</key><string>しろわいんじょうぞう</string></dict>
-	<dict><key>phrase</key><string>直接圧搾</string><key>shortcut</key><string>ちょくせつあっさく</string></dict>
+	<dict><key>phrase</key><string>白ワイン醸造</string><key>shortcut</key><string>しろわいんじょうぞう</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>直接圧搾</string><key>shortcut</key><string>ちょくせつあっさく</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>直接圧搾法</string><key>shortcut</key><string>ちょくせつあっさくほう</string></dict>
 	<dict><key>phrase</key><string>破砕</string><key>shortcut</key><string>はさい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>破砕後</string><key>shortcut</key><string>はさいご</string></dict>
@@ -6478,7 +6478,7 @@
 	<dict><key>phrase</key><string>蒸溜回数</string><key>shortcut</key><string>じょうりゅうかいすう</string></dict>
 	<dict><key>phrase</key><string>蒸溜後</string><key>shortcut</key><string>じょうりゅうご</string></dict>
 	<dict><key>phrase</key><string>蒸溜技術</string><key>shortcut</key><string>じょうりゅうぎじゅつ</string></dict>
-	<dict><key>phrase</key><string>蒸溜操作</string><key>shortcut</key><string>じょうりゅうそうさ</string></dict>
+	<dict><key>phrase</key><string>蒸溜操作</string><key>shortcut</key><string>じょうりゅうそうさ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>蒸溜方法</string><key>shortcut</key><string>じょうりゅうほうほう</string></dict>
 	<dict><key>phrase</key><string>蒸溜法</string><key>shortcut</key><string>じょうりゅうほう</string></dict>
 	<dict><key>phrase</key><string>蒸溜過程</string><key>shortcut</key><string>じょうりゅうかてい</string></dict>
@@ -6490,22 +6490,22 @@
 	<dict><key>phrase</key><string>補糖不可</string><key>shortcut</key><string>ほとうふか</string></dict>
 	<dict><key>phrase</key><string>補糖可</string><key>shortcut</key><string>ほとうか</string></dict>
 	<dict><key>phrase</key><string>補糖後</string><key>shortcut</key><string>ほとうご</string></dict>
-	<dict><key>phrase</key><string>補酸</string><key>shortcut</key><string>ほさん</string></dict>
+	<dict><key>phrase</key><string>補酸</string><key>shortcut</key><string>ほさん</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>調合</string><key>shortcut</key><string>ちょうごう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>育成</string><key>shortcut</key><string>いくせい</string></dict>
 	<dict><key>phrase</key><string>購入</string><key>shortcut</key><string>こうにゅう</string></dict>
 	<dict><key>phrase</key><string>保管</string><key>shortcut</key><string>ほかん</string></dict>
 	<dict><key>phrase</key><string>販売</string><key>shortcut</key><string>はんばい</string></dict>
 	<dict><key>phrase</key><string>赤ワイン醸造法</string><key>shortcut</key><string>あかわいんじょうぞうほう</string></dict>
-	<dict><key>phrase</key><string>連続式蒸溜</string><key>shortcut</key><string>れんぞくしきじょうりゅう</string></dict>
+	<dict><key>phrase</key><string>連続式蒸溜</string><key>shortcut</key><string>れんぞくしきじょうりゅう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>連続式蒸溜器</string><key>shortcut</key><string>れんぞくしきじょうりゅうき</string></dict>
 	<dict><key>phrase</key><string>連続式蒸溜焼酎</string><key>shortcut</key><string>れんぞくしきじょうりゅうしょうちゅう</string></dict>
-	<dict><key>phrase</key><string>選果</string><key>shortcut</key><string>せんか</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>酸化熟成</string><key>shortcut</key><string>さんかじゅくせい</string></dict>
+	<dict><key>phrase</key><string>選果</string><key>shortcut</key><string>せんか</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>酸化熟成</string><key>shortcut</key><string>さんかじゅくせい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>酸化熟成タイプ</string><key>shortcut</key><string>さんかじゅくせいたいぷ</string></dict>
 	<dict><key>phrase</key><string>醗酵</string><key>shortcut</key><string>はっこう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>醗酵タンク</string><key>shortcut</key><string>はっこうたんく</string></dict>
-	<dict><key>phrase</key><string>醗酵・蒸溜</string><key>shortcut</key><string>はっこうじょうりゅう</string></dict>
+	<dict><key>phrase</key><string>醗酵・蒸溜</string><key>shortcut</key><string>はっこうじょうりゅう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>醗酵・貯蔵容器</string><key>shortcut</key><string>はっこうちょぞうようき</string></dict>
 	<dict><key>phrase</key><string>醗酵・連続蒸溜器</string><key>shortcut</key><string>はっこうれんぞくじょうりゅうき</string></dict>
 	<dict><key>phrase</key><string>醗酵中</string><key>shortcut</key><string>はっこうちゅう</string></dict>
@@ -6518,11 +6518,11 @@
 	<dict><key>phrase</key><string>醗酵段階</string><key>shortcut</key><string>はっこうだんかい</string></dict>
 	<dict><key>phrase</key><string>醗酵済</string><key>shortcut</key><string>はっこうずみ</string></dict>
 	<dict><key>phrase</key><string>醗酵温度</string><key>shortcut</key><string>はっこうおんど</string></dict>
-	<dict><key>phrase</key><string>醗酵熟成</string><key>shortcut</key><string>はっこうじゅくせい</string></dict>
+	<dict><key>phrase</key><string>醗酵熟成</string><key>shortcut</key><string>はっこうじゅくせい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>醗酵終了後</string><key>shortcut</key><string>はっこうしゅうりょうご</string></dict>
-	<dict><key>phrase</key><string>醗酵貯蔵</string><key>shortcut</key><string>はっこうちょぞう</string></dict>
+	<dict><key>phrase</key><string>醗酵貯蔵</string><key>shortcut</key><string>はっこうちょぞう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>醗酵途中</string><key>shortcut</key><string>はっこうとちゅう</string></dict>
-	<dict><key>phrase</key><string>醗酵遅延</string><key>shortcut</key><string>はっこうちえん</string></dict>
+	<dict><key>phrase</key><string>醗酵遅延</string><key>shortcut</key><string>はっこうちえん</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>醗酵過程</string><key>shortcut</key><string>はっこうかてい</string></dict>
 	<dict><key>phrase</key><string>醸造</string><key>shortcut</key><string>じょうぞう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>醸造アルコール</string><key>shortcut</key><string>じょうぞうあるこーる</string></dict>
@@ -6539,7 +6539,7 @@
 	<dict><key>phrase</key><string>醸造技術</string><key>shortcut</key><string>じょうぞうぎじゅつ</string></dict>
 	<dict><key>phrase</key><string>醸造技術者</string><key>shortcut</key><string>じょうぞうぎじゅつしゃ</string></dict>
 	<dict><key>phrase</key><string>醸造方法</string><key>shortcut</key><string>じょうぞうほうほう</string></dict>
-	<dict><key>phrase</key><string>醸造施設</string><key>shortcut</key><string>じょうぞうしせつ</string></dict>
+	<dict><key>phrase</key><string>醸造施設</string><key>shortcut</key><string>じょうぞうしせつ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>醸造期間</string><key>shortcut</key><string>じょうぞうきかん</string></dict>
 	<dict><key>phrase</key><string>醸造業者資格同盟制度</string><key>shortcut</key><string>じょうぞうぎょうしゃしかくどうめいせいど</string></dict>
 	<dict><key>phrase</key><string>醸造法</string><key>shortcut</key><string>じょうぞうほう</string></dict>
@@ -6552,8 +6552,8 @@
 	<dict><key>phrase</key><string>醸造酒</string><key>shortcut</key><string>じょうぞうしゅ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>醸造酒類</string><key>shortcut</key><string>じょうぞうしゅるい</string></dict>
 	<dict><key>phrase</key><string>醸造量</string><key>shortcut</key><string>じょうぞうりょう</string></dict>
-	<dict><key>phrase</key><string>長期ビン内熟成</string><key>shortcut</key><string>ちょうきびんないじゅくせい</string></dict>
-	<dict><key>phrase</key><string>長期熟成</string><key>shortcut</key><string>ちょうきじゅくせい</string></dict>
+	<dict><key>phrase</key><string>長期ビン内熟成</string><key>shortcut</key><string>ちょうきびんないじゅくせい</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>長期熟成</string><key>shortcut</key><string>ちょうきじゅくせい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>長期熟成タイプ</string><key>shortcut</key><string>ちょうきじゅくせいたいぷ</string></dict>
 	<dict><key>phrase</key><string>長期熟成ワイン</string><key>shortcut</key><string>ちょうきじゅくせいわいん</string></dict>
 	<dict><key>phrase</key><string>長期熟成可能</string><key>shortcut</key><string>ちょうきじゅくせいかのう</string></dict>
@@ -6561,7 +6561,7 @@
 	<dict><key>phrase</key><string>長期熟成型</string><key>shortcut</key><string>ちょうきじゅくせいがた</string></dict>
 	<dict><key>phrase</key><string>長期熟成能力</string><key>shortcut</key><string>ちょうきじゅくせいのうりょく</string></dict>
 	<dict><key>phrase</key><string>長期熟成赤ワイン</string><key>shortcut</key><string>ちょうきじゅくせいあかわいん</string></dict>
-	<dict><key>phrase</key><string>長期間熟成</string><key>shortcut</key><string>ちょうきかんじゅくせい</string></dict>
+	<dict><key>phrase</key><string>長期間熟成</string><key>shortcut</key><string>ちょうきかんじゅくせい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>長野醸造ワイン</string><key>shortcut</key><string>ながのじょうぞうわいん</string></dict>
 	<dict><key>phrase</key><string>陰干し</string><key>shortcut</key><string>かげぼし</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>Ancestral Method</string><key>shortcut</key><string>あんせすとらるめそっど</string></dict>
@@ -6705,9 +6705,9 @@
 	<dict><key>phrase</key><string>攪拌時</string><key>shortcut</key><string>かくはんじ</string></dict>
 	<dict><key>phrase</key><string>月以上ビン内</string><key>shortcut</key><string>げついじょうびんない</string></dict>
 	<dict><key>phrase</key><string>月以上人工的</string><key>shortcut</key><string>げついじょうじんこうてき</string></dict>
-	<dict><key>phrase</key><string>月以上自然乾燥</string><key>shortcut</key><string>げついじょうしぜんかんそう</string></dict>
+	<dict><key>phrase</key><string>月以上自然乾燥</string><key>shortcut</key><string>げついじょうしぜんかんそう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>月屋外</string><key>shortcut</key><string>げつおくがい</string></dict>
-	<dict><key>phrase</key><string>月陰干</string><key>shortcut</key><string>げつかげぼし</string></dict>
+	<dict><key>phrase</key><string>月陰干</string><key>shortcut</key><string>げつかげぼし</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>本格的ワイン造</string><key>shortcut</key><string>ほんかくてきわいんづくり</string></dict>
 	<dict><key>phrase</key><string>板目取</string><key>shortcut</key><string>いためどり</string></dict>
 	<dict><key>phrase</key><string>果汁糖度測定法</string><key>shortcut</key><string>かじゅうとうどそくていほう</string></dict>
@@ -6718,7 +6718,7 @@
 	<dict><key>phrase</key><string>樽庫</string><key>shortcut</key><string>たるぐら</string></dict>
 	<dict><key>phrase</key><string>樽材</string><key>shortcut</key><string>たるざい</string></dict>
 	<dict><key>phrase</key><string>樽由来</string><key>shortcut</key><string>たるゆらい</string></dict>
-	<dict><key>phrase</key><string>樽育成</string><key>shortcut</key><string>たるいくせい</string></dict>
+	<dict><key>phrase</key><string>樽育成</string><key>shortcut</key><string>たるいくせい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>樽育成中</string><key>shortcut</key><string>たるいくせいちゅう</string></dict>
 	<dict><key>phrase</key><string>残糖度</string><key>shortcut</key><string>ざんとうど</string></dict>
 	<dict><key>phrase</key><string>混醸法</string><key>shortcut</key><string>こんじょうほう</string></dict>
@@ -6726,8 +6726,8 @@
 	<dict><key>phrase</key><string>漉</string><key>shortcut</key><string>こし</string></dict>
 	<dict><key>phrase</key><string>炭酸ガス入り</string><key>shortcut</key><string>たんさんがすいり</string></dict>
 	<dict><key>phrase</key><string>炭酸ガス注入法</string><key>shortcut</key><string>たんさんがすちゅうにゅうほう</string></dict>
-	<dict><key>phrase</key><string>物理的・化学的処理</string><key>shortcut</key><string>ぶつりてきかがくてきしょり</string></dict>
-	<dict><key>phrase</key><string>目減</string><key>shortcut</key><string>めべり</string></dict>
+	<dict><key>phrase</key><string>物理的・化学的処理</string><key>shortcut</key><string>ぶつりてきかがくてきしょり</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>目減</string><key>shortcut</key><string>めべり</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>短期間フロール</string><key>shortcut</key><string>たんきかんふろーる</string></dict>
 	<dict><key>phrase</key><string>粕部分</string><key>shortcut</key><string>かすぶぶん</string></dict>
 	<dict><key>phrase</key><string>糖分量</string><key>shortcut</key><string>とうぶんりょう</string></dict>
@@ -6752,7 +6752,7 @@
 	<dict><key>phrase</key><string>ウデド</string><key>shortcut</key><string>うでど</string></dict>
 	<dict><key>phrase</key><string>添加後</string><key>shortcut</key><string>てんかご</string></dict>
 	<dict><key>phrase</key><string>添加量</string><key>shortcut</key><string>てんかりょう</string></dict>
-	<dict><key>phrase</key><string>糖化</string><key>shortcut</key><string>とうか</string></dict>	<!-- 元: ワイン醸造技術用語 -->
+	<dict><key>phrase</key><string>糖化</string><key>shortcut</key><string>とうか</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: ワイン醸造技術用語 -->
 	<dict><key>phrase</key><string>Churi</string><key>shortcut</key><string>ちゅり</string></dict>
 	<dict><key>phrase</key><string>アンフォラ</string><key>shortcut</key><string>あんふぉら</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>アンブテイヤージュ</string><key>shortcut</key><string>あんぶていやーじゅ</string></dict>
@@ -6803,27 +6803,27 @@
 	<dict><key>phrase</key><string>メトード・シャルマ</string><key>shortcut</key><string>めとーどしゃるま</string></dict>
 	<dict><key>phrase</key><string>上澄</string><key>shortcut</key><string>うわずみ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>冷却</string><key>shortcut</key><string>れいきゃく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>冷却処理</string><key>shortcut</key><string>れいきゃくしょり</string></dict>
-	<dict><key>phrase</key><string>加水</string><key>shortcut</key><string>かすい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>冷却処理</string><key>shortcut</key><string>れいきゃくしょり</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>加水</string><key>shortcut</key><string>かすい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>古樽</string><key>shortcut</key><string>ふるだる</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>安定化</string><key>shortcut</key><string>あんていか</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>密閉ステンレスタンク</string><key>shortcut</key><string>みっぺいすてんれすたんく</string></dict>
 	<dict><key>phrase</key><string>密閉タンク方式</string><key>shortcut</key><string>みっぺいたんくほうしき</string></dict>
 	<dict><key>phrase</key><string>密閉容器</string><key>shortcut</key><string>みっぺいようき</string></dict>
-	<dict><key>phrase</key><string>ガンマ線照射</string><key>shortcut</key><string>がんませんしょうしゃ</string></dict>
+	<dict><key>phrase</key><string>ガンマ線照射</string><key>shortcut</key><string>がんませんしょうしゃ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>フーラージュ</string><key>shortcut</key><string>ふーらーじゅ</string></dict>
 	<dict><key>phrase</key><string>ルモンタージュ</string><key>shortcut</key><string>るもんたーじゅ</string></dict>
 	<dict><key>phrase</key><string>ヴィナッチャ</string><key>shortcut</key><string>ゔぃなっちゃ</string></dict>
 	<dict><key>phrase</key><string>ヴィンサンタイア</string><key>shortcut</key><string>ゔぃんさんたいあ</string></dict>
 	<dict><key>phrase</key><string>冷却効果</string><key>shortcut</key><string>れいきゃくこうか</string></dict>
 	<dict><key>phrase</key><string>加圧下</string><key>shortcut</key><string>かあつか</string></dict>
-	<dict><key>phrase</key><string>常温減圧濃縮</string><key>shortcut</key><string>じょうおんげんあつのうしゅく</string></dict>
-	<dict><key>phrase</key><string>成分抽出</string><key>shortcut</key><string>せいぶんちゅうしゅつ</string></dict>
+	<dict><key>phrase</key><string>常温減圧濃縮</string><key>shortcut</key><string>じょうおんげんあつのうしゅく</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>成分抽出</string><key>shortcut</key><string>せいぶんちゅうしゅつ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>抽出度合</string><key>shortcut</key><string>ちゅうしゅつどあい</string></dict>
 	<dict><key>phrase</key><string>抽出方法</string><key>shortcut</key><string>ちゅうしゅつほうほう</string></dict>
-	<dict><key>phrase</key><string>撹拌作業</string><key>shortcut</key><string>かくはんさぎょう</string></dict>
-	<dict><key>phrase</key><string>数日間密閉</string><key>shortcut</key><string>すうじつかんみっぺい</string></dict>
-	<dict><key>phrase</key><string>数時間静置</string><key>shortcut</key><string>すうじかんせいち</string></dict>
+	<dict><key>phrase</key><string>撹拌作業</string><key>shortcut</key><string>かくはんさぎょう</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>数日間密閉</string><key>shortcut</key><string>すうじつかんみっぺい</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>数時間静置</string><key>shortcut</key><string>すうじかんせいち</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>時間果皮</string><key>shortcut</key><string>じかんかひ</string></dict>
 	<dict><key>phrase</key><string>果帽全体</string><key>shortcut</key><string>かぼうぜんたい</string></dict>
 	<dict><key>phrase</key><string>果皮・種子</string><key>shortcut</key><string>かひしゅし</string></dict>
@@ -6832,20 +6832,20 @@
 	<dict><key>phrase</key><string>木樽由来</string><key>shortcut</key><string>きだるゆらい</string></dict>
 	<dict><key>phrase</key><string>液状部分</string><key>shortcut</key><string>えきじょうぶぶん</string></dict>
 	<dict><key>phrase</key><string>混合溶液</string><key>shortcut</key><string>こんごうようえき</string></dict>
-	<dict><key>phrase</key><string>混植混醸</string><key>shortcut</key><string>こんしょくこんじょう</string></dict>
+	<dict><key>phrase</key><string>混植混醸</string><key>shortcut</key><string>こんしょくこんじょう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>添加・無添加</string><key>shortcut</key><string>てんかむてんか</string></dict>
 	<dict><key>phrase</key><string>添加理由</string><key>shortcut</key><string>てんかりゆう</string></dict>
 	<dict><key>phrase</key><string>減圧状態</string><key>shortcut</key><string>げんあつじょうたい</string></dict>
-	<dict><key>phrase</key><string>温度管理</string><key>shortcut</key><string>おんどかんり</string></dict>
-	<dict><key>phrase</key><string>温度調節</string><key>shortcut</key><string>おんどちょうせつ</string></dict>
+	<dict><key>phrase</key><string>温度管理</string><key>shortcut</key><string>おんどかんり</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>温度調節</string><key>shortcut</key><string>おんどちょうせつ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>滞留時間</string><key>shortcut</key><string>たいりゅうじかん</string></dict>
 	<dict><key>phrase</key><string>濃縮果汁</string><key>shortcut</key><string>のうしゅくかじゅう</string></dict>
-	<dict><key>phrase</key><string>甘味調整</string><key>shortcut</key><string>あまみちょうせい</string></dict>
-	<dict><key>phrase</key><string>空気接触</string><key>shortcut</key><string>くうきせっしょく</string></dict>
-	<dict><key>phrase</key><string>糖分添加</string><key>shortcut</key><string>とうぶんてんか</string></dict>
-	<dict><key>phrase</key><string>糖分調整</string><key>shortcut</key><string>とうぶんちょうせい</string></dict>
-	<dict><key>phrase</key><string>自己分解</string><key>shortcut</key><string>じこぶんかい</string></dict>
-	<dict><key>phrase</key><string>自然乾燥</string><key>shortcut</key><string>しぜんかんそう</string></dict>
+	<dict><key>phrase</key><string>甘味調整</string><key>shortcut</key><string>あまみちょうせい</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>空気接触</string><key>shortcut</key><string>くうきせっしょく</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>糖分添加</string><key>shortcut</key><string>とうぶんてんか</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>糖分調整</string><key>shortcut</key><string>とうぶんちょうせい</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>自己分解</string><key>shortcut</key><string>じこぶんかい</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>自然乾燥</string><key>shortcut</key><string>しぜんかんそう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>製造基準</string><key>shortcut</key><string>せいぞうきじゅん</string></dict>
 	<dict><key>phrase</key><string>製造工程</string><key>shortcut</key><string>せいぞうこうてい</string></dict>
 	<dict><key>phrase</key><string>製造方法</string><key>shortcut</key><string>せいぞうほうほう</string></dict>
@@ -6856,13 +6856,13 @@
 	<dict><key>phrase</key><string>貯蔵年数</string><key>shortcut</key><string>ちょぞうねんすう</string></dict>
 	<dict><key>phrase</key><string>貯蔵期間</string><key>shortcut</key><string>ちょぞうきかん</string></dict>
 	<dict><key>phrase</key><string>貯蔵条件</string><key>shortcut</key><string>ちょぞうじょうけん</string></dict>
-	<dict><key>phrase</key><string>酵素反応</string><key>shortcut</key><string>こうそはんのう</string></dict>
-	<dict><key>phrase</key><string>酸化重合</string><key>shortcut</key><string>さんかじゅうごう</string></dict>
-	<dict><key>phrase</key><string>酸素供給</string><key>shortcut</key><string>さんそきょうきゅう</string></dict>
+	<dict><key>phrase</key><string>酵素反応</string><key>shortcut</key><string>こうそはんのう</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>酸化重合</string><key>shortcut</key><string>さんかじゅうごう</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>酸素供給</string><key>shortcut</key><string>さんそきょうきゅう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>酸素透過性</string><key>shortcut</key><string>さんそとうかせい</string></dict>
 	<dict><key>phrase</key><string>酸素透過率</string><key>shortcut</key><string>さんそとうかりつ</string></dict>
-	<dict><key>phrase</key><string>長時間接触</string><key>shortcut</key><string>ちょうじかんせっしょく</string></dict>
-	<dict><key>phrase</key><string>長期間接触</string><key>shortcut</key><string>ちょうきかんせっしょく</string></dict>
+	<dict><key>phrase</key><string>長時間接触</string><key>shortcut</key><string>ちょうじかんせっしょく</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>長期間接触</string><key>shortcut</key><string>ちょうきかんせっしょく</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>陶製容器</string><key>shortcut</key><string>とうせいようき</string></dict>
 	<dict><key>phrase</key><string>食塩水中</string><key>shortcut</key><string>しょくえんすいちゅう</string></dict>
 	<dict><key>phrase</key><string>コルク樫</string><key>shortcut</key><string>こるくがし</string></dict>
@@ -6875,14 +6875,14 @@
 	<dict><key>phrase</key><string>月間不活性容器</string><key>shortcut</key><string>げっかんふかっせいようき</string></dict>
 	<dict><key>phrase</key><string>果汁糖分最低含有量</string><key>shortcut</key><string>かじゅうとうぶんさいていがんゆうりょう</string></dict>
 	<dict><key>phrase</key><string>果汁糖度基準</string><key>shortcut</key><string>かじゅうとうどきじゅん</string></dict>
-	<dict><key>phrase</key><string>溶存酸素管理</string><key>shortcut</key><string>ようぞんさんそかんり</string></dict>
+	<dict><key>phrase</key><string>溶存酸素管理</string><key>shortcut</key><string>ようぞんさんそかんり</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>炭酸ガス注入方式</string><key>shortcut</key><string>たんさんがすちゅうにゅうほうしき</string></dict>
 	<dict><key>phrase</key><string>管理作業</string><key>shortcut</key><string>かんりさぎょう</string></dict>
 	<dict><key>phrase</key><string>糖分・酵母・温度</string><key>shortcut</key><string>とうぶんこうぼおんど</string></dict>
 	<dict><key>phrase</key><string>糖度測定方法</string><key>shortcut</key><string>とうどそくていほうほう</string></dict>
 	<dict><key>phrase</key><string>自然条件</string><key>shortcut</key><string>しぜんじょうけん</string></dict>
 	<dict><key>phrase</key><string>製法上</string><key>shortcut</key><string>せいほうじょう</string></dict>
-	<dict><key>phrase</key><string>1次加工</string><key>shortcut</key><string>いちじかこう</string></dict>
+	<dict><key>phrase</key><string>1次加工</string><key>shortcut</key><string>いちじかこう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>Enology</string><key>shortcut</key><string>えのろじー</string></dict>
 	<dict><key>phrase</key><string>ロシオ</string><key>shortcut</key><string>ろしお</string></dict>
 	<dict><key>phrase</key><string>フォルムラ</string><key>shortcut</key><string>ふぉるむら</string></dict>
@@ -7183,7 +7183,7 @@
 	<dict><key>phrase</key><string>ロゼ・ベンコヴァッツ</string><key>shortcut</key><string>ろぜべんこゔぁっつ</string></dict>
 	<dict><key>phrase</key><string>ロゼ・ワイン</string><key>shortcut</key><string>ろぜわいん</string></dict>
 	<dict><key>phrase</key><string>ロゼ・白</string><key>shortcut</key><string>ろぜしろ</string></dict>
-	<dict><key>phrase</key><string>酒精強化</string><key>shortcut</key><string>しゅせいきょうか</string></dict>
+	<dict><key>phrase</key><string>酒精強化</string><key>shortcut</key><string>しゅせいきょうか</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>酒精強化ワイン</string><key>shortcut</key><string>しゅせいきょうかわいん</string></dict>
 	<dict><key>phrase</key><string>Artemis Domaine</string><key>shortcut</key><string>あるてみすどめーぬ</string></dict>
 	<dict><key>phrase</key><string>Castagna</string><key>shortcut</key><string>かすたーにゃ</string></dict>
@@ -7297,7 +7297,7 @@
 	<dict><key>phrase</key><string>水系</string><key>shortcut</key><string>すいけい</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>水麹</string><key>shortcut</key><string>みずこうじ</string></dict>
 	<dict><key>phrase</key><string>水資源</string><key>shortcut</key><string>すいしげん</string></dict>
-	<dict><key>phrase</key><string>水質保全</string><key>shortcut</key><string>すいしつほぜん</string></dict>
+	<dict><key>phrase</key><string>水質保全</string><key>shortcut</key><string>すいしつほぜん</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>水量</string><key>shortcut</key><string>すいりょう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>静岡吟醸</string><key>shortcut</key><string>しずおかぎんじょう</string></dict>
 	<dict><key>phrase</key><string>静岡酵母</string><key>shortcut</key><string>しずおかこうぼ</string></dict>
@@ -7325,7 +7325,7 @@
 	<dict><key>phrase</key><string>突き破精</string><key>shortcut</key><string>つきはぜ</string></dict>
 	<dict><key>phrase</key><string>総破精</string><key>shortcut</key><string>そうはぜ</string></dict>
 	<dict><key>phrase</key><string>米質</string><key>shortcut</key><string>べいしつ</string></dict>
-	<dict><key>phrase</key><string>日本酒醸造</string><key>shortcut</key><string>にほんしゅじょうぞう</string></dict>
+	<dict><key>phrase</key><string>日本酒醸造</string><key>shortcut</key><string>にほんしゅじょうぞう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>日本酒</string><key>shortcut</key><string>にほんしゅ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>日本酒造り</string><key>shortcut</key><string>にほんしゅづくり</string></dict>
 	<dict><key>phrase</key><string>saké</string><key>shortcut</key><string>さけ</string></dict>
@@ -7436,7 +7436,7 @@
 	<dict><key>phrase</key><string>良酒</string><key>shortcut</key><string>りょうしゅ</string></dict>
 	<dict><key>phrase</key><string>蒸米</string><key>shortcut</key><string>むしまい</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>蒸米機</string><key>shortcut</key><string>むしまいき</string></dict>
-	<dict><key>phrase</key><string>補酒</string><key>shortcut</key><string>ほしゅ</string></dict>
+	<dict><key>phrase</key><string>補酒</string><key>shortcut</key><string>ほしゅ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>見掛精米歩合</string><key>shortcut</key><string>みかけせいまいぶあい</string></dict>
 	<dict><key>phrase</key><string>貴醸酒</string><key>shortcut</key><string>きじょうしゅ</string></dict>
 	<dict><key>phrase</key><string>越淡麗</string><key>shortcut</key><string>こしたんれい</string></dict>
@@ -7446,7 +7446,7 @@
 	<dict><key>phrase</key><string>酛米</string><key>shortcut</key><string>もとまい</string></dict>
 	<dict><key>phrase</key><string>醇良酒</string><key>shortcut</key><string>じゅんりょうしゅ</string></dict>
 	<dict><key>phrase</key><string>香気成分</string><key>shortcut</key><string>こうきせいぶん</string></dict>
-	<dict><key>phrase</key><string>高精米</string><key>shortcut</key><string>こうせいまい</string></dict>
+	<dict><key>phrase</key><string>高精米</string><key>shortcut</key><string>こうせいまい</string><key>pos</key><string>サ変名詞</string></dict>
 
 	<!-- ■ 銘柄 -->
 	<dict><key>phrase</key><string>ポール・ロジェ</string><key>shortcut</key><string>ぽーるろじぇ</string></dict>
@@ -7715,15 +7715,15 @@
 	<dict><key>phrase</key><string>交雑</string><key>shortcut</key><string>こうざつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>休眠</string><key>shortcut</key><string>きゅうみん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>伸長</string><key>shortcut</key><string>しんちょう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>作付</string><key>shortcut</key><string>さくづけ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>作付</string><key>shortcut</key><string>さくづけ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>作柄</string><key>shortcut</key><string>さくがら</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>受粉</string><key>shortcut</key><string>じゅふん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>受粉・結実</string><key>shortcut</key><string>じゅふんけつじつ</string></dict>
+	<dict><key>phrase</key><string>受粉・結実</string><key>shortcut</key><string>じゅふんけつじつ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>受精</string><key>shortcut</key><string>じゅせい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>古木</string><key>shortcut</key><string>こぼく</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>品種改良</string><key>shortcut</key><string>ひんしゅかいりょう</string></dict>
-	<dict><key>phrase</key><string>品種登録</string><key>shortcut</key><string>ひんしゅとうろく</string></dict>
-	<dict><key>phrase</key><string>土寄</string><key>shortcut</key><string>つちよせ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>品種改良</string><key>shortcut</key><string>ひんしゅかいりょう</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>品種登録</string><key>shortcut</key><string>ひんしゅとうろく</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>土寄</string><key>shortcut</key><string>つちよせ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>密植</string><key>shortcut</key><string>みっしょく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>オーガニック農業国</string><key>shortcut</key><string>おーがにっくのうぎょうこく</string></dict>
 	<dict><key>phrase</key><string>塩分耐性</string><key>shortcut</key><string>えんぶんたいせい</string></dict>
@@ -7731,10 +7731,10 @@
 	<dict><key>phrase</key><string>平均樹齢</string><key>shortcut</key><string>へいきんじゅれい</string></dict>
 	<dict><key>phrase</key><string>有機農業</string><key>shortcut</key><string>ゆうきのうぎょう</string></dict>
 	<dict><key>phrase</key><string>有機農法</string><key>shortcut</key><string>ゆうきのうほう</string></dict>
-	<dict><key>phrase</key><string>植物検疫</string><key>shortcut</key><string>しょくぶつけんえき</string></dict>
+	<dict><key>phrase</key><string>植物検疫</string><key>shortcut</key><string>しょくぶつけんえき</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>植物由来</string><key>shortcut</key><string>しょくぶつゆらい</string></dict>
-	<dict><key>phrase</key><string>検疫規制</string><key>shortcut</key><string>けんえききせい</string></dict>
-	<dict><key>phrase</key><string>機械作業</string><key>shortcut</key><string>きかいさぎょう</string></dict>
+	<dict><key>phrase</key><string>検疫規制</string><key>shortcut</key><string>けんえききせい</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>機械作業</string><key>shortcut</key><string>きかいさぎょう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>機械化農業</string><key>shortcut</key><string>きかいかのうぎょう</string></dict>
 	<dict><key>phrase</key><string>成熟度合</string><key>shortcut</key><string>せいじゅくどあい</string></dict>
 	<dict><key>phrase</key><string>成熟期間</string><key>shortcut</key><string>せいじゅくきかん</string></dict>
@@ -7749,23 +7749,23 @@
 	<dict><key>phrase</key><string>病虫害対策</string><key>shortcut</key><string>びょうちゅうがいたいさく</string></dict>
 	<dict><key>phrase</key><string>積算温度</string><key>shortcut</key><string>せきさんおんど</string></dict>
 	<dict><key>phrase</key><string>繁殖可能</string><key>shortcut</key><string>はんしょくかのう</string></dict>
-	<dict><key>phrase</key><string>繁殖防止</string><key>shortcut</key><string>はんしょくぼうし</string></dict>
-	<dict><key>phrase</key><string>耕作放棄</string><key>shortcut</key><string>こうさくほうき</string></dict>
+	<dict><key>phrase</key><string>繁殖防止</string><key>shortcut</key><string>はんしょくぼうし</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>耕作放棄</string><key>shortcut</key><string>こうさくほうき</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>耕作面積</string><key>shortcut</key><string>こうさくめんせき</string></dict>
-	<dict><key>phrase</key><string>自然交配</string><key>shortcut</key><string>しぜんこうはい</string></dict>
+	<dict><key>phrase</key><string>自然交配</string><key>shortcut</key><string>しぜんこうはい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>自然農法</string><key>shortcut</key><string>しぜんのうほう</string></dict>
 	<dict><key>phrase</key><string>自社農園</string><key>shortcut</key><string>じしゃのうえん</string></dict>
-	<dict><key>phrase</key><string>薬剤散布</string><key>shortcut</key><string>やくざいさんぷ</string></dict>
+	<dict><key>phrase</key><string>薬剤散布</string><key>shortcut</key><string>やくざいさんぷ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>表皮成長</string><key>shortcut</key><string>ひょうひせいちょう</string></dict>
 	<dict><key>phrase</key><string>複数区画</string><key>shortcut</key><string>ふくすうくかく</string></dict>
 	<dict><key>phrase</key><string>試験農場</string><key>shortcut</key><string>しけんのうじょう</string></dict>
 	<dict><key>phrase</key><string>農事試験場</string><key>shortcut</key><string>のうじしけんじょう</string></dict>
-	<dict><key>phrase</key><string>農薬散布</string><key>shortcut</key><string>のうやくさんぷ</string></dict>
+	<dict><key>phrase</key><string>農薬散布</string><key>shortcut</key><string>のうやくさんぷ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>Lieu-dit</string><key>shortcut</key><string>りゅーでぃ</string></dict>
 	<dict><key>phrase</key><string>Ried</string><key>shortcut</key><string>りーと</string></dict>
 	<dict><key>phrase</key><string>クリマ</string><key>shortcut</key><string>くりま</string></dict>
 	<dict><key>phrase</key><string>プロヴァイン</string><key>shortcut</key><string>ぷろゔぁいん</string></dict>
-	<dict><key>phrase</key><string>環境保全</string><key>shortcut</key><string>かんきょうほぜん</string></dict>
+	<dict><key>phrase</key><string>環境保全</string><key>shortcut</key><string>かんきょうほぜん</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>生物多様性</string><key>shortcut</key><string>せいぶつたようせい</string></dict>
 	<dict><key>phrase</key><string>遺伝子レベル</string><key>shortcut</key><string>いでんしれべる</string></dict>
 	<dict><key>phrase</key><string>遺伝情報</string><key>shortcut</key><string>いでんじょうほう</string></dict>
@@ -7960,10 +7960,10 @@
 	<dict><key>phrase</key><string>六条大麦</string><key>shortcut</key><string>ろくじょうおおむぎ</string></dict>
 	<dict><key>phrase</key><string>銘醸地</string><key>shortcut</key><string>めいじょうち</string></dict>
 	<dict><key>phrase</key><string>産膜酵母</string><key>shortcut</key><string>さんまくこうぼ</string></dict>
-	<dict><key>phrase</key><string>微発泡</string><key>shortcut</key><string>びはっぽう</string></dict>
+	<dict><key>phrase</key><string>微発泡</string><key>shortcut</key><string>びはっぽう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>単為結果</string><key>shortcut</key><string>たんいけっか</string></dict>
 	<dict><key>phrase</key><string>ジェロボアム</string><key>shortcut</key><string>じぇろぼあむ</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>製麦</string><key>shortcut</key><string>せいばく</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>製麦</string><key>shortcut</key><string>せいばく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>柾目取り</string><key>shortcut</key><string>まさめどり</string></dict>
 	<dict><key>phrase</key><string>岩の原</string><key>shortcut</key><string>いわのはら</string></dict>
 	<dict><key>phrase</key><string>果帽</string><key>shortcut</key><string>かぼう</string></dict>
@@ -7973,7 +7973,7 @@
 	<dict><key>phrase</key><string>残糖分</string><key>shortcut</key><string>ざんとうぶん</string></dict>
 	<dict><key>phrase</key><string>残糖量</string><key>shortcut</key><string>ざんとうりょう</string></dict>
 	<dict><key>phrase</key><string>除梗</string><key>shortcut</key><string>じょこう</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>除葉</string><key>shortcut</key><string>じょよう</string></dict>
+	<dict><key>phrase</key><string>除葉</string><key>shortcut</key><string>じょよう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>色沢</string><key>shortcut</key><string>しきたく</string></dict>	<!-- 米・酒の色つや。敷きたく だった(learningBOX 検査 3693) -->
 	<dict><key>phrase</key><string>畝くずし</string><key>shortcut</key><string>うねくずし</string></dict>	<!-- 冬の土寄せを崩す作業(Débuttage)。教材は 31 回とも 畝くずし(learningBOX 検査 3693、畝崩し だった) -->
 	<dict><key>phrase</key><string>新樽</string><key>shortcut</key><string>しんだる</string></dict>
@@ -8140,10 +8140,10 @@
 	<dict><key>phrase</key><string>ペコリーノ・ロマーノ</string><key>shortcut</key><string>ぺこりーのろまーの</string></dict>
 	<dict><key>phrase</key><string>マンステール</string><key>shortcut</key><string>まんすてーる</string></dict>
 	<dict><key>phrase</key><string>ラクレット</string><key>shortcut</key><string>らくれっと</string></dict>
-	<dict><key>phrase</key><string>加熱圧搾</string><key>shortcut</key><string>かねつあっさく</string></dict>
+	<dict><key>phrase</key><string>加熱圧搾</string><key>shortcut</key><string>かねつあっさく</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>加熱圧搾タイプ</string><key>shortcut</key><string>かねつあっさくたいぷ</string></dict>
 	<dict><key>phrase</key><string>加熱圧搾タイプチーズ</string><key>shortcut</key><string>かねつあっさくたいぷちーず</string></dict>
-	<dict><key>phrase</key><string>加熱熟成</string><key>shortcut</key><string>かねつじゅくせい</string></dict>
+	<dict><key>phrase</key><string>加熱熟成</string><key>shortcut</key><string>かねつじゅくせい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>加熱熟成方法</string><key>shortcut</key><string>かねつじゅくせいほうほう</string></dict>
 	<dict><key>phrase</key><string>加熱熟成法</string><key>shortcut</key><string>かねつじゅくせいほう</string></dict>
 	<dict><key>phrase</key><string>山羊</string><key>shortcut</key><string>やぎ</string></dict>	<!-- Sudachiにもある -->
@@ -8154,7 +8154,7 @@
 	<dict><key>phrase</key><string>青カビチーズ</string><key>shortcut</key><string>あおかびちーず</string></dict>
 	<dict><key>phrase</key><string>青カビ菌</string><key>shortcut</key><string>あおかびきん</string></dict>
 	<dict><key>phrase</key><string>大型チーズ</string><key>shortcut</key><string>おおがたちーず</string></dict>
-	<dict><key>phrase</key><string>半加熱圧搾</string><key>shortcut</key><string>はんかねつあっさく</string></dict>
+	<dict><key>phrase</key><string>半加熱圧搾</string><key>shortcut</key><string>はんかねつあっさく</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>半加熱圧搾タイプ</string><key>shortcut</key><string>はんかねつあっさくたいぷ</string></dict>
 	<dict><key>phrase</key><string>非加熱圧搾タイプ</string><key>shortcut</key><string>ひかねつあっさくたいぷ</string></dict>
 	<dict><key>phrase</key><string>羊主体</string><key>shortcut</key><string>ひつじしゅたい</string></dict>
@@ -8257,7 +8257,7 @@
 	<dict><key>phrase</key><string>碾茶</string><key>shortcut</key><string>てんちゃ</string></dict>
 	<dict><key>phrase</key><string>緑茶消費</string><key>shortcut</key><string>りょくちゃしょうひ</string></dict>
 	<dict><key>phrase</key><string>緑茶飲料</string><key>shortcut</key><string>りょくちゃいんりょう</string></dict>
-	<dict><key>phrase</key><string>荒茶加工</string><key>shortcut</key><string>あらちゃかこう</string></dict>
+	<dict><key>phrase</key><string>荒茶加工</string><key>shortcut</key><string>あらちゃかこう</string><key>pos</key><string>サ変名詞</string></dict>
 
 	<!-- ■ コーヒー -->
 	<dict><key>phrase</key><string>モカ</string><key>shortcut</key><string>もか</string></dict>	<!-- Sudachiにもある -->
@@ -8699,7 +8699,7 @@
 	<dict><key>phrase</key><string>ヴォー州産ソーセージ</string><key>shortcut</key><string>ゔぉーしゅうさんそーせーじ</string></dict>
 	<dict><key>phrase</key><string>仔牛肉</string><key>shortcut</key><string>こうしにく</string></dict>
 	<dict><key>phrase</key><string>卵入</string><key>shortcut</key><string>たまごいり</string></dict>
-	<dict><key>phrase</key><string>厚切</string><key>shortcut</key><string>あつぎり</string></dict>
+	<dict><key>phrase</key><string>厚切</string><key>shortcut</key><string>あつぎり</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>料理Zwiebelkuchen</string><key>shortcut</key><string>りょうりつびーべるくーへん</string></dict>
 	<dict><key>phrase</key><string>炭火焼</string><key>shortcut</key><string>すみびやき</string></dict>
 	<dict><key>phrase</key><string>牛リブロース肉</string><key>shortcut</key><string>ぎゅうりぶろーすにく</string></dict>
@@ -8707,14 +8707,14 @@
 	<dict><key>phrase</key><string>特産Bottarga</string><key>shortcut</key><string>とくさんぼったるが</string></dict>
 	<dict><key>phrase</key><string>特産物</string><key>shortcut</key><string>とくさんぶつ</string></dict>
 	<dict><key>phrase</key><string>砂糖漬</string><key>shortcut</key><string>さとうづけ</string></dict>
-	<dict><key>phrase</key><string>細切</string><key>shortcut</key><string>ほそぎり</string></dict>
+	<dict><key>phrase</key><string>細切</string><key>shortcut</key><string>ほそぎり</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>細麺</string><key>shortcut</key><string>ほそめん</string></dict>
 	<dict><key>phrase</key><string>緑胡椒</string><key>shortcut</key><string>みどりこしょう</string></dict>
 	<dict><key>phrase</key><string>肉料理</string><key>shortcut</key><string>にくりょうり</string></dict>
 	<dict><key>phrase</key><string>脂分</string><key>shortcut</key><string>あぶらぶん</string></dict>
 	<dict><key>phrase</key><string>脂肪球</string><key>shortcut</key><string>しぼうきゅう</string></dict>
 	<dict><key>phrase</key><string>薄切焼</string><key>shortcut</key><string>うすぎりやき</string></dict>
-	<dict><key>phrase</key><string>血抜</string><key>shortcut</key><string>ちぬき</string></dict>
+	<dict><key>phrase</key><string>血抜</string><key>shortcut</key><string>ちぬき</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>調理時</string><key>shortcut</key><string>ちょうりじ</string></dict>
 	<dict><key>phrase</key><string>調理法</string><key>shortcut</key><string>ちょうりほう</string></dict>
 	<dict><key>phrase</key><string>赤ワイン煮</string><key>shortcut</key><string>あかわいんに</string></dict>
@@ -9196,9 +9196,9 @@
 	<dict><key>phrase</key><string>ワインテイスティング</string><key>shortcut</key><string>わいんていすてぃんぐ</string></dict>
 	<dict><key>phrase</key><string>比較テイスティング</string><key>shortcut</key><string>ひかくていすてぃんぐ</string></dict>
 	<dict><key>phrase</key><string>官能チャート</string><key>shortcut</key><string>かんのうちゃーと</string></dict>
-	<dict><key>phrase</key><string>官能表現</string><key>shortcut</key><string>かんのうひょうげん</string></dict>
+	<dict><key>phrase</key><string>官能表現</string><key>shortcut</key><string>かんのうひょうげん</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>官能表現チャート</string><key>shortcut</key><string>かんのうひょうげんちゃーと</string></dict>
-	<dict><key>phrase</key><string>官能試験</string><key>shortcut</key><string>かんのうしけん</string></dict>
+	<dict><key>phrase</key><string>官能試験</string><key>shortcut</key><string>かんのうしけん</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>Amabile</string><key>shortcut</key><string>あまーびれ</string></dict>
 	<dict><key>phrase</key><string>Amber</string><key>shortcut</key><string>あんばー</string></dict>
 	<dict><key>phrase</key><string>Ambré</string><key>shortcut</key><string>あんぶれ</string></dict>
@@ -9331,7 +9331,7 @@
 	<dict><key>phrase</key><string>特徴香</string><key>shortcut</key><string>とくちょうこう</string></dict>
 	<dict><key>phrase</key><string>猫尿</string><key>shortcut</key><string>ねこにょう</string></dict>
 	<dict><key>phrase</key><string>甘辛度</string><key>shortcut</key><string>あまからど</string></dict>
-	<dict><key>phrase</key><string>甘辛度表示</string><key>shortcut</key><string>あまからどひょうじ</string></dict>
+	<dict><key>phrase</key><string>甘辛度表示</string><key>shortcut</key><string>あまからどひょうじ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>第1アロマ</string><key>shortcut</key><string>だいいちあろま</string></dict>
 	<dict><key>phrase</key><string>第2アロマ</string><key>shortcut</key><string>だいにあろま</string></dict>
 	<dict><key>phrase</key><string>第3アロマ</string><key>shortcut</key><string>だいさんあろま</string></dict>
@@ -9452,7 +9452,7 @@
 	<dict><key>phrase</key><string>赤紫色</string><key>shortcut</key><string>あかむらさきいろ</string></dict>
 	<dict><key>phrase</key><string>赤茶色</string><key>shortcut</key><string>あかちゃいろ</string></dict>
 	<dict><key>phrase</key><string>身質</string><key>shortcut</key><string>みしつ</string></dict>
-	<dict><key>phrase</key><string>香味形成</string><key>shortcut</key><string>こうみけいせい</string></dict>
+	<dict><key>phrase</key><string>香味形成</string><key>shortcut</key><string>こうみけいせい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>若飲</string><key>shortcut</key><string>わかのみ</string></dict>
 	<dict><key>phrase</key><string>優良年</string><key>shortcut</key><string>ゆうりょうねん</string></dict>
 
@@ -9461,7 +9461,7 @@
 	<dict><key>phrase</key><string>有名ワイン産地名</string><key>shortcut</key><string>ゆうめいわいんさんちめい</string></dict>
 	<dict><key>phrase</key><string>信州ワインバレー構想</string><key>shortcut</key><string>しんしゅうわいんばれーこうそう</string></dict>
 	<dict><key>phrase</key><string>州名</string><key>shortcut</key><string>しゅうめい</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>州名表示</string><key>shortcut</key><string>しゅうめいひょうじ</string></dict>
+	<dict><key>phrase</key><string>州名表示</string><key>shortcut</key><string>しゅうめいひょうじ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>州境</string><key>shortcut</key><string>しゅうきょう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>州都</string><key>shortcut</key><string>しゅうと</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>欧州連合</string><key>shortcut</key><string>おうしゅうれんごう</string></dict>	<!-- Sudachiにもある -->
@@ -9594,7 +9594,7 @@
 	<dict><key>phrase</key><string>野生酵母</string><key>shortcut</key><string>やせいこうぼ</string></dict>
 	<dict><key>phrase</key><string>微生物学的</string><key>shortcut</key><string>びせいぶつがくてき</string></dict>
 	<dict><key>phrase</key><string>微生物学的安定性</string><key>shortcut</key><string>びせいぶつがくてきあんていせい</string></dict>
-	<dict><key>phrase</key><string>感染報告</string><key>shortcut</key><string>かんせんほうこく</string></dict>
+	<dict><key>phrase</key><string>感染報告</string><key>shortcut</key><string>かんせんほうこく</string><key>pos</key><string>サ変名詞</string></dict>
 	<!-- ■ 輸入・流通 -->
 	<dict><key>phrase</key><string>Mis en bouteille au Domaine</string><key>shortcut</key><string>みざんぶてぃゆおどめーぬ</string></dict>
 	<dict><key>phrase</key><string>輸出用ワイン</string><key>shortcut</key><string>ゆしゅつようわいん</string></dict>
@@ -9621,7 +9621,7 @@
 	<dict><key>phrase</key><string>供給国</string><key>shortcut</key><string>きょうきゅうこく</string></dict>
 	<dict><key>phrase</key><string>供給地</string><key>shortcut</key><string>きょうきゅうち</string></dict>
 	<dict><key>phrase</key><string>保存紙</string><key>shortcut</key><string>ほぞんし</string></dict>
-	<dict><key>phrase</key><string>値下</string><key>shortcut</key><string>ねさげ</string></dict>
+	<dict><key>phrase</key><string>値下</string><key>shortcut</key><string>ねさげ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>全ワイン販売量</string><key>shortcut</key><string>ぜんわいんはんばいりょう</string></dict>
 	<dict><key>phrase</key><string>全ワイン輸出量</string><key>shortcut</key><string>ぜんわいんゆしゅつりょう</string></dict>
 	<dict><key>phrase</key><string>出荷前</string><key>shortcut</key><string>しゅっかまえ</string></dict>
@@ -9661,11 +9661,11 @@
 	<dict><key>phrase</key><string>他部署</string><key>shortcut</key><string>たぶしょ</string></dict>
 	<dict><key>phrase</key><string>社用金額</string><key>shortcut</key><string>しゃようきんがく</string></dict>
 	<dict><key>phrase</key><string>破損金額</string><key>shortcut</key><string>はそんきんがく</string></dict>
-	<dict><key>phrase</key><string>P決済</string><key>shortcut</key><string>ぴーけっさい</string></dict>
+	<dict><key>phrase</key><string>P決済</string><key>shortcut</key><string>ぴーけっさい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>総合売り</string><key>shortcut</key><string>そうごううり</string></dict>
 	<dict><key>phrase</key><string>インポーター</string><key>shortcut</key><string>いんぽーたー</string></dict>
 	<dict><key>phrase</key><string>ケース</string><key>shortcut</key><string>けーす</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>ケース換算</string><key>shortcut</key><string>けーすかんさん</string></dict>
+	<dict><key>phrase</key><string>ケース換算</string><key>shortcut</key><string>けーすかんさん</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>コンテナ</string><key>shortcut</key><string>こんてな</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>コンテナヤード</string><key>shortcut</key><string>こんてなやーど</string></dict>
 	<dict><key>phrase</key><string>シッパー</string><key>shortcut</key><string>しっぱー</string></dict>	<!-- Sudachiにもある -->
@@ -9676,18 +9676,18 @@
 	<dict><key>phrase</key><string>フォワーダー</string><key>shortcut</key><string>ふぉわーだー</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>プリムール</string><key>shortcut</key><string>ぷりむーる</string></dict>
 	<dict><key>phrase</key><string>プリムール価格</string><key>shortcut</key><string>ぷりむーるかかく</string></dict>
-	<dict><key>phrase</key><string>プリムール取引</string><key>shortcut</key><string>ぷりむーるとりひき</string></dict>
+	<dict><key>phrase</key><string>プリムール取引</string><key>shortcut</key><string>ぷりむーるとりひき</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>ワイン関税</string><key>shortcut</key><string>わいんかんぜい</string></dict>
 	<dict><key>phrase</key><string>仲卸問屋</string><key>shortcut</key><string>なかおろしどんや</string></dict>
 	<dict><key>phrase</key><string>仲買人</string><key>shortcut</key><string>なかがいにん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>保税倉庫</string><key>shortcut</key><string>ほぜいそうこ</string></dict>
 	<dict><key>phrase</key><string>保険料</string><key>shortcut</key><string>ほけんりょう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>信用状</string><key>shortcut</key><string>しんようじょう</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>信用状取引</string><key>shortcut</key><string>しんようじょうとりひき</string></dict>
+	<dict><key>phrase</key><string>信用状取引</string><key>shortcut</key><string>しんようじょうとりひき</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>公的検査番号</string><key>shortcut</key><string>こうてきけんさばんごう</string></dict>
 	<dict><key>phrase</key><string>分析証明書</string><key>shortcut</key><string>ぶんせきしょうめいしょ</string></dict>
 	<dict><key>phrase</key><string>前月棚卸在庫金額</string><key>shortcut</key><string>ぜんげつたなおろしざいこきんがく</string></dict>
-	<dict><key>phrase</key><string>危険負担</string><key>shortcut</key><string>きけんふたん</string></dict>
+	<dict><key>phrase</key><string>危険負担</string><key>shortcut</key><string>きけんふたん</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>卸売業者</string><key>shortcut</key><string>おろしうりぎょうしゃ</string></dict>
 	<dict><key>phrase</key><string>取引価格</string><key>shortcut</key><string>とりひきかかく</string></dict>
 	<dict><key>phrase</key><string>外国公的検査機関</string><key>shortcut</key><string>がいこくこうてきけんさきかん</string></dict>
@@ -9697,46 +9697,46 @@
 	<dict><key>phrase</key><string>売上金額</string><key>shortcut</key><string>うりあげきんがく</string></dict>
 	<dict><key>phrase</key><string>当月仕入金額</string><key>shortcut</key><string>とうげつしいれきんがく</string></dict>
 	<dict><key>phrase</key><string>当月棚卸在庫金額</string><key>shortcut</key><string>とうげつたなおろしざいこきんがく</string></dict>
-	<dict><key>phrase</key><string>当月販売</string><key>shortcut</key><string>とうげつはんばい</string></dict>
+	<dict><key>phrase</key><string>当月販売</string><key>shortcut</key><string>とうげつはんばい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>振替金額</string><key>shortcut</key><string>ふりかえきんがく</string></dict>
 	<dict><key>phrase</key><string>損益分岐売上</string><key>shortcut</key><string>そんえきぶんきうりあげ</string></dict>
 	<dict><key>phrase</key><string>支払条件</string><key>shortcut</key><string>しはらいじょうけん</string></dict>
 	<dict><key>phrase</key><string>月間出荷</string><key>shortcut</key><string>げっかんしゅっか</string></dict>
-	<dict><key>phrase</key><string>段階的減税</string><key>shortcut</key><string>だんかいてきげんぜい</string></dict>
+	<dict><key>phrase</key><string>段階的減税</string><key>shortcut</key><string>だんかいてきげんぜい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>流通業者</string><key>shortcut</key><string>りゅうつうぎょうしゃ</string></dict>
-	<dict><key>phrase</key><string>海外進出</string><key>shortcut</key><string>かいがいしんしゅつ</string></dict>
+	<dict><key>phrase</key><string>海外進出</string><key>shortcut</key><string>かいがいしんしゅつ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>海外需要</string><key>shortcut</key><string>かいがいじゅよう</string></dict>
 	<dict><key>phrase</key><string>混載コンテナ貨物</string><key>shortcut</key><string>こんさいこんてなかもつ</string></dict>
 	<dict><key>phrase</key><string>混載貨物</string><key>shortcut</key><string>こんさいかもつ</string></dict>
 	<dict><key>phrase</key><string>現物価格</string><key>shortcut</key><string>げんぶつかかく</string></dict>
 	<dict><key>phrase</key><string>自由貿易協定</string><key>shortcut</key><string>じゆうぼうえききょうてい</string></dict>
-	<dict><key>phrase</key><string>貿易取引</string><key>shortcut</key><string>ぼうえきとりひき</string></dict>
+	<dict><key>phrase</key><string>貿易取引</string><key>shortcut</key><string>ぼうえきとりひき</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>貿易条件</string><key>shortcut</key><string>ぼうえきじょうけん</string></dict>
 	<dict><key>phrase</key><string>貿易用語</string><key>shortcut</key><string>ぼうえきようご</string></dict>
 	<dict><key>phrase</key><string>購入価格</string><key>shortcut</key><string>こうにゅうかかく</string></dict>
 	<dict><key>phrase</key><string>輸入取引条件</string><key>shortcut</key><string>ゆにゅうとりひきじょうけん</string></dict>
 	<dict><key>phrase</key><string>輸入数量</string><key>shortcut</key><string>ゆにゅうすうりょう</string></dict>
-	<dict><key>phrase</key><string>輸入者指定</string><key>shortcut</key><string>ゆにゅうしゃしてい</string></dict>
+	<dict><key>phrase</key><string>輸入者指定</string><key>shortcut</key><string>ゆにゅうしゃしてい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>輸入関税</string><key>shortcut</key><string>ゆにゅうかんぜい</string></dict>
 	<dict><key>phrase</key><string>輸出品目</string><key>shortcut</key><string>ゆしゅつひんもく</string></dict>
-	<dict><key>phrase</key><string>輸出増加</string><key>shortcut</key><string>ゆしゅつぞうか</string></dict>
-	<dict><key>phrase</key><string>輸出通関</string><key>shortcut</key><string>ゆしゅつつうかん</string></dict>
+	<dict><key>phrase</key><string>輸出増加</string><key>shortcut</key><string>ゆしゅつぞうか</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>輸出通関</string><key>shortcut</key><string>ゆしゅつつうかん</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>輸送中</string><key>shortcut</key><string>ゆそうちゅう</string></dict>
 	<dict><key>phrase</key><string>輸送容器</string><key>shortcut</key><string>ゆそうようき</string></dict>
 	<dict><key>phrase</key><string>輸送方法</string><key>shortcut</key><string>ゆそうほうほう</string></dict>
-	<dict><key>phrase</key><string>通関認証</string><key>shortcut</key><string>つうかんにんしょう</string></dict>
+	<dict><key>phrase</key><string>通関認証</string><key>shortcut</key><string>つうかんにんしょう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>運送人渡</string><key>shortcut</key><string>うんそうにんわたし</string></dict>
 	<dict><key>phrase</key><string>運送人渡条件</string><key>shortcut</key><string>うんそうにんわたしじょうけん</string></dict>
-	<dict><key>phrase</key><string>運送契約</string><key>shortcut</key><string>うんそうけいやく</string></dict>
-	<dict><key>phrase</key><string>関税軽減</string><key>shortcut</key><string>かんぜいけいげん</string></dict>
-	<dict><key>phrase</key><string>電信送金</string><key>shortcut</key><string>でんしんそうきん</string></dict>
-	<dict><key>phrase</key><string>電子送金</string><key>shortcut</key><string>でんしそうきん</string></dict>
+	<dict><key>phrase</key><string>運送契約</string><key>shortcut</key><string>うんそうけいやく</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>関税軽減</string><key>shortcut</key><string>かんぜいけいげん</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>電信送金</string><key>shortcut</key><string>でんしんそうきん</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>電子送金</string><key>shortcut</key><string>でんしそうきん</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>飲料単価</string><key>shortcut</key><string>いんりょうたんか</string></dict>
 	<dict><key>phrase</key><string>飲料売上</string><key>shortcut</key><string>いんりょううりあげ</string></dict>
-	<dict><key>phrase</key><string>相互供与</string><key>shortcut</key><string>そうごきょうよ</string></dict>
-	<dict><key>phrase</key><string>相互売買</string><key>shortcut</key><string>そうごばいばい</string></dict>
-	<dict><key>phrase</key><string>船積</string><key>shortcut</key><string>ふなづみ</string></dict>
-	<dict><key>phrase</key><string>蔵出</string><key>shortcut</key><string>くらだし</string></dict>
+	<dict><key>phrase</key><string>相互供与</string><key>shortcut</key><string>そうごきょうよ</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>相互売買</string><key>shortcut</key><string>そうごばいばい</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>船積</string><key>shortcut</key><string>ふなづみ</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>蔵出</string><key>shortcut</key><string>くらだし</string><key>pos</key><string>サ変名詞</string></dict>
 	<!-- ■ サーヴィス -->
 	<dict><key>phrase</key><string>No.3591規格グラス</string><key>shortcut</key><string>なんばーさんごーきゅーいちきかくぐらす</string></dict>
 	<dict><key>phrase</key><string>Chambré</string><key>shortcut</key><string>しゃんぶれ</string></dict>
@@ -9804,7 +9804,7 @@
 	<dict><key>phrase</key><string>フルート型</string><key>shortcut</key><string>ふるーとがた</string></dict>
 	<dict><key>phrase</key><string>ボウル型</string><key>shortcut</key><string>ぼうるがた</string></dict>
 	<dict><key>phrase</key><string>ボート型</string><key>shortcut</key><string>ぼーとがた</string></dict>
-	<dict><key>phrase</key><string>再栓</string><key>shortcut</key><string>さいせん</string></dict>
+	<dict><key>phrase</key><string>再栓</string><key>shortcut</key><string>さいせん</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>動ビン</string><key>shortcut</key><string>どうびん</string></dict>
 	<dict><key>phrase</key><string>動ビン時</string><key>shortcut</key><string>どうびんじ</string></dict>
 	<dict><key>phrase</key><string>口直し</string><key>shortcut</key><string>くちなおし</string></dict>
@@ -9883,18 +9883,18 @@
 	<dict><key>phrase</key><string>ワインラベル表記</string><key>shortcut</key><string>わいんらべるひょうき</string></dict>
 	<dict><key>phrase</key><string>保管方法</string><key>shortcut</key><string>ほかんほうほう</string></dict>
 	<dict><key>phrase</key><string>保管条件</string><key>shortcut</key><string>ほかんじょうけん</string></dict>
-	<dict><key>phrase</key><string>冷蔵保存</string><key>shortcut</key><string>れいぞうほぞん</string></dict>
+	<dict><key>phrase</key><string>冷蔵保存</string><key>shortcut</key><string>れいぞうほぞん</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>地下セラー</string><key>shortcut</key><string>ちかせらー</string></dict>
 	<dict><key>phrase</key><string>巨大地下セラー</string><key>shortcut</key><string>きょだいちかせらー</string></dict>
 	<dict><key>phrase</key><string>巨大地下ワインセラー</string><key>shortcut</key><string>きょだいちかわいんせらー</string></dict>
-	<dict><key>phrase</key><string>極力振動</string><key>shortcut</key><string>きょくりょくしんどう</string></dict>
+	<dict><key>phrase</key><string>極力振動</string><key>shortcut</key><string>きょくりょくしんどう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>横長デカンター</string><key>shortcut</key><string>よこながでかんたー</string></dict>
 	<dict><key>phrase</key><string>ビン中</string><key>shortcut</key><string>びんちゅう</string></dict>
 	<dict><key>phrase</key><string>縦長デカンター</string><key>shortcut</key><string>たてながでかんたー</string></dict>
 	<dict><key>phrase</key><string>蒸着シート</string><key>shortcut</key><string>じょうちゃくしーと</string></dict>
 	<dict><key>phrase</key><string>認証シール</string><key>shortcut</key><string>にんしょうしーる</string></dict>
-	<dict><key>phrase</key><string>長期保存</string><key>shortcut</key><string>ちょうきほぞん</string></dict>
-	<dict><key>phrase</key><string>長期貯蔵</string><key>shortcut</key><string>ちょうきちょぞう</string></dict>
+	<dict><key>phrase</key><string>長期保存</string><key>shortcut</key><string>ちょうきほぞん</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>長期貯蔵</string><key>shortcut</key><string>ちょうきちょぞう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>直接吹</string><key>shortcut</key><string>ちょくせつふき</string></dict>
 	<dict><key>phrase</key><string>空寸</string><key>shortcut</key><string>くうすん</string></dict>
 	<dict><key>phrase</key><string>カスク</string><key>shortcut</key><string>かすく</string></dict>
@@ -9903,7 +9903,7 @@
 	<dict><key>phrase</key><string>ガラス製</string><key>shortcut</key><string>がらすせい</string></dict>
 	<dict><key>phrase</key><string>スクリューキャップ栓</string><key>shortcut</key><string>すくりゅーきゃっぷせん</string></dict>
 	<dict><key>phrase</key><string>スクリュー栓</string><key>shortcut</key><string>すくりゅーせん</string></dict>
-	<dict><key>phrase</key><string>スクリュー栓採用宣言</string><key>shortcut</key><string>すくりゅーせんさいようせんげん</string></dict>
+	<dict><key>phrase</key><string>スクリュー栓採用宣言</string><key>shortcut</key><string>すくりゅーせんさいようせんげん</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>ステルヴァン</string><key>shortcut</key><string>すてるゔぁん</string></dict>
 	<dict><key>phrase</key><string>ノマコルク</string><key>shortcut</key><string>のまこるく</string></dict>
 	<dict><key>phrase</key><string>ビン内</string><key>shortcut</key><string>びんない</string></dict>
@@ -9977,7 +9977,7 @@
 	<dict><key>phrase</key><string>栄華</string><key>shortcut</key><string>えいが</string></dict>	<!-- 3位/19候補 -->
 	<dict><key>phrase</key><string>液中</string><key>shortcut</key><string>えきちゅう</string></dict>	<!-- 3位/3候補 -->
 	<dict><key>phrase</key><string>櫂</string><key>shortcut</key><string>かい</string></dict>	<!-- 14位/24候補 -->
-	<dict><key>phrase</key><string>改植</string><key>shortcut</key><string>かいしょく</string></dict>	<!-- 8位/11候補 -->
+	<dict><key>phrase</key><string>改植</string><key>shortcut</key><string>かいしょく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 8位/11候補 -->
 	<dict><key>phrase</key><string>海底</string><key>shortcut</key><string>かいてい</string></dict>	<!-- 4位/10候補 -->
 	<dict><key>phrase</key><string>海霧</string><key>shortcut</key><string>かいむ</string></dict>	<!-- 4位/6候補 -->
 	<dict><key>phrase</key><string>海洋</string><key>shortcut</key><string>かいよう</string></dict>	<!-- 3位/14候補 -->
@@ -10016,7 +10016,7 @@
 	<dict><key>phrase</key><string>釧路</string><key>shortcut</key><string>くしろ</string></dict>	<!-- 3位/10候補 -->
 	<dict><key>phrase</key><string>景観</string><key>shortcut</key><string>けいかん</string></dict>	<!-- 3位/13候補 -->
 	<dict><key>phrase</key><string>契機</string><key>shortcut</key><string>けいき</string></dict>	<!-- 8位/24候補 -->
-	<dict><key>phrase</key><string>経済連携協定</string><key>shortcut</key><string>けいざいれんけいきょうてい</string></dict>	<!-- word_costs に無し -->
+	<dict><key>phrase</key><string>経済連携協定</string><key>shortcut</key><string>けいざいれんけいきょうてい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- word_costs に無し -->
 	<dict><key>phrase</key><string>経度</string><key>shortcut</key><string>けいど</string></dict>	<!-- 3位/6候補 -->
 	<dict><key>phrase</key><string>原価</string><key>shortcut</key><string>げんか</string></dict>	<!-- 6位/21候補 -->
 	<dict><key>phrase</key><string>厳格</string><key>shortcut</key><string>げんかく</string></dict>	<!-- 4位/11候補 -->
@@ -10068,7 +10068,7 @@
 	<dict><key>phrase</key><string>深刻</string><key>shortcut</key><string>しんこく</string></dict>	<!-- 6位/8候補 -->
 	<dict><key>phrase</key><string>新種</string><key>shortcut</key><string>しんしゅ</string></dict>	<!-- 6位/7候補 -->
 	<dict><key>phrase</key><string>浸出</string><key>shortcut</key><string>しんしゅつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/6候補 -->
-	<dict><key>phrase</key><string>新植</string><key>shortcut</key><string>しんしょく</string></dict>	<!-- 5位/9候補 -->
+	<dict><key>phrase</key><string>新植</string><key>shortcut</key><string>しんしょく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 5位/9候補 -->
 	<dict><key>phrase</key><string>心臓</string><key>shortcut</key><string>しんぞう</string></dict>	<!-- 3位/24候補 -->
 	<dict><key>phrase</key><string>審判</string><key>shortcut</key><string>しんぱん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 7位/8候補 -->
 	<dict><key>phrase</key><string>磁器</string><key>shortcut</key><string>じき</string></dict>	<!-- 9位/19候補 -->
@@ -10107,7 +10107,7 @@
 	<dict><key>phrase</key><string>断崖</string><key>shortcut</key><string>だんがい</string></dict>	<!-- 4位/4候補 -->
 	<dict><key>phrase</key><string>段上</string><key>shortcut</key><string>だんじょう</string></dict>	<!-- 3位/9候補 -->
 	<dict><key>phrase</key><string>貯蔵</string><key>shortcut</key><string>ちょぞう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/3候補 -->
-	<dict><key>phrase</key><string>接木</string><key>shortcut</key><string>つぎき</string></dict>	<!-- 3位/8候補 -->
+	<dict><key>phrase</key><string>接木</string><key>shortcut</key><string>つぎき</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/8候補 -->
 	<dict><key>phrase</key><string>蔓</string><key>shortcut</key><string>つる</string></dict>	<!-- 3位/15候補 -->
 	<dict><key>phrase</key><string>逓減</string><key>shortcut</key><string>ていげん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/7候補 -->
 	<dict><key>phrase</key><string>低地</string><key>shortcut</key><string>ていち</string></dict>	<!-- 3位/6候補 -->
@@ -10162,7 +10162,7 @@
 	<dict><key>phrase</key><string>松脂</string><key>shortcut</key><string>まつやに</string></dict>	<!-- 3位/3候補 -->
 	<dict><key>phrase</key><string>見込</string><key>shortcut</key><string>みこみ</string></dict>	<!-- 4位/4候補 -->
 	<dict><key>phrase</key><string>見出</string><key>shortcut</key><string>みだし</string></dict>	<!-- 3位/3候補 -->
-	<dict><key>phrase</key><string>見直</string><key>shortcut</key><string>みなおし</string></dict>	<!-- 3位/4候補 -->
+	<dict><key>phrase</key><string>見直</string><key>shortcut</key><string>みなおし</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/4候補 -->
 	<dict><key>phrase</key><string>見舞</string><key>shortcut</key><string>みまい</string></dict>	<!-- 3位/4候補 -->
 	<dict><key>phrase</key><string>紫色</string><key>shortcut</key><string>むらさきいろ</string></dict>	<!-- 3位/5候補 -->
 	<dict><key>phrase</key><string>明示</string><key>shortcut</key><string>めいじ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/9候補 -->
@@ -10191,7 +10191,7 @@
 	<dict><key>phrase</key><string>木イチゴ</string><key>shortcut</key><string>きいちご</string></dict>	<!-- 4位/5候補 -->
 	<dict><key>phrase</key><string>左岸</string><key>shortcut</key><string>さがん</string></dict>	<!-- 3位/4候補 -->
 	<dict><key>phrase</key><string>砂岩</string><key>shortcut</key><string>さがん</string></dict>	<!-- 4位/4候補 -->
-	<dict><key>phrase</key><string>萎凋</string><key>shortcut</key><string>いちょう</string></dict>	<!-- 11位/18候補 -->
+	<dict><key>phrase</key><string>萎凋</string><key>shortcut</key><string>いちょう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 11位/18候補 -->
 	<dict><key>phrase</key><string>菌糸</string><key>shortcut</key><string>きんし</string></dict>	<!-- 7位/16候補 -->
 	<dict><key>phrase</key><string>通関</string><key>shortcut</key><string>つうかん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 4位/5候補 -->
 	<dict><key>phrase</key><string>ツバキ科</string><key>shortcut</key><string>つばきか</string></dict>	<!-- 3位/3候補 -->

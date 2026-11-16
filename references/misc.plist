@@ -468,6 +468,189 @@
 	<dict><key>phrase</key><string>どんだけ</string><key>shortcut</key><string>どんだけ</string></dict>	<!-- どんだけ(どれだけ の口語。かな正書の副詞): 辞書にも LM にも 1 語で無く、ドン+だけ/丼+だけ に割れて どんだけあぶないか が ドンだけあぶないか だった(ユーザ報告 3731) -->
 
 	<!-- ■ 供給欠落の補充(Sudachi 未収録の複合語・固有名。そもそも候補が作れない) -->
+	<!-- □ 人体の骨・筋肉の名前(総称と個々の名前。辞書に無いか、合成に負けていたもの。よく使う語と読みが同じものはコメントにしてある。ユーザ指定 3821) -->
+	<dict><key>phrase</key><string>体幹骨</string><key>shortcut</key><string>たいかんこつ</string><key>pos</key><string>名詞</string></dict>	<!-- 骨総称 -->
+	<dict><key>phrase</key><string>体肢骨</string><key>shortcut</key><string>たいしこつ</string><key>pos</key><string>名詞</string></dict>	<!-- 骨総称 -->
+	<dict><key>phrase</key><string>上肢骨</string><key>shortcut</key><string>じょうしこつ</string><key>pos</key><string>名詞</string></dict>	<!-- 骨総称 -->
+	<dict><key>phrase</key><string>下肢骨</string><key>shortcut</key><string>かしこつ</string><key>pos</key><string>名詞</string></dict>	<!-- 骨総称 -->
+	<dict><key>phrase</key><string>上肢帯</string><key>shortcut</key><string>じょうしたい</string><key>pos</key><string>名詞</string></dict>	<!-- 骨総称 -->
+	<dict><key>phrase</key><string>下肢帯</string><key>shortcut</key><string>かしたい</string><key>pos</key><string>名詞</string></dict>	<!-- 骨総称 -->
+	<dict><key>phrase</key><string>脳頭蓋</string><key>shortcut</key><string>のうとうがい</string><key>pos</key><string>名詞</string></dict>	<!-- 骨総称 -->
+	<dict><key>phrase</key><string>顔面頭蓋</string><key>shortcut</key><string>がんめんとうがい</string><key>pos</key><string>名詞</string></dict>	<!-- 骨総称 -->
+	<dict><key>phrase</key><string>神経頭蓋</string><key>shortcut</key><string>しんけいとうがい</string><key>pos</key><string>名詞</string></dict>	<!-- 骨総称 -->
+	<dict><key>phrase</key><string>内臓頭蓋</string><key>shortcut</key><string>ないぞうとうがい</string><key>pos</key><string>名詞</string></dict>	<!-- 骨総称 -->
+	<dict><key>phrase</key><string>頭蓋冠</string><key>shortcut</key><string>とうがいかん</string><key>pos</key><string>名詞</string></dict>	<!-- 骨総称 -->
+	<dict><key>phrase</key><string>頭蓋底</string><key>shortcut</key><string>とうがいてい</string><key>pos</key><string>名詞</string></dict>	<!-- 骨総称 -->
+	<dict><key>phrase</key><string>指節骨</string><key>shortcut</key><string>しせつこつ</string><key>pos</key><string>名詞</string></dict>	<!-- 骨総称 -->
+	<dict><key>phrase</key><string>趾節骨</string><key>shortcut</key><string>しせつこつ</string><key>pos</key><string>名詞</string></dict>	<!-- 骨総称 -->
+	<dict><key>phrase</key><string>篩骨</string><key>shortcut</key><string>しこつ</string><key>pos</key><string>名詞</string></dict>	<!-- 頭の骨 -->
+	<dict><key>phrase</key><string>下鼻甲介</string><key>shortcut</key><string>かびこうかい</string><key>pos</key><string>名詞</string></dict>	<!-- 頭の骨 -->
+	<dict><key>phrase</key><string>鋤骨</string><key>shortcut</key><string>じょこつ</string><key>pos</key><string>名詞</string></dict>	<!-- 頭の骨 -->
+	<dict><key>phrase</key><string>ツチ骨</string><key>shortcut</key><string>つちこつ</string><key>pos</key><string>名詞</string></dict>	<!-- 頭の骨 -->
+	<dict><key>phrase</key><string>キヌタ骨</string><key>shortcut</key><string>きぬたこつ</string><key>pos</key><string>名詞</string></dict>	<!-- 頭の骨 -->
+	<dict><key>phrase</key><string>アブミ骨</string><key>shortcut</key><string>あぶみこつ</string><key>pos</key><string>名詞</string></dict>	<!-- 頭の骨 -->
+	<dict><key>phrase</key><string>上鼻甲介</string><key>shortcut</key><string>じょうびこうかい</string><key>pos</key><string>名詞</string></dict>	<!-- 頭の骨 -->
+	<dict><key>phrase</key><string>中鼻甲介</string><key>shortcut</key><string>ちゅうびこうかい</string><key>pos</key><string>名詞</string></dict>	<!-- 頭の骨 -->
+	<dict><key>phrase</key><string>乳様突起</string><key>shortcut</key><string>にゅうようとっき</string><key>pos</key><string>名詞</string></dict>	<!-- 頭の骨 -->
+	<dict><key>phrase</key><string>茎状突起</string><key>shortcut</key><string>けいじょうとっき</string><key>pos</key><string>名詞</string></dict>	<!-- 頭の骨 -->
+	<dict><key>phrase</key><string>大後頭孔</string><key>shortcut</key><string>だいこうとうこう</string><key>pos</key><string>名詞</string></dict>	<!-- 頭の骨 -->
+	<dict><key>phrase</key><string>大泉門</string><key>shortcut</key><string>だいせんもん</string><key>pos</key><string>名詞</string></dict>	<!-- 頭の骨 -->
+	<dict><key>phrase</key><string>小泉門</string><key>shortcut</key><string>しょうせんもん</string><key>pos</key><string>名詞</string></dict>	<!-- 頭の骨 -->
+	<dict><key>phrase</key><string>下顎頭</string><key>shortcut</key><string>かがくとう</string><key>pos</key><string>名詞</string></dict>	<!-- 頭の骨 -->
+	<dict><key>phrase</key><string>尾椎</string><key>shortcut</key><string>びつい</string><key>pos</key><string>名詞</string></dict>	<!-- 脊柱 -->
+	<dict><key>phrase</key><string>環椎</string><key>shortcut</key><string>かんつい</string><key>pos</key><string>名詞</string></dict>	<!-- 脊柱 -->
+	<dict><key>phrase</key><string>軸椎</string><key>shortcut</key><string>じくつい</string><key>pos</key><string>名詞</string></dict>	<!-- 脊柱 -->
+	<dict><key>phrase</key><string>隆椎</string><key>shortcut</key><string>りゅうつい</string><key>pos</key><string>名詞</string></dict>	<!-- 脊柱 -->
+	<dict><key>phrase</key><string>椎体</string><key>shortcut</key><string>ついたい</string><key>pos</key><string>名詞</string></dict>	<!-- 脊柱 -->
+	<dict><key>phrase</key><string>棘突起</string><key>shortcut</key><string>きょくとっき</string><key>pos</key><string>名詞</string></dict>	<!-- 脊柱 -->
+	<dict><key>phrase</key><string>横突起</string><key>shortcut</key><string>おうとっき</string><key>pos</key><string>名詞</string></dict>	<!-- 脊柱 -->
+	<dict><key>phrase</key><string>椎間孔</string><key>shortcut</key><string>ついかんこう</string><key>pos</key><string>名詞</string></dict>	<!-- 脊柱 -->
+	<dict><key>phrase</key><string>脊柱管</string><key>shortcut</key><string>せきちゅうかん</string><key>pos</key><string>名詞</string></dict>	<!-- 脊柱 -->
+	<dict><key>phrase</key><string>胸骨柄</string><key>shortcut</key><string>きょうこつへい</string><key>pos</key><string>名詞</string></dict>	<!-- 胸郭 -->
+	<dict><key>phrase</key><string>胸骨体</string><key>shortcut</key><string>きょうこつたい</string><key>pos</key><string>名詞</string></dict>	<!-- 胸郭 -->
+	<dict><key>phrase</key><string>剣状突起</string><key>shortcut</key><string>けんじょうとっき</string><key>pos</key><string>名詞</string></dict>	<!-- 胸郭 -->
+	<dict><key>phrase</key><string>烏口突起</string><key>shortcut</key><string>うこうとっき</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢 -->
+	<!--<dict><key>phrase</key><string>肘頭</string><key>shortcut</key><string>ちゅうとう</string><key>pos</key><string>名詞</string></dict> 読みが 中東 と同じなので入れない -->
+	<dict><key>phrase</key><string>月状骨</string><key>shortcut</key><string>げつじょうこつ</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢 -->
+	<dict><key>phrase</key><string>豆状骨</string><key>shortcut</key><string>とうじょうこつ</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢 -->
+	<dict><key>phrase</key><string>大菱形骨</string><key>shortcut</key><string>だいりょうけいこつ</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢 -->
+	<dict><key>phrase</key><string>小菱形骨</string><key>shortcut</key><string>しょうりょうけいこつ</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢 -->
+	<dict><key>phrase</key><string>有頭骨</string><key>shortcut</key><string>ゆうとうこつ</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢 -->
+	<dict><key>phrase</key><string>有鉤骨</string><key>shortcut</key><string>ゆうこうこつ</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢 -->
+	<dict><key>phrase</key><string>基節骨</string><key>shortcut</key><string>きせつこつ</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢 -->
+	<dict><key>phrase</key><string>末節骨</string><key>shortcut</key><string>まっせつこつ</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢 -->
+	<dict><key>phrase</key><string>寛骨</string><key>shortcut</key><string>かんこつ</string><key>pos</key><string>名詞</string></dict>	<!-- 下肢 -->
+	<dict><key>phrase</key><string>寛骨臼</string><key>shortcut</key><string>かんこつきゅう</string><key>pos</key><string>名詞</string></dict>	<!-- 下肢 -->
+	<dict><key>phrase</key><string>大転子</string><key>shortcut</key><string>だいてんし</string><key>pos</key><string>名詞</string></dict>	<!-- 下肢 -->
+	<!--<dict><key>phrase</key><string>内果</string><key>shortcut</key><string>ないか</string><key>pos</key><string>名詞</string></dict> 読みが 内科 と同じなので入れない -->
+	<!--<dict><key>phrase</key><string>外果</string><key>shortcut</key><string>がいか</string><key>pos</key><string>名詞</string></dict> 読みが 外貨 と同じなので入れない -->
+	<dict><key>phrase</key><string>内側楔状骨</string><key>shortcut</key><string>ないそくけつじょうこつ</string><key>pos</key><string>名詞</string></dict>	<!-- 下肢 -->
+	<dict><key>phrase</key><string>中間楔状骨</string><key>shortcut</key><string>ちゅうかんけつじょうこつ</string><key>pos</key><string>名詞</string></dict>	<!-- 下肢 -->
+	<dict><key>phrase</key><string>外側楔状骨</string><key>shortcut</key><string>がいそくけつじょうこつ</string><key>pos</key><string>名詞</string></dict>	<!-- 下肢 -->
+	<dict><key>phrase</key><string>楔状骨</string><key>shortcut</key><string>けつじょうこつ</string><key>pos</key><string>名詞</string></dict>	<!-- 下肢 -->
+	<dict><key>phrase</key><string>骨格筋</string><key>shortcut</key><string>こっかくきん</string><key>pos</key><string>名詞</string></dict>	<!-- 筋総称 -->
+	<dict><key>phrase</key><string>平滑筋</string><key>shortcut</key><string>へいかつきん</string><key>pos</key><string>名詞</string></dict>	<!-- 筋総称 -->
+	<dict><key>phrase</key><string>咀嚼筋</string><key>shortcut</key><string>そしゃくきん</string><key>pos</key><string>名詞</string></dict>	<!-- 筋総称 -->
+	<dict><key>phrase</key><string>頸筋</string><key>shortcut</key><string>けいきん</string><key>pos</key><string>名詞</string></dict>	<!-- 筋総称 -->
+	<dict><key>phrase</key><string>体幹筋</string><key>shortcut</key><string>たいかんきん</string><key>pos</key><string>名詞</string></dict>	<!-- 筋総称 -->
+	<dict><key>phrase</key><string>呼吸筋</string><key>shortcut</key><string>こきゅうきん</string><key>pos</key><string>名詞</string></dict>	<!-- 筋総称 -->
+	<dict><key>phrase</key><string>回旋筋腱板</string><key>shortcut</key><string>かいせんきんけんばん</string><key>pos</key><string>名詞</string></dict>	<!-- 筋総称 -->
+	<dict><key>phrase</key><string>ローテーターカフ</string><key>shortcut</key><string>ろーてーたーかふ</string><key>pos</key><string>名詞</string></dict>	<!-- 筋総称 -->
+	<dict><key>phrase</key><string>大腿四頭筋</string><key>shortcut</key><string>だいたいしとうきん</string><key>pos</key><string>名詞</string></dict>	<!-- 筋総称 -->
+	<dict><key>phrase</key><string>下腿三頭筋</string><key>shortcut</key><string>かたいさんとうきん</string><key>pos</key><string>名詞</string></dict>	<!-- 筋総称 -->
+	<dict><key>phrase</key><string>内転筋群</string><key>shortcut</key><string>ないてんきんぐん</string><key>pos</key><string>名詞</string></dict>	<!-- 筋総称 -->
+	<dict><key>phrase</key><string>骨盤底筋</string><key>shortcut</key><string>こつばんていきん</string><key>pos</key><string>名詞</string></dict>	<!-- 筋総称 -->
+	<dict><key>phrase</key><string>屈筋</string><key>shortcut</key><string>くっきん</string><key>pos</key><string>名詞</string></dict>	<!-- 筋総称 -->
+	<dict><key>phrase</key><string>横紋筋</string><key>shortcut</key><string>おうもんきん</string><key>pos</key><string>名詞</string></dict>	<!-- 筋総称 -->
+	<dict><key>phrase</key><string>前頭筋</string><key>shortcut</key><string>ぜんとうきん</string><key>pos</key><string>名詞</string></dict>	<!-- 頭頸部の筋 -->
+	<dict><key>phrase</key><string>後頭筋</string><key>shortcut</key><string>こうとうきん</string><key>pos</key><string>名詞</string></dict>	<!-- 頭頸部の筋 -->
+	<dict><key>phrase</key><string>側頭筋</string><key>shortcut</key><string>そくとうきん</string><key>pos</key><string>名詞</string></dict>	<!-- 頭頸部の筋 -->
+	<dict><key>phrase</key><string>内側翼突筋</string><key>shortcut</key><string>ないそくよくとつきん</string><key>pos</key><string>名詞</string></dict>	<!-- 頭頸部の筋 -->
+	<dict><key>phrase</key><string>外側翼突筋</string><key>shortcut</key><string>がいそくよくとつきん</string><key>pos</key><string>名詞</string></dict>	<!-- 頭頸部の筋 -->
+	<dict><key>phrase</key><string>眼輪筋</string><key>shortcut</key><string>がんりんきん</string><key>pos</key><string>名詞</string></dict>	<!-- 頭頸部の筋 -->
+	<dict><key>phrase</key><string>口輪筋</string><key>shortcut</key><string>こうりんきん</string><key>pos</key><string>名詞</string></dict>	<!-- 頭頸部の筋 -->
+	<dict><key>phrase</key><string>大頬骨筋</string><key>shortcut</key><string>だいきょうこつきん</string><key>pos</key><string>名詞</string></dict>	<!-- 頭頸部の筋 -->
+	<dict><key>phrase</key><string>小頬骨筋</string><key>shortcut</key><string>しょうきょうこつきん</string><key>pos</key><string>名詞</string></dict>	<!-- 頭頸部の筋 -->
+	<!--<dict><key>phrase</key><string>笑筋</string><key>shortcut</key><string>しょうきん</string><key>pos</key><string>名詞</string></dict> 読みが 賞金 と同じなので入れない -->
+	<dict><key>phrase</key><string>皺眉筋</string><key>shortcut</key><string>しゅうびきん</string><key>pos</key><string>名詞</string></dict>	<!-- 頭頸部の筋 -->
+	<dict><key>phrase</key><string>口角下制筋</string><key>shortcut</key><string>こうかくかせいきん</string><key>pos</key><string>名詞</string></dict>	<!-- 頭頸部の筋 -->
+	<dict><key>phrase</key><string>オトガイ筋</string><key>shortcut</key><string>おとがいきん</string><key>pos</key><string>名詞</string></dict>	<!-- 頭頸部の筋 -->
+	<dict><key>phrase</key><string>広頸筋</string><key>shortcut</key><string>こうけいきん</string><key>pos</key><string>名詞</string></dict>	<!-- 頭頸部の筋 -->
+	<dict><key>phrase</key><string>胸鎖乳突筋</string><key>shortcut</key><string>きょうさにゅうとつきん</string><key>pos</key><string>名詞</string></dict>	<!-- 頭頸部の筋 -->
+	<dict><key>phrase</key><string>斜角筋</string><key>shortcut</key><string>しゃかくきん</string><key>pos</key><string>名詞</string></dict>	<!-- 頭頸部の筋 -->
+	<dict><key>phrase</key><string>前斜角筋</string><key>shortcut</key><string>ぜんしゃかくきん</string><key>pos</key><string>名詞</string></dict>	<!-- 頭頸部の筋 -->
+	<dict><key>phrase</key><string>中斜角筋</string><key>shortcut</key><string>ちゅうしゃかくきん</string><key>pos</key><string>名詞</string></dict>	<!-- 頭頸部の筋 -->
+	<dict><key>phrase</key><string>後斜角筋</string><key>shortcut</key><string>こうしゃかくきん</string><key>pos</key><string>名詞</string></dict>	<!-- 頭頸部の筋 -->
+	<dict><key>phrase</key><string>舌骨上筋</string><key>shortcut</key><string>ぜっこつじょうきん</string><key>pos</key><string>名詞</string></dict>	<!-- 頭頸部の筋 -->
+	<dict><key>phrase</key><string>舌骨下筋</string><key>shortcut</key><string>ぜっこつかきん</string><key>pos</key><string>名詞</string></dict>	<!-- 頭頸部の筋 -->
+	<dict><key>phrase</key><string>頭板状筋</string><key>shortcut</key><string>とうばんじょうきん</string><key>pos</key><string>名詞</string></dict>	<!-- 頭頸部の筋 -->
+	<dict><key>phrase</key><string>頸板状筋</string><key>shortcut</key><string>けいばんじょうきん</string><key>pos</key><string>名詞</string></dict>	<!-- 頭頸部の筋 -->
+	<dict><key>phrase</key><string>菱形筋</string><key>shortcut</key><string>りょうけいきん</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢帯の筋 -->
+	<dict><key>phrase</key><string>大菱形筋</string><key>shortcut</key><string>だいりょうけいきん</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢帯の筋 -->
+	<dict><key>phrase</key><string>小菱形筋</string><key>shortcut</key><string>しょうりょうけいきん</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢帯の筋 -->
+	<dict><key>phrase</key><string>肩甲挙筋</string><key>shortcut</key><string>けんこうきょきん</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢帯の筋 -->
+	<dict><key>phrase</key><string>棘上筋</string><key>shortcut</key><string>きょくじょうきん</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢帯の筋 -->
+	<dict><key>phrase</key><string>棘下筋</string><key>shortcut</key><string>きょくかきん</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢帯の筋 -->
+	<dict><key>phrase</key><string>小円筋</string><key>shortcut</key><string>しょうえんきん</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢帯の筋 -->
+	<dict><key>phrase</key><string>大円筋</string><key>shortcut</key><string>だいえんきん</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢帯の筋 -->
+	<dict><key>phrase</key><string>肩甲下筋</string><key>shortcut</key><string>けんこうかきん</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢帯の筋 -->
+	<dict><key>phrase</key><string>小胸筋</string><key>shortcut</key><string>しょうきょうきん</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢帯の筋 -->
+	<dict><key>phrase</key><string>前鋸筋</string><key>shortcut</key><string>ぜんきょきん</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢帯の筋 -->
+	<dict><key>phrase</key><string>鎖骨下筋</string><key>shortcut</key><string>さこつかきん</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢帯の筋 -->
+	<dict><key>phrase</key><string>上腕三頭筋</string><key>shortcut</key><string>じょうわんさんとうきん</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢の筋 -->
+	<dict><key>phrase</key><string>上腕筋</string><key>shortcut</key><string>じょうわんきん</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢の筋 -->
+	<dict><key>phrase</key><string>烏口腕筋</string><key>shortcut</key><string>うこうわんきん</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢の筋 -->
+	<dict><key>phrase</key><string>腕橈骨筋</string><key>shortcut</key><string>わんとうこつきん</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢の筋 -->
+	<dict><key>phrase</key><string>円回内筋</string><key>shortcut</key><string>えんかいないきん</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢の筋 -->
+	<dict><key>phrase</key><string>方形回内筋</string><key>shortcut</key><string>ほうけいかいないきん</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢の筋 -->
+	<dict><key>phrase</key><string>回外筋</string><key>shortcut</key><string>かいがいきん</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢の筋 -->
+	<dict><key>phrase</key><string>橈側手根屈筋</string><key>shortcut</key><string>とうそくしゅこんくっきん</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢の筋 -->
+	<dict><key>phrase</key><string>尺側手根屈筋</string><key>shortcut</key><string>しゃくそくしゅこんくっきん</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢の筋 -->
+	<dict><key>phrase</key><string>長掌筋</string><key>shortcut</key><string>ちょうしょうきん</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢の筋 -->
+	<dict><key>phrase</key><string>浅指屈筋</string><key>shortcut</key><string>せんしくっきん</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢の筋 -->
+	<dict><key>phrase</key><string>深指屈筋</string><key>shortcut</key><string>しんしくっきん</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢の筋 -->
+	<dict><key>phrase</key><string>長橈側手根伸筋</string><key>shortcut</key><string>ちょうとうそくしゅこんしんきん</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢の筋 -->
+	<dict><key>phrase</key><string>短橈側手根伸筋</string><key>shortcut</key><string>たんとうそくしゅこんしんきん</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢の筋 -->
+	<dict><key>phrase</key><string>尺側手根伸筋</string><key>shortcut</key><string>しゃくそくしゅこんしんきん</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢の筋 -->
+	<dict><key>phrase</key><string>総指伸筋</string><key>shortcut</key><string>そうししんきん</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢の筋 -->
+	<dict><key>phrase</key><string>長母指屈筋</string><key>shortcut</key><string>ちょうぼしくっきん</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢の筋 -->
+	<dict><key>phrase</key><string>長母指伸筋</string><key>shortcut</key><string>ちょうぼししんきん</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢の筋 -->
+	<dict><key>phrase</key><string>短母指伸筋</string><key>shortcut</key><string>たんぼししんきん</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢の筋 -->
+	<dict><key>phrase</key><string>長母指外転筋</string><key>shortcut</key><string>ちょうぼしがいてんきん</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢の筋 -->
+	<dict><key>phrase</key><string>短母指外転筋</string><key>shortcut</key><string>たんぼしがいてんきん</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢の筋 -->
+	<dict><key>phrase</key><string>母指内転筋</string><key>shortcut</key><string>ぼしないてんきん</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢の筋 -->
+	<dict><key>phrase</key><string>母指対立筋</string><key>shortcut</key><string>ぼしたいりつきん</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢の筋 -->
+	<dict><key>phrase</key><string>小指外転筋</string><key>shortcut</key><string>しょうしがいてんきん</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢の筋 -->
+	<dict><key>phrase</key><string>骨間筋</string><key>shortcut</key><string>こっかんきん</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢の筋 -->
+	<dict><key>phrase</key><string>虫様筋</string><key>shortcut</key><string>ちゅうようきん</string><key>pos</key><string>名詞</string></dict>	<!-- 上肢の筋 -->
+	<dict><key>phrase</key><string>外腹斜筋</string><key>shortcut</key><string>がいふくしゃきん</string><key>pos</key><string>名詞</string></dict>	<!-- 体幹の筋 -->
+	<dict><key>phrase</key><string>内腹斜筋</string><key>shortcut</key><string>ないふくしゃきん</string><key>pos</key><string>名詞</string></dict>	<!-- 体幹の筋 -->
+	<dict><key>phrase</key><string>腹横筋</string><key>shortcut</key><string>ふくおうきん</string><key>pos</key><string>名詞</string></dict>	<!-- 体幹の筋 -->
+	<dict><key>phrase</key><string>外肋間筋</string><key>shortcut</key><string>がいろっかんきん</string><key>pos</key><string>名詞</string></dict>	<!-- 体幹の筋 -->
+	<dict><key>phrase</key><string>内肋間筋</string><key>shortcut</key><string>ないろっかんきん</string><key>pos</key><string>名詞</string></dict>	<!-- 体幹の筋 -->
+	<dict><key>phrase</key><string>脊柱起立筋</string><key>shortcut</key><string>せきちゅうきりつきん</string><key>pos</key><string>名詞</string></dict>	<!-- 体幹の筋 -->
+	<dict><key>phrase</key><string>腸肋筋</string><key>shortcut</key><string>ちょうろくきん</string><key>pos</key><string>名詞</string></dict>	<!-- 体幹の筋 -->
+	<dict><key>phrase</key><string>最長筋</string><key>shortcut</key><string>さいちょうきん</string><key>pos</key><string>名詞</string></dict>	<!-- 体幹の筋 -->
+	<dict><key>phrase</key><string>多裂筋</string><key>shortcut</key><string>たれつきん</string><key>pos</key><string>名詞</string></dict>	<!-- 体幹の筋 -->
+	<dict><key>phrase</key><string>回旋筋</string><key>shortcut</key><string>かいせんきん</string><key>pos</key><string>名詞</string></dict>	<!-- 体幹の筋 -->
+	<dict><key>phrase</key><string>腰方形筋</string><key>shortcut</key><string>ようほうけいきん</string><key>pos</key><string>名詞</string></dict>	<!-- 体幹の筋 -->
+	<dict><key>phrase</key><string>骨盤底筋群</string><key>shortcut</key><string>こつばんていきんぐん</string><key>pos</key><string>名詞</string></dict>	<!-- 体幹の筋 -->
+	<dict><key>phrase</key><string>肛門挙筋</string><key>shortcut</key><string>こうもんきょきん</string><key>pos</key><string>名詞</string></dict>	<!-- 体幹の筋 -->
+	<dict><key>phrase</key><string>腸腰筋</string><key>shortcut</key><string>ちょうようきん</string><key>pos</key><string>名詞</string></dict>	<!-- 下肢の筋 -->
+	<dict><key>phrase</key><string>大腰筋</string><key>shortcut</key><string>だいようきん</string><key>pos</key><string>名詞</string></dict>	<!-- 下肢の筋 -->
+	<dict><key>phrase</key><string>小腰筋</string><key>shortcut</key><string>しょうようきん</string><key>pos</key><string>名詞</string></dict>	<!-- 下肢の筋 -->
+	<dict><key>phrase</key><string>腸骨筋</string><key>shortcut</key><string>ちょうこつきん</string><key>pos</key><string>名詞</string></dict>	<!-- 下肢の筋 -->
+	<dict><key>phrase</key><string>大殿筋</string><key>shortcut</key><string>だいでんきん</string><key>pos</key><string>名詞</string></dict>	<!-- 下肢の筋 -->
+	<dict><key>phrase</key><string>小殿筋</string><key>shortcut</key><string>しょうでんきん</string><key>pos</key><string>名詞</string></dict>	<!-- 下肢の筋 -->
+	<dict><key>phrase</key><string>梨状筋</string><key>shortcut</key><string>りじょうきん</string><key>pos</key><string>名詞</string></dict>	<!-- 下肢の筋 -->
+	<dict><key>phrase</key><string>大腿方形筋</string><key>shortcut</key><string>だいたいほうけいきん</string><key>pos</key><string>名詞</string></dict>	<!-- 下肢の筋 -->
+	<dict><key>phrase</key><string>大腿直筋</string><key>shortcut</key><string>だいたいちょっきん</string><key>pos</key><string>名詞</string></dict>	<!-- 下肢の筋 -->
+	<dict><key>phrase</key><string>外側広筋</string><key>shortcut</key><string>がいそくこうきん</string><key>pos</key><string>名詞</string></dict>	<!-- 下肢の筋 -->
+	<dict><key>phrase</key><string>内側広筋</string><key>shortcut</key><string>ないそくこうきん</string><key>pos</key><string>名詞</string></dict>	<!-- 下肢の筋 -->
+	<dict><key>phrase</key><string>中間広筋</string><key>shortcut</key><string>ちゅうかんこうきん</string><key>pos</key><string>名詞</string></dict>	<!-- 下肢の筋 -->
+	<dict><key>phrase</key><string>縫工筋</string><key>shortcut</key><string>ほうこうきん</string><key>pos</key><string>名詞</string></dict>	<!-- 下肢の筋 -->
+	<dict><key>phrase</key><string>大腿筋膜張筋</string><key>shortcut</key><string>だいたいきんまくちょうきん</string><key>pos</key><string>名詞</string></dict>	<!-- 下肢の筋 -->
+	<dict><key>phrase</key><string>腸脛靱帯</string><key>shortcut</key><string>ちょうけいじんたい</string><key>pos</key><string>名詞</string></dict>	<!-- 下肢の筋 -->
+	<dict><key>phrase</key><string>大内転筋</string><key>shortcut</key><string>だいないてんきん</string><key>pos</key><string>名詞</string></dict>	<!-- 下肢の筋 -->
+	<dict><key>phrase</key><string>長内転筋</string><key>shortcut</key><string>ちょうないてんきん</string><key>pos</key><string>名詞</string></dict>	<!-- 下肢の筋 -->
+	<dict><key>phrase</key><string>短内転筋</string><key>shortcut</key><string>たんないてんきん</string><key>pos</key><string>名詞</string></dict>	<!-- 下肢の筋 -->
+	<dict><key>phrase</key><string>恥骨筋</string><key>shortcut</key><string>ちこつきん</string><key>pos</key><string>名詞</string></dict>	<!-- 下肢の筋 -->
+	<dict><key>phrase</key><string>薄筋</string><key>shortcut</key><string>はくきん</string><key>pos</key><string>名詞</string></dict>	<!-- 下肢の筋 -->
+	<dict><key>phrase</key><string>大腿二頭筋</string><key>shortcut</key><string>だいたいにとうきん</string><key>pos</key><string>名詞</string></dict>	<!-- 下肢の筋 -->
+	<dict><key>phrase</key><string>半腱様筋</string><key>shortcut</key><string>はんけんようきん</string><key>pos</key><string>名詞</string></dict>	<!-- 下肢の筋 -->
+	<dict><key>phrase</key><string>半膜様筋</string><key>shortcut</key><string>はんまくようきん</string><key>pos</key><string>名詞</string></dict>	<!-- 下肢の筋 -->
+	<dict><key>phrase</key><string>膝窩筋</string><key>shortcut</key><string>しっかきん</string><key>pos</key><string>名詞</string></dict>	<!-- 下肢の筋 -->
+	<dict><key>phrase</key><string>足底筋</string><key>shortcut</key><string>そくていきん</string><key>pos</key><string>名詞</string></dict>	<!-- 下肢の筋 -->
+	<dict><key>phrase</key><string>アキレス腱</string><key>shortcut</key><string>あきれすけん</string><key>pos</key><string>名詞</string></dict>	<!-- 下肢の筋 -->
+	<dict><key>phrase</key><string>前脛骨筋</string><key>shortcut</key><string>ぜんけいこつきん</string><key>pos</key><string>名詞</string></dict>	<!-- 下肢の筋 -->
+	<dict><key>phrase</key><string>後脛骨筋</string><key>shortcut</key><string>こうけいこつきん</string><key>pos</key><string>名詞</string></dict>	<!-- 下肢の筋 -->
+	<dict><key>phrase</key><string>長腓骨筋</string><key>shortcut</key><string>ちょうひこつきん</string><key>pos</key><string>名詞</string></dict>	<!-- 下肢の筋 -->
+	<dict><key>phrase</key><string>短腓骨筋</string><key>shortcut</key><string>たんひこつきん</string><key>pos</key><string>名詞</string></dict>	<!-- 下肢の筋 -->
+	<dict><key>phrase</key><string>長趾伸筋</string><key>shortcut</key><string>ちょうししんきん</string><key>pos</key><string>名詞</string></dict>	<!-- 下肢の筋 -->
+	<dict><key>phrase</key><string>長母趾伸筋</string><key>shortcut</key><string>ちょうぼししんきん</string><key>pos</key><string>名詞</string></dict>	<!-- 下肢の筋 -->
+	<dict><key>phrase</key><string>長趾屈筋</string><key>shortcut</key><string>ちょうしくっきん</string><key>pos</key><string>名詞</string></dict>	<!-- 下肢の筋 -->
+	<dict><key>phrase</key><string>長母趾屈筋</string><key>shortcut</key><string>ちょうぼしくっきん</string><key>pos</key><string>名詞</string></dict>	<!-- 下肢の筋 -->
+	<dict><key>phrase</key><string>足底腱膜</string><key>shortcut</key><string>そくていけんまく</string><key>pos</key><string>名詞</string></dict>	<!-- 下肢の筋 -->
 	<!-- 生物の分類の 〜科 は カタカナ(漢字の 鯉科/牛科 などは suppr で抑制。カタカナの形が辞書に無かったもの。ユーザ指定 3813) -->
 	<dict><key>phrase</key><string>コイ科</string><key>shortcut</key><string>こいか</string><key>pos</key><string>名詞</string></dict>
 	<dict><key>phrase</key><string>ウシ科</string><key>shortcut</key><string>うしか</string><key>pos</key><string>名詞</string></dict>
@@ -555,7 +738,7 @@
 	<dict><key>phrase</key><string>反維新</string><key>shortcut</key><string>はんいしん</string></dict>	<!-- 反維新(日本維新の会/大阪維新の会 への反対)。辞書に無く 藩維新 になっていた。反自民 は辞書に、反共産 は 反共 経由で出る(ユーザ報告 3745) -->
 	<dict><key>phrase</key><string>日本維新の会</string><key>shortcut</key><string>にほんいしんのかい</string></dict>	<!-- 辞書は にっぽんいしんのかい の読みだけ -->
 	<dict><key>phrase</key><string>大阪維新の会</string><key>shortcut</key><string>おおさかいしんのかい</string></dict>
-	<dict><key>phrase</key><string>飯盒炊爨</string><key>shortcut</key><string>はんごうすいさん</string></dict>	<!-- 飯盒炊爨: 部品(飯盒/炊爨)は辞書にあるが 1 語で無く、LM にも無いので組めなかった(ユーザ報告 3738) -->
+	<dict><key>phrase</key><string>飯盒炊爨</string><key>shortcut</key><string>はんごうすいさん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 飯盒炊爨: 部品(飯盒/炊爨)は辞書にあるが 1 語で無く、LM にも無いので組めなかった(ユーザ報告 3738) -->
 	<dict><key>phrase</key><string>大規模</string><key>shortcut</key><string>だいきぼ</string></dict>	<!-- 大規模: 辞書にあるが wc 12577 と重く、台+規模 の合成が先頭だった(ユーザ報告 3735) -->
 	<!-- うどん出汁/うどんだし: 辞書に 1 語で無く、う+ドン+だし/饂飩+だし の合成が先頭だった。順はユーザ指定(3706) -->
 	<dict><key>phrase</key><string>うどん出汁</string><key>shortcut</key><string>うどんだし</string></dict>
@@ -643,7 +826,7 @@
 	<dict><key>phrase</key><string>華倫海</string><key>shortcut</key><string>ふぁーれんはいと</string></dict>	<!-- 漢字音訳(ユーザ指定 2779) -->
 	<dict><key>phrase</key><string>華倫海特</string><key>shortcut</key><string>ふぁーれんはいと</string></dict>
 	<dict><key>phrase</key><string>华伦海特</string><key>shortcut</key><string>ふぁーれんはいと</string></dict>
-	<dict><key>phrase</key><string>従量課金</string><key>shortcut</key><string>じゅうりょうかきん</string></dict>	<!-- Sudachi に 従量/従量制 はあるが 従量課金 は無く、LM の 重量 5424 ≪ 従量 7884 で 重量課金 が先頭だった(ユーザ報告 2778) -->
+	<dict><key>phrase</key><string>従量課金</string><key>shortcut</key><string>じゅうりょうかきん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachi に 従量/従量制 はあるが 従量課金 は無く、LM の 重量 5424 ≪ 従量 7884 で 重量課金 が先頭だった(ユーザ報告 2778) -->
 	<dict><key>phrase</key><string>従量料金</string><key>shortcut</key><string>じゅうりょうりょうきん</string></dict>
 	<dict><key>phrase</key><string>被差別</string><key>shortcut</key><string>ひさべつ</string><key>pos</key><string>名詞</string></dict>	<!-- 被差別: Sudachi core/LM とも無い完全供給欠落(単文節は seed)。連文節は seed ノード(dictUnknown 8700)が 日(ひ)+差別 分割に負けるため curated 化(被差別部落 等) -->
 	<dict><key>phrase</key><string>とんかつ屋</string><key>shortcut</key><string>とんかつや</string><key>pos</key><string>名詞</string></dict>	<!-- とんかつ屋: Sudachi 未収録の複合。連文節で トン+勝谷(かつや の名前収穫)の分割に負けるため curated 化(単文節は seed でも供給) -->
@@ -1013,9 +1196,9 @@
 	<!--既存<dict><key>phrase</key><string>室町時代</string><key>shortcut</key><string>むろまちじだい</string></dict> -->
 	        <dict><key>phrase</key><string>平安時代</string><key>shortcut</key><string>へいあんじだい</string></dict><!-- 複合語が薄くて -->
 	        <dict><key>phrase</key><string>秘密結社</string><key>shortcut</key><string>ひみつけっしゃ</string></dict><!-- 複合語が薄くて -->
-	        <dict><key>phrase</key><string>臣籍降下</string><key>shortcut</key><string>しんせきこうか</string></dict><!-- 複合語が薄くて -->
-	        <dict><key>phrase</key><string>臣籍降嫁</string><key>shortcut</key><string>しんせきこうか</string></dict><!-- 複合語が薄くて -->
-	        <dict><key>phrase</key><string>賜姓降下</string><key>shortcut</key><string>しせいこうか</string></dict><!-- 複合語が薄くて -->
+	        <dict><key>phrase</key><string>臣籍降下</string><key>shortcut</key><string>しんせきこうか</string><key>pos</key><string>サ変名詞</string></dict><!-- 複合語が薄くて -->
+	        <dict><key>phrase</key><string>臣籍降嫁</string><key>shortcut</key><string>しんせきこうか</string><key>pos</key><string>サ変名詞</string></dict><!-- 複合語が薄くて -->
+	        <dict><key>phrase</key><string>賜姓降下</string><key>shortcut</key><string>しせいこうか</string><key>pos</key><string>サ変名詞</string></dict><!-- 複合語が薄くて -->
 	        <dict><key>phrase</key><string>皇室典範</string><key>shortcut</key><string>こうしつてんぱん</string></dict><!-- 複合語が薄くて -->
 	        <dict><key>phrase</key><string>陰謀論</string><key>shortcut</key><string>いんぼうろん</string></dict><!-- 複合語が薄くて -->
 	        <dict><key>phrase</key><string>オウンゴール</string><key>shortcut</key><string>おうんごーる</string><key>pos</key><string>サ変名詞</string></dict><!-- 複合語が薄くて -->
@@ -1142,14 +1325,9 @@
 	<dict><key>phrase</key><string>微温くなっちゃいました</string><key>shortcut</key><string>ぬるくなっちゃいました</string></dict>
 	<dict><key>phrase</key><string>緩くなっちゃいました</string><key>shortcut</key><string>ぬるくなっちゃいました</string></dict>
 	<!-- AI生成: えいあいせいせい が AI製成/AI生成 の順だった(ユーザ指定 3674)。製成 は 製成品 等の稀な語 -->
-	<dict><key>phrase</key><string>AI生成</string><key>shortcut</key><string>えいあいせいせい</string></dict>
-	<dict><key>phrase</key><string>AI製成</string><key>shortcut</key><string>えいあいせいせい</string></dict>
-	<dict><key>phrase</key><string>AI精製</string><key>shortcut</key><string>えいあいせいせい</string></dict>
-	<dict><key>phrase</key><string>英愛製成</string><key>shortcut</key><string>えいあいせいせい</string></dict>
-	<dict><key>phrase</key><string>AI生成</string><key>shortcut</key><string>えーあいせいせい</string></dict>
-	<dict><key>phrase</key><string>AI製成</string><key>shortcut</key><string>えーあいせいせい</string></dict>
-	<dict><key>phrase</key><string>AI精製</string><key>shortcut</key><string>えーあいせいせい</string></dict>
-	<dict><key>phrase</key><string>英愛製成</string><key>shortcut</key><string>えーあいせいせい</string></dict>
+	<dict><key>phrase</key><string>AI生成</string><key>shortcut</key><string>えいあいせいせい</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>AI生成</string><key>shortcut</key><string>えーあいせいせい</string><key>pos</key><string>サ変名詞</string></dict>
+	<!-- AI製成/AI精製/英愛製成 は 3674 で並びごと登録していたが使わない語なので外した(ユーザ指摘 3821) -->
 	<!-- 週前半: しゅうぜんはんは が 州前半は/集前半は/周前半は/週前半は で 週 が最後だった(ユーザ指定 3675) -->
 	<dict><key>phrase</key><string>週前半</string><key>shortcut</key><string>しゅうぜんはん</string></dict>
 	<dict><key>phrase</key><string>修繕班</string><key>shortcut</key><string>しゅうぜんはん</string></dict>

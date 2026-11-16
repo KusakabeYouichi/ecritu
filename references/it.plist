@@ -323,7 +323,7 @@
 	<dict><key>phrase</key><string>Anker</string><key>shortcut</key><string>あんかー</string></dict>
 	<dict><key>phrase</key><string>SSD</string><key>shortcut</key><string>えすえすでぃー</string></dict>
 	<dict><key>phrase</key><string>二分木</string><key>shortcut</key><string>にぶんぎ</string></dict>
-	<dict><key>phrase</key><string>二分検索</string><key>shortcut</key><string>にぶんけんさく</string></dict>
+	<dict><key>phrase</key><string>二分検索</string><key>shortcut</key><string>にぶんけんさく</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>二分検索木</string><key>shortcut</key><string>にぶんけんさくぎ</string></dict>
 	<dict><key>phrase</key><string>ヒープ</string><key>shortcut</key><string>ひーぷ</string></dict>
 	<dict><key>phrase</key><string>連結リスト</string><key>shortcut</key><string>れんけつりすと</string></dict>

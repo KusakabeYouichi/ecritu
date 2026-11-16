@@ -679,7 +679,7 @@
 	<dict><key>phrase</key><string>越前岬</string><key>shortcut</key><string>えちぜんみさき</string></dict>	<!-- 田邊酒造 -->
 	<dict><key>phrase</key><string>平和春</string><key>shortcut</key><string>へいわはる</string></dict>	<!-- 武生酒造 -->
 	<dict><key>phrase</key><string>富久駒</string><key>shortcut</key><string>ふくこま</string></dict>	<!-- 久保田酒造 -->
-	<dict><key>phrase</key><string>一筆啓上</string><key>shortcut</key><string>いっぴつけいじょう</string></dict>	<!-- 久保田酒造 -->
+	<dict><key>phrase</key><string>一筆啓上</string><key>shortcut</key><string>いっぴつけいじょう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 久保田酒造 -->
 	<dict><key>phrase</key><string>鬼作左</string><key>shortcut</key><string>おにさくざ</string></dict>	<!-- 久保田酒造 -->
 	<dict><key>phrase</key><string>嫁おどし</string><key>shortcut</key><string>よめおどし</string></dict>	<!-- 久保田酒造 -->
 	<dict><key>phrase</key><string>花垣</string><key>shortcut</key><string>はながき</string></dict>	<!-- 南部酒造 -->
@@ -1514,7 +1514,7 @@
 	<dict><key>phrase</key><string>水龍</string><key>shortcut</key><string>すいりゅう</string></dict>	<!-- 中野光次郎本店 -->
 	<dict><key>phrase</key><string>誠鏡</string><key>shortcut</key><string>せいきょう</string></dict>	<!-- 中尾醸造 -->
 	<dict><key>phrase</key><string>千福</string><key>shortcut</key><string>せんぷく</string></dict>	<!-- 三宅本店 -->
-	<dict><key>phrase</key><string>大号令</string><key>shortcut</key><string>だいごうれい</string></dict>	<!-- 馬上酒造場 -->
+	<dict><key>phrase</key><string>大号令</string><key>shortcut</key><string>だいごうれい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 馬上酒造場 -->
 	<dict><key>phrase</key><string>高野山天龍</string><key>shortcut</key><string>たかのやまてんりゅう</string></dict>	<!-- 高野山酒造 -->
 	<dict><key>phrase</key><string>竹鶴</string><key>shortcut</key><string>たけつる</string></dict>	<!-- 竹鶴酒造 -->
 	<dict><key>phrase</key><string>超群</string><key>shortcut</key><string>ちょうぐん</string></dict>	<!-- 生熊酒造 -->
@@ -1623,7 +1623,7 @@
 	<dict><key>phrase</key><string>日本心</string><key>shortcut</key><string>やまとごころ</string></dict>	<!-- 武田酒造 -->
 	<dict><key>phrase</key><string>助六</string><key>shortcut</key><string>すけろく</string></dict>	<!-- 武田酒造 -->
 	<dict><key>phrase</key><string>なでしこ</string><key>shortcut</key><string>なでしこ</string></dict>	<!-- 武田酒造 -->
-	<dict><key>phrase</key><string>プラス嗜好</string><key>shortcut</key><string>ぷらすしこう</string></dict>	<!-- 武田酒造 -->
+	<dict><key>phrase</key><string>プラス嗜好</string><key>shortcut</key><string>ぷらすしこう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 武田酒造 -->
 	<dict><key>phrase</key><string>伊方杜氏の誌</string><key>shortcut</key><string>いかたとうじのうた</string></dict>	<!-- 武田酒造 -->
 	<dict><key>phrase</key><string>大番</string><key>shortcut</key><string>おおばん</string></dict>	<!-- 西本酒造 -->
 	<dict><key>phrase</key><string>虎の尾</string><key>shortcut</key><string>とらのお</string></dict>	<!-- 西本酒造 -->
