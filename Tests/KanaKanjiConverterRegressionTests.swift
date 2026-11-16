@@ -30501,6 +30501,12 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(boosted("とうのうちのひとつ", after: "4").first, "頭のうちのひとつ")
         XCTAssertTrue(boosted("とう", after: "4").contains("島"))
         XCTAssertEqual(boosted("つのさと", after: "5").first, "つの里")
+        // 3819: 似る は勧める言い方に付かない、あやまって、覚えて〜 の 2 番めは 憶えて〜、押す場所、よく似ている
+        XCTAssertEqual(top("にるといいよ"), "煮るといいよ")
+        XCTAssertEqual(Array(single("あやまって").prefix(3)), ["誤って", "謝って", "過って"])
+        XCTAssertEqual(Array(multi("おぼえておきなさい").prefix(2)), ["覚えておきなさい", "憶えておきなさい"])
+        XCTAssertEqual(top("おすばしょ"), "押す場所")
+        XCTAssertEqual(top("よくにている"), "よく似ている")
         // 3817: 先代+の+社長、飲み物+を+注ぐ、鳥飼いたい
         XCTAssertEqual(top("せんだいのしゃちょう"), "先代の社長")
         XCTAssertEqual(top("せんだいのぎゅうたん"), "仙台の牛タン")
