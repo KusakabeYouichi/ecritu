@@ -582,6 +582,24 @@ extension KanaKanjiConverter {
         }
         // 2 番目がもう一方の文字を含んでいれば触らない(ベライヒSaar/マスカット・ベイリーA を別の書き方で押し出さない)。
         // 2 番目が先頭の大文字・®/™ 違いだけ(VINOTERAS/ジップロック®)のときも、指定の並び(3289/2698)を守る
+        // ラテン文字の形が先頭から複数続くとき(Beaujolais-Villages/Beaujolais Villages)は、それを全部先に残し、カタカナを
+        // その直後に入れる(3816、ユーザ指定。3677 の『ラテン文字が先・カタカナが 2 番め』をラテン文字が複数の場合に広げた)
+        if isLatinOnly(top) {
+            // 大文字・小文字だけの違い(Seasoning/seasoning)は別の形と数えない(3661 の指定: Seasoning の次は シーズニング)
+            let latinRunEnd = candidates.indices.dropFirst().first(where: {
+                !isLatinOnly(candidates[$0]) || candidates[$0].lowercased() == top.lowercased()
+            }) ?? candidates.endIndex
+            if latinRunEnd > 1 {
+                guard latinRunEnd < candidates.endIndex, !wanted(candidates[latinRunEnd]), !alreadyMixed(candidates[latinRunEnd]),
+                    let index = candidates.indices.dropFirst(latinRunEnd + 1).first(where: { wanted(candidates[$0]) }) else {
+                    return candidates
+                }
+                var result = candidates
+                let moved = result.remove(at: index)
+                result.insert(moved, at: latinRunEnd)
+                return result
+            }
+        }
         let second = candidates[1]
         let strippedSecond = second.replacingOccurrences(of: "®", with: "").replacingOccurrences(of: "™", with: "")
         // 大文字・小文字の違いは、全部大文字の商標の書き方(VINOTERAS)だけ同じ語とみなす(Méthode ancestrale/seasoning は別扱い)
@@ -6181,6 +6199,29 @@ extension KanaKanjiConverter {
                             node.surface == "側", node.reading == "がわ" {
                             cost += Self.multiClauseGawaSideAfterLatinPenalty
                         }
+                        // 助詞の直後の 単独のかな ら(定数コメント参照。3815)
+                        if node.isKanaIdentity, node.surface == "ら", prevNode.isKanaIdentity,
+                            Self.multiClauseParticlesBeforeStrayRa.contains(prevNode.surface) {
+                            cost += Self.multiClauseStrayRaAfterParticlePenalty
+                        }
+                        // に+ついで は 次いで(定数コメント参照。3815)
+                        // つい+で と割る経路(ボルドーに+つい+で+第2位)も同じ。ついでに(帰りについでに買う)は除く
+                        if prevNode.readingID == SID.に, prevNode.surfaceID == SID.に,
+                            node.reading.hasPrefix("つい"), node.start + 3 <= n,
+                            chars[node.start + 1] == "い", chars[node.start + 2] == "で",
+                            !(node.start + 3 < n && chars[node.start + 3] == "に") {
+                            if node.surface.hasPrefix("次いで") {
+                                cost -= Self.multiClauseNiTsuideBonus
+                            } else {
+                                cost += Self.multiClauseNiTsuideBonus
+                            }
+                        }
+                        // 飼う動物+(助詞なし)飼う の活用形(定数コメント参照。3815)
+                        if node.isInflectionDerived, node.surface.first == "飼",
+                            Self.multiClauseKeptAnimalSurfaces.contains(prevNode.surface),
+                            !node.surface.hasPrefix("飼ってき"), !node.surface.hasPrefix("飼ってく") {
+                            cost -= Self.multiClauseKeptAnimalThenKauBonus
+                        }
                         // 〜科+じゅう(定数コメント参照。3813)
                         if prevNode.surface.last == "科", node.reading == "じゅう" {
                             cost += Self.multiClauseKaThenJuuPenalty
@@ -7351,7 +7392,7 @@ extension KanaKanjiConverter {
                         newBest.bestTotal - bestTotal <= Self.multiClauseCoordinatedVerbMaxDelta else {
                         continue
                     }
-                    let mixedJoined = pathIndices.map { nodes[$0].surface }.joined()
+                    let mixedJoined = pathIndices.map { nodes[$0].surface }.joinedMultiClauseSurfaces()
                     let mixedTotal = bestTotal
                     best = newBest.best
                     backPointer = newBest.backPointer
@@ -7359,7 +7400,7 @@ extension KanaKanjiConverter {
                     pathIndices = newBest.pathIndices
                     if candidates.count >= 2 {
                         let second = candidates[1]
-                        coordinatedAlternatives.append((second.bestTotal - bestTotal, second.pathIndices.map { nodes[$0].surface }.joined()))
+                        coordinatedAlternatives.append((second.bestTotal - bestTotal, second.pathIndices.map { nodes[$0].surface }.joinedMultiClauseSurfaces()))
                     }
                     // 元の混在経路は揃えた2経路の後ろへ(delta は第2候補の直後に固定)
                     let mixedDelta = (coordinatedAlternatives.last?.delta ?? (bestTotal - mixedTotal)) + Self.multiClauseSeedOrderVariantStep
@@ -7386,7 +7427,7 @@ extension KanaKanjiConverter {
                 let altIdx = nodes.firstIndex(where: { $0.start == lead.start && $0.end == lead.end && $0.surface == seedList[1] }),
                 let alternative = solveViterbi(allowedStartNodeIndex: altIdx), alternative.pathIndices.count >= 2,
                 alternative.bestTotal - bestTotal <= Self.multiClauseLeadAlternativeMaxDelta {
-                let altJoined = alternative.pathIndices.map { nodes[$0].surface }.joined()
+                let altJoined = alternative.pathIndices.map { nodes[$0].surface }.joinedMultiClauseSurfaces()
                 if altJoined != normalized {
                     leadAlternativeJoined = altJoined
                     // 1文節の seed 順変種と同じ刻み(順位×step)に揃える。実差がそれより小さければ実差
@@ -7405,8 +7446,8 @@ extension KanaKanjiConverter {
                 let alternative = solveViterbi(allowedStartNodeIndex: nil, requiredNodeIndices: [moIdx]),
                 alternative.pathIndices.count >= 2,
                 alternative.bestTotal - bestTotal <= Self.multiClauseMoSplitAlternativeMaxDelta {
-                let altJoined = alternative.pathIndices.map { nodes[$0].surface }.joined()
-                if altJoined != normalized, altJoined != pathIndices.map({ nodes[$0].surface }).joined() {
+                let altJoined = alternative.pathIndices.map { nodes[$0].surface }.joinedMultiClauseSurfaces()
+                if altJoined != normalized, altJoined != pathIndices.map({ nodes[$0].surface }).joinedMultiClauseSurfaces() {
                     moSplitAlternativeJoined = altJoined
                 }
             }
@@ -7427,8 +7468,8 @@ extension KanaKanjiConverter {
                 node.reading.count >= 4, node.reading.hasSuffix("はじめ") else { continue }
             if let alternative = solveViterbi(allowedStartNodeIndex: nil, forcedBoundary: node.end - 3),
                 alternative.bestTotal - bestTotal <= Self.multiClauseVariantMaxDelta {
-                let altJoined = alternative.pathIndices.map { nodes[$0].surface }.joined()
-                if altJoined != normalized, altJoined != pathIndices.map({ nodes[$0].surface }).joined() {
+                let altJoined = alternative.pathIndices.map { nodes[$0].surface }.joinedMultiClauseSurfaces()
+                if altJoined != normalized, altJoined != pathIndices.map({ nodes[$0].surface }).joinedMultiClauseSurfaces() {
                     hajimeSplitAlternative = (altJoined, max(1, alternative.bestTotal - bestTotal))
                 }
             }
@@ -7468,7 +7509,7 @@ extension KanaKanjiConverter {
                     afterParticle.surface != afterParticle.reading || afterParticle.isCurated else {
                     continue
                 }
-                let altJoined = altSurfaces.joined()
+                let altJoined = altSurfaces.joinedMultiClauseSurfaces()
                 guard altJoined != normalized else {
                     break
                 }
@@ -7483,7 +7524,7 @@ extension KanaKanjiConverter {
                     && (Self.isDurationNounSurface(prevNode.surface)
                         || store.isSuruNoun(reading: prevNode.reading, candidate: prevNode.surface))
                 if prevIsMeansNoun {
-                    let originalJoined = pathIndices.map { nodes[$0].surface }.joined()
+                    let originalJoined = pathIndices.map { nodes[$0].surface }.joinedMultiClauseSurfaces()
                     best = alternative.best
                     backPointer = alternative.backPointer
                     bestTotal = alternative.bestTotal
@@ -7528,7 +7569,7 @@ extension KanaKanjiConverter {
         }
         var taFormSplitAlternatives: [(delta: Int, joined: String)] = []
         do {
-            let bestJoined = pathIndices.map { nodes[$0].surface }.joined()
+            let bestJoined = pathIndices.map { nodes[$0].surface }.joinedMultiClauseSurfaces()
             for pos in 0..<pathIndices.count {
                 let node = nodes[pathIndices[pos]]
                 guard node.isInflectionDerived, containsKanji(node.surface), node.reading.count >= 4 else { continue }
@@ -7549,7 +7590,7 @@ extension KanaKanjiConverter {
                     alternative.bestTotal - bestTotal <= Self.multiClauseTaFormSplitAlternativeMaxDelta else {
                     continue
                 }
-                let altJoined = alternative.pathIndices.map { nodes[$0].surface }.joined()
+                let altJoined = alternative.pathIndices.map { nodes[$0].surface }.joinedMultiClauseSurfaces()
                 guard altJoined != normalized, altJoined != bestJoined,
                     !taFormSplitAlternatives.contains(where: { $0.joined == altJoined }) else {
                     continue
@@ -7596,8 +7637,8 @@ extension KanaKanjiConverter {
                     firstIsKanaDictWord ? verbNode.isInflectionDerived : (verbNode.isInflectionDerived || verbNode.isDictWord),
                     !verbNode.isKanaIdentity, verbNode.surface != verbNode.reading {
                     var surfaces = alternative.pathIndices.map { nodes[$0].surface }
-                    let joinedAlt = surfaces.joined()
-                    let bestJoined = pathIndices.map { nodes[$0].surface }.joined()
+                    let joinedAlt = surfaces.joinedMultiClauseSurfaces()
+                    let bestJoined = pathIndices.map { nodes[$0].surface }.joinedMultiClauseSurfaces()
                     if joinedAlt != bestJoined {
                         bosParticleSplitAlternatives.append(joinedAlt)
                         // 助詞直後の同スパン兄弟(行った→言った)を、その経路での累積コスト順に1つ
@@ -7613,7 +7654,7 @@ extension KanaKanjiConverter {
                             .min { alternative.best[$0] < alternative.best[$1] }
                         if let sibling {
                             surfaces[1] = nodes[sibling].surface
-                            let siblingJoined = surfaces.joined()
+                            let siblingJoined = surfaces.joinedMultiClauseSurfaces()
                             if siblingJoined != bestJoined {
                                 bosParticleSplitAlternatives.append(siblingJoined)
                             }
@@ -7639,7 +7680,7 @@ extension KanaKanjiConverter {
                 }),
                 let alternative = solveViterbi(allowedStartNodeIndex: nil, requiredNodeIndices: [mergedIdx]),
                 alternative.bestTotal - bestTotal <= Self.multiClauseToShiMergedAlternativeMaxDelta {
-                let altJoined = alternative.pathIndices.map { nodes[$0].surface }.joined()
+                let altJoined = alternative.pathIndices.map { nodes[$0].surface }.joinedMultiClauseSurfaces()
                 if altJoined != normalized {
                     toShiMergedAlternativeJoined = altJoined
                     toShiMergedAlternativeDelta = alternative.bestTotal - bestTotal
@@ -7694,7 +7735,7 @@ extension KanaKanjiConverter {
                             alternative.bestTotal - bestTotal <= Self.multiClauseSwallowedParticleAlternativeMaxDelta else {
                             continue
                         }
-                        let altJoined = alternative.pathIndices.map { nodes[$0].surface }.joined()
+                        let altJoined = alternative.pathIndices.map { nodes[$0].surface }.joinedMultiClauseSurfaces()
                         if altJoined != normalized, !kanaRunMergedAlternatives.contains(where: { $0.joined == altJoined }) {
                             kanaRunMergedAlternatives.append((alternative.bestTotal - bestTotal, altJoined))
                         }
@@ -7707,8 +7748,8 @@ extension KanaKanjiConverter {
                         }
                     }
                     if let promoted {
-                        kanaRunPromotedOriginalJoined = pathIndices.map { nodes[$0].surface }.joined()
-                        kanaRunMergedAlternatives.removeAll { $0.joined == promoted.pathIndices.map { nodes[$0].surface }.joined() }
+                        kanaRunPromotedOriginalJoined = pathIndices.map { nodes[$0].surface }.joinedMultiClauseSurfaces()
+                        kanaRunMergedAlternatives.removeAll { $0.joined == promoted.pathIndices.map { nodes[$0].surface }.joinedMultiClauseSurfaces() }
                         best = promoted.best
                         backPointer = promoted.backPointer
                         bestTotal = promoted.bestTotal
@@ -7737,7 +7778,7 @@ extension KanaKanjiConverter {
                     guard let alternative = solveViterbi(allowedStartNodeIndex: nil, requiredNodeIndices: [idx]),
                         alternative.bestTotal - bestTotal <= Self.multiClauseSwallowedParticleAlternativeMaxDelta,
                         alternative.bestTotal < (chosen?.total ?? Int.max) else { continue }
-                    chosen = (alternative.bestTotal, alternative.pathIndices.map { nodes[$0].surface }.joined())
+                    chosen = (alternative.bestTotal, alternative.pathIndices.map { nodes[$0].surface }.joinedMultiClauseSurfaces())
                 }
                 if let chosen, chosen.joined != normalized {
                     particleRareruMergedAlternativeJoined = chosen.joined
@@ -7830,12 +7871,12 @@ extension KanaKanjiConverter {
                 !lastNode.isKanaIdentity,
                 !lastNode.isCurated,
                 Self.isPredicateLikePrevForConditional(prevNode) {
-                conditionalNaraKanjiVariant = segments.joined()
+                conditionalNaraKanjiVariant = segments.joinedMultiClauseSurfaces()
                 segments[segments.count - 1] = lastNode.reading
             }
         }
 
-        let joined = segments.joined()
+        let joined = segments.joinedMultiClauseSurfaces()
         // 全かな結果は原則返さない(素通りの丸ごとエコー防止)。ただし経路に curated ノード
         // (やって/にした 等、かなが正書として明示登録された語)を含む場合は、かな結果が
         // 正規の変換なので返す(やってそうな が候補なしになるのを防ぐ)。
@@ -8390,7 +8431,7 @@ extension KanaKanjiConverter {
                     : Self.multiClauseVariantMaxDelta
                 var altSegments = segments
                 altSegments[pos] = alt.surface
-                let variantJoined = altSegments.joined()
+                let variantJoined = altSegments.joinedMultiClauseSurfaces()
                 if variantJoined == joined {
                     continue
                 }
@@ -8545,7 +8586,7 @@ extension KanaKanjiConverter {
                 var replaced = segments
                 replaced[position] = compound
                 replaced.remove(at: position + 1)
-                let replacedJoined = replaced.joined()
+                let replacedJoined = replaced.joinedMultiClauseSurfaces()
                 if !results.contains(replacedJoined) {
                     results.insert(replacedJoined, at: 0)
                 }
@@ -8605,7 +8646,7 @@ extension KanaKanjiConverter {
                     var crossSegments = segments
                     crossSegments[lhs.1.position] = lhs.1.surface
                     crossSegments[rhs.1.position] = rhs.1.surface
-                    let crossJoined = crossSegments.joined()
+                    let crossJoined = crossSegments.joinedMultiClauseSurfaces()
                     guard crossJoined != normalized, !results.contains(crossJoined) else { continue }
                     crossed.append((delta, crossJoined))
                 }
@@ -8636,7 +8677,7 @@ extension KanaKanjiConverter {
                 }),
                 let alternative = solveViterbi(allowedStartNodeIndex: nil, requiredNodeIndices: [mergedIdx]),
                 alternative.bestTotal - bestTotal <= Self.multiClauseMergedLeadTailMaxDelta {
-                let altJoined = alternative.pathIndices.map { nodes[$0].surface }.joined()
+                let altJoined = alternative.pathIndices.map { nodes[$0].surface }.joinedMultiClauseSurfaces()
                 if altJoined != normalized, !results.contains(altJoined) {
                     results.append(altJoined)
                 }
@@ -8762,5 +8803,29 @@ extension KanaKanjiConverter {
             return true
         }
         return false
+    }
+}
+
+extension Sequence where Element == String {
+    // 連文節の語をつなぐ。ラテン文字で終わる語とラテン文字で始まる語の間には空白を 1 つ入れる(Beaujolais-Villages+Nouveau が
+    // Beaujolais-VillagesNouveau だった。欧文は語の間を空ける。3815、ユーザ指定)。どちらかが日本語の字・数字・記号なら詰める
+    func joinedMultiClauseSurfaces() -> String {
+        var result = ""
+        for surface in self {
+            if let last = result.last, let first = surface.first,
+                KanaKanjiConverter.isLatinLetterForWordSpacing(last), KanaKanjiConverter.isLatinLetterForWordSpacing(first) {
+                result.append(" ")
+            }
+            result.append(surface)
+        }
+        return result
+    }
+}
+
+extension KanaKanjiConverter {
+    // ラテン文字(基本・拡張 A/B のアクセント付きを含む)の字か
+    static func isLatinLetterForWordSpacing(_ character: Character) -> Bool {
+        guard character.isLetter, let scalar = character.unicodeScalars.first else { return false }
+        return scalar.value < 0x0250
     }
 }

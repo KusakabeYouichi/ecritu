@@ -690,7 +690,8 @@ extension KanaKanjiConverter {
         "てん": ["点", "點"],
         // 頭(動物)を先頭に。順位の 等 は今は使用が減ったので最後(ユーザ指定 3645: いっとう→一頭 が出なかった)
         // 灯(街灯・照明の数。3810、ユーザ指定で追加)
-        "とう": ["頭", "棟", "灯", "等"],
+        // 島(4島のうち。島 が表に無く 4頭の家 だった。3815、ユーザ指定)
+        "とう": ["頭", "棟", "島", "灯", "等"],
         "とおり": ["通り", "通"],
         "とん": ["トン", "瓲", "噸"],
         // 温度(36ど→36度/36°C/36°F)。字形(°C/℃)は提示層の設定 degré で置換(2773)
@@ -853,6 +854,8 @@ extension KanaKanjiConverter {
         "げんしゅ": ["原種"],
         // 2+きあつ(いじょう)は 気圧(機+あつ… の 2機圧以上 だった。機圧 という語は無い。3809、ユーザ指摘)
         "きあつ": ["気圧"],
+        // 数+ごう+弱/強 は量の 合(約1合弱 が 1号弱 だった。号 に 弱/強 は付かない。3815、ユーザ指摘)
+        "ごうじゃく": ["合弱"], "ごうきょう": ["合強"],
         // 数の直後の を+しめ は 占め(約2割を占めています/3分の2を占め が 閉め/染め/しめ だった。数量を 閉める/締める はまず無い。
         // 3809、ユーザ指摘)。2割を… のように助数詞が前に付く読みは、助数詞ごと変換した形を使う(下の合成)
         "をしめ": ["を占め"],
@@ -968,6 +971,10 @@ extension KanaKanjiConverter {
     // 4 かな以上は連文節の最良(もおしたことない→も押したことない、2700)。短い末尾は単文節だが、末尾が助詞なら
     // 助詞を残した形を優先する(まえの の先頭は姓 前野(rank0)で 年前野 を作ってしまう。2820)
     static let counterTailParticleCharacters: Set<Character> = Set("のにでをがはもとへ")
+    // 助数詞+末尾の変換形で、漢字の語の後ろに付いてよい付属語(1杯+分です。3815)
+    static let counterTailFunctionWordSuffixes: [String] = [
+        "です", "でした", "だ", "だった", "の", "に", "を", "が", "は", "も", "で", "と", "まで", "から", "ほど", "くらい", "ぐらい"
+    ]
     // 数字直後の合成を止める「常用の語」の判定(語 LM の値段がこの値以下。世紀 4000 台/以上 3000 台/木曜日 6000 前後)
     static let counterBlockingCommonWordMaxUnigram = 6500
     func isCommonWordForCounterBlock(_ surface: String) -> Bool {
@@ -979,7 +986,18 @@ extension KanaKanjiConverter {
         // 文頭の助詞として割られた形(を機沿い)が返り、2+いをきそい が 位を機沿い だった
         // 次の字が ん・小書き・長音 なら先頭の 1 字は助詞ではない(にんていです=認定です。に+んていです と見て 年にんて胃です
         // だった。2011+ねんにんていです。3810、ユーザ報告)
-        if tail.count >= 4, let particle = tail.first, Self.counterTailParticleCharacters.contains(particle),
+        // 数量+のうち(4島のうちのひとつ)の うち は範囲でかな。家 にしない(4頭の家のひとつ だった。3815、ユーザ報告)
+        if tail.hasPrefix("のうち") {
+            let rest = String(tail.dropFirst(3))
+            if rest.isEmpty {
+                return "のうち"
+            }
+            let converted = multiClauseCandidates(for: rest, systemCandidateMode: .surface, minReadingCountOverride: 2).first
+                ?? candidates(for: rest, limit: 6, systemCandidateMode: .surface).first
+            return "のうち" + (converted ?? rest)
+        }
+        // 3 字の末尾(のさと)も同じ(5つ+のさと が 乃さと だった。の を 1 字の漢字 乃 にした合成。3815、ユーザ報告)
+        if tail.count >= 3, let particle = tail.first, Self.counterTailParticleCharacters.contains(particle),
             !"んぁぃぅぇぉゃゅょゎっー".contains(tail[tail.index(after: tail.startIndex)]) {
             let rest = String(tail.dropFirst())
             // 短い活用形(きそい=競い)は単文節に無いことがあるので、連文節を短い読みでも試す
@@ -1015,6 +1033,9 @@ extension KanaKanjiConverter {
             return candidates
         }
         let present = Set(candidates)
+        // 数えの つ(4つ/9つ)は 1 桁の数だけ。数字の最後の字しか分からないので、0 で終わる数(10 以上。3,000+つぼです が
+        // 3,000つ戊です だった。3815、ユーザ指摘)では つ を助数詞と見ない。12つ のような 0 で終わらない 2 桁は見分けられない
+        let tsuCounterAllowed = precedingCharacter != "0" && precedingCharacter != "０"
         // 数の単位+助数詞(3+まんぼん→万本。定数コメント参照。3492)。組めたら最優先で前置し、下の 助数詞+かな末尾 の
         // 合成(ま+んぼん→間んぼん)は作らない
         let unitCompositions = Self.numeralUnitCompositions(for: reading) ?? []
@@ -1030,7 +1051,7 @@ extension KanaKanjiConverter {
         // 変換形が漢字で始まるものだけ(つ+くる 等の短い末尾や、つ+かな のままの形は対象外)
         // 変換形は送りがな(かな)を含むこと。全部漢字の変換形は動詞でなく名詞(3+つのうち で のうち→農地 が つ農地 を先頭に
         // 供給していた。ユーザ報告 3640)
-        if reading.hasPrefix("つ"), reading.count >= 4, let tailConversion {
+        if reading.hasPrefix("つ"), reading.count >= 4, tsuCounterAllowed, let tailConversion {
             let tail = String(reading.dropFirst())
             if let converted = tailConversion(tail), converted != tail,
                 let first = converted.first, containsKanjiCandidate(String(first)),
@@ -1092,8 +1113,10 @@ extension KanaKanjiConverter {
             // 合成しない(2814)
             let isOrdinalMeReading = reading.hasSuffix("め")
                 && numericCounterSuffixCandidatesByReading[String(reading.dropLast())] != nil
+            // 補助表(ぱい/ぽん/ぴき。半濁音の形)も合成の対象(1+ぱいぶんです が パイ分です、1+ぱいの が パイの だった。3815、ユーザ報告)
             for counterReading in Set(numericCounterSuffixCandidatesByReading.keys)
                 .union(digitContextAdditionalCounterSurfacesByReading.keys)
+                .union(supplementalCounterSurfacesByReading.keys)
                 .sorted(by: { $0.count != $1.count ? $0.count > $1.count : $0 < $1 })
             where !readingHasSeedWord && !isOrdinalMeReading && !hasUnitComposition && !readingIsParticle
                 && reading.count > counterReading.count && reading.hasPrefix(counterReading)
@@ -1103,7 +1126,11 @@ extension KanaKanjiConverter {
                 if counterReading == "と" {
                     continue
                 }
-                let surfaces = Self.digitBoostCounterSurfaces(for: counterReading) ?? []
+                if counterReading == "つ", !tsuCounterAllowed {
+                    continue
+                }
+                let surfaces = (Self.digitBoostCounterSurfaces(for: counterReading) ?? [])
+                    + (Self.supplementalCounterSurfacesByReading[counterReading] ?? [])
                 let tail = String(reading.dropFirst(counterReading.count))
                 // 末尾の長さでは制限しない(ユーザ指定 2700)。数字につながる1文節め(助数詞読み)が
                 // 表に一致することが条件で、その後ろは全かななら何文字でもよい。以前は末尾6かなの
@@ -1202,6 +1229,11 @@ extension KanaKanjiConverter {
                         keepsLeadingParticle(convertedTail),
                         KanaKanjiConverter.isAllKanjiSurface(convertedTail)
                             || (particleLedTail && containsKanjiCandidate(convertedTail))
+                            // 漢字の語+助詞・助動詞(ぶんです→分です)。後ろのかなが読みの末尾と同じ付属語のときだけ(1杯ぶんです だった。3815)
+                            || Self.counterTailFunctionWordSuffixes.contains(where: { suffix in
+                                tail.hasSuffix(suffix) && convertedTail.hasSuffix(suffix)
+                                    && KanaKanjiConverter.isAllKanjiSurface(String(convertedTail.dropLast(suffix.count)))
+                            })
                             // 助詞の後ろがラテン文字の語(2+いはせれさ→位はCereza。かなのまま 位はせれさ だった。3810、ユーザ報告)
                             || (particleLedTail && convertedTail.dropFirst().contains(where: { $0.isASCII && $0.isLetter })) {
                         let convertedForm = surface + convertedTail
