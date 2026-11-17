@@ -230,7 +230,7 @@ extension KanaKanjiConverter {
     }
 
     // precedingCharacter: 入力欄で読みの直前にある確定済み文字(数字なら文頭の助数詞を持ち上げる。2887)
-    func multiClauseCandidates(
+    public func multiClauseCandidates(
         for reading: String,
         systemCandidateMode: KanaKanjiCandidateSourceMode,
         minReadingCountOverride: Int? = nil,
@@ -555,7 +555,7 @@ extension KanaKanjiConverter {
     // 候補欄で単文節の 1 位を差し込むときは、この組も 3 番目にする(3711、ユーザ報告: なんかいってや で 単文節の 1 位
     // 何回ってや が 2 番目に入り、なんか言ってや が 3 番目だった)
     static let pinnedSecondSubstitutions: [(String, String)] = [("何か", "なんか"), ("のたれ", "のタレ"), ("のたびに", "の度に")]
-    static func keepsSecondAgainstSingleBest(_ first: String, _ second: String) -> Bool {
+    public static func keepsSecondAgainstSingleBest(_ first: String, _ second: String) -> Bool {
         isScriptCounterpartPair(first, second) || isKanaScriptVariantPair(first, second) || pinnedSecondSubstitutions.contains {
             first.contains($0.0) && first.replacingOccurrences(of: $0.0, with: $0.1) == second
         }

@@ -83,7 +83,7 @@ extension KanaKanjiConverter {
         return nil
     }
 
-    func applyKaCounterVariantPreference(reading: String, to candidates: [String], precedingCharacter: Character? = nil) -> [String] {
+    public func applyKaCounterVariantPreference(reading: String, to candidates: [String], precedingCharacter: Character? = nil) -> [String] {
         guard candidates.count >= 1 else {
             return candidates
         }

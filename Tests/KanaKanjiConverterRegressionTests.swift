@@ -1,6 +1,8 @@
 import SwiftUI
 import XCTest
 import SQLite3
+@testable import EcrituConversion
+@testable import EcrituConversionBase
 
 // リポジトリのフォルダー。このファイル(Tests/ の直下)の場所から割り出す。clone した場所や
 // ユーザー名に依らず動き、作者の手元のパスをコードに残さない(3414)

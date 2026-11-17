@@ -1,4 +1,5 @@
 import XCTest
+@testable import EcrituConversion
 
 // 顔文字パネルの選択規則(KaomojiPanelState)。期待値は段 4 設計の期待表から決めた具体値
 @MainActor

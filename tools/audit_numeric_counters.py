@@ -24,7 +24,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 RAW = ROOT / "tmp" / "sudachi_raw"
-TABLE_SOURCE = ROOT / "KeyboardExtension" / "KanaKanjiConverter+CompoundDerivation.swift"
+TABLE_SOURCE = ROOT / "Packages" / "EcrituConversion" / "Sources" / "EcrituConversion" / "KanaKanjiConverter+CompoundDerivation.swift"
 POS_COUNTER = "助数詞可能"
 
 

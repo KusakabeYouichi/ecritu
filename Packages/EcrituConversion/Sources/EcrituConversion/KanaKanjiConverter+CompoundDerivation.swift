@@ -510,7 +510,7 @@ extension KanaKanjiConverter {
         "まで", "でも", "かも", "こそ", "さえ", "すら", "ばかり",
     ]
 
-    static func counterKanaTailPromotedCandidates(
+    public static func counterKanaTailPromotedCandidates(
         _ candidates: [String],
         reading: String
     ) -> [String] {
@@ -937,7 +937,7 @@ extension KanaKanjiConverter {
         "がた": ["型"]
     ]
 
-    static func latinContextPreferredCandidates(
+    public static func latinContextPreferredCandidates(
         _ candidates: [String],
         reading: String,
         precedingCharacter: Character?
@@ -977,11 +977,11 @@ extension KanaKanjiConverter {
     ]
     // 数字直後の合成を止める「常用の語」の判定(語 LM の値段がこの値以下。世紀 4000 台/以上 3000 台/木曜日 6000 前後)
     static let counterBlockingCommonWordMaxUnigram = 6500
-    func isCommonWordForCounterBlock(_ surface: String) -> Bool {
+    public func isCommonWordForCounterBlock(_ surface: String) -> Bool {
         (store.wordLMUnigramCosts(for: [surface])[surface] ?? Int.max) <= Self.counterBlockingCommonWordMaxUnigram
     }
 
-    func counterTailConversion(_ tail: String) -> String? {
+    public func counterTailConversion(_ tail: String) -> String? {
         // 助詞で始まる長い末尾(をきそい)は、助詞の後ろだけを変換して助詞を付け直す(3806)。助詞ごと連文節に掛けると、
         // 文頭の助詞として割られた形(を機沿い)が返り、2+いをきそい が 位を機沿い だった
         // 次の字が ん・小書き・長音 なら先頭の 1 字は助詞ではない(にんていです=認定です。に+んていです と見て 年にんて胃です
@@ -1018,7 +1018,7 @@ extension KanaKanjiConverter {
         return singles.first
     }
 
-    static func digitContextCounterBoostedCandidates(
+    public static func digitContextCounterBoostedCandidates(
         _ candidates: [String],
         reading: String,
         precedingCharacter: Character?,
@@ -1361,7 +1361,7 @@ extension KanaKanjiConverter {
     //   欠けている側は補生成する(番目⇄番め。同 通則4 は『目』)。
     // 供給源(辞書/フォールバック/活用)を問わず最終列で整えるので、辞書側の並び
     // (薄目 rank0<薄め rank1 等)にも一様に効く。
-    func applyMeSuffixPreferences(reading: String, to candidates: [String]) -> [String] {
+    public func applyMeSuffixPreferences(reading: String, to candidates: [String]) -> [String] {
         // 候補が空でも助数詞+め(ぱくめ→泊目)は補生成する(辞書語が無い読みで 泊め/泊目 が出なかった。3562)
         guard reading.count >= 2, reading.hasSuffix("め"),
             !candidates.isEmpty || Self.numericCounterSuffixCandidatesByReading[String(reading.dropLast())] != nil else {
@@ -1815,7 +1815,7 @@ extension KanaKanjiConverter {
         ("しゃ", "車")
     ]
 
-    func shouldPromoteSingleBestAboveMultiClause(reading: String, singleBest: String) -> Bool {
+    public func shouldPromoteSingleBestAboveMultiClause(reading: String, singleBest: String) -> Bool {
         guard reading.count >= 4 else {
             return false
         }

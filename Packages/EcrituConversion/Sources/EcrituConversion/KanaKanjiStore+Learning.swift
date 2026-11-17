@@ -237,8 +237,8 @@ extension KanaKanjiStore {
 
     // 確定の直後に削除キーで消したとき、その確定の学習を取り消すための「学習する前の状態」(3741、ユーザ指定)。
     // 点数を 1 引くのではなく、その読みの学習済みの並びと、その組の点数を学習前の値に戻す(並びの順も戻る)
-    struct LearningUndoSnapshot: Equatable {
-        let reading: String
+    public struct LearningUndoSnapshot: Equatable {
+        public let reading: String
         let candidate: String
         let learnedCandidates: [String]?
         let score: Int?

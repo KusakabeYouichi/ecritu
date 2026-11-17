@@ -395,7 +395,7 @@ extension KanaKanjiConverter {
         return changed ? uniqueCandidates(from: result) : candidates
     }
 
-    func applyOkuriganaVariantPreference(reading: String, to inputCandidates: [String]) -> [String] {
+    public func applyOkuriganaVariantPreference(reading: String, to inputCandidates: [String]) -> [String] {
         var candidates = restoringNominalizedOkurigana(reading: reading, in: inputCandidates)
         guard candidates.count >= 2 else {
             return candidates

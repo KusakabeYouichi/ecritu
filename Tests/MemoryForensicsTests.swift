@@ -1,4 +1,5 @@
 import XCTest
+@testable import EcrituConversion
 
 // ★時限デバッグ装置(2611)の検証。KeyboardMemoryForensics.swift を剥がすときは
 // このファイルも一緒に削除する(grep MEMFORENSICS)。

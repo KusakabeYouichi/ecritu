@@ -8,9 +8,11 @@ PBXFileReference + グループ掲載 + ターゲットごとの PBXBuildFile/So
 使い方:
   python3 tools/register_pbxproj_source.py <新ファイル(リポジトリ相対)> --like <手本ファイル(リポジトリ相対)>
 
-例: KeyboardExtension/SortedTSVBlob.swift を KanaKanjiStore+LatinSuggestions.swift と同じターゲット群(拡張+テスト)へ:
-  python3 tools/register_pbxproj_source.py KeyboardExtension/SortedTSVBlob.swift \
-      --like KeyboardExtension/KanaKanjiStore+LatinSuggestions.swift
+例: KeyboardExtension/KeyboardInputState.swift を KaomojiPanelState.swift と同じターゲット群(拡張+テスト)へ:
+  python3 tools/register_pbxproj_source.py KeyboardExtension/KeyboardInputState.swift \
+      --like KeyboardExtension/KaomojiPanelState.swift
+
+変換の中核(Packages/EcrituConversion/Sources/ の下)は Swift Package なので登録は要らない(置けばビルドに入る)。
 """
 import argparse
 import hashlib

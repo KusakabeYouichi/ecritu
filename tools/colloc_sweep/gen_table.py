@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """確認表の判定(decisions.json)から 目的語+助詞+同音動詞 の連語表(Swift)を生成する。
 
-使い方: .venv/bin/python -I tools/colloc_sweep/gen_table.py references/colloc_sweep/<id> KeyboardExtension/KanaKanjiConverter+ObjectVerbCollocations.swift
+使い方: .venv/bin/python -I tools/colloc_sweep/gen_table.py references/colloc_sweep/<id> Packages/EcrituConversion/Sources/EcrituConversion/KanaKanjiConverter+ObjectVerbCollocations.swift
 
 - mark が fix の組だけを採る(ok/未入力は載せない)
 - 備考で順位を指定された組は OVERRIDES で扱う(備考は期待表記より優先)

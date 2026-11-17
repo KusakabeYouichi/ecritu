@@ -1,4 +1,5 @@
 import Foundation
+@testable import EcrituConversion
 
 // テスト専用の書き込み補助。本番のキーボード拡張は追加語彙を読むだけ(書くのはコンテナーアプリ)なので、
 // KanaKanjiStore+Learning.swift から移した(2822)。テストターゲットは拡張のソースを直接コンパイルするため

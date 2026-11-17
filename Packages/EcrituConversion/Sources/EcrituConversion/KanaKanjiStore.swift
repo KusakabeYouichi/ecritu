@@ -6,7 +6,7 @@ private struct KanaKanjiInflectionEntry: Codable {
     let inflectionClass: String
 }
 
-final class KanaKanjiStore {
+public final class KanaKanjiStore {
     private let appGroupID: String
     let defaults: UserDefaults?
     private let fileManager = FileManager.default
@@ -193,7 +193,7 @@ final class KanaKanjiStore {
     var learningPersistDirtyScores = false
     var learningPersistWorkItem: DispatchWorkItem?
 
-    init(appGroupID: String) {
+    public init(appGroupID: String) {
         self.appGroupID = appGroupID
         self.defaults = UserDefaults(suiteName: appGroupID)
     }
@@ -300,7 +300,7 @@ final class KanaKanjiStore {
         }
     }
 
-    func isSystemDictionaryFallback() -> Bool {
+    public func isSystemDictionaryFallback() -> Bool {
         guard let sqliteIndex = sqliteIndexIfAvailable() else {
             return true
         }
@@ -599,7 +599,7 @@ final class KanaKanjiStore {
     }
 
     // 連文節 DP(案1: 自前単語 n-gram LM)が利用可能か。
-    var hasWordLMMetadata: Bool {
+    public var hasWordLMMetadata: Bool {
         sqliteIndexIfAvailable()?.hasWordLMMetadata ?? false
     }
 
@@ -1047,7 +1047,7 @@ final class KanaKanjiStore {
     // メモリ内訳census用: 常駐辞書構造の概算バイト数(文字実体のみ、下限値)を1行で返す。
     // ベースライン固定費(キャッシュ空でも残る mallocUsed 約35MB)の正体特定に使う(2570)。
     // 読み込み済みの構造だけ集計する(census がロードを誘発しないよう nil はスキップ)。
-    func diagnosticsStructureBytesSummary() -> String {
+    public func diagnosticsStructureBytesSummary() -> String {
         func dictBytes(_ dict: [String: [String]]?) -> Int {
             guard let dict else { return -1 }
             var total = 0
@@ -1110,7 +1110,7 @@ final class KanaKanjiStore {
     // 解放されるのはごく小さいページキャッシュのみ。一方 close すると hasWordLMMetadata が
     // false になり連文節が丸ごと停止して劣化変換(しゃしん→者芯 等)になるため、
     // メモリ対策では sqlite を落とさない。
-    func clearSystemDictionaryJSONCaches() {
+    public func clearSystemDictionaryJSONCaches() {
         withCacheLock {
             cachedSystemDictionary = nil
             cachedSupplementalSystemDictionary = nil
@@ -1129,7 +1129,7 @@ final class KanaKanjiStore {
 
     // メモリ警告が続くときの縮小モード: LM/word_costs キャッシュを破棄した上で上限を
     // 下げ、再成長を抑える(sqlite クローズと違い変換品質は維持される)。
-    func enterConstrainedMemoryCacheMode() {
+    public func enterConstrainedMemoryCacheMode() {
         withCacheLock {
             isConstrainedMemoryCacheMode = true
             cachedWordLMUnigram.removeAll(keepingCapacity: false)
@@ -1140,7 +1140,7 @@ final class KanaKanjiStore {
     }
 
     // 新しい表示セッションで縮小モードを解除する(圧迫エピソードは表示単位で区切る)。
-    func exitConstrainedMemoryCacheMode() {
+    public func exitConstrainedMemoryCacheMode() {
         withCacheLock { isConstrainedMemoryCacheMode = false }
     }
 
@@ -1274,7 +1274,7 @@ final class KanaKanjiStore {
         return normalized
     }
 
-    func shortcutVocabulary() -> [String] {
+    public func shortcutVocabulary() -> [String] {
         if let cached = withCacheLock({ cachedShortcutVocabulary }) {
             return cached
         }
@@ -1302,7 +1302,7 @@ final class KanaKanjiStore {
     // 保存が無い/空(コンテナーアプリ未起動、全削除)ときは表示と同じく初期一覧を土台にする。上限はアプリ側の登録と同じ 128
     static let shortcutVocabularyMaxCount = 128
 
-    func prependShortcutCandidate(_ candidate: String) {
+    public func prependShortcutCandidate(_ candidate: String) {
         // 前後の空白も含めてそのまま保存する(3261。「 > 」が「>」になっていた)。空白だけのものは捨てる
         guard !candidate.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty, let defaults else {
             return
@@ -1326,7 +1326,7 @@ final class KanaKanjiStore {
     /// iOS のユーザ辞書で読みが ☻ の単語をショートカット語彙の先頭へ足す(3244)。
     /// すでにある単語は元の位置のまま(先頭へ動かさない)。足した件数を返す。
     @discardableResult
-    func prependNewShortcutCandidates(_ candidates: [String]) -> Int {
+    public func prependNewShortcutCandidates(_ candidates: [String]) -> Int {
         guard let defaults else {
             return 0
         }
@@ -1360,7 +1360,7 @@ final class KanaKanjiStore {
     /// iOS のユーザ辞書から取り込んだ ☻ 語のうち、まだ一覧に残っているものを外して記録を消す。
     /// 「iOS のユーザ辞書の単語」を「使わない」にしたときに呼ぶ(記録が空なら何もしない)。外した件数を返す
     @discardableResult
-    func removeImportedUserDictionaryShortcutCandidates() -> Int {
+    public func removeImportedUserDictionaryShortcutCandidates() -> Int {
         guard let defaults,
             let imported = decodedStringArray(forKey: KanaKanjiStorageKeys.userDictionaryShortcutImportedCandidates) else {
             return 0
@@ -1384,7 +1384,7 @@ final class KanaKanjiStore {
     /// レキシコン(iOS のユーザ辞書)の項目から、読みが ☻ の単語だけを取り出す(3244)。
     static let userDictionaryShortcutReading = "☻"
 
-    static func shortcutCandidatesFromUserDictionaryEntries(
+    public static func shortcutCandidatesFromUserDictionaryEntries(
         _ entries: [(userInput: String, candidate: String)]
     ) -> [String] {
         entries.compactMap { entry in
@@ -1498,7 +1498,7 @@ final class KanaKanjiStore {
         return result
     }
 
-    func suppressedCandidatesByReading() -> [String: Set<String>] {
+    public func suppressedCandidatesByReading() -> [String: Set<String>] {
         if let cached = withCacheLock({ cachedSuppressedCandidatesByReading }) {
             return cached
         }

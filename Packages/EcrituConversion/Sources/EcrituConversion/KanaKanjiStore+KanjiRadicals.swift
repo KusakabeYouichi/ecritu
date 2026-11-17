@@ -4,15 +4,15 @@ import Foundation
 // バイト順ソート済み。1行 = "NNN\tSS\t字\t区点\t読み\tTT"、TT=総画数)を Data(mappedIfSafe) のまま保持し、
 // 行頭 "NNN\t" のバイナリサーチで部首ブロックだけを切り出す。欧文語彙
 // (GenericLatinLexiconFileIndex)と同じ方式で、常駐フットプリントを持たない。
-struct KanjiRadicalFileIndex {
-    struct Entry {
-        let character: String
+public struct KanjiRadicalFileIndex {
+    public struct Entry {
+        public let character: String
         // 部首内画数。描画には使わないが、索引ファイルの並び(総画数→部首内画数)の検査(テスト)が読む
         let residualStrokes: Int
-        let kuten: String
-        let readings: String
+        public let kuten: String
+        public let readings: String
         // 総画数(Unihan kTotalStrokes)。字グリッドの画数区切りに使う。0 は不明(区切りを出さない)
-        let totalStrokes: Int
+        public let totalStrokes: Int
     }
 
     let data: Data
@@ -22,7 +22,7 @@ struct KanjiRadicalFileIndex {
     }
 
     // 部首番号(1〜214)に属する字を、ファイル順(総画数→部首内画数→コードポイント)で返す。
-    func entries(radical: Int) -> [Entry] {
+    public func entries(radical: Int) -> [Entry] {
         guard 1...214 ~= radical, !data.isEmpty else {
             return []
         }
@@ -66,7 +66,7 @@ struct KanjiRadicalFileIndex {
 
 extension KanaKanjiStore {
     // 索引の mmap は初回参照時に開き、以後キャッシュする(Data 保持のみなので常駐コスト無し)。
-    func kanjiRadicalIndex() -> KanjiRadicalFileIndex {
+    public func kanjiRadicalIndex() -> KanjiRadicalFileIndex {
         if let cached = withCacheLock({ cachedKanjiRadicalIndex }) {
             return cached
         }

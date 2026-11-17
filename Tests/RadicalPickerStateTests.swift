@@ -1,4 +1,5 @@
 import XCTest
+@testable import EcrituConversion
 
 // 部首ピッカーの選択と一覧の組み立て規則(RadicalPickerState / RadicalPickerListing)。
 // 期待値は段 5 設計の期待表から決めた具体値

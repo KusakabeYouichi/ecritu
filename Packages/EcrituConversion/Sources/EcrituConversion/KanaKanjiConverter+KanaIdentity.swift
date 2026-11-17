@@ -52,7 +52,7 @@ extension KanaKanjiConverter {
         return false
     }
 
-    func shouldKeepKanaIdentityLeading(for reading: String) -> Bool {
+    public func shouldKeepKanaIdentityLeading(for reading: String) -> Bool {
         let normalized = KanaTextNormalizer.normalizedReading(reading)
         guard !normalized.isEmpty else {
             return false

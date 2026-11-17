@@ -13,7 +13,7 @@
 
 | 層 | 中身 | 依存してよいもの |
 |---|---|---|
-| 変換 | `KeyboardExtension/KanaKanji*.swift`(19 ファイル) | Foundation、SQLite3 |
+| 変換 | `Packages/EcrituConversion/Sources/`(ローカル Swift Package。33 ファイル) | Foundation、SQLite3 |
 | UI | `KeyboardRootView*`、`KeyboardKeyComponents`、`FlickKeyView`、`App/` の画面 | SwiftUI、UIKit、CoreText ほか |
 | OS・構成 | `KanaKanjiStore` の入出力、`KeyboardViewController`、ビルド設定 | 何でも(ここが移植時の差し替え点) |
 
@@ -24,6 +24,15 @@ SQLite3 は macOS にも Android にもあるので障害にならない。
 
 含まれるもの: ラティス探索と連文節のコスト計算、活用、送り仮名や助数詞の表記選好、かな正書の判定、
 seed 辞書、抑制と追加語彙の適用、候補の並べ替え。**改良が集中するのはここ**。
+
+2026-11-17 に、この層をローカル Swift Package `Packages/EcrituConversion` へ切り出した(静的リンク)。ターゲットは 2 つ:
+
+- `EcrituConversionBase`: アプリも使う 10 本(設定の選好・表・正規化・補助語彙)。アプリはこれだけをリンクし、変換本体(seed・連語表)を持たない
+- `EcrituConversion`: 残りの変換本体(`KanaKanji*` 20 本など 23 本)。`EcrituConversionBase` を再公開する
+
+拡張は `KeyboardExtension/EcrituConversionImport.swift`、アプリは `App/EcrituConversionBaseImport.swift` の 1 本で import し、
+個々のファイルには import を書かない。テストは `@testable import` で internal を見る。資源(辞書・索引)は今まで通り
+各ターゲットの Copy Bundle Resources にあり、`Bundle(for: KanaKanjiStore.self)` で引く。
 
 ### OS・構成層(移植で書き換える部分)
 
@@ -48,7 +57,7 @@ OS 依存は `KanaKanjiStore` に集約されている。移植時に差し替�
 `tools/verify_conversion_core_portability.sh` がビルドのたびに検査し、破れたらビルドを止める。
 
 ```
-KeyboardExtension/KanaKanjiTypes.swift:2: error: [変換中核] import UIKit は変換の層に入れられません
+Packages/EcrituConversion/Sources/EcrituConversion/KanaKanjiTypes.swift:2: error: [変換中核] import UIKit は変換の層に入れられません
 ```
 
 禁止するのは UIKit / SwiftUI / AppKit / CoreText / CoreGraphics / CoreAnimation / Combine / Contacts / WebKit。
@@ -65,8 +74,7 @@ KeyboardExtension/KanaKanjiTypes.swift:2: error: [変換中核] import UIKit は
 
 ## 3. いま無理にやらないこと
 
-- 変換層を別モジュール(Swift Package)に切り出すこと。境界はすでに機械検査で守られており、
-  モジュール分割はビルド構成と辞書生成スクリプトに波及する。移植を実際に始めるときでよい
+- 資源(辞書・索引)を Package の資源(`Bundle.module`)へ移すこと。動きを変えないため、2026-11-17 の切り出しでは見送った
 - OS 依存を protocol で抽象化すること。差し替え点は `KanaKanjiStore` の 4 種類だけと分かっているので、
   移植先が決まってから、その OS に合う形で切ればよい。使う予定の無い抽象は保守の負担にしかならない
 - Android を Swift で書く前提を置くこと。Kotlin で書き直す判断もありうる。その場合でも

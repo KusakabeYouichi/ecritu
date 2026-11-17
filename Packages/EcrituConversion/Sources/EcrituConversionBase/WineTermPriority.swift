@@ -12,17 +12,17 @@ import Foundation
 // - 変換の本体(KanaKanjiConverter.wineTermPriorityEnabled)の初期値はオフ。デバッグ版のキーボードが設定(初期値オン)を読んで
 //   オンにする。テストは明示的にオンにしたものだけがこの並びになる
 #if DEBUG
-enum WineTermPriority {
-    static let sharedDefaultsKey = "debugWineTermPriorityEnabled"
+public enum WineTermPriority {
+    public static let sharedDefaultsKey = "debugWineTermPriorityEnabled"
     // 文の中で値段に上限を掛ける語の読みの長さの下限と、その上限(常用の漢字語の LM の値段 4000〜6000 より安く、登録語の 1500 より高い)
-    static let inSentenceMinReadingCount = 3
-    static let inSentenceWordCostCap = 3000
+    public static let inSentenceMinReadingCount = 3
+    public static let inSentenceWordCostCap = 3000
 
-    struct Entry {
+    public struct Entry {
         let reading: String
         let wineSurfaces: [String]
         // 表を作ったときに先頭だった一般語(説明に出すだけ。変換では使わない)
-        let displacedGeneral: String
+        public let displacedGeneral: String
         // 文の中でも一般語より先にする語(語 LM に無いか稀な語だけ。帰還/高価/発声 のような日常語は入らない)
         let inSentenceSurfaces: [String]
     }
@@ -30,7 +30,7 @@ enum WineTermPriority {
     // 読み全体+この助詞 の形も先頭に置く(長い順に試す)
     static let trailingParticles: [String] = ["には", "では", "から", "まで", "より", "とは", "は", "が", "を", "に", "の", "も", "で", "と", "へ", "や"]
 
-    static let entries: [Entry] = table.split(separator: "\n").compactMap { line in
+    public static let entries: [Entry] = table.split(separator: "\n").compactMap { line in
         let columns = line.split(separator: "\t", omittingEmptySubsequences: false)
         guard columns.count >= 3 else { return nil }
         return Entry(
@@ -45,13 +45,13 @@ enum WineTermPriority {
         entries.map { ($0.reading, $0.wineSurfaces) }, uniquingKeysWith: { first, _ in first }
     )
     // 文の中で値段に上限を掛ける語(読みが inSentenceMinReadingCount 以上のものだけ)
-    static let inSentenceSurfacesByReading: [String: [String]] = Dictionary(
+    public static let inSentenceSurfacesByReading: [String: [String]] = Dictionary(
         entries.filter { $0.reading.count >= inSentenceMinReadingCount && !$0.inSentenceSurfaces.isEmpty }
             .map { ($0.reading, $0.inSentenceSurfaces) },
         uniquingKeysWith: { first, _ in first }
     )
 
-    static let entriesByReading: [String: Entry] = Dictionary(entries.map { ($0.reading, $0) }, uniquingKeysWith: { first, _ in first })
+    public static let entriesByReading: [String: Entry] = Dictionary(entries.map { ($0.reading, $0) }, uniquingKeysWith: { first, _ in first })
     // 表の語がサ変名詞のとき、この活用が付いた形も先頭に置く
     static let suruTails: [String] = [
         "させられる", "させます", "させない", "させる", "させて", "させた", "されます", "されない", "される", "されて", "された",
@@ -61,7 +61,7 @@ enum WineTermPriority {
     // 候補の並びの先頭に、表の語(読み全体)か 表の語+助詞・サ変の活用 を置く。表に無い読みは触らない
     // isSuruNoun(読み, 語): その語がサ変名詞か。地名など サ変でない語に する を付けた形は作らない(かいしする が 甲斐市する、
     // さくしした が 佐久市した になった。ユーザ指摘 3808)。サ変名詞の一般語(開始/作詞)がそのまま先頭に残る
-    static func ordered(reading: String, candidates: [String], isSuruNoun: (String, String) -> Bool) -> [String] {
+    public static func ordered(reading: String, candidates: [String], isSuruNoun: (String, String) -> Bool) -> [String] {
         if let surfaces = surfacesByReading[reading] {
             return surfaces + candidates.filter { !surfaces.contains($0) }
         }
@@ -95,7 +95,7 @@ enum WineTermPriority {
     }
 
     // コンテナーアプリの設定の説明に出す全対象(読み: ワイン用語(押しのける一般語))
-    static var descriptionLines: [String] {
+    public static var descriptionLines: [String] {
         entries.map { entry in
             let inSentence = entry.reading.count >= inSentenceMinReadingCount && !entry.inSentenceSurfaces.isEmpty
             return "\(entry.reading): \(entry.wineSurfaces.joined(separator: "、"))(一般語: \(entry.displacedGeneral))\(inSentence ? " ※文の中でも" : "")"

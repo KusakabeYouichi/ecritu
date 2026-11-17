@@ -1,16 +1,16 @@
 import Foundation
 
-enum KanaKanjiStorageKeys {
+public enum KanaKanjiStorageKeys {
     static let ajoutVocabulary = "ÉcrituAjoutVocab"
     static let learnedDictionary = "kanaKanjiLearnedVocabulary"
     static let shortcutVocabulary = "ÉcrituShortcutVocab"
     // iOS のユーザ辞書で読みが ☻ の単語をショートカット語彙へ取り込む予約(3244)。
     // アプリが初回起動時と「iOS のユーザ辞書の単語」を「使う」にしたときに true を書き、
     // 拡張がレキシコン取得時に消費する(アプリ側からはユーザ辞書を読めないため)。
-    static let userDictionaryShortcutImportPending = "kanaKanjiUserDictionaryShortcutImportPending"
+    public static let userDictionaryShortcutImportPending = "kanaKanjiUserDictionaryShortcutImportPending"
     // 一度でも取り込んだ印。無ければ予約と同じ扱い(アプリを開かずに使い始めた端末や、
     // 予約の仕組みより前に初回移行が済んだ端末でも、最初にキーボードを開いたとき取り込む)
-    static let userDictionaryShortcutImportedOnce = "kanaKanjiUserDictionaryShortcutImportedOnce"
+    public static let userDictionaryShortcutImportedOnce = "kanaKanjiUserDictionaryShortcutImportedOnce"
     // iOS のユーザ辞書から取り込んで足した ☻ 語の記録。「使わない」にしたとき、まだ一覧に残っているものを
     // ショートカット語彙から外す(セキュリティー検査 2026-10-25。住所やメールを ☻ で登録している人がいる)。
     // 取り込み後に編集した語は文字列が変わるので記録と一致せず、残る
@@ -44,7 +44,7 @@ enum KanaKanjiStorageKeys {
 
 // カタカナ強調表記/交ぜ書きの扱い(コンテナ設定)。suppress=候補から除去(既定)、
 // demote=候補リスト後方、normal=同列(従来どおり)。
-enum ScriptVariantCandidateMode: String {
+public enum ScriptVariantCandidateMode: String {
     case suppress
     case demote
     case normal
@@ -70,7 +70,7 @@ enum KanaKanjiSemanticSeed {
     ]
 }
 
-enum KanaKanjiCandidateSourceMode: String {
+public enum KanaKanjiCandidateSourceMode: String {
     case normalise
     case surface
     case lesDeux
@@ -94,7 +94,7 @@ enum KanaKanjiCandidateSourceMode: String {
 
 // 旧字体・異体字の抑制の小分類(コンテナー設定で個別にオン/オフ。2991)。
 // 人名(Sudachi の姓/名)は分類に関わらず常に対象外 — 小野澤/千惠/眞子 は消さない。
-enum ScriptVariantSuppressionCategory: String, CaseIterable {
+public enum ScriptVariantSuppressionCategory: String, CaseIterable {
     case kyujitai          // 旧字体(康熙字体): 氣→気、會→会、變→変
     case itaiji            // 異体字(印刷標準字体レベルの差): 飜→翻、每→毎、步→歩
     case ryakuji           // 略字: 仝→同、卆→卒
@@ -103,30 +103,30 @@ enum ScriptVariantSuppressionCategory: String, CaseIterable {
     case personNameVariant // 人名で生きている異体字: 邊→辺、龍→竜、嶋→島(初期設定オフ)
 
     // 初期設定で抑制する分類(人名で生きている異体字だけオフ)
-    static let defaultEnabled: Set<ScriptVariantSuppressionCategory> = [
+    public static let defaultEnabled: Set<ScriptVariantSuppressionCategory> = [
         .kyujitai, .itaiji, .ryakuji, .confusable, .lookalike
     ]
 
-    var settingsKey: String {
+    public var settingsKey: String {
         "scriptVariantSuppress" + rawValue.prefix(1).uppercased() + rawValue.dropFirst()
     }
 }
 
-enum UserDictionaryCandidateDisplayMode: String {
+public enum UserDictionaryCandidateDisplayMode: String {
     case off
     case on
 
-    var usesUserDictionaryCandidates: Bool {
+    public var usesUserDictionaryCandidates: Bool {
         self == .on
     }
 }
 
-enum ContactCandidateDisplayMode: String {
+public enum ContactCandidateDisplayMode: String {
     case off
     case namesOnly
     case namesPlusFullName
 
-    var usesContacts: Bool {
+    public var usesContacts: Bool {
         self != .off
     }
 
@@ -136,7 +136,7 @@ extension Array where Element == String {
     // 前後空白を除いた表層で重複を畳み、空文字を捨てる(出現順を保つ)。
     // keepingOriginalText=true なら比較だけ trimmed で行い、返す要素は元の文字列(ショートカット語彙の表示用)。
     // 以前は converter/store/merger/RootView に同じループが 5 本あった(2805 リファクタで集約)
-    func uniquedTrimmedCandidates(keepingOriginalText: Bool = false) -> [String] {
+    public func uniquedTrimmedCandidates(keepingOriginalText: Bool = false) -> [String] {
         var seen = Set<String>()
         var result: [String] = []
         result.reserveCapacity(count)

@@ -1,4 +1,5 @@
 import XCTest
+@testable import EcrituConversion
 
 // 忘れられた離脱個体の掃除(3199)の資格判定。UIKit を使わない純関数なので Mac 上で固定できる。
 // 誤爆すると「表示中のキーボードのビュー階層を消す」(2604 の事故)ので、否定側を厚めに置く。

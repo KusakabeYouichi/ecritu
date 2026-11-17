@@ -5,7 +5,7 @@ import Foundation
 // 両ターゲットに同梱する(2816)。
 // 永続値は ASCII の識別子(3004)。以前は rawValue が表記そのもの("か" 等)で、
 // 共有 UserDefaults に日本語が入っていた。旧形式の読み込みは init(encoded:) が受け付ける
-enum KaCounterVariant: String, CaseIterable, Identifiable, Codable {
+public enum KaCounterVariant: String, CaseIterable, Identifiable, Codable {
     case hiragana
     case katakana
     case smallKe
@@ -14,9 +14,9 @@ enum KaCounterVariant: String, CaseIterable, Identifiable, Codable {
     case ko
     case ke
 
-    var id: String { rawValue }
+    public var id: String { rawValue }
 
-    var character: Character {
+    public var character: Character {
         switch self {
         case .hiragana: return "か"
         case .katakana: return "カ"
@@ -36,7 +36,7 @@ enum KaCounterVariant: String, CaseIterable, Identifiable, Codable {
         self = match
     }
 
-    var title: String {
+    public var title: String {
         switch self {
         case .hiragana: return "か(1か所)"
         case .katakana: return "カ(1カ所)"
@@ -48,34 +48,34 @@ enum KaCounterVariant: String, CaseIterable, Identifiable, Codable {
         }
     }
 
-    static let allCharacters: Set<Character> = Set(allCases.map(\.character))
+    public static let allCharacters: Set<Character> = Set(allCases.map(\.character))
 }
 
-struct KaCounterVariantPreference: Equatable {
+public struct KaCounterVariantPreference: Equatable {
     // 全 7 表記の並び(オフのものも位置を保つ)
-    var order: [KaCounterVariant]
-    var enabled: Set<KaCounterVariant>
+    public var order: [KaCounterVariant]
+    public var enabled: Set<KaCounterVariant>
 
     // 初期設定(戦略的初期設定。ユーザ指定 2817): か だけを出す。並びは か → 箇 → ヶ → カ → ヵ → 個 → ケ
     // (公用文の か/箇 が先。個所/ケ所 は現代の一般的な表記ではなく、ケ は地名(六ケ所)に残る)。
     // 保守的初期設定は か・箇・ヶ・カ をオン(ContentView+LogoMenu の conservativePresetValues)
-    static let `default` = KaCounterVariantPreference(
+    public static let `default` = KaCounterVariantPreference(
         order: [.hiragana, .kanji, .smallKe, .katakana, .smallKa, .ko, .ke],
         enabled: [.hiragana]
     )
-    static let conservative = KaCounterVariantPreference(
+    public static let conservative = KaCounterVariantPreference(
         order: KaCounterVariantPreference.default.order,
         enabled: [.hiragana, .kanji, .smallKe, .katakana]
     )
 
     // オンの表記だけを設定順に
-    var enabledInOrder: [KaCounterVariant] {
+    public var enabledInOrder: [KaCounterVariant] {
         order.filter { enabled.contains($0) }
     }
 
     // 永続形式: "hiragana,katakana,smallKe,smallKa,kanji,-ko,-ke"(- 接頭がオフ)。
     // 欠けた表記は末尾にオフで補う。旧形式("か,カ,…" の表記そのもの)も読める
-    var encoded: String {
+    public var encoded: String {
         order.map { (enabled.contains($0) ? "" : "-") + $0.rawValue }.joined(separator: ",")
     }
 
@@ -106,7 +106,7 @@ struct KaCounterVariantPreference: Equatable {
         self.enabled = enabled
     }
 
-    static func decode(_ encoded: String?) -> KaCounterVariantPreference {
+    public static func decode(_ encoded: String?) -> KaCounterVariantPreference {
         guard let encoded, !encoded.isEmpty else {
             return .default
         }

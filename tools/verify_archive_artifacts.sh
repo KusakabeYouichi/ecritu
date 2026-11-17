@@ -270,7 +270,7 @@ check_debug_only_strings "$APP_BIN" "App"
 check_debug_only_strings "$APPEX_BIN" "KeyboardExtension"
 
 # 9c) 撮影用の一時フックがソースツリーに残っていないか(3307)。git が clean でもコミットされていれば残るので ❌
-HOOKS=$(grep -rln "撮影用の一時フック" App KeyboardExtension 2>/dev/null || true)
+HOOKS=$(grep -rln "撮影用の一時フック" App KeyboardExtension Packages 2>/dev/null || true)
 if [[ -n "$HOOKS" ]]; then
   bad "撮影用の一時フックがソースに残っている: $(echo "$HOOKS" | tr '\n' ' ')(git checkout -- KeyboardExtension/ で外す)"
 else
@@ -284,7 +284,7 @@ if [[ $IS_ARCHIVE -eq 1 ]]; then
 fi
 
 # 10) 提出前に解消すべき印(APP_STORE_BLOCKER)。個別の一時的な仕掛け用
-BLOCKERS=$(grep -rn "APP_STORE_BLOCKER:" App KeyboardExtension 2>/dev/null || true)
+BLOCKERS=$(grep -rn "APP_STORE_BLOCKER:" App KeyboardExtension Packages 2>/dev/null || true)
 if [[ -n "$BLOCKERS" ]]; then
   bad "提出前に解消する印(APP_STORE_BLOCKER)が残っています:"
   echo "$BLOCKERS" | sed 's/^/      /'

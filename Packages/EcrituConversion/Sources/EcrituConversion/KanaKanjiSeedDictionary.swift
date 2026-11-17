@@ -1,8 +1,8 @@
 import Foundation
 
-enum KanaKanjiSeedDictionary {
+public enum KanaKanjiSeedDictionary {
     // Minimal fallback seed used until a preprocessed Sudachi index is supplied.
-    static let seed: [String: [String]] = [
+    public static let seed: [String: [String]] = [
         "あい": ["愛", "藍", "会い", "あい"],
         // 四月: misc に 1 語で登録すると ひざしがつよい が 膝四月よい に割れた(日差し+が+強い)。seed で供給だけする(3612)
         "しがつ": ["四月"],

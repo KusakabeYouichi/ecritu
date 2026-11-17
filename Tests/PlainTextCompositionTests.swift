@@ -1,4 +1,5 @@
 import XCTest
+@testable import EcrituConversion
 
 // 未確定の方式 mountain view(3210)の純関数: 表示差分の手順と、カーソル位置の追跡。
 // ホストへ出す deleteBackward/insertText の回数と位置がここで決まるので、ずれると本文を壊す

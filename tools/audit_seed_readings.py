@@ -12,7 +12,7 @@ sqlite 辞書(tmp/kana_kanji_dictionary.sqlite)に照合し、辞書に無い読
 usage: python3 tools/audit_seed_readings.py
 """
 import re, json, sqlite3, unicodedata, collections
-src = open("KeyboardExtension/KanaKanjiSeedDictionary.swift", encoding="utf-8").read()
+src = open("Packages/EcrituConversion/Sources/EcrituConversion/KanaKanjiSeedDictionary.swift", encoding="utf-8").read()
 # エントリ抽出: "読み": [ "a", "b", ... ]  (複数行可、コメント除去)
 body = re.sub(r"//[^\n]*", "", src)
 entries = []

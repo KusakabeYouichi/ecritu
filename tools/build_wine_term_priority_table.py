@@ -2,7 +2,7 @@
 """ワイン用語優先(デバッグ版専用。3805)の表を作り直す。
 
 ワイン語彙(references/vin.plist)の読みを 1 つずつ実際に変換し、先頭の候補がその読みのワイン用語でない読みを全部拾って、
-KeyboardExtension/WineTermPriority.swift の BEGIN/END GENERATED TABLE の間に書き込む。
+Packages/EcrituConversion/Sources/EcrituConversionBase/WineTermPriority.swift の BEGIN/END GENERATED TABLE の間に書き込む。
 
 手順:
   1. 入力を作る:   python3 -I tools/build_wine_term_priority_table.py input <vin_in.tsv>
@@ -27,7 +27,7 @@ import diff_pairs  # noqa: E402
 import near_match  # noqa: E402
 
 VIN_PLIST = os.path.join(ROOT, "references", "vin.plist")
-SWIFT = os.path.join(ROOT, "KeyboardExtension", "WineTermPriority.swift")
+SWIFT = os.path.join(ROOT, "Packages", "EcrituConversion", "Sources", "EcrituConversionBase", "WineTermPriority.swift")
 ENTRY = re.compile(r"<key>phrase</key><string>(.*?)</string><key>shortcut</key><string>(.*?)</string>")
 LATIN = re.compile(r"[A-Za-zÀ-ÖØ-öø-ÿŒœ]")
 HIRAGANA = re.compile(r"[ぁ-ゖ]")

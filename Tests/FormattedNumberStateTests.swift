@@ -1,4 +1,5 @@
 import XCTest
+@testable import EcrituConversion
 
 // 書式化数値の規則(FormattedNumberFormatting の純関数と FormattedNumberState)。
 // 期待値はビューにあった頃の挙動(段 3 設計の期待表)から決めた具体値

@@ -11,6 +11,7 @@
 #   - OS 依存は KanaKanjiStore に集約(UserDefaults の App Group / containerURL / Bundle)。
 #     ここが移植時の差し替え点になる
 #   - 描画の関心事(字形の有無の判定)は 2858 で UI 層へ移した
+#   - 2026-11-17 に中核をローカル Swift Package(Packages/EcrituConversion)へ移した。検査はその Sources 全体
 #
 # この検査は「知らないうちに UI 依存が中核へ漏れる」ことだけを止める。
 # UserDefaults や Bundle(Foundation で移植可能)は対象にしない。
@@ -36,7 +37,7 @@ while IFS= read -r file; do
     echo "$file:$line_number: error: [変換中核] $statement は変換の層に入れられません(UI・OS 層へ置いてください)"
     fail=1
   done <<< "$hits"
-done < <(git ls-files -- 'KeyboardExtension/KanaKanji*.swift')
+done < <(git ls-files -- 'Packages/EcrituConversion/Sources/*.swift')
 
 if ((fail)); then
   echo "note: 変換中核は Foundation と SQLite3 だけに保ちます(将来の macOS/Android 移植でソースを分岐させないため)。詳細は notes/architecture-layers.md" >&2

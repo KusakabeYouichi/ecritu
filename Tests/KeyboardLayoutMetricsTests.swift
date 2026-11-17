@@ -2,6 +2,7 @@ import XCTest
 import Combine
 import SwiftUI
 import UIKit
+@testable import EcrituConversion
 
 // 寸法・位置の端末別分岐(KeyboardLayoutMetrics)の回帰テスト(2609)。
 //

@@ -1,4 +1,6 @@
 import XCTest
+@testable import EcrituConversion
+@testable import EcrituConversionBase
 
 final class KeyboardCandidateMergingTests: XCTestCase {
     func testSupplementaryMergingKeepsConverterSlotsForTopCandidates() {

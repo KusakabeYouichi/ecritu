@@ -1,7 +1,7 @@
 import Foundation
 
-enum KanaTextNormalizer {
-    static func normalizedKanaCharacter(from text: String) -> Character? {
+public enum KanaTextNormalizer {
+    public static func normalizedKanaCharacter(from text: String) -> Character? {
         // 速い道(3296): 単一スカラーの文字は ICU の文字変換を通さずに決める。ICU の Hiragana-Katakana 変換は
         // 初回に変換表を組み立てて約 0.7MB をプロセスが終わるまで持ち続ける(実機メモリグラフの記録で確認)。
         // 打鍵ごと・候補のかな判定(漢字 1 字ずつ)で呼ばれるので、ふつうの文字はここで決着させる。
@@ -43,7 +43,7 @@ enum KanaTextNormalizer {
         return character
     }
 
-    static func normalizedReading(_ text: String) -> String {
+    public static func normalizedReading(_ text: String) -> String {
         var normalized = ""
         normalized.reserveCapacity(text.utf8.count)
 

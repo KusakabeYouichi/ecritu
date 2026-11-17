@@ -7,21 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C6FE2CFFEE225D820459E2D1 /* KanaTextNormalizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0D1FE5173616F003E85277 /* KanaTextNormalizer.swift */; };
-		26AAE912515D7C2168E06A5E /* SupplementalVocabCompactStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BEDB9F2531DDB35F1DCE849 /* SupplementalVocabCompactStore.swift */; };
-		0B77621898C089EA619439E5 /* SupplementalVocabCompactStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BEDB9F2531DDB35F1DCE849 /* SupplementalVocabCompactStore.swift */; };
-		5D120A86CB3819D22C4FF0CD /* SupplementalVocabCompactStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BEDB9F2531DDB35F1DCE849 /* SupplementalVocabCompactStore.swift */; };
 		A1B2C3D4E5F600000T000000 /* AppleEmojiCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F54F6835629848F61C8D81 /* AppleEmojiCatalog.swift */; };
 		A1B2C3D4E5F600000T000001 /* DakutenDuckIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39716214A902EFE0258ECF45 /* DakutenDuckIcon.swift */; };
 		5C73BA92F9B707E8D0F8F160 /* ContactCacheCipher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B70228F070A1B08A805E031 /* ContactCacheCipher.swift */; };
-		D59BF9A4723705982B6A326B /* KanaGakiTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 009FC4DE8AD0A95B683E1490 /* KanaGakiTable.swift */; };
-		64FB5EC99542D089A621A371 /* GenitiveReadingTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA01C057F9A1DD796E628B03 /* GenitiveReadingTable.swift */; };
-		0DE7B13833F2917EFD596F15 /* KaCounterVariantPreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3AF807717D293F1CFC3598 /* KaCounterVariantPreference.swift */; };
-		0DE7B13833F2917EFD596F21 /* NumeralStylePreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3AF807717D293F1CFC35A1 /* NumeralStylePreference.swift */; };
-		0DE7B13833F2917EFD597A21 /* WineTermPriority.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3AF807717D293F1CFC36A1 /* WineTermPriority.swift */; };
-		C1E5DB422C47D25880BCC0D8 /* OkuriganaVariantPreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D934D40B6494AEA0275382 /* OkuriganaVariantPreference.swift */; };
-		1B042B69834DF2F3F95B5F5E /* KakikaeTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 066C630D82063E19AB061BB3 /* KakikaeTable.swift */; };
-		364D785880653A6640998D1B /* KakikaePreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = F786A277D18B8FAFAC9D0A82 /* KakikaePreference.swift */; };
 		A1B2C3D4E5F600000T000002 /* DateFormatCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000FF08 /* DateFormatCatalog.swift */; };
 		0ACA4CDD62A8F63672FDA514 /* RelativeDateCandidates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EB998F735DB40F4EEE1C655 /* RelativeDateCandidates.swift */; };
 		A1B2C3D4E5F600000T000003 /* FlickKeyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E47697B4A1DF6C69AD1AD3A /* FlickKeyView.swift */; };
@@ -67,14 +55,9 @@
 		D7ED406024C1D1B29A93E999 /* RelativeDateCandidates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EB998F735DB40F4EEE1C655 /* RelativeDateCandidates.swift */; };
 		A1B2C3D4E5F600000000FF09 /* FormattedNumberCalendarGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000FF0A /* FormattedNumberCalendarGridView.swift */; };
 		A1B2C3D4E5F600000000DD01 /* KeyboardRootView+Header.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000DD02 /* KeyboardRootView+Header.swift */; };
-		1574B0356912D7E82C120E75 /* KanaKanjiSeedDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 280DC806280D22AF5EF91508 /* KanaKanjiSeedDictionary.swift */; };
 		1C452267470AD5017D0E2C4B /* KeyboardExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 4B5F60406235BC88C1D35F20 /* KeyboardExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		23B05161BF547868088CAA9A /* SupplementaryCandidateMerger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A8F5EFF71215E8B8F00101 /* SupplementaryCandidateMerger.swift */; };
-		256E54F1234A13909B92EBC9 /* KanaKanjiTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 273590BA984813E0EEEABE45 /* KanaKanjiTypes.swift */; };
 		2653402FC791880CEEA47249 /* AppleEmojiCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F54F6835629848F61C8D81 /* AppleEmojiCatalog.swift */; };
 		285326EF479921408BB11307 /* IndexedVocabularyList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1350C355909AB4D0F84C48DF /* IndexedVocabularyList.swift */; };
-		2B8DF44D16D0C01219D158CF /* KanaTextNormalizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0D1FE5173616F003E85277 /* KanaTextNormalizer.swift */; };
-		2C9612062F1AA2CA24C41264 /* KanaKanjiTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 273590BA984813E0EEEABE45 /* KanaKanjiTypes.swift */; };
 		2D41A6A9E4C2789278485192 /* LEGAL in Resources */ = {isa = PBXBuildFile; fileRef = F5ED4830F4FA66EFEFE9B5AB /* LEGAL */; };
 		B2C3D4E5F60718293A4B5C6D /* UNICODE-LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B5C /* UNICODE-LICENSE.txt */; };
 		D4E5F60718293A4B5C6D7E8F /* MOZC-LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = C3D4E5F60718293A4B5C6D7E /* MOZC-LICENSE */; };
@@ -92,30 +75,7 @@
 		A1B2C3D4E5F600000000AB01 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000AB02 /* PrivacyInfo.xcprivacy */; };
 		A1B2C3D4E5F600000000AB03 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000AB04 /* PrivacyInfo.xcprivacy */; };
 		A1B2C3D4E5F600000000CC10 /* LatinSuggestionLexicon_it.txt in Resources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000CC11 /* LatinSuggestionLexicon_it.txt */; };
-		37DD1CCB2A1328749D93F728 /* KanaKanjiConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40E7E9146201A6F655CCD5D /* KanaKanjiConverter.swift */; };
-		3AEC6F8EE21646908F9365B7 /* KanaKanjiInflectionRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2992579AD50D4D629ED7B731 /* KanaKanjiInflectionRules.swift */; };
-		B2C3D4E5F6A700000000EE01 /* KanaKanjiStore+LatinSuggestions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C3D4E5F6A700000000EE03 /* KanaKanjiStore+LatinSuggestions.swift */; };
-		CEEF9731868B8828CFBBBAAD /* SortedTSVBlob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41A35F243F58B23D5582D129 /* SortedTSVBlob.swift */; };
 		DEADBEEF000000000000000A /* KeyboardRootView+KanjiRadicalLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEADBEEF000000000000000B /* KeyboardRootView+KanjiRadicalLayout.swift */; };
-		DEADBEEF0000000000000007 /* KanjiRadicalCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEADBEEF0000000000000008 /* KanjiRadicalCatalog.swift */; };
-		DEADBEEF0000000000000003 /* KanaKanjiStore+KanjiRadicals.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEADBEEF0000000000000005 /* KanaKanjiStore+KanjiRadicals.swift */; };
-		B2C3D4E5F6A700000000FF01 /* KanaKanjiStore+Learning.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C3D4E5F6A700000000FF03 /* KanaKanjiStore+Learning.swift */; };
-		A1B2C3D4E5F600000000EE01 /* KanaKanjiSQLiteIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000EE03 /* KanaKanjiSQLiteIndex.swift */; };
-		A69D0CF4F6634A4FB50443E1 /* KanaKanjiConverter+Inflection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F047B9E61D3B4C70B04344B2 /* KanaKanjiConverter+Inflection.swift */; };
-		9E846D741D34C1FDDD3826BD /* KanaKanjiConverter+KaCounterVariants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 041125E5EB4DE50107D8F34B /* KanaKanjiConverter+KaCounterVariants.swift */; };
-		B5E2F1E66EE8AC41F746F510 /* KanaKanjiConverter+OkuriganaVariants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914C08AE543E2D7832932BA2 /* KanaKanjiConverter+OkuriganaVariants.swift */; };
-		1C95BF648CCE7E4D46C133D7 /* KanaKanjiConverter+KanaIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D41D114494590F355DDD0B5 /* KanaKanjiConverter+KanaIdentity.swift */; };
-		4734C94872E64FB3B73C9518 /* KanaKanjiConverter+CompoundDerivation.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE149C0EAA98417AAF394051 /* KanaKanjiConverter+CompoundDerivation.swift */; };
-		0D22D01D5F54458B8AC30432 /* KanaKanjiConverter+PostfixDerivation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E225984C8C346C49B2C37A2 /* KanaKanjiConverter+PostfixDerivation.swift */; };
-		CFF9B0163E5247C5A9BDA3B6 /* KanaKanjiConverter+RankingHeuristics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940CAA33AC5A452DA5B06B46 /* KanaKanjiConverter+RankingHeuristics.swift */; };
-		8D5E4B6DA71340D48E5D984B /* KanaKanjiConverter+SurfaceFilters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EA6857DEF7B4AD5AF584721 /* KanaKanjiConverter+SurfaceFilters.swift */; };
-		87C85492924F4B02AA6B7C27 /* KanaKanjiConverter+MultiClause.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76F366FBFCE640FD9FAF12CA /* KanaKanjiConverter+MultiClause.swift */; };
-		A1B2C3D4E5F600000000AB06 /* KanaKanjiConverter+MultiClauseTables.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000AB05 /* KanaKanjiConverter+MultiClauseTables.swift */; };
-		B5D9B6D42FD4A268356E9E1A /* KanaKanjiConverter+ObjectVerbCollocations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 269B8B35C4D2A73F893DF7E7 /* KanaKanjiConverter+ObjectVerbCollocations.swift */; };
-		A1B2C3D4E5F600000000AB07 /* KanaKanjiConverter+MultiClauseTables.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000AB05 /* KanaKanjiConverter+MultiClauseTables.swift */; };
-		3D5D74AF2B419C52744B3AC0 /* KanaKanjiConverter+ObjectVerbCollocations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 269B8B35C4D2A73F893DF7E7 /* KanaKanjiConverter+ObjectVerbCollocations.swift */; };
-		38B6E4119C8C44881C192E33 /* KanaKanjiSeedDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 280DC806280D22AF5EF91508 /* KanaKanjiSeedDictionary.swift */; };
-		3B731B693D5ABC86B422C333 /* KanaKanjiStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CDFD7A0DB06E1D737E502DF /* KanaKanjiStore.swift */; };
 		3CE284AC441A0CC766575E9E /* LICENSE-2.0.txt in Resources */ = {isa = PBXBuildFile; fileRef = 16990983DAC17CA61989BE7D /* LICENSE-2.0.txt */; };
 		4295AC8BC709B3CD3FE6E133 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DF3F61E6678EA62C2C94678 /* ContentView.swift */; };
 		449ECACEDBC8A2BBA1DEF8E5 /* FlickKanaMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5F74D99919C4D40677DFB1B /* FlickKanaMap.swift */; };
@@ -163,15 +123,6 @@
 		8BCC1E4F9906F5BEA4C9AFCF /* EcrituApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E807A57473C85475BCAA585B /* EcrituApp.swift */; };
 		8C430DDA862C1BE5CE3F4275 /* DakutenDuckIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39716214A902EFE0258ECF45 /* DakutenDuckIcon.swift */; };
 		B7067E4631919AD2BEF06FD1 /* ContactCacheCipher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B70228F070A1B08A805E031 /* ContactCacheCipher.swift */; };
-		CB6F5A1C4C72208BD3194AA8 /* KanaGakiTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 009FC4DE8AD0A95B683E1490 /* KanaGakiTable.swift */; };
-		1A2DF34C7023D52226A2370B /* GenitiveReadingTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA01C057F9A1DD796E628B03 /* GenitiveReadingTable.swift */; };
-		4A33C802ABCB82C4980C79A3 /* KaCounterVariantPreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3AF807717D293F1CFC3598 /* KaCounterVariantPreference.swift */; };
-		4A33C802ABCB82C4980C79B1 /* NumeralStylePreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3AF807717D293F1CFC35A1 /* NumeralStylePreference.swift */; };
-		4A33C802ABCB82C4980C7AB1 /* WineTermPriority.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3AF807717D293F1CFC36A1 /* WineTermPriority.swift */; };
-		18CDA1EACCF5CD1A23660FEC /* OkuriganaVariantPreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D934D40B6494AEA0275382 /* OkuriganaVariantPreference.swift */; };
-		9865EBB09826029AF6A08953 /* KakikaeTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 066C630D82063E19AB061BB3 /* KakikaeTable.swift */; };
-		389BC5A7039D69E23021D5CE /* KakikaePreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = F786A277D18B8FAFAC9D0A82 /* KakikaePreference.swift */; };
-		8D78613535A703BDB593E778 /* KanaKanjiStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CDFD7A0DB06E1D737E502DF /* KanaKanjiStore.swift */; };
 		8F8895266804EE4794A101EE /* KaomojiCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = C52949EB4A52E9D891A305A3 /* KaomojiCatalog.swift */; };
 		9CD485B6F82D22898978D8C4 /* KeyboardViewController+InputHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBF85556C12EA4F6FBD4883 /* KeyboardViewController+InputHandling.swift */; };
 		D3B64ED570BF4152B4E66810 /* KeyboardViewController+MarkedTextCommit.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEFC195B623C4F8B8493F505 /* KeyboardViewController+MarkedTextCommit.swift */; };
@@ -196,42 +147,21 @@
 		53064A42B69324283D71BDF8 /* SettingsSectionViews+Formats.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13CA63D706B8F9C3D66781CC /* SettingsSectionViews+Formats.swift */; };
 		0692248F5D9689409B82D529 /* SettingsSectionViews+Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6C5680C2D88C7A2490CE34 /* SettingsSectionViews+Layout.swift */; };
 		70DEE994ABC1B2843608C0FD /* SettingsSectionViews+Conversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A343B2F9E4EEF9CDFB1A26 /* SettingsSectionViews+Conversion.swift */; };
-		DB967B134FC1CDBD2C451957 /* SupplementaryCandidateMerger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A8F5EFF71215E8B8F00101 /* SupplementaryCandidateMerger.swift */; };
 		DBBA852BCC8D33CCF73645E9 /* ÉcrituPremierVocab.json in Resources */ = {isa = PBXBuildFile; fileRef = 0B48E53773A110FCDB0D91D7 /* ÉcrituPremierVocab.json */; };
-		E21AE995B20E7DF2B75B6F82 /* KanaTextNormalizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0D1FE5173616F003E85277 /* KanaTextNormalizer.swift */; };
 		E720F22020AECD4CA0A2E3F7 /* KanaKanjiConverterRegressionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B334B844356306350487E012 /* KanaKanjiConverterRegressionTests.swift */; };
 		EC8FDC01B55FCFCE162E0226 /* DakutenDuckIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39716214A902EFE0258ECF45 /* DakutenDuckIcon.swift */; };
 		60B06C587F133C40555963C6 /* ContactCacheCipher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B70228F070A1B08A805E031 /* ContactCacheCipher.swift */; };
-		BD7A160B19DDC9CC80CAA944 /* KanaGakiTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 009FC4DE8AD0A95B683E1490 /* KanaGakiTable.swift */; };
-		4A7582E34500715CC08E6A98 /* GenitiveReadingTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA01C057F9A1DD796E628B03 /* GenitiveReadingTable.swift */; };
-		CDF448E37D898133E60724A8 /* KaCounterVariantPreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3AF807717D293F1CFC3598 /* KaCounterVariantPreference.swift */; };
-		CDF448E37D898133E60724B1 /* NumeralStylePreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3AF807717D293F1CFC35A1 /* NumeralStylePreference.swift */; };
-		CDF448E37D898133E60725B1 /* WineTermPriority.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3AF807717D293F1CFC36A1 /* WineTermPriority.swift */; };
-		5912EF241EFFCF00FE3C59AE /* OkuriganaVariantPreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D934D40B6494AEA0275382 /* OkuriganaVariantPreference.swift */; };
-		051FCD3A6136F426F1108795 /* KakikaeTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 066C630D82063E19AB061BB3 /* KakikaeTable.swift */; };
-		714E1DB43EC46C87D0EDC265 /* KakikaePreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = F786A277D18B8FAFAC9D0A82 /* KakikaePreference.swift */; };
 		ECDBEEB3F6EF91C0EB7C3E85 /* KeyboardViewController+Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBCA2A2C0BECA4CEC1F55BFB /* KeyboardViewController+Layout.swift */; };
-		F769B10A75C8DE3CBA5F9F78 /* KanaKanjiConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40E7E9146201A6F655CCD5D /* KanaKanjiConverter.swift */; };
-		405E08C8A5D34B7FBFB7990A /* KanaKanjiInflectionRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2992579AD50D4D629ED7B731 /* KanaKanjiInflectionRules.swift */; };
-		B2C3D4E5F6A700000000EE02 /* KanaKanjiStore+LatinSuggestions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C3D4E5F6A700000000EE03 /* KanaKanjiStore+LatinSuggestions.swift */; };
-		74440734139ED343A66DBD07 /* SortedTSVBlob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41A35F243F58B23D5582D129 /* SortedTSVBlob.swift */; };
 		DEADBEEF0000000000000009 /* KeyboardRootView+KanjiRadicalLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEADBEEF000000000000000B /* KeyboardRootView+KanjiRadicalLayout.swift */; };
-		DEADBEEF0000000000000006 /* KanjiRadicalCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEADBEEF0000000000000008 /* KanjiRadicalCatalog.swift */; };
-		DEADBEEF0000000000000004 /* KanaKanjiStore+KanjiRadicals.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEADBEEF0000000000000005 /* KanaKanjiStore+KanjiRadicals.swift */; };
-		B2C3D4E5F6A700000000FF02 /* KanaKanjiStore+Learning.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C3D4E5F6A700000000FF03 /* KanaKanjiStore+Learning.swift */; };
-		A1B2C3D4E5F600000000EE02 /* KanaKanjiSQLiteIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000EE03 /* KanaKanjiSQLiteIndex.swift */; };
-		0BC3CAC6405B450D9B804EB3 /* KanaKanjiConverter+Inflection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F047B9E61D3B4C70B04344B2 /* KanaKanjiConverter+Inflection.swift */; };
-		85066194540B01309B71C5EC /* KanaKanjiConverter+KaCounterVariants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 041125E5EB4DE50107D8F34B /* KanaKanjiConverter+KaCounterVariants.swift */; };
-		8A1F932FDF673E2274F7DD42 /* KanaKanjiConverter+OkuriganaVariants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914C08AE543E2D7832932BA2 /* KanaKanjiConverter+OkuriganaVariants.swift */; };
-		3BA3DC19F07809AF51C65796 /* KanaKanjiConverter+KanaIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D41D114494590F355DDD0B5 /* KanaKanjiConverter+KanaIdentity.swift */; };
-		36371FDAA33E4893ABDAE864 /* KanaKanjiConverter+CompoundDerivation.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE149C0EAA98417AAF394051 /* KanaKanjiConverter+CompoundDerivation.swift */; };
-		275ECC90B0E942DFA3DE2EF5 /* KanaKanjiConverter+PostfixDerivation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E225984C8C346C49B2C37A2 /* KanaKanjiConverter+PostfixDerivation.swift */; };
-		D4C98B3B37BF4A51954BE3ED /* KanaKanjiConverter+RankingHeuristics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940CAA33AC5A452DA5B06B46 /* KanaKanjiConverter+RankingHeuristics.swift */; };
-		6181BCCBB3784740A7CC7802 /* KanaKanjiConverter+SurfaceFilters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EA6857DEF7B4AD5AF584721 /* KanaKanjiConverter+SurfaceFilters.swift */; };
-		9F66315689C04FCE886B08C2 /* KanaKanjiConverter+MultiClause.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76F366FBFCE640FD9FAF12CA /* KanaKanjiConverter+MultiClause.swift */; };
 		F807D4921FE2F90C8C2AC439 /* KeyboardViewController+Diagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = E350B63B760B3D9746E360EF /* KeyboardViewController+Diagnostics.swift */; };
 		ED612FD56E8E6B72DEE3811A /* KeyboardViewController+MallocCensus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F394172DDE64DDC1A7D8766 /* KeyboardViewController+MallocCensus.swift */; };
 		FC91CDA19A4DE7BCD13D9440 /* KeyboardRootView+FontSizes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FCBC2AEE4D692642405836F /* KeyboardRootView+FontSizes.swift */; };
+		AB00000000000000000038C1 /* EcrituConversionImport.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB00000000000000000038C0 /* EcrituConversionImport.swift */; };
+		AB00000000000000000038C2 /* EcrituConversionImport.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB00000000000000000038C0 /* EcrituConversionImport.swift */; };
+		AB00000000000000000038C4 /* EcrituConversionBaseImport.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB00000000000000000038C3 /* EcrituConversionBaseImport.swift */; };
+		AB00000000000000000038C9 /* EcrituConversion in Frameworks */ = {isa = PBXBuildFile; productRef = AB00000000000000000038C6 /* EcrituConversion */; };
+		AB00000000000000000038CA /* EcrituConversion in Frameworks */ = {isa = PBXBuildFile; productRef = AB00000000000000000038C7 /* EcrituConversion */; };
+		AB00000000000000000038CB /* EcrituConversionBase in Frameworks */ = {isa = PBXBuildFile; productRef = AB00000000000000000038C8 /* EcrituConversionBase */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -260,8 +190,6 @@
 
 /* Begin PBXFileReference section */
 		0B48E53773A110FCDB0D91D7 /* ÉcrituPremierVocab.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "ÉcrituPremierVocab.json"; sourceTree = "<group>"; };
-		0CDFD7A0DB06E1D737E502DF /* KanaKanjiStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KanaKanjiStore.swift; sourceTree = "<group>"; };
-		3BEDB9F2531DDB35F1DCE849 /* SupplementalVocabCompactStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplementalVocabCompactStore.swift; sourceTree = "<group>"; };
 		105353784C776E1A40C7A8AE /* SettingsModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsModels.swift; sourceTree = "<group>"; };
 		1101C5F140F04B38C98D298F /* ThirdPartyLicensesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThirdPartyLicensesView.swift; sourceTree = "<group>"; };
 		1350C355909AB4D0F84C48DF /* IndexedVocabularyList.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = IndexedVocabularyList.swift; sourceTree = "<group>"; };
@@ -280,21 +208,11 @@
 		A1B2C3D4E5F600000000AB04 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		A1B2C3D4E5F600000000CC11 /* LatinSuggestionLexicon_it.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = LatinSuggestionLexicon_it.txt; sourceTree = "<group>"; };
 		2626823DE41575D1188F5DEA /* KeyboardCandidateMergingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardCandidateMergingTests.swift; sourceTree = "<group>"; };
-		273590BA984813E0EEEABE45 /* KanaKanjiTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KanaKanjiTypes.swift; sourceTree = "<group>"; };
-		280DC806280D22AF5EF91508 /* KanaKanjiSeedDictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KanaKanjiSeedDictionary.swift; sourceTree = "<group>"; };
 		2D2A68C12E9937EB406DC707 /* kana_kanji_dictionary.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = kana_kanji_dictionary.sqlite; sourceTree = "<group>"; };
 		2D815BB97FDB1F3F743DACDD /* SettingsComponents.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SettingsComponents.swift; sourceTree = "<group>"; };
 		31B98B9E42E4E93025B51ECB /* KeyboardKeyComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardKeyComponents.swift; sourceTree = "<group>"; };
 		39716214A902EFE0258ECF45 /* DakutenDuckIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DakutenDuckIcon.swift; sourceTree = "<group>"; };
 		2B70228F070A1B08A805E031 /* ContactCacheCipher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactCacheCipher.swift; sourceTree = "<group>"; };
-		009FC4DE8AD0A95B683E1490 /* KanaGakiTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KanaGakiTable.swift; sourceTree = "<group>"; };
-		CA01C057F9A1DD796E628B03 /* GenitiveReadingTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenitiveReadingTable.swift; sourceTree = "<group>"; };
-		3C3AF807717D293F1CFC3598 /* KaCounterVariantPreference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaCounterVariantPreference.swift; sourceTree = "<group>"; };
-		3C3AF807717D293F1CFC35A1 /* NumeralStylePreference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumeralStylePreference.swift; sourceTree = "<group>"; };
-		3C3AF807717D293F1CFC36A1 /* WineTermPriority.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WineTermPriority.swift; sourceTree = "<group>"; };
-		81D934D40B6494AEA0275382 /* OkuriganaVariantPreference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OkuriganaVariantPreference.swift; sourceTree = "<group>"; };
-		066C630D82063E19AB061BB3 /* KakikaeTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KakikaeTable.swift; sourceTree = "<group>"; };
-		F786A277D18B8FAFAC9D0A82 /* KakikaePreference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KakikaePreference.swift; sourceTree = "<group>"; };
 		3E243E0E4A8BE9229D7694DE /* kana_kanji_inflection_dictionary.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = kana_kanji_inflection_dictionary.json; sourceTree = "<group>"; };
 		3E9058C9AC20A9C771D55DFC /* Edition.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Edition.xcconfig; sourceTree = "<group>"; };
 		4B5F60406235BC88C1D35F20 /* KeyboardExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = KeyboardExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -305,7 +223,6 @@
 		AB0000000000000000002612 /* KeyboardLayoutMetricsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardLayoutMetricsTests.swift; sourceTree = "<group>"; };
 		4BEF6D5508A6FD899B260559 /* KeyboardModeTransitionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardModeTransitionTests.swift; sourceTree = "<group>"; };
 		4E47697B4A1DF6C69AD1AD3A /* FlickKeyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlickKeyView.swift; sourceTree = "<group>"; };
-		4F0D1FE5173616F003E85277 /* KanaTextNormalizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KanaTextNormalizer.swift; sourceTree = "<group>"; };
 		4FCBC2AEE4D692642405836F /* KeyboardRootView+FontSizes.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "KeyboardRootView+FontSizes.swift"; sourceTree = "<group>"; };
 		52EE3BD3294D58DDFF8071B1 /* SettingsSectionViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsSectionViews.swift; sourceTree = "<group>"; };
 		F7F40B3144040C731821A98F /* SettingsSectionViews+Appearance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SettingsSectionViews+Appearance.swift"; sourceTree = "<group>"; };
@@ -318,7 +235,6 @@
 		A1B2C3D4E5F600000000BB12 /* InitialSupprHiddenNounVocabMigration.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = InitialSupprHiddenNounVocabMigration.json; sourceTree = "<group>"; };
 		5CC113350DED3CCDEF21E28B /* KeyboardRootViewSupportTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardRootViewSupportTypes.swift; sourceTree = "<group>"; };
 		5DF3F61E6678EA62C2C94678 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		66A8F5EFF71215E8B8F00101 /* SupplementaryCandidateMerger.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SupplementaryCandidateMerger.swift; sourceTree = "<group>"; };
 		693BB077926B6B9DCDCDA8EA /* écrituTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = "écrituTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AB0000000000000000002614 /* KeyboardMemoryForensics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardMemoryForensics.swift; sourceTree = "<group>"; };
 		AB0000000000000000002610 /* KeyboardLayoutMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardLayoutMetrics.swift; sourceTree = "<group>"; };
@@ -349,26 +265,7 @@
 		A1B2C3D4E5F600000000DD02 /* KeyboardRootView+Header.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "KeyboardRootView+Header.swift"; sourceTree = "<group>"; };
 		B2F1069200465BA796649E29 /* KeyboardExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = KeyboardExtension.entitlements; sourceTree = "<group>"; };
 		B334B844356306350487E012 /* KanaKanjiConverterRegressionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KanaKanjiConverterRegressionTests.swift; sourceTree = "<group>"; };
-		B40E7E9146201A6F655CCD5D /* KanaKanjiConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KanaKanjiConverter.swift; sourceTree = "<group>"; };
-		2992579AD50D4D629ED7B731 /* KanaKanjiInflectionRules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KanaKanjiInflectionRules.swift; sourceTree = "<group>"; };
-		B2C3D4E5F6A700000000EE03 /* KanaKanjiStore+LatinSuggestions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KanaKanjiStore+LatinSuggestions.swift"; sourceTree = "<group>"; };
-		41A35F243F58B23D5582D129 /* SortedTSVBlob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortedTSVBlob.swift; sourceTree = "<group>"; };
 		DEADBEEF000000000000000B /* KeyboardRootView+KanjiRadicalLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KeyboardRootView+KanjiRadicalLayout.swift"; sourceTree = "<group>"; };
-		DEADBEEF0000000000000008 /* KanjiRadicalCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KanjiRadicalCatalog.swift"; sourceTree = "<group>"; };
-		DEADBEEF0000000000000005 /* KanaKanjiStore+KanjiRadicals.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KanaKanjiStore+KanjiRadicals.swift"; sourceTree = "<group>"; };
-		B2C3D4E5F6A700000000FF03 /* KanaKanjiStore+Learning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KanaKanjiStore+Learning.swift"; sourceTree = "<group>"; };
-		A1B2C3D4E5F600000000EE03 /* KanaKanjiSQLiteIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KanaKanjiSQLiteIndex.swift; sourceTree = "<group>"; };
-		F047B9E61D3B4C70B04344B2 /* KanaKanjiConverter+Inflection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KanaKanjiConverter+Inflection.swift"; sourceTree = "<group>"; };
-		041125E5EB4DE50107D8F34B /* KanaKanjiConverter+KaCounterVariants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KanaKanjiConverter+KaCounterVariants.swift"; sourceTree = "<group>"; };
-		914C08AE543E2D7832932BA2 /* KanaKanjiConverter+OkuriganaVariants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KanaKanjiConverter+OkuriganaVariants.swift"; sourceTree = "<group>"; };
-		2D41D114494590F355DDD0B5 /* KanaKanjiConverter+KanaIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KanaKanjiConverter+KanaIdentity.swift"; sourceTree = "<group>"; };
-		FE149C0EAA98417AAF394051 /* KanaKanjiConverter+CompoundDerivation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KanaKanjiConverter+CompoundDerivation.swift"; sourceTree = "<group>"; };
-		4E225984C8C346C49B2C37A2 /* KanaKanjiConverter+PostfixDerivation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KanaKanjiConverter+PostfixDerivation.swift"; sourceTree = "<group>"; };
-		940CAA33AC5A452DA5B06B46 /* KanaKanjiConverter+RankingHeuristics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KanaKanjiConverter+RankingHeuristics.swift"; sourceTree = "<group>"; };
-		2EA6857DEF7B4AD5AF584721 /* KanaKanjiConverter+SurfaceFilters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KanaKanjiConverter+SurfaceFilters.swift"; sourceTree = "<group>"; };
-		76F366FBFCE640FD9FAF12CA /* KanaKanjiConverter+MultiClause.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KanaKanjiConverter+MultiClause.swift"; sourceTree = "<group>"; };
-		A1B2C3D4E5F600000000AB05 /* KanaKanjiConverter+MultiClauseTables.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "KanaKanjiConverter+MultiClauseTables.swift"; sourceTree = "<group>"; };
-		269B8B35C4D2A73F893DF7E7 /* KanaKanjiConverter+ObjectVerbCollocations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KanaKanjiConverter+ObjectVerbCollocations.swift"; sourceTree = "<group>"; };
 		B69E8277B29FFE7871F04CFB /* ContentView+Diagnostics.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "ContentView+Diagnostics.swift"; sourceTree = "<group>"; };
 		E7D339A73CAF6CF6AE6F104E /* ContentView+LogoMenu.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "ContentView+LogoMenu.swift"; sourceTree = "<group>"; };
 		A1C4E7093D5B28F6C0E1B7A2 /* SVGPathShape.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SVGPathShape.swift; sourceTree = "<group>"; };
@@ -397,7 +294,36 @@
 		A1B2C3D4E5F60718293A4B5C /* UNICODE-LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = "UNICODE-LICENSE.txt"; path = "unicode/UNICODE-LICENSE.txt"; sourceTree = "<group>"; };
 		C3D4E5F60718293A4B5C6D7E /* MOZC-LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; name = "MOZC-LICENSE"; path = "mozc/MOZC-LICENSE"; sourceTree = "<group>"; };
 		FAD29F752D4216C2DEF3BD80 /* ContentView+Bootstrap.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "ContentView+Bootstrap.swift"; sourceTree = "<group>"; };
+		AB00000000000000000038C0 /* EcrituConversionImport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EcrituConversionImport.swift; sourceTree = "<group>"; };
+		AB00000000000000000038C3 /* EcrituConversionBaseImport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EcrituConversionBaseImport.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		AB00000000000000000038CC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AB00000000000000000038C9 /* EcrituConversion in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AB00000000000000000038CD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AB00000000000000000038CA /* EcrituConversion in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AB00000000000000000038CE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AB00000000000000000038CB /* EcrituConversionBase in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		3436D36A0267FBBA4D3031FE /* App */ = {
@@ -424,6 +350,7 @@
 				E7D339A73CAF6CF6AE6F104E /* ContentView+LogoMenu.swift */,
 				A1C4E7093D5B28F6C0E1B7A2 /* SVGPathShape.swift */,
 				FAD29F752D4216C2DEF3BD80 /* ContentView+Bootstrap.swift */,
+				AB00000000000000000038C3 /* EcrituConversionBaseImport.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -478,14 +405,6 @@
 				83F54F6835629848F61C8D81 /* AppleEmojiCatalog.swift */,
 				39716214A902EFE0258ECF45 /* DakutenDuckIcon.swift */,
 				2B70228F070A1B08A805E031 /* ContactCacheCipher.swift */,
-				009FC4DE8AD0A95B683E1490 /* KanaGakiTable.swift */,
-				CA01C057F9A1DD796E628B03 /* GenitiveReadingTable.swift */,
-				3C3AF807717D293F1CFC3598 /* KaCounterVariantPreference.swift */,
-				3C3AF807717D293F1CFC35A1 /* NumeralStylePreference.swift */,
-				3C3AF807717D293F1CFC36A1 /* WineTermPriority.swift */,
-				81D934D40B6494AEA0275382 /* OkuriganaVariantPreference.swift */,
-				066C630D82063E19AB061BB3 /* KakikaeTable.swift */,
-				F786A277D18B8FAFAC9D0A82 /* KakikaePreference.swift */,
 				175BA54F5130F67FF3A05039 /* FlickKanaLayout.swift */,
 				E5F74D99919C4D40677DFB1B /* FlickKanaMap.swift */,
 				4E47697B4A1DF6C69AD1AD3A /* FlickKeyView.swift */,
@@ -503,31 +422,7 @@
 				5C7FFC5AF8872DE4A3040949 /* InitialSupprVocabMigration.json */,
 				A1B2C3D4E5F600000000BB02 /* InitialSupprHiddenVocabMigration.json */,
 				A1B2C3D4E5F600000000BB12 /* InitialSupprHiddenNounVocabMigration.json */,
-				B40E7E9146201A6F655CCD5D /* KanaKanjiConverter.swift */,
-				2992579AD50D4D629ED7B731 /* KanaKanjiInflectionRules.swift */,
-				B2C3D4E5F6A700000000EE03 /* KanaKanjiStore+LatinSuggestions.swift */,
-				41A35F243F58B23D5582D129 /* SortedTSVBlob.swift */,
 				DEADBEEF000000000000000B /* KeyboardRootView+KanjiRadicalLayout.swift */,
-				DEADBEEF0000000000000008 /* KanjiRadicalCatalog.swift */,
-				DEADBEEF0000000000000005 /* KanaKanjiStore+KanjiRadicals.swift */,
-				B2C3D4E5F6A700000000FF03 /* KanaKanjiStore+Learning.swift */,
-				A1B2C3D4E5F600000000EE03 /* KanaKanjiSQLiteIndex.swift */,
-				F047B9E61D3B4C70B04344B2 /* KanaKanjiConverter+Inflection.swift */,
-				041125E5EB4DE50107D8F34B /* KanaKanjiConverter+KaCounterVariants.swift */,
-				914C08AE543E2D7832932BA2 /* KanaKanjiConverter+OkuriganaVariants.swift */,
-				2D41D114494590F355DDD0B5 /* KanaKanjiConverter+KanaIdentity.swift */,
-				FE149C0EAA98417AAF394051 /* KanaKanjiConverter+CompoundDerivation.swift */,
-				4E225984C8C346C49B2C37A2 /* KanaKanjiConverter+PostfixDerivation.swift */,
-				940CAA33AC5A452DA5B06B46 /* KanaKanjiConverter+RankingHeuristics.swift */,
-				2EA6857DEF7B4AD5AF584721 /* KanaKanjiConverter+SurfaceFilters.swift */,
-				76F366FBFCE640FD9FAF12CA /* KanaKanjiConverter+MultiClause.swift */,
-				A1B2C3D4E5F600000000AB05 /* KanaKanjiConverter+MultiClauseTables.swift */,
-				269B8B35C4D2A73F893DF7E7 /* KanaKanjiConverter+ObjectVerbCollocations.swift */,
-				280DC806280D22AF5EF91508 /* KanaKanjiSeedDictionary.swift */,
-				0CDFD7A0DB06E1D737E502DF /* KanaKanjiStore.swift */,
-				3BEDB9F2531DDB35F1DCE849 /* SupplementalVocabCompactStore.swift */,
-				273590BA984813E0EEEABE45 /* KanaKanjiTypes.swift */,
-				4F0D1FE5173616F003E85277 /* KanaTextNormalizer.swift */,
 				C52949EB4A52E9D891A305A3 /* KaomojiCatalog.swift */,
 				B2F1069200465BA796649E29 /* KeyboardExtension.entitlements */,
 				31B98B9E42E4E93025B51ECB /* KeyboardKeyComponents.swift */,
@@ -566,7 +461,7 @@
 				4EB998F735DB40F4EEE1C655 /* RelativeDateCandidates.swift */,
 				A1B2C3D4E5F600000000FF0A /* FormattedNumberCalendarGridView.swift */,
 				A1B2C3D4E5F600000000DD02 /* KeyboardRootView+Header.swift */,
-				66A8F5EFF71215E8B8F00101 /* SupplementaryCandidateMerger.swift */,
+				AB00000000000000000038C0 /* EcrituConversionImport.swift */,
 			);
 			path = KeyboardExtension;
 			sourceTree = "<group>";
@@ -619,6 +514,7 @@
 				73881471BCB7622DF1D93733 /* Verify Signing Identity */,
 				3779834627D07EB92CE0379F /* Enforce Blank Line After Top-Level Brace */,
 				7033AAA35E85A2153F4A5E58 /* Sources */,
+				AB00000000000000000038CE /* Frameworks */,
 				DBFDF8AE2497155E13CCADDE /* Resources */,
 				7DB30E7B1A9A5333890CA082 /* Embed Foundation Extensions */,
 			);
@@ -628,6 +524,9 @@
 				AACF3B7AC89B28B4445A38A9 /* PBXTargetDependency */,
 			);
 			name = "écritu";
+			packageProductDependencies = (
+				AB00000000000000000038C8 /* EcrituConversionBase */,
+			);
 			productName = "écritu";
 			productReference = E9737BDAEF466B520663D3C6 /* écritu.app */;
 			productType = "com.apple.product-type.application";
@@ -638,6 +537,7 @@
 			buildPhases = (
 				418031ED91AC8E1450690841 /* Enforce Blank Line After Top-Level Brace */,
 				6006A30D6C0072653326C6E4 /* Sources */,
+				AB00000000000000000038CD /* Frameworks */,
 				A1B2C3D4E5F600000000BB04 /* Resources */,
 			);
 			buildRules = (
@@ -645,6 +545,9 @@
 			dependencies = (
 			);
 			name = "écrituTests";
+			packageProductDependencies = (
+				AB00000000000000000038C7 /* EcrituConversion */,
+			);
 			productName = "écrituTests";
 			productReference = 693BB077926B6B9DCDCDA8EA /* écrituTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -657,6 +560,7 @@
 				98C563A65F5003CBC778E453 /* Verify Signing Identity */,
 				912055C11BAEE6ECCC43B589 /* Enforce Blank Line After Top-Level Brace */,
 				AF6737C5790E3B38F48F08BC /* Sources */,
+				AB00000000000000000038CC /* Frameworks */,
 				DAFC31EE8DBF17957F350584 /* Resources */,
 				F0DA7A3466A4D9001E191240 /* Refresh Simulator Dictionary Artifacts */,
 			);
@@ -665,6 +569,9 @@
 			dependencies = (
 			);
 			name = KeyboardExtension;
+			packageProductDependencies = (
+				AB00000000000000000038C6 /* EcrituConversion */,
+			);
 			productName = KeyboardExtension;
 			productReference = 4B5F60406235BC88C1D35F20 /* KeyboardExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
@@ -697,6 +604,9 @@
 			);
 			mainGroup = 75392B2AC57D0625BC750522;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				AB00000000000000000038C5 /* XCLocalSwiftPackageReference "Packages/EcrituConversion" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 9D77912A8CEA17C3CCC8BD95 /* Products */;
 			projectDirPath = "";
@@ -906,18 +816,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0B77621898C089EA619439E5 /* SupplementalVocabCompactStore.swift in Sources */,
 				A1B2C3D4E5F600000T000000 /* AppleEmojiCatalog.swift in Sources */,
 				A1B2C3D4E5F600000T000001 /* DakutenDuckIcon.swift in Sources */,
 				5C73BA92F9B707E8D0F8F160 /* ContactCacheCipher.swift in Sources */,
-				D59BF9A4723705982B6A326B /* KanaGakiTable.swift in Sources */,
-				64FB5EC99542D089A621A371 /* GenitiveReadingTable.swift in Sources */,
-				0DE7B13833F2917EFD596F15 /* KaCounterVariantPreference.swift in Sources */,
-				0DE7B13833F2917EFD596F21 /* NumeralStylePreference.swift in Sources */,
-				0DE7B13833F2917EFD597A21 /* WineTermPriority.swift in Sources */,
-				C1E5DB422C47D25880BCC0D8 /* OkuriganaVariantPreference.swift in Sources */,
-				1B042B69834DF2F3F95B5F5E /* KakikaeTable.swift in Sources */,
-				364D785880653A6640998D1B /* KakikaePreference.swift in Sources */,
 				A1B2C3D4E5F600000T000002 /* DateFormatCatalog.swift in Sources */,
 				0ACA4CDD62A8F63672FDA514 /* RelativeDateCandidates.swift in Sources */,
 				A1B2C3D4E5F600000T000003 /* FlickKeyView.swift in Sources */,
@@ -951,31 +852,8 @@
 				A1B2C3D4E5F600000T00001B /* SIUnitCatalog.swift in Sources */,
 				2FB61A019A327E122984C488 /* FlickKanaLayout.swift in Sources */,
 				449ECACEDBC8A2BBA1DEF8E5 /* FlickKanaMap.swift in Sources */,
-				37DD1CCB2A1328749D93F728 /* KanaKanjiConverter.swift in Sources */,
-				3AEC6F8EE21646908F9365B7 /* KanaKanjiInflectionRules.swift in Sources */,
-				B2C3D4E5F6A700000000EE01 /* KanaKanjiStore+LatinSuggestions.swift in Sources */,
-				CEEF9731868B8828CFBBBAAD /* SortedTSVBlob.swift in Sources */,
 				DEADBEEF000000000000000A /* KeyboardRootView+KanjiRadicalLayout.swift in Sources */,
-				DEADBEEF0000000000000007 /* KanjiRadicalCatalog.swift in Sources */,
-				DEADBEEF0000000000000003 /* KanaKanjiStore+KanjiRadicals.swift in Sources */,
-				B2C3D4E5F6A700000000FF01 /* KanaKanjiStore+Learning.swift in Sources */,
-				A1B2C3D4E5F600000000EE01 /* KanaKanjiSQLiteIndex.swift in Sources */,
-				A69D0CF4F6634A4FB50443E1 /* KanaKanjiConverter+Inflection.swift in Sources */,
-				9E846D741D34C1FDDD3826BD /* KanaKanjiConverter+KaCounterVariants.swift in Sources */,
-				B5E2F1E66EE8AC41F746F510 /* KanaKanjiConverter+OkuriganaVariants.swift in Sources */,
-				1C95BF648CCE7E4D46C133D7 /* KanaKanjiConverter+KanaIdentity.swift in Sources */,
-				4734C94872E64FB3B73C9518 /* KanaKanjiConverter+CompoundDerivation.swift in Sources */,
-				0D22D01D5F54458B8AC30432 /* KanaKanjiConverter+PostfixDerivation.swift in Sources */,
-				CFF9B0163E5247C5A9BDA3B6 /* KanaKanjiConverter+RankingHeuristics.swift in Sources */,
-				8D5E4B6DA71340D48E5D984B /* KanaKanjiConverter+SurfaceFilters.swift in Sources */,
-				87C85492924F4B02AA6B7C27 /* KanaKanjiConverter+MultiClause.swift in Sources */,
-				A1B2C3D4E5F600000000AB06 /* KanaKanjiConverter+MultiClauseTables.swift in Sources */,
-				B5D9B6D42FD4A268356E9E1A /* KanaKanjiConverter+ObjectVerbCollocations.swift in Sources */,
 				E720F22020AECD4CA0A2E3F7 /* KanaKanjiConverterRegressionTests.swift in Sources */,
-				38B6E4119C8C44881C192E33 /* KanaKanjiSeedDictionary.swift in Sources */,
-				8D78613535A703BDB593E778 /* KanaKanjiStore.swift in Sources */,
-				256E54F1234A13909B92EBC9 /* KanaKanjiTypes.swift in Sources */,
-				2B8DF44D16D0C01219D158CF /* KanaTextNormalizer.swift in Sources */,
 				0F8A21202683F7A7645F26B6 /* KeyboardCandidateMergingTests.swift in Sources */,
 				11A915FC905E04AF64E07BC6 /* KeyboardModeTransition.swift in Sources */,
 				AB000000000000000000357A /* KeyboardInputState.swift in Sources */,
@@ -992,7 +870,7 @@
 				B2F96E4FACF872E0C99909F7 /* TestSupport+StoreHelpers.swift in Sources */,
 				AB0000000000000000002611 /* KeyboardLayoutMetricsTests.swift in Sources */,
 				500517A2A72AC3F984FF7674 /* KeyboardModeTransitionTests.swift in Sources */,
-				23B05161BF547868088CAA9A /* SupplementaryCandidateMerger.swift in Sources */,
+				AB00000000000000000038C2 /* EcrituConversionImport.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1000,19 +878,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C6FE2CFFEE225D820459E2D1 /* KanaTextNormalizer.swift in Sources */,
-				26AAE912515D7C2168E06A5E /* SupplementalVocabCompactStore.swift in Sources */,
 				4295AC8BC709B3CD3FE6E133 /* ContentView.swift in Sources */,
 				EC8FDC01B55FCFCE162E0226 /* DakutenDuckIcon.swift in Sources */,
 				60B06C587F133C40555963C6 /* ContactCacheCipher.swift in Sources */,
-				BD7A160B19DDC9CC80CAA944 /* KanaGakiTable.swift in Sources */,
-				4A7582E34500715CC08E6A98 /* GenitiveReadingTable.swift in Sources */,
-				CDF448E37D898133E60724A8 /* KaCounterVariantPreference.swift in Sources */,
-				CDF448E37D898133E60724B1 /* NumeralStylePreference.swift in Sources */,
-				CDF448E37D898133E60725B1 /* WineTermPriority.swift in Sources */,
-				5912EF241EFFCF00FE3C59AE /* OkuriganaVariantPreference.swift in Sources */,
-				051FCD3A6136F426F1108795 /* KakikaeTable.swift in Sources */,
-				714E1DB43EC46C87D0EDC265 /* KakikaePreference.swift in Sources */,
 				8BCC1E4F9906F5BEA4C9AFCF /* EcrituApp.swift in Sources */,
 				B03E6564B72E74C154837470 /* SettingsModels.swift in Sources */,
 				DB34668D73DDDCE6D95BF320 /* SettingsSectionViews.swift in Sources */,
@@ -1029,6 +897,7 @@
 				29464649B09976E4E9780859 /* ContentView+LogoMenu.swift in Sources */,
 				5E7A9C3D1B2F4A6081D4C7E1 /* SVGPathShape.swift in Sources */,
 				121829EFE660D70A60BCE836 /* ContentView+Bootstrap.swift in Sources */,
+				AB00000000000000000038C4 /* EcrituConversionBaseImport.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1036,45 +905,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5D120A86CB3819D22C4FF0CD /* SupplementalVocabCompactStore.swift in Sources */,
 				2653402FC791880CEEA47249 /* AppleEmojiCatalog.swift in Sources */,
 				8C430DDA862C1BE5CE3F4275 /* DakutenDuckIcon.swift in Sources */,
 				B7067E4631919AD2BEF06FD1 /* ContactCacheCipher.swift in Sources */,
-				CB6F5A1C4C72208BD3194AA8 /* KanaGakiTable.swift in Sources */,
-				1A2DF34C7023D52226A2370B /* GenitiveReadingTable.swift in Sources */,
-				4A33C802ABCB82C4980C79A3 /* KaCounterVariantPreference.swift in Sources */,
-				4A33C802ABCB82C4980C79B1 /* NumeralStylePreference.swift in Sources */,
-				4A33C802ABCB82C4980C7AB1 /* WineTermPriority.swift in Sources */,
-				18CDA1EACCF5CD1A23660FEC /* OkuriganaVariantPreference.swift in Sources */,
-				9865EBB09826029AF6A08953 /* KakikaeTable.swift in Sources */,
-				389BC5A7039D69E23021D5CE /* KakikaePreference.swift in Sources */,
 				0B7C9000DDE3B341088C24C3 /* FlickKanaLayout.swift in Sources */,
 				D1CDEBCB8939BC969433777A /* FlickKanaMap.swift in Sources */,
 				55453E798FC6382F14E94B48 /* FlickKeyView.swift in Sources */,
-				F769B10A75C8DE3CBA5F9F78 /* KanaKanjiConverter.swift in Sources */,
-				405E08C8A5D34B7FBFB7990A /* KanaKanjiInflectionRules.swift in Sources */,
-				B2C3D4E5F6A700000000EE02 /* KanaKanjiStore+LatinSuggestions.swift in Sources */,
-				74440734139ED343A66DBD07 /* SortedTSVBlob.swift in Sources */,
 				DEADBEEF0000000000000009 /* KeyboardRootView+KanjiRadicalLayout.swift in Sources */,
-				DEADBEEF0000000000000006 /* KanjiRadicalCatalog.swift in Sources */,
-				DEADBEEF0000000000000004 /* KanaKanjiStore+KanjiRadicals.swift in Sources */,
-				B2C3D4E5F6A700000000FF02 /* KanaKanjiStore+Learning.swift in Sources */,
-				A1B2C3D4E5F600000000EE02 /* KanaKanjiSQLiteIndex.swift in Sources */,
-				0BC3CAC6405B450D9B804EB3 /* KanaKanjiConverter+Inflection.swift in Sources */,
-				85066194540B01309B71C5EC /* KanaKanjiConverter+KaCounterVariants.swift in Sources */,
-				8A1F932FDF673E2274F7DD42 /* KanaKanjiConverter+OkuriganaVariants.swift in Sources */,
-				3BA3DC19F07809AF51C65796 /* KanaKanjiConverter+KanaIdentity.swift in Sources */,
-				36371FDAA33E4893ABDAE864 /* KanaKanjiConverter+CompoundDerivation.swift in Sources */,
-				275ECC90B0E942DFA3DE2EF5 /* KanaKanjiConverter+PostfixDerivation.swift in Sources */,
-				D4C98B3B37BF4A51954BE3ED /* KanaKanjiConverter+RankingHeuristics.swift in Sources */,
-				6181BCCBB3784740A7CC7802 /* KanaKanjiConverter+SurfaceFilters.swift in Sources */,
-				9F66315689C04FCE886B08C2 /* KanaKanjiConverter+MultiClause.swift in Sources */,
-				A1B2C3D4E5F600000000AB07 /* KanaKanjiConverter+MultiClauseTables.swift in Sources */,
-				3D5D74AF2B419C52744B3AC0 /* KanaKanjiConverter+ObjectVerbCollocations.swift in Sources */,
-				1574B0356912D7E82C120E75 /* KanaKanjiSeedDictionary.swift in Sources */,
-				3B731B693D5ABC86B422C333 /* KanaKanjiStore.swift in Sources */,
-				2C9612062F1AA2CA24C41264 /* KanaKanjiTypes.swift in Sources */,
-				E21AE995B20E7DF2B75B6F82 /* KanaTextNormalizer.swift in Sources */,
 				8F8895266804EE4794A101EE /* KaomojiCatalog.swift in Sources */,
 				5455038D3ECF9657CA458C8E /* KeyboardKeyComponents.swift in Sources */,
 				494D3AC7F382B16B0C6F478A /* KeyboardLayerZIndex.swift in Sources */,
@@ -1111,7 +948,7 @@
 				D7ED406024C1D1B29A93E999 /* RelativeDateCandidates.swift in Sources */,
 				A1B2C3D4E5F600000000FF09 /* FormattedNumberCalendarGridView.swift in Sources */,
 				A1B2C3D4E5F600000000DD01 /* KeyboardRootView+Header.swift in Sources */,
-				DB967B134FC1CDBD2C451957 /* SupplementaryCandidateMerger.swift in Sources */,
+				AB00000000000000000038C1 /* EcrituConversionImport.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1447,6 +1284,31 @@
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		AB00000000000000000038C5 /* XCLocalSwiftPackageReference "Packages/EcrituConversion" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/EcrituConversion;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		AB00000000000000000038C6 /* EcrituConversion */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AB00000000000000000038C5 /* XCLocalSwiftPackageReference "Packages/EcrituConversion" */;
+			productName = EcrituConversion;
+		};
+		AB00000000000000000038C7 /* EcrituConversion */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AB00000000000000000038C5 /* XCLocalSwiftPackageReference "Packages/EcrituConversion" */;
+			productName = EcrituConversion;
+		};
+		AB00000000000000000038C8 /* EcrituConversionBase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AB00000000000000000038C5 /* XCLocalSwiftPackageReference "Packages/EcrituConversion" */;
+			productName = EcrituConversionBase;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = C2AEB9D58AEFFB740EDC3C3D /* Project object */;
 }

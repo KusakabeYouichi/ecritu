@@ -26,7 +26,7 @@ extension KanaKanjiConverter {
     }
 
     // 文頭の感動詞のかな識別を先頭へ(定数コメント参照)。候補集合は変えず順序だけ入れ替える
-    static func sentenceInitialInterjectionPromotedCandidates(
+    public static func sentenceInitialInterjectionPromotedCandidates(
         _ candidates: [String],
         reading: String,
         precedingCharacter: Character?

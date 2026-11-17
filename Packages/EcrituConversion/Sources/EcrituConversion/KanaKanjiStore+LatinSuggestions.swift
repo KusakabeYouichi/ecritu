@@ -3,7 +3,7 @@ import Foundation
 // 汎用Latin語彙のmmap索引。バイト順ソート済みtxt(key\tword\trank\n)を Data(mappedIfSafe)
 // のまま保持し、バイナリサーチで前方一致行だけをパースする。UTF-8のバイト前方一致は
 // スカラ前方一致と等価(スカラ先頭バイトと継続バイトの領域が重ならないため)。
-struct GenericLatinLexiconFileIndex {
+public struct GenericLatinLexiconFileIndex {
     let data: Data
     let entryCount: Int
 
@@ -85,13 +85,13 @@ extension KanaKanjiStore {
     // 語句全体(空白込みトークン)で一致ゼロのときは、空白/改行の直後から検索を
     // やり直して段階的に縮める(grand ch→ch)。空白入りentry(追加語彙のワイン語句等)の
     // 最長一致補完を優先しつつ、1語entryしか無い汎用リストも2語目以降で効くようにする。
-    func latinSuggestions(prefix: String, limit: Int) -> [String] {
+    public func latinSuggestions(prefix: String, limit: Int) -> [String] {
         latinSuggestionsWithMatchedQuery(prefix: prefix, limit: limit).results
     }
 
     // 候補と、その候補が一致した問い合わせ(縮めた後の部分)。候補をタップしたときに置き換えるのは
     // この部分だけ(Early Bir で Birds を選んで Early まで消していた。3372)
-    func latinSuggestionsWithMatchedQuery(prefix: String, limit: Int) -> (results: [String], matchedQuery: String) {
+    public func latinSuggestionsWithMatchedQuery(prefix: String, limit: Int) -> (results: [String], matchedQuery: String) {
         var query = prefix
 
         while true {
@@ -209,7 +209,7 @@ extension KanaKanjiStore {
             .map(\.key)
     }
 
-    func setGenericLatinLexiconEnabledLanguages(_ languages: Set<String>) {
+    public func setGenericLatinLexiconEnabledLanguages(_ languages: Set<String>) {
         withCacheLock {
             guard genericLatinLexiconEnabledLanguages != languages else {
                 return
@@ -226,7 +226,7 @@ extension KanaKanjiStore {
     // Data(mappedIfSafe)のままバイト単位バイナリサーチで前方一致行だけをパースする。
     // 10.5万語のSwift文字列配列化(常駐約10MB+パーススパイク)を廃止: ファイル裏付きの
     // クリーンページは footprint に乗らず、メモリ警告での解放・再ロードも実質ゼロコスト(2422)。
-    func genericLatinLexiconIndex(language: String) -> GenericLatinLexiconFileIndex? {
+    public func genericLatinLexiconIndex(language: String) -> GenericLatinLexiconFileIndex? {
         if let cached = withCacheLock({ cachedGenericLatinLexiconIndexByLanguage[language] }) {
             return cached
         }

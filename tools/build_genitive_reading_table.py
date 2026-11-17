@@ -18,7 +18,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DB = ROOT / "tmp" / "kana_kanji_dictionary.sqlite"
-DST = ROOT / "KeyboardExtension" / "GenitiveReadingTable.swift"
+DST = ROOT / "Packages" / "EcrituConversion" / "Sources" / "EcrituConversionBase" / "GenitiveReadingTable.swift"
 KANJI = re.compile(r"^[一-鿿々]+$")
 GENITIVE_KANJI = set("之乃野廼能埜")
 
@@ -50,13 +50,13 @@ def main():
         "// 辞書の「の込み」読み(みなもとの=源、たちばなの=橘/橘ノ、あきの=秋 …)。変換では抑制し、",
         "// ちょうどその読みを打ったときだけ resupplied の表記を末尾に出す(suppr+exactReadingOnlySeed と同じ二段構え)",
         "",
-        "enum GenitiveReadingTable {",
-        "    static let suppressed: [String: [String]] = [",
+        "public enum GenitiveReadingTable {",
+        "    public static let suppressed: [String: [String]] = [",
     ]
     for reading in sorted(suppressed):
         values = ", ".join(swift_string(s) for s in sorted(suppressed[reading]))
         lines.append(f"        {swift_string(reading)}: [{values}],")
-    lines += ["    ]", "", "    static let resupplied: [String: [String]] = ["]
+    lines += ["    ]", "", "    public static let resupplied: [String: [String]] = ["]
     for reading in sorted(resupplied):
         values = ", ".join(swift_string(s) for s in sorted(resupplied[reading]))
         lines.append(f"        {swift_string(reading)}: [{values}],")

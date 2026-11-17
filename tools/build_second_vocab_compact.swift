@@ -10,8 +10,9 @@ import Foundation
 // 正規化・重複排除は拡張側の loadSupplementalSystemDictionary と同じにするため、
 // KanaTextNormalizer / SupplementalVocabCompactStore / KanaKanjiTypes(uniquedTrimmedCandidates)を
 // 同じソースからいっしょにコンパイルする(tools/refresh_simulator_dictionary_on_build.sh 参照):
-//   swiftc tools/build_second_vocab_compact.swift KeyboardExtension/KanaTextNormalizer.swift \
-//          KeyboardExtension/SupplementalVocabCompactStore.swift KeyboardExtension/KanaKanjiTypes.swift
+//   swiftc tools/build_second_vocab_compact.swift Packages/EcrituConversion/Sources/EcrituConversionBase/KanaTextNormalizer.swift \
+//          Packages/EcrituConversion/Sources/EcrituConversionBase/SupplementalVocabCompactStore.swift \
+//          Packages/EcrituConversion/Sources/EcrituConversion/KanaKanjiTypes.swift
 // 使い方: <tool> <入力 JSON> <出力 .eccs>
 // 複数ファイルを swiftc で結合するので、最上位文は使わず @main に置く
 

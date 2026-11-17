@@ -29,8 +29,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 DB = ROOT / "tmp" / "kana_kanji_dictionary.sqlite"
 OUT = ROOT / "tmp" / "rare_in_top3.tsv"
-SEED = ROOT / "KeyboardExtension" / "KanaKanjiSeedDictionary.swift"
-FILTERS = ROOT / "KeyboardExtension" / "KanaKanjiConverter+SurfaceFilters.swift"
+SEED = ROOT / "Packages" / "EcrituConversion" / "Sources" / "EcrituConversion" / "KanaKanjiSeedDictionary.swift"
+FILTERS = ROOT / "Packages" / "EcrituConversion" / "Sources" / "EcrituConversion" / "KanaKanjiConverter+SurfaceFilters.swift"
 
 HIRAGANA = re.compile(r"^[ぁ-ゖー]+$")
 KANJI = re.compile(r"[㐀-鿿豈-﫿]")

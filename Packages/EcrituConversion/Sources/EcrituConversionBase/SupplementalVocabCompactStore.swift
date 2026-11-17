@@ -18,7 +18,7 @@ import Foundation
 //   読み i の表層スロット = surfaceListStarts[i] ..< surfaceListStarts[i+1]
 //   表層スロット j       = blob[surfaceOffsets[j] ..< 次に始まるもの]
 //   blob の配置は [読みi][表層i0][表層i1]…[読みi+1][表層(i+1)0]… の交互
-struct SupplementalVocabCompactStore: Equatable {
+public struct SupplementalVocabCompactStore: Equatable {
     // 直列化形式そのもの。ファイル由来なら mmap(Data(contentsOf:options:.mappedIfSafe))、
     // 辞書から畳んだ/復号した場合は in-memory。等値はバイト列の一致で見る
     private let buffer: Data
@@ -35,18 +35,18 @@ struct SupplementalVocabCompactStore: Equatable {
     private static let serializationMagic: [UInt8] = Array("ECCS1".utf8)
     private static var headerLength: Int { serializationMagic.count + 16 }
 
-    static let empty = SupplementalVocabCompactStore(dictionary: [:])
+    public static let empty = SupplementalVocabCompactStore(dictionary: [:])
 
-    var readingCount: Int { max(0, readingOffsetCount - 1) }
-    var isEmpty: Bool { readingCount == 0 }
+    public var readingCount: Int { max(0, readingOffsetCount - 1) }
+    public var isEmpty: Bool { readingCount == 0 }
     // 表の実サイズ(mmap 由来なら heap には乗っていない)
-    var estimatedBytes: Int { buffer.count }
+    public var estimatedBytes: Int { buffer.count }
 
-    static func == (lhs: SupplementalVocabCompactStore, rhs: SupplementalVocabCompactStore) -> Bool {
+    public static func == (lhs: SupplementalVocabCompactStore, rhs: SupplementalVocabCompactStore) -> Bool {
         lhs.buffer == rhs.buffer
     }
 
-    init(dictionary: [String: [String]]) {
+    public init(dictionary: [String: [String]]) {
         let sortedReadings = dictionary.keys.sorted { Array($0.utf8).lexicographicallyPrecedes(Array($1.utf8)) }
         var blob: [UInt8] = []
         var readingOffsets: [UInt32] = []
@@ -92,12 +92,12 @@ struct SupplementalVocabCompactStore: Equatable {
     }
 
     // 直列化形式そのもの(mmap 由来ならコピーせずそのまま返す)
-    func serializedData() -> Data {
+    public func serializedData() -> Data {
         buffer
     }
 
     // 検証してそのまま保持する(コピーしない)。壊れた入力・別形式は nil
-    init?(serialized data: Data) {
+    public init?(serialized data: Data) {
         let magic = Self.serializationMagic
         let headerLength = Self.headerLength
         guard data.count >= headerLength else {
@@ -265,7 +265,7 @@ struct SupplementalVocabCompactStore: Equatable {
         }
     }
 
-    func candidates(for reading: String) -> [String] {
+    public func candidates(for reading: String) -> [String] {
         let target = Array(reading.utf8)
         return withCursor { cursor in
             guard let index = cursor.indexOfReading(target) else {
@@ -279,7 +279,7 @@ struct SupplementalVocabCompactStore: Equatable {
         }
     }
 
-    func contains(reading: String, surface: String) -> Bool {
+    public func contains(reading: String, surface: String) -> Bool {
         let readingTarget = Array(reading.utf8)
         let surfaceTarget = Array(surface.utf8)
         return withCursor { cursor in
@@ -296,7 +296,7 @@ struct SupplementalVocabCompactStore: Equatable {
 
     // 読みの文字数が cap を超える語の、その文字数の集合(連文節の 1 区間の上限 12 字を超える語を別に引くため。3696)。
     // 全読みを 1 回なめるので、呼び出し側(KanaKanjiStore.curatedLongReadingLengths)でキャッシュする
-    func readingLengths(longerThan cap: Int) -> Set<Int> {
+    public func readingLengths(longerThan cap: Int) -> Set<Int> {
         withCursor { cursor in
             var lengths = Set<Int>()
             for index in 0..<readingCount {

@@ -133,7 +133,7 @@ from pathlib import Path
 import os
 import re
 
-seed_path = Path(os.environ["ROOT_DIR"]) / "KeyboardExtension" / "KanaKanjiSeedDictionary.swift"
+seed_path = Path(os.environ["ROOT_DIR"]) / "Packages" / "EcrituConversion" / "Sources" / "EcrituConversion" / "KanaKanjiSeedDictionary.swift"
 
 try:
     text = seed_path.read_text(encoding="utf-8")
@@ -270,7 +270,9 @@ python3 tools/build_second_vocab_from_references.py \
 
 # 補助語彙をビルド時に畳む(3030)。拡張が起動後の初回変換で JSON を 16,226 読みの辞書へ復元して
 # 畳んでいた工程を、ここへ移す(その一瞬の辞書が malloc アリーナを +8MB 広げて返さなかった。実機計測)。
-# 正規化・重複排除を拡張と同じにするため、拡張のソース 3 本をいっしょに swiftc でコンパイルする。
+# 正規化・重複排除を拡張と同じにするため、変換の中核(Packages/EcrituConversion)のソース 3 本をいっしょに swiftc でコンパイルする。
+# 3 本を 1 つの module として通すので、この 3 本には `import EcrituConversionBase` などパッケージ内の import を書かない
+# (書くとここだけ落ち、下の警告 1 行で JSON 経路に戻って +8MB が黙って復活する)。
 second_compact_stamp="$ROOT_DIR/tmp/.ÉcrituSecondVocab.eccs.src.sha"
 second_compact_tool="$ROOT_DIR/tmp/build_second_vocab_compact"
 # 病名を入れるときは、読みが既存の語とぶつからない病名だけを畳む元に足す(tools/merge_medicaux_runtime_vocab.py 参照)
@@ -281,12 +283,14 @@ if [[ -f "$TMP_MEDICAUX" && -f "$TMP_PREMIER" ]]; then
     --medicaux "$TMP_MEDICAUX" --output "$second_compact_input"
 fi
 second_compact_src_sha="$(shasum -a 256 "$second_compact_input" tools/build_second_vocab_compact.swift \
-  KeyboardExtension/KanaTextNormalizer.swift KeyboardExtension/SupplementalVocabCompactStore.swift \
-  KeyboardExtension/KanaKanjiTypes.swift | shasum -a 256 | cut -d' ' -f1)"
+  Packages/EcrituConversion/Sources/EcrituConversionBase/KanaTextNormalizer.swift \
+  Packages/EcrituConversion/Sources/EcrituConversionBase/SupplementalVocabCompactStore.swift \
+  Packages/EcrituConversion/Sources/EcrituConversion/KanaKanjiTypes.swift | shasum -a 256 | cut -d' ' -f1)"
 if [[ ! -f "$TMP_SECOND_COMPACT" || ! -f "$second_compact_stamp" || "$(cat "$second_compact_stamp")" != "$second_compact_src_sha" ]]; then
   if SDKROOT="$(xcrun --sdk macosx --show-sdk-path)" swiftc -O -parse-as-library \
-      tools/build_second_vocab_compact.swift KeyboardExtension/KanaTextNormalizer.swift \
-      KeyboardExtension/SupplementalVocabCompactStore.swift KeyboardExtension/KanaKanjiTypes.swift \
+      tools/build_second_vocab_compact.swift Packages/EcrituConversion/Sources/EcrituConversionBase/KanaTextNormalizer.swift \
+      Packages/EcrituConversion/Sources/EcrituConversionBase/SupplementalVocabCompactStore.swift \
+      Packages/EcrituConversion/Sources/EcrituConversion/KanaKanjiTypes.swift \
       -o "$second_compact_tool" \
     && "$second_compact_tool" "$second_compact_input" "$TMP_SECOND_COMPACT"; then
     echo "$second_compact_src_sha" > "$second_compact_stamp"

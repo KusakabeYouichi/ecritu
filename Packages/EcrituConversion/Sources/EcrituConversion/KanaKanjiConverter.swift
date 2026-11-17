@@ -1,6 +1,6 @@
 import Foundation
 
-final class KanaKanjiConverter {
+public final class KanaKanjiConverter {
     struct CandidateCacheKey: Hashable {
         let reading: String
         let limit: Int
@@ -14,14 +14,14 @@ final class KanaKanjiConverter {
         var digitPrefixTail: Character? = nil
     }
 
-    let store: KanaKanjiStore
+    public let store: KanaKanjiStore
 
     // 変換器の可変状態(キャッシュ等)の排他。以前は DispatchQueue.sync だったが、ジェネリックな sync は呼び出しごとに
     // 脱抽象化サンクの箱を確保する(打鍵あたり約 1500 回。3096 の確保実測)。NSLock なら確保ゼロ。全部 sync 利用だったので意味は同じ
     let stateLock = NSLock()
 
     @inline(__always)
-    func withStateLock<T>(_ body: () throws -> T) rethrows -> T {
+    public func withStateLock<T>(_ body: () throws -> T) rethrows -> T {
         stateLock.lock()
         defer { stateLock.unlock() }
         return try body()
@@ -57,7 +57,7 @@ final class KanaKanjiConverter {
     var scoreTraceByReadingForDiagnostics: [String: String] = [:]
     let scoreTraceByReadingLimit = 64
     var scoreLedgerForDiagnostics: [String: [Int]] = [:]
-    func scoreTraceForDiagnostics(reading: String) -> String? {
+    public func scoreTraceForDiagnostics(reading: String) -> String? {
         withStateLock { scoreTraceByReadingForDiagnostics[reading] }
     }
 
@@ -92,7 +92,7 @@ final class KanaKanjiConverter {
     // め終わり読みの『め/目』選好(コンテナー設定。applyMeSuffixPreferences 参照)。
     // 序数(première…): true=漢字『目』を先に(既定。1973年内閣告示第2号 通則4 の表記)。
     // 形容詞語幹(un peu…): true=『目』形も出す(かな『め』が先)。既定はオフ(告示 付表の語1)。
-    var ordinalMeKanjiPreferred: Bool = true
+    public var ordinalMeKanjiPreferred: Bool = true
     // 助数詞「か」の表記(1か所/数か月)の表示順とオン/オフ(コンテナー設定。2816)
     var kaCounterVariantPreference: KaCounterVariantPreference = .default
     // 数詞+助数詞の表記(アラビア数字/漢数字の順と有無。コンテナー設定 X.18。3702)。テスト(設定なし)は両方・アラビア数字が先
@@ -108,11 +108,11 @@ final class KanaKanjiConverter {
     // デバッグ版のキーボードが設定(初期値オン)を読んで true にする。リリース版では表も処理も入らない
     var wineTermPriorityEnabled: Bool = false
 
-    init(store: KanaKanjiStore) {
+    public init(store: KanaKanjiStore) {
         self.store = store
     }
 
-    func setHistoricalKanaSurfaceAllowed(_ allowed: Bool) {
+    public func setHistoricalKanaSurfaceAllowed(_ allowed: Bool) {
         withStateLock {
             guard historicalKanaSurfaceAllowed != allowed else {
                 return
@@ -123,7 +123,7 @@ final class KanaKanjiConverter {
         }
     }
 
-    func setIterationMarkSurfaceAllowed(_ allowed: Bool) {
+    public func setIterationMarkSurfaceAllowed(_ allowed: Bool) {
         withStateLock {
             guard iterationMarkSurfaceAllowed != allowed else {
                 return
@@ -134,7 +134,7 @@ final class KanaKanjiConverter {
         }
     }
 
-    func setOrdinalMeKanjiPreferred(_ enabled: Bool) {
+    public func setOrdinalMeKanjiPreferred(_ enabled: Bool) {
         withStateLock {
             guard ordinalMeKanjiPreferred != enabled else {
                 return
@@ -144,7 +144,7 @@ final class KanaKanjiConverter {
         }
     }
 
-    func setNumeralStylePreference(_ preference: NumeralStylePreference) {
+    public func setNumeralStylePreference(_ preference: NumeralStylePreference) {
         withStateLock {
             guard numeralStylePreference != preference else {
                 return
@@ -154,7 +154,7 @@ final class KanaKanjiConverter {
         }
     }
 
-    func setKaCounterVariantPreference(_ preference: KaCounterVariantPreference) {
+    public func setKaCounterVariantPreference(_ preference: KaCounterVariantPreference) {
         withStateLock {
             guard kaCounterVariantPreference != preference else {
                 return
@@ -164,7 +164,7 @@ final class KanaKanjiConverter {
         }
     }
 
-    func setOkuriganaVariantPreference(_ preference: OkuriganaVariantPreference) {
+    public func setOkuriganaVariantPreference(_ preference: OkuriganaVariantPreference) {
         withStateLock {
             guard okuriganaVariantPreference != preference else {
                 return
@@ -174,7 +174,7 @@ final class KanaKanjiConverter {
         }
     }
 
-    func setAdjectiveMeKanjiCandidatesEnabled(_ enabled: Bool) {
+    public func setAdjectiveMeKanjiCandidatesEnabled(_ enabled: Bool) {
         withStateLock {
             guard adjectiveMeKanjiCandidatesEnabled != enabled else {
                 return
@@ -184,7 +184,7 @@ final class KanaKanjiConverter {
         }
     }
 
-    func setWineTermPriorityEnabled(_ enabled: Bool) {
+    public func setWineTermPriorityEnabled(_ enabled: Bool) {
         withStateLock {
             guard wineTermPriorityEnabled != enabled else {
                 return
@@ -194,7 +194,7 @@ final class KanaKanjiConverter {
         }
     }
 
-    func setFormalNounMeKanaCandidatesEnabled(_ enabled: Bool) {
+    public func setFormalNounMeKanaCandidatesEnabled(_ enabled: Bool) {
         withStateLock {
             guard formalNounMeKanaCandidatesEnabled != enabled else {
                 return
@@ -204,7 +204,7 @@ final class KanaKanjiConverter {
         }
     }
 
-    func setKatakanaEmphasisCandidateMode(_ mode: ScriptVariantCandidateMode) {
+    public func setKatakanaEmphasisCandidateMode(_ mode: ScriptVariantCandidateMode) {
         withStateLock {
             guard katakanaEmphasisCandidateMode != mode else {
                 return
@@ -214,7 +214,7 @@ final class KanaKanjiConverter {
         }
     }
 
-    func setScriptVariantSuppressionCategories(_ categories: Set<ScriptVariantSuppressionCategory>) {
+    public func setScriptVariantSuppressionCategories(_ categories: Set<ScriptVariantSuppressionCategory>) {
         withStateLock {
             guard scriptVariantSuppressionCategories != categories else {
                 return
@@ -224,7 +224,7 @@ final class KanaKanjiConverter {
         }
     }
 
-    func setKanaGakiSuppressedCategories(_ categories: Set<KanaGakiCategory>) {
+    public func setKanaGakiSuppressedCategories(_ categories: Set<KanaGakiCategory>) {
         withStateLock {
             guard kanaGakiSuppressedCategories != categories else {
                 return
@@ -234,7 +234,7 @@ final class KanaKanjiConverter {
         }
     }
 
-    func setEmojiCandidatesEnabled(_ enabled: Bool) {
+    public func setEmojiCandidatesEnabled(_ enabled: Bool) {
         withStateLock {
             guard emojiCandidatesEnabled != enabled else {
                 return
@@ -259,7 +259,7 @@ final class KanaKanjiConverter {
         return false
     }
 
-    func setKakikaeEverydayException(_ enabled: Bool) {
+    public func setKakikaeEverydayException(_ enabled: Bool) {
         withStateLock {
             guard kakikaeEverydayException != enabled else {
                 return
@@ -269,7 +269,7 @@ final class KanaKanjiConverter {
         }
     }
 
-    func setKakikaePreference(_ preference: KakikaePreference) {
+    public func setKakikaePreference(_ preference: KakikaePreference) {
         withStateLock {
             guard kakikaePreference != preference else {
                 return
@@ -279,7 +279,7 @@ final class KanaKanjiConverter {
         }
     }
 
-    func setLateStandardizedRewritePreference(_ preference: KakikaePreference) {
+    public func setLateStandardizedRewritePreference(_ preference: KakikaePreference) {
         withStateLock {
             guard lateStandardizedRewritePreference != preference else {
                 return
@@ -289,7 +289,7 @@ final class KanaKanjiConverter {
         }
     }
 
-    func setMazegakiCandidateMode(_ mode: ScriptVariantCandidateMode) {
+    public func setMazegakiCandidateMode(_ mode: ScriptVariantCandidateMode) {
         withStateLock {
             guard mazegakiCandidateMode != mode else {
                 return
@@ -299,7 +299,7 @@ final class KanaKanjiConverter {
         }
     }
 
-    func preloadSystemDictionaryIfNeeded(onLoaded: (() -> Void)? = nil) {
+    public func preloadSystemDictionaryIfNeeded(onLoaded: (() -> Void)? = nil) {
         store.prepareSystemDictionaryIfNeeded { [weak self] in
             guard let self else {
                 onLoaded?()
@@ -314,7 +314,7 @@ final class KanaKanjiConverter {
         }
     }
 
-    func clearSharedDataCaches() {
+    public func clearSharedDataCaches() {
         store.clearSharedDataCaches()
 
         withStateLock {
@@ -323,14 +323,14 @@ final class KanaKanjiConverter {
     }
 
     // 学習リセットの反映(2968)。学習キャッシュを書き出さずに捨ててから通常の破棄を行う
-    func applyLearningReset() {
+    public func applyLearningReset() {
         store.discardLearningCachesWithoutPersist()
         clearSharedDataCaches()
     }
 
     // メモリ対策用の全キャッシュ破棄。sqlite インデックス(連文節LM)は保持する
     // (close しても解放量はごく僅かなのに連文節が停止して劣化変換になるため)。
-    func clearAllCaches() {
+    public func clearAllCaches() {
         store.clearSystemDictionaryJSONCaches()
         store.clearSharedDataCaches()
 
@@ -342,7 +342,7 @@ final class KanaKanjiConverter {
     // メモリ内訳census用: converter 側キャッシュの件数+store 側の要約を1行で返す。
     // 診断ログ(DEBUG)とテストにしか使わないので DEBUG だけで組み立てる(3313)
     #if DEBUG
-    func diagnosticsCacheCountsSummary() -> String {
+    public func diagnosticsCacheCountsSummary() -> String {
         let converterPart = withStateLock {
             "cand=\(candidateCache.count)"
                 + " kanaLead=\(kanaIdentityLeadingCache.count)"
@@ -352,7 +352,7 @@ final class KanaKanjiConverter {
     }
     #endif
 
-    func preloadSharedDataCachesIfNeeded() {
+    public func preloadSharedDataCachesIfNeeded() {
         _ = store.ajoutVocabulary()
         _ = store.learnedDictionary()
         _ = store.initialAjoutVocabulary()
@@ -454,7 +454,7 @@ final class KanaKanjiConverter {
         let hasDirectCandidates: Bool
     }
 
-    func candidates(
+    public func candidates(
         for reading: String,
         limit: Int,
         systemCandidateMode: KanaKanjiCandidateSourceMode
@@ -1698,7 +1698,7 @@ final class KanaKanjiConverter {
 
     // 学習した場合は学習する前の状態を返す(確定の直後に削除キーで消したときの取り消しに使う。3741)
     @discardableResult
-    func learn(reading: String, candidate: String, allowKanaIdentity: Bool = false) -> KanaKanjiStore.LearningUndoSnapshot? {
+    public func learn(reading: String, candidate: String, allowKanaIdentity: Bool = false) -> KanaKanjiStore.LearningUndoSnapshot? {
         let normalizedReading = KanaTextNormalizer.normalizedReading(reading)
         let trimmedCandidate = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
 
@@ -1739,7 +1739,7 @@ final class KanaKanjiConverter {
     }
 
     // 学習を学習する前の状態に戻す(確定の直後に削除キーで消したとき。3741、ユーザ指定)
-    func undoLearning(_ snapshot: KanaKanjiStore.LearningUndoSnapshot) {
+    public func undoLearning(_ snapshot: KanaKanjiStore.LearningUndoSnapshot) {
         store.restoreLearning(snapshot)
         withStateLock {
             invalidateCandidateCache()

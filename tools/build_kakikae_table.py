@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""references/kakikae.plist(同音の漢字による書きかえ)から KeyboardExtension/KakikaeTable.swift を作る(3422)。
+"""references/kakikae.plist(同音の漢字による書きかえ)から Packages/EcrituConversion/Sources/EcrituConversionBase/KakikaeTable.swift を作る(3422)。
 
 節の見出しは「<!-- ■ 英名 説明 -->」。normal はコンテナー X.9 で選ぶ組、lateStandardized(報告の後に常用漢字に加わった字の組)は
 X.10 で選ぶ組(3570)。
@@ -12,7 +12,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "references" / "kakikae.plist"
-DST = ROOT / "KeyboardExtension" / "KakikaeTable.swift"
+DST = ROOT / "Packages" / "EcrituConversion" / "Sources" / "EcrituConversionBase" / "KakikaeTable.swift"
 
 HEADER = re.compile(r"<!--\s*■\s*(\w+)")
 ENTRY = re.compile(r"<key>before</key><string>([^<]+)</string><key>after</key><string>([^<]+)</string>")
@@ -43,7 +43,7 @@ def main() -> int:
         "// 生成ファイル。tools/build_kakikae_table.py が references/kakikae.plist から作る。手で直さない(3422)",
         "// 同音の漢字による書きかえ(1956 年 国語審議会報告)の語の組。コンテナー設定 X.9 で 書きかえ前だけ/後だけ/両方 を選ぶ。",
         "// 報告の後に書きかえ前の字が常用漢字に加わった組は X.10 で別に選ぶ(3570)",
-        "enum KakikaeTable {",
+        "public enum KakikaeTable {",
         "    // (書きかえ前, 書きかえ後, 報告の後に常用漢字に加わった字の組か)。plist の順",
         "    static let pairs: [(before: String, after: String, isLateStandardized: Bool)] = [",
     ]
@@ -53,23 +53,23 @@ def main() -> int:
         "    ]",
         "",
         "    // X.9 で選ぶ組(isLateStandardized を除く)",
-        "    static let switchablePairs: [(before: String, after: String)] = pairs.filter { !$0.isLateStandardized }.map { ($0.before, $0.after) }",
+        "    public static let switchablePairs: [(before: String, after: String)] = pairs.filter { !$0.isLateStandardized }.map { ($0.before, $0.after) }",
         "",
         "    // X.10 で選ぶ組(報告の後に常用漢字に加わった字の組。3570)",
-        "    static let lateStandardizedPairs: [(before: String, after: String)] = pairs.filter { $0.isLateStandardized }.map { ($0.before, $0.after) }",
+        "    public static let lateStandardizedPairs: [(before: String, after: String)] = pairs.filter { $0.isLateStandardized }.map { ($0.before, $0.after) }",
         "",
         "    // 書きかえ前 → 書きかえ後 / 書きかえ後 → 書きかえ前(X.9 の組だけ)",
-        "    static let afterByBefore: [String: String] = Dictionary(switchablePairs.map { ($0.before, $0.after) }, uniquingKeysWith: { first, _ in first })",
+        "    public static let afterByBefore: [String: String] = Dictionary(switchablePairs.map { ($0.before, $0.after) }, uniquingKeysWith: { first, _ in first })",
         "    static let beforeByAfter: [String: String] = Dictionary(switchablePairs.map { ($0.after, $0.before) }, uniquingKeysWith: { first, _ in first })",
         "",
         "    // 候補の中の出現を探すための索引(語の先頭の字 → 組)。打鍵ごとに全組を contains で舐めないため",
-        "    static let switchablePairsByBeforeHead: [Character: [(before: String, after: String)]] =",
+        "    public static let switchablePairsByBeforeHead: [Character: [(before: String, after: String)]] =",
         "        Dictionary(grouping: switchablePairs, by: { $0.before.first! })",
-        "    static let switchablePairsByAfterHead: [Character: [(before: String, after: String)]] =",
+        "    public static let switchablePairsByAfterHead: [Character: [(before: String, after: String)]] =",
         "        Dictionary(grouping: switchablePairs, by: { $0.after.first! })",
-        "    static let lateStandardizedPairsByBeforeHead: [Character: [(before: String, after: String)]] =",
+        "    public static let lateStandardizedPairsByBeforeHead: [Character: [(before: String, after: String)]] =",
         "        Dictionary(grouping: lateStandardizedPairs, by: { $0.before.first! })",
-        "    static let lateStandardizedPairsByAfterHead: [Character: [(before: String, after: String)]] =",
+        "    public static let lateStandardizedPairsByAfterHead: [Character: [(before: String, after: String)]] =",
         "        Dictionary(grouping: lateStandardizedPairs, by: { $0.after.first! })",
         "}",
         "",

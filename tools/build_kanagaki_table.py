@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""references/kanagaki.plist(かなで書く言葉)から KeyboardExtension/KanaGakiTable.swift を作る(3404)。
+"""references/kanagaki.plist(かなで書く言葉)から Packages/EcrituConversion/Sources/EcrituConversionBase/KanaGakiTable.swift を作る(3404)。
 
 節の見出しは「<!-- ■ 英名 日本語名 -->」。英名が KanaGakiCategory の case 名になる。
 アプリ(設定画面の例)とキーボード(変換)の両方がこの表を使う。plist を直したらこれを流してコミットする。
@@ -11,7 +11,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "references" / "kanagaki.plist"
-DST = ROOT / "KeyboardExtension" / "KanaGakiTable.swift"
+DST = ROOT / "Packages" / "EcrituConversion" / "Sources" / "EcrituConversionBase" / "KanaGakiTable.swift"
 
 HEADER = re.compile(r"<!--\s*■\s*(\w+)\s+(.+?)(?:\s+default=(on|off))?\s*-->")
 ENTRY = re.compile(r"<key>phrase</key><string>([^<]+)</string><key>shortcut</key><string>([^<]+)</string>")
@@ -41,12 +41,12 @@ def main() -> int:
         "// 生成ファイル。tools/build_kanagaki_table.py が references/kanagaki.plist から作る。手で直さない(3404)",
         "// かなで書く言葉: 漢字で書けるが、今の文章ではかなで書くことが多い語。コンテナー設定 X.8 で仲間ごとに",
         "// 抑制(漢字を出さない)/抑制しない(かなを先頭にして漢字はその後ろ)を選ぶ",
-        "enum KanaGakiCategory: String, CaseIterable {",
+        "public enum KanaGakiCategory: String, CaseIterable {",
     ]
     out += [f"    case {gid}" for gid, _, _ in groups]
     out += [
         "",
-        "    var title: String {",
+        "    public var title: String {",
         "        switch self {",
     ]
     out += [f"        case .{gid}: return {swift_string(title)}" for gid, title, _ in groups]
@@ -54,12 +54,12 @@ def main() -> int:
         "        }",
         "    }",
         "",
-        "    var settingsKey: String {",
+        "    public var settingsKey: String {",
         '        "kanaGakiSuppress" + rawValue.prefix(1).uppercased() + rawValue.dropFirst()',
         "    }",
         "",
         "    // 初期設定で抑制するか(plist の見出しの default=off の仲間は かな先頭で漢字も残す。3552)",
-        "    var suppressedByDefault: Bool {",
+        "    public var suppressedByDefault: Bool {",
         "        switch self {",
     ]
     out += [f"        case .{gid}: return {'false' if gid in defaults_off else 'true'}" for gid, _, _ in groups]
@@ -68,9 +68,9 @@ def main() -> int:
         "    }",
         "}",
         "",
-        "enum KanaGakiTable {",
+        "public enum KanaGakiTable {",
         "    // 仲間 → [(漢字表記, 読み)](plist の順。設定画面の例はこの順に先頭から並べる)",
-        "    static let entries: [KanaGakiCategory: [(surface: String, reading: String)]] = [",
+        "    public static let entries: [KanaGakiCategory: [(surface: String, reading: String)]] = [",
     ]
     for gid, _, items in groups:
         pairs = ", ".join(f"({swift_string(s)}, {swift_string(r)})" for s, r in items)
@@ -79,7 +79,7 @@ def main() -> int:
         "    ]",
         "",
         "    // 読み → 漢字表記 → 仲間(変換で引く用)",
-        "    static let categoryByReadingAndSurface: [String: [String: KanaGakiCategory]] = {",
+        "    public static let categoryByReadingAndSurface: [String: [String: KanaGakiCategory]] = {",
         "        var table: [String: [String: KanaGakiCategory]] = [:]",
         "        for (category, items) in entries {",
         "            for item in items {",

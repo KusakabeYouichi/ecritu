@@ -3,7 +3,7 @@ import Foundation
 // 部首の位置カテゴリー(偏/旁/冠/脚/垂/繞/構/独立)と、その字形一覧。
 // 分類の源泉は references/bushu.plist(バンドル同梱)。1字形が複数カテゴリーに
 // 属してよく、位置を持たない部首は「独立」に入る(2444)。
-enum RadicalPositionCategory: String, CaseIterable, Identifiable {
+public enum RadicalPositionCategory: String, CaseIterable, Identifiable {
     case hen = "偏"
     case tsukuri = "旁"
     case kanmuri = "冠"
@@ -13,11 +13,11 @@ enum RadicalPositionCategory: String, CaseIterable, Identifiable {
     case kamae = "構"
     case independent = "独立"
 
-    var id: String { rawValue }
+    public var id: String { rawValue }
 
-    var title: String { rawValue }
+    public var title: String { rawValue }
 
-    var reading: String {
+    public var reading: String {
         switch self {
         case .hen: return "へん"
         case .tsukuri: return "つくり"
@@ -30,7 +30,7 @@ enum RadicalPositionCategory: String, CaseIterable, Identifiable {
         }
     }
 
-    var accessibilityLabel: String { "\(title)(\(reading))" }
+    public var accessibilityLabel: String { "\(title)(\(reading))" }
 }
 
 // 部首の画数の数え方。辞書によって流儀が分かれる字形(艹 3/4、辶 3/4、礻 4/5、飠 7/8)の
@@ -44,7 +44,7 @@ struct RadicalStrokeOption: Equatable, Hashable, Identifiable {
     var id: String { "\(form)-\(strokes)" }
 }
 
-enum RadicalStrokeChoiceCatalog {
+public enum RadicalStrokeChoiceCatalog {
     // 部首番号 → 選択肢。しめすへんは 礻(4)/⺭(5)/示(5) で画数が重複するが3択で並べる(ユーザー指定)
     static let optionsByRadical: [Int: [RadicalStrokeOption]] = [
         140: [.init(form: "⺾", strokes: 3), .init(form: "⺿", strokes: 4), .init(form: "艸", strokes: 6)],
@@ -61,21 +61,21 @@ enum RadicalStrokeChoiceCatalog {
     }
 
     // 総画数(Unihan kTotalStrokes)の計算基準になる画数 = 選択肢の先頭
-    static func totalBasisStrokes(forRadical radical: Int) -> Int? {
+    public static func totalBasisStrokes(forRadical radical: Int) -> Int? {
         optionsByRadical[radical]?.first?.strokes
     }
 }
 
 // 部首ごとの画数選択。共有 defaults には "140:4,162:3" のような1本の文字列で持つ
 // (キーボードへの受け渡し経路を増やさないため)。旧設定 modern/traditional も受け取る。
-struct RadicalStrokeChoices: Equatable {
+public struct RadicalStrokeChoices: Equatable {
     private var strokesByRadical: [Int: Int]
 
-    init(strokesByRadical: [Int: Int] = [:]) {
+    public init(strokesByRadical: [Int: Int] = [:]) {
         self.strokesByRadical = strokesByRadical
     }
 
-    init(rawValue: String) {
+    public init(rawValue: String) {
         // 旧設定(単一の流儀)からの移行: traditional は各部首の2番目の選択肢に対応する
         switch rawValue {
         case "traditional":
@@ -125,20 +125,20 @@ struct RadicalStrokeChoices: Equatable {
 
 }
 
-struct RadicalForm: Identifiable, Equatable {
+public struct RadicalForm: Identifiable, Equatable {
     let form: String
-    let radical: Int
+    public let radical: Int
     // その字形自体の画数(氵=3画/水=4画)。部首一覧の画数区切りに使う。新字体で数えた値
     let strokes: Int
     // 旧字体(伝統)で数えた画数。流儀が分かれる字形だけ持つ(無ければ strokes と同じ)
     let strokesTraditional: Int?
-    let name: String
+    public let name: String
     let categories: [String]
 
-    var id: String { "\(radical)-\(form)" }
+    public var id: String { "\(radical)-\(form)" }
 
     // 部首ごとの選択(設定)を反映した字形。艸(6画)を選べば一覧・見出しも 艸 で表示する(2503)。
-    func displayForm(choices: RadicalStrokeChoices) -> String {
+    public func displayForm(choices: RadicalStrokeChoices) -> String {
         guard strokesTraditional != nil,
             let option = choices.selectedOption(forRadical: radical) else {
             return form
@@ -147,7 +147,7 @@ struct RadicalForm: Identifiable, Equatable {
     }
 
     // 部首ごとの選択(設定)を反映した画数。選択肢を持たない字形は plist の値そのまま。
-    func strokes(choices: RadicalStrokeChoices) -> Int {
+    public func strokes(choices: RadicalStrokeChoices) -> Int {
         guard strokesTraditional != nil,
             let selected = choices.strokes(forRadical: radical) else {
             return strokes
@@ -156,7 +156,7 @@ struct RadicalForm: Identifiable, Equatable {
     }
 }
 
-enum KanjiRadicalCatalog {
+public enum KanjiRadicalCatalog {
     // bushu.plist は245エントリーの小さなデータなので初回参照時に一度だけ読む。
     private static let lock = NSLock()
     private static var cache: [RadicalForm]?
@@ -209,7 +209,7 @@ enum KanjiRadicalCatalog {
 
     // カテゴリー内は画数順(同画数は部首番号順)。部首を探すときの手掛かりが画数のため、
     // 一覧もその順に並べ、画数の区切りを挟めるようにする(2447)。画数の流儀は設定で切替(2448)。
-    static func forms(
+    public static func forms(
         in category: RadicalPositionCategory,
         choices: RadicalStrokeChoices = RadicalStrokeChoices()
     ) -> [RadicalForm] {

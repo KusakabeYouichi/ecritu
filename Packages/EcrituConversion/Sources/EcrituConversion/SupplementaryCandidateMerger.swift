@@ -1,20 +1,20 @@
 import Foundation
 
-enum ExternalCandidateLimits {
-    static let lookupMultiplier = 2
+public enum ExternalCandidateLimits {
+    public static let lookupMultiplier = 2
     static let minimumConverterSlots = 8
     static let preferredConverterSharePercent = 67
     static let shortReadingMaximumLength = 2
     static let shortReadingMinimumConverterSlots = 20
 }
 
-enum SupplementaryCandidateMerger {
+public enum SupplementaryCandidateMerger {
     // 連絡先候補の「窓」: エンジン候補3つの直後(4番目)に連絡先由来の先頭1件を前出しする
     // (2026-08-31 ユーザ要望: 登録済みの名前が17番目では遠い)。学習等で既に4番目以内に
     // 居る場合は動かさない。2件目以降の連絡先は従来の補完位置のまま。
     static let contactWindowIndex = 3
 
-    static func mergeSupplementaryAndConverterCandidates(
+    public static func mergeSupplementaryAndConverterCandidates(
         reading: String,
         supplementaryCandidates: [String],
         converterCandidates: [String],
@@ -275,7 +275,7 @@ enum SupplementaryCandidateMerger {
 
     // 読みが完全一致するときだけ、KanaKanjiSeedDictionary.presentationTailSeed の表層を最後尾へ回す
     // (ほんと→本当。絵文字・顔文字より後ろ。候補としては残す。2810)
-    static func demotingPresentationTailSeed(_ candidates: [String], reading: String) -> [String] {
+    public static func demotingPresentationTailSeed(_ candidates: [String], reading: String) -> [String] {
         guard let tail = KanaKanjiSeedDictionary.presentationTailSeed[reading] else {
             return candidates
         }
@@ -289,7 +289,7 @@ enum SupplementaryCandidateMerger {
 
     // 読みが完全一致するときだけ、KanaKanjiSeedDictionary.presentationOrderSeed の表層をこの順で先頭に並べる
     // (そう→そう,添う,沿う,総。候補に無ければ供給する。3772)
-    static func promotingPresentationOrderSeed(_ candidates: [String], reading: String) -> [String] {
+    public static func promotingPresentationOrderSeed(_ candidates: [String], reading: String) -> [String] {
         guard let order = KanaKanjiSeedDictionary.presentationOrderSeed[reading] else {
             return candidates
         }
@@ -301,7 +301,7 @@ enum SupplementaryCandidateMerger {
     // 「出来」の直後がひらがな(できる活用の頭 る/た/て/ま/な/ち/れ)で、同一リストに
     // 「でき」へ置換した版が存在する場合のみ、漢字版をかな版の直後へ回す。
     // 出来事/出来高/出来上がる 等(直後が漢字 or 「あ」等)は対象外。
-    static func demotingDekiKanjiBelowKana(_ candidates: [String]) -> [String] {
+    public static func demotingDekiKanjiBelowKana(_ candidates: [String]) -> [String] {
         let dekiInflectionHeads: Set<Character> = ["る", "た", "て", "ま", "な", "ち", "れ"]
         let candidateSet = Set(candidates)
 
