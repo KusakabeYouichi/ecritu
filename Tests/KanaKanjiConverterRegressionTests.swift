@@ -30503,6 +30503,11 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(boosted("つのさと", after: "5").first, "つの里")
         // 3823: 何でしたっけ/なんでしたっけ/ナンでしたっけ、靄る/もやる は〜ましょう を作らない、こうしましょう はかな
         XCTAssertEqual(Array(multi("なんでしたっけ").prefix(3)), ["何でしたっけ", "なんでしたっけ", "ナンでしたっけ"])
+        // 表示層でも かな を 2 番めに残す(末尾のチップに回して ナン が 2 番めになっていた。3824)
+        XCTAssertTrue(KeyboardViewController.kanaKeptAtEnginePositionReadings.contains("なんでしたっけ"))
+        XCTAssertEqual(Array(SupplementaryCandidateMerger.promotingPresentationOrderSeed(single("あわなかった"), reading: "あわなかった").prefix(2)),
+                       ["合わなかった", "会わなかった"])
+        XCTAssertEqual(top("かれにあわなかった"), "彼に会わなかった")
         XCTAssertEqual(top("それはなんでしたっけ"), "それは何でしたっけ")
         XCTAssertEqual(top("なんでしたら"), "なんでしたら")
         XCTAssertEqual(top("こうしもやりましょう"), "講師もやりましょう")

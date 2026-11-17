@@ -604,6 +604,12 @@ extension KeyboardViewController {
             KanaKanjiSeedDictionary.seed[composingReading]?.dropFirst().contains(composingText) == true {
             return candidates
         }
+        // かなを変換候補の列のエンジンの位置(2 番め)に残す読み(何でしたっけ/なんでしたっけ/ナンでしたっけ。かなが末尾のチップに
+        // 回って ナン が 2 番めになっていた。3824、ユーザ指定)
+        if Self.kanaKeptAtEnginePositionReadings.contains(composingReading), isKanaOnlyText(composingText),
+            let kanaIndex = candidates.firstIndex(of: composingText), kanaIndex <= 2 {
+            return candidates
+        }
         if kanaKanjiConverter.shouldKeepKanaIdentityLeading(for: composingReading) {
             // かな正書の根拠があり、かつ合流後の上位(3位以内=ひらがなのは/あったが 等、
             // 会った/合った 等の妥当な漢字候補の直後に置きたいかな)に居るかな識別は位置維持。
@@ -631,6 +637,8 @@ extension KeyboardViewController {
 
     // たこ: 胼胝/胝/胼/腓胝 の次に かな(3749、ユーザ指定)。きが: 起臥/木香 の次に かな(3752、ユーザ指定)
     static let kanaKeptAtSeedPositionReadings: Set<String> = ["かぶ", "ひろし", "しょう", "たこ", "きが"]
+    // かなを変換候補の列のエンジンの位置に残す読み(seed の無い連文節の読み。3824、ユーザ指定)
+    static let kanaKeptAtEnginePositionReadings: Set<String> = ["なんでしたっけ", "なんでしたっけね", "なんでしたか"]
 
     func isKanaOnlyText(_ text: String) -> Bool {
         guard !text.isEmpty else {
