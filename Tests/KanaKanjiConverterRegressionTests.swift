@@ -30501,6 +30501,13 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(boosted("とうのうちのひとつ", after: "4").first, "頭のうちのひとつ")
         XCTAssertTrue(boosted("とう", after: "4").contains("島"))
         XCTAssertEqual(boosted("つのさと", after: "5").first, "つの里")
+        // 3823: 何でしたっけ/なんでしたっけ/ナンでしたっけ、靄る/もやる は〜ましょう を作らない、こうしましょう はかな
+        XCTAssertEqual(Array(multi("なんでしたっけ").prefix(3)), ["何でしたっけ", "なんでしたっけ", "ナンでしたっけ"])
+        XCTAssertEqual(top("それはなんでしたっけ"), "それは何でしたっけ")
+        XCTAssertEqual(top("なんでしたら"), "なんでしたら")
+        XCTAssertEqual(top("こうしもやりましょう"), "講師もやりましょう")
+        XCTAssertEqual(top("いきましょう"), "行きましょう")
+        XCTAssertEqual(top("こうしましょう"), "こうしましょう")
         // 3821: 人体の骨・筋肉の名前(misc と seed)。よく使う語と読みが同じものは今までどおり
         for (reading, expected) in [("かんこつ", "寛骨"), ("じょこつ", "鋤骨"), ("つちこつ", "ツチ骨"), ("かんつい", "環椎"),
                                     ("ゆうこうこつ", "有鉤骨"), ("せんこつ", "仙骨"), ("きょうこつ", "胸骨"), ("しこつ", "指骨"),

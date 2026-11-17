@@ -770,6 +770,9 @@ extension KanaKanjiConverter {
         ("にるといい", "にるといい", "似るといい", "煮るといい"), ("にればいい", "にればいい", "似ればいい", "煮ればいい"),
         ("にたらいい", "にたらいい", "似たらいい", "煮たらいい"), ("になさい", "になさい", "似なさい", "煮なさい"),
         ("にるとよい", "にるとよい", "似るとよい", "煮るとよい"), ("にるほうがいい", "にるほうがいい", "似るほうがいい", "煮るほうがいい"),
+        // なんでしたっけ/なんでしたか は 何 を先頭に(かなの なんでした が 1 語で安く立ち、何でしたっけ が候補に出なかった。
+        // かなの形は 2 番め、ナンでしたっけ を 3 番め(contextCuedThirdCandidates)。なんでしたら(よろしければ)はかなのまま。3823、ユーザ指定)
+        ("なんでしたっけ", "なんでしたっけ", "なんでしたっけ", "何でしたっけ"), ("なんでしたか", "なんでしたか", "なんでしたか", "何でしたか"),
         // よく似ている(欲+にている だった。3819)
         ("よくにている", "よくにている", "欲にている", "よく似ている"), ("よくにてる", "よくにてる", "欲にてる", "よく似てる"),
         // を+よく+にて… は 煮る(人参をよく煮ている。似る は を を取らない。上の差し替えの後に当てる。3820)
@@ -1168,6 +1171,14 @@ extension KanaKanjiConverter {
             let second = top.replacingCharacters(in: range, with: rule.to)
             ordered = [top, second] + ordered.dropFirst().filter { $0 != second }
         }
+        // 3 番めの指定(その読みの文だけ。3823): 先頭の一部を置き換えた形を 3 番めに置く
+        for rule in contextCuedThirdCandidates where reading.contains(rule.cue) {
+            guard let top = ordered.first, let range = top.range(of: rule.from) else { continue }
+            let third = top.replacingCharacters(in: range, with: rule.to)
+            var rest = ordered.filter { $0 != third }
+            rest.insert(third, at: min(2, rest.count))
+            ordered = rest
+        }
         // その読みの文では意味をなさない候補を外す(3820)
         for rule in contextCuedDroppedSurfaces where reading.contains(rule.cue) {
             ordered.removeAll { $0.contains(rule.surface) }
@@ -1177,6 +1188,11 @@ extension KanaKanjiConverter {
 
     // 読みに cue を含む文では、surface を含む候補を出さない(よくにている の 欲にている: 欲+かなの にている は意味をなさない。
     // 3820、ユーザ指定)
+    // 読みに cue を含む文で、先頭の from を to に置き換えた形を 3 番めに置く(何でしたっけ/なんでしたっけ/ナンでしたっけ。3823、ユーザ指定)
+    static let contextCuedThirdCandidates: [(cue: String, from: String, to: String)] = [
+        ("なんでしたっけ", "何でしたっけ", "ナンでしたっけ"),
+    ]
+
     static let contextCuedDroppedSurfaces: [(cue: String, surface: String)] = [
         ("よくにてい", "欲にてい"), ("よくにてる", "欲にてる"),
     ]

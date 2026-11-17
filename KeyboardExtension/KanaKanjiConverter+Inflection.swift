@@ -485,7 +485,9 @@ extension KanaKanjiConverter {
         let userOwnCandidateSet = initialOrUserCandidateSet
         var results: [String] = []
         var contributingBases: [String] = []
+        // 丁寧の意志・勧誘(〜ましょう/〜ましょうか)も意志形と同じに扱う(靄りましょう。3823)
         let isVolitionalRule = Self.volitionalReadingSuffixHeads.contains { rule.readingSuffix.hasPrefix($0) }
+            || rule.readingSuffix.contains("ましょう")
 
         for candidate in baseCandidates {
             // 意志を持てない動詞の意志形は作らない(定数コメント参照。3255)
