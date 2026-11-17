@@ -25,7 +25,7 @@ médical.plist			# [医学] 人体の骨と筋肉の名前(総称と個々の名
 emoji.plist				# [絵文字] CLDR ja アノテーション由来(SudachiPyで読み化+手動整備。2026-08-31 に全読みのCLDR帰着を検証済み、f8c4c10)
 personnalités.plist	# [人名]
 kanagaki.plist			# [かなで書く言葉] 所謂/即ち/下さい/事/此処 等、漢字で書けるが今はかなで書くことが多い語。節(■ 英名 日本語名)が仲間で、コンテナー X.8 で仲間ごとに抑制/かな先頭を選ぶ。
-						#   plist を直したら python3 tools/build_kanagaki_table.py で KeyboardExtension/KanaGakiTable.swift を作り直してコミット(アプリの設定画面の例もこの表から並ぶ)。3404
+						#   plist を直したら python3 tools/build_kanagaki_table.py で Packages/EcrituConversion/Sources/EcrituConversionBase/KanaGakiTable.swift を作り直してコミット(アプリの設定画面の例もこの表から並ぶ)。3404
 kakikae.plist			# [同音の漢字による書きかえ] 1956 年 国語審議会報告の語の書きかえ 308 組(醗酵→発酵 等。文化庁 漢字小委員会 H27.11.27 資料 3 の全文から)。
 						#   コンテナー X.9 で 書きかえ前だけ/後だけ/両方(前を先に/後を先に)を選ぶ。節 lateStandardized は報告の後に常用漢字に加わった字の組で、X.10 で同じ 4 択を別に選ぶ(3570)。
 						#   1 字の代用字(廻→回 等 41 字)は人名・地名を巻き込むので入れていない。plist を直したら python3 tools/build_kakikae_table.py。3422
