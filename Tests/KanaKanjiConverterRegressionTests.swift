@@ -20846,6 +20846,12 @@ extension KanaKanjiConverterRegressionTests {
     func testPerfBudgetKeystrokeSimulation() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
+        // PERF_WINE=1 で ワイン用語優先(デバッグ版専用。実機のデバッグ版は初期値がオン)を入れて測る(3827)
+        #if DEBUG
+        if ProcessInfo.processInfo.environment["PERF_WINE"] != nil {
+            converter.setWineTermPriorityEnabled(true)
+        }
+        #endif
         let readings = ["としによる", "たとえていうなら", "さくじょしておきながら", "きょうはてんきがいいのででかけよう"]
         var bestMs = Double.greatestFiniteMagnitude
         for _ in 0..<3 {
