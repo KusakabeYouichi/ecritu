@@ -637,14 +637,6 @@ final class KeyboardViewController: UIInputViewController {
     static let diagnosticsFlightRecorderMaxEventCount = 120
     static let diagnosticsFlightRecorderMinRecordIntervalSec: TimeInterval = 0.12
     #endif
-    private static let baseKeyboardBackgroundColor = UIColor { trait in
-        if trait.userInterfaceStyle == .dark {
-            return UIColor(red: 0.12, green: 0.14, blue: 0.18, alpha: 1.0)
-        }
-
-        return UIColor(red: 0.89, green: 0.90, blue: 0.92, alpha: 1.0)
-    }
-
     enum PortraitHeightProfile: CaseIterable {
         case kanaThreeByThree
         case compactGrid
@@ -2333,9 +2325,5 @@ final class KeyboardViewController: UIInputViewController {
         if hostingController?.view.alpha != 1 {
             hostingController?.view.alpha = 1
         }
-    }
-
-    func latinSuggestions(prefix: String, limit: Int) -> [String] {
-        kanaKanjiStore.latinSuggestions(prefix: prefix, limit: limit)
     }
 }

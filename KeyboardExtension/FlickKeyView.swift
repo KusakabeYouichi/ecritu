@@ -529,13 +529,11 @@ struct FlickKeyView: View {
     @State private var isTouching = false
     @State private var longPressIsActive = false
     @State private var highlightedLongPressIndex = 0
-    @State private var latestTouchLocationY: CGFloat = 0
     @State private var longPressWorkItem: DispatchWorkItem?
     @State private var stuckTouchWatchdogWorkItem: DispatchWorkItem?
     @State private var didTriggerLongPressAction = false
     @State private var latestTouchLocationX: CGFloat = 0
     @State private var longPressAnchorLocationX: CGFloat = 0
-    @State private var longPressAnchorLocationY: CGFloat = 0
     @State private var keyFrameInGlobal: CGRect = .zero
     @State private var secondaryFlickPrimaryDirection: FlickDirection?
     @State private var secondaryFlickVerticalDirection: FlickDirection?
@@ -1112,7 +1110,6 @@ struct FlickKeyView: View {
                 }
                 isTouching = true
                 latestTouchLocationX = value.location.x
-                latestTouchLocationY = value.location.y
 
                 if didTriggerLongPressAction {
                     return
@@ -1353,9 +1350,7 @@ struct FlickKeyView: View {
             }
             activeDirection = .milieu
             latestTouchLocationX = localX
-            latestTouchLocationY = keyFrameInGlobal.height * 0.5
             longPressAnchorLocationX = localX
-            longPressAnchorLocationY = latestTouchLocationY
             LongPressHorizontalCandidateHitTest.keyIDLeftAnchor = nil
             highlightedLongPressIndex = 0
             longPressIsActive = true
@@ -1449,7 +1444,6 @@ struct FlickKeyView: View {
             #endif
             activeDirection = .milieu
             longPressAnchorLocationX = latestTouchLocationX
-            longPressAnchorLocationY = latestTouchLocationY
             LongPressHorizontalCandidateHitTest.keyIDLeftAnchor = nil
             // 縦(面選択のパレット)は、指が盤に入るまでどれも選ばない(ユーザ指定 3138)
             highlightedLongPressIndex = longPressCandidateAxis == .vertical
@@ -1544,7 +1538,6 @@ struct FlickKeyView: View {
         longPressIsActive = false
         latestTouchLocationX = 0
         longPressAnchorLocationX = 0
-        longPressAnchorLocationY = 0
         if LongPressHorizontalCandidateHitTest.keyIDLeftAnchor == rawLongPressKeyID {
             LongPressHorizontalCandidateHitTest.keyIDLeftAnchor = nil
         }

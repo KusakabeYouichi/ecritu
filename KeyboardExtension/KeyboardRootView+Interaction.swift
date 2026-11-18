@@ -371,12 +371,8 @@ extension KeyboardRootView {
         openModeSwitcherPanel(target, triggerLabel: triggerLabel ?? "左下キー \(direction)")
     }
 
-    // 単漢字・顔文字の面へはパレットと左下キーから inputState 経由で入る。ビュー側の取り次ぎは
-    // 面内のキーから呼ぶ絵文字と記号の 2 つだけ残す
-    func enterEmojiMode() {
-        inputState.enterEmojiMode()
-    }
-
+    // 単漢字・顔文字・絵文字の面へはパレットと左下キーから inputState 経由で入る。ビュー側の取り次ぎは
+    // 面内のキーから呼ぶ記号だけ残す
     func enterSymbolsMode() {
         inputState.enterSymbolsMode()
     }

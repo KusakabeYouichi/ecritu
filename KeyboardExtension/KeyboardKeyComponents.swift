@@ -35,7 +35,6 @@ struct LatinShiftKeyButton: View {
     let onLongPress: () -> Void
 
     @Environment(\.keyboardAccentColor) private var accentColor
-    @State private var didTriggerLongPress = false
     private let keyLabelColor = KeyboardThemePalette.keyLabel
     private let shiftSymbolHorizontalOffset: CGFloat = 1
     private let shiftSymbolVerticalOffset: CGFloat = 3
@@ -112,10 +111,8 @@ struct LatinShiftKeyButton: View {
                         return
                     }
                     isPressing = true
-                    didTriggerLongPress = false
                     onTap()
                     let workItem = DispatchWorkItem {
-                        didTriggerLongPress = true
                         onLongPress()
                     }
                     longPressWorkItem = workItem
@@ -1161,11 +1158,6 @@ struct LongPressVerticalCandidatePanel: View {
         return n * cellHeight + max(0, n - 1) * spacing + verticalPadding * 2
     }
 
-    static func panelWidth(cellWidth: CGFloat, columns: Int) -> CGFloat {
-        let columns = CGFloat(max(1, columns))
-        return columns * cellWidth + (columns - 1) * spacing + horizontalPadding * 2
-    }
-
     // 何段目かは指の位置(キー上辺 y=0 のローカル座標)で決める。盤を overlay に変えてキーの
     // 枠が伸びなくなったので、指が乗っている段がそのまま選ばれる(3129: 1 つ上が選ばれていた)。
     // index 0 は最下段
@@ -1293,10 +1285,7 @@ struct ReturnToKanaPaletteKey: View {
     @State private var highlightedIndex = 0
     @State private var longPressWorkItem: DispatchWorkItem?
 
-    @State private var latestLocationY: CGFloat = 0
-    @State private var latestLocationX: CGFloat = 0
     @State private var touchBeganAt: Date?
-    @State private var anchorLocationY: CGFloat = 0
     @Environment(\.keyboardAccentColor) private var accentColor
 
     // 面の切り替えは「選び直し」ではないので待たせない(ユーザ指定 3125)
@@ -1373,8 +1362,6 @@ struct ReturnToKanaPaletteKey: View {
                     if touchBeganAt == nil {
                         touchBeganAt = value.time
                     }
-                    latestLocationY = value.location.y
-                    latestLocationX = value.location.x
                     if paletteIsActive {
                         highlightedIndex = LongPressVerticalCandidatePanel.index(
                             forLocalX: value.location.x,
@@ -1390,7 +1377,6 @@ struct ReturnToKanaPaletteKey: View {
                     let work = DispatchWorkItem {
                         paletteIsActive = true
                         highlightedIndex = LongPressVerticalCandidatePanel.noSelection
-                        anchorLocationY = latestLocationY
                     }
                     longPressWorkItem = work
                     DispatchQueue.main.asyncAfter(deadline: .now() + Self.longPressDelay, execute: work)

@@ -785,17 +785,6 @@ enum KanaModeSwitcherActionOption: String, CaseIterable, Identifiable {
         case .formattedNumber: return "書式化"
         }
     }
-
-    // キーに出る字(面選択のパレットのアイコンと同じ)
-    var keyLabel: String {
-        switch self {
-        case .symbols: return "⌘"
-        case .emoji: return "☺︎"
-        case .kaomoji: return "^_^"
-        case .kanjiRadical: return "熙"
-        case .formattedNumber: return "1,000"
-        }
-    }
 }
 
 enum KanaPostModifierEmptyTapActionOption: String, CaseIterable, Identifiable {

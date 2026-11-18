@@ -396,15 +396,14 @@ final class KanjiTotalStrokeMarkerGridCell: UICollectionViewCell {
 // 字のロングタップで出す字典風ポップアップ(読み / U+XXXX / JIS X 0208区点)の寸法・配置規則。
 // 描画は KanjiCharacterGridCollectionView の Coordinator(UIKit)が行う(2783)。位置はキーの矩形から
 // 決め、上に出す余地が無い最上段では指に隠れないよう横へ逃がす。左右上下ともスクロール領域内に
-// クランプするので見切れない(2481、2490でキー矩形基準に変更)。
-struct KanjiInspectBubble: View {
+// クランプするので見切れない(2481、2490でキー矩形基準に変更)。SwiftUI での描画は使われていなかったので外し、
+// 寸法と規則だけの名前空間にした(3829)
+enum KanjiInspectBubble {
     static let bubbleWidth: CGFloat = 176
     // 2行(読み+コード)+上下パディングの見込み。配置計算にだけ使う
     static let bubbleHeight: CGFloat = 46
     private static let gap: CGFloat = 6
     private static let margin: CGFloat = 4
-
-    let entry: KanjiRadicalFileIndex.Entry
 
     // 音読み(カタカナ)と訓読み(ひらがな)の境目に / を入れる。索引は音→訓の順で並ぶ。
     // 片方しか無い字(コウ だけ/さんずい だけ)はスラッシュを付けない(2491)。
@@ -427,13 +426,6 @@ struct KanjiInspectBubble: View {
         return onReadings.joined(separator: " ") + " / " + kunReadings.joined(separator: " ")
     }
 
-    private var codePointText: String {
-        guard let scalar = entry.character.unicodeScalars.first else {
-            return "—"
-        }
-        return String(format: "U+%04X", scalar.value)
-    }
-
     // 吹き出し左上の位置(セクション座標)。キーの上に出せなければ横、はみ出しはクランプ。
     static func placement(forKey keyFrame: CGRect, in size: CGSize) -> CGPoint {
         func clampedX(_ x: CGFloat) -> CGFloat {
@@ -451,30 +443,6 @@ struct KanjiInspectBubble: View {
             ? keyFrame.maxX + gap
             : keyFrame.minX - gap - bubbleWidth
         return CGPoint(x: clampedX(sideX), y: clampedY(keyFrame.minY))
-    }
-
-    var body: some View {
-        VStack(spacing: 2) {
-            Text(Self.readingsDisplayText(for: entry.readings))
-                .font(.system(size: 12, weight: .bold, design: .rounded))
-                .lineLimit(2)
-                .minimumScaleFactor(0.7)
-            Text("\(codePointText)  区点 \(entry.kuten)")
-                .font(.system(size: 10.5, weight: .medium, design: .rounded))
-                .foregroundStyle(.white.opacity(0.82))
-                .lineLimit(1)
-                .minimumScaleFactor(0.8)
-        }
-        .foregroundStyle(.white)
-        .multilineTextAlignment(.center)
-        .padding(.horizontal, 10)
-        .padding(.vertical, 6)
-        .frame(width: Self.bubbleWidth)
-        .background(
-            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .fill(Color.black.opacity(0.86))
-        )
-        .keyboardSoftShadow(RoundedRectangle(cornerRadius: 8, style: .continuous), color: .black.opacity(0.25), radius: 6, y: 2)
     }
 }
 
@@ -619,7 +587,7 @@ struct RadicalFormGridCollectionView: UIViewRepresentable {
     }
 }
 
-// 部首キーのセル(字形+読み)。SwiftUI の RadicalFormKeyButton と同じ見た目(3193)
+// 部首キーのセル(字形+読み)。SwiftUI 版の RadicalFormKeyButton(3829 で削除)と同じ見た目(3193)
 final class RadicalFormGridCell: UICollectionViewCell {
     static let reuseIdentifier = "RadicalFormGridCell"
     private let glyphLabel = UILabel()
@@ -719,62 +687,6 @@ final class RadicalStrokeMarkerGridCell: UICollectionViewCell {
     func configure(strokes: Int) {
         label.text = "\(strokes)画"
         accessibilityLabel = "\(strokes)画の部首"
-    }
-}
-
-// 部首キー。字形と読み(さんずい 等)を並べる。
-struct RadicalFormKeyButton: View {
-    let form: RadicalForm
-    // 設定で選んだ字形(艸 等)。選択肢を持たない部首は plist の字形そのまま(2503)
-    let displayForm: String
-    let isSelected: Bool
-    let height: CGFloat
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            VStack(spacing: 0) {
-                Text(displayForm)
-                    .font(.custom("HiraMinProN-W3", size: 22))
-                    .minimumScaleFactor(0.6)
-                    .lineLimit(1)
-                Text(form.name)
-                    .font(.system(size: 9))
-                    .foregroundStyle(Color(.secondaryLabel))
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.7)
-            }
-            .frame(maxWidth: .infinity)
-            .frame(height: height)
-            .background(
-                RoundedRectangle(cornerRadius: 6, style: .continuous)
-                    .fill(isSelected ? Color.accentColor.opacity(0.18) : Color(.systemBackground))
-            )
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel("\(displayForm) \(form.name)")
-    }
-}
-
-// 画数の区切り(タップできない)。「3画」のように示す。
-struct RadicalStrokeMarkerCell: View {
-    let strokes: Int
-    let height: CGFloat
-
-    var body: some View {
-        Text("\(strokes)画")
-            .font(.system(size: 13, weight: .semibold, design: .rounded))
-            .foregroundStyle(Color(.label).opacity(0.75))
-            .lineLimit(1)
-            .minimumScaleFactor(0.7)
-            .frame(maxWidth: .infinity)
-            .frame(height: height)
-            .background(
-                RoundedRectangle(cornerRadius: 6, style: .continuous)
-                    .fill(Color(.tertiarySystemFill))
-            )
-            .accessibilityLabel("\(strokes)画の部首")
     }
 }
 
