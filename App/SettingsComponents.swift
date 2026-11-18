@@ -355,6 +355,21 @@ func applyScrollIndexIndicatorState(
     }
 }
 
+// 索引の表示を 2 つの Binding へ渡す閉包。辞書の 4 つのカードで同じ閉包を書いていたのを 1 つに(3829)
+func scrollIndexIndicatorStateHandler(
+    scrollIndexTitle: Binding<String>,
+    isScrollIndexVisible: Binding<Bool>
+) -> (String, Bool) -> Void {
+    { title, isVisible in
+        applyScrollIndexIndicatorState(
+            title: title,
+            isVisible: isVisible,
+            scrollIndexTitle: scrollIndexTitle,
+            isScrollIndexVisible: isScrollIndexVisible
+        )
+    }
+}
+
 struct DictionaryRegistrationHeaderView: View {
     let title: String
     let count: Int
@@ -483,5 +498,50 @@ struct DictionaryRegistrationForm<Fields: View>: View {
                 )
             }
         }
+    }
+}
+
+// 青地に白の Loading 表示。起動直後の RootLoadingView と ContentView の loadingToastLabel の写しを 1 つに(3829)
+struct LoadingCapsule: View {
+    let message: String
+
+    var body: some View {
+        HStack(spacing: 8) {
+            ProgressView()
+                .controlSize(.small)
+                .tint(.white)
+
+            Text(message)
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(.white)
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .background(Color.accentColor, in: Capsule())
+        .shadow(color: .black.opacity(0.12), radius: 8, y: 3)
+    }
+}
+
+// 横並びの選択肢の札(角丸 8、選択中は accent 0.18 の塗りと枠)。E.4 と V.5 の写しを 1 つに(3829)。
+// ボタン側の色・押せなさ・読み上げ名は呼ぶ側で付ける
+struct ChipOptionLabel: View {
+    let title: String
+    let isSelected: Bool
+
+    var body: some View {
+        Text(title)
+            .font(.subheadline.weight(isSelected ? .semibold : .regular))
+            .lineLimit(1)
+            .minimumScaleFactor(0.8)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 8)
+            .background(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .fill(isSelected ? Color.accentColor.opacity(0.18) : Color.secondary.opacity(0.08))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: 1)
+            )
     }
 }

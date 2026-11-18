@@ -1,6 +1,5 @@
 import SwiftUI
 import UIKit
-import UniformTypeIdentifiers
 
 // 設定カード内の小見出し付き項目(複数セクションで共用)
 @ViewBuilder
@@ -12,110 +11,88 @@ func settingsSubItem<Content: View>(_ title: String, @ViewBuilder content: () ->
     }
 }
 
+// 秒数のスライダー行(見出し・[初期設定]の印・値・スライダー・[初期設定に戻す])。E.2 の 2 つと E.3 の写しを 1 つに(3829)
+private struct SecondsSliderRow: View {
+    let title: String
+    @Binding var value: Double
+    let range: ClosedRange<Double>
+    let step: Double
+    let defaultValue: Double
+    let fractionLength: Int
+
+    private var isAtDefault: Bool {
+        abs(value - defaultValue) <= 0.001
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack {
+                Text(title)
+                    .font(.subheadline.weight(.semibold))
+                Spacer(minLength: 12)
+                if isAtDefault {
+                    Text("初期設定")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(Color.orange)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(
+                            Capsule(style: .continuous)
+                                .fill(Color.orange.opacity(0.12))
+                        )
+                }
+                Text("\(value.formatted(.number.precision(.fractionLength(fractionLength)))) 秒")
+                    .font(.caption.monospacedDigit())
+                    .foregroundStyle(.secondary)
+            }
+
+            Slider(value: $value, in: range, step: step)
+                .tint(Color.orange)
+
+            HStack {
+                Text("初期設定(3つとも): \(defaultValue.formatted(.number.precision(.fractionLength(fractionLength)))) 秒")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                Spacer(minLength: 8)
+
+                if !isAtDefault {
+                    Button("初期設定に戻す") {
+                        value = defaultValue
+                    }
+                    .font(.caption.weight(.semibold))
+                }
+            }
+        }
+    }
+}
+
 struct KeyRepeatSettingsSection: View {
     @Binding var keyRepeatInitialDelay: Double
     @Binding var keyRepeatInterval: Double
-
-    private func isAtRepeatDefault(_ value: Double, default defaultValue: Double) -> Bool {
-        abs(value - defaultValue) <= 0.001
-    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             SettingsCardHeadline("E.2 削除キーリピート")
 
             VStack(alignment: .leading, spacing: 12) {
-                VStack(alignment: .leading, spacing: 6) {
-                    HStack {
-                        Text("リピート開始までの時間")
-                            .font(.subheadline.weight(.semibold))
-                        Spacer(minLength: 12)
-                        if isAtRepeatDefault(
-                            keyRepeatInitialDelay,
-                            default: RepeatSettings.initialDelayDefault
-                        ) {
-                            Text("初期設定")
-                                .font(.caption2.weight(.semibold))
-                                .foregroundStyle(Color.orange)
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 2)
-                                .background(
-                                    Capsule(style: .continuous)
-                                        .fill(Color.orange.opacity(0.12))
-                                )
-                        }
-                        Text("\(keyRepeatInitialDelay.formatted(.number.precision(.fractionLength(2)))) 秒")
-                            .font(.caption.monospacedDigit())
-                            .foregroundStyle(.secondary)
-                    }
+                SecondsSliderRow(
+                    title: "リピート開始までの時間",
+                    value: $keyRepeatInitialDelay,
+                    range: RepeatSettings.initialDelayRange,
+                    step: 0.01,
+                    defaultValue: RepeatSettings.initialDelayDefault,
+                    fractionLength: 2
+                )
 
-                    Slider(value: $keyRepeatInitialDelay, in: RepeatSettings.initialDelayRange, step: 0.01)
-                        .tint(Color.orange)
-
-                    HStack {
-                        Text("初期設定(3つとも): \(RepeatSettings.initialDelayDefault.formatted(.number.precision(.fractionLength(2)))) 秒")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-
-                        Spacer(minLength: 8)
-
-                        if !isAtRepeatDefault(
-                            keyRepeatInitialDelay,
-                            default: RepeatSettings.initialDelayDefault
-                        ) {
-                            Button("初期設定に戻す") {
-                                keyRepeatInitialDelay = RepeatSettings.initialDelayDefault
-                            }
-                            .font(.caption.weight(.semibold))
-                        }
-                    }
-                }
-
-                VStack(alignment: .leading, spacing: 6) {
-                    HStack {
-                        Text("リピート速度(間隔)")
-                            .font(.subheadline.weight(.semibold))
-                        Spacer(minLength: 12)
-                        if isAtRepeatDefault(
-                            keyRepeatInterval,
-                            default: RepeatSettings.intervalDefault
-                        ) {
-                            Text("初期設定")
-                                .font(.caption2.weight(.semibold))
-                                .foregroundStyle(Color.orange)
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 2)
-                                .background(
-                                    Capsule(style: .continuous)
-                                        .fill(Color.orange.opacity(0.12))
-                                )
-                        }
-                        Text("\(keyRepeatInterval.formatted(.number.precision(.fractionLength(2)))) 秒")
-                            .font(.caption.monospacedDigit())
-                            .foregroundStyle(.secondary)
-                    }
-
-                    Slider(value: $keyRepeatInterval, in: RepeatSettings.intervalRange, step: 0.01)
-                        .tint(Color.orange)
-
-                    HStack {
-                        Text("初期設定(3つとも): \(RepeatSettings.intervalDefault.formatted(.number.precision(.fractionLength(2)))) 秒")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-
-                        Spacer(minLength: 8)
-
-                        if !isAtRepeatDefault(
-                            keyRepeatInterval,
-                            default: RepeatSettings.intervalDefault
-                        ) {
-                            Button("初期設定に戻す") {
-                                keyRepeatInterval = RepeatSettings.intervalDefault
-                            }
-                            .font(.caption.weight(.semibold))
-                        }
-                    }
-                }
+                SecondsSliderRow(
+                    title: "リピート速度(間隔)",
+                    value: $keyRepeatInterval,
+                    range: RepeatSettings.intervalRange,
+                    step: 0.01,
+                    defaultValue: RepeatSettings.intervalDefault,
+                    fractionLength: 2
+                )
             }
 
             Text("削除キーは1回目の押下で削除され、上の時間が過ぎると設定した間隔で連続削除されます。")
@@ -144,20 +121,7 @@ struct ComposingTextStyleSettingsSection: View {
                     Button {
                         rawValue = option.rawValue
                     } label: {
-                        Text(option.title)
-                            .font(.subheadline.weight(isSelected ? .semibold : .regular))
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.8)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 8)
-                            .background(
-                                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                    .fill(isSelected ? Color.accentColor.opacity(0.18) : Color.secondary.opacity(0.08))
-                            )
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                    .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: 1)
-                            )
+                        ChipOptionLabel(title: option.title, isSelected: isSelected)
                     }
                     .buttonStyle(.plain)
                     .foregroundStyle(Color.primary)
@@ -183,10 +147,6 @@ struct IdleCommitSettingsSection: View {
     @Binding var idleCommitEnabled: Bool
     @Binding var idleCommitInterval: Double
 
-    private func isAtDefault(_ value: Double, default defaultValue: Double) -> Bool {
-        abs(value - defaultValue) <= 0.001
-    }
-
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             SettingsCardHeadline("E.3 自動確定(アイドル)")
@@ -196,45 +156,14 @@ struct IdleCommitSettingsSection: View {
                 .tint(Color.orange)
 
             if idleCommitEnabled {
-                VStack(alignment: .leading, spacing: 6) {
-                    HStack {
-                        Text("確定までの待ち時間")
-                            .font(.subheadline.weight(.semibold))
-                        Spacer(minLength: 12)
-                        if isAtDefault(idleCommitInterval, default: IdleCommitSettings.intervalDefault) {
-                            Text("初期設定")
-                                .font(.caption2.weight(.semibold))
-                                .foregroundStyle(Color.orange)
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 2)
-                                .background(
-                                    Capsule(style: .continuous)
-                                        .fill(Color.orange.opacity(0.12))
-                                )
-                        }
-                        Text("\(idleCommitInterval.formatted(.number.precision(.fractionLength(1)))) 秒")
-                            .font(.caption.monospacedDigit())
-                            .foregroundStyle(.secondary)
-                    }
-
-                    Slider(value: $idleCommitInterval, in: IdleCommitSettings.intervalRange, step: 0.1)
-                        .tint(Color.orange)
-
-                    HStack {
-                        Text("初期設定(3つとも): \(IdleCommitSettings.intervalDefault.formatted(.number.precision(.fractionLength(1)))) 秒")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-
-                        Spacer(minLength: 8)
-
-                        if !isAtDefault(idleCommitInterval, default: IdleCommitSettings.intervalDefault) {
-                            Button("初期設定に戻す") {
-                                idleCommitInterval = IdleCommitSettings.intervalDefault
-                            }
-                            .font(.caption.weight(.semibold))
-                        }
-                    }
-                }
+                SecondsSliderRow(
+                    title: "確定までの待ち時間",
+                    value: $idleCommitInterval,
+                    range: IdleCommitSettings.intervalRange,
+                    step: 0.1,
+                    defaultValue: IdleCommitSettings.intervalDefault,
+                    fractionLength: 1
+                )
             }
 
             Text("先行する確定文字があると、未確定(下線)は送信時に切り捨てられます(iOSの拡張キーボード共通の制約)。入力が上の時間だけ止まると未確定を確定して送信に乗せます。行頭から全部が未確定のときは元々送信に乗るため対象外です。")

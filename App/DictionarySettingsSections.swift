@@ -1,6 +1,5 @@
 import SwiftUI
 import UIKit
-import UniformTypeIdentifiers
 
 struct AjoutVocabularySettingsSection: View {
     @Binding var entries: [VocabularyEntry]
@@ -134,14 +133,10 @@ struct AjoutVocabularySettingsSection: View {
                             isRegistrationVisible = true
                         }
                     },
-                    onIndexIndicatorStateChange: { title, isVisible in
-                        applyScrollIndexIndicatorState(
-                            title: title,
-                            isVisible: isVisible,
-                            scrollIndexTitle: $scrollIndexTitle,
-                            isScrollIndexVisible: $isScrollIndexVisible
-                        )
-                    }
+                    onIndexIndicatorStateChange: scrollIndexIndicatorStateHandler(
+                        scrollIndexTitle: $scrollIndexTitle,
+                        isScrollIndexVisible: $isScrollIndexVisible
+                    )
                 )
                 .frame(height: listHeight)
             }
@@ -268,14 +263,10 @@ struct LearnedDictionarySettingsSection: View {
                     pendingDeletionEntryID: pendingDeletionEntry?.id,
                     onDelete: { entry in pendingDeletionEntry = entry },
                     onSelect: nil,
-                    onIndexIndicatorStateChange: { title, isVisible in
-                        applyScrollIndexIndicatorState(
-                            title: title,
-                            isVisible: isVisible,
-                            scrollIndexTitle: $scrollIndexTitle,
-                            isScrollIndexVisible: $isScrollIndexVisible
-                        )
-                    }
+                    onIndexIndicatorStateChange: scrollIndexIndicatorStateHandler(
+                        scrollIndexTitle: $scrollIndexTitle,
+                        isScrollIndexVisible: $isScrollIndexVisible
+                    )
                 )
                 .frame(height: listHeight)
             }
@@ -451,14 +442,10 @@ struct SuppressionDictionarySettingsSection: View {
                             isRegistrationVisible = true
                         }
                     },
-                    onIndexIndicatorStateChange: { title, isVisible in
-                        applyScrollIndexIndicatorState(
-                            title: title,
-                            isVisible: isVisible,
-                            scrollIndexTitle: $scrollIndexTitle,
-                            isScrollIndexVisible: $isScrollIndexVisible
-                        )
-                    }
+                    onIndexIndicatorStateChange: scrollIndexIndicatorStateHandler(
+                        scrollIndexTitle: $scrollIndexTitle,
+                        isScrollIndexVisible: $isScrollIndexVisible
+                    )
                 )
                 .frame(height: listHeight)
             }
@@ -825,14 +812,10 @@ struct ReadOnlyDictionarySettingsSection: View {
                     selectedEntryID: nil,
                     onDelete: nil,
                     onSelect: nil,
-                    onIndexIndicatorStateChange: { title, isVisible in
-                        applyScrollIndexIndicatorState(
-                            title: title,
-                            isVisible: isVisible,
-                            scrollIndexTitle: $scrollIndexTitle,
-                            isScrollIndexVisible: $isScrollIndexVisible
-                        )
-                    }
+                    onIndexIndicatorStateChange: scrollIndexIndicatorStateHandler(
+                        scrollIndexTitle: $scrollIndexTitle,
+                        isScrollIndexVisible: $isScrollIndexVisible
+                    )
                 )
                 .frame(height: listHeight)
             }

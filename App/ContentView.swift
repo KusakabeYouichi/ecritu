@@ -1,5 +1,4 @@
 import SwiftUI
-import Darwin
 import Contacts
 #if os(iOS)
 import UIKit
@@ -1276,19 +1275,7 @@ struct ContentView: View {
 
     // 青地に白(3713、ユーザ指定。前は半透明の素材で背景に紛れた)。起動直後の RootLoadingView と同じ見た目
     private var loadingToastLabel: some View {
-        HStack(spacing: 8) {
-            ProgressView()
-                .controlSize(.small)
-                .tint(.white)
-
-            Text(loadingToastMessage)
-                .font(.footnote.weight(.semibold))
-                .foregroundStyle(.white)
-        }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 10)
-        .background(Color.accentColor, in: Capsule())
-        .shadow(color: .black.opacity(0.12), radius: 8, y: 3)
+        LoadingCapsule(message: loadingToastMessage)
     }
 
     @ViewBuilder

@@ -74,32 +74,14 @@ struct ThirdPartyLicensesSection: View {
                 .font(.headline)
 
             Link(destination: ContentView.privacyPolicyURL) {
-                HStack(spacing: 10) {
-                    Image(systemName: "hand.raised")
-                        .foregroundStyle(.secondary)
-                    Text("プライバシーポリシーを開く")
-                        .font(.subheadline.weight(.semibold))
-                    Spacer(minLength: 8)
-                    Image(systemName: "arrow.up.right")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                }
+                linkRowLabel(icon: "hand.raised", title: "プライバシーポリシーを開く", trailingIcon: "arrow.up.right")
             }
             .buttonStyle(.plain)
 
             NavigationLink {
                 ThirdPartyLicensesListView()
             } label: {
-                HStack(spacing: 10) {
-                    Image(systemName: "doc.text")
-                        .foregroundStyle(.secondary)
-                    Text("ライセンス表示を開く")
-                        .font(.subheadline.weight(.semibold))
-                    Spacer(minLength: 8)
-                    Image(systemName: "chevron.right")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                }
+                linkRowLabel(icon: "doc.text", title: "ライセンス表示を開く", trailingIcon: "chevron.right")
             }
             .buttonStyle(.plain)
 
@@ -108,6 +90,20 @@ struct ThirdPartyLicensesSection: View {
                 .foregroundStyle(.secondary)
         }
         .settingsCardStyle()
+    }
+
+    // 2 つの行(ポリシー・ライセンス)の中身。同じ形の写しを 1 つに(3829)
+    private func linkRowLabel(icon: String, title: String, trailingIcon: String) -> some View {
+        HStack(spacing: 10) {
+            Image(systemName: icon)
+                .foregroundStyle(.secondary)
+            Text(title)
+                .font(.subheadline.weight(.semibold))
+            Spacer(minLength: 8)
+            Image(systemName: trailingIcon)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+        }
     }
 }
 

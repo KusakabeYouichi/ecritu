@@ -60,55 +60,13 @@ struct ContactCandidateDisplaySettingsSection: View {
 
             VStack(spacing: 8) {
                 ForEach(ContactCandidateDisplayModeOption.allCases) { option in
-                    let isSelected = selection == option
-
-                    Button {
+                    RadioOptionRow(
+                        title: option.title,
+                        subtitle: option.subtitle,
+                        isSelected: selection == option
+                    ) {
                         selection = option
-                    } label: {
-                        HStack(alignment: .top, spacing: 9) {
-                            VStack(alignment: .leading, spacing: 3) {
-                                Text(option.title)
-                                    .font(.subheadline.weight(.semibold))
-                                    .foregroundStyle(.primary)
-                                    .fixedSize(horizontal: false, vertical: true)
-
-                                Text(option.subtitle)
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                                    .fixedSize(horizontal: false, vertical: true)
-                            }
-                            .frame(maxWidth: .infinity, alignment: .leading)
-
-                            Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                                .font(.system(size: 16, weight: .semibold))
-                                .foregroundStyle(
-                                    isSelected
-                                        ? Color.accentColor
-                                        : AppTheme.subduedIcon
-                                )
-                        }
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 9)
-                        .background(
-                            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                .fill(
-                                    isSelected
-                                        ? AppTheme.selectedControlBackground
-                                        : AppTheme.controlBackground
-                                )
-                        )
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                .stroke(
-                                    isSelected
-                                        ? AppTheme.emphasisBorder
-                                        : AppTheme.subtleBorder,
-                                    lineWidth: isSelected ? 1.2 : 1
-                                )
-                        )
                     }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel(option.title)
                 }
             }
             .padding(4)
@@ -365,7 +323,16 @@ struct KanaGakiSettingsSection: View {
     // 例として並べる語の数(超えたら「など」)
     static let exampleLimit = 12
 
+    // body のたびに表を走査していたのを、仲間ごとに 1 回だけ作って持つ(3829。結果と並びは同じ)
+    private static let examplesByCategory: [KanaGakiCategory: String] = Dictionary(
+        uniqueKeysWithValues: KanaGakiCategory.allCases.map { ($0, makeExamples(for: $0)) }
+    )
+
     static func examples(for category: KanaGakiCategory) -> String {
+        examplesByCategory[category] ?? makeExamples(for: category)
+    }
+
+    private static func makeExamples(for category: KanaGakiCategory) -> String {
         var seen = Set<String>()
         let surfaces = (KanaGakiTable.entries[category] ?? []).map(\.surface).filter { seen.insert($0).inserted }
         let shown = surfaces.prefix(exampleLimit).joined(separator: "、")
@@ -508,57 +475,73 @@ struct KanjiRewriteOptionList: View {
     var body: some View {
         VStack(spacing: 8) {
             ForEach(KakikaePreference.allCases) { option in
-                let isSelected = preference == option
-
-                Button {
+                RadioOptionRow(
+                    title: option.title,
+                    subtitle: subtitle(option),
+                    isSelected: preference == option
+                ) {
                     rawValue = option.rawValue
-                } label: {
-                    HStack(alignment: .top, spacing: 9) {
-                        VStack(alignment: .leading, spacing: 3) {
-                            Text(option.title)
-                                .font(.subheadline.weight(.semibold))
-                                .foregroundStyle(.primary)
-                                .fixedSize(horizontal: false, vertical: true)
-
-                            Text(subtitle(option))
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                                .fixedSize(horizontal: false, vertical: true)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-
-                        Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                            .font(.system(size: 16, weight: .semibold))
-                            .foregroundStyle(
-                                isSelected
-                                    ? Color.accentColor
-                                    : AppTheme.subduedIcon
-                            )
-                    }
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 9)
-                    .background(
-                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .fill(
-                                isSelected
-                                    ? AppTheme.selectedControlBackground
-                                    : AppTheme.controlBackground
-                            )
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .stroke(
-                                isSelected
-                                    ? AppTheme.emphasisBorder
-                                    : AppTheme.subtleBorder,
-                                lineWidth: isSelected ? 1.2 : 1
-                            )
-                    )
                 }
-                .buttonStyle(.plain)
-                .accessibilityLabel(option.title)
             }
         }
+    }
+}
+
+// ラジオボタン式の 1 行(見出し・説明・丸印、選択中は 1.2pt の枠)。X.16 と書きかえの 4 択の写しを 1 つに(3829)
+private struct RadioOptionRow: View {
+    let title: String
+    let subtitle: String
+    let isSelected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button {
+            action()
+        } label: {
+            HStack(alignment: .top, spacing: 9) {
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(title)
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.primary)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    Text(subtitle)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(
+                        isSelected
+                            ? Color.accentColor
+                            : AppTheme.subduedIcon
+                    )
+            }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 9)
+            .background(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .fill(
+                        isSelected
+                            ? AppTheme.selectedControlBackground
+                            : AppTheme.controlBackground
+                    )
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .stroke(
+                        isSelected
+                            ? AppTheme.emphasisBorder
+                            : AppTheme.subtleBorder,
+                        lineWidth: isSelected ? 1.2 : 1
+                    )
+            )
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(title)
     }
 }
 

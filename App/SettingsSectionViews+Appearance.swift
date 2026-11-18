@@ -251,20 +251,7 @@ struct CandidateFontStyleSettingsSection: View {
                     Button {
                         rawValue = option.rawValue
                     } label: {
-                        Text(option.title)
-                            .font(.subheadline.weight(isSelected ? .semibold : .regular))
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.8)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 8)
-                            .background(
-                                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                    .fill(isSelected ? Color.accentColor.opacity(0.18) : Color.secondary.opacity(0.08))
-                            )
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                    .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: 1)
-                            )
+                        ChipOptionLabel(title: option.title, isSelected: isSelected)
                     }
                     .buttonStyle(.plain)
                     .foregroundStyle(isAvailable ? Color.primary : Color.secondary)

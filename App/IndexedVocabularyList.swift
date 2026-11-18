@@ -1,6 +1,5 @@
 import SwiftUI
 import UIKit
-import UniformTypeIdentifiers
 
 struct IndexedVocabularyList: UIViewRepresentable {
     let entries: [VocabularyEntry]

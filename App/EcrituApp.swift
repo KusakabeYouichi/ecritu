@@ -23,19 +23,7 @@ private struct RootLoadingView: View {
                     AppTheme.screenBackground
                         .ignoresSafeArea()
 
-                    HStack(spacing: 8) {
-                        ProgressView()
-                            .controlSize(.small)
-                            .tint(.white)
-
-                        Text("起動準備中")
-                            .font(.footnote.weight(.semibold))
-                            .foregroundStyle(.white)
-                    }
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 10)
-                    .background(Color.accentColor, in: Capsule())
-                    .shadow(color: .black.opacity(0.12), radius: 8, y: 3)
+                    LoadingCapsule(message: "起動準備中")
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .task {
