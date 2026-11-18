@@ -832,6 +832,25 @@ private struct SymbolInspectButtonStyle: ButtonStyle {
     }
 }
 
+/// 丸ゴシックの UIFont と吹き出しの端寄せの計算。このファイルの 3 か所・2 か所で共通(3829)
+private enum KeyComponentUIKitSupport {
+    static func roundedSystemFont(ofSize size: CGFloat, weight: UIFont.Weight) -> UIFont {
+        var font = UIFont.systemFont(ofSize: size, weight: weight)
+        if let descriptor = font.fontDescriptor.withDesign(.rounded) {
+            font = UIFont(descriptor: descriptor, size: size)
+        }
+        return font
+    }
+
+    // 吹き出し中心を枠内[minX+margin+half, maxX-margin-half]にクランプする(3829)
+    static func clampedBubbleCenterX(_ centerX: CGFloat, minX: CGFloat, maxX: CGFloat, margin: CGFloat, half: CGFloat) -> CGFloat {
+        min(
+            max(centerX, minX + margin + half),
+            max(minX + margin + half, maxX - margin - half)
+        )
+    }
+}
+
 // キー上に吹き出しを配置する。なるべく1行で表示し、画面端に当たる場合は内側へずらす。
 // 1行で最大幅を超える長い名前(バチカン等)のみ2行に折り返す。
 private struct SymbolInspectBubbleOverlay: View {
@@ -846,10 +865,7 @@ private struct SymbolInspectBubbleOverlay: View {
 
     // 1行表示に必要なテキスト幅を UIFont で実測する。
     private var idealTextWidth: CGFloat {
-        var font = UIFont.systemFont(ofSize: 13, weight: .bold)
-        if let descriptor = font.fontDescriptor.withDesign(.rounded) {
-            font = UIFont(descriptor: descriptor, size: 13)
-        }
+        let font = KeyComponentUIKitSupport.roundedSystemFont(ofSize: 13, weight: .bold)
         return ceil((text as NSString).size(withAttributes: [.font: font]).width)
     }
 
@@ -865,9 +881,8 @@ private struct SymbolInspectBubbleOverlay: View {
             let half = bubbleWidth / 2
             let keyCenterX = keyFrame.midX
             // 吹き出し中心を枠内[minX+margin+half, maxX-margin-half]にクランプし、はみ出しを内側へずらす。
-            let clampedCenterX = min(
-                max(keyCenterX, bounds.minX + screenMargin + half),
-                max(bounds.minX + screenMargin + half, bounds.maxX - screenMargin - half)
+            let clampedCenterX = KeyComponentUIKitSupport.clampedBubbleCenterX(
+                keyCenterX, minX: bounds.minX, maxX: bounds.maxX, margin: screenMargin, half: half
             )
             let dx = clampedCenterX - keyCenterX
 
@@ -966,26 +981,42 @@ struct EmojiCategoryKeyButton: View {
             Text(icon)
                 .font(.system(size: 18))
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(
-                    RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .fill(
-                            isSelected
-                                ? KeyboardThemePalette.categoryButtonBackgroundSelected
-                                : KeyboardThemePalette.categoryButtonBackground
-                        )
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .stroke(
-                            isSelected
-                                ? KeyboardThemePalette.keyBorderEmphasis
-                                : KeyboardThemePalette.keyBorder,
-                            lineWidth: isSelected ? 1.4 : 1
-                        )
+                .modifier(
+                    CategoryKeyChrome(
+                        isSelected: isSelected,
+                        fill: isSelected
+                            ? KeyboardThemePalette.categoryButtonBackgroundSelected
+                            : KeyboardThemePalette.categoryButtonBackground,
+                        border: isSelected
+                            ? KeyboardThemePalette.keyBorderEmphasis
+                            : KeyboardThemePalette.keyBorder
+                    )
                 )
         }
         .buttonStyle(.plain)
         .accessibilityLabel(icon)
+    }
+}
+
+/// 分類ボタン 3 種で共通の角丸の塗りと縁(3829)
+private struct CategoryKeyChrome: ViewModifier {
+    let isSelected: Bool
+    let fill: Color
+    let border: Color
+
+    func body(content: Content) -> some View {
+        content
+            .background(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .fill(fill)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .stroke(
+                        border,
+                        lineWidth: isSelected ? 1.4 : 1
+                    )
+            )
     }
 }
 
@@ -1002,22 +1033,16 @@ struct SymbolCategoryKeyButton: View {
                 .font(.system(size: 18, weight: .semibold, design: .rounded))
                 .foregroundStyle(isSelected ? tintColor : tintColor.opacity(0.8))
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(
-                    RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .fill(
-                            isSelected
-                                ? tintColor.opacity(0.22)
-                                : KeyboardThemePalette.categoryButtonBackground
-                        )
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .stroke(
-                            isSelected
-                                ? tintColor.opacity(0.75)
-                                : KeyboardThemePalette.keyBorder,
-                            lineWidth: isSelected ? 1.4 : 1
-                        )
+                .modifier(
+                    CategoryKeyChrome(
+                        isSelected: isSelected,
+                        fill: isSelected
+                            ? tintColor.opacity(0.22)
+                            : KeyboardThemePalette.categoryButtonBackground,
+                        border: isSelected
+                            ? tintColor.opacity(0.75)
+                            : KeyboardThemePalette.keyBorder
+                    )
                 )
         }
         .buttonStyle(.plain)
@@ -1042,22 +1067,16 @@ struct KaomojiCategoryKeyButton: View {
                     ? KeyboardThemePalette.keyLabel
                     : KeyboardThemePalette.keyLabelSecondary
             )
-            .background(
-                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .fill(
-                        isSelected
-                            ? KeyboardThemePalette.categoryButtonBackgroundSelected
-                            : KeyboardThemePalette.categoryButtonBackground
-                    )
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .stroke(
-                        isSelected
-                            ? KeyboardThemePalette.keyBorderEmphasis
-                            : KeyboardThemePalette.keyBorder,
-                        lineWidth: isSelected ? 1.4 : 1
-                    )
+            .modifier(
+                CategoryKeyChrome(
+                    isSelected: isSelected,
+                    fill: isSelected
+                        ? KeyboardThemePalette.categoryButtonBackgroundSelected
+                        : KeyboardThemePalette.categoryButtonBackground,
+                    border: isSelected
+                        ? KeyboardThemePalette.keyBorderEmphasis
+                        : KeyboardThemePalette.keyBorder
+                )
             )
         }
         .buttonStyle(.plain)
@@ -1218,16 +1237,7 @@ struct LongPressVerticalCandidatePanel: View {
         }
         .padding(.horizontal, Self.horizontalPadding)
         .padding(.vertical, Self.verticalPadding)
-        .background(
-            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .fill(KeyboardThemePalette.longPressPanelBackground)
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .stroke(KeyboardThemePalette.longPressPanelBorder, lineWidth: 1)
-        )
-        .keyboardSoftShadow(RoundedRectangle(cornerRadius: 10, style: .continuous), color: KeyboardThemePalette.longPressPanelShadow, radius: 4, y: 1)
-        .allowsHitTesting(false)
+        .modifier(LongPressPanelFrame(cornerRadius: 10))
     }
 
     private func cell(index: Int, candidate: String) -> some View {
@@ -1252,19 +1262,48 @@ struct LongPressVerticalCandidatePanel: View {
                     .foregroundStyle(KeyboardThemePalette.longPressPanelText)
                     .padding(.horizontal, 8)
                     .frame(width: cellWidth, height: Self.cellHeight)
-                    .background(
-                        RoundedRectangle(cornerRadius: 8, style: .continuous)
-                            .fill(
-                                index == highlightedIndex
-                                    ? KeyboardThemePalette.longPressPanelCellHighlight
-                                    : KeyboardThemePalette.longPressPanelCellBackground
-                            )
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8, style: .continuous)
-                            .stroke(KeyboardThemePalette.keyBorder, lineWidth: 1)
-                    )
+                    .modifier(LongPressPanelCellChrome(isHighlighted: index == highlightedIndex))
         )
+    }
+}
+
+/// 長押しの盤の外枠(塗り・縁・影、触れない)。キーの盤 2 か所で共通(3829)
+struct LongPressPanelFrame: ViewModifier {
+    let cornerRadius: CGFloat
+
+    func body(content: Content) -> some View {
+        content
+            .background(
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .fill(KeyboardThemePalette.longPressPanelBackground)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .stroke(KeyboardThemePalette.longPressPanelBorder, lineWidth: 1)
+            )
+            .keyboardSoftShadow(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous), color: KeyboardThemePalette.longPressPanelShadow, radius: 4, y: 1)
+            .allowsHitTesting(false)
+    }
+}
+
+/// 長押しの盤の 1 マスの塗りと縁(3829)
+struct LongPressPanelCellChrome: ViewModifier {
+    let isHighlighted: Bool
+
+    func body(content: Content) -> some View {
+        content
+            .background(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .fill(
+                        isHighlighted
+                            ? KeyboardThemePalette.longPressPanelCellHighlight
+                            : KeyboardThemePalette.longPressPanelCellBackground
+                    )
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .stroke(KeyboardThemePalette.keyBorder, lineWidth: 1)
+            )
     }
 }
 
@@ -1876,10 +1915,7 @@ struct EmojiGridCollectionView: UIViewRepresentable {
         // 左右 padding 10、キーの上 36pt、画面端で 6pt 内側にクランプ)
         private func showBubble(text: String, kind: SymbolInspectBubbleKind, above cell: UIView, in host: UIView) {
             hideBubble()
-            var font = UIFont.systemFont(ofSize: 13, weight: .bold)
-            if let descriptor = font.fontDescriptor.withDesign(.rounded) {
-                font = UIFont(descriptor: descriptor, size: 13)
-            }
+            let font = KeyComponentUIKitSupport.roundedSystemFont(ofSize: 13, weight: .bold)
             let label = UILabel()
             label.text = text
             label.font = font
@@ -1903,9 +1939,8 @@ struct EmojiGridCollectionView: UIViewRepresentable {
             let hostOriginX = hostFrameInWindow.minX
             let half = bubbleWidth / 2
             let centerXInScreen = hostOriginX + cellFrame.midX
-            let clampedCenterX = min(
-                max(centerXInScreen, hostFrameInWindow.minX + 6 + half),
-                max(hostFrameInWindow.minX + 6 + half, hostFrameInWindow.maxX - 6 - half)
+            let clampedCenterX = KeyComponentUIKitSupport.clampedBubbleCenterX(
+                centerXInScreen, minX: hostFrameInWindow.minX, maxX: hostFrameInWindow.maxX, margin: 6, half: half
             )
             let centerX = clampedCenterX - hostOriginX
             container.frame = CGRect(
@@ -2235,11 +2270,7 @@ final class KaomojiGridCell: UICollectionViewCell {
         feedback.layer.borderColor = UIColor(KeyboardThemePalette.pressFeedbackRoundedBorder).cgColor
         feedback.isHidden = true
         feedback.isUserInteractionEnabled = false
-        var font = UIFont.systemFont(ofSize: 18, weight: .semibold)
-        if let descriptor = font.fontDescriptor.withDesign(.rounded) {
-            font = UIFont(descriptor: descriptor, size: 18)
-        }
-        label.font = font
+        label.font = KeyComponentUIKitSupport.roundedSystemFont(ofSize: 18, weight: .semibold)
         label.textColor = UIColor(KeyboardThemePalette.keyLabel)
         label.textAlignment = .center
         label.numberOfLines = 1

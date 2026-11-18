@@ -22,7 +22,7 @@ extension KeyboardRootView {
     var usesLandscapeLatinTypewriterLayout: Bool {
         isLandscapeLayout
             && inputMode == .latin
-            && (latinLayoutMode == .qwerty || latinLayoutMode == .azerty)
+            && usesTypewriterLatinLayout
     }
 
     var landscapeLatinInlineReturnRowIndex: Int {
@@ -301,16 +301,7 @@ extension KeyboardRootView {
     @ViewBuilder func landscapeStateCapsuleSlot(showsCapsule: Bool) -> some View {
         if showsCapsule, internalCompositionPreviewText.isEmpty, !composingText.isEmpty {
             Image(systemName: conversionStateIconName)
-                .font(.system(size: candidateStateFontSize, weight: .bold))
-                .foregroundStyle(Color.white)
-                .lineLimit(1)
-                .padding(.horizontal, 7)
-                .padding(.vertical, 3)
-                .background(
-                    Capsule(style: .continuous)
-                        .fill(conversionStateColor.opacity(0.95))
-                )
-                .accessibilityLabel(conversionStateLabel)
+                .modifier(ConversionStateCapsuleStyle(fontSize: candidateStateFontSize, color: conversionStateColor, label: conversionStateLabel))
                 .frame(width: Self.landscapeStateCapsuleSlotWidth, alignment: .leading)
                 .allowsHitTesting(false)
         } else {
@@ -360,16 +351,11 @@ extension KeyboardRootView {
                     .font(.system(size: candidateTextFontSize, weight: candidateTextFontWeight))
                     .lineLimit(1)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 6)
-                    .background(
-                        RoundedRectangle(cornerRadius: 9, style: .continuous)
-                            .fill(
-                                showsKatakanaCommitFeedback
-                                    ? accentColor.opacity(0.95)
-                                    : KeyboardThemePalette.candidateHeaderChipBackground
-                            )
-                    )
+                    .modifier(LandscapeCandidateChip(
+                        fill: showsKatakanaCommitFeedback
+                            ? accentColor.opacity(0.95)
+                            : KeyboardThemePalette.candidateHeaderChipBackground
+                    ))
                 } else {
                     Text(composingText)
                         .font(.system(size: candidateTextFontSize, weight: candidateTextFontWeight))
@@ -380,16 +366,11 @@ extension KeyboardRootView {
                         )
                         .lineLimit(1)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 6)
-                        .background(
-                            RoundedRectangle(cornerRadius: 9, style: .continuous)
-                                .fill(
-                                    showsKatakanaCommitFeedback
-                                        ? accentColor.opacity(0.95)
-                                        : KeyboardThemePalette.candidateHeaderChipBackground
-                                )
-                        )
+                        .modifier(LandscapeCandidateChip(
+                            fill: showsKatakanaCommitFeedback
+                                ? accentColor.opacity(0.95)
+                                : KeyboardThemePalette.candidateHeaderChipBackground
+                        ))
                 }
             }
             .buttonStyle(.plain)
@@ -410,16 +391,7 @@ extension KeyboardRootView {
             if !internalCompositionPreviewText.isEmpty {
                 HStack(spacing: 6) {
                     Image(systemName: conversionStateIconName)
-                        .font(.system(size: candidateStateFontSize, weight: .bold))
-                        .foregroundStyle(Color.white)
-                        .lineLimit(1)
-                        .padding(.horizontal, 7)
-                        .padding(.vertical, 3)
-                        .background(
-                            Capsule(style: .continuous)
-                                .fill(conversionStateColor.opacity(0.95))
-                        )
-                        .accessibilityLabel(conversionStateLabel)
+                        .modifier(ConversionStateCapsuleStyle(fontSize: candidateStateFontSize, color: conversionStateColor, label: conversionStateLabel))
                     Text(internalCompositionPreviewText)
                         .font(.system(size: candidateTextFontSize - 2, weight: .semibold, design: .rounded))
                         .underline()
@@ -444,10 +416,7 @@ extension KeyboardRootView {
                     fullAccessNoticeSidebarView
                 } else if !(showsParenthesesWrapper && composingText.isEmpty) {
                     ForEach(0..<landscapeEmptyCandidatePlaceholderCount, id: \.self) { _ in
-                        RoundedRectangle(cornerRadius: 8, style: .continuous)
-                            .fill(KeyboardThemePalette.candidateHeaderPlaceholderBackground)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .frame(height: 24)
+                        LandscapeEmptyCandidatePlaceholder()
                     }
                 }
             } else if usesWideLandscapeSidebar,
@@ -505,30 +474,20 @@ extension KeyboardRootView {
                 .font(.system(size: candidateTextFontSize, weight: candidateTextFontWeight))
                 .lineLimit(1)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 6)
-                .background(
-                    RoundedRectangle(cornerRadius: 9, style: .continuous)
-                        .fill(
-                            isSelected
-                                ? accentColor.opacity(0.9)
-                                : KeyboardThemePalette.candidateHeaderChipBackground
-                        )
-                )
+                .modifier(LandscapeCandidateChip(
+                    fill: isSelected
+                        ? accentColor.opacity(0.9)
+                        : KeyboardThemePalette.candidateHeaderChipBackground
+                ))
             } else {
                 CandidateGlyphText(candidate, fontSize: candidateTextFontSize, weight: candidateTextFontWeight, color: isSelected ? Color.white : keyLabelColor)
                     .lineLimit(1)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 6)
-                    .background(
-                        RoundedRectangle(cornerRadius: 9, style: .continuous)
-                            .fill(
-                                isSelected
-                                    ? accentColor.opacity(0.9)
-                                    : KeyboardThemePalette.candidateHeaderChipBackground
-                            )
-                    )
+                    .modifier(LandscapeCandidateChip(
+                        fill: isSelected
+                            ? accentColor.opacity(0.9)
+                            : KeyboardThemePalette.candidateHeaderChipBackground
+                    ))
             }
         }
         .buttonStyle(.plain)
@@ -590,10 +549,7 @@ extension KeyboardRootView {
         VStack(alignment: .leading, spacing: 4) {
             if latinSuggestionQuery.isEmpty {
                 ForEach(0..<landscapeEmptyCandidatePlaceholderCount, id: \.self) { _ in
-                    RoundedRectangle(cornerRadius: 8, style: .continuous)
-                        .fill(KeyboardThemePalette.candidateHeaderPlaceholderBackground)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .frame(height: 24)
+                    LandscapeEmptyCandidatePlaceholder()
                 }
             } else if latinSuggestions.isEmpty {
                 // かな側と同じ空集合アイコン(候補なし)。
@@ -653,19 +609,14 @@ extension KeyboardRootView {
                 .foregroundStyle(keyLabelColor)
                 .lineLimit(1)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 6)
-                .background(
-                    RoundedRectangle(cornerRadius: 9, style: .continuous)
-                        .fill(KeyboardThemePalette.candidateHeaderChipBackground)
-                )
+                .modifier(LandscapeCandidateChip(fill: KeyboardThemePalette.candidateHeaderChipBackground))
         }
         .buttonStyle(.plain)
     }
 
     var landscapeLatinReferenceClusterHeight: CGFloat {
         // ラテン横画面の主要クラスターは4段固定。
-        mainFlickKeyHeight * 4 + keyboardRowSpacing * 3
+        fourRowDesignedHeight
     }
 
     @ViewBuilder
@@ -1193,7 +1144,7 @@ extension KeyboardRootView {
     var landscapeKanaReferenceClusterHeight: CGFloat {
         if isKanaThreeByThreeMode {
             // 3x3+わのかな塊は4段固定。
-            return mainFlickKeyHeight * 4 + keyboardRowSpacing * 3
+            return fourRowDesignedHeight
         }
 
         if isKanaFiveByTwoMode {
@@ -1206,6 +1157,31 @@ extension KeyboardRootView {
         }
 
         return 0
+    }
+}
+
+/// 横画面の候補チップの余白と角丸 9 の塗り(3829)
+private struct LandscapeCandidateChip: ViewModifier {
+    let fill: Color
+
+    func body(content: Content) -> some View {
+        content
+            .padding(.horizontal, 8)
+            .padding(.vertical, 6)
+            .background(
+                RoundedRectangle(cornerRadius: 9, style: .continuous)
+                    .fill(fill)
+            )
+    }
+}
+
+/// 横画面で候補が無いときの空の枠 1 つ(3829)
+private struct LandscapeEmptyCandidatePlaceholder: View {
+    var body: some View {
+        RoundedRectangle(cornerRadius: 8, style: .continuous)
+            .fill(KeyboardThemePalette.candidateHeaderPlaceholderBackground)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(height: 24)
     }
 }
 

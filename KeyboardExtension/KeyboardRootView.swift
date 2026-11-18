@@ -47,7 +47,6 @@ struct KeyboardRootView: View {
     // 効かないのに見た目は正常なので、ユーザーが気づけない(2026-08-20 に実際に半日気づけず、
     // 読み取りだけは効いていたためテーマは設定どおりに見えていた)。全面の案内で知らせる。
     let hasFullAccess: Bool
-    let keyboardBackgroundThemeRawValue: String
     let basicSymbolOrderRawValue: String
     let temperatureUnitRawValue: String
     let radicalStrokeCountStyleRawValue: String
@@ -315,10 +314,31 @@ struct KeyboardRootView: View {
         latinLayoutMode == .qwerty
     }
 
+    // ラテン文字の配列が QWERTY か AZERTY(タイプライター式)か(3829)
+    var usesTypewriterLatinLayout: Bool {
+        latinLayoutMode == .qwerty || latinLayoutMode == .azerty
+    }
+
+    // 面の幅から外側の余白を引いた見積もりの幅(3829)
+    private var estimatedKeyboardInnerWidth: CGFloat {
+        max(
+            1,
+            keyboardContainerWidth - keyboardHorizontalPadding * 2
+        )
+    }
+
+    // 縦向き QWERTY/AZERTY の 1 段に使える幅。左端の列(面の切り替え)とその隙間を引く(3829)
+    private var portraitLatinRowAvailableWidth: CGFloat {
+        let leadingControlWidth: CGFloat = showsCompactLeftModeSwitchButtons
+            ? (leftModeSwitchButtonWidth + keyboardRowSpacing)
+            : 0
+        return max(1, estimatedKeyboardInnerWidth - leadingControlWidth)
+    }
+
     var usesPortraitLatinInlineDeleteLayout: Bool {
         !isLandscapeLayout
             && inputMode == .latin
-            && (latinLayoutMode == .qwerty || latinLayoutMode == .azerty)
+            && usesTypewriterLatinLayout
     }
 
     private var portraitLatinQwertyBottomRowSlackWidth: CGFloat {
@@ -327,14 +347,7 @@ struct KeyboardRootView: View {
             return 0
         }
 
-        let estimatedKeyboardWidth = max(
-            1,
-            keyboardContainerWidth - keyboardHorizontalPadding * 2
-        )
-        let leadingControlWidth: CGFloat = showsCompactLeftModeSwitchButtons
-            ? (leftModeSwitchButtonWidth + keyboardRowSpacing)
-            : 0
-        let letterAreaWidth = max(1, estimatedKeyboardWidth - leadingControlWidth)
+        let letterAreaWidth = portraitLatinRowAvailableWidth
         let topRowLetterCount = CGFloat(max(rows.first?.count ?? 10, 1))
         let topRowLetterSpacingCount = CGFloat(max(Int(topRowLetterCount) - 1, 0))
         let topRowLetterWidth = max(
@@ -377,14 +390,7 @@ struct KeyboardRootView: View {
             return nil
         }
 
-        let estimatedKeyboardWidth = max(
-            1,
-            keyboardContainerWidth - keyboardHorizontalPadding * 2
-        )
-        let leadingControlWidth: CGFloat = showsCompactLeftModeSwitchButtons
-            ? (leftModeSwitchButtonWidth + keyboardRowSpacing)
-            : 0
-        let availableRowWidth = max(1, estimatedKeyboardWidth - leadingControlWidth)
+        let availableRowWidth = portraitLatinRowAvailableWidth
 
         // QWERTY のアポストロフィーは中段右端(3515。portraitQwertyMiddleRowApostropheWidth 参照)なので下段には無い
         return Self.portraitLatinBottomRowKeyMetrics(
@@ -441,12 +447,8 @@ struct KeyboardRootView: View {
             rowIndex == 1 else {
             return nil
         }
-        let estimatedKeyboardWidth = max(1, keyboardContainerWidth - keyboardHorizontalPadding * 2)
-        let leadingControlWidth: CGFloat = showsCompactLeftModeSwitchButtons
-            ? (leftModeSwitchButtonWidth + keyboardRowSpacing)
-            : 0
         return Self.portraitQwertyMiddleRowApostropheWidth(
-            availableRowWidth: max(1, estimatedKeyboardWidth - leadingControlWidth),
+            availableRowWidth: portraitLatinRowAvailableWidth,
             spacing: keyboardRowSpacing,
             letterCount: rows.indices.contains(1) ? rows[1].count : 9
         )
@@ -501,12 +503,12 @@ struct KeyboardRootView: View {
 
     private var latinSpaceRightActionSymbols: [String] {
         if isLandscapeLayout,
-            latinLayoutMode == .qwerty || latinLayoutMode == .azerty {
+            usesTypewriterLatinLayout {
             return [".", "-"]
         }
 
         if !isLandscapeLayout,
-            latinLayoutMode == .qwerty || latinLayoutMode == .azerty {
+            usesTypewriterLatinLayout {
             return [".", "-"]
         }
 
@@ -515,12 +517,12 @@ struct KeyboardRootView: View {
 
     private var latinSpaceLeftActionSymbols: [String] {
         if isLandscapeLayout,
-            latinLayoutMode == .qwerty || latinLayoutMode == .azerty {
+            usesTypewriterLatinLayout {
             return ["@", "_"]
         }
 
         if !isLandscapeLayout,
-            latinLayoutMode == .qwerty || latinLayoutMode == .azerty {
+            usesTypewriterLatinLayout {
             return ["/"]
         }
 
@@ -537,7 +539,7 @@ struct KeyboardRootView: View {
         // 縦向きの QWERTY/AZERTY の / . - は数字 clavier と同じサイズ(定義コメント参照)。
         // フリック配列の !?@&/ や横向きは従来の 20pt
         let usesClavierSymbolSizes = !isLandscapeLayout
-            && (latinLayoutMode == .qwerty || latinLayoutMode == .azerty)
+            && usesTypewriterLatinLayout
 
         ForEach(symbols, id: \.self) { symbol in
             ActionKeyButton(
@@ -1004,11 +1006,16 @@ struct KeyboardRootView: View {
         return 47 + (isLargePhonePortrait ? Self.largePortraitKeyHeightBoost : 0)
     }
 
+    // 4 段ぶんの設計の高さ(キー 4 つと隙間 3 つ)(3829)
+    var fourRowDesignedHeight: CGFloat {
+        mainFlickKeyHeight * 4 + keyboardRowSpacing * 3
+    }
+
     // 記号・絵文字・顔文字・部首・書式化の面の「4 段ぶん」の高さ。横画面では枠が足りず、
     // 3170 の縮小が働いて下段バーが上へずれていた(かな面の ⌘ キーと高さが揃わない)。
     // 枠から逆算した値に収めて、下段バーがかな面の最下段と同じ位置に来るようにする(3189)
     var fourRowAlignedClusterHeight: CGFloat {
-        let designed = mainFlickKeyHeight * 4 + keyboardRowSpacing * 3
+        let designed = fourRowDesignedHeight
         if !isLandscapeLayout {
             // 縦で窓が設計より高いとき(Duo は内画面・外画面ともホームバーの帯が無い)、決め打ちだと最下段の下が
             // 空いた(内画面でかな 20pt に対し 47pt、外画面で 25pt 余り。3570)。余りを上のまとまりに回して枠を埋める
@@ -1033,7 +1040,7 @@ struct KeyboardRootView: View {
         guard isFoldablePhone, !isLandscapeLayout, faceHeight > 0 else {
             return 0
         }
-        let designed = mainFlickKeyHeight * 4 + keyboardRowSpacing * 3
+        let designed = fourRowDesignedHeight
         let available = faceHeight
             - keyboardTopPaddingForCluster
             - keyboardBottomPaddingForCluster
@@ -1098,10 +1105,7 @@ struct KeyboardRootView: View {
             return 0
         }
 
-        let estimatedKeyboardWidth = max(
-            1,
-            keyboardContainerWidth - keyboardHorizontalPadding * 2
-        )
+        let estimatedKeyboardWidth = estimatedKeyboardInnerWidth
         let leadingControlWidth: CGFloat = shouldShowCompactLeftModeSwitchInBottomActionRow
             ? leftModeSwitchButtonWidth
             : 0
@@ -1183,7 +1187,7 @@ struct KeyboardRootView: View {
         }
 
         if inputMode == .latin {
-            return latinLayoutMode == .qwerty || latinLayoutMode == .azerty
+            return usesTypewriterLatinLayout
         }
 
         if inputMode == .number {
@@ -1210,7 +1214,7 @@ struct KeyboardRootView: View {
     // AZERTY/QWERTY のラテン文字キー、および clavier 配列の数字・記号キーは semibold、
     // それ以外(かなフリック、calculette/telephone)は従来通り bold。
     var rowKeyMainLabelFontWeight: Font.Weight {
-        if inputMode == .latin && (latinLayoutMode == .qwerty || latinLayoutMode == .azerty) {
+        if inputMode == .latin && usesTypewriterLatinLayout {
             return .semibold
         }
         if inputMode == .number && effectiveNumberLayoutMode == .clavier {
@@ -1651,7 +1655,6 @@ struct KeyboardRootView: View {
         accentPaletteRawValue: "emeraude",
         isSystemDictionaryFallback: false,
         hasFullAccess: true,
-        keyboardBackgroundThemeRawValue: "bleu",
         basicSymbolOrderRawValue: "ascii",
         temperatureUnitRawValue: TemperatureUnitPreference.celsius.rawValue,
         radicalStrokeCountStyleRawValue: "",

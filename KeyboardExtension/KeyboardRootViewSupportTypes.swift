@@ -1048,16 +1048,7 @@ extension KeyboardRootView {
             if conversionCandidates.isEmpty {
                 if !(showsParenthesesWrapper && composingText.isEmpty) {
                     // 変換候補が入力かなのみ=「候補なし」。文字ラベルでなく空集合アイコンで示す。
-                    Image(systemName: "circle.slash")
-                        .font(.system(size: candidateTextFontSize, weight: .regular))
-                        .foregroundStyle(keyLabelColor.opacity(0.6))
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, KeyboardRootView.candidateChipVerticalPadding)
-                        .background(
-                            RoundedRectangle(cornerRadius: 7, style: .continuous)
-                                .fill(KeyboardThemePalette.candidateHeaderPlaceholderBackground)
-                        )
-                        .accessibilityLabel("候補なし")
+                    PortraitNoCandidateMark(fontSize: candidateTextFontSize, labelColor: keyLabelColor)
                 }
             }
 
@@ -1083,23 +1074,12 @@ extension KeyboardRootView {
                         }
                     }
                     .lineLimit(1)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, KeyboardRootView.candidateChipVerticalPadding)
-                    .background(
-                        RoundedRectangle(cornerRadius: 7, style: .continuous)
-                            .fill(
-                                isSelected
-                                    ? accentColor.opacity(0.9)
-                                    : KeyboardThemePalette.candidateHeaderChipBackground
-                            )
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 7, style: .continuous)
-                            .stroke(
-                                KeyboardThemePalette.candidateHeaderBorder,
-                                lineWidth: isSelected ? 0 : 1
-                            )
-                    )
+                    .modifier(PortraitCandidateChip(
+                        fill: isSelected
+                            ? accentColor.opacity(0.9)
+                            : KeyboardThemePalette.candidateHeaderChipBackground,
+                        borderWidth: isSelected ? 0 : 1
+                    ))
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel(candidate)
@@ -1128,23 +1108,12 @@ extension KeyboardRootView {
                 .font(.system(size: candidateTextFontSize, weight: candidateTextFontWeight))
                 .foregroundStyle(showsKatakanaCommitFeedback ? Color.white : keyLabelColor)
                 .lineLimit(1)
-                .padding(.horizontal, 8)
-                .padding(.vertical, KeyboardRootView.candidateChipVerticalPadding)
-                .background(
-                    RoundedRectangle(cornerRadius: 7, style: .continuous)
-                        .fill(
-                            showsKatakanaCommitFeedback
-                                ? accentColor.opacity(0.9)
-                                : KeyboardThemePalette.candidateHeaderChipBackground
-                        )
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: 7, style: .continuous)
-                        .stroke(
-                            KeyboardThemePalette.candidateHeaderBorder,
-                            lineWidth: showsKatakanaCommitFeedback ? 0 : 1
-                        )
-                )
+                .modifier(PortraitCandidateChip(
+                    fill: showsKatakanaCommitFeedback
+                        ? accentColor.opacity(0.9)
+                        : KeyboardThemePalette.candidateHeaderChipBackground,
+                    borderWidth: showsKatakanaCommitFeedback ? 0 : 1
+                ))
         }
 
         // tokushima(3211): 未確定の行を上に足すぶん、チップ側の余白を詰めて 35pt の枠に収める
@@ -1165,16 +1134,7 @@ extension KeyboardRootView {
                     Image(systemName: conversionStateIconName)
                 }
             }
-            .font(.system(size: candidateStateFontSize, weight: .bold))
-            .foregroundStyle(Color.white)
-            .lineLimit(1)
-            .padding(.horizontal, 7)
-            .padding(.vertical, 3)
-            .background(
-                Capsule(style: .continuous)
-                    .fill(conversionStateColor.opacity(0.95))
-            )
-            .accessibilityLabel(conversionStateLabel)
+            .modifier(ConversionStateCapsuleStyle(fontSize: candidateStateFontSize, color: conversionStateColor, label: conversionStateLabel))
         }
 
         var body: some View {
@@ -1296,16 +1256,7 @@ extension KeyboardRootView {
                 HStack(spacing: 6) {
                     if latinSuggestions.isEmpty {
                         // かな側と同じ空集合アイコン(候補なし)。
-                        Image(systemName: "circle.slash")
-                            .font(.system(size: candidateTextFontSize, weight: .regular))
-                            .foregroundStyle(keyLabelColor.opacity(0.6))
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, KeyboardRootView.candidateChipVerticalPadding)
-                            .background(
-                                RoundedRectangle(cornerRadius: 7, style: .continuous)
-                                    .fill(KeyboardThemePalette.candidateHeaderPlaceholderBackground)
-                            )
-                            .accessibilityLabel("候補なし")
+                        PortraitNoCandidateMark(fontSize: candidateTextFontSize, labelColor: keyLabelColor)
                     }
 
                     ForEach(Array(latinSuggestions.enumerated()), id: \.offset) { index, candidate in
@@ -1316,16 +1267,7 @@ extension KeyboardRootView {
                                 .font(.system(size: candidateTextFontSize, weight: candidateTextFontWeight))
                                 .foregroundStyle(keyLabelColor)
                                 .lineLimit(1)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, KeyboardRootView.candidateChipVerticalPadding)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 7, style: .continuous)
-                                        .fill(KeyboardThemePalette.candidateHeaderChipBackground)
-                                )
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 7, style: .continuous)
-                                        .stroke(KeyboardThemePalette.candidateHeaderBorder, lineWidth: 1)
-                                )
+                                .modifier(PortraitCandidateChip(fill: KeyboardThemePalette.candidateHeaderChipBackground, borderWidth: 1))
                         }
                         .buttonStyle(.plain)
                         .accessibilityLabel(candidate)
@@ -1424,5 +1366,68 @@ struct CandidateChipTapExtensionStrip: View {
             }
         }
         .frame(width: headerFrame.width, height: headerFrame.height, alignment: .topLeading)
+    }
+}
+
+/// 状態カプセル(鉛筆/循環矢印)の見た目。縦画面の候補欄と横画面の候補列で共通(3829)
+struct ConversionStateCapsuleStyle: ViewModifier {
+    let fontSize: CGFloat
+    let color: Color
+    let label: String
+
+    func body(content: Content) -> some View {
+        content
+            .font(.system(size: fontSize, weight: .bold))
+            .foregroundStyle(Color.white)
+            .lineLimit(1)
+            .padding(.horizontal, 7)
+            .padding(.vertical, 3)
+            .background(
+                Capsule(style: .continuous)
+                    .fill(color.opacity(0.95))
+            )
+            .accessibilityLabel(label)
+    }
+}
+
+/// 縦画面の候補チップの余白と角丸 7 の塗り・縁(3829)
+private struct PortraitCandidateChip: ViewModifier {
+    let fill: Color
+    let borderWidth: CGFloat
+
+    func body(content: Content) -> some View {
+        content
+            .padding(.horizontal, 8)
+            .padding(.vertical, KeyboardRootView.candidateChipVerticalPadding)
+            .background(
+                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                    .fill(fill)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                    .stroke(
+                        KeyboardThemePalette.candidateHeaderBorder,
+                        lineWidth: borderWidth
+                    )
+            )
+    }
+}
+
+/// 縦画面の候補欄の「候補なし」(空集合アイコン)。かな・欧文で共通(3829)
+private struct PortraitNoCandidateMark: View {
+    let fontSize: CGFloat
+    let labelColor: Color
+
+    var body: some View {
+        Image(systemName: "circle.slash")
+            .font(.system(size: fontSize, weight: .regular))
+            .foregroundStyle(labelColor.opacity(0.6))
+            .padding(.horizontal, 8)
+            .padding(.vertical, KeyboardRootView.candidateChipVerticalPadding)
+            .background(
+                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                    .fill(KeyboardThemePalette.candidateHeaderPlaceholderBackground)
+            )
+            .accessibilityLabel("候補なし")
     }
 }

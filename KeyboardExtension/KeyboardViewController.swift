@@ -2028,15 +2028,12 @@ final class KeyboardViewController: UIInputViewController {
         guard configuration != lastRenderConfiguration else {
             let refreshElapsedMs = performanceElapsedMilliseconds(since: refreshStartedAt)
 
-            if configurationElapsedMs >= Self.renderConfigurationSlowThresholdMs
-                || refreshElapsedMs >= Self.refreshKeyboardStateSlowThresholdMs {
-                appendKeyboardDiagnosticsLog(
-                    "refreshKeyboardState遅延 trigger=\(trigger) elapsedMs=\(refreshElapsedMs) configMs=\(configurationElapsedMs) changed=false pending=\(pendingRefreshKeyboardStateRequests)",
-                    file: #fileID,
-                    line: #line,
-                    function: #function
-                )
-            }
+            logSlowRefreshIfNeeded(
+                trigger: trigger,
+                refreshElapsedMs: refreshElapsedMs,
+                configurationElapsedMs: configurationElapsedMs,
+                changed: false
+            )
 
             return
         }
@@ -2061,13 +2058,31 @@ final class KeyboardViewController: UIInputViewController {
 
         let refreshElapsedMs = performanceElapsedMilliseconds(since: refreshStartedAt)
 
+        logSlowRefreshIfNeeded(
+            trigger: trigger,
+            refreshElapsedMs: refreshElapsedMs,
+            configurationElapsedMs: configurationElapsedMs,
+            changed: true
+        )
+    }
+
+    // refreshKeyboardState が遅かったときの記録。file/line/function は呼び元の位置を残す(3829)
+    private func logSlowRefreshIfNeeded(
+        trigger: String,
+        refreshElapsedMs: Int,
+        configurationElapsedMs: Int,
+        changed: Bool,
+        file: String = #fileID,
+        line: Int = #line,
+        function: String = #function
+    ) {
         if configurationElapsedMs >= Self.renderConfigurationSlowThresholdMs
             || refreshElapsedMs >= Self.refreshKeyboardStateSlowThresholdMs {
             appendKeyboardDiagnosticsLog(
-                "refreshKeyboardState遅延 trigger=\(trigger) elapsedMs=\(refreshElapsedMs) configMs=\(configurationElapsedMs) changed=true pending=\(pendingRefreshKeyboardStateRequests)",
-                file: #fileID,
-                line: #line,
-                function: #function
+                "refreshKeyboardState遅延 trigger=\(trigger) elapsedMs=\(refreshElapsedMs) configMs=\(configurationElapsedMs) changed=\(changed) pending=\(pendingRefreshKeyboardStateRequests)",
+                file: file,
+                line: line,
+                function: function
             )
         }
     }

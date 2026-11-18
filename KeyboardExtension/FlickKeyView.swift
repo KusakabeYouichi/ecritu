@@ -466,6 +466,16 @@ extension EnvironmentValues {
     }
 }
 
+/// ガイド文字を 1 行で詰めて置く 3 つの修飾。ガイド文字の 3 か所で共通(3829)
+private struct SingleLineGuideHint: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .lineLimit(1)
+            .allowsTightening(true)
+            .fixedSize(horizontal: true, vertical: false)
+    }
+}
+
 struct FlickKeyView: View {
     private enum Metrics {
         static let keyCornerRadius: CGFloat = 10
@@ -830,9 +840,7 @@ struct FlickKeyView: View {
                 Text(text)
                     .font(downDirectionalHintFont(for: text))
                     .minimumScaleFactor(0.1)
-                    .lineLimit(1)
-                    .allowsTightening(true)
-                    .fixedSize(horizontal: true, vertical: false)
+                    .modifier(SingleLineGuideHint())
                     .foregroundStyle(keyLabelColor.opacity(directionalHintOpacity))
             }
         }
@@ -847,9 +855,7 @@ struct FlickKeyView: View {
             Text(text)
                 .font(.system(size: 8, weight: .semibold, design: .rounded))
                 .minimumScaleFactor(0.01)
-                .lineLimit(1)
-                .allowsTightening(true)
-                .fixedSize(horizontal: true, vertical: false)
+                .modifier(SingleLineGuideHint())
                 .tracking(-0.2)
                 .scaleEffect(0.32)
                 .foregroundStyle(keyLabelColor.opacity(directionalHintOpacity))
@@ -858,9 +864,7 @@ struct FlickKeyView: View {
             Text(text)
                 .font(directionalHintFont(for: text))
                 .minimumScaleFactor(0.1)
-                .lineLimit(1)
-                .allowsTightening(true)
-                .fixedSize(horizontal: true, vertical: false)
+                .modifier(SingleLineGuideHint())
                 .foregroundStyle(keyLabelColor.opacity(directionalHintOpacity))
                 .offset(specialDirectionalHintOffset(for: text, direction: direction))
         }
@@ -872,26 +876,13 @@ struct FlickKeyView: View {
     }
 
     private func directionalHintFont(for text: String) -> Font {
-        if isDakutenGuideText(text) {
-            return .system(size: scaledDirectionalHintSize(25), weight: .bold, design: .rounded)
-        }
-
-        if text == "小" {
-            return .system(size: scaledDirectionalHintSize(6), weight: .semibold, design: .rounded)
-        }
-
-        switch text.count {
-        case 7...:
-            return .system(size: scaledDirectionalHintSize(6), weight: .medium, design: .rounded)
-        case 5...6:
-            return .system(size: scaledDirectionalHintSize(7), weight: .medium, design: .rounded)
-        case 3...4:
-            return .system(size: scaledDirectionalHintSize(8), weight: .semibold, design: .rounded)
-        case 2:
-            return .system(size: scaledDirectionalHintSize(9), weight: .semibold, design: .rounded)
-        default:
-            return .system(size: scaledDirectionalHintSize(10), weight: .semibold, design: .rounded)
-        }
+        guideTextFont(
+            for: text,
+            dakutenSize: 25,
+            smallSize: 6,
+            sizesByLength: (6, 7, 8, 9, 10),
+            scale: scaledDirectionalHintSize
+        )
     }
 
     private var downDirectionalHintTexts: [String] {
@@ -899,25 +890,42 @@ struct FlickKeyView: View {
     }
 
     private func downDirectionalHintFont(for text: String) -> Font {
+        guideTextFont(
+            for: text,
+            dakutenSize: 12,
+            smallSize: 6,
+            sizesByLength: (5, 6, 7, 8, 9),
+            scale: scaledDownDirectionalHintSize
+        )
+    }
+
+    // ガイド文字の字の大きさの表。sizesByLength は文字数 7 以上/5〜6/3〜4/2/1 の順の基準の大きさ(3829)
+    private func guideTextFont(
+        for text: String,
+        dakutenSize: CGFloat,
+        smallSize: CGFloat,
+        sizesByLength: (CGFloat, CGFloat, CGFloat, CGFloat, CGFloat),
+        scale: (CGFloat) -> CGFloat
+    ) -> Font {
         if isDakutenGuideText(text) {
-            return .system(size: scaledDownDirectionalHintSize(12), weight: .bold, design: .rounded)
+            return .system(size: scale(dakutenSize), weight: .bold, design: .rounded)
         }
 
         if text == "小" {
-            return .system(size: scaledDownDirectionalHintSize(6), weight: .semibold, design: .rounded)
+            return .system(size: scale(smallSize), weight: .semibold, design: .rounded)
         }
 
         switch text.count {
         case 7...:
-            return .system(size: scaledDownDirectionalHintSize(5), weight: .medium, design: .rounded)
+            return .system(size: scale(sizesByLength.0), weight: .medium, design: .rounded)
         case 5...6:
-            return .system(size: scaledDownDirectionalHintSize(6), weight: .medium, design: .rounded)
+            return .system(size: scale(sizesByLength.1), weight: .medium, design: .rounded)
         case 3...4:
-            return .system(size: scaledDownDirectionalHintSize(7), weight: .semibold, design: .rounded)
+            return .system(size: scale(sizesByLength.2), weight: .semibold, design: .rounded)
         case 2:
-            return .system(size: scaledDownDirectionalHintSize(8), weight: .semibold, design: .rounded)
+            return .system(size: scale(sizesByLength.3), weight: .semibold, design: .rounded)
         default:
-            return .system(size: scaledDownDirectionalHintSize(9), weight: .semibold, design: .rounded)
+            return .system(size: scale(sizesByLength.4), weight: .semibold, design: .rounded)
         }
     }
 
@@ -974,18 +982,7 @@ struct FlickKeyView: View {
             .minimumScaleFactor(0.7)
             .foregroundStyle(KeyboardThemePalette.longPressPanelText)
             .frame(width: cellWidth, height: Metrics.candidateCellHeight)
-            .background(
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .fill(
-                        index == highlightedLongPressIndex
-                            ? KeyboardThemePalette.longPressPanelCellHighlight
-                            : KeyboardThemePalette.longPressPanelCellBackground
-                    )
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .stroke(KeyboardThemePalette.keyBorder, lineWidth: 1)
-            )
+            .modifier(LongPressPanelCellChrome(isHighlighted: index == highlightedLongPressIndex))
     }
 
     private var longPressCandidatePanel: some View {
@@ -999,16 +996,7 @@ struct FlickKeyView: View {
         }
         .padding(.horizontal, Metrics.candidatePanelPadding)
         .padding(.vertical, Metrics.candidatePanelVerticalPadding)
-        .background(
-            RoundedRectangle(cornerRadius: Metrics.keyCornerRadius, style: .continuous)
-                .fill(KeyboardThemePalette.longPressPanelBackground)
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: Metrics.keyCornerRadius, style: .continuous)
-                .stroke(KeyboardThemePalette.longPressPanelBorder, lineWidth: 1)
-        )
-        .keyboardSoftShadow(RoundedRectangle(cornerRadius: Metrics.keyCornerRadius, style: .continuous), color: KeyboardThemePalette.longPressPanelShadow, radius: 4, y: 1)
-        .allowsHitTesting(false)
+        .modifier(LongPressPanelFrame(cornerRadius: Metrics.keyCornerRadius))
     }
 
     private var candidatePanelWidth: CGFloat {

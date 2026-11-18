@@ -36,6 +36,50 @@ extension KeyboardRootView {
     }
 }
 
+/// 字グリッドと部首グリッド(UICollectionView)で共通の下ごしらえ(3829)
+@MainActor
+private enum RadicalGridSupport {
+    // 縦スクロールの格子。セルの登録と dataSource/delegate は呼び元で付ける
+    static func makeVerticalGridView(itemSpacing: CGFloat) -> UICollectionView {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
+        layout.minimumInteritemSpacing = itemSpacing
+        layout.minimumLineSpacing = itemSpacing
+        layout.sectionInset = UIEdgeInsets(top: 2, left: 0, bottom: 2, right: 0)
+        let view = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        view.backgroundColor = .clear
+        view.showsVerticalScrollIndicator = false
+        view.showsHorizontalScrollIndicator = false
+        view.alwaysBounceVertical = true
+        view.delaysContentTouches = false
+        hideScrollEdgeEffects(view)
+        return view
+    }
+
+    // 列数で横幅を等分したセルの大きさ
+    static func itemSize(in collectionView: UICollectionView, columnCount: Int, itemSpacing: CGFloat, itemHeight: CGFloat) -> CGSize {
+        let columns = max(1, columnCount)
+        let available = collectionView.bounds.width - itemSpacing * CGFloat(columns - 1)
+        let width = floor(max(1, available / CGFloat(columns)))
+        return CGSize(width: width, height: itemHeight)
+    }
+
+    // 押している間だけ少し縮める
+    static func animatePress(of contentView: UIView, pressed: Bool) {
+        UIView.animate(withDuration: 0.08, delay: 0, options: [.curveEaseOut, .beginFromCurrentState]) {
+            contentView.transform = pressed ? CGAffineTransform(scaleX: 0.94, y: 0.94) : .identity
+        }
+    }
+
+    static func roundedFont(size: CGFloat, weight: UIFont.Weight) -> UIFont {
+        let base = UIFont.systemFont(ofSize: size, weight: weight)
+        if let descriptor = base.fontDescriptor.withDesign(.rounded) {
+            return UIFont(descriptor: descriptor, size: size)
+        }
+        return base
+    }
+}
+
 // 字グリッド(2783): SwiftUI の LazyVGrid から UICollectionView+UILabel(セル再利用)へ。
 // 実機実測(2782)で部首1つの一覧を約30秒スクロールすると used +16.6MB、退出後も +9.7MB が残った。
 // 内訳は明朝グリフキャッシュ約5MB(上限付きで頭打ち)+ SwiftUI 側約10MB(LazyVGrid が生成した
@@ -66,18 +110,7 @@ struct KanjiCharacterGridCollectionView: UIViewRepresentable {
     }
 
     func makeUIView(context: Context) -> UICollectionView {
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .vertical
-        layout.minimumInteritemSpacing = itemSpacing
-        layout.minimumLineSpacing = itemSpacing
-        layout.sectionInset = UIEdgeInsets(top: 2, left: 0, bottom: 2, right: 0)
-        let view = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        view.backgroundColor = .clear
-        view.showsVerticalScrollIndicator = false
-        view.showsHorizontalScrollIndicator = false
-        view.alwaysBounceVertical = true
-        view.delaysContentTouches = false
-        hideScrollEdgeEffects(view)
+        let view = RadicalGridSupport.makeVerticalGridView(itemSpacing: itemSpacing)
         view.register(KanjiCharacterGridCell.self, forCellWithReuseIdentifier: KanjiCharacterGridCell.reuseIdentifier)
         view.register(KanjiTotalStrokeMarkerGridCell.self, forCellWithReuseIdentifier: KanjiTotalStrokeMarkerGridCell.reuseIdentifier)
         view.dataSource = context.coordinator
@@ -144,10 +177,12 @@ struct KanjiCharacterGridCollectionView: UIViewRepresentable {
             layout collectionViewLayout: UICollectionViewLayout,
             sizeForItemAt indexPath: IndexPath
         ) -> CGSize {
-            let columns = max(1, parent.columnCount)
-            let available = collectionView.bounds.width - parent.itemSpacing * CGFloat(columns - 1)
-            let width = floor(max(1, available / CGFloat(columns)))
-            return CGSize(width: width, height: parent.itemHeight)
+            RadicalGridSupport.itemSize(
+                in: collectionView,
+                columnCount: parent.columnCount,
+                itemSpacing: parent.itemSpacing,
+                itemHeight: parent.itemHeight
+            )
         }
 
         func collectionView(_ collectionView: UICollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool {
@@ -232,7 +267,7 @@ struct KanjiCharacterGridCollectionView: UIViewRepresentable {
 
             let readings = UILabel()
             readings.text = KanjiInspectBubble.readingsDisplayText(for: entry.readings)
-            readings.font = Self.roundedFont(size: 12, weight: .bold)
+            readings.font = RadicalGridSupport.roundedFont(size: 12, weight: .bold)
             readings.textColor = .white
             readings.textAlignment = .center
             readings.numberOfLines = 2
@@ -241,7 +276,7 @@ struct KanjiCharacterGridCollectionView: UIViewRepresentable {
             let code = UILabel()
             let codePoint = entry.character.unicodeScalars.first.map { String(format: "U+%04X", $0.value) } ?? "—"
             code.text = "\(codePoint)  区点 \(entry.kuten)"
-            code.font = Self.roundedFont(size: 10.5, weight: .medium)
+            code.font = RadicalGridSupport.roundedFont(size: 10.5, weight: .medium)
             code.textColor = UIColor.white.withAlphaComponent(0.82)
             code.textAlignment = .center
             code.adjustsFontSizeToFitWidth = true
@@ -281,14 +316,6 @@ struct KanjiCharacterGridCollectionView: UIViewRepresentable {
                 shape.fill()
             }
         }()
-
-        private static func roundedFont(size: CGFloat, weight: UIFont.Weight) -> UIFont {
-            let base = UIFont.systemFont(ofSize: size, weight: weight)
-            if let descriptor = base.fontDescriptor.withDesign(.rounded) {
-                return UIFont(descriptor: descriptor, size: size)
-            }
-            return base
-        }
 
         func hideBubble() {
             bubble?.removeFromSuperview()
@@ -339,10 +366,7 @@ final class KanjiCharacterGridCell: UICollectionViewCell {
 
     override var isHighlighted: Bool {
         didSet {
-            let pressed = isHighlighted
-            UIView.animate(withDuration: 0.08, delay: 0, options: [.curveEaseOut, .beginFromCurrentState]) {
-                self.contentView.transform = pressed ? CGAffineTransform(scaleX: 0.94, y: 0.94) : .identity
-            }
+            RadicalGridSupport.animatePress(of: contentView, pressed: isHighlighted)
         }
     }
 
@@ -362,8 +386,7 @@ final class KanjiTotalStrokeMarkerGridCell: UICollectionViewCell {
         contentView.backgroundColor = .tertiarySystemFill
         contentView.layer.borderColor = UIColor.separator.cgColor
         contentView.layer.borderWidth = 1
-        let base = UIFont.systemFont(ofSize: 12, weight: .semibold)
-        label.font = base.fontDescriptor.withDesign(.rounded).map { UIFont(descriptor: $0, size: 12) } ?? base
+        label.font = RadicalGridSupport.roundedFont(size: 12, weight: .semibold)
         label.textColor = UIColor.label.withAlphaComponent(0.7)
         label.textAlignment = .center
         label.adjustsFontSizeToFitWidth = true
@@ -493,18 +516,7 @@ struct RadicalFormGridCollectionView: UIViewRepresentable {
     }
 
     func makeUIView(context: Context) -> UICollectionView {
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .vertical
-        layout.minimumInteritemSpacing = itemSpacing
-        layout.minimumLineSpacing = itemSpacing
-        layout.sectionInset = UIEdgeInsets(top: 2, left: 0, bottom: 2, right: 0)
-        let view = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        view.backgroundColor = .clear
-        view.showsVerticalScrollIndicator = false
-        view.showsHorizontalScrollIndicator = false
-        view.alwaysBounceVertical = true
-        view.delaysContentTouches = false
-        hideScrollEdgeEffects(view)
+        let view = RadicalGridSupport.makeVerticalGridView(itemSpacing: itemSpacing)
         view.register(RadicalFormGridCell.self, forCellWithReuseIdentifier: RadicalFormGridCell.reuseIdentifier)
         view.register(
             RadicalStrokeMarkerGridCell.self,
@@ -566,10 +578,12 @@ struct RadicalFormGridCollectionView: UIViewRepresentable {
             layout collectionViewLayout: UICollectionViewLayout,
             sizeForItemAt indexPath: IndexPath
         ) -> CGSize {
-            let columns = max(1, parent.columnCount)
-            let available = collectionView.bounds.width - parent.itemSpacing * CGFloat(columns - 1)
-            let width = floor(max(1, available / CGFloat(columns)))
-            return CGSize(width: width, height: parent.itemHeight)
+            RadicalGridSupport.itemSize(
+                in: collectionView,
+                columnCount: parent.columnCount,
+                itemSpacing: parent.itemSpacing,
+                itemHeight: parent.itemHeight
+            )
         }
 
         func collectionView(_ collectionView: UICollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool {
@@ -646,10 +660,7 @@ final class RadicalFormGridCell: UICollectionViewCell {
 
     override var isHighlighted: Bool {
         didSet {
-            let pressed = isHighlighted
-            UIView.animate(withDuration: 0.08, delay: 0, options: [.curveEaseOut, .beginFromCurrentState]) {
-                self.contentView.transform = pressed ? CGAffineTransform(scaleX: 0.94, y: 0.94) : .identity
-            }
+            RadicalGridSupport.animatePress(of: contentView, pressed: isHighlighted)
         }
     }
 }
@@ -664,8 +675,7 @@ final class RadicalStrokeMarkerGridCell: UICollectionViewCell {
         contentView.backgroundColor = .tertiarySystemFill
         contentView.layer.cornerRadius = 6
         contentView.layer.cornerCurve = .continuous
-        let base = UIFont.systemFont(ofSize: 13, weight: .semibold)
-        label.font = base.fontDescriptor.withDesign(.rounded).map { UIFont(descriptor: $0, size: 13) } ?? base
+        label.font = RadicalGridSupport.roundedFont(size: 13, weight: .semibold)
         label.textColor = UIColor.label.withAlphaComponent(0.75)
         label.textAlignment = .center
         label.adjustsFontSizeToFitWidth = true

@@ -504,94 +504,7 @@ extension KeyboardViewController {
                 return upgraded
             },
             onInputModeChanged: { [weak self] mode, changeDetail in
-                guard let self else {
-                    return
-                }
-
-                let previousMode = self.currentInputMode
-
-                guard previousMode != mode else {
-                    return
-                }
-
-                if previousMode == .kana,
-                    mode != .kana {
-                    self.commitPendingComposingTextBeforeInputModeSwitch()
-                }
-
-                self.currentInputMode = mode
-                // 調査用ログ(記号面切替 2838): 引き金(changeDetail)を添える。原因判明後に外す
-                #if DEBUG
-                self.updateKeyboardDiagnosticsHeartbeat(
-                    event: "入力モード変更 \(self.keyboardInputModeName(previousMode)) -> \(self.keyboardInputModeName(mode)) 引き金=\(changeDetail) \(MemoryForensics.cgDataRegionSummary())",
-                    appendLog: true
-                )
-                #else
-                self.updateKeyboardDiagnosticsHeartbeat(
-                    event: "入力モード変更 \(self.keyboardInputModeName(previousMode)) -> \(self.keyboardInputModeName(mode))",
-                    appendLog: true
-                )
-                #endif
-                // 絵文字モードはピッカー構築で footprint が跳ねる。長寿命プロセスが高水位の
-                // まま切り替えると per-process limit の jetsam で即死する(2026-08-14 17:01
-                // 実測: footprint 63MB 圏で latin→emoji 切替直後に jetsam(1)
-                // per-process-limit(7)。この kill は iOS がレポートを non-actionable として
-                // 破棄するため .ips も残らない)。高水位なら先に再構築可能な dirty キャッシュ
-                // (LM/word_costs/JSON辞書系。欧文辞書本体は mmap でfootprint非寄与)を落として
-                // 余白を作る。sqlite は保持されるので変換は劣化せず、キャッシュは次の利用時に
-                // 遅延再構築される。
-                // MEMFORENSICS(時限計測 2611): 絵文字ピッカー構築の高水位帰属
-                if mode == .emoji {
-                    MemoryForensics.noteOperation("絵文字切替")
-                    // ピッカー構築そのものの寄与を前後差分で名指しする(2631)。
-                    // 1.2s=初期構築、5s=初期スクロール・グリフキャッシュ含む
-                    MemoryForensics.noteSpikeWindow("絵文字切替")
-                    MemoryForensics.noteSpikeWindow("絵文字切替+5s", delaySeconds: 5.0)
-                }
-                if previousMode == .emoji {
-                    // 退出後に used が戻るか(=グリフキャッシュが解放されるか)の判定材料。
-                    // 戻るなら退出時 pressure_relief でページ返却が根治になる(2632)
-                    MemoryForensics.noteSpikeWindow("絵文字退出", minDeltaMB: -1_000)
-                    MemoryForensics.noteSpikeWindow("絵文字退出+5s", delaySeconds: 5.0, minDeltaMB: -1_000)
-                }
-                // 面(記号・絵文字・顔文字・部首・書式化)から出るときは、その面で膨らんだぶんを
-                // その場で返す(3191)。実機の Jetsam 記録では拡張が 51MB、前面のメモアプリが 78MB で
-                // 端末全体が逼迫し、前面アプリが落とされていた。面の閲覧はグリフ・セルの保持が大きく、
-                // 戻った直後が最も捨てやすい
-                if previousMode == .emoji || previousMode == .formattedNumber,
-                    mode != .emoji, mode != .formattedNumber {
-                    self.kanaKanjiConverter.store.clearSystemDictionaryJSONCaches()
-                    malloc_zone_pressure_relief(nil, 0)
-                    if let footprintMB = self.currentFootprintMB() {
-                        self.updateKeyboardDiagnosticsHeartbeat(
-                            event: "面から出るときの整理 footprintMB=\(String(format: "%.1f", footprintMB))"
-                                + "→\(self.diagnosticsFootprintMBText())",
-                            appendLog: true
-                        )
-                    }
-                }
-                // 面を開く前の整理。横画面は同じ上限に早く近づくので閾値を下げる(3186)
-                let isLandscape = self.view.window?.windowScene?.interfaceOrientation.isLandscape
-                    ?? (self.traitCollection.verticalSizeClass == .compact)
-                if mode == .emoji,
-                    let footprintMB = self.currentFootprintMB(),
-                    footprintMB >= (isLandscape ? 42 : 50) {
-                    self.kanaKanjiConverter.store.clearSystemDictionaryJSONCaches()
-                    // free 済み dirty ページも OS へ返す(census 実測でアリーナ保持が
-                    // footprint の主成分だったため。メモリ警告時と同じ処方)
-                    malloc_zone_pressure_relief(nil, 0)
-                    self.updateKeyboardDiagnosticsHeartbeat(
-                        event: "絵文字モード切替前にキャッシュ解放 footprintMB=\(String(format: "%.1f", footprintMB))"
-                            + "→\(self.diagnosticsFootprintMBText())",
-                        appendLog: true
-                    )
-                }
-
-                if mode != .kana {
-                    self.clearComposingState()
-                }
-
-                self.refreshKeyboardStateAsync()
+                self?.handleInputModeChanged(mode, changeDetail: changeDetail)
             },
             onMemoryDebugDisplayRefreshRequested: { [weak self] face in
                 self?.refreshMemoryPressureDebugDisplay(trigger: "面切替(\(face))")
@@ -611,7 +524,6 @@ extension KeyboardViewController {
             accentPaletteRawValue: configuration.accentPaletteRawValue,
             isSystemDictionaryFallback: configuration.isSystemDictionaryFallback,
             hasFullAccess: configuration.hasFullAccess,
-            keyboardBackgroundThemeRawValue: configuration.keyboardBackgroundThemeRawValue,
             basicSymbolOrderRawValue: configuration.basicSymbolOrderRawValue,
             temperatureUnitRawValue: configuration.temperatureUnitRawValue,
             radicalStrokeCountStyleRawValue: configuration.radicalStrokeCountStyleRawValue,
@@ -667,6 +579,94 @@ extension KeyboardViewController {
             self?.moveCursorAfterShortcutInsertion(by: offset)
         }
         return rootView
+    }
+
+    // キーボード側から入力モードが変わったと届いたとき(makeRootView の onInputModeChanged。3829 で移設)
+    func handleInputModeChanged(_ mode: KeyboardInputMode, changeDetail: String) {
+        let previousMode = self.currentInputMode
+
+        guard previousMode != mode else {
+            return
+        }
+
+        if previousMode == .kana,
+            mode != .kana {
+            self.commitPendingComposingTextBeforeInputModeSwitch()
+        }
+
+        self.currentInputMode = mode
+        // 調査用ログ(記号面切替 2838): 引き金(changeDetail)を添える。原因判明後に外す
+        #if DEBUG
+        self.updateKeyboardDiagnosticsHeartbeat(
+            event: "入力モード変更 \(self.keyboardInputModeName(previousMode)) -> \(self.keyboardInputModeName(mode)) 引き金=\(changeDetail) \(MemoryForensics.cgDataRegionSummary())",
+            appendLog: true
+        )
+        #else
+        self.updateKeyboardDiagnosticsHeartbeat(
+            event: "入力モード変更 \(self.keyboardInputModeName(previousMode)) -> \(self.keyboardInputModeName(mode))",
+            appendLog: true
+        )
+        #endif
+        // 絵文字モードはピッカー構築で footprint が跳ねる。長寿命プロセスが高水位の
+        // まま切り替えると per-process limit の jetsam で即死する(2026-08-14 17:01
+        // 実測: footprint 63MB 圏で latin→emoji 切替直後に jetsam(1)
+        // per-process-limit(7)。この kill は iOS がレポートを non-actionable として
+        // 破棄するため .ips も残らない)。高水位なら先に再構築可能な dirty キャッシュ
+        // (LM/word_costs/JSON辞書系。欧文辞書本体は mmap でfootprint非寄与)を落として
+        // 余白を作る。sqlite は保持されるので変換は劣化せず、キャッシュは次の利用時に
+        // 遅延再構築される。
+        // MEMFORENSICS(時限計測 2611): 絵文字ピッカー構築の高水位帰属
+        if mode == .emoji {
+            MemoryForensics.noteOperation("絵文字切替")
+            // ピッカー構築そのものの寄与を前後差分で名指しする(2631)。
+            // 1.2s=初期構築、5s=初期スクロール・グリフキャッシュ含む
+            MemoryForensics.noteSpikeWindow("絵文字切替")
+            MemoryForensics.noteSpikeWindow("絵文字切替+5s", delaySeconds: 5.0)
+        }
+        if previousMode == .emoji {
+            // 退出後に used が戻るか(=グリフキャッシュが解放されるか)の判定材料。
+            // 戻るなら退出時 pressure_relief でページ返却が根治になる(2632)
+            MemoryForensics.noteSpikeWindow("絵文字退出", minDeltaMB: -1_000)
+            MemoryForensics.noteSpikeWindow("絵文字退出+5s", delaySeconds: 5.0, minDeltaMB: -1_000)
+        }
+        // 面(記号・絵文字・顔文字・部首・書式化)から出るときは、その面で膨らんだぶんを
+        // その場で返す(3191)。実機の Jetsam 記録では拡張が 51MB、前面のメモアプリが 78MB で
+        // 端末全体が逼迫し、前面アプリが落とされていた。面の閲覧はグリフ・セルの保持が大きく、
+        // 戻った直後が最も捨てやすい
+        if previousMode == .emoji || previousMode == .formattedNumber,
+            mode != .emoji, mode != .formattedNumber {
+            self.kanaKanjiConverter.store.clearSystemDictionaryJSONCaches()
+            malloc_zone_pressure_relief(nil, 0)
+            if let footprintMB = self.currentFootprintMB() {
+                self.updateKeyboardDiagnosticsHeartbeat(
+                    event: "面から出るときの整理 footprintMB=\(String(format: "%.1f", footprintMB))"
+                        + "→\(self.diagnosticsFootprintMBText())",
+                    appendLog: true
+                )
+            }
+        }
+        // 面を開く前の整理。横画面は同じ上限に早く近づくので閾値を下げる(3186)
+        let isLandscape = self.view.window?.windowScene?.interfaceOrientation.isLandscape
+            ?? (self.traitCollection.verticalSizeClass == .compact)
+        if mode == .emoji,
+            let footprintMB = self.currentFootprintMB(),
+            footprintMB >= (isLandscape ? 42 : 50) {
+            self.kanaKanjiConverter.store.clearSystemDictionaryJSONCaches()
+            // free 済み dirty ページも OS へ返す(census 実測でアリーナ保持が
+            // footprint の主成分だったため。メモリ警告時と同じ処方)
+            malloc_zone_pressure_relief(nil, 0)
+            self.updateKeyboardDiagnosticsHeartbeat(
+                event: "絵文字モード切替前にキャッシュ解放 footprintMB=\(String(format: "%.1f", footprintMB))"
+                    + "→\(self.diagnosticsFootprintMBText())",
+                appendLog: true
+            )
+        }
+
+        if mode != .kana {
+            self.clearComposingState()
+        }
+
+        self.refreshKeyboardStateAsync()
     }
 
     // UIReturnKeyType → キーの文字ラベル。純正キーボードの日本語表記に合わせる。

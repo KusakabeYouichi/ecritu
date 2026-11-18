@@ -28,55 +28,26 @@ struct DakutenDuckCompositeIconView: View {
                     .applying(transform)
                     .stroke(
                         duckStrokeColor,
-                        style: StrokeStyle(
-                            lineWidth: max(1.2, 20 * scale),
-                            lineCap: .round,
-                            lineJoin: .round
-                        )
+                        style: Self.roundStrokeStyle(max(1.2, 20 * scale))
                     )
 
                 DakutenDuckVectorPaths.beak
                     .applying(transform)
                     .stroke(
                         duckStrokeColor,
-                        style: StrokeStyle(
-                            lineWidth: max(1.1, 16 * scale),
-                            lineCap: .round,
-                            lineJoin: .round
-                        )
+                        style: Self.roundStrokeStyle(max(1.1, 16 * scale))
                     )
 
-                Path(
-                    ellipseIn: CGRect(
-                        x: eyeRingCenter.x - eyeRingRadius,
-                        y: eyeRingCenter.y - eyeRingRadius,
-                        width: eyeRingRadius * 2,
-                        height: eyeRingRadius * 2
-                    )
-                )
+                Self.circlePath(center: eyeRingCenter, radius: eyeRingRadius)
                 .stroke(
                     duckStrokeColor,
                     style: StrokeStyle(lineWidth: max(1.0, 12 * scale))
                 )
 
-                Path(
-                    ellipseIn: CGRect(
-                        x: eyeRingCenter.x - pupilRadius,
-                        y: eyeRingCenter.y - pupilRadius,
-                        width: pupilRadius * 2,
-                        height: pupilRadius * 2
-                    )
-                )
+                Self.circlePath(center: eyeRingCenter, radius: pupilRadius)
                 .fill(duckStrokeColor)
 
-                Path(
-                    ellipseIn: CGRect(
-                        x: eyeHighlightCenter.x - eyeHighlightRadius,
-                        y: eyeHighlightCenter.y - eyeHighlightRadius,
-                        width: eyeHighlightRadius * 2,
-                        height: eyeHighlightRadius * 2
-                    )
-                )
+                Self.circlePath(center: eyeHighlightCenter, radius: eyeHighlightRadius)
                 .fill(Color(uiColor: .systemBackground))
 
                 if showsHandakutenMark {
@@ -93,11 +64,7 @@ struct DakutenDuckCompositeIconView: View {
                         .applying(handakutenVisualOffset)
                         .stroke(
                             overlayColor,
-                            style: StrokeStyle(
-                                lineWidth: max(0.9, 8 * scale),
-                                lineCap: .round,
-                                lineJoin: .round
-                            )
+                            style: Self.roundStrokeStyle(max(0.9, 8 * scale))
                         )
 
                     DakutenDuckVectorPaths.handakutenHaloInner
@@ -105,11 +72,7 @@ struct DakutenDuckCompositeIconView: View {
                         .applying(handakutenVisualOffset)
                         .stroke(
                             overlayColor,
-                            style: StrokeStyle(
-                                lineWidth: max(0.8, 6 * scale),
-                                lineCap: .round,
-                                lineJoin: .round
-                            )
+                            style: Self.roundStrokeStyle(max(0.8, 6 * scale))
                         )
                 }
 
@@ -118,50 +81,55 @@ struct DakutenDuckCompositeIconView: View {
                         .applying(transform)
                         .stroke(
                             overlayColor,
-                            style: StrokeStyle(
-                                lineWidth: max(1.0, 14 * scale),
-                                lineCap: .round,
-                                lineJoin: .round
-                            )
+                            style: Self.roundStrokeStyle(max(1.0, 14 * scale))
                         )
 
                     DakutenDuckVectorPaths.sweatSmall
                         .applying(transform)
                         .stroke(
                             overlayColor,
-                            style: StrokeStyle(
-                                lineWidth: max(1.0, 14 * scale),
-                                lineCap: .round,
-                                lineJoin: .round
-                            )
+                            style: Self.roundStrokeStyle(max(1.0, 14 * scale))
                         )
 
                     DakutenDuckVectorPaths.sweatLargeHighlight
                         .applying(transform)
                         .stroke(
                             overlayColor,
-                            style: StrokeStyle(
-                                lineWidth: max(0.8, 7 * scale),
-                                lineCap: .round,
-                                lineJoin: .round
-                            )
+                            style: Self.roundStrokeStyle(max(0.8, 7 * scale))
                         )
 
                     DakutenDuckVectorPaths.sweatSmallHighlight
                         .applying(transform)
                         .stroke(
                             overlayColor,
-                            style: StrokeStyle(
-                                lineWidth: max(0.8, 7 * scale),
-                                lineCap: .round,
-                                lineJoin: .round
-                            )
+                            style: Self.roundStrokeStyle(max(0.8, 7 * scale))
                         )
                 }
             }
         }
         .aspectRatio(1, contentMode: .fit)
         .allowsHitTesting(false)
+    }
+
+    // 中心と半径で円の Path を作る(3829)
+    private static func circlePath(center: CGPoint, radius: CGFloat) -> Path {
+        Path(
+            ellipseIn: CGRect(
+                x: center.x - radius,
+                y: center.y - radius,
+                width: radius * 2,
+                height: radius * 2
+            )
+        )
+    }
+
+    // 端と角を丸めた線(3829)
+    private static func roundStrokeStyle(_ lineWidth: CGFloat) -> StrokeStyle {
+        StrokeStyle(
+            lineWidth: lineWidth,
+            lineCap: .round,
+            lineJoin: .round
+        )
     }
 }
 
