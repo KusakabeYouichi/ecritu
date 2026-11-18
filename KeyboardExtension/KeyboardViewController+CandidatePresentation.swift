@@ -221,6 +221,10 @@ extension KeyboardViewController {
         // 直前の確定済み文字は main で読んでから渡す(textDocumentProxy は UIKit の main 専用で、
         // 候補生成キューから読むと main の編集と順序が不定になる。セキュリティー検査 2026-10-25)
         let precedingCharacter = textDocumentProxy.documentContextBeforeInput?.last
+        #if DEBUG
+        // 調査用(3827): 段階ごとの時間(ConversionTimingProbe)
+        let timingKickoffAt = CFAbsoluteTimeGetCurrent()
+        #endif
 
         candidateGenerationQueue.async { [weak self] in
             // 旧世代ジョブの早期スキップ: 直列キューで自分の番が来た時点で新しい打鍵が
@@ -229,6 +233,11 @@ extension KeyboardViewController {
             guard sequencer.isCurrent(generation) else {
                 return
             }
+            #if DEBUG
+            let timingQueueStartAt = CFAbsoluteTimeGetCurrent()
+            var timingMultiMs = 0.0
+            var timingTraceMs = 0.0
+            #endif
             let converterLimit = max(
                 presentationLimit * ExternalCandidateLimits.lookupMultiplier,
                 presentationLimit + 12
@@ -248,6 +257,9 @@ extension KeyboardViewController {
             }
             let singleForTrace = Array(converterCandidates.prefix(8))
             var multiClauseLeadingKana = false
+            #if DEBUG
+            let timingSingleEndAt = CFAbsoluteTimeGetCurrent()
+            #endif
 
             // 連文節変換(案1: 自前単語LM): フラグ on の時のみ、連文節候補を上位(先頭候補の次)へ
             // 合流。既存の単文節候補は必ず残し、重複は除外する(退行防止)。
@@ -273,12 +285,19 @@ extension KeyboardViewController {
                         )
                     }
                 }
+                #if DEBUG
+                let timingMultiEndAt = CFAbsoluteTimeGetCurrent()
+                timingMultiMs = (timingMultiEndAt - timingSingleEndAt) * 1000
+                #endif
                 self?.recordConversionTrace(
                     reading: reading,
                     multi: multiClause,
                     single: singleForTrace,
                     mode: systemCandidateMode
                 )
+                #if DEBUG
+                timingTraceMs = (CFAbsoluteTimeGetCurrent() - timingMultiEndAt) * 1000
+                #endif
                 // MEMFORENSICS(時限計測 2611): 変換がアリーナ高水位を育てたかの帰属
                 MemoryForensics.noteOperation("変換\(reading.count)字")
                 // フットプリントが 5MB 動いたら理由付きで残す(2855)。alloc が動かない上昇を取り逃さない
@@ -349,6 +368,11 @@ extension KeyboardViewController {
                 }
             }
 
+            #if DEBUG
+            let timingQueueEndAt = CFAbsoluteTimeGetCurrent()
+            let timingMulti = timingMultiMs
+            let timingTrace = timingTraceMs
+            #endif
             DispatchQueue.main.async {
                 defer {
                     sequencer.finish(generation)
@@ -356,34 +380,72 @@ extension KeyboardViewController {
                 guard let self else {
                     return
                 }
+                #if DEBUG
+                let timingMainStartAt = CFAbsoluteTimeGetCurrent()
+                #endif
 
-                self.applyAsyncCandidateGenerationResult(
+                let applied = self.applyAsyncCandidateGenerationResult(
                     generation: generation,
                     cacheKey: pendingKey,
                     converterCandidates: converterCandidates,
                     multiClauseLeadingKana: multiClauseLeadingKana,
                     presentationLimit: presentationLimit
                 )
+                #if DEBUG
+                // 画面に使われた変換だけ数える(次の打鍵に追い越されたものは仕上げをしないので混ぜない)
+                if applied {
+                    let timingEndAt = CFAbsoluteTimeGetCurrent()
+                    self.recordConversionTiming(ConversionTimingSample(
+                        readingLength: reading.count,
+                        queueWaitMs: (timingQueueStartAt - timingKickoffAt) * 1000,
+                        singleMs: (timingSingleEndAt - timingQueueStartAt) * 1000,
+                        multiMs: timingMulti,
+                        traceMs: timingTrace,
+                        mainWaitMs: (timingMainStartAt - timingQueueEndAt) * 1000,
+                        applyMs: (timingEndAt - timingMainStartAt) * 1000,
+                        totalMs: (timingEndAt - timingKickoffAt) * 1000
+                    ))
+                }
+                #else
+                _ = applied
+                #endif
             }
         }
     }
 
+    // 調査用(3827): 変換時間を集め、まとまった数ごとに要約を共有設定へ足す(デバッグ版だけ呼ばれる)。main で呼ぶ
+    func recordConversionTiming(_ sample: ConversionTimingSample) {
+        guard let line = conversionTimingProbe.record(sample), let sharedDefaults else {
+            return
+        }
+        let edition = (Bundle.main.infoDictionary?["CFBundleVersion"] as? String) ?? "?"
+        let timestamp = Self.diagnosticsTimestampFormatter.string(from: Date())
+        var stored = sharedDefaults.stringArray(forKey: SharedDefaultsKeys.keyboardConversionTimingSummaries) ?? []
+        stored.append("\(timestamp) [\(edition)] \(line)")
+        if stored.count > ConversionTimingProbe.storedSummaryLimit {
+            stored.removeFirst(stored.count - ConversionTimingProbe.storedSummaryLimit)
+        }
+        sharedDefaults.set(stored, forKey: SharedDefaultsKeys.keyboardConversionTimingSummaries)
+    }
+
+    // 戻り値: 結果を画面に使ったか(次の打鍵に追い越されていたら false)
+    @discardableResult
     func applyAsyncCandidateGenerationResult(
         generation: UInt64,
         cacheKey: CandidatePresentationCacheKey,
         converterCandidates: [String],
         multiClauseLeadingKana: Bool = false,
         presentationLimit: Int
-    ) {
+    ) -> Bool {
         guard candidateGenerationSequencer.isCurrent(generation) else {
-            return
+            return false
         }
 
         guard cacheKey.reading == effectiveComposingReading,
             cacheKey.composingRawText == effectiveComposingRawText,
             currentInputMode == .kana,
             activeConversion == nil else {
-            return
+            return false
         }
 
         let supplementaryCandidates = supplementaryLexiconCandidates(for: cacheKey.reading)
@@ -474,6 +536,7 @@ extension KeyboardViewController {
         settledCandidatePresentationKey = cacheKey
 
         refreshKeyboardStateAsync()
+        return true
     }
 
     // デバッグ: 実機のみ再現する誤変換の層特定用。直近1回の変換の生の連文節/単文節結果と

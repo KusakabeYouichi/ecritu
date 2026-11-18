@@ -82,6 +82,7 @@
 		494D3AC7F382B16B0C6F478A /* KeyboardLayerZIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCD9B73E7496C0E678230735 /* KeyboardLayerZIndex.swift */; };
 		4B117742728D546BC84BDC01 /* KeyboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE8ED69072A5EAA44DDACB9E /* KeyboardViewController.swift */; };
 		AB0000000000000000002618 /* MemoryForensicsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000002617 /* MemoryForensicsTests.swift */; };
+		130C6584F19009210CFBA757 /* ConversionTimingProbeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BC4ACAB7FA54E057F738DE9 /* ConversionTimingProbeTests.swift */; };
 		E477DC610F262272485792C2 /* KeyboardControllerLifecycleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E49C5D3BAEA4CD47BE5FC20 /* KeyboardControllerLifecycleTests.swift */; };
 		C9521F0CE9D3F61A234D0D97 /* PlainTextCompositionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8063BC27BE3E71CDA0CC5E56 /* PlainTextCompositionTests.swift */; };
 		B2F96E4FACF872E0C99909F7 /* TestSupport+StoreHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = D47DAE19C6007C33FE1974E9 /* TestSupport+StoreHelpers.swift */; };
@@ -91,7 +92,9 @@
 		5455038D3ECF9657CA458C8E /* KeyboardKeyComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31B98B9E42E4E93025B51ECB /* KeyboardKeyComponents.swift */; };
 		55453E798FC6382F14E94B48 /* FlickKeyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E47697B4A1DF6C69AD1AD3A /* FlickKeyView.swift */; };
 		AB0000000000000000002615 /* KeyboardMemoryForensics.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000002614 /* KeyboardMemoryForensics.swift */; };
+		018621927B7D7EF381DF1B96 /* ConversionTimingProbe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF1BA7EA778C130B70AF8F0 /* ConversionTimingProbe.swift */; };
 		AB0000000000000000002616 /* KeyboardMemoryForensics.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000002614 /* KeyboardMemoryForensics.swift */; };
+		6BE34D3876A390A6B49D26EE /* ConversionTimingProbe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF1BA7EA778C130B70AF8F0 /* ConversionTimingProbe.swift */; };
 		AB0000000000000000002613 /* KeyboardLayoutMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000002610 /* KeyboardLayoutMetrics.swift */; };
 				AB0000000000000000002609 /* KeyboardLayoutMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000002610 /* KeyboardLayoutMetrics.swift */; };
 62E37AD409B322FD8E105704 /* KeyboardRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E86F6C5D01B42067D46B922 /* KeyboardRootView.swift */; };
@@ -217,6 +220,7 @@
 		3E9058C9AC20A9C771D55DFC /* Edition.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Edition.xcconfig; sourceTree = "<group>"; };
 		4B5F60406235BC88C1D35F20 /* KeyboardExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = KeyboardExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		AB0000000000000000002617 /* MemoryForensicsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryForensicsTests.swift; sourceTree = "<group>"; };
+		7BC4ACAB7FA54E057F738DE9 /* ConversionTimingProbeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversionTimingProbeTests.swift; sourceTree = "<group>"; };
 		5E49C5D3BAEA4CD47BE5FC20 /* KeyboardControllerLifecycleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardControllerLifecycleTests.swift; sourceTree = "<group>"; };
 		8063BC27BE3E71CDA0CC5E56 /* PlainTextCompositionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlainTextCompositionTests.swift; sourceTree = "<group>"; };
 		D47DAE19C6007C33FE1974E9 /* TestSupport+StoreHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TestSupport+StoreHelpers.swift"; sourceTree = "<group>"; };
@@ -237,6 +241,7 @@
 		5DF3F61E6678EA62C2C94678 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		693BB077926B6B9DCDCDA8EA /* écrituTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = "écrituTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AB0000000000000000002614 /* KeyboardMemoryForensics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardMemoryForensics.swift; sourceTree = "<group>"; };
+		0AF1BA7EA778C130B70AF8F0 /* ConversionTimingProbe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversionTimingProbe.swift; sourceTree = "<group>"; };
 		AB0000000000000000002610 /* KeyboardLayoutMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardLayoutMetrics.swift; sourceTree = "<group>"; };
 		6E86F6C5D01B42067D46B922 /* KeyboardRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardRootView.swift; sourceTree = "<group>"; };
 		753727472F0FBB8C1E318336 /* kana_kanji_candidate_sources.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = kana_kanji_candidate_sources.json; sourceTree = "<group>"; };
@@ -434,6 +439,7 @@
 				AB0000000000000000003590 /* RadicalPickerState.swift */,
 				AB0000000000000000003595 /* RadicalPositionIcon.swift */,
 				AB0000000000000000002614 /* KeyboardMemoryForensics.swift */,
+				0AF1BA7EA778C130B70AF8F0 /* ConversionTimingProbe.swift */,
 				AB0000000000000000002610 /* KeyboardLayoutMetrics.swift */,
 				6E86F6C5D01B42067D46B922 /* KeyboardRootView.swift */,
 				5CC113350DED3CCDEF21E28B /* KeyboardRootViewSupportTypes.swift */,
@@ -492,6 +498,7 @@
 				B334B844356306350487E012 /* KanaKanjiConverterRegressionTests.swift */,
 				2626823DE41575D1188F5DEA /* KeyboardCandidateMergingTests.swift */,
 				AB0000000000000000002617 /* MemoryForensicsTests.swift */,
+				7BC4ACAB7FA54E057F738DE9 /* ConversionTimingProbeTests.swift */,
 				5E49C5D3BAEA4CD47BE5FC20 /* KeyboardControllerLifecycleTests.swift */,
 				8063BC27BE3E71CDA0CC5E56 /* PlainTextCompositionTests.swift */,
 				D47DAE19C6007C33FE1974E9 /* TestSupport+StoreHelpers.swift */,
@@ -847,6 +854,7 @@
 				A1B2C3D4E5F600000T000018 /* KeyboardViewController+Settings.swift in Sources */,
 				A1B2C3D4E5F600000T000019 /* KeyboardViewController+SupplementaryCandidates.swift in Sources */,
 				AB0000000000000000002615 /* KeyboardMemoryForensics.swift in Sources */,
+				018621927B7D7EF381DF1B96 /* ConversionTimingProbe.swift in Sources */,
 				AB0000000000000000002613 /* KeyboardLayoutMetrics.swift in Sources */,
 				A1B2C3D4E5F600000T00001A /* KeyboardViewController.swift in Sources */,
 				A1B2C3D4E5F600000T00001B /* SIUnitCatalog.swift in Sources */,
@@ -865,6 +873,7 @@
 				AB0000000000000000003589 /* KaomojiPanelStateTests.swift in Sources */,
 				AB0000000000000000003594 /* RadicalPickerStateTests.swift in Sources */,
 				AB0000000000000000002618 /* MemoryForensicsTests.swift in Sources */,
+				130C6584F19009210CFBA757 /* ConversionTimingProbeTests.swift in Sources */,
 				E477DC610F262272485792C2 /* KeyboardControllerLifecycleTests.swift in Sources */,
 				C9521F0CE9D3F61A234D0D97 /* PlainTextCompositionTests.swift in Sources */,
 				B2F96E4FACF872E0C99909F7 /* TestSupport+StoreHelpers.swift in Sources */,
@@ -922,6 +931,7 @@
 				AB0000000000000000003591 /* RadicalPickerState.swift in Sources */,
 				AB0000000000000000003596 /* RadicalPositionIcon.swift in Sources */,
 				AB0000000000000000002616 /* KeyboardMemoryForensics.swift in Sources */,
+				6BE34D3876A390A6B49D26EE /* ConversionTimingProbe.swift in Sources */,
 				AB0000000000000000002609 /* KeyboardLayoutMetrics.swift in Sources */,
 				62E37AD409B322FD8E105704 /* KeyboardRootView.swift in Sources */,
 				0AF6674FC22E71B601C7EDC4 /* KeyboardRootViewSupportTypes.swift in Sources */,

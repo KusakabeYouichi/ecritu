@@ -299,6 +299,8 @@ final class KeyboardViewController: UIInputViewController {
     var pendingRefreshKeyboardStateRequests = 0
     var isRefreshKeyboardStateAsyncScheduled = false
     let candidateGenerationSequencer = CandidateGenerationSequencer()
+    // 調査用(3827): 変換時間の集計。main からだけ触る
+    var conversionTimingProbe = ConversionTimingProbe()
     let candidateBarModel = KeyboardCandidateBarModel()
     var settledCandidatePresentation: CandidatePresentation?
     var settledCandidatePresentationKey: CandidatePresentationCacheKey?
@@ -559,6 +561,8 @@ final class KeyboardViewController: UIInputViewController {
         // デバッグ用: 直近1回の変換トレース(上書き式)。実機のみ再現する誤変換の層特定に使う。
         // reading→連文節上位|単文節上位|LM/フェイルセーフ/モード を記録。ローテなし・単一値。
         static let keyboardConversionLastTrace = "keyboardConversionLastTrace"
+        // 調査用(3827): 変換時間の要約(30 回ごとに 1 行、新しい順でなく追記、上限あり)。打った文字は入らない
+        static let keyboardConversionTimingSummaries = "keyboardConversionTimingSummaries"
         // 削除キーにメモリの数値を出すか(アプリの「キーボード診断ログ」のスイッチ。初期設定はオフ。3334)
         static let deleteKeyMemoryBadgeEnabled = "deleteKeyMemoryBadgeEnabled"
         // 設定変更の世代カウンタ(コンテナ app が変更のたび +1)。サスペンド中のキーボードが
