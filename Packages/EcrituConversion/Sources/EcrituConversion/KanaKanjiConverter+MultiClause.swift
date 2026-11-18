@@ -3779,6 +3779,23 @@ extension KanaKanjiConverter {
             return naCost <= Self.multiClauseNaAdjectiveBigramThreshold
         }
 
+        #if DEBUG
+        // ワイン用語優先の判定の控え(3827)。キーは読みと表記の ID。この関数の 1 回の呼び出しの中だけで使う
+        var wineTermSurfaceMemo: [Int64: Bool] = [:]
+        var wineTermCapMemo: [Int64: Bool] = [:]
+        // 表(読み→表記)に載っている語か。遷移のたびに読みの文字列で表を引いていたのを、語ごとに 1 回にする
+        func isWineTermSurface(readingID: Int32, surfaceID: Int32, reading: String, surface: String) -> Bool {
+            guard let wineTermPrioritySurfaces else { return false }
+            let memoKey = (Int64(readingID) << 32) | Int64(surfaceID)
+            if let known = wineTermSurfaceMemo[memoKey] {
+                return known
+            }
+            let value = wineTermPrioritySurfaces[reading]?.contains(surface) ?? false
+            wineTermSurfaceMemo[memoKey] = value
+            return value
+        }
+        #endif
+
         // --- 3. コスト関数(sim_lm.py と一致): bigram / unigram+backoff / 辞書OOV / 素通りper-char ---
         func transitionCost(
             prev: String,
@@ -4108,17 +4125,31 @@ extension KanaKanjiConverter {
             #if DEBUG
             // ワイン用語優先(デバッグ版専用。3805): 表の語は文の中でも一般語より先に(ドウロを擁します)。読みが 2 かな以下の語
             // (Gin=じん、Dão=だん)と日常語でもある語(帰還/発声)は表の側で外してある(普通の文が軒並み崩れる)
-            if let wineTermPrioritySurfaces, wineTermPrioritySurfaces[reading]?.contains(surface) ?? false {
-                base = min(base, WineTermPriority.inSentenceWordCostCap)
-            } else if let wineTermPrioritySurfaces, isDictWord, !isKanaIdentity, reading.count >= 4 {
-                // 表の語で始まるもっと長い語(酒石酸)も同じ上限に。短い語(酒石)だけ安いと、長い語を割った経路が勝つ
-                // (しゅせきさんがおおい が 酒石+3+… だった。3809)
-                for prefixCount in WineTermPriority.inSentenceMinReadingCount..<reading.count {
-                    if let heads = wineTermPrioritySurfaces[String(reading.prefix(prefixCount))],
-                        heads.contains(where: { surface.count > $0.count && surface.hasPrefix($0) }) {
-                        base = min(base, WineTermPriority.inSentenceWordCostCap)
-                        break
+            // 判定は語(読み・表記・辞書の語か)だけで決まるので、語ごとに 1 回だけ求めて覚える。遷移のたびに読みの字数を数え、
+            // 読みの先頭を切り出して表を引いていて、オンのとき 1 打鍵が 2ms(4%)遅かった(3827)
+            if let wineTermPrioritySurfaces {
+                let memoKey = (Int64(readingID) << 33) | (Int64(surfaceID) << 1) | (isDictWord ? 1 : 0)
+                let isCapped: Bool
+                if let known = wineTermCapMemo[memoKey] {
+                    isCapped = known
+                } else {
+                    var value = isWineTermSurface(readingID: readingID, surfaceID: surfaceID, reading: reading, surface: surface)
+                    if !value, isDictWord, !isKanaIdentity, reading.count >= 4 {
+                        // 表の語で始まるもっと長い語(酒石酸)も同じ上限に。短い語(酒石)だけ安いと、長い語を割った経路が勝つ
+                        // (しゅせきさんがおおい が 酒石+3+… だった。3809)
+                        for prefixCount in WineTermPriority.inSentenceMinReadingCount..<reading.count {
+                            if let heads = wineTermPrioritySurfaces[String(reading.prefix(prefixCount))],
+                                heads.contains(where: { surface.count > $0.count && surface.hasPrefix($0) }) {
+                                value = true
+                                break
+                            }
+                        }
                     }
+                    wineTermCapMemo[memoKey] = value
+                    isCapped = value
+                }
+                if isCapped {
+                    base = min(base, WineTermPriority.inSentenceWordCostCap)
                 }
             }
             #endif
@@ -7046,7 +7077,8 @@ extension KanaKanjiConverter {
                         wineTermPrioritySurfaces[prevNode.reading]?.contains(prevNode.surface) ?? false {
                         cost += Self.multiClauseWineTermAfterSuruNounTopicPenalty
                     }
-                    if let wineTermPrioritySurfaces, wineTermPrioritySurfaces[node.reading]?.contains(node.surface) ?? false {
+                    if wineTermPrioritySurfaces != nil,
+                        isWineTermSurface(readingID: node.readingID, surfaceID: node.surfaceID, reading: node.reading, surface: node.surface) {
                         // ワイン用語優先: 助詞でない 1 字のかなの直後には立てない(ごとに+さ+神蔵 が 酒蔵 に勝った。3812、ユーザ指摘)
                         if prevNode.isKanaIdentity, prevNode.reading.count == 1,
                             !Self.multiClauseWineTermAllowedPrecedingKana.contains(prevNode.surface) {
