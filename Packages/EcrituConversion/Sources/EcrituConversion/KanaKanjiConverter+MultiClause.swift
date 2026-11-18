@@ -7110,6 +7110,14 @@ extension KanaKanjiConverter {
                         Self.digitBoostCounterSurfaces(for: prevNode.reading)?.contains(prevNode.surface) ?? false {
                         cost -= Self.multiClauseDigitCounterThenRangeWordBonus
                     }
+                    // 数字の直後の 助数詞+おき(定数コメント参照。3826)。整数 ID の判定を先に
+                    // 後ろが活用の続き(1行おきます=置きます)のときは掛けない。文末か助詞(に/の/で/が/は/も/を/と)の前だけ
+                    if node.surfaceID == SID.おき, digitPrefixed, prevNode.start == 0, node.isKanaIdentity,
+                        node.end == n || Self.multiClauseOkiFollowingParticles.contains(chars[node.end]),
+                        !Self.multiClauseOffshoreDistanceUnits.contains(prevNode.surface),
+                        Self.digitBoostCounterSurfaces(for: prevNode.reading)?.contains(prevNode.surface) ?? false {
+                        cost -= Self.multiClauseDigitCounterThenOkiBonus
+                    }
                     if digitPrefixed, prevNode.start == 0, prevNode.reading.count == 2, prevNode.surface == "大", prevNode.reading == "だい",
                         node.reading.count >= 2, node.surface.count >= 2, !node.isKanaIdentity, !node.isInflectionDerived, !node.isDictionaryFormPredicate,
                         !Self.multiClauseDaiCounterFollowingWords.contains(node.surface) {

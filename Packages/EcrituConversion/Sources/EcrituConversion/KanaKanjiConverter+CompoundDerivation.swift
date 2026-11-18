@@ -508,6 +508,8 @@ extension KanaKanjiConverter {
     static let counterPromotableKanaTails: Set<String> = [
         "しか", "だけ", "ずつ", "ごと", "ごとに", "ぐらい", "くらい", "ほど", "など",
         "まで", "でも", "かも", "こそ", "さえ", "すら", "ばかり",
+        // 間隔の おき(1行おき/3メートルおきに。1+ぎょうおき が 1行沖 だった。3826、ユーザ報告)
+        "おき", "おきに", "おきの", "おきで",
     ]
 
     public static func counterKanaTailPromotedCandidates(

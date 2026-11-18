@@ -4024,6 +4024,11 @@ extension KanaKanjiConverter {
     // 数字の直後の 助数詞+以内/以上…(19+どいないとなる が 土居+ない+となる だった。度+以内 が先。3809、ユーザ指摘)
     static let multiClauseDigitCounterThenRangeWordBonus = 2500
     static let multiClauseRangeWordsAfterCounter: Set<String> = ["以内", "以上", "以下", "未満", "前後", "程度", "以降", "以前"]
+    // 数字の直後の 助数詞+おき(1行おき/5人おきに/3メートルおき)の おき はかな(3826、ユーザ報告)。1+ぎょうおき が 1行沖 だった
+    // (行→沖 が 行→おき より安い)。距離の単位の後ろは 沖 がある(10キロ沖)ので除く
+    static let multiClauseDigitCounterThenOkiBonus = 4000
+    static let multiClauseOkiFollowingParticles: Set<Character> = ["に", "の", "で", "が", "は", "も", "を", "と", "、", "。"]
+    static let multiClauseOffshoreDistanceUnits: Set<String> = ["キロ", "km", "キロメートル", "海里", "マイル", "カイリ"]
     // 関西方言の ている→とる 縮約(騙して→騙しとった)は活用派生の定額で標準形の複合(騙し取った)と同点になり、
     // 文字コード順(かな と < 漢字 取)で先頭に出ていた(ユーザ報告 2887 だましとった)。方言形は標準形の後ろに置く。
     // 連用形のかな+とる系の形だけ(取った 等の漢字表層は対象外)

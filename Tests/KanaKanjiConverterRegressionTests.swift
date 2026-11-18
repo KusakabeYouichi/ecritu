@@ -30503,6 +30503,17 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(boosted("とうのうちのひとつ", after: "4").first, "頭のうちのひとつ")
         XCTAssertTrue(boosted("とう", after: "4").contains("島"))
         XCTAssertEqual(boosted("つのさと", after: "5").first, "つの里")
+        // 3826: 数字+助数詞+おき はかな(1行沖 だった)。活用の続き(置きます)と距離の単位(10キロ沖)は変えない。かなー/かなあ/かなぁ はかなが先頭
+        XCTAssertEqual(boosted("ぎょうおき", after: "1").first, "行おき")
+        XCTAssertEqual(boosted("ぎょうおきに", after: "2").first, "行おきに")
+        XCTAssertEqual(boosted("にんおきに", after: "5").first, "人おきに")
+        XCTAssertEqual(boosted("めーとるおき", after: "3").first, "メートルおき")
+        XCTAssertEqual(boosted("ぎょうおきます", after: "1").first, "行置きます")
+        XCTAssertEqual(boosted("きろおき", after: "0").first, "キロ沖")
+        for reading in ["かなー", "かなあ", "かなぁ"] {
+            XCTAssertEqual(single(reading).first, reading)
+        }
+        XCTAssertEqual(multi("くるかなー").first, "来るかなー")
         // 3823: 何でしたっけ/なんでしたっけ/ナンでしたっけ、靄る/もやる は〜ましょう を作らない、こうしましょう はかな
         XCTAssertEqual(Array(multi("なんでしたっけ").prefix(3)), ["何でしたっけ", "なんでしたっけ", "ナンでしたっけ"])
         // 表示層でも かな を 2 番めに残す(末尾のチップに回して ナン が 2 番めになっていた。3824)
