@@ -1865,11 +1865,35 @@ public final class KanaKanjiConverter {
         let textUTF8 = text.utf8
         let suffixUTF8 = suffix.utf8
         guard !suffixUTF8.isEmpty,
-            suffixUTF8.count <= textUTF8.count,
-            textUTF8.suffix(suffixUTF8.count).elementsEqual(suffixUTF8) else {
+            Self.utf8HasSuffix(text, suffix) else {
             return nil
         }
         return String(decoding: textUTF8.prefix(textUTF8.count - suffixUTF8.count), as: UTF8.self)
+    }
+
+    // UTF-8 のバイト列での末尾一致(空の suffix は一致)。連続した記憶域を直接比べる。以前の suffix(_:).elementsEqual は
+    // 最適化なしのビルドで 1 回 380ns かかり、活用派生の 4% を占めた(memcmp なら 54ns。3828)。
+    // 記憶域が連続でない文字列(ブリッジされた NSString)だけ元の比べ方に戻る。結果は同じ
+    static func utf8HasSuffix(_ text: String, _ suffix: String) -> Bool {
+        let textUTF8 = text.utf8
+        let suffixUTF8 = suffix.utf8
+        let textCount = textUTF8.count
+        let suffixCount = suffixUTF8.count
+        guard suffixCount <= textCount else {
+            return false
+        }
+        guard suffixCount > 0 else {
+            return true
+        }
+        let fast: Bool?? = textUTF8.withContiguousStorageIfAvailable { textBytes in
+            suffixUTF8.withContiguousStorageIfAvailable { suffixBytes in
+                memcmp(textBytes.baseAddress! + (textCount - suffixCount), suffixBytes.baseAddress!, suffixCount) == 0
+            }
+        }
+        if let fast, let fast {
+            return fast
+        }
+        return textUTF8.suffix(suffixCount).elementsEqual(suffixUTF8)
     }
 
     func uniqueCandidates(from candidates: [String]) -> [String] {

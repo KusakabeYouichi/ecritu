@@ -221,6 +221,9 @@ extension KanaKanjiConverter {
         }
         return buckets
     }()
+    // 規則の読みの語尾だけを並べた表(allInflectionRules と同じ添字)。走査では先にこれで語尾を比べ、合った規則だけ本体を
+    // 取り出す(規則は文字列をいくつも持つ struct で、取り出すたびに全部の参照を数え直していた。3828)
+    static let inflectionRuleReadingSuffixes: [String] = allInflectionRules.map { $0.readingSuffix }
     static let deinflectionRulesWithEmptyReadingSuffix: [InflectionRule] =
         allInflectionRules.filter { $0.readingSuffix.isEmpty }
     static let deinflectionRuleIndicesWithEmptyReadingSuffix: [Int] =
@@ -349,7 +352,9 @@ extension KanaKanjiConverter {
             ))
         }
 
-        for index in Self.deinflectionRulesByReadingLastCharacter[readingLastCharacter] ?? [] {
+        // 読みは正規化済みのかななので、末尾一致はバイト列で比べる(removingSuffix と同じ前提)
+        for index in Self.deinflectionRulesByReadingLastCharacter[readingLastCharacter] ?? []
+        where Self.utf8HasSuffix(reading, Self.inflectionRuleReadingSuffixes[index]) {
             addProbe(for: Self.allInflectionRules[index])
         }
         for rule in Self.deinflectionRulesWithEmptyReadingSuffix {

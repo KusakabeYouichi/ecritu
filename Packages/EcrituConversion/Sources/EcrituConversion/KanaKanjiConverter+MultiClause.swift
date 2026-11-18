@@ -2533,8 +2533,10 @@ extension KanaKanjiConverter {
                         var inAllowlist = false
                         var suppliesKana = false
                         for index in ruleIndices {
+                            // 語尾が合う規則だけ本体を取り出す(3828)。読みは正規化済みのかななのでバイト列で比べる
+                            let readingSuffix = Self.inflectionRuleReadingSuffixes[index]
+                            guard !readingSuffix.isEmpty, Self.utf8HasSuffix(segmentReading, readingSuffix) else { continue }
                             let rule = Self.allInflectionRules[index]
-                            guard !rule.readingSuffix.isEmpty, segmentReading.hasSuffix(rule.readingSuffix) else { continue }
                             let stem = segmentReading.dropLast(rule.readingSuffix.count)
                             guard !stem.isEmpty else { continue }
                             let base = String(stem) + rule.baseReadingSuffix

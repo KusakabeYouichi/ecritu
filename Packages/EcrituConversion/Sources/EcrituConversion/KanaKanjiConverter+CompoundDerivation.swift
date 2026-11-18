@@ -821,10 +821,9 @@ extension KanaKanjiConverter {
         }
     }
 
-    static var numericCompoundCounterReadings: Set<String> {
-        Set(numericCounterSuffixCandidatesByReading.keys)
-            .union(supplementalCounterSurfacesByReading.keys)
-    }
+    // 2 つの表はどちらも固定なので 1 回だけ作る(呼ぶたびに集合を作り直していて、連文節の 2.5% を占めた。3828)
+    static let numericCompoundCounterReadings: Set<String> = Set(numericCounterSuffixCandidatesByReading.keys)
+        .union(supplementalCounterSurfacesByReading.keys)
 
     // 第 が付くときだけ使う助数詞(第3章/第2話/第1部 等。ユーザ報告 3342: だいさんしょう→台参照)。
     // 本表に置くと 3しょう→3章 や 何章/数章 以外の合成(さんわ→3話 等)に波及するので、序数接頭のときに限る
