@@ -116,9 +116,10 @@ extension KeyboardRootView {
     // 候補チップの当たり判定を見た目の下へ広げる幅(ユーザ指定 3818)。縦画面で未確定の行を取る(チップが上寄せ)ときだけ。
     // チップの真下にだけ透明の当たり判定を置き、候補欄ごとキーより手前に出す(本体の zIndex)。候補欄の枠(横スクロール)を
     // 延ばすとチップの無い所でもキーの上端を奪うので延ばさない。候補の無い面(絵文字・数字)や横画面は今までどおり
-    // 値は 候補欄の枠の下端から: 枠とキーの間の隙間(段の間隔)+キーの上端に食い込む幅(6pt)。チップの下端から枠の下端までの
-    // 余白はチップ側(CandidateChipTapExtensionStrip)で足す
-    static let candidateChipTapIntoKeyHeight: CGFloat = 6
+    // 値は 候補欄の枠の下端から: 枠とキーの間の隙間(段の間隔)+キーの上端に食い込む幅(3pt)。チップの下端から枠の下端までの
+    // 余白はチップ側(CandidateChipTapExtensionStrip)で足す。食い込む幅は 3818 では 6pt だったが、最上段のキーを押した
+    // つもりで候補を選んでしまうことがあったので 3pt に減らした(ユーザ指定 3838)
+    static let candidateChipTapIntoKeyHeight: CGFloat = 3
     var candidateChipTapExtension: CGFloat {
         guard !isLandscapeLayout, reservesCandidateCompositionRow,
             showsKanaConversionCandidates || showsLatinSuggestionCandidates else {
