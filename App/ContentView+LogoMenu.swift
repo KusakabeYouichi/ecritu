@@ -45,8 +45,8 @@ enum LogoMenuAction: String, CaseIterable, Identifiable {
     var subtitle: String {
         switch self {
         case .strategicDefaults: return "組み込みの標準値に戻す"
-        case .conservativeDefaults: return "3×3+わ・téléphone など従来型の配列にする"
-        case .contemporaryDefaults: return "保守的+かなで書く言葉をすべて抑制"
+        case .conservativeDefaults: return "Apple 純正に近い従来型の配列と表記にする"
+        case .contemporaryDefaults: return "従来型の配列で効率よく、いまの表記に寄せる"
         case .copyYAML: return "YAML 形式でクリップボードへ"
         case .stashSettings: return "再インストール後も残る場所に保存"
         case .restoreStashedSettings: return "退避していた設定に戻す"
@@ -754,9 +754,9 @@ extension ContentView {
         case .strategicDefaults:
             return "すべての設定を組み込みの標準値(戦略的初期設定)に戻します。語彙・学習内容はそのままです。"
         case .conservativeDefaults:
-            return "すべての設定を従来型の組み合わせ(3x3+わ・ラテン文字は 3x3・数字は téléphone・後置修飾・littlebear式のフリック 等)にします。iOS の連絡先の名前も候補に使う設定になり、まだ許可していなければ連絡先へのアクセスの許可を求めます。語彙・学習内容はそのままです。"
+            return "Apple 純正のキーボードの操作に慣れていて、それに合わせたい人に向く設定です。すべての設定を従来型の組み合わせ(3x3+わ・ラテン文字は 3x3・数字は téléphone・後置修飾・littlebear式のフリック 等)にします。表記は、事・此処 のような漢字の候補も残すので、そうした書き方に親しんだ年配の人にも向きます(同音の漢字による書きかえは常用漢字が先です)。iOS の連絡先の名前も候補に使う設定になり、まだ許可していなければ連絡先へのアクセスの許可を求めます。語彙・学習内容はそのままです。"
         case .contemporaryDefaults:
-            return "すべての設定を保守的初期設定と同じにし、かなで書く言葉(所謂・即ち・事・此処 など)は 5 つの仲間すべてで漢字を出さないようにします。iOS の連絡先の名前も候補に使う設定になり、まだ許可していなければ連絡先へのアクセスの許可を求めます。語彙・学習内容はそのままです。"
+            return "より若い人や、効率よく入力したい人、常用漢字による書きかえにあまり賛同できない人に向く設定です。かなの配列(3x3+わ)・後置修飾・littlebear式のフリックは従来型のまま、ラテン文字は AZERTY、数字は clavier にします。かなで書く言葉(所謂・即ち・事・此処 など)は漢字を出さず、同音の漢字による書きかえは本来の漢字を先に出します。iOS の連絡先の名前(フルネイムも)を候補に使う設定になり、まだ許可していなければ連絡先へのアクセスの許可を求めます。語彙・学習内容はそのままです。"
         case .restoreStashedSettings:
             if let stash = loadSettingsStash() {
                 let formatter = DateFormatter()
