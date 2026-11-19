@@ -782,9 +782,14 @@ struct KeyboardRootKanjiRadicalSectionView: View {
                     .frame(height: mainFlickKeyHeight)
                 }
 
+                // ほかの面(絵文字・記号)の削除キーと同じにする(3834、ユーザ指定)。以前は長押しで連続せず、
+                // アイコンが小さく(16pt)、読み上げ名も無かった
                 ActionKeyButton(
                     title: "⌫",
+                    accessibilityLabel: "削除",
+                    fontSize: 26,
                     fixedWidth: deleteKeyWidth,
+                    repeatsWhileHolding: true,
                     repeatInitialDelay: keyRepeatInitialDelay,
                     repeatInterval: keyRepeatInterval,
                     action: onDeleteBackward
