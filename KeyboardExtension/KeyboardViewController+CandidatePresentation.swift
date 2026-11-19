@@ -699,7 +699,8 @@ extension KeyboardViewController {
     }
 
     // たこ: 胼胝/胝/胼/腓胝 の次に かな(3749、ユーザ指定)。きが: 起臥/木香 の次に かな(3752、ユーザ指定)
-    static let kanaKeptAtSeedPositionReadings: Set<String> = ["かぶ", "ひろし", "しょう", "たこ", "きが"]
+    // うそつく/うそついて/うそついた: 嘘つく の次に かな(3840、ユーザ指定)
+    static let kanaKeptAtSeedPositionReadings: Set<String> = ["かぶ", "ひろし", "しょう", "たこ", "きが", "うそつく", "うそついて", "うそついた"]
     // かなを変換候補の列のエンジンの位置に残す読み(seed の無い連文節の読み。3824、ユーザ指定)
     static let kanaKeptAtEnginePositionReadings: Set<String> = ["なんでしたっけ", "なんでしたっけね", "なんでしたか"]
 

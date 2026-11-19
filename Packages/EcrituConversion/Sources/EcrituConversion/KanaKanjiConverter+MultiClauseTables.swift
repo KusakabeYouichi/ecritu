@@ -238,7 +238,9 @@ extension KanaKanjiConverter {
     static let multiClauseKanaSecondInflectionBaseReadings: Set<String> = ["つながる"]
     static let multiClauseSeedOrderInflectionBaseReadings: Set<String> = [
         "おくる",  // おくれない seed(送れない/遅れない/贈れない/後れない)の先頭に連文節でもボーナス(2910)
-"つかえる", "おく", "たつ", "おきる", "ためす"]
+"つかえる", "おく", "たつ", "おきる", "ためす",
+        "さます",  // 連文節でも 冷ます を先に(お湯を覚まして だった。目を のときは連語の表で 醒ます。3840)
+    ]
     // いう の未然形(いわず/いわない/いわなくて/いわれる)はかなより漢字(言わ〜)が正書。いう(3293)が
     // 言う(4804)より LM 優位なためかな活用形も供給され、OOV 同点で列挙順のかなが勝っていた
     // (いわずに→いわずに。2881 ユーザ報告)。同点を割るだけの小さな減点。という/そういう(かなが正書)は
@@ -1740,6 +1742,8 @@ extension KanaKanjiConverter {
     static let multiClauseKatakanaSeedSiblingDemotion = 1500
     // た形/たて の区間を割った代替経路の許容差(3537)。結んだ+けど 14600 vs 蒸す+んだけど 20172、濡れたて+で 10886 vs 濡れた+手で 15900
     static let multiClauseTaFormSplitAlternativeMaxDelta = 6500
+    // かなの 1 語を 名詞+助詞 に割った形も 2 番めに出す読み(さらに→皿に。使う所のコメント参照。3840)
+    static let multiClauseKanaWordNounParticleSplitReadings: Set<String> = ["さらに"]
 
     // 産 が産地表記になる文脈。地域接尾(愛知県産)に加えて、カタカナの地名
     // (ギリシャ産/アメリカ産/ザクセン産)も対象にする(2878、抜き取り検査 23 件)。
@@ -2390,6 +2394,12 @@ extension KanaKanjiConverter {
         "ください\t増せ": -5000,
         // お待ち+し(お待ちしております/お待ちしています)。お待ち の後ろの し が重く、雄町+し+て に負けて 雄町しております だった(3839)
         "お待ち\tし": 4000,
+        // 過大+電流/電圧(かだいでんりゅう が 課題電流 だった。3840)
+        "過大\t電流": 3000, "過大\t電圧": 3000,
+        // 店の話の 開店(3840)。時刻の直後(8時開店)と、前/休業/時間/祝い/準備 の前
+        "時\t開店": 3000, "時半\t開店": 3000, "開店\t前": 3000, "開店\t休業": 3000, "開店\t時間": 3000, "開店\t祝い": 3000, "開店\t準備": 3000,
+        // 同じ/大きな/小さな+皿(おなじさらに が 同じさらに だった。かなの さらに に 2,000 負けていた。3840)
+        "同じ\t皿": 4000, "大きな\t皿": 4000, "小さな\t皿": 4000,
         "お待ち\tして": 4000,
         "お待ち\tを": -7500,
         "お待ち\tが": -7500,
@@ -4028,6 +4038,8 @@ extension KanaKanjiConverter {
     }()
     // み+に+行く/来る の 見 の加点・身 の減点(使う所のコメント参照。3810)
     static let multiClauseMiNiMotionVerbBonus = 2500
+    // て形の直後の 這う の減点(使う所のコメント参照。3840)
+    static let multiClauseCrawlVerbAfterTeFormPenalty = 3000
     // ワイン用語優先(デバッグ版専用)の文の中の上限(3000)を打ち消す幅(使う所のコメント参照。3809)
     static let multiClauseWineTermAfterSuruNounTopicPenalty = 5000
     // 登録語の 減酸 は連文節で安く、原産 に常勝していた(マディランが原産で/モルドヴァ公国原産で が 減酸で、Ouzoの原産国を が

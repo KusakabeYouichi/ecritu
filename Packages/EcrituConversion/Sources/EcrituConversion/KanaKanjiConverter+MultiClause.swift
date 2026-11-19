@@ -1116,6 +1116,9 @@ extension KanaKanjiConverter {
         ("わいんのさんを", "のさんを", "のサンを", "の酸を"), ("わいんのさんで", "のさんで", "のサンで", "の酸で"),
         ("わいんのさんを", "のさんを", "のさんを", "の酸を"), ("わいんのさんで", "のさんで", "のさんで", "の酸で"),
         ("ぞうのはなはなが", "ぞうのはなは", "像のは那覇長", "象の鼻は長"),
+        // きげんがあった で文が終わるときは 期限(期限があった)。のか などが続くとき(起源があったのか)は LM どおり 起源 のまま
+        // (ユーザ指定 3840)。$ で終わる from は先頭の候補の末尾だけを差し替える
+        ("きげんがあった", "きげんがあった", "起源があった$", "期限があった"),
         // ひどい目に遭う(酷い目 でなく かな。単独の ひどい は かな が先頭。3788、ユーザ指定)
         ("ひどいめにあ", "ひどいめ", "酷い目", "ひどい目"),
         // チリ(国名)を連文節でも通常の語にした(3776)ので、塵/地理 の言い回しを守る
@@ -1191,6 +1194,8 @@ extension KanaKanjiConverter {
     // 読みに cue を含む文で、先頭の from を to に置き換えた形を 3 番めに置く(何でしたっけ/なんでしたっけ/ナンでしたっけ。3823、ユーザ指定)
     static let contextCuedThirdCandidates: [(cue: String, from: String, to: String)] = [
         ("なんでしたっけ", "何でしたっけ", "ナンでしたっけ"),
+        // 目を醒まして の 3 番めは 目をさまして(3840、ユーザ指定)
+        ("めをさま", "を醒ま", "をさま"),
     ]
 
     static let contextCuedDroppedSurfaces: [(cue: String, surface: String)] = [
@@ -1206,6 +1211,8 @@ extension KanaKanjiConverter {
         ("よくにてい", "似てい", "煮てい"), ("よくにてる", "似てる", "煮てる"),
         // 覚えて〜 の 2 番めは 憶えて〜(おぼえておきなさい の 2 番めが 覚えて起きなさい で 憶えて が出なかった。3819、ユーザ指定)
         ("おぼえて", "覚えて", "憶えて"),
+        // 目を醒まして の 2 番めは 目を覚まして(3840、ユーザ指定)
+        ("めをさま", "を醒ま", "を覚ま"),
     ]
 
     // サ変名詞+の+たびに(3710): 先頭が 〜のたびに/〜の度に で 〜の旅に の変種も並ぶとき(DP がサ変名詞の後ろの たび と判断した。
@@ -5760,6 +5767,7 @@ extension KanaKanjiConverter {
                     // 語だけで決まる判定は、前の語のループの外で 1 回だけ求める(使うときに初めて計算する。3828)
                     lazy var nodeIsNonPassivizableSuruForm = Self.isNonPassivizableSuruForm(node.surface)
                     lazy var nodeReadingStartsWithSuruCluster = Self.readingStartsWithSuruCluster(node.reading)
+                    lazy var nodeIsCrawlVerbForm = node.surface.first.map { $0 == "這" || $0 == "匍" || $0 == "匐" } ?? false
                     for prevIdx in nodesEndingAt[node.start] {
                         let prevCost = best[prevIdx]
                         if prevCost >= infinity {
@@ -6561,6 +6569,15 @@ extension KanaKanjiConverter {
                                 || Self.isKatakanaString(prevNode.surface)
                                 || Self.multiClauseNationalityPrefixSurfaces.contains(prevNode.surface) {
                             cost -= Self.multiClauseNationalitySuffixBonus
+                        }
+                        // て形の直後の 這う(冷やして這います)。〜ては+います/いません(強調・限定の は)が 146 差で負けていた
+                        // (ユーザ報告 3840)。這う のほうを下げる。床を這います/赤ちゃんが這います は て形の後ろではないのでそのまま
+                        // 読んで は 読ん+で に割れることがあるので、ん の後ろの で も て形と見る
+                        if nodeIsCrawlVerbForm,
+                            (prevNode.reading.count >= 2
+                                && (prevNode.surface.hasSuffix("て") || prevNode.surface.hasSuffix("で")))
+                                || (prevNode.surface == "で" && node.start >= 2 && chars[node.start - 2] == "ん") {
+                            cost += Self.multiClauseCrawlVerbAfterTeFormPenalty
                         }
                         // 受け身・尊敬の される が付かない サ変名詞(発酵/発効/発光 等。3483)。1 ノード(発酵される)でも、
                         // 名詞+され…(発酵+される)の 2 ノードでも減点する
@@ -7767,6 +7784,28 @@ extension KanaKanjiConverter {
                 // 同区間の 1 文節変種(かな 茹で/掬んだ)より前の 2 番目に(ユーザ指定 3553)。seed 順変種の刻み(100)の手前
                 taFormSplitAlternatives.append((-1, altJoined))
             }
+        }
+        // かなの 1 語(さらに=副詞)を 名詞+助詞(皿+に)に割った代替経路(ユーザ報告 3840: おなじさらに に 同じ皿に が出なかった)。
+        // 区切りが違うので 1 文節差し替えの変種では作れない。名指しの読み(multiClauseKanaWordNounParticleSplitReadings)だけ、
+        // 必須ノード付きで再最適化して第 2 候補群に出す(コストは動かさない。再最適化は 1 回ぶん重いので一律にはしない)
+        for pos in 0..<pathIndices.count {
+            let node = nodes[pathIndices[pos]]
+            guard node.isKanaIdentity, Self.multiClauseKanaWordNounParticleSplitReadings.contains(node.reading) else { continue }
+            let nounIndex = nodesStartingAt[node.start]
+                .filter { nodes[$0].end == node.end - 1 && !nodes[$0].isKanaIdentity && containsKanji(nodes[$0].surface) }
+                .min { best[$0] < best[$1] }
+            guard let nounIndex,
+                let alternative = solveViterbi(allowedStartNodeIndex: nil, requiredNodeIndices: [nounIndex]),
+                alternative.bestTotal - bestTotal <= Self.multiClauseTaFormSplitAlternativeMaxDelta else {
+                continue
+            }
+            let altJoined = alternative.pathIndices.map { nodes[$0].surface }.joinedMultiClauseSurfaces()
+            let bestJoined = pathIndices.map { nodes[$0].surface }.joinedMultiClauseSurfaces()
+            guard altJoined != normalized, altJoined != bestJoined,
+                !taFormSplitAlternatives.contains(where: { $0.joined == altJoined }) else {
+                continue
+            }
+            taFormSplitAlternatives.append((-1, altJoined))
         }
         // 文頭の裸の助詞に割った代替経路(3142): 最良経路の先頭が「文頭から丸ごと読んだ活用形」
         // (入った=はいった)で、その読みが文頭助詞で始まるときは、助詞に割った経路(は+行った)も

@@ -30675,6 +30675,72 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("ぜんさいをたべる").first, "前菜を食べる")
     }
 
+    // 3840: ユーザ指定の並び 11 件(ろうえい/うそついて/誤タップ/きげんがあった/〜てはいます/さまして/自然光で撮れる/過大電流/
+    // なかで/同じ皿に/盛らなくても/開店)
+    func testUserSpecifiedOrders3840() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        func single(_ r: String) -> [String] { converter.candidates(for: r, limit: 8, systemCandidateMode: .surface) }
+        func top(_ r: String) -> String? { multi(r).first ?? single(r).first }
+        // ろうえい: 漏洩 が先。漏えい(交ぜ書き)/漏曳(誤字)/漏泄(ろうせつ にだけ)は出さない
+        XCTAssertEqual(Array(single("ろうえいしてる").prefix(2)), ["漏洩してる", "朗詠してる"])
+        for reading in ["ろうえい", "ろうえいしてる", "ろうえいした"] {
+            XCTAssertFalse(single(reading).contains { $0.hasPrefix("漏えい") || $0.hasPrefix("漏曳") || $0.hasPrefix("漏泄") }, "\(single(reading))")
+        }
+        XCTAssertTrue(single("ろうせつ").contains("漏泄"))
+        // うそつく: 嘘つく、うそつく、嘘吐く、うそ吐く
+        XCTAssertEqual(Array(single("うそついて").prefix(4)), ["嘘ついて", "うそついて", "嘘吐いて", "うそ吐いて"])
+        XCTAssertEqual(single("うそつかない").first, "嘘つかない")
+        XCTAssertEqual(top("うそをついて"), "嘘をついて")
+        // 誤タップ/誤タッチ
+        XCTAssertEqual(single("ごたっぷ").first, "誤タップ")
+        XCTAssertEqual(single("ごたっち").first, "誤タッチ")
+        XCTAssertEqual(top("がめんをたっぷ"), "画面をタップ")
+        // きげんがあった で終われば 期限、のか が続けば 起源
+        XCTAssertEqual(top("きげんがあった"), "期限があった")
+        XCTAssertEqual(top("きげんがあったのか"), "起源があったのか")
+        // て形+は+います(強調・限定の は)。這う は て形の後ろでなければそのまま
+        for (reading, expected) in [
+            ("ひやしてはいます", "冷やしてはいます"), ("みてはいます", "見てはいます"), ("よんではいます", "読んではいます"),
+            ("ゆかをはいます", "床を這います"), ("あかちゃんがはいます", "赤ちゃんが這います")
+        ] {
+            XCTAssertEqual(top(reading), expected, reading)
+        }
+        // さまして: ふだんは 冷まして、目を のときは 醒まして、覚まして、さまして
+        XCTAssertEqual(single("さまして").first, "冷まして")
+        XCTAssertEqual(top("おゆをさまして"), "お湯を冷まして")
+        XCTAssertEqual(Array(multi("めをさまして").prefix(3)), ["目を醒まして", "目を覚まして", "目をさまして"])
+        XCTAssertEqual(top("めがさめて"), "目が覚めて")
+        // 光+で+撮る。海で採れる は崩さない
+        XCTAssertEqual(top("しぜんこうでとれる"), "自然光で撮れる")
+        XCTAssertEqual(top("うみでとれる"), "海で採れる")
+        // 過大電流
+        XCTAssertEqual(top("かだいでんりゅう"), "過大電流")
+        XCTAssertEqual(top("かだいでんりゅうがながれる"), "過大電流が流れる")
+        XCTAssertEqual(top("かだいがある"), "課題がある")
+        // なかで: 中で、仲で が先
+        XCTAssertEqual(Array(single("なかで").prefix(3)), ["中で", "仲で", "中手"])
+        XCTAssertEqual(top("そのなかで"), "その中で")
+        XCTAssertEqual(top("なかでおまちに"), "中でお待ちに")
+        // 皿に: 同じ+皿 は 皿 が先。ほかの文でも さらに の次に 皿に を出す(区切りの違う形)
+        XCTAssertEqual(top("おなじさらに"), "同じ皿に")
+        XCTAssertEqual(Array(multi("べつのさらに").prefix(2)), ["別のさらに", "別の皿に"])
+        XCTAssertEqual(top("さらにおおきく"), "さらに大きく")
+        // 盛る
+        XCTAssertEqual(single("もらなくても").first, "盛らなくても")
+        XCTAssertEqual(top("ごはんをもる"), "ご飯を盛る")
+        XCTAssertEqual(top("あめがもる"), "雨が漏る")
+        // 店の話の 開店。かいてん だけ・回転寿司・回転椅子 は 回転 のまま
+        for (reading, expected) in [
+            ("かいてんまえ", "開店前"), ("かいてんきゅうぎょう", "開店休業"), ("かいてんまえにならぶ", "開店前に並ぶ"),
+            ("かいてん", "回転"), ("かいてんずし", "回転寿司"), ("かいてんいす", "回転椅子")
+        ] {
+            XCTAssertEqual(top(reading), expected, reading)
+        }
+        XCTAssertEqual(multi("8じかいてん").first.map { $0.hasSuffix("時開店") }, true, "\(multi("8じかいてん"))")
+    }
+
     // 3839: 日常の丁寧な言い回し 3 件(ユーザ指定。おまちください を調べる途中で見つかった)。
     // 少々 は LM で 少将 に負け、くださいませ は 増す の命令形 増せ・稀な語 籬 に、お待ちして は 雄町+し+て に負けていた
     func testPoliteEverydayPhrases3839() throws {
