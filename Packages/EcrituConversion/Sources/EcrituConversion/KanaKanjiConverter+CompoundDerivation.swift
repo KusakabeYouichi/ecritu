@@ -187,6 +187,8 @@ extension KanaKanjiConverter {
     // 名詞に付く生産的な漢字接尾辞(種類別・色別・国別…)。語幹(名詞)+接尾辞漢字。
     // か: 予約課/入場可/自動化/情報科/管理下 のような複合は SudachiDict に単語として
     //     載らないことが多いため、ここで派生させる(家/歌/価 は既存語が辞書にあり非生産的)。
+    // 接尾辞ごとの、語幹の読みの長さの下限(書いていない接尾辞は 2 かな)。使う所のコメント参照(3845)
+    static let nounKanjiSuffixMinimumStemReadingCount: [String: Int] = ["車": 3]
     static let nounKanjiSuffixAffixCandidatesByReading: [(reading: String, candidate: String)] = [
         ("べつ", "別"),
         ("か", "課"),
@@ -1951,7 +1953,10 @@ extension KanaKanjiConverter {
             where reading.hasSuffix(affix.reading) {
             let stem = String(reading.dropLast(affix.reading.count))
 
-            guard stem.count >= 2 else {
+            // 車 は語幹の読みが 3 かな以上のときだけ(フランス車/日本車/ドイツ車)。2 かなの語幹(ぜん)では 1 字の漢字や
+            // カタカナに 車 を付けた意味のない合成(ゼン車/膳車/善車/禅車/然車)ばかりになる(ぜんしゃ の候補に並んでいた。
+            // ユーザ指摘 3845)。新車/外車/全車 のような 2 かなの語は辞書にある
+            guard stem.count >= (Self.nounKanjiSuffixMinimumStemReadingCount[affix.candidate] ?? 2) else {
                 continue
             }
 
