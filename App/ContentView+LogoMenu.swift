@@ -868,6 +868,35 @@ extension ContentView {
         SettingsSyncNotification.postSettingsDidChange()
     }
 
+    // 保守的初期設定の かなで書く言葉 は 3833 で 副詞・接続詞・補助用言 もオフ(漢字の候補を残す)になった。それより前に保守的を
+    // 当てた端末は、前の値(この 3 つがオン)のまま残る。値が前の保守的の組み合わせそのまま(3 つがオン、形式名詞と指示語が
+    // オフ)なら、1 回だけ新しい値に書き換える(ユーザ指定 3839)。本人が 1 つでも変えていれば触らない
+    func migrateConservativeKanaGakiDefaultsIfNeeded() {
+        guard let defaults = Self.sharedDefaults,
+            !defaults.bool(forKey: SettingsKeys.conservativeKanaGakiDefaultsMigrated) else {
+            return
+        }
+        defaults.set(true, forKey: SettingsKeys.conservativeKanaGakiDefaultsMigrated)
+        guard Self.currentBasePreset == .conservative else {
+            return
+        }
+        // 値が無いキーは組み込みの値(5 つともオン)で動いている
+        func isOn(_ key: String) -> Bool {
+            (defaults.object(forKey: key) as? Bool) ?? true
+        }
+        let rewrittenKeys = [
+            SettingsKeys.kanaGakiSuppressAdverb, SettingsKeys.kanaGakiSuppressConjunction, SettingsKeys.kanaGakiSuppressAuxiliary
+        ]
+        guard rewrittenKeys.allSatisfy(isOn),
+            !isOn(SettingsKeys.kanaGakiSuppressFormalNoun), !isOn(SettingsKeys.kanaGakiSuppressDemonstrative) else {
+            return
+        }
+        for key in rewrittenKeys {
+            defaults.set(false, forKey: key)
+        }
+        SettingsSyncNotification.postSettingsDidChange()
+    }
+
     func applyKakikaeDefaultForExistingInstallIfNeeded() {
         guard let defaults = Self.sharedDefaults,
             defaults.object(forKey: SettingsKeys.kakikaePreference) == nil else {

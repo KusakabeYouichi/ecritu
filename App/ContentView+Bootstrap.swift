@@ -873,6 +873,7 @@ extension ContentView {
             applyLateStandardizedRewriteDefaultForExistingInstallIfNeeded()
             applyNumeralStyleDefaultForExistingInstallIfNeeded()
             applyFormalNounMeDefaultForExistingInstallIfNeeded()
+            migrateConservativeKanaGakiDefaultsIfNeeded()
             applyCompactKeyboardSwitchKeyAssignmentsForExistingInstallIfNeeded()
             normalizeLegacyKanaYaBracketValueIfNeeded()
             applyBasePresetDefaultIfNeeded()
