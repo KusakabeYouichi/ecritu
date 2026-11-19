@@ -1297,6 +1297,20 @@ public final class KanaKanjiConverter {
                 }
             }
         }
+        // 文の中の ください(見てください/お待ちください)。下さい は辞書にも活用の生成にも無いので、上の置き換えの元になる
+        // 漢字の形がそもそも無い。補助用言を抑制していないときは、いちばん上の 〜ください のすぐ下に 〜下さい を 1 つ補う
+        // (ユーザ指定 3839。単独の ください は seed で供給)
+        if !suppressed.contains(.auxiliary), reading.count > 4, reading.hasSuffix("ください") {
+            let best = scores
+                .filter { $0.key.hasSuffix("ください") && $0.key != reading }
+                .max { ($0.value, $1.key) < ($1.value, $0.key) }
+            if let best {
+                let kanjiForm = String(best.key.dropLast(4)) + "下さい"
+                if scores[kanjiForm] == nil {
+                    scores[kanjiForm] = best.value - 1
+                }
+            }
+        }
     }
 
     // 旧字体・異体字(氣持/會社/變更/仝じ/聯合 等)は、同じ読みに標準字体版の候補が実在する
