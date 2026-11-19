@@ -113,7 +113,7 @@ public final class KanaKanjiConverter {
     }
 
     // 設定の値を入れ替える。値が変わったときだけ候補のキャッシュを捨てる。以前は下の set〜 17 本がそれぞれ同じ形
-    // (ロック→同じ値なら戻る→代入→キャッシュを捨てる)を書いていた(3838)
+    // (ロック→同じ値なら戻る→代入→キャッシュを捨てる)を書いていた(3837)
     private func updateSetting<Value: Equatable>(
         _ keyPath: ReferenceWritableKeyPath<KanaKanjiConverter, Value>, to newValue: Value
     ) {

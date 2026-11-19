@@ -1287,7 +1287,7 @@ extension KeyboardRootView {
     }
 
 // パネル(絵文字/顔文字/記号/単漢字/書式化数値)の下段の左端: [あい](長押しで面を選ぶ盤)と 🌐。5 つの面に同じ形で
-// 書いていたのをまとめた(3838)。HStack の直下に置く前提で、包む入れ物を足さずに 2 つを並べて返す
+// 書いていたのをまとめた(3837)。HStack の直下に置く前提で、包む入れ物を足さずに 2 つを並べて返す
 struct ModePanelLeadingKeys: View {
     let returnKeyWidth: CGFloat
     let paletteColumnCount: Int
@@ -1311,7 +1311,7 @@ struct ModePanelLeadingKeys: View {
 }
 
 extension ActionKeyButton {
-    // 面(絵文字・記号・単漢字)の下段の削除キー。3 つの面に同じ引数で書いていたのをまとめた(3838)。
+    // 面(絵文字・記号・単漢字)の下段の削除キー。3 つの面に同じ引数で書いていたのをまとめた(3837)。
     // かな・ラテン文字の面の deleteActionKey(KeyboardRootView)と同じ見た目で、長押しで連続して消える
     static func panelDeleteKey(
         fixedWidth: CGFloat,
