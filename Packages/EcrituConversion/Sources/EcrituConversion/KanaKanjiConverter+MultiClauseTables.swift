@@ -236,6 +236,10 @@ extension KanaKanjiConverter {
     // 第 1 候補にした読みだけ載せているので、漢字を先にした途端にかなのノードが無くなる。値段は他の派生と同じ定額で、
     // 並びは列挙順(漢字が先)
     static let multiClauseKanaSecondInflectionBaseReadings: Set<String> = ["つながる"]
+    // 上の 2 つの表の読みの頭の字(区間ごとの照合を、頭の字が合わない区間で省く。3849)
+    static let multiClauseSeedOrderBaseReadingFirstCharacters: Set<Character> = Set(
+        (multiClauseSeedOrderInflectionBaseReadings.union(multiClauseKanaSecondInflectionBaseReadings)).compactMap(\.first)
+    )
     static let multiClauseSeedOrderInflectionBaseReadings: Set<String> = [
         "おくる",  // おくれない seed(送れない/遅れない/贈れない/後れない)の先頭に連文節でもボーナス(2910)
 "つかえる", "おく", "たつ", "おきる", "ためす",

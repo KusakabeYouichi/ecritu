@@ -1160,6 +1160,9 @@ extension KanaKanjiConverter {
                     // 同じ走査で、かなの活用形も載せる基底の読み(繋がる。定数コメント参照。3799)かも見る
                     let (spanBaseInSeedOrderAllowlist, spanBaseSuppliesKanaSecond): (Bool, Bool) = {
                         guard let lastChar = segmentReading.last,
+                            // 基底の読みは区間の読みの頭(語幹)から作るので、頭の 1 字が表のどの読みとも違えば当たらない(3849)
+                            let firstChar = segmentReading.first,
+                            Self.multiClauseSeedOrderBaseReadingFirstCharacters.contains(firstChar),
                             let ruleIndices = Self.deinflectionRulesByReadingLastCharacter[lastChar] else {
                             return (false, false)
                         }
@@ -4396,6 +4399,8 @@ extension KanaKanjiConverter {
                     lazy var nodeIsCrawlVerbForm = node.surface.first.map { $0 == "這" || $0 == "匍" || $0 == "匐" } ?? false
                     lazy var nodeIsEnterVerbForm = node.surface.first == "入" && node.reading.hasPrefix("はい")
                     lazy var nodeIsImperialHighnessTitle = node.surface == "殿下"
+                    // なんか/なんて で始まるノードか(なんかの判定を前の語ごとに呼ばないため。3849)
+                    lazy var nodeStartsWithNankaReading = Self.multiClauseNankaAdverbialReadings.contains(where: { node.reading.hasPrefix($0) })
                     for prevIdx in nodesEndingAt[node.start] {
                         let prevCost = best[prevIdx]
                         if prevCost >= infinity {
@@ -5139,7 +5144,9 @@ extension KanaKanjiConverter {
                             }
                         }
                         // 名詞直後の なんか/なんて は副助詞(保存なんかしてない。定数コメント参照。2888)
-                        cost += multiClauseNankaAfterNounCost(prev: prevNode, node: node)
+                        if nodeStartsWithNankaReading {
+                            cost += multiClauseNankaAfterNounCost(prev: prevNode, node: node)
+                        }
                         // 述語(辞書形/た形)直後の形式名詞 とき(去るときに。定数コメント参照。2887)
                         if node.reading.hasPrefix("とき"),
                             node.surface.hasPrefix("とき") || node.surface.hasPrefix("時"),
