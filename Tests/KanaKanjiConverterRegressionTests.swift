@@ -30693,7 +30693,11 @@ extension KanaKanjiConverterRegressionTests {
         ] {
             XCTAssertEqual(top(reading), expected, reading)
         }
-        for (reading, expected) in [("じかいてん", "時開店"), ("じはんかいてん", "時半開店"), ("じへいてん", "時閉店"), ("じかん", "時間")] {
+        // じかいし/じしゅうりょう は 3842(次回し が先頭だった)
+        for (reading, expected) in [
+            ("じかいてん", "時開店"), ("じはんかいてん", "時半開店"), ("じへいてん", "時閉店"), ("じかん", "時間"),
+            ("じかいし", "時開始"), ("じはんかいし", "時半開始"), ("じしゅうりょう", "時終了")
+        ] {
             let base = converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
             let boosted = KanaKanjiConverter.digitContextCounterBoostedCandidates(
                 base, reading: reading, precedingCharacter: "8",
