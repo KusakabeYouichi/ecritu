@@ -662,6 +662,8 @@ final class KeyboardViewController: UIInputViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        // 新しい個体は設定を読み直す(覚えた設定の値は同じプロセスの個体で共有。3847)
+        Self.invalidateSharedSettingsReadCache()
         MemoryForensics.notePhase("個体の生成(viewDidLoad)")
         // 外観とサイズクラスの変化の監視(3685)。クロージャーは self を引数で受けるので循環参照にならない
         registerForTraitChanges([UITraitUserInterfaceStyle.self, UITraitVerticalSizeClass.self]) {
@@ -753,6 +755,8 @@ final class KeyboardViewController: UIInputViewController {
         MemoryForensics.firstConversionPhasePending = true
         defer { MemoryForensics.notePhase("表示の準備(viewWillAppear)") }
         super.viewWillAppear(animated)
+        // キーボードを出すたびに、覚えた設定の値を捨てて読み直す(閉じている間にコンテナーアプリで変えた分。3847)
+        Self.invalidateSharedSettingsReadCache()
         cancelKeyboardAttachWatchdog()
         if keyboardLaunchViewDidLoadAt > 0, launchTimingToWillAppearMs < 0 {
             launchTimingToWillAppearMs = Int((CFAbsoluteTimeGetCurrent() - keyboardLaunchViewDidLoadAt) * 1000)

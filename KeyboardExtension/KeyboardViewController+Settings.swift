@@ -215,6 +215,8 @@ extension KeyboardViewController {
     }
 
     func handleSharedSettingsDidChange() {
+        // 覚えた設定の値は、重い処理を控える状態でも必ず捨てる(次に読むときに新しい値になる)
+        Self.invalidateSharedSettingsReadCache()
         DispatchQueue.main.async { [weak self] in
             guard let self else {
                 return
@@ -330,6 +332,7 @@ extension KeyboardViewController {
             return
         }
         Self.lastSeenSettingsChangeGeneration = generation
+        Self.invalidateSharedSettingsReadCache()
         // 学習リセットが混じっていたら先に「書き出さずに捨てる」を通す(2968)
         if !applyLearningResetIfNeeded(trigger: trigger) {
             kanaKanjiConverter.clearSharedDataCaches()
@@ -342,12 +345,43 @@ extension KeyboardViewController {
         )
     }
 
+    // 設定の値の読み出しを覚えておく(3847)。画面の組み立て(makeRenderConfiguration)が共有の設定を約 50 回読み、
+    // それが 1 打鍵に 2〜4 回走っていた。設定はコンテナーアプリが書くもので、打鍵の間には変わらない。
+    // 捨てる時: 設定変更の知らせ(handleSharedSettingsDidChange)、取りこぼした変更の検出(applyMissedSharedSettingsChangeIfNeeded)、
+    // キーボードを出すたび(viewWillAppear)。値が無いキーも『無い』として覚える(初期値で動く)
+    private static let sharedSettingsReadCacheLock = NSLock()
+    private static var sharedSettingsReadCache: [String: Any] = [:]
+
+    static func invalidateSharedSettingsReadCache() {
+        sharedSettingsReadCacheLock.lock()
+        sharedSettingsReadCache.removeAll(keepingCapacity: true)
+        sharedSettingsReadCacheLock.unlock()
+    }
+
+    // 覚えた値(無いキーは NSNull)。defaults が無いときは覚えない
+    func cachedSharedSettingObject(from defaults: UserDefaults?, key: String) -> Any? {
+        guard let defaults else {
+            return nil
+        }
+        Self.sharedSettingsReadCacheLock.lock()
+        let cached = Self.sharedSettingsReadCache[key]
+        Self.sharedSettingsReadCacheLock.unlock()
+        if let cached {
+            return cached is NSNull ? nil : cached
+        }
+        let value = defaults.object(forKey: key)
+        Self.sharedSettingsReadCacheLock.lock()
+        Self.sharedSettingsReadCache[key] = value ?? NSNull()
+        Self.sharedSettingsReadCacheLock.unlock()
+        return value
+    }
+
     func sharedStringValue(
         from defaults: UserDefaults?,
         key: String,
         fallback: String
     ) -> String {
-        defaults?.string(forKey: key) ?? fallback
+        (cachedSharedSettingObject(from: defaults, key: key) as? String) ?? fallback
     }
 
     func sharedBoolValue(
@@ -355,7 +389,7 @@ extension KeyboardViewController {
         key: String,
         fallback: Bool
     ) -> Bool {
-        (defaults?.object(forKey: key) as? Bool) ?? fallback
+        (cachedSharedSettingObject(from: defaults, key: key) as? Bool) ?? fallback
     }
 
     func sharedEnumValue<Value: RawRepresentable>(
@@ -373,8 +407,7 @@ extension KeyboardViewController {
         fallback: Double,
         range: ClosedRange<Double>
     ) -> Double {
-        guard let defaults,
-                let number = defaults.object(forKey: key) as? NSNumber else {
+        guard let number = cachedSharedSettingObject(from: defaults, key: key) as? NSNumber else {
             return fallback
         }
 
@@ -385,7 +418,7 @@ extension KeyboardViewController {
         from defaults: UserDefaults?,
         key: String
     ) -> FlickGuideDisplayMode {
-        if let rawValue = defaults?.string(forKey: key),
+        if let rawValue = cachedSharedSettingObject(from: defaults, key: key) as? String,
             let mode = FlickGuideDisplayMode(rawValue: rawValue) {
             return mode
         }
