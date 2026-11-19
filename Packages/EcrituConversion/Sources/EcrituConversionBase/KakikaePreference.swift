@@ -29,8 +29,6 @@ public enum KakikaePreference: String, CaseIterable, Identifiable {
         rawValue.flatMap(KakikaePreference.init(rawValue:)) ?? existingInstallDefault
     }
 
-    var showsBefore: Bool { self != .afterOnly }
-    var showsAfter: Bool { self != .beforeOnly }
     public var prefersBefore: Bool { self == .beforeOnly || self == .bothBeforeFirst }
 
     // 例外グループ(日常語): 日常ではほぼ常用漢字側だけを使う組。設定(本来の漢字だけ/本来の漢字を先に)にかかわらず

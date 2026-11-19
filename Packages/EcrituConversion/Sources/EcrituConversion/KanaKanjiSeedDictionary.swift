@@ -1912,12 +1912,12 @@ public enum KanaKanjiSeedDictionary {
         "ひさひと": ["悠仁"],
         // うち はかなが正書(うちで/そのうち 等)。家(うち)は正当な読みだが LM
         // (家4250/家→で1685)がかな(4319/うち→で2148)を上回り全文脈で漢字先頭化していた。
-        // 連文節は multiClauseSeedOrderNounReadings の opt-in で是正(ユーザ方針: うち>家 全般)
+        // 連文節は multiClauseSeedOrderNounBonusesByReading の opt-in で是正(ユーザ方針: うち>家 全般)
         "うち": ["うち", "家", "内", "打ち"],
         // おん は オン(スイッチ)を先頭に(エアコンをオン)。御(接頭辞)/音(単独名詞でない読み)は
         // suppr で辞書から外し完全一致時のみ末尾再供給(二段構え) — を→御 bigram(5399)が
         // を→オン(5530)より安く先頭化し、変種枠3(御/音)が ON/On/on を圏外に押し出していた。
-        // 恩 は単独名詞なので残す。連文節は multiClauseSeedOrderNounReadings の opt-in で是正。
+        // 恩 は単独名詞なので残す。連文節は multiClauseSeedOrderNounBonusesByReading の opt-in で是正。
         // ON/On/on は LM 実在(を→ON 5786 まで観測)なのに辞書未登録だった供給欠落
         "おん": ["オン", "On", "恩", "温", "ON", "怨", "on"],  // ユーザ指定の順(3399。ユーザの「恨」は おん と読まないので 怨)
         // びょう は 秒(LM4933=最頻・助数詞)が辞書 word_cost 順で 鋲/眇 に沈む。秒 を先頭・鋲/病 続き。

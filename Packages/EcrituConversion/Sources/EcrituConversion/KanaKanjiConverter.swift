@@ -112,136 +112,70 @@ public final class KanaKanjiConverter {
         self.store = store
     }
 
-    public func setHistoricalKanaSurfaceAllowed(_ allowed: Bool) {
+    // 設定の値を入れ替える。値が変わったときだけ候補のキャッシュを捨てる。以前は下の set〜 17 本がそれぞれ同じ形
+    // (ロック→同じ値なら戻る→代入→キャッシュを捨てる)を書いていた(3838)
+    private func updateSetting<Value: Equatable>(
+        _ keyPath: ReferenceWritableKeyPath<KanaKanjiConverter, Value>, to newValue: Value
+    ) {
         withStateLock {
-            guard historicalKanaSurfaceAllowed != allowed else {
+            guard self[keyPath: keyPath] != newValue else {
                 return
             }
-
-            historicalKanaSurfaceAllowed = allowed
+            self[keyPath: keyPath] = newValue
             invalidateCandidateCache()
         }
+    }
+
+    public func setHistoricalKanaSurfaceAllowed(_ allowed: Bool) {
+        updateSetting(\.historicalKanaSurfaceAllowed, to: allowed)
     }
 
     public func setIterationMarkSurfaceAllowed(_ allowed: Bool) {
-        withStateLock {
-            guard iterationMarkSurfaceAllowed != allowed else {
-                return
-            }
-
-            iterationMarkSurfaceAllowed = allowed
-            invalidateCandidateCache()
-        }
+        updateSetting(\.iterationMarkSurfaceAllowed, to: allowed)
     }
 
     public func setOrdinalMeKanjiPreferred(_ enabled: Bool) {
-        withStateLock {
-            guard ordinalMeKanjiPreferred != enabled else {
-                return
-            }
-            ordinalMeKanjiPreferred = enabled
-            invalidateCandidateCache()
-        }
+        updateSetting(\.ordinalMeKanjiPreferred, to: enabled)
     }
 
     public func setNumeralStylePreference(_ preference: NumeralStylePreference) {
-        withStateLock {
-            guard numeralStylePreference != preference else {
-                return
-            }
-            numeralStylePreference = preference
-            invalidateCandidateCache()
-        }
+        updateSetting(\.numeralStylePreference, to: preference)
     }
 
     public func setKaCounterVariantPreference(_ preference: KaCounterVariantPreference) {
-        withStateLock {
-            guard kaCounterVariantPreference != preference else {
-                return
-            }
-            kaCounterVariantPreference = preference
-            invalidateCandidateCache()
-        }
+        updateSetting(\.kaCounterVariantPreference, to: preference)
     }
 
     public func setOkuriganaVariantPreference(_ preference: OkuriganaVariantPreference) {
-        withStateLock {
-            guard okuriganaVariantPreference != preference else {
-                return
-            }
-            okuriganaVariantPreference = preference
-            invalidateCandidateCache()
-        }
+        updateSetting(\.okuriganaVariantPreference, to: preference)
     }
 
     public func setAdjectiveMeKanjiCandidatesEnabled(_ enabled: Bool) {
-        withStateLock {
-            guard adjectiveMeKanjiCandidatesEnabled != enabled else {
-                return
-            }
-            adjectiveMeKanjiCandidatesEnabled = enabled
-            invalidateCandidateCache()
-        }
+        updateSetting(\.adjectiveMeKanjiCandidatesEnabled, to: enabled)
     }
 
     public func setWineTermPriorityEnabled(_ enabled: Bool) {
-        withStateLock {
-            guard wineTermPriorityEnabled != enabled else {
-                return
-            }
-            wineTermPriorityEnabled = enabled
-            invalidateCandidateCache()
-        }
+        updateSetting(\.wineTermPriorityEnabled, to: enabled)
     }
 
     public func setFormalNounMeKanaCandidatesEnabled(_ enabled: Bool) {
-        withStateLock {
-            guard formalNounMeKanaCandidatesEnabled != enabled else {
-                return
-            }
-            formalNounMeKanaCandidatesEnabled = enabled
-            invalidateCandidateCache()
-        }
+        updateSetting(\.formalNounMeKanaCandidatesEnabled, to: enabled)
     }
 
     public func setKatakanaEmphasisCandidateMode(_ mode: ScriptVariantCandidateMode) {
-        withStateLock {
-            guard katakanaEmphasisCandidateMode != mode else {
-                return
-            }
-            katakanaEmphasisCandidateMode = mode
-            invalidateCandidateCache()
-        }
+        updateSetting(\.katakanaEmphasisCandidateMode, to: mode)
     }
 
     public func setScriptVariantSuppressionCategories(_ categories: Set<ScriptVariantSuppressionCategory>) {
-        withStateLock {
-            guard scriptVariantSuppressionCategories != categories else {
-                return
-            }
-            scriptVariantSuppressionCategories = categories
-            invalidateCandidateCache()
-        }
+        updateSetting(\.scriptVariantSuppressionCategories, to: categories)
     }
 
     public func setKanaGakiSuppressedCategories(_ categories: Set<KanaGakiCategory>) {
-        withStateLock {
-            guard kanaGakiSuppressedCategories != categories else {
-                return
-            }
-            kanaGakiSuppressedCategories = categories
-            invalidateCandidateCache()
-        }
+        updateSetting(\.kanaGakiSuppressedCategories, to: categories)
     }
 
     public func setEmojiCandidatesEnabled(_ enabled: Bool) {
-        withStateLock {
-            guard emojiCandidatesEnabled != enabled else {
-                return
-            }
-            emojiCandidatesEnabled = enabled
-            invalidateCandidateCache()
-        }
+        updateSetting(\.emojiCandidatesEnabled, to: enabled)
     }
 
     // 絵文字を含むか。国旗(地域指示記号)、絵文字表示が既定の字(🐱)、異体字セレクタ 16 付きの絵文字(☺︎ でなく ☺️)。
@@ -260,43 +194,19 @@ public final class KanaKanjiConverter {
     }
 
     public func setKakikaeEverydayException(_ enabled: Bool) {
-        withStateLock {
-            guard kakikaeEverydayException != enabled else {
-                return
-            }
-            kakikaeEverydayException = enabled
-            invalidateCandidateCache()
-        }
+        updateSetting(\.kakikaeEverydayException, to: enabled)
     }
 
     public func setKakikaePreference(_ preference: KakikaePreference) {
-        withStateLock {
-            guard kakikaePreference != preference else {
-                return
-            }
-            kakikaePreference = preference
-            invalidateCandidateCache()
-        }
+        updateSetting(\.kakikaePreference, to: preference)
     }
 
     public func setLateStandardizedRewritePreference(_ preference: KakikaePreference) {
-        withStateLock {
-            guard lateStandardizedRewritePreference != preference else {
-                return
-            }
-            lateStandardizedRewritePreference = preference
-            invalidateCandidateCache()
-        }
+        updateSetting(\.lateStandardizedRewritePreference, to: preference)
     }
 
     public func setMazegakiCandidateMode(_ mode: ScriptVariantCandidateMode) {
-        withStateLock {
-            guard mazegakiCandidateMode != mode else {
-                return
-            }
-            mazegakiCandidateMode = mode
-            invalidateCandidateCache()
-        }
+        updateSetting(\.mazegakiCandidateMode, to: mode)
     }
 
     public func preloadSystemDictionaryIfNeeded(onLoaded: (() -> Void)? = nil) {

@@ -3133,7 +3133,7 @@ extension KanaKanjiConverter {
     // はなしたい が 花(5287)+したい(かな 1500)で 話したい(派生 7200)に勝っていた(ユーザ報告)。花する は非文
     static let multiClauseNonSuruNounBeforeSuruClusterOverDerivedPenalty = 3000
     // サ変名詞の直後の 後(ご)。受諾後/終了後/確認後 は最も生産的な接尾で、語(ご) は 国名+語 以外では立たない。
-    // 後(ご) の床免除(rareReadingFloorExempt)だけでは 語→EOS 2114 < 後→EOS 2716 の文末統計で 46 差負ける(3054)
+    // 後(ご) の床免除(multiClauseRareReadingFloorExemptSurfacesByReading)だけでは 語→EOS 2114 < 後→EOS 2716 の文末統計で 46 差負ける(3054)
     static let multiClauseSuruNounGoSuffixBonus = 1000
     // 助詞 1 字が動詞の頭を食う分割の是正(2797)。かいさつとおって が 改札と+追って(と→追っ の bigram 6040 が
     // 活用 OOV を 4500 に下げる)になり、1 動詞の 通って(改札→通っ の bigram 無し=7200)が負けていた。
@@ -3797,7 +3797,7 @@ extension KanaKanjiConverter {
     // - bigram 観測時は文脈の実証があるので免除。レア語自体は単文節+学習で選択可能。
     static let multiClauseRareReadingFloorMaxReadingCount = 2
     static let multiClauseKanaIdentityFloorExemptReadings: Set<String> = [
-        // 格助詞・係助詞(caseParticleSurfaces と同梱+複合の部品)
+        // 格助詞・係助詞(multiClauseCaseParticleSurfaces と同梱+複合の部品)
         "に", "を", "が", "へ", "と", "で", "は", "も", "の",
         "から", "まで", "より",
         // 終助詞・間投助詞(や は除外しない: multiClauseFinalParticleReadings にも無く、

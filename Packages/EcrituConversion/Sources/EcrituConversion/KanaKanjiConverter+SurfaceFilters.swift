@@ -475,7 +475,6 @@ extension KanaKanjiConverter {
                 for: candidate,
                 baseReading: stemReading,
                 systemClassMap: metadata.classMap,
-                hasSystemMetadata: metadata.hasMetadata,
                 userCandidateSet: userCandidateSet
             ) else {
                 return false

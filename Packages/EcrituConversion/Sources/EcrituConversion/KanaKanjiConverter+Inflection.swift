@@ -270,7 +270,6 @@ extension KanaKanjiConverter {
                     for: candidate,
                     baseReading: baseReading,
                     systemClassMap: metadata.classMap,
-                    hasSystemMetadata: metadata.hasMetadata,
                     userCandidateSet: userCandidateSet
                 )
 
@@ -502,7 +501,6 @@ extension KanaKanjiConverter {
                 for: candidate,
                 baseReading: baseReading,
                 systemClassMap: metadata.classMap,
-                hasSystemMetadata: metadata.hasMetadata,
                 userCandidateSet: initialOrUserCandidateSet
             )
 
@@ -674,7 +672,6 @@ extension KanaKanjiConverter {
         for candidate: String,
         baseReading: String,
         systemClassMap: [String: String],
-        hasSystemMetadata: Bool,
         userCandidateSet: Set<String>
     ) -> String? {
         if let inflectionClass = systemClassMap[candidate] {
@@ -686,7 +683,6 @@ extension KanaKanjiConverter {
         // 河う を五段う動詞と推論して 河って/河ってきて を作り、変わってきてる を逆転していた
         // (音の借用による誤活用の温床)。inflection_classes テーブルを持つ辞書では、読みに行が
         // 無いこと自体が「この読みの用言は無い」証拠なので推論しない(2465)。
-        _ = hasSystemMetadata
         guard userCandidateSet.contains(candidate) || !store.hasSystemInflectionMetadataTable else {
             return nil
         }

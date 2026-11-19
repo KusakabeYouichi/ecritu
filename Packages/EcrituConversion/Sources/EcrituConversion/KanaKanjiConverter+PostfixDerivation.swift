@@ -484,26 +484,7 @@ extension KanaKanjiConverter {
             }
         }
         let fullReadingHasStandaloneNonPersonWord = hasStandaloneWord(ignoringPersonNames: true)
-        let fullReadingHasStandaloneWord = fullReadingCandidates.contains { candidate in
-            guard let firstScalar = candidate.unicodeScalars.first else {
-                return false
-            }
-            if candidate.hasPrefix("お") || candidate.hasPrefix("ご") || candidate.hasPrefix("御") {
-                return false
-            }
-            let isKanjiLead = (0x4E00...0x9FFF).contains(firstScalar.value)
-                || (0x3400...0x4DBF).contains(firstScalar.value)
-                || firstScalar.value == 0x3005
-            guard isKanjiLead else {
-                return false
-            }
-            if let wordCost = fullReadingWordCosts[candidate],
-                wordCost >= CandidateScore.harvestTierWordCostFloor,
-                fullReadingUnigrams[candidate] == nil {
-                return false
-            }
-            return true
-        }
+        let fullReadingHasStandaloneWord = hasStandaloneWord(ignoringPersonNames: false)
 
         for prefix in Self.politePrefixPassthroughPrefixes where reading.hasPrefix(prefix) {
             let stem = String(reading.dropFirst(prefix.count))
@@ -641,7 +622,6 @@ extension KanaKanjiConverter {
                     for: candidate,
                     baseReading: stem,
                     systemClassMap: metadata.classMap,
-                    hasSystemMetadata: metadata.hasMetadata,
                     userCandidateSet: userCandidateSet
                 )
 
@@ -892,7 +872,6 @@ extension KanaKanjiConverter {
                 for: candidate,
                 baseReading: baseReading,
                 systemClassMap: metadata.classMap,
-                hasSystemMetadata: metadata.hasMetadata,
                 userCandidateSet: userCandidateSet
             )
             guard resolvedClass == expectedInflectionClass,
@@ -1008,7 +987,6 @@ extension KanaKanjiConverter {
                 for: candidate,
                 baseReading: baseReading,
                 systemClassMap: metadata.classMap,
-                hasSystemMetadata: metadata.hasMetadata,
                 userCandidateSet: userCandidateSet
             )
 
