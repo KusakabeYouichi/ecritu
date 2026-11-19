@@ -75,6 +75,10 @@ struct LatinShiftKeyButton: View {
     private static let longPressDuration: TimeInterval = 0.4
     @State private var isPressing = false
     @State private var longPressWorkItem: DispatchWorkItem?
+    // タッチが取り消されると SwiftUI は onEnded を呼ばない(着信、システムの操作など)。GestureState は取り消しでも
+    // 元に戻るので、false に戻ったら押している印とロックの予約を捨てる。以前は取り消しの後、印が残って次のタップに
+    // 反応せず、予約も残って指を離しているのにロックになった(3837)
+    @GestureState private var isTouchActive = false
 
     var body: some View {
         // 指を置いた瞬間に切り替える(3507)。以前は Button(指を離したときに action)で、押してから色と矢印が
@@ -106,6 +110,9 @@ struct LatinShiftKeyButton: View {
         .contentShape(Rectangle())
         .gesture(
             DragGesture(minimumDistance: 0)
+                .updating($isTouchActive) { _, active, _ in
+                    active = true
+                }
                 .onChanged { _ in
                     guard !isPressing else {
                         return
@@ -124,6 +131,20 @@ struct LatinShiftKeyButton: View {
                     longPressWorkItem = nil
                 }
         )
+        .onChange(of: isTouchActive) { _, active in
+            guard !active else {
+                return
+            }
+            // 普通に離したときは onEnded が同じ片づけを済ませている。取り消しのときだけここが効く
+            DispatchQueue.main.async {
+                guard !isTouchActive else {
+                    return
+                }
+                isPressing = false
+                longPressWorkItem?.cancel()
+                longPressWorkItem = nil
+            }
+        }
         .onDisappear {
             isPressing = false
             longPressWorkItem?.cancel()
@@ -1320,6 +1341,8 @@ struct ReturnToKanaPaletteKey: View {
     let onReturn: () -> Void
     let onSelectCandidate: (String) -> Void
 
+    // タッチの取り消しを知るための印(取り消しでも false に戻る。3837)
+    @GestureState private var isTouchActive = false
     @State private var paletteIsActive = false
     @State private var highlightedIndex = 0
     @State private var longPressWorkItem: DispatchWorkItem?
@@ -1397,6 +1420,9 @@ struct ReturnToKanaPaletteKey: View {
         .accessibilityLabel(title)
         .gesture(
             DragGesture(minimumDistance: 0)
+                .updating($isTouchActive) { _, active, _ in
+                    active = true
+                }
                 .onChanged { value in
                     if touchBeganAt == nil {
                         touchBeganAt = value.time
@@ -1442,6 +1468,23 @@ struct ReturnToKanaPaletteKey: View {
                     onSelectCandidate(candidates[highlightedIndex])
                 }
         )
+        // タッチが取り消されると onEnded は呼ばれない。盤の予約と表示、触れた時刻を捨てる(3837。以前は盤が出たまま
+        // 残り、次に触れたときの長さの判定も前の時刻から数えていた)。普通に離したときは onEnded が先に済ませているので、
+        // 次の周回で片づける(同じ更新の中で先に消すと、選んだ面への切り替えが かなへ戻る になってしまう)
+        .onChange(of: isTouchActive) { _, active in
+            guard !active else {
+                return
+            }
+            DispatchQueue.main.async {
+                guard !isTouchActive else {
+                    return
+                }
+                longPressWorkItem?.cancel()
+                longPressWorkItem = nil
+                paletteIsActive = false
+                touchBeganAt = nil
+            }
+        }
         .onDisappear {
             longPressWorkItem?.cancel()
             longPressWorkItem = nil
