@@ -132,6 +132,8 @@ struct UserRegisteredVocabularyCopyButton: View {
     let userRegisteredEntries: [VocabularyEntry]
 
     @State private var didCopyUserRegistered = false
+    // 続けて押したとき、前の回の予約が表示を早く戻さないようにする(最後の回の予約だけが戻す。3837)
+    @State private var copyGeneration = 0
 
     var body: some View {
         Button {
@@ -139,8 +141,12 @@ struct UserRegisteredVocabularyCopyButton: View {
                 .map { $0.reading + "\t" + $0.candidate }
                 .joined(separator: "\n")
             didCopyUserRegistered = true
+            copyGeneration += 1
+            let generation = copyGeneration
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                didCopyUserRegistered = false
+                if generation == copyGeneration {
+                    didCopyUserRegistered = false
+                }
             }
         } label: {
             Text(didCopyUserRegistered ? "コピーしました" : "コピー")

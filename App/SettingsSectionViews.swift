@@ -421,6 +421,9 @@ struct KeyboardDiagnosticsSection: View {
     // 更新の成否可視化: 内容が変わらない(たまたま最新だった)場合でも取得完了が
     // わかるよう、取得時刻付きのバッジを一時表示する
     @State private var reloadedBadgeText: String?
+    // 続けて押したとき、前の回の予約が表示を早く消さないようにする(最後の回の予約だけが消す。3837)
+    @State private var reloadedBadgeGeneration = 0
+    @State private var copiedBadgeGeneration = 0
 
     private var logText: String {
         logLines.joined(separator: "\n")
@@ -513,7 +516,12 @@ struct KeyboardDiagnosticsSection: View {
                     withAnimation(.easeOut(duration: 0.16)) {
                         reloadedBadgeText = "更新しました(\(timeText)時点)"
                     }
+                    reloadedBadgeGeneration += 1
+                    let generation = reloadedBadgeGeneration
                     DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                        guard generation == reloadedBadgeGeneration else {
+                            return
+                        }
                         withAnimation(.easeOut(duration: 0.2)) {
                             reloadedBadgeText = nil
                         }
@@ -528,7 +536,12 @@ struct KeyboardDiagnosticsSection: View {
                         isCopiedBadgeVisible = true
                     }
 
+                    copiedBadgeGeneration += 1
+                    let generation = copiedBadgeGeneration
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
+                        guard generation == copiedBadgeGeneration else {
+                            return
+                        }
                         withAnimation(.easeOut(duration: 0.2)) {
                             isCopiedBadgeVisible = false
                         }
@@ -544,7 +557,12 @@ struct KeyboardDiagnosticsSection: View {
                         isCopiedBadgeVisible = true
                     }
 
+                    copiedBadgeGeneration += 1
+                    let generation = copiedBadgeGeneration
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
+                        guard generation == copiedBadgeGeneration else {
+                            return
+                        }
                         withAnimation(.easeOut(duration: 0.2)) {
                             isCopiedBadgeVisible = false
                         }
