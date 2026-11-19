@@ -673,16 +673,14 @@ extension KeyboardRootView {
                 .frame(height: fourRowAlignedTopContentHeight)
 
                 HStack(spacing: keyboardRowSpacing) {
-                    ReturnToKanaPaletteKey(
-                        title: "あい",
-                        fixedWidth: returnKeyWidth,
-                        candidates: KeyboardRootView.modePaletteLabels,
+                    ModePanelLeadingKeys(
+                        returnKeyWidth: returnKeyWidth,
                         paletteColumnCount: paletteColumnCount,
+                        height: mainFlickKeyHeight,
                         onReturn: onSwitchToKana,
-                        onSelectCandidate: onSelectModePalette
+                        onSelectCandidate: onSelectModePalette,
+                        onAdvanceKeyboard: onAdvanceKeyboard
                     )
-                    .frame(height: mainFlickKeyHeight)
-                    PanelAdvanceKeyboardKey(action: onAdvanceKeyboard, height: mainFlickKeyHeight)
 
                     ForEach(KeyboardRootView.EmojiCategory.allCases, id: \.self) { category in
                         EmojiCategoryKeyButton(
@@ -694,12 +692,8 @@ extension KeyboardRootView {
                         .frame(height: mainFlickKeyHeight)
                     }
 
-                    ActionKeyButton(
-                        title: "⌫",
-                        accessibilityLabel: "削除",
-                        fontSize: 26,
+                    ActionKeyButton.panelDeleteKey(
                         fixedWidth: deleteKeyWidth,
-                        repeatsWhileHolding: true,
                         repeatInitialDelay: keyRepeatInitialDelay,
                         repeatInterval: keyRepeatInterval,
                         backgroundColorOverride: deleteKeyBackgroundColorOverride,
@@ -795,27 +789,21 @@ extension KeyboardRootView {
                 .modifier(SymbolScrollClipDisabledModifier())
 
                 HStack(spacing: keyboardRowSpacing) {
-                    ReturnToKanaPaletteKey(
-                        title: "あい",
-                        fixedWidth: returnKeyWidth,
-                        candidates: KeyboardRootView.modePaletteLabels,
+                    ModePanelLeadingKeys(
+                        returnKeyWidth: returnKeyWidth,
                         paletteColumnCount: paletteColumnCount,
+                        height: mainFlickKeyHeight,
                         onReturn: onSwitchToKana,
-                        onSelectCandidate: onSelectModePalette
+                        onSelectCandidate: onSelectModePalette,
+                        onAdvanceKeyboard: onAdvanceKeyboard
                     )
-                    .frame(height: mainFlickKeyHeight)
-                    PanelAdvanceKeyboardKey(action: onAdvanceKeyboard, height: mainFlickKeyHeight)
 
                     symbolCategoryTabs
                         .frame(maxWidth: .infinity)
                         .frame(height: mainFlickKeyHeight)
 
-                    ActionKeyButton(
-                        title: "⌫",
-                        accessibilityLabel: "削除",
-                        fontSize: 26,
+                    ActionKeyButton.panelDeleteKey(
                         fixedWidth: deleteKeyWidth,
-                        repeatsWhileHolding: true,
                         repeatInitialDelay: keyRepeatInitialDelay,
                         repeatInterval: keyRepeatInterval,
                         action: onDeleteBackward
@@ -1297,6 +1285,56 @@ extension KeyboardRootView {
         @State private var chipFrames: [Int: CGRect] = [:]
         @State private var headerFrame: CGRect = .zero
     }
+
+// パネル(絵文字/顔文字/記号/単漢字/書式化数値)の下段の左端: [あい](長押しで面を選ぶ盤)と 🌐。5 つの面に同じ形で
+// 書いていたのをまとめた(3838)。HStack の直下に置く前提で、包む入れ物を足さずに 2 つを並べて返す
+struct ModePanelLeadingKeys: View {
+    let returnKeyWidth: CGFloat
+    let paletteColumnCount: Int
+    let height: CGFloat
+    let onReturn: () -> Void
+    let onSelectCandidate: (String) -> Void
+    let onAdvanceKeyboard: (() -> Void)?
+
+    var body: some View {
+        ReturnToKanaPaletteKey(
+            title: "あい",
+            fixedWidth: returnKeyWidth,
+            candidates: KeyboardRootView.modePaletteLabels,
+            paletteColumnCount: paletteColumnCount,
+            onReturn: onReturn,
+            onSelectCandidate: onSelectCandidate
+        )
+        .frame(height: height)
+        PanelAdvanceKeyboardKey(action: onAdvanceKeyboard, height: height)
+    }
+}
+
+extension ActionKeyButton {
+    // 面(絵文字・記号・単漢字)の下段の削除キー。3 つの面に同じ引数で書いていたのをまとめた(3838)。
+    // かな・ラテン文字の面の deleteActionKey(KeyboardRootView)と同じ見た目で、長押しで連続して消える
+    static func panelDeleteKey(
+        fixedWidth: CGFloat,
+        repeatInitialDelay: TimeInterval,
+        repeatInterval: TimeInterval,
+        backgroundColorOverride: Color? = nil,
+        cornerBadgeText: String? = nil,
+        action: @escaping () -> Void
+    ) -> ActionKeyButton {
+        ActionKeyButton(
+            title: "⌫",
+            accessibilityLabel: "削除",
+            fontSize: 26,
+            fixedWidth: fixedWidth,
+            repeatsWhileHolding: true,
+            repeatInitialDelay: repeatInitialDelay,
+            repeatInterval: repeatInterval,
+            backgroundColorOverride: backgroundColorOverride,
+            cornerBadgeText: cornerBadgeText,
+            action: action
+        )
+    }
+}
 
 // パネル(絵文字/顔文字/記号/漢字ピッカー/書式化数値)下段の 🌐。地球儀キーが要る機種
 // (needsInputModeSwitchKey=true のホームボタン機)だけ action が渡され、それ以外は何も描かない

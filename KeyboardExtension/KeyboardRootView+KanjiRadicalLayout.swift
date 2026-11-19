@@ -760,16 +760,14 @@ struct KeyboardRootKanjiRadicalSectionView: View {
             }
 
             HStack(spacing: keyboardRowSpacing) {
-                ReturnToKanaPaletteKey(
-                    title: "あい",
-                    fixedWidth: returnKeyWidth,
-                    candidates: KeyboardRootView.modePaletteLabels,
+                ModePanelLeadingKeys(
+                    returnKeyWidth: returnKeyWidth,
                     paletteColumnCount: paletteColumnCount,
+                    height: mainFlickKeyHeight,
                     onReturn: onSwitchToKana,
-                    onSelectCandidate: onSelectModePalette
+                    onSelectCandidate: onSelectModePalette,
+                    onAdvanceKeyboard: onAdvanceKeyboard
                 )
-                .frame(height: mainFlickKeyHeight)
-                PanelAdvanceKeyboardKey(action: onAdvanceKeyboard, height: mainFlickKeyHeight)
 
                 ForEach(RadicalPositionCategory.allCases) { category in
                     RadicalCategoryKeyButton(
@@ -782,14 +780,9 @@ struct KeyboardRootKanjiRadicalSectionView: View {
                     .frame(height: mainFlickKeyHeight)
                 }
 
-                // ほかの面(絵文字・記号)の削除キーと同じにする(3834、ユーザ指定)。以前は長押しで連続せず、
-                // アイコンが小さく(16pt)、読み上げ名も無かった
-                ActionKeyButton(
-                    title: "⌫",
-                    accessibilityLabel: "削除",
-                    fontSize: 26,
+                // ほかの面(絵文字・記号)の削除キーと同じ(3834、ユーザ指定。以前は長押しで連続せず、アイコンが小さく、読み上げ名も無かった)
+                ActionKeyButton.panelDeleteKey(
                     fixedWidth: deleteKeyWidth,
-                    repeatsWhileHolding: true,
                     repeatInitialDelay: keyRepeatInitialDelay,
                     repeatInterval: keyRepeatInterval,
                     action: onDeleteBackward

@@ -383,18 +383,13 @@ extension KeyboardRootView {
                 .frame(height: fourRowAlignedTopContentHeight)
 
                 HStack(spacing: keyboardRowSpacing) {
-                    ReturnToKanaPaletteKey(
-                        title: "あい",
-                        fixedWidth: modePanelReturnKeyWidth,
-                        candidates: KeyboardRootView.modePaletteLabels,
+                    ModePanelLeadingKeys(
+                        returnKeyWidth: modePanelReturnKeyWidth,
                         paletteColumnCount: modePaletteColumnCount,
+                        height: mainFlickKeyHeight,
                         onReturn: { switchInputMode(.kana) },
-                        onSelectCandidate: { _ = selectModePalette($0) }
-                    )
-                        .frame(height: mainFlickKeyHeight)
-                    PanelAdvanceKeyboardKey(
-                        action: showsNextKeyboardKey ? onAdvanceKeyboard : nil,
-                        height: mainFlickKeyHeight
+                        onSelectCandidate: { _ = selectModePalette($0) },
+                        onAdvanceKeyboard: showsNextKeyboardKey ? onAdvanceKeyboard : nil
                     )
 
                     ScrollView(.horizontal, showsIndicators: false) {
