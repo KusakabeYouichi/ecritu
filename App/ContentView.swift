@@ -1697,8 +1697,9 @@ struct ContentView: View {
                     return
                 }
 
+                // 許可の確認の終わりに対応表を作り直す(requestContactsAccessIfNeeded の末尾)。以前はここでも続けて
+                // 作り直していて、許可済みの端末では連絡先を 2 回読んでいた(3837)
                 requestContactsAccessIfNeededInBackground()
-                syncContactCandidatesCacheFromContainerApp()
             }
             .onChange(of: scenePhase) { _, newPhase in
                 // トーストは、消える前に他のアプリへ切り替えると、戻ったときにまだ出ていた(消すタイマーは止められた
