@@ -312,9 +312,8 @@ extension KeyboardViewController {
                 // alloc 68 / used 39 = 29MB が「free 済みだが返していない」領域だった。
                 // 警告(fp≈58)を待たずに返せば、警告そのものを減らせる。
                 // relief は数ms だが連続変換で毎回走らせない(最短間隔 preventiveReliefMinimumInterval)
-                DispatchQueue.main.async { [weak self] in
-                    self?.performPreventiveMallocReliefIfNeeded()
-                }
+                // 実行は、下で変換結果を画面へ渡した後にする(3845)。以前はここで main に積んでいて、変換結果より先に
+                // 順番が来るので、返却の時間がそのまま候補の表示の遅れになっていた(実機の main 待ち 90% 16〜18ms の一因)
                 // MEMFORENSICS(時限計測 2651→2654): プロセス初回変換は必ず記録(2651 の
                 // 実測: レキシコンオフ下で used +10〜12MB、自前構造は1MB弱=残りは遅延
                 // ロード+フレームワーク側の初回ウォームアップ)。以降は Δalloc/|Δfp| が
@@ -368,6 +367,20 @@ extension KeyboardViewController {
                 }
             }
 
+            // 仕上げ(main の applyAsyncCandidateGenerationResult)が引く重い問い合わせを、ここ(変換のキュー)で先に済ませて
+            // キャッシュへ入れておく(3845)。結果は使わない。main は覚えた結果を引くだけになる
+            // - かなを先頭に残すかの判定: 読みが 1 字伸びるたびにキャッシュが外れ、main で規則を全部たどっていた
+            // - 数字の直後: 助数詞の後ろの読みを変換し直す(counterTailConversion)。main で変換そのものを呼んでいた
+            _ = converter.shouldKeepKanaIdentityLeading(for: reading)
+            if precedingCharacter != nil {
+                _ = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+                    converterCandidates,
+                    reading: reading,
+                    precedingCharacter: precedingCharacter,
+                    tailConversion: { converter.counterTailConversion($0) },
+                    isCommonWord: { converter.isCommonWordForCounterBlock($0) }
+                )
+            }
             #if DEBUG
             let timingQueueEndAt = CFAbsoluteTimeGetCurrent()
             let timingMulti = timingMultiMs
@@ -409,6 +422,8 @@ extension KeyboardViewController {
                 #else
                 _ = applied
                 #endif
+                // 予防的スリム化(上のコメント参照)。候補を画面へ渡した後なので、表示を待たせない
+                self.performPreventiveMallocReliefIfNeeded()
             }
         }
     }
@@ -448,6 +463,8 @@ extension KeyboardViewController {
             return false
         }
 
+        // 直前の確定済みの文字は 1 回だけ読む(以前は下の 4 か所でそれぞれ読んでいた。3845)
+        let precedingCharacter = textDocumentProxy.documentContextBeforeInput?.last
         let supplementaryCandidates = supplementaryLexiconCandidates(for: cacheKey.reading)
 
         let merged: [String]
@@ -485,10 +502,10 @@ extension KeyboardViewController {
             KanaKanjiConverter.latinContextPreferredCandidates(
                 promoted,
                 reading: cacheKey.reading,
-                precedingCharacter: textDocumentProxy.documentContextBeforeInput?.last
+                precedingCharacter: precedingCharacter
             ),
             reading: cacheKey.reading,
-            precedingCharacter: textDocumentProxy.documentContextBeforeInput?.last,
+            precedingCharacter: precedingCharacter,
             suppressedCandidates: kanaKanjiConverter.store
                 .suppressedCandidatesByReading()[cacheKey.reading] ?? [],
             ordinalMeKanaFirst: !kanaKanjiConverter.withStateLock { kanaKanjiConverter.ordinalMeKanjiPreferred },
@@ -505,7 +522,7 @@ extension KeyboardViewController {
             reading: cacheKey.reading,
             to: kanaKanjiConverter.applyKaCounterVariantPreference(
                 reading: cacheKey.reading, to: boosted,
-                precedingCharacter: textDocumentProxy.documentContextBeforeInput?.last
+                precedingCharacter: precedingCharacter
             )
         )
 
@@ -513,7 +530,7 @@ extension KeyboardViewController {
         let interjectionOrdered = KanaKanjiConverter.sentenceInitialInterjectionPromotedCandidates(
             kaOrdered,
             reading: cacheKey.reading,
-            precedingCharacter: textDocumentProxy.documentContextBeforeInput?.last
+            precedingCharacter: precedingCharacter
         )
 
         // 温度の度記号を設定の字形へ(内部正規形 °C/°F → ℃/℉ 等。同じになった候補は畳む。2773)

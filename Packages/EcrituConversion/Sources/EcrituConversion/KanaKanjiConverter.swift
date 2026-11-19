@@ -29,6 +29,9 @@ public final class KanaKanjiConverter {
 
     var candidateCache: [CandidateCacheKey: [String]] = [:]
 
+    // 助数詞の後ろの読みを変換した結果(counterTailConversion。値が nil のものも覚える)
+    var counterTailConversionCache: [String: String?] = [:]
+
     var candidateCacheOrder: [CandidateCacheKey] = []
 
     let candidateCacheLimit = 96
@@ -1679,6 +1682,7 @@ public final class KanaKanjiConverter {
     func invalidateCandidateCache() {
         candidateCache.removeAll(keepingCapacity: true)
         candidateCacheOrder.removeAll(keepingCapacity: true)
+        counterTailConversionCache.removeAll(keepingCapacity: true)
         multiClauseInflectionCache.removeAll(keepingCapacity: true)
         multiClauseTaFormCheckCache.removeAll(keepingCapacity: true)
         kanaIdentityLeadingCache.removeAll(keepingCapacity: true)

@@ -996,7 +996,24 @@ extension KanaKanjiConverter {
         (store.wordLMUnigramCosts(for: [surface])[surface] ?? Int.max) <= Self.counterBlockingCommonWordMaxUnigram
     }
 
+    // 結果を読みごとに覚えておく(3845)。数字の直後の候補を組み立てるとき、画面側(main)がここで変換そのものを
+    // 最大 2 回やり直していて、仕上げが 18〜59ms かかる束があった(実機の計測)。変換のキューが同じ問い合わせを先に
+    // 済ませておけば、main は覚えた結果を引くだけで済む。候補のキャッシュと同じ時に捨てる(invalidateCandidateCache)
     public func counterTailConversion(_ tail: String) -> String? {
+        if let cached = withStateLock({ counterTailConversionCache[tail] }) {
+            return cached
+        }
+        let converted = computeCounterTailConversion(tail)
+        withStateLock {
+            if counterTailConversionCache.count >= 64 {
+                counterTailConversionCache.removeAll(keepingCapacity: true)
+            }
+            counterTailConversionCache[tail] = .some(converted)
+        }
+        return converted
+    }
+
+    private func computeCounterTailConversion(_ tail: String) -> String? {
         // 助詞で始まる長い末尾(をきそい)は、助詞の後ろだけを変換して助詞を付け直す(3806)。助詞ごと連文節に掛けると、
         // 文頭の助詞として割られた形(を機沿い)が返り、2+いをきそい が 位を機沿い だった
         // 次の字が ん・小書き・長音 なら先頭の 1 字は助詞ではない(にんていです=認定です。に+んていです と見て 年にんて胃です
