@@ -30745,6 +30745,19 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3848: はなっとく は 放っとく と かな だけで、は納得 が無かった(1+はなっとく。ユーザ指定: 先頭でなく 2 番めでよい)
+    func testHaNattokuSecondCandidate3848() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let list = converter.candidates(for: "はなっとく", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(2)), ["放っとく", "は納得"], "\(list)")
+        let afterDigit = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+            list, reading: "はなっとく", precedingCharacter: "1",
+            tailConversion: { self.converter.counterTailConversion($0) },
+            isCommonWord: { self.converter.isCommonWordForCounterBlock($0) })
+        XCTAssertTrue(afterDigit.prefix(2).contains("は納得"), "\(afterDigit)")
+    }
+
     // 3845: ぜんしゃ の並び(前者、全社、全車、全射、前車、禅者)と、2 かなの語幹+車 の意味のない合成(ゼン車/膳車/善車/禅車/然車)を
     // 出さないこと(ユーザ指定)。フランス車/日本車 のような 3 かな以上の語幹+車 はそのまま
     func testZenshaOrderAndNoShortStemCarCompounds3845() throws {
