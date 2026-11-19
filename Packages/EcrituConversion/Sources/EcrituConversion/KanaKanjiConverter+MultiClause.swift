@@ -336,6 +336,8 @@ extension KanaKanjiConverter {
             candidates = WineTermPriority.ordered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates, isSuruNoun: { self.store.isSuruNoun(reading: $0, candidate: $1) })
         }
         #endif
+        // ワインの語はカタカナの形を先に(単独・助詞つき・文の中で揃える。ユーザ指定 3846)
+        candidates = WineScriptOrdering.katakanaFirst(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.suruNounTabiOrdered(candidates)
         candidates = Self.nankaKanaSecondOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.tareSauceSecondOrdered(candidates)

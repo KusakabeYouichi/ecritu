@@ -1594,10 +1594,11 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
         for (reading, latin, katakana) in [("かしす", "Cassis", "カシス"), ("ぐろろー", "Grolleau", "グロロー")] {
-            XCTAssertEqual(Array(converter.candidates(for: reading, limit: 10, systemCandidateMode: .surface).prefix(2)), [latin, katakana])
+            // 3846: ワインの語はカタカナが先(以前は ラテン文字が先・カタカナが 2 位)
+            XCTAssertEqual(Array(converter.candidates(for: reading, limit: 10, systemCandidateMode: .surface).prefix(2)), [katakana, latin])
         }
         let multi = converter.multiClauseCandidates(for: "かーねろすはなぱ", systemCandidateMode: .surface)
-        XCTAssertEqual(Array(multi.prefix(2)), ["CarnerosはNapa", "カーネロスはナパ"], "\(multi.prefix(4))")
+        XCTAssertEqual(Array(multi.prefix(2)), ["カーネロスはナパ", "CarnerosはNapa"], "\(multi.prefix(4))")
         XCTAssertEqual(
             KanaKanjiConverter.promoteKatakanaCounterpartOfLatinTop(["Napaのワイン", "ナパの和院", "Napaの和院", "ナパのワイン"]),
             ["Napaのワイン", "ナパのワイン", "ナパの和院", "Napaの和院"]
@@ -1768,8 +1769,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("きたからだいじょうぶ").first, "来たから大丈夫")
         XCTAssertEqual(multi("かえってきたからのことは").first, "帰ってきたからのことは")
         // まれな語・人名を連文節で下げる(薄伽/絡まん/秀明)、州名 は seed 先頭
-        XCTAssertEqual(multi("ばがはくろぶどうひんしゅです").first, "Bagaは黒ぶどう品種です")
-        XCTAssertEqual(multi("でざれーとからまん").first, "デザレーとCalamin")
+        XCTAssertEqual(multi("ばがはくろぶどうひんしゅです").first, "バガは黒ぶどう品種です")
+        XCTAssertEqual(multi("でざれーとからまん").first, "デザレーとカラマン")
         XCTAssertEqual(multi("しゅうめいではありません").first, "州名ではありません")
         // ほう/方+が+です は非文(正解はほうがです→正解は萌芽です)。何がですか は崩さない
         XCTAssertEqual(multi("せいかいはほうがです").first, "正解は萌芽です")
@@ -1789,7 +1790,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("かじゅうとともにかひ").first, "果汁とともに果皮")
         XCTAssertEqual(multi("けっこんのかひ").first, "結婚の可否")
         // 12 字を超える読みの補助語彙(vin)も 1 語に
-        XCTAssertEqual(multi("ばーでぃっしゅろーとごるとは").first, "Badisch Rotgoldは")
+        XCTAssertEqual(multi("ばーでぃっしゅろーとごるとは").first, "バーディッシュ・ロートゴルトは")
         // seed(山幸/Río Oja/要し)と連語表(糖度を計る/タンクに開ける)
         XCTAssertTrue(multi("やまさちは").prefix(2).contains("山幸は"), "\(multi("やまさちは").prefix(3))")
         XCTAssertTrue(multi("すぺいんごでりおおは").prefix(2).contains("スペイン語でRío Oja"), "\(multi("すぺいんごでりおおは").prefix(3))")
@@ -1939,7 +1940,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             XCTAssertLessThan(list.firstIndex(of: expected) ?? 99, list.firstIndex(of: small) ?? 99, "\(list.prefix(4))")
         }
         // ラテン文字が先頭の文でも、2 番めのカタカナは語彙の チンクエ・テッレ
-        XCTAssertEqual(Array(multi("ちんくえてっれとは").prefix(2)), ["Cinque Terreとは", "チンクエ・テッレとは"])
+        XCTAssertEqual(Array(multi("ちんくえてっれとは").prefix(2)), ["チンクエ・テッレとは", "Cinque Terreとは"])
     }
 
     // 3719(ユーザ報告): こさ の 濃さ が 26 番め(コサ/胡沙/子さ/股さ/戸さ の後ろ)。くろっぽくしたぜ が 黒っぽく下ぜ
@@ -1985,7 +1986,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             ("こくがある", "コクがある"), ("こくのある", "コクのある"), ("ごひゃくまんごく", "五百万石"), ("いっこくもはやく", "一刻も早く"),
             ("いろがこくでる", "色が濃く出る"),
             // 正解は+答えの語(問題文の型だけ。道路 単独は保つ)
-            ("せいかいはどうろです", "正解はDouroです"), ("どうろをわたる", "道路を渡る"), ("せいかいはだれ", "正解は誰"),
+            ("せいかいはどうろです", "正解はドウロです"), ("どうろをわたる", "道路を渡る"), ("せいかいはだれ", "正解は誰"),
         ] {
             let list = shown(reading)
             XCTAssertEqual(list.first, expected, "\(reading) \(list.prefix(5))")
@@ -2010,11 +2011,11 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
         for (reading, expected) in [
             // 問題文の型
-            ("せいかいはばらかです", "正解はBarakaです"), ("せいかいはるえだです", "正解はRuedaです"),
+            ("せいかいはばらかです", "正解はバラカです"), ("せいかいはるえだです", "正解はルエダです"),
             ("ふらんすごでごぶれです", "フランス語でGobeletです"),
-            ("またはごぶれ", "またはGobelet"), ("しろぶどうはくれれっと", "白ぶどうはClairette"),
+            ("またはごぶれ", "またはゴブレ"), ("しろぶどうはくれれっと", "白ぶどうはクレレット"),
             // 固有名の並び
-            ("ぐれーこやありあにこがある", "GrecoやAglianicoがある"), ("とろっけんとあしゅっとは", "TrockenとAsciuttoは"),
+            ("ぐれーこやありあにこがある", "グレーコやアリアニコがある"), ("とろっけんとあしゅっとは", "トロッケンとアシュットは"),
             // vin の漢字の語(全麹)や個別の組(正解\tでんぷん)がある区間は型の加点を掛けない
             ("せいかいはぜんこうじしこみです", "正解は全麹仕込みです"), ("せいかいはでんぷんです", "正解はでんぷんです"),
             // 普段の文は保つ
@@ -2052,7 +2053,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
         for (reading, expected) in [
             ("そのあいだに", "その間に"), ("そのままでいい", "そのままでいい"),
-            ("じんはびふぃーたー", "Ginはビフィーター"), ("じんをはる", "陣を張る"), ("じんをしく", "陣を敷く"),
+            ("じんはびふぃーたー", "ジンはビフィーター"), ("じんをはる", "陣を張る"), ("じんをしく", "陣を敷く"),
             ("おおさかのじん", "大阪の陣"), ("なつのじん", "夏の陣"), ("とらきあじん", "トラキア人"), ("にほんじん", "日本人"),
             ("しんしょうがわるい", "心証が悪い"), ("かんこくのめいさん", "韓国の名産"), ("かれははさんした", "彼は破産した"),
             ("じかんをようします", "時間を要します"), ("こうしのぱいつつみやき", "仔牛のパイ包み焼き"),
@@ -2815,8 +2816,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("かれはあやまった").prefix(2).contains("彼は謝った"), true)
         XCTAssertEqual(multi("どちゃくのしろぶどうひんしゅです").first, "土着の白ぶどう品種です")
         XCTAssertEqual(multi("だゔぃでぃしゅ").first, "ダヴィディ種")
-        XCTAssertEqual(Array(multi("くりゅがそんざいします").prefix(2)), ["Cruが存在します", "クリュが存在します"])
-        XCTAssertEqual(Array(multi("くりゅです").prefix(2)), ["Cruです", "クリュです"])
+        XCTAssertEqual(Array(multi("くりゅがそんざいします").prefix(2)), ["クリュが存在します", "Cruが存在します"])
+        XCTAssertEqual(Array(multi("くりゅです").prefix(2)), ["クリュです", "Cruです"])
         XCTAssertEqual(multi("まっくおーえすで").first, "macOSで")
         XCTAssertFalse(multi("まっくおーえすで").contains("マックオーエスで"))
         XCTAssertEqual(multi("あいすとともにまぜあわせる").first, "アイスとともに混ぜ合わせる")
@@ -2889,7 +2890,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("せいぶさんがくたい").first, "西部山岳帯")
         XCTAssertEqual(multi("せいかいはおどりです").first, "正解は踊りです")
         XCTAssertEqual(multi("せいさんかのうしょくはしろのみ").first, "生産可能色は白のみ")
-        XCTAssertEqual(Array(multi("くりゅには").prefix(2)), ["Cruには", "クリュには"])
+        XCTAssertEqual(Array(multi("くりゅには").prefix(2)), ["クリュには", "Cruには"])
         // 3678: 辞書の「の込み」読み(たちばなの=橘/橘ノ、あきの=秋 …)は部品にせず、ちょうどその読みのときだけ末尾に(ユーザ指定)
         XCTAssertEqual(GenitiveReadingTable.suppressed["たちばなの"], ["橘", "橘ノ"])
         XCTAssertEqual(GenitiveReadingTable.resupplied["たちばなの"], ["橘"])
@@ -2900,7 +2901,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("いずのくに").first, "伊豆の国")
         // 3678: カタカナ語の後ろが 等/種/地方 ならラテン文字の形も 2 番目に。大文字小文字だけの違いは全部大文字のときだけ同じ語
         XCTAssertEqual(Array(multi("みっしょんしゅがもちこまれました").prefix(2)), ["ミッション種が持ち込まれました", "Mission種が持ち込まれました"])
-        XCTAssertEqual(Array(single("しーずにんぐ").prefix(2)), ["Seasoning", "シーズニング"])
+        XCTAssertEqual(Array(single("しーずにんぐ").prefix(2)), ["シーズニング", "Seasoning"])
         // 3678(ユーザ指定・報告): ではない(日傅 は Sudachi の読み誤り、では無い は出さない)、きおけじこみ、えみこ、か、確認表の語
         XCTAssertEqual(single("ではない").first, "ではない")
         XCTAssertFalse(single("ではない").contains("日傅"))
@@ -2956,20 +2957,20 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("かーどのさいはっこう").first, "カードの再発行")
         XCTAssertEqual(multi("しょうめいしょをはっこうさせる").first, "証明書を発行させる")
         // 3685(同上): ラテン文字の次は語彙のカタカナ(チンクエ・テッレ。辞書の チンクェ・テッレ が 2 番目だった)
-        XCTAssertEqual(Array(multi("ちんくえてっれとは").prefix(2)), ["Cinque Terreとは", "チンクエ・テッレとは"])
+        XCTAssertEqual(Array(multi("ちんくえてっれとは").prefix(2)), ["チンクエ・テッレとは", "Cinque Terreとは"])
         // 3686(learningBOX 検査 3684 の [直す]): 表記違いの組は候補欄で 2 番目を譲らない、混ぜ書きの先頭は全部ラテン文字に、ワインの語の単独の読み
         XCTAssertTrue(KanaKanjiConverter.isScriptCounterpartPair("Portは", "ポートは"))
         XCTAssertFalse(KanaKanjiConverter.isScriptCounterpartPair("Portは", "ポーとは"))
-        XCTAssertEqual(Array(multi("しぇりーがあぺら").prefix(2)), ["SherryがApera", "シェリーがアペラ"])
-        XCTAssertEqual(multi("わいんはぴののわーる").first, "ワインはPinot Noir")
+        XCTAssertEqual(Array(multi("しぇりーがあぺら").prefix(2)), ["シェリーがアペラ", "SherryがApera"])
+        XCTAssertEqual(multi("わいんはぴののわーる").first, "ワインはピノ・ノワール")
         XCTAssertTrue(single("うぃーん").prefix(2).contains("Wien"))
         XCTAssertTrue(single("さんてみりおん").prefix(2).contains("Saint-Émilion"))
-        XCTAssertEqual(single("せっこ").first, "Secco")
+        XCTAssertEqual(single("せっこ").first, "セッコ")
         XCTAssertEqual(Array(single("こな").prefix(2)), ["粉", "Kona"])
         // 2026-11-06(ユーザ指定): こな は 粉 が先のまま、コーヒーの文脈(こなこーひー)だけ Kona を先に(vin.plist に登録)。
         // Castilla La Mancha はハイフン無しを先に(ハイフン付きが西語の正式だが候補はハイフン無し→付き の順)
-        XCTAssertEqual(Array(multi("こなこーひー").prefix(2)), ["Konaコーヒー", "コナコーヒー"])
-        XCTAssertEqual(Array(single("こなこーひー").prefix(2)), ["Konaコーヒー", "コナコーヒー"])
+        XCTAssertEqual(Array(multi("こなこーひー").prefix(2)), ["コナコーヒー", "Konaコーヒー"])
+        XCTAssertEqual(Array(single("こなこーひー").prefix(2)), ["コナコーヒー", "Konaコーヒー"])
         XCTAssertEqual(Array(single("かすてぃーりゃらまんちゃ").prefix(3)), ["カスティーリャ・ラ・マンチャ", "Castilla La Mancha", "Castilla-La Mancha"])
         // learningBOX 検査 3692 の退行(3684 の 字\t型 の加点が 1問+字+型 に漏れた): 数詞複合の直後の 字 を禁止
         XCTAssertEqual(multi("せいかいはいちもんじがたたんしょうせんていです").first, "正解は一文字型短梢剪定です")
@@ -3057,7 +3058,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertNil(KanaKanjiConverter.nominalizedInflectionalKanaRestored("寄付金", reading: "きふきん"))
         XCTAssertNil(KanaKanjiConverter.nominalizedInflectionalKanaRestored("気付", reading: "きつけ"))
         XCTAssertEqual(KanaKanjiConverter.nominalizedInflectionalKanaRestored("表記付テーブル", reading: "ひょうきつきてーぶる"), "表記付きテーブル")
-        XCTAssertEqual(Array(multi("がめいなど").prefix(2)), ["Gamayなど", "ガメイなど"])
+        XCTAssertEqual(Array(multi("がめいなど").prefix(2)), ["ガメイなど", "Gamayなど"])
     }
 
     // learningBOX 検査 3658 の備考つきの指摘(正しい読みで)
@@ -3069,20 +3070,20 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // 3673 から メル+ろー の区切りが立たず、連文節は空(単文節の メルロー が出る)
         // 3727 で Merlot(めるろー)を vin に足したので、ラテン文字が先頭・カタカナが 2 番め(ラテン先の方針 11-03)
         XCTAssertTrue([nil, "Merlot"].contains(multiTop("めるろー")), "\(String(describing: multiTop("めるろー")))")
-        XCTAssertEqual(Array(converter.candidates(for: "めるろー", limit: 5, systemCandidateMode: .surface).prefix(2)), ["Merlot", "メルロー"])
+        XCTAssertEqual(Array(converter.candidates(for: "めるろー", limit: 5, systemCandidateMode: .surface).prefix(2)), ["メルロー", "Merlot"])
         // 夢の香 の読みは ゆめのかおり(ユーザ修正 3677。ゆめのか はいちごの品種)
         XCTAssertEqual(multiTop("ゆめのかおり") ?? converter.candidates(for: "ゆめのかおり", limit: 3, systemCandidateMode: .surface).first, "夢の香")
         // 12 字を超える補助語彙も 1 語に立つようになった(3697)ので、読み全体が 1 語なら連文節は空で単文節の先頭が出る
-        // 3727 で Grüner Veltliner を足したので、ラテン文字が先頭・カタカナが 2 番め。
+        // 3727 で Grüner Veltliner を足した。3846 からワインの語はカタカナが先頭・ラテン文字が 2 番め(ユーザ指定)。
         // 3729 で グリュナー を グリューナー にそろえた(読みも ぐりゅーなー に。ユーザ指定)
         let gruner = converter.multiClauseCandidates(for: "ぐりゅーなーゔぇるとりーなー", systemCandidateMode: .surface)
         XCTAssertEqual(Array((gruner.isEmpty
             ? converter.candidates(for: "ぐりゅーなーゔぇるとりーなー", limit: 3, systemCandidateMode: .surface) : gruner).prefix(2)),
-            ["Grüner Veltliner", "グリューナー・ヴェルトリーナー"])
+            ["グリューナー・ヴェルトリーナー", "Grüner Veltliner"])
         let erzeuger = converter.multiClauseCandidates(for: "えあつぉいがーあぷふゅるんぐ", systemCandidateMode: .surface)
         XCTAssertEqual(Array((erzeuger.isEmpty
             ? converter.candidates(for: "えあつぉいがーあぷふゅるんぐ", limit: 3, systemCandidateMode: .surface) : erzeuger).prefix(2)),
-            ["Erzeugerabfüllung", "エアツォイガーアプフュルング"])
+            ["エアツォイガーアプフュルング", "Erzeugerabfüllung"])
         // 粘土 は 土壌/岩盤/含む と呼応したときだけ(普段は 年度)
         XCTAssertEqual(multiTop("あかいねんどのどじょう"), "赤い粘土の土壌")
         XCTAssertEqual(multiTop("かたいねんどのがんばんがある"), "硬い粘土の岩盤がある")
@@ -27165,7 +27166,7 @@ extension KanaKanjiConverterRegressionTests {
     func testRegressionGamayKatakanaWithinTopThree() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
-        XCTAssertEqual(Array(converter.candidates(for: "がめい", limit: 4, systemCandidateMode: .surface)), ["Gamay", "ガメイ", "雅名", "画名"])
+        XCTAssertEqual(Array(converter.candidates(for: "がめい", limit: 4, systemCandidateMode: .surface)), ["ガメイ", "Gamay", "雅名", "画名"])
         let multi = converter.multiClauseCandidates(for: "がめいわすれたら", systemCandidateMode: .surface)
         XCTAssertTrue(multi.prefix(3).contains("ガメイ忘れたら"), "\(multi.prefix(4))")
         // 和語のカタカナ化(コメ/ネコ)の降格は従来どおり
@@ -29770,12 +29771,12 @@ extension KanaKanjiConverterRegressionTests {
         let expectations = [
             "せいかいはたいしょうじだいです": "正解は大正時代です",
             "せいかいはたなじたてです": "正解は棚仕立てです",
-            "せいかいはたいです": "正解はTaiです",
-            "せいかいはたなです": "正解はTannatです",
+            "せいかいはたいです": "正解はタイです",
+            "せいかいはたなです": "正解はタナです",
             "せいかいはしえなけんです": "正解はシエナ県です",
             "せいかいはどいつごです": "正解はドイツ語です",
             "せいかいはどなうがわです": "正解はドナウ川です",
-            "らぶるすかしゅ": "labrusca種",
+            "らぶるすかしゅ": "ラブルスカ種",
             "とうきょうがわ": "東京側",
             "ふらんすけい": "フランス系"
         ]
@@ -29804,7 +29805,7 @@ extension KanaKanjiConverterRegressionTests {
             // ルエダ は人名の 瑠江+だ より先(語の値段の上限。3776・3777、ユーザ指定)
             "るえだが": "ルエダが",
             "るえださんのわいん": "ルエダ産のワイン",
-            "ばんはるえだ": "ばんはRueda"
+            "ばんはるえだ": "ばんはルエダ"
         ]
         for (reading, expected) in expectations {
             XCTAssertEqual(converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).first, expected, reading)
@@ -30426,7 +30427,7 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(top("むしょくのえきたい"), "無色の液体")
         XCTAssertEqual(top("となんすいにぶんるいされます"), "と軟水に分類されます")
         XCTAssertEqual(top("かれらのいえ"), "彼らの家")
-        XCTAssertEqual(multi("までらのあるこーる").prefix(2), ["Madeiraのアルコール", "マデラのアルコール"])
+        XCTAssertEqual(multi("までらのあるこーる").prefix(2), ["マデラのアルコール", "Madeiraのアルコール"])
         XCTAssertEqual(top("ぼーじょれゔぃらーじゅぬーゔぉー"), "Beaujolais-Villages Nouveau")
         // ラテン文字の形が複数あるときは全部先、カタカナはその直後(ユーザ指定 3816)
         XCTAssertEqual(Array(KanaKanjiConverter.scriptCounterpartSecond(
@@ -30597,7 +30598,7 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(single("やしない").first, "養い")
         // 数字の直後: 助数詞+に で始まる語(認定)を に+… に割らない、助詞+ラテン文字の語、の+小地区
         XCTAssertEqual(boosted("ねんにんていです", after: "1").first, "年認定です")
-        XCTAssertEqual(boosted("いはせれさ", after: "2").first, "位はCereza")
+        XCTAssertEqual(boosted("いはせれさ", after: "2").first, "位はセレサ")
         XCTAssertEqual(boosted("のしょうちく", after: "2").first, "の小地区")
         // 助数詞に 灯
         XCTAssertEqual(boosted("とう", after: "3").contains("灯"), true)
@@ -30628,7 +30629,7 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(boosted("かげつ", after: "6").first, "か月")
         XCTAssertEqual(boosted("きゅう", after: "3").first, "級")
         XCTAssertEqual(boosted("しゅのやくそう", after: "7").first, "種の薬草")
-        XCTAssertEqual(Array(boosted("しゃとー", after: "4").prefix(2)), ["Château", "シャトー"])
+        XCTAssertEqual(Array(boosted("しゃとー", after: "4").prefix(2)), ["シャトー", "Château"])
         XCTAssertEqual(boosted("どりんく", after: "1").first, "ドリンク")
         XCTAssertEqual(multi("ねんにかけて", after: "8").first, "年にかけて")
         // 本来の語があるときは 助数詞+かな の合成を前に出さない(3807。14+せいき が 畝いき、4+いじょう が 位じょう、
@@ -30662,7 +30663,7 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("さかなをやく").first, "魚を焼く")
         // 文頭の と+名詞・数 は 1 語を割らない(と海は/と6件は)。と思う/という は変えない
         XCTAssertEqual(multi("とかいは").first, "都会は")
-        XCTAssertEqual(multi("とろっけんは").first, "Trockenは")
+        XCTAssertEqual(multi("とろっけんは").first, "トロッケンは")
         XCTAssertEqual(multi("とかいにすむ").first, "都会に住む")
         XCTAssertEqual(multi("というのは").first, "というのは")
         XCTAssertEqual(multi("となりのいえ").first, "隣の家")
@@ -30702,6 +30703,31 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("のんぶるを").first, "ノンブルを")
         // ワインの語は、単独でラテン文字が先頭でも、文の中ではカタカナが先のまま(3661 ほかの指定。IT の語だけに効かせる)
         XCTAssertEqual(multi("めるろーです").first, "メルローです")
+    }
+
+    // 3846: ワインの語は、単独・助詞つき・文の中のどれでもカタカナの形を先に(めるろーです は メルローです なのに、
+    // めるろーで は Merlotで、めるろー は Merlot だった。ユーザ指定: 11-16 の『ラテン文字が先』をワインの語では取り消す)。
+    // ワイン用語優先のオン・オフどちらでも同じ。IT の語(TestFlight/Apple)はラテン文字が先のまま
+    func testWineTermParticleFormKeepsScriptOrder3846() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func top(_ r: String) -> String? {
+            converter.multiClauseCandidates(for: r, systemCandidateMode: .surface).first
+                ?? converter.candidates(for: r, limit: 3, systemCandidateMode: .surface).first
+        }
+        for wine in [false, true] {
+            converter.setWineTermPriorityEnabled(wine)
+            for (reading, expected) in [
+                ("めるろー", "メルロー"), ("りーすりんぐ", "リースリング"), ("あるざす", "アルザス"),
+                ("めるろーです", "メルローです"), ("めるろーで", "メルローで"), ("めるろーの", "メルローの"),
+                ("りーすりんぐの", "リースリングの"), ("りーすりんぐのじゅうようさんちです", "リースリングの重要産地です")
+            ] {
+                XCTAssertEqual(top(reading), expected, "wine=\(wine) \(reading)")
+            }
+        }
+        converter.setWineTermPriorityEnabled(false)
+        XCTAssertEqual(converter.candidates(for: "てすとふらいと", limit: 3, systemCandidateMode: .surface).first, "TestFlight")
+        XCTAssertEqual(converter.candidates(for: "あっぷる", limit: 3, systemCandidateMode: .surface).first, "Apple")
     }
 
     // 3845: かねははらわない が 鐘は払わない だった(ユーザ指摘)。金+を/は/も/が+払う・貸す・借りる・返す・稼ぐ・貯める と
@@ -30816,7 +30842,7 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(single("だんの").first, "段の", "\(single("だんの"))")
         converter.setWineTermPriorityEnabled(true)
         XCTAssertEqual(single("だんの").first, "段の", "wine: \(single("だんの"))")
-        XCTAssertEqual(single("だん").first, "Dão", "wine: \(single("だん"))")
+        XCTAssertEqual(single("だん").first, "ダン", "wine: \(single("だん"))")
         converter.setWineTermPriorityEnabled(false)
         let base = single("だんめ")
         let kanaFirst = KanaKanjiConverter.digitContextCounterBoostedCandidates(
@@ -31000,19 +31026,21 @@ extension KanaKanjiConverterRegressionTests {
         converter.setWineTermPriorityEnabled(true)
         defer { converter.setWineTermPriorityEnabled(false) }
         for entry in entries {
-            XCTAssertEqual(single(entry.reading).first, entry.wineSurfaces[0], entry.reading)
-            XCTAssertEqual(top(entry.reading), entry.wineSurfaces[0], entry.reading)
-            XCTAssertEqual(Array(single(entry.reading).prefix(entry.wineSurfaces.count)), entry.wineSurfaces, entry.reading)
+            // 3846: ワインの語はカタカナが先(表の順はラテン文字が先なので、同じ並べ替えを当てた順と比べる)
+            let expected = WineScriptOrdering.katakanaFirst(reading: entry.reading, candidates: entry.wineSurfaces)
+            XCTAssertEqual(single(entry.reading).first, expected[0], entry.reading)
+            XCTAssertEqual(top(entry.reading), expected[0], entry.reading)
+            XCTAssertEqual(Array(single(entry.reading).prefix(expected.count)), expected, entry.reading)
         }
         // 助詞が 1 つ付いた形
         for (reading, expected) in [
-            ("どうろは", "Douroは"), ("たなは", "Tannatは"), ("とかいは", "Tokajは"), ("なうさは", "Naoussaは"),
+            ("どうろは", "ドウロは"), ("たなは", "タナは"), ("とかいは", "トカイは"), ("なうさは", "ナウサは"),
             ("きふきんが", "貴腐菌が"), ("ぶどうかの", "ブドウ科の"), ("さくしには", "佐久市には"), ("かいしで", "甲斐市で"),
         ] {
             XCTAssertEqual(top(reading), expected, reading)
         }
         // 文の中: 読みが 3 かな以上で日常の文にまず出ない語は一般語より先
-        XCTAssertEqual(multi("どうろをようします").first, "Douroを擁します")
+        XCTAssertEqual(multi("どうろをようします").first, "ドウロを擁します")
         XCTAssertEqual(multi("きふきんがついたぶどう").first?.hasPrefix("貴腐菌が"), true)
         XCTAssertEqual(multi("しんしょうがのびる").first?.hasPrefix("新梢が"), true)
         // 文の中: 2 かな以下の語(Gin=じん、Dão=だん)と日常語でもある語(発声/帰還/高価)は上げない
@@ -31087,9 +31115,9 @@ extension KanaKanjiConverterRegressionTests {
         for (reading, expected) in [
             ("こうちでぶどうさいばいがさかんである", "高地でぶどう栽培が盛んである"), ("こうちをたがやす", "耕地を耕す"),
             ("いちょうがよわい", "胃腸が弱い"), ("てぶれがひどい", "手ぶれがひどい"), ("ふかくいちれいする", "深く一礼する"),
-            ("ゔぃのろっくはがらすせんのいちれいです", "Vinolokはガラス栓の一例です"), ("いちれいをあげる", "一例を挙げる"),
-            ("ごぶれはかぶじたてです", "Gobeletは株仕立てです"), ("あんぶれは", "Ambréは"), ("じゅらんそんは", "Jurançonは"),
-            ("せんていはたいゆ", "剪定はTaille"),
+            ("ゔぃのろっくはがらすせんのいちれいです", "ヴィノロックはガラス栓の一例です"), ("いちれいをあげる", "一例を挙げる"),
+            ("ごぶれはかぶじたてです", "ゴブレは株仕立てです"), ("あんぶれは", "アンブレは"), ("じゅらんそんは", "ジュランソンは"),
+            ("せんていはたいゆ", "剪定はタイユ"),
             ("かひをつけこむこうていです", "果皮を漬け込む工程です"), ("まっしろなきじとなるのもとくちょうです", "真っ白な生地となるのも特徴です"),
             ("せいかいはしょとうからそうしゅんです", "正解は初冬から早春です"), ("せいかいはこっかいです", "正解は黒海です"),
             ("せいかいはせいしゅです", "正解は清酒です"), ("せいかいはしゅしです", "正解は種子です"),

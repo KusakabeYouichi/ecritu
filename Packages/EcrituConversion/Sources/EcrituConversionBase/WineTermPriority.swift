@@ -81,7 +81,14 @@ public enum WineTermPriority {
         for particle in trailingParticles where reading.count > particle.count && reading.hasSuffix(particle) {
             let stem = String(reading.dropLast(particle.count))
             guard !particleFormExcludedReadings.contains(stem), let surfaces = surfacesByReading[stem] else { continue }
-            let lead = surfaces.map { $0 + particle }
+            // ワイン用語の形どうしの順(ラテン文字とカタカナ)は、変換の結果の順に合わせる。表の順(ラテン文字が先)で並べると、
+            // めるろーで が Merlotで、めるろーです が メルローです のように、助詞を付けただけで逆転した(ユーザ指摘 3846:
+            // ほかがカタカナ先頭なら、の や で を付けたぐらいで逆転しないでほしい)。変換の結果に無い形は後ろへ
+            let lead = surfaces.map { $0 + particle }.enumerated().sorted { lhs, rhs in
+                let left = candidates.firstIndex(of: lhs.element) ?? Int.max
+                let right = candidates.firstIndex(of: rhs.element) ?? Int.max
+                return left != right ? left < right : lhs.offset < rhs.offset
+            }.map(\.element)
             return lead + candidates.filter { !lead.contains($0) }
         }
         // サ変の形(らっかさせる→落果させる。落下させる が先だった。ユーザ指定 3806): 読みが 表の読み+する の活用で、候補に

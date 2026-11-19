@@ -1274,7 +1274,10 @@ extension KanaKanjiConverter {
                                     && KanaKanjiConverter.isAllKanjiSurface(String(convertedTail.dropLast(suffix.count)))
                             })
                             // 助詞の後ろがラテン文字の語(2+いはせれさ→位はCereza。かなのまま 位はせれさ だった。3810、ユーザ報告)
-                            || (particleLedTail && convertedTail.dropFirst().contains(where: { $0.isASCII && $0.isLetter })) {
+                            || (particleLedTail && convertedTail.dropFirst().contains(where: { $0.isASCII && $0.isLetter }))
+                            // カタカナの語も同じ(ワインの語はカタカナを先にした: 2+いはせれさ→位はセレサ。3846)
+                            || (particleLedTail && convertedTail.count >= 3
+                                && convertedTail.dropFirst().allSatisfy({ ("ァ"..."ヺ").contains($0) || $0 == "ー" || $0 == "・" })) {
                         let convertedForm = surface + convertedTail
                         if !suppressedCandidates.contains(convertedForm),
                             !matched.contains(convertedForm) {
