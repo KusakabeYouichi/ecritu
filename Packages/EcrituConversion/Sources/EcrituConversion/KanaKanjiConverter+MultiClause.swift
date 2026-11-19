@@ -208,25 +208,25 @@ extension KanaKanjiConverter {
         guard let prevReading, !prevReading.isEmpty else {
             return false
         }
-        let cacheKey = prevReading + "\t" + prevSurface
-        if let cached = withStateLock({ multiClauseTaFormCheckCache[cacheKey] }) {
-            return cached
+        // 読みごとに た形の一覧を覚える(3848)。以前は 読み+表記 ごとに覚えていたので、同じ読みの別の表記
+        // (話/放し/離し)のたびに活用の生成をやり直していた(打鍵の模擬で 7.7%)
+        if let forms = withStateLock({ multiClauseTaFormsByReading[prevReading] }) {
+            return forms.contains(prevSurface + "た")
         }
-        let forms = inflectionCandidates(
+        let forms = Set(inflectionCandidates(
             for: prevReading + "た",
             ajoutVocabulary: store.ajoutVocabulary(),
             initialAjoutVocabulary: store.initialAjoutVocabulary(),
             systemCandidateMode: .surface,
             limit: 16
-        )
-        let result = forms.contains(prevSurface + "た")
+        ))
         withStateLock {
-            if multiClauseTaFormCheckCache.count >= multiClauseInflectionCacheLimit {
-                multiClauseTaFormCheckCache.removeAll(keepingCapacity: true)
+            if multiClauseTaFormsByReading.count >= multiClauseInflectionCacheLimit {
+                multiClauseTaFormsByReading.removeAll(keepingCapacity: true)
             }
-            multiClauseTaFormCheckCache[cacheKey] = result
+            multiClauseTaFormsByReading[prevReading] = forms
         }
-        return result
+        return forms.contains(prevSurface + "た")
     }
 
     // precedingCharacter: 入力欄で読みの直前にある確定済み文字(数字なら文頭の助数詞を持ち上げる。2887)

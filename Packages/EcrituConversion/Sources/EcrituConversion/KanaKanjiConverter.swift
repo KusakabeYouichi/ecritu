@@ -29,6 +29,11 @@ public final class KanaKanjiConverter {
 
     var candidateCache: [CandidateCacheKey: [String]] = [:]
 
+    // 読み → その読み+た の活用形の一覧(isInflectedTaFormOfKnownVerb。3848)
+    var multiClauseTaFormsByReading: [String: Set<String>] = [:]
+    // 読み → 活用を戻して抑制を照らす手がかり(candidatesForReading。3848)
+    var deinflectionSuppressionProbeCache: [String: [DeinflectionSuppressionProbe]] = [:]
+
     // 助数詞の後ろの読みを変換した結果(counterTailConversion。値が nil のものも覚える)
     var counterTailConversionCache: [String: String?] = [:]
 
@@ -45,7 +50,6 @@ public final class KanaKanjiConverter {
     let multiClauseInflectionCacheLimit = 1024
     // 名詞+た の遮断判定(isInflectedTaFormOfKnownVerb)のメモ。DP の遷移ごとに活用エンジンを呼んでいて
     // 連文節の処理時間の約7%を占めていた(2805 プロファイル)。キー "prevReading\tprevSurface"
-    var multiClauseTaFormCheckCache: [String: Bool] = [:]
 
     // shouldKeepKanaIdentityLeading のメモ(結果適用のたび main で全ルール走査+sqlite点
     // クエリが走っていた)。学習・抑制・設定変更で invalidateCandidateCache と一緒に消える。
@@ -1686,7 +1690,8 @@ public final class KanaKanjiConverter {
         candidateCacheOrder.removeAll(keepingCapacity: true)
         counterTailConversionCache.removeAll(keepingCapacity: true)
         multiClauseInflectionCache.removeAll(keepingCapacity: true)
-        multiClauseTaFormCheckCache.removeAll(keepingCapacity: true)
+        multiClauseTaFormsByReading.removeAll(keepingCapacity: true)
+        deinflectionSuppressionProbeCache.removeAll(keepingCapacity: true)
         kanaIdentityLeadingCache.removeAll(keepingCapacity: true)
     }
 
@@ -1760,7 +1765,22 @@ public final class KanaKanjiConverter {
         }
 
         let directSuppressed = suppressedByReading[normalizedReading] ?? []
-        let probes = deinflectionSuppressionProbes(reading: normalizedReading, suppressedByReading: store.suppressedCandidatesByReadingForDeinflection())
+        // 読みごとに覚える(3848。打鍵の模擬で 6%。同じ区間の読みを連文節の中で何度も引く)。抑制が変わる時は
+        // clearSharedDataCaches → invalidateCandidateCache で捨てる
+        let probes: [DeinflectionSuppressionProbe]
+        if let cached = withStateLock({ deinflectionSuppressionProbeCache[normalizedReading] }) {
+            probes = cached
+        } else {
+            probes = deinflectionSuppressionProbes(
+                reading: normalizedReading, suppressedByReading: store.suppressedCandidatesByReadingForDeinflection()
+            )
+            withStateLock {
+                if deinflectionSuppressionProbeCache.count >= 512 {
+                    deinflectionSuppressionProbeCache.removeAll(keepingCapacity: true)
+                }
+                deinflectionSuppressionProbeCache[normalizedReading] = probes
+            }
+        }
 
         return candidates.filter { candidate in
             if directSuppressed.contains(candidate) {
