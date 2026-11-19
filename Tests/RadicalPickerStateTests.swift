@@ -29,28 +29,28 @@ final class RadicalPickerStateTests: XCTestCase {
 
     func testInitialSelectionIsHenWithoutForm() {
         let state = RadicalPickerState()
-        XCTAssertEqual(state.selectedCategory, .hen)
+        XCTAssertEqual(state.selectedCategory, .leftSide)
         XCTAssertNil(state.selectedForm)
     }
 
     func testSelectCategoryClearsOpenForm() {
         let state = RadicalPickerState()
         state.selectForm(makeForm("氵", radical: 85, strokes: 3))
-        state.selectCategory(.kanmuri)
-        XCTAssertEqual(state.selectedCategory, .kanmuri)
+        state.selectCategory(.crown)
+        XCTAssertEqual(state.selectedCategory, .crown)
         XCTAssertNil(state.selectedForm)
     }
 
     func testSelectFormAndClearFormKeepCategory() {
         let state = RadicalPickerState()
-        state.selectCategory(.ashi)
+        state.selectCategory(.foot)
         let form = makeForm("灬", radical: 86, strokes: 4)
         state.selectForm(form)
         XCTAssertEqual(state.selectedForm, form)
-        XCTAssertEqual(state.selectedCategory, .ashi)
+        XCTAssertEqual(state.selectedCategory, .foot)
         state.clearForm()
         XCTAssertNil(state.selectedForm)
-        XCTAssertEqual(state.selectedCategory, .ashi)
+        XCTAssertEqual(state.selectedCategory, .foot)
     }
 
     // MARK: 字の一覧
@@ -93,7 +93,7 @@ final class RadicalPickerStateTests: XCTestCase {
         )
         defer { KanjiRadicalCatalog.resourceDirectoryURLOverride = nil }
         let choices = RadicalStrokeChoices()
-        let forms = KanjiRadicalCatalog.forms(in: .hen, choices: choices)
+        let forms = KanjiRadicalCatalog.forms(in: .leftSide, choices: choices)
         XCTAssertFalse(forms.isEmpty)
         let items = RadicalPickerListing.radicalListItems(forms: forms, strokeChoices: choices)
         let first = try XCTUnwrap(items.first)

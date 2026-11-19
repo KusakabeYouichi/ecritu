@@ -27,24 +27,24 @@ struct RadicalPositionIcon: Shape {
         let far: CGFloat = 20
 
         switch category {
-        case .hen:
+        case .leftSide:
             path.addRect(band(3, 3, third, 29))
-        case .tsukuri:
+        case .rightSide:
             // 旁は偏より広いのが通例なので右1/2(偏は1/3)
             path.addRect(band(16, 3, 29, 29))
-        case .kanmuri:
+        case .crown:
             path.addRect(band(3, 3, 29, third))
-        case .ashi:
+        case .foot:
             path.addRect(band(3, far, 29, 29))
-        case .tare:
+        case .hangingCover:
             // 上の帯 + 左へ垂れる(广)
             path.addRect(band(3, 3, 29, third))
             path.addRect(band(3, third, third, 29))
-        case .nyou:
+        case .lowerLeftWrap:
             // 左 + 下へ回り込む(辶)
             path.addRect(band(3, 3, third, 29))
             path.addRect(band(third, far, 29, 29))
-        case .kamae:
+        case .enclosure:
             // 門の形。左右の柱+上の帯で、下の真ん中1/3は開ける(間/開)
             path.addRect(band(3, 3, 29, third))
             path.addRect(band(3, third, third, 29))

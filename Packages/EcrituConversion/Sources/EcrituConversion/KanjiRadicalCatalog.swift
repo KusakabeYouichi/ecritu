@@ -4,13 +4,15 @@ import Foundation
 // 分類の源泉は references/bushu.plist(バンドル同梱)。1字形が複数カテゴリーに
 // 属してよく、位置を持たない部首は「独立」に入る(2444)。
 public enum RadicalPositionCategory: String, CaseIterable, Identifiable {
-    case hen = "偏"
-    case tsukuri = "旁"
-    case kanmuri = "冠"
-    case ashi = "脚"
-    case tare = "垂"
-    case nyou = "繞"
-    case kamae = "構"
+    // case の名前は位置を表す英語(3837 まではローマ字の hen/tsukuri/kanmuri/ashi/tare/nyou/kamae だった)。
+    // 値(偏・旁…)は画面の題字と bushu.plist の区分に使うので変えない
+    case leftSide = "偏"
+    case rightSide = "旁"
+    case crown = "冠"
+    case foot = "脚"
+    case hangingCover = "垂"
+    case lowerLeftWrap = "繞"
+    case enclosure = "構"
     case independent = "独立"
 
     public var id: String { rawValue }
@@ -19,13 +21,13 @@ public enum RadicalPositionCategory: String, CaseIterable, Identifiable {
 
     public var reading: String {
         switch self {
-        case .hen: return "へん"
-        case .tsukuri: return "つくり"
-        case .kanmuri: return "かんむり"
-        case .ashi: return "あし"
-        case .tare: return "たれ"
-        case .nyou: return "にょう"
-        case .kamae: return "かまえ"
+        case .leftSide: return "へん"
+        case .rightSide: return "つくり"
+        case .crown: return "かんむり"
+        case .foot: return "あし"
+        case .hangingCover: return "たれ"
+        case .lowerLeftWrap: return "にょう"
+        case .enclosure: return "かまえ"
         case .independent: return "その他"
         }
     }

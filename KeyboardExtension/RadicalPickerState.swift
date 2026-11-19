@@ -55,7 +55,7 @@ enum RadicalPickerListing {
 @Observable
 @MainActor
 final class RadicalPickerState {
-    private(set) var selectedCategory: RadicalPositionCategory = .hen
+    private(set) var selectedCategory: RadicalPositionCategory = .leftSide
     private(set) var selectedForm: RadicalForm?
 
     func selectCategory(_ category: RadicalPositionCategory) {
