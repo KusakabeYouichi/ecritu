@@ -517,9 +517,10 @@ regenerate_sqlite_if_possible() {
   fi
 
   # Sudachi に無い人名の補い(桃原(とうばる)=姓 等。敬称の前の人名優先が Sudachi 掲載の 当原 だけに効き
-  # 桃原さん が負けていた。3112)。reading→candidate→姓/名 の JSON、dictionary_entries に載る候補だけ有効
+  # 桃原さん が負けていた。3112)。reading→candidate→姓/名 の JSON。misc.plist で登録した語(sqlite に載らない)にも
+  # 印が付くよう、dictionary_entries に無くても入れる(3831)
   if [[ -f "$REF_PERSON_NAMES_ADD" ]]; then
-    sqlite_args+=(--person-names-json "$REF_PERSON_NAMES_ADD")
+    sqlite_args+=(--person-names-add-json "$REF_PERSON_NAMES_ADD")
   fi
 
   # 地名の表から外れている地名の補い(開南(かいなん)=那覇の地名。Sudachi では地名だが LM に無く、頻度の絞り込みで落ちる。地名+店/人/県 などの判定に使う。3806)。

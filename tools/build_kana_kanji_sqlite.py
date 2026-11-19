@@ -69,6 +69,12 @@ def parse_args() -> argparse.Namespace:
         help="Optional reading->candidate->人名区分(姓/名) JSON (repeatable)",
     )
     parser.add_argument(
+        "--person-names-add-json",
+        action="append",
+        default=[],
+        help="Optional reading->candidate->人名区分 JSON kept even when the candidate is not in dictionary_entries (repeatable, 3831)",
+    )
+    parser.add_argument(
         "--place-names-json",
         action="append",
         default=[],
@@ -281,6 +287,7 @@ def build_sqlite(
     person_names: Dict[str, Dict[str, str]] = {},
     place_names: Dict[str, Dict[str, str]] = {},
     place_names_add: Dict[str, Dict[str, str]] = {},
+    person_names_add: Dict[str, Dict[str, str]] = {},
     trailing_pairs: Set[Tuple[str, str]] = set(),
 ) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -405,6 +412,13 @@ def build_sqlite(
                 continue
             for candidate, kind in candidate_map.items():
                 if candidate in allowed_candidates:
+                    person_rows.append((reading, candidate, kind))
+        # 手で補った人名(references/person_names_add.json)は dictionary_entries に無くても入れる。misc.plist で登録した語
+        # (佳子(かこ)、悠仁(ひさひと))は実行時に足されるので sqlite には載らず、上の絞り込みで人名の印が落ちていた(3831)
+        seen_persons = {(reading, candidate) for reading, candidate, _ in person_rows}
+        for reading, candidate_map in person_names_add.items():
+            for candidate, kind in candidate_map.items():
+                if (reading, candidate) not in seen_persons:
                     person_rows.append((reading, candidate, kind))
         if person_rows:
             conn.executemany(
@@ -589,6 +603,7 @@ def main() -> int:
     person_names = merge_inflections(person_name_paths)
     place_names = merge_inflections(place_name_paths)
     place_names_add = merge_inflections([Path(path) for path in args.place_names_add_json])
+    person_names_add = merge_inflections([Path(path) for path in args.person_names_add_json])
 
     word_lm = None
     if args.word_lm_json:
@@ -612,6 +627,7 @@ def main() -> int:
         person_names=person_names,
         place_names=place_names,
         place_names_add=place_names_add,
+        person_names_add=person_names_add,
         trailing_pairs=trailing_pairs,
     )
     return 0

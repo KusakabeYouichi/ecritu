@@ -21498,6 +21498,30 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3831: かこ で 佳子 が出なかった(ユーザ指摘。皇族の名前)。辞書は よしこ の読みだけで、人名の表にも無かった。
+    // seed で 過去 の次に補い、人名の印で敬称の前は先頭にする。悠仁(ひさひと)も辞書に無かったので一緒に補う
+    func testImperialFamilyGivenNamesKakoAndHisahito() throws {
+        try prepareRealLMDictionary()
+        let kako = converter.candidates(for: "かこ", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(kako.first, "過去", "single=\(kako)")
+        XCTAssertEqual(kako.dropFirst().first, "佳子", "single=\(kako)")
+        let hisahito = converter.candidates(for: "ひさひと", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(hisahito.first, "悠仁", "single=\(hisahito)")
+        for (reading, expected) in [
+            // 人名の後の さま は 様 が先(まつおさま→松尾様 と同じ規則)。佳子さま は 3 番め
+            ("かこさま", "佳子様"), ("かこないしんのう", "佳子内親王"),
+            ("ひさひとさま", "悠仁様"), ("ひさひとしんのう", "悠仁親王"),
+            // 過去 の文は崩さない
+            ("かこの", "過去の"), ("かこに", "過去に"), ("かこのじれい", "過去の事例"), ("かこさいこう", "過去最高"),
+            ("かこをふりかえる", "過去を振り返る")
+        ] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            let single = converter.candidates(for: reading, limit: 4, systemCandidateMode: .surface)
+            XCTAssertTrue(multi.first == expected || (multi.isEmpty && single.first == expected),
+                          "\(reading): multi=\(multi.prefix(4)) single=\(single)")
+        }
+    }
+
     // 3112: ユーザ報告 4 件。学習リセット(3110)で表面化した既存の並び 2 件(とうばるさん/ほうが)、
     // 09-18 の 述語+って 割引(3086)による退行 1 件(いいって)、活用形への keepKana 誤発火 1 件(たりない)
     func testRegression3112QuotativeTteAfterKanaAdjectiveKeepsKana() throws {
