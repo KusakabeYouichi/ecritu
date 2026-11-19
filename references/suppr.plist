@@ -5,6 +5,7 @@
 	<!-- 変換抑制の語彙(キーボードが直接読む。アプリの抑制語彙UIには非表示)。『■ 』で始まる行がグループ見出し(直前に空行)。エントリ行の後ろのコメントはその語の個別理由。『※ 』で始まる行は、対応するエントリが今は無い補足メモ。 -->
 
 	<!-- ■ 誤エントリ: 辞書の誤った読み・存在しない表記(学習でも古語でもなく明確な誤り) -->
+	<dict><key>phrase</key><string>漏曳</string><key>shortcut</key><string>ろうえい</string></dict>	<!-- 漏曳: 誤エントリ。漏洩 の誤字(Sudachi に行があるが、語 LM には 1 回も出てこない)。ろうえいしてる の候補に 漏曳してる が出ていた(ユーザ指摘 3840) -->
 	<dict><key>phrase</key><string>爺</string><key>shortcut</key><string>や</string></dict>	<!-- 爺(や): 爺や(じいや)の や を 爺 の読みにした誤り。かれーやさん が カレー爺さん になっていた(ユーザ報告 3791) -->
 	<dict><key>phrase</key><string>回わる</string><key>shortcut</key><string>まわる</string></dict>	<!-- 回わる/廻わる: 送り仮名の誤り(本則・許容とも 回る/廻る)。いっしゅうまわった の候補に 回わった、まわった に 廻わった が出ていた(ユーザ指摘 3748) -->
 	<dict><key>phrase</key><string>廻わる</string><key>shortcut</key><string>まわる</string></dict>
@@ -344,6 +345,7 @@
 	<dict><key>phrase</key><string>莎草科</string><key>shortcut</key><string>かやつりぐさか</string></dict>
 
 	<!-- ■ 交ぜ書き・表記ゆれの収穫(石ユ/ぜい金 等、意味のない混ぜ表記) -->
+	<dict><key>phrase</key><string>漏えい</string><key>shortcut</key><string>ろうえい</string></dict>	<!-- 漏洩 の交ぜ書き。下の一括登録(3699)は活用する語を外したので漏れていた。品詞を付けず、漏えいしてる などの活用した形も出さない(ユーザ指定 3840) -->
 	<dict><key>phrase</key><string>捕そく</string><key>shortcut</key><string>ほそく</string></dict>	<!-- 捕捉 の交ぜ書き(捉 が常用漢字に入る前の表記)。ほそくできる の 5 番めに 捕そくできる が出ていた(ユーザ指定 3747) -->
 	<dict><key>phrase</key><string>仕こみ</string><key>shortcut</key><string>じこみ</string></dict>	<!-- 仕込み の交ぜ書き(辞書の じこみ 1 位)。きおけじこみ が 木桶仕こみ だった(ユーザ報告 3678) -->
 	<dict><key>phrase</key><string>受け付</string><key>shortcut</key><string>うけつけ</string></dict>	<!-- 受付/受け付け/受付け があれば足りる(ユーザ指定 3674) -->
@@ -610,6 +612,7 @@
 	<!-- 対応表へ移した(3343) <dict><key>phrase</key><string>麴塵</string><key>shortcut</key><string>あおいろ</string></dict> -->
 
 	<!-- ■ 現代的に流行っていない言い方(古語・文語・旧仮名・非標準表記) -->
+	<dict><key>phrase</key><string>漏泄</string><key>shortcut</key><string>ろうえい</string></dict>	<!-- 漏泄 は ろうえい では出さない(ろうせつ の読みには残す。漏洩 の古い書き方で、今は 漏洩 と書く。ユーザ指定 3840) -->
 	<dict><key>phrase</key><string>誰</string><key>shortcut</key><string>たれ</string><key>pos</key><string>名詞</string></dict>	<!-- 誰(たれ): 古語かその流れをくむ文脈だけの読みで、普通は だれ としか読まない。やきとりのたれがない が 焼き鳥の誰がない だった(ユーザ指定 3710)。だれ は残す -->
 	<dict><key>phrase</key><string>足れ</string><key>shortcut</key><string>たれ</string></dict>	<!-- 足れ(足る の古い活用形。今は 足りる)。やきとりのたれがない の 3 番めに 焼き鳥の足れがない が出ていた(誰 と同じ理由。3710) -->
 	<dict><key>phrase</key><string>詣で来る</string><key>shortcut</key><string>もうでくる</string></dict>	<!-- 詣で来る(古語の複合動詞、Sudachi)。活用ごと抑制する。もうできてるから が 詣で来てるから 1 つだけだった(ユーザ報告 3710) -->
