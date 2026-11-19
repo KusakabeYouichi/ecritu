@@ -952,8 +952,23 @@ extension KeyboardViewController {
         defaults.set(Data((lines.joined(separator: "\n") + "\n").utf8), forKey: key)
     }
 
+    // 診断ログの保存は裏の直列のキューで行なう(3847)。以前は main で、1 行ごとに 160KB の Data と設定 3 つを書き、
+    // 重要な行はさらに重要ログ全体を読んで足して書き直していて、打鍵の途中で時々 1 フレームを塞いでいた。
+    // 直列なので書く順は呼んだ順のまま。解体中(diagnosticsIsDeinitializing)はその場で書く(後で動く作業を残さない)
+    static let diagnosticsWriteQueue = DispatchQueue(label: "ecritu.diagnosticsWrite", qos: .utility)
+
+    func performDiagnosticsWrite(_ write: @escaping () -> Void) {
+        if diagnosticsState.diagnosticsIsDeinitializing {
+            write()
+        } else {
+            Self.diagnosticsWriteQueue.async(execute: write)
+        }
+    }
+
     func saveDiagnosticsLogText(_ text: Data, to defaults: UserDefaults) {
-        defaults.set(text, forKey: SharedDefaultsKeys.keyboardDiagnosticsLogLines)
+        performDiagnosticsWrite {
+            defaults.set(text, forKey: SharedDefaultsKeys.keyboardDiagnosticsLogLines)
+        }
     }
 
     // 表示未到達の監視: viewDidLoad後この秒数以内にviewWillAppearが来なければ、
@@ -1181,19 +1196,22 @@ extension KeyboardViewController {
     func appendKeyboardDiagnosticsCriticalLog(_ entry: String, to defaults: UserDefaults) {
         // 開発ビルド専用(appendKeyboardDiagnosticsLog と同方針)
         #if DEBUG
-        var lines = diagnosticsLogLines(
-            from: defaults,
-            key: SharedDefaultsKeys.keyboardDiagnosticsCriticalLogLines
-        )
-        lines.append(entry)
-        if lines.count > Self.diagnosticsCriticalLogMaxLineCount {
-            lines.removeFirst(lines.count - Self.diagnosticsCriticalLogMaxLineCount)
+        // 読んで足して書き直すので、裏の直列のキューで行なう(saveDiagnosticsLogText のコメント参照。3847)
+        let maxLineCount = Self.diagnosticsCriticalLogMaxLineCount
+        performDiagnosticsWrite {
+            let key = SharedDefaultsKeys.keyboardDiagnosticsCriticalLogLines
+            var lines: [String]
+            if let data = defaults.data(forKey: key) {
+                lines = Self.diagnosticsLogLines(fromStoredData: data)
+            } else {
+                lines = (defaults.array(forKey: key) ?? []).compactMap { $0 as? String }
+            }
+            lines.append(entry)
+            if lines.count > maxLineCount {
+                lines.removeFirst(lines.count - maxLineCount)
+            }
+            defaults.set(Data((lines.joined(separator: "\n") + "\n").utf8), forKey: key)
         }
-        saveDiagnosticsLogLines(
-            lines,
-            to: defaults,
-            key: SharedDefaultsKeys.keyboardDiagnosticsCriticalLogLines
-        )
         #else
         return
         #endif
@@ -1221,12 +1239,14 @@ extension KeyboardViewController {
 
     #if DEBUG
     func saveFlightRecorderEvents(_ events: [DiagnosticsFlightRecorderEvent], to defaults: UserDefaults) {
-        if let encoded = try? JSONEncoder().encode(events) {
-            defaults.set(encoded, forKey: SharedDefaultsKeys.keyboardDiagnosticsFlightRecorderEvents)
-            return
+        // 2 秒ごとに最大 120 件を JSON にするので、裏の直列のキューで行なう(3847。以前は main)
+        performDiagnosticsWrite {
+            if let encoded = try? JSONEncoder().encode(events) {
+                defaults.set(encoded, forKey: SharedDefaultsKeys.keyboardDiagnosticsFlightRecorderEvents)
+                return
+            }
+            defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsFlightRecorderEvents)
         }
-
-        defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsFlightRecorderEvents)
     }
     #endif
 
@@ -1362,6 +1382,10 @@ extension KeyboardViewController {
             diagnosticsState.diagnosticsFlightRecorderLastPersistedAt = Date().timeIntervalSince1970
         }
         #endif
+        // 裏のキューに積んだ保存を書き終えるまで待つ(終了・警告・バックグラウンド遷移の時。3847)
+        if !diagnosticsState.diagnosticsIsDeinitializing {
+            Self.diagnosticsWriteQueue.sync {}
+        }
     }
 
     #if DEBUG
@@ -1576,9 +1600,13 @@ extension KeyboardViewController {
         } else {
             scheduleDiagnosticsLogFlushIfNeeded()
         }
-        sharedDefaults.set(entry, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastEvent)
-        sharedDefaults.set(Date().timeIntervalSince1970, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastHeartbeat)
-        sharedDefaults.set(diagnosticsState.diagnosticsSessionID, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastSessionID)
+        let sessionID = diagnosticsState.diagnosticsSessionID
+        let now = Date().timeIntervalSince1970
+        performDiagnosticsWrite {
+            sharedDefaults.set(entry, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastEvent)
+            sharedDefaults.set(now, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastHeartbeat)
+            sharedDefaults.set(sessionID, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastSessionID)
+        }
         #else
         return
         #endif
@@ -1606,16 +1634,20 @@ extension KeyboardViewController {
 
         // ここから先はログ書き込み(開発ビルド専用)。failSafe の永続化は機能なので残す。
         #if DEBUG
-        let sourceFile = (file as NSString).lastPathComponent
-        let summary = "\(event) [\(diagnosticsRuntimeContext())] @ \(sourceFile):\(line) \(function)"
-
         // ハートビートのスカラー書き込みもスロットル(粒度2秒で生存確認には十分)。
         // appendLog 付き(メモリ警告/ライフサイクル等の重要イベント)は即時。
+        // 要約(メモリの値を 2 回測る diagnosticsRuntimeContext を含む)は、書くと決まってから作る(3847。以前は打鍵のたびに
+        // 作ってから間引いていた)。書き込みは裏の直列のキュー
         let now = Date().timeIntervalSince1970
         if appendLog || now - diagnosticsState.diagnosticsHeartbeatLastPersistedAt >= Self.diagnosticsBufferPersistIntervalSec {
-            sharedDefaults.set(now, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastHeartbeat)
-            sharedDefaults.set(summary, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastEvent)
-            sharedDefaults.set(diagnosticsState.diagnosticsSessionID, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastSessionID)
+            let sourceFile = (file as NSString).lastPathComponent
+            let summary = "\(event) [\(diagnosticsRuntimeContext())] @ \(sourceFile):\(line) \(function)"
+            let sessionID = diagnosticsState.diagnosticsSessionID
+            performDiagnosticsWrite {
+                sharedDefaults.set(now, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastHeartbeat)
+                sharedDefaults.set(summary, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastEvent)
+                sharedDefaults.set(sessionID, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastSessionID)
+            }
             diagnosticsState.diagnosticsHeartbeatLastPersistedAt = now
         }
 
