@@ -6898,7 +6898,8 @@ extension KanaKanjiConverter {
                                     cost -= Self.multiClauseCountryProduceExtraBonus
                                 }
                             } else if node.surfaceID == SID.様,
-                                personNameKindByNodeKey[prevNode.key] != nil {
+                                personNameKindByNodeKey[prevNode.key] != nil,
+                                !Self.multiClauseKanaSamaGivenNameKeys.contains(prevNode.reading + "\t" + prevNode.surface) {
                                 // 人名+様(定数コメント参照。3187)
                                 cost -= Self.multiClauseHonorificSamaAfterPersonNameBonus
                             } else {

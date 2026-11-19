@@ -1722,6 +1722,9 @@ extension KanaKanjiConverter {
     // 文末の さま(松尾さま)でも 様 が先に来るように、EOS 遷移の差(さま→EOS の方が安い)も跨ぐ
     // 値にする(3187 の 900 では まつおさま 単独で かなが勝っていた。ユーザー指定 3188)
     static let multiClauseHonorificSamaAfterPersonNameBonus = 2200
+    // 皇族の名前の後ろの さま は かな が慣例(佳子さま、悠仁さま)。上の 様 の加点から外す(ユーザ指定 3839)。
+    // 読みも見る: 佳子 は よしこ とも読み、その場合は普通の人名(佳子様)。キーは 読み+タブ+表記
+    static let multiClauseKanaSamaGivenNameKeys: Set<String> = ["かこ\t佳子", "ひさひと\t悠仁", "あきこ\t彬子"]
     static let multiClauseHonorificKanjiPenalty = 3000
     // 地域接尾+産(産地表記)を かな敬称さん より優先するボーナス(2410)
     static let multiClauseRegionalProduceBonus = 3000
