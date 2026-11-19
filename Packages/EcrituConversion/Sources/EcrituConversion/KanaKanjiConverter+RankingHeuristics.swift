@@ -977,6 +977,17 @@ extension KanaKanjiConverter {
     // 濃くない 等の活用合成(語幹2字以上)も対象外。LM unigram 実在の辞書語だけを
     // 断片群の直上へ持ち上げる(相対順は維持)。せんない の 詮ない(1699)のような
     // 高スコアの正当語は跨がない(断片 top 基準の底上げのみ)。
+    // 候補を断片群(いちばん上の点が fragmentTop)のすぐ上へ持ち上げる。渡した並びを保つため、前のものほど高い下駄を
+    // 履かせる。すでに断片より上にある候補は触らない。下の 3 つの補正が同じ 6 行を書いていた(3842)
+    static func liftCandidates(_ lifted: [String], above fragmentTop: Int, in scores: inout [String: Int]) {
+        for (index, candidate) in lifted.enumerated() {
+            let target = fragmentTop + 40 + (lifted.count - index)
+            if scores[candidate, default: 0] < target {
+                scores[candidate] = target
+            }
+        }
+    }
+
     func applyDictOverNaiFragmentBoost(
         for reading: String,
         systemCandidates: [String],
@@ -1004,12 +1015,7 @@ extension KanaKanjiConverter {
         // 上位から降順の下駄を履かせる。既に断片より上の語(線内 2495 等)は触らない
         let unigrams = store.wordLMUnigramCosts(for: systemCandidates)
         let lifted = systemCandidates.filter { unigrams[$0] != nil && $0 != reading }
-        for (index, candidate) in lifted.enumerated() {
-            let target = fragmentTop + 40 + (lifted.count - index)
-            if scores[candidate, default: 0] < target {
-                scores[candidate] = target
-            }
-        }
+        Self.liftCandidates(lifted, above: fragmentTop, in: &scores)
     }
 
     // 「多字語+末尾1かな」の素通り合成断片(実業か/演算し 等)が読み全体の
@@ -1049,12 +1055,7 @@ extension KanaKanjiConverter {
         let lmBacked = systemCandidates.filter { unigrams[$0] != nil && $0 != reading }
         let others = systemCandidates.filter { unigrams[$0] == nil && $0 != reading }
         let lifted = lmBacked + others
-        for (index, candidate) in lifted.enumerated() {
-            let target = fragmentTop + 40 + (lifted.count - index)
-            if scores[candidate, default: 0] < target {
-                scores[candidate] = target
-            }
-        }
+        Self.liftCandidates(lifted, above: fragmentTop, in: &scores)
     }
 
     // 「頭1かな+漢字含み」の素通り合成断片(あ闊歩句/あ尾っぽ句 等)が、読み全体の
@@ -1091,12 +1092,7 @@ extension KanaKanjiConverter {
         let lifted = inflectionDerivedCandidates
             .filter { $0 != reading && Self.containsKanjiCandidate($0) }
             .sorted { (scores[$0] ?? 0) > (scores[$1] ?? 0) }
-        for (index, candidate) in lifted.enumerated() {
-            let target = fragmentTop + 40 + (lifted.count - index)
-            if scores[candidate, default: 0] < target {
-                scores[candidate] = target
-            }
-        }
+        Self.liftCandidates(lifted, above: fragmentTop, in: &scores)
     }
 
     func applyAdjectiveSaBoost(

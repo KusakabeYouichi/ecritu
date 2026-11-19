@@ -1250,19 +1250,8 @@ public final class KanaKanjiStore {
         // 追加語彙(sacoche=InitialAjout)と変換対策語(misc=InitialMisc)を統合してラティスの
         // curated 供給に使う。どちらも変換には効かせるが、コンテナアプリの「追加語彙」への
         // 初期表示は sacoche(InitialAjout)側のみ(App 側のマイグレーションが分離管理)。
-        let bundle = Bundle(for: KanaKanjiStore.self)
-
-        func loadBundled(_ resourceName: String) -> [String: [String]] {
-            guard let url = bundle.url(forResource: resourceName, withExtension: "json"),
-                let data = try? Data(contentsOf: url),
-                let decoded = try? JSONDecoder().decode([String: [String]].self, from: data) else {
-                return [:]
-            }
-            return decoded
-        }
-
-        var combined = loadBundled(KanaKanjiStorageKeys.initialAjoutVocabularyResourceName)
-        for (reading, candidates) in loadBundled(KanaKanjiStorageKeys.initialMiscDictionaryResourceName) {
+        var combined = bundledDictionary(resourceName: KanaKanjiStorageKeys.initialAjoutVocabularyResourceName)
+        for (reading, candidates) in bundledDictionary(resourceName: KanaKanjiStorageKeys.initialMiscDictionaryResourceName) {
             combined[reading, default: []].append(contentsOf: candidates)
         }
         if let override = initialAjoutVocabularyOverride {
@@ -1450,16 +1439,7 @@ public final class KanaKanjiStore {
         if let cached = withCacheLock({ cachedBundledHiddenSuppression }) {
             return cached
         }
-        let bundle = Bundle(for: KanaKanjiStore.self)
-        guard let url = bundle.url(
-            forResource: KanaKanjiStorageKeys.initialSuppressionHiddenResourceName,
-            withExtension: "json"
-        ),
-            let data = try? Data(contentsOf: url),
-            let decoded = try? JSONDecoder().decode([String: [String]].self, from: data) else {
-            withCacheLock { cachedBundledHiddenSuppression = [:] }
-            return [:]
-        }
+        let decoded = bundledDictionary(resourceName: KanaKanjiStorageKeys.initialSuppressionHiddenResourceName)
         withCacheLock { cachedBundledHiddenSuppression = decoded }
         return decoded
     }

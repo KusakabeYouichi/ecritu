@@ -395,6 +395,18 @@ extension KanaKanjiConverter {
         return changed ? uniqueCandidates(from: result) : candidates
     }
 
+    // 候補を、漢字列(ひらがなを除いた文字列)が同じものどうしの組に分ける。値は候補の位置(並び順)。
+    // ひらがなだけの候補は組に入れない。applyOkuriganaVariantPreference が 2 回同じループを書いていた(3842)
+    private static func kanjiSkeletonBuckets(of candidates: [String]) -> [String: [Int]] {
+        var buckets: [String: [Int]] = [:]
+        for (index, candidate) in candidates.enumerated() {
+            let skeleton = String(candidate.filter { !Self.isHiragana($0) })
+            guard !skeleton.isEmpty else { continue }
+            buckets[skeleton, default: []].append(index)
+        }
+        return buckets
+    }
+
     public func applyOkuriganaVariantPreference(reading: String, to inputCandidates: [String]) -> [String] {
         var candidates = restoringNominalizedOkurigana(reading: reading, in: inputCandidates)
         guard candidates.count >= 2 else {
@@ -402,12 +414,7 @@ extension KanaKanjiConverter {
         }
         let preference = okuriganaVariantPreference
         // 漢字列(ひらがなを除いた文字列)で組分け。2 つ以上の候補が集まった組だけ調べる
-        var buckets: [String: [Int]] = [:]
-        for (index, candidate) in candidates.enumerated() {
-            let skeleton = String(candidate.filter { !Self.isHiragana($0) })
-            guard !skeleton.isEmpty else { continue }
-            buckets[skeleton, default: []].append(index)
-        }
+        var buckets = Self.kanjiSkeletonBuckets(of: candidates)
         var candidateBuckets = buckets.values.filter { $0.count >= 2 }
         guard !candidateBuckets.isEmpty else {
             return candidates
@@ -459,12 +466,7 @@ extension KanaKanjiConverter {
         if candidates.count != Set(candidates).count {
             candidates = uniqueCandidates(from: candidates)
         }
-        buckets = [:]
-        for (index, candidate) in candidates.enumerated() {
-            let skeleton = String(candidate.filter { !Self.isHiragana($0) })
-            guard !skeleton.isEmpty else { continue }
-            buckets[skeleton, default: []].append(index)
-        }
+        buckets = Self.kanjiSkeletonBuckets(of: candidates)
         candidateBuckets = buckets.values.filter { $0.count >= 2 }
 
         // 許容形 → (本則, グループ)。本則は連鎖(取り扱い→取扱い→取扱)の根へ辿る
