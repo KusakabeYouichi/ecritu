@@ -126,4 +126,12 @@ extension KeyboardRootView {
         }
         return keyboardRowSpacing + Self.candidateChipTapIntoKeyHeight
     }
+
+    // 候補欄の重なり順。チップの当たり判定をキーに重ねているとき(candidateChipTapExtension > 0)だけキーより手前に出し、
+    // キーを押しているあいだはキーを手前に戻す(3819)。当たり判定を重ねていない面(絵文字・顔文字・記号・単漢字・
+    // 書式化数値・数字、横画面)では手前に出さない: 3818 からこれらの面でも手前に出ていて、[あい]の長押しの盤が
+    // 題字(分類名)の下に隠れていた(ユーザ報告 3838)
+    var topHeaderZIndex: Double {
+        candidateChipTapExtension > 0 && activeLayerIndex == nil && !isTouchingLeftModeSwitchColumn ? 1 : 0
+    }
 }

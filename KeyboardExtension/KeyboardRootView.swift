@@ -1524,7 +1524,7 @@ struct KeyboardRootView: View {
                     // 候補欄はチップの当たり判定を最上段のキーに重ねるので手前に(candidateChipTapExtension。3818)。
                     // キーを押しているあいだはキーを手前に戻す(上の段の上フリックの吹き出しが候補欄の下に隠れた。3819、ユーザ報告)
                     topHeaderView
-                        .zIndex(activeLayerIndex == nil && !isTouchingLeftModeSwitchColumn ? 1 : 0)
+                        .zIndex(topHeaderZIndex)
                     keyboardMainContent
                 }
             }
