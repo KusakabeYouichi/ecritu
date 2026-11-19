@@ -457,9 +457,11 @@ extension ContentView {
         SettingsKeys.scriptVariantSuppressLookalike: true,
         SettingsKeys.scriptVariantSuppressPersonNameVariant: false,
         // かなで書く言葉: 形式名詞と指示語・代名詞は抑制せず かな を先頭に(ユーザ指定 3404)
-        SettingsKeys.kanaGakiSuppressAdverb: true,
-        SettingsKeys.kanaGakiSuppressConjunction: true,
-        SettingsKeys.kanaGakiSuppressAuxiliary: true,
+        // 保守的=かなで書く言葉は 6 つともオフ(漢字の候補を残す)。副詞・接続詞・補助用言は 3833 でオフに(ユーザ指定:
+        // 所謂・即ち・下さい のような表記に親しんだ年配の人に向ける)。すでに保守的を当てた端末の保存値は変えない
+        SettingsKeys.kanaGakiSuppressAdverb: false,
+        SettingsKeys.kanaGakiSuppressConjunction: false,
+        SettingsKeys.kanaGakiSuppressAuxiliary: false,
         SettingsKeys.kanaGakiSuppressFormalNoun: false,
         SettingsKeys.kanaGakiSuppressDemonstrative: false,
         SettingsKeys.kanaGakiSuppressAdverbKanaFirst: false,
@@ -754,7 +756,7 @@ extension ContentView {
         case .strategicDefaults:
             return "すべての設定を組み込みの標準値(戦略的初期設定)に戻します。語彙・学習内容はそのままです。"
         case .conservativeDefaults:
-            return "Apple 純正のキーボードの操作に慣れていて、それに合わせたい人に向く設定です。すべての設定を従来型の組み合わせ(3x3+わ・ラテン文字は 3x3・数字は téléphone・後置修飾・littlebear式のフリック 等)にします。表記は、事・此処 のような漢字の候補も残すので、そうした書き方に親しんだ年配の人にも向きます(同音の漢字による書きかえは常用漢字が先です)。iOS の連絡先の名前も候補に使う設定になり、まだ許可していなければ連絡先へのアクセスの許可を求めます。語彙・学習内容はそのままです。"
+            return "Apple 純正のキーボードの操作に慣れていて、それに合わせたい人に向く設定です。すべての設定を従来型の組み合わせ(3x3+わ・ラテン文字は 3x3・数字は téléphone・後置修飾・littlebear式のフリック 等)にします。表記は、所謂・即ち・下さい・事・此処 のような漢字の候補も残すので、副詞や接続詞を漢字で書くことに親しんだ年配の人にも向きます(同音の漢字による書きかえは常用漢字が先です)。iOS の連絡先の名前も候補に使う設定になり、まだ許可していなければ連絡先へのアクセスの許可を求めます。語彙・学習内容はそのままです。"
         case .contemporaryDefaults:
             return "より若い人や、効率よく入力したい人、常用漢字による書きかえにあまり賛同できない人に向く設定です。かなの配列(3x3+わ)・後置修飾・littlebear式のフリックは従来型のまま、ラテン文字は AZERTY、数字は clavier にします。かなで書く言葉(所謂・即ち・事・此処 など)は漢字を出さず、同音の漢字による書きかえは本来の漢字を先に出します。iOS の連絡先の名前(フルネイムも)を候補に使う設定になり、まだ許可していなければ連絡先へのアクセスの許可を求めます。語彙・学習内容はそのままです。"
         case .restoreStashedSettings:
