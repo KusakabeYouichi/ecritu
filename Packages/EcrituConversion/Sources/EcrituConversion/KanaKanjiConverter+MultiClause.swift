@@ -4392,6 +4392,7 @@ extension KanaKanjiConverter {
                     lazy var nodeReadingStartsWithSuruCluster = Self.readingStartsWithSuruCluster(node.reading)
                     lazy var nodeIsCrawlVerbForm = node.surface.first.map { $0 == "這" || $0 == "匍" || $0 == "匐" } ?? false
                     lazy var nodeIsEnterVerbForm = node.surface.first == "入" && node.reading.hasPrefix("はい")
+                    lazy var nodeIsImperialHighnessTitle = node.surface == "殿下"
                     for prevIdx in nodesEndingAt[node.start] {
                         let prevCost = best[prevIdx]
                         if prevCost >= infinity {
@@ -5202,6 +5203,11 @@ extension KanaKanjiConverter {
                                 && (prevNode.surface.hasSuffix("て") || prevNode.surface.hasSuffix("で")))
                                 || (prevNode.surface == "で" && node.start >= 2 && chars[node.start - 2] == "ん") {
                             cost += Self.multiClauseCrawlVerbAfterTeFormPenalty
+                        }
+                        // 人名の直後の でんか は 殿下(悠仁殿下/佳子殿下。ひさひとでんか が 悠仁電化 だった。ユーザ指定 3843)。
+                        // 称号の後ろ(親王殿下/内親王殿下/妃殿下)は組の加点の表(multiClauseBigramPairBonuses)
+                        if nodeIsImperialHighnessTitle, personNameKindByNodeKey[prevNode.key] != nil {
+                            cost -= Self.multiClauseHonorificSamaAfterPersonNameBonus
                         }
                         // て形の直後の 入る(やって入る/冷やして入る)。〜ては+いる(やってはいる。強調・限定の は)が普通なので 入る を
                         // 下げる(ユーザ指定 3841)。走って入る/並んで入る のように、入り方を言う動詞の後ろはそのまま
