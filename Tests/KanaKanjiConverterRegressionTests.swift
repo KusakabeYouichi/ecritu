@@ -30675,6 +30675,36 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("ぜんさいをたべる").first, "前菜を食べる")
     }
 
+    // 3840: だんの は 段の(ワイン用語優先がオンでも。Dãoの が先頭だった)。数字の直後の だんめ は X.14 に従い、
+    // 『ひらがなが先』なら 段め、『漢字が先』なら 段目(段め が 6 番めだった)。ユーザ指定
+    func testDanNoAndOrdinalDanMe3840() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func single(_ r: String) -> [String] { converter.candidates(for: r, limit: 8, systemCandidateMode: .surface) }
+        XCTAssertEqual(single("だんの").first, "段の", "\(single("だんの"))")
+        converter.setWineTermPriorityEnabled(true)
+        XCTAssertEqual(single("だんの").first, "段の", "wine: \(single("だんの"))")
+        XCTAssertEqual(single("だん").first, "Dão", "wine: \(single("だん"))")
+        converter.setWineTermPriorityEnabled(false)
+        let base = single("だんめ")
+        let kanaFirst = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+            base, reading: "だんめ", precedingCharacter: "1", ordinalMeKanaFirst: true
+        )
+        XCTAssertEqual(Array(kanaFirst.prefix(2)), ["段め", "段目"], "\(kanaFirst)")
+        let kanjiFirst = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+            base, reading: "だんめ", precedingCharacter: "1", ordinalMeKanaFirst: false
+        )
+        XCTAssertEqual(kanjiFirst.first, "段目", "\(kanjiFirst)")
+        let ko = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+            single("こめ"), reading: "こめ", precedingCharacter: "3", ordinalMeKanaFirst: true
+        )
+        XCTAssertEqual(Array(ko.prefix(2)), ["個め", "個目"], "\(ko)")
+        // 数字の直後でなければ今までどおり
+        XCTAssertEqual(KanaKanjiConverter.digitContextCounterBoostedCandidates(
+            base, reading: "だんめ", precedingCharacter: "の", ordinalMeKanaFirst: true
+        ), base)
+    }
+
     // 3840: ユーザ指定の並び 11 件(ろうえい/うそついて/誤タップ/きげんがあった/〜てはいます/さまして/自然光で撮れる/過大電流/
     // なかで/同じ皿に/盛らなくても/開店)
     func testUserSpecifiedOrders3840() throws {

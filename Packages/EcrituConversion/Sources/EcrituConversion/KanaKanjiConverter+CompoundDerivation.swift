@@ -950,6 +950,9 @@ extension KanaKanjiConverter {
         return preferred + candidates.filter { !preferred.contains($0) }
     }
 
+    // 数字の直後の助数詞のうち、序数の 〜め(段め/個め)として X.14 に従わせる読み(3840)
+    static let digitContextOrdinalMeCounterReadings: Set<String> = ["だんめ", "こめ"]
+
     static func digitBoostCounterSurfaces(for reading: String) -> [String]? {
         let base = numericCounterSuffixCandidatesByReading[reading]
         let extra = digitContextAdditionalCounterSurfacesByReading[reading]
@@ -1077,7 +1080,12 @@ extension KanaKanjiConverter {
             boosted += afterSurfaces.map { $0 + tail }
                 .filter { !boosted.contains($0) && !suppressedCandidates.contains($0) }
         }
-        if let counterSurfaces = Self.digitBoostCounterSurfaces(for: reading) {
+        if var counterSurfaces = Self.digitBoostCounterSurfaces(for: reading) {
+            // 序数の 〜め(1段め/3個め)は X.14(め/目 の先後)に従う。『ひらがなが先』なら 〜目 の前に 〜め を置く
+            // (1+だんめ の 段め が 6 番めだった。表は 段目/個目 だけを持つ。ユーザ指定 3840)。丁目/貫目 は序数ではないので対象外
+            if ordinalMeKanaFirst, Self.digitContextOrdinalMeCounterReadings.contains(reading) {
+                counterSurfaces = counterSurfaces.flatMap { $0.hasSuffix("目") ? [String($0.dropLast()) + "め", $0] : [$0] }
+            }
             // 助数詞マップの順(か国,箇国,…)で前置する(候補列の順ではなく人手の優先順を採用)。
             // 候補列に無い助数詞も数字文脈なら供給する(抑制済みは復活させない)。
             boosted += counterSurfaces.filter {

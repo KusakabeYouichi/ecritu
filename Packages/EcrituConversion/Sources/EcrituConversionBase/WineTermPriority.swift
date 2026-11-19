@@ -27,6 +27,8 @@ public enum WineTermPriority {
         let inSentenceSurfaces: [String]
     }
 
+    // 読み+助詞 の形では先頭に置かない読み(だんの は 段の。Dãoの が先頭だった。だん だけなら Dão が先頭のまま。ユーザ指定 3840)
+    static let particleFormExcludedReadings: Set<String> = ["だん"]
     // 読み全体+この助詞 の形も先頭に置く(長い順に試す)
     static let trailingParticles: [String] = ["には", "では", "から", "まで", "より", "とは", "は", "が", "を", "に", "の", "も", "で", "と", "へ", "や"]
 
@@ -77,7 +79,8 @@ public enum WineTermPriority {
             }
         }
         for particle in trailingParticles where reading.count > particle.count && reading.hasSuffix(particle) {
-            guard let surfaces = surfacesByReading[String(reading.dropLast(particle.count))] else { continue }
+            let stem = String(reading.dropLast(particle.count))
+            guard !particleFormExcludedReadings.contains(stem), let surfaces = surfacesByReading[stem] else { continue }
             let lead = surfaces.map { $0 + particle }
             return lead + candidates.filter { !lead.contains($0) }
         }
