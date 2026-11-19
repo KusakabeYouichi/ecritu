@@ -171,33 +171,33 @@ enum SettingsKeys {
     static let scriptVariantSuppressConfusable = "scriptVariantSuppressConfusable"
     static let scriptVariantSuppressLookalike = "scriptVariantSuppressLookalike"
     static let scriptVariantSuppressPersonNameVariant = "scriptVariantSuppressPersonNameVariant"
-    // かなで書く言葉の抑制(仲間ごと。KanaGakiCategory.settingsKey と同じ文字列。3404)
-    static let kanaGakiSuppressAdverb = "kanaGakiSuppressAdverb"
-    static let kanaGakiSuppressConjunction = "kanaGakiSuppressConjunction"
-    static let kanaGakiSuppressAuxiliary = "kanaGakiSuppressAuxiliary"
-    static let kanaGakiSuppressFormalNoun = "kanaGakiSuppressFormalNoun"
-    static let kanaGakiSuppressDemonstrative = "kanaGakiSuppressDemonstrative"
+    // かなで書く言葉の抑制(仲間ごと。KanaSpellingCategory.settingsKey と同じ文字列。3404)
+    static let kanaSpellingSuppressAdverb = "kanaGakiSuppressAdverb"
+    static let kanaSpellingSuppressConjunction = "kanaGakiSuppressConjunction"
+    static let kanaSpellingSuppressAuxiliary = "kanaGakiSuppressAuxiliary"
+    static let kanaSpellingSuppressFormalNoun = "kanaGakiSuppressFormalNoun"
+    static let kanaSpellingSuppressDemonstrative = "kanaGakiSuppressDemonstrative"
     // 副詞(漢字も残す): 初期設定はオフ=かなを先頭にして漢字はその後ろ(3552)
-    static let kanaGakiSuppressAdverbKanaFirst = "kanaGakiSuppressAdverbKanaFirst"
+    static let kanaSpellingSuppressAdverbKanaFirst = "kanaGakiSuppressAdverbKanaFirst"
     // 保守的初期設定の かなで書く言葉 の値を 3833 の新しい値へ書き換える処理を済ませた印(3839。設定項目ではない)
-    static let conservativeKanaGakiDefaultsMigrated = "conservativeKanaGakiDefaultsMigrated"
+    static let conservativeKanaSpellingDefaultsMigrated = "conservativeKanaGakiDefaultsMigrated"
     static let radicalStrokeCountStyle = "radicalStrokeCountStyle"
     static let ordinalMeKanjiPreferred = "ordinalMeKanjiPreferred"
     static let kaCounterVariantPreference = "kaCounterVariantPreference"
     // 数詞+助数詞の表記(X.18。3702。3790 までは X.19)
     static let numeralStylePreference = "numeralStylePreference"
-    static let okuriganaVariantPreference = "okuriganaVariantPreference"
-    // 同音の漢字による書きかえ(KakikaePreference の rawValue。3422)
-    static let kakikaePreference = "kakikaePreference"
+    static let inflectionalKanaVariantPreference = "okuriganaVariantPreference"
+    // 同音の漢字による書きかえ(KanjiRewritePreference の rawValue。3422)
+    static let kanjiRewritePreference = "kakikaePreference"
     // 書きかえ(X.9)の例外グループ(了解/了承/回復/連想 など日常語)は設定にかかわらず常用漢字を先に(3644)
-    static let kakikaeEverydayException = "kakikaeEverydayException"
-    // 報告の後に常用漢字に加わった字の組(臆測/肝腎。X.10)の書きかえ(KakikaePreference の rawValue。3570)
+    static let kanjiRewriteEverydayException = "kakikaeEverydayException"
+    // 報告の後に常用漢字に加わった字の組(臆測/肝腎。X.10)の書きかえ(KanjiRewritePreference の rawValue。3570)
     static let lateStandardizedRewritePreference = "lateStandardizedRewritePreference"
     static let adjectiveMeKanjiCandidatesEnabled = "adjectiveMeKanjiCandidatesEnabled"
     // 形式名詞の 目(ひどい目に遭う/痛い目を見る)に ひらがなの め の候補も出す(X.14 のサブ項目。3790)
     static let formalNounMeKanaCandidatesEnabled = "formalNounMeKanaCandidatesEnabled"
     static let suspendMemorySlimmingEnabled = "suspendMemorySlimmingEnabled"
-    static let mazegakiCandidateMode = "mazegakiCandidateMode"
+    static let mixedScriptCandidateMode = "mazegakiCandidateMode"
     static let iterationMarkCandidatesEnabled = "iterationMarkCandidatesEnabled"
     static let latinLexiconEnglishEnabled = "latinLexiconEnglishEnabled"
     static let latinLexiconFrenchEnabled = "latinLexiconFrenchEnabled"

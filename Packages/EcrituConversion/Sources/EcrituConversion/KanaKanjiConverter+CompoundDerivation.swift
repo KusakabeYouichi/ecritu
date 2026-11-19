@@ -229,24 +229,24 @@ extension KanaKanjiConverter {
     ]
     // 連濁・半濁の桁読みは先行数字が固定(さんぜん/さんびゃく/ろっぴゃく/はっぴゃく)。
     // 単独や他の数字では成立しない(ぜんかい→1000回/びゃくにん→100人 等の誤生成を防ぐ)。
-    static let rendakuPlaceMarkerAllowedDigits: [String: Set<Int>] = [
+    static let sequentialVoicingPlaceMarkerAllowedDigits: [String: Set<Int>] = [
         "ぜん": [3], "びゃく": [3], "ぴゃく": [6, 8], "びゃっ": [3], "ぴゃっ": [6, 8]
     ]
     // 和語数詞(〜つ)。ひとつ→1つ 等。
-    static let arabicWagoTsuReadings: [String: Int] = [
+    static let arabicNativeWordTsuReadings: [String: Int] = [
         "ひとつ": 1, "ふたつ": 2, "みっつ": 3, "よっつ": 4, "いつつ": 5,
         "むっつ": 6, "ななつ": 7, "やっつ": 8, "ここのつ": 9
     ]
     // 和語数詞+助数詞(ひとけた→一桁/1桁、ふたくみ→二組/2組。3687)。長い読みを先に(貪欲一致)。
     // 助数詞は和語数詞で数えるのが普通のものに限る(けた/くみ/つぶ/きれ/ふくろ/はこ/たば/やま/へや/いろ/ばん/かぶ/ふさ/さら/つつみ/つぼ)。
     // 漢数字(一桁)を先、算用(1桁)を次に出す。いちけた 等の漢語数詞側は従来の算用複合(japaneseNumberReadingValue)が担う
-    static let arabicWagoNumeralReadings: [(reading: String, value: Int)] = [
+    static let arabicNativeWordNumeralReadings: [(reading: String, value: Int)] = [
         ("ここの", 9), ("なな", 7), ("ひと", 1), ("ふた", 2), ("いつ", 5), ("とお", 10),
         // や(8)は載せない: 助詞の や と同じ読みで、新梢や房の管理 が 新梢8房の管理 だった(や+ふさ=8房。3809、ユーザ報告)。
         // 今は や で数えることはまず無い(八つ/八重 は 1 語として辞書にある)
         ("み", 3), ("よ", 4), ("む", 6)
     ]
-    static let arabicWagoCounterSurfacesByReading: [String: String] = [
+    static let arabicNativeWordCounterSurfacesByReading: [String: String] = [
         "けた": "桁", "くみ": "組", "つぶ": "粒", "きれ": "切れ", "ふくろ": "袋", "はこ": "箱", "たば": "束",
         "やま": "山", "へや": "部屋", "いろ": "色", "ばん": "晩", "かぶ": "株", "ふさ": "房", "さら": "皿",
         "つつみ": "包み", "つぼ": "坪"
@@ -254,7 +254,7 @@ extension KanaKanjiConverter {
     // 日付・日数の和語の読み(ふつか→二日/2日。3793、ユーザ指定: 単語を登録せずにアラビア数字の形も出す)。
     // いつか(五日)も入れる: アラビア数字の形は漢数字の形(五日)の隣に並ぶだけで、かなの いつか(何時か)の位置は変わらない
     // (ユーザ指摘で確認)。後ろに続いてよい語は下の表だけ(ふつかめ→2日目、ふつかかん→2日間)
-    static let arabicWagoDayReadings: [(reading: String, value: Int)] = [
+    static let arabicNativeWordDayReadings: [(reading: String, value: Int)] = [
         ("ついたち", 1), ("ふつか", 2), ("みっか", 3), ("よっか", 4), ("いつか", 5), ("むいか", 6), ("なのか", 7), ("ようか", 8),
         ("ここのか", 9), ("とおか", 10), ("はつか", 20)
     ]
@@ -265,16 +265,16 @@ extension KanaKanjiConverter {
         ("いちがつ", 1), ("にがつ", 2), ("さんがつ", 3), ("しがつ", 4), ("ごがつ", 5), ("ろくがつ", 6), ("しちがつ", 7), ("はちがつ", 8),
         ("くがつ", 9), ("じゅうがつ", 10), ("じゅういちがつ", 11), ("じゅうにがつ", 12)
     ]
-    static let arabicWagoDayTailSurfacesByReading: [String: String] = [
+    static let arabicNativeWordDayTailSurfacesByReading: [String: String] = [
         "": "", "め": "目", "かん": "間", "まえ": "前", "ご": "後", "ぶん": "分", "いない": "以内", "いじょう": "以上"
     ]
     // 読みが 日付の読み(+続く語)なら (数, 単位の字, 続く語の表記)。月名は読み全体が一致するときだけ(続く語なし)
-    static func wagoDayComposition(for reading: String) -> (value: Int, unit: String, tail: String)? {
+    static func nativeWordDayComposition(for reading: String) -> (value: Int, unit: String, tail: String)? {
         for (monthReading, value) in arabicMonthReadings where reading == monthReading {
             return (value, "月", "")
         }
-        for (dayReading, value) in arabicWagoDayReadings where reading.hasPrefix(dayReading) {
-            if let tail = arabicWagoDayTailSurfacesByReading[String(reading.dropFirst(dayReading.count))] {
+        for (dayReading, value) in arabicNativeWordDayReadings where reading.hasPrefix(dayReading) {
+            if let tail = arabicNativeWordDayTailSurfacesByReading[String(reading.dropFirst(dayReading.count))] {
                 return (value, "日", tail)
             }
         }
@@ -325,7 +325,7 @@ extension KanaKanjiConverter {
                 }
             }
             for marker in place.markers where rest.hasPrefix(marker) {
-                if let allowed = rendakuPlaceMarkerAllowedDigits[marker],
+                if let allowed = sequentialVoicingPlaceMarkerAllowedDigits[marker],
                     !digitMatched || !allowed.contains(digit) {
                     continue
                 }
@@ -367,14 +367,14 @@ extension KanaKanjiConverter {
         }
         for (ordinalPrefix, body) in bodies {
             // 月名+日付の和語(ごがついつか→五月五日。3805)
-            if ordinalPrefix.isEmpty, let monthDay = Self.monthWagoDayByReading[body] {
+            if ordinalPrefix.isEmpty, let monthDay = Self.monthNativeWordDayByReading[body] {
                 if seen.insert(monthDay.surface).inserted {
                     results.append(monthDay.surface)
                 }
                 continue
             }
             // 日付・日数の和語の読み(ふつか→二日。定義コメント参照。3793)
-            if ordinalPrefix.isEmpty, let day = Self.wagoDayComposition(for: body) {
+            if ordinalPrefix.isEmpty, let day = Self.nativeWordDayComposition(for: body) {
                 let text = "\(Self.kanjiNumeralString(day.value))\(day.unit)\(day.tail)"
                 if seen.insert(text).inserted {
                     results.append(text)
@@ -383,9 +383,9 @@ extension KanaKanjiConverter {
             }
             // 和語数詞+助数詞の漢数字(ひとけた→一桁。算用 1桁 は arabicNumericCompoundCandidates)
             if ordinalPrefix.isEmpty {
-                for (numeralReading, value) in Self.arabicWagoNumeralReadings where body.hasPrefix(numeralReading) {
+                for (numeralReading, value) in Self.arabicNativeWordNumeralReadings where body.hasPrefix(numeralReading) {
                     let counterReading = String(body.dropFirst(numeralReading.count))
-                    if let counter = Self.arabicWagoCounterSurfacesByReading[counterReading] {
+                    if let counter = Self.arabicNativeWordCounterSurfacesByReading[counterReading] {
                         let text = "\(Self.kanjiNumerals[value])\(counter)"
                         if seen.insert(text).inserted {
                             results.append(text)
@@ -448,25 +448,25 @@ extension KanaKanjiConverter {
         }
         for (ordinalPrefix, body) in bodies {
             // 月名+日付の和語(ごがついつか→5月5日。3805)
-            if ordinalPrefix.isEmpty, let monthDay = Self.monthWagoDayByReading[body] {
+            if ordinalPrefix.isEmpty, let monthDay = Self.monthNativeWordDayByReading[body] {
                 emit(monthDay.arabic)
                 continue
             }
             // 日付・日数の和語の読み(ふつか→2日、ふつかめ→2日目。定義コメント参照。3793)
-            if ordinalPrefix.isEmpty, let day = Self.wagoDayComposition(for: body) {
+            if ordinalPrefix.isEmpty, let day = Self.nativeWordDayComposition(for: body) {
                 emit("\(day.value)\(day.unit)\(day.tail)")
                 continue
             }
             // 和語数詞+つ(ひとつ→1つ 等)。第 は付かない。
-            if ordinalPrefix.isEmpty, let value = Self.arabicWagoTsuReadings[body] {
+            if ordinalPrefix.isEmpty, let value = Self.arabicNativeWordTsuReadings[body] {
                 emit("\(value)つ")
                 continue
             }
             // 和語数詞+助数詞(ひとけた→一桁/1桁。定義コメント参照。3687)。第 は付かない
             if ordinalPrefix.isEmpty {
-                for (numeralReading, value) in Self.arabicWagoNumeralReadings where body.hasPrefix(numeralReading) {
+                for (numeralReading, value) in Self.arabicNativeWordNumeralReadings where body.hasPrefix(numeralReading) {
                     let counterReading = String(body.dropFirst(numeralReading.count))
-                    if let counter = Self.arabicWagoCounterSurfacesByReading[counterReading] {
+                    if let counter = Self.arabicNativeWordCounterSurfacesByReading[counterReading] {
                         emit("\(value)\(counter)")
                     }
                     break
@@ -1289,7 +1289,7 @@ extension KanaKanjiConverter {
             }
         }
         guard !boosted.isEmpty else {
-            return counterRendakuFiltered(candidates, reading: reading, digit: precedingCharacter)
+            return counterSequentialVoicingFiltered(candidates, reading: reading, digit: precedingCharacter)
         }
         // 供給元が複数(助数詞表・追加表・合成)なので同じ表層が二度入り得る(3185)。先勝ちで畳む
         var seenBoost = Set<String>()
@@ -1302,21 +1302,21 @@ extension KanaKanjiConverter {
             rest.remove(at: echoIndex)
             rest.append(reading)
         }
-        return counterRendakuFiltered(boosted + rest, reading: reading, digit: precedingCharacter)
+        return counterSequentialVoicingFiltered(boosted + rest, reading: reading, digit: precedingCharacter)
     }
 
     // 数字の直後の助数詞の連濁(1杯=いっぱい/2杯=にはい/3杯=さんばい。3778、ユーザ指定: 2+ばいはいって に 杯 が出ていた)。
     // 直前の数字の 1 の位で決まる読みの頭(は行/ぱ行/ば行)と合わない濁音・半濁音の読みで、その助数詞から始まる候補を外す。
     // 清音(3ほん/3はく)は基の読みをそのまま打つ人が多いので常に通す。0 は 10/100/1000(じゅっ/ひゃっ/せん)で変わるので見ない。
     // 8 は はっ/はち の両方がある
-    private static let counterRendakuRowsByDigit: [String: [Int: Set<Character>]] = {
+    private static let counterSequentialVoicingRowsByDigit: [String: [Int: Set<Character>]] = {
         let honLike: [Int: Set<Character>] = [1: ["p"], 2: ["h"], 3: ["b"], 4: ["h"], 5: ["h"], 6: ["p"], 7: ["h"], 8: ["p", "h"], 9: ["h"]]
         let hatsuLike: [Int: Set<Character>] = [1: ["p"], 2: ["h"], 3: ["p"], 4: ["h", "p"], 5: ["h"], 6: ["p"], 7: ["h"], 8: ["p", "h"], 9: ["h"]]
         let fun: [Int: Set<Character>] = [1: ["p"], 2: ["h"], 3: ["p"], 4: ["p"], 5: ["h"], 6: ["p"], 7: ["h"], 8: ["p", "h"], 9: ["h"]]
         return ["杯": honLike, "本": honLike, "匹": honLike, "発": hatsuLike, "泊": hatsuLike, "分": fun]
     }()
 
-    static func counterRendakuFiltered(_ candidates: [String], reading: String, digit: Character?) -> [String] {
+    static func counterSequentialVoicingFiltered(_ candidates: [String], reading: String, digit: Character?) -> [String] {
         guard let value = digit?.wholeNumberValue, value != 0, let head = reading.first else {
             return candidates
         }
@@ -1331,7 +1331,7 @@ extension KanaKanjiConverter {
         // 3+ぶんの が 3 に合う読み(ぷん)でないとして 分の を外され、3文の1 になっていた
         let isFractionBun = reading.hasPrefix("ぶん")
         return candidates.filter { candidate in
-            guard let first = candidate.first, let rows = counterRendakuRowsByDigit[String(first)]?[value] else {
+            guard let first = candidate.first, let rows = counterSequentialVoicingRowsByDigit[String(first)]?[value] else {
                 return true
             }
             if isFractionBun, first == "分" {

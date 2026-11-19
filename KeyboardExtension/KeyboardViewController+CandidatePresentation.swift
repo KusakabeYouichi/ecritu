@@ -501,7 +501,7 @@ extension KeyboardViewController {
             }
         )
         // 助数詞「か」の表記(1か所/数か月)を設定順に(連文節混じりの一覧にも一様に効かせる。2816)
-        let kaOrdered = kanaKanjiConverter.applyOkuriganaVariantPreference(
+        let kaOrdered = kanaKanjiConverter.applyInflectionalKanaVariantPreference(
             reading: cacheKey.reading,
             to: kanaKanjiConverter.applyKaCounterVariantPreference(
                 reading: cacheKey.reading, to: boosted,

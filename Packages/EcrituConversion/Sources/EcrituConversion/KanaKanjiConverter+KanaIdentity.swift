@@ -408,9 +408,9 @@ extension KanaKanjiConverter {
             // にくそう だけ 遣りにくそう が先頭になっていた(合成の供給は 2870 で追加済み)
             for auxiliary in ["やすい", "にくい", "づらい", "やすそう", "にくそう", "づらそう"]
             where probe.count > auxiliary.count && probe.hasSuffix(auxiliary) {
-                let renyou = String(probe.dropLast(auxiliary.count))
-                guard renyou.count >= 2 else { continue }
-                for base in [renyou + "る", renyou + "う", renyou + "く"]
+                let continuative = String(probe.dropLast(auxiliary.count))
+                guard continuative.count >= 2 else { continue }
+                for base in [continuative + "る", continuative + "う", continuative + "く"]
                 where KanaKanjiSeedDictionary.seed[base]?.first == base {
                     return keepKanaGround("L377")
                 }

@@ -43,9 +43,9 @@ extension KanaKanjiConverter {
         return reordered
     }
 
-    static let godanImperativeCandidateBoost = 320
+    static let consonantStemImperativeCandidateBoost = 320
 
-    static let godanVolitionalCandidateBoost = 320
+    static let consonantStemVolitionalCandidateBoost = 320
 
     // 注意: normalizedReading が数字を除去するため、この関数の hasLeadingNumberPrefix 判定は
     // candidates() 経由では発火しない(実効は candidates() 最終段の digitContext ブースト側)。
@@ -455,32 +455,32 @@ extension KanaKanjiConverter {
     // 可能動詞(のみほせる=飲み干せる)が五段動詞(のみほす=飲み干す)と別の辞書エントリとして収録されていて、
     // その順が 飲乾せる→飲干せる→飲み乾せる→飲み干せる と五段側(飲み干す rank0)と食い違う。派生(のみほせない)
     // は可能動詞の一段ルールが先に立つのでこの順が表に出ていた(2820)。五段側の並びに揃える
-    private static let potentialVerbEndingToGodan: [Character: Character] = [
+    private static let potentialVerbEndingToConsonantStem: [Character: Character] = [
         "せ": "す", "け": "く", "げ": "ぐ", "て": "つ", "ね": "ぬ", "べ": "ぶ", "め": "む", "れ": "る", "え": "う"
     ]
-    func potentialVerbBaseCandidatesAlignedToGodan(_ candidates: [String], reading: String) -> [String] {
+    func potentialVerbBaseCandidatesAlignedToConsonantStem(_ candidates: [String], reading: String) -> [String] {
         let chars = Array(reading)
         // seed のある読み(ならせる=鳴らせる 先頭 等)は人手の並びが最終なので触らない
         guard chars.count >= 3, chars.last == "る", candidates.count >= 2,
             KanaKanjiSeedDictionary.seed[reading] == nil,
-            let godanEnding = Self.potentialVerbEndingToGodan[chars[chars.count - 2]] else {
+            let consonantStemEnding = Self.potentialVerbEndingToConsonantStem[chars[chars.count - 2]] else {
             return candidates
         }
-        let godanReading = String(chars.dropLast(2)) + String(godanEnding)
+        let consonantStemReading = String(chars.dropLast(2)) + String(consonantStemEnding)
         // 基底が本物の五段動詞のときだけ並べ替える(2868)。おさめる は一段動詞で、
         // おさむ は動詞として登録が無い(オサム/修/収/治 等の人名)。それを可能動詞の基底と
         // 誤認して、収める 先頭の辞書順が人名の並び(治→修→納→収)で塗り替えられていた。
-        // のみほせる の基底 のみほす は全候補が godan-su を持つので従来どおり働く
-        guard store.hasGodanVerbClass(reading: godanReading) else {
+        // のみほせる の基底 のみほす は全候補が consonantStem-su を持つので従来どおり働く
+        guard store.hasConsonantStemVerbClass(reading: consonantStemReading) else {
             return candidates
         }
-        let godanCandidates = candidatesForReading(
-            godanReading,
+        let consonantStemCandidates = candidatesForReading(
+            consonantStemReading,
             ajoutVocabulary: store.ajoutVocabulary(),
             initialAjoutVocabulary: store.initialAjoutVocabulary(),
             systemCandidateMode: .surface
         )
-        guard !godanCandidates.isEmpty else {
+        guard !consonantStemCandidates.isEmpty else {
             return candidates
         }
         // 五段の語幹(飲み干)順に、対応する可能動詞(飲み干せる)を並べ直す。漢字候補の全部が五段に対応する
@@ -491,13 +491,13 @@ extension KanaKanjiConverter {
         guard !kanjiCandidates.isEmpty else {
             return candidates
         }
-        let godanStems = Set(godanCandidates.filter { $0.count >= 2 }.map { String($0.dropLast()) })
-        guard kanjiCandidates.allSatisfy({ $0.count >= 3 && godanStems.contains(String($0.dropLast(2))) }) else {
+        let consonantStemStems = Set(consonantStemCandidates.filter { $0.count >= 2 }.map { String($0.dropLast()) })
+        guard kanjiCandidates.allSatisfy({ $0.count >= 3 && consonantStemStems.contains(String($0.dropLast(2))) }) else {
             return candidates
         }
         var aligned: [String] = []
-        for godan in godanCandidates where godan.count >= 2 {
-            let potential = String(godan.dropLast()) + potentialEnding
+        for consonantStem in consonantStemCandidates where consonantStem.count >= 2 {
+            let potential = String(consonantStem.dropLast()) + potentialEnding
             if kanjiCandidates.contains(potential), !aligned.contains(potential) {
                 aligned.append(potential)
             }
@@ -506,7 +506,7 @@ extension KanaKanjiConverter {
     }
 
     func orderedDerivationBaseCandidates(_ candidates: [String], reading: String) -> [String] {
-        var ordered = potentialVerbBaseCandidatesAlignedToGodan(candidates, reading: reading)
+        var ordered = potentialVerbBaseCandidatesAlignedToConsonantStem(candidates, reading: reading)
         if let seedOrder = KanaKanjiSeedDictionary.seed[reading] {
             let seedSet = Set(seedOrder)
             let seeded = seedOrder.filter { ordered.contains($0) }
@@ -708,14 +708,14 @@ extension KanaKanjiConverter {
         to scores: inout [String: Int]
     ) {
         guard let matchedSuffix = matchingInflectionRankingSuffix(for: reading) else {
-            applyGodanImperativeBoost(
+            applyConsonantStemImperativeBoost(
                 for: reading,
                 ajoutVocabulary: ajoutVocabulary,
                 initialAjoutVocabulary: initialAjoutVocabulary,
                 systemCandidateMode: systemCandidateMode,
                 to: &scores
             )
-            applyGodanVolitionalBoost(
+            applyConsonantStemVolitionalBoost(
                 for: reading,
                 ajoutVocabulary: ajoutVocabulary,
                 initialAjoutVocabulary: initialAjoutVocabulary,
@@ -795,14 +795,14 @@ extension KanaKanjiConverter {
             to: &scores
         )
         applyKuruCandidateBoost(for: reading, to: &scores)
-        applyGodanImperativeBoost(
+        applyConsonantStemImperativeBoost(
             for: reading,
             ajoutVocabulary: ajoutVocabulary,
             initialAjoutVocabulary: initialAjoutVocabulary,
             systemCandidateMode: systemCandidateMode,
             to: &scores
         )
-        applyGodanVolitionalBoost(
+        applyConsonantStemVolitionalBoost(
             for: reading,
             ajoutVocabulary: ajoutVocabulary,
             initialAjoutVocabulary: initialAjoutVocabulary,
@@ -1213,7 +1213,7 @@ extension KanaKanjiConverter {
         for counterReading in numericCounterSuffixCandidatesByReading.keys
         where reading.count > counterReading.count && reading.hasSuffix(counterReading) {
             guard let first = counterReading.first,
-                let devoiced = rendakuDevoicedKanaCharacter[first] else {
+                let devoiced = sequentialVoicingDevoicedKanaCharacter[first] else {
                 continue
             }
             let devoicedReading = String(devoiced) + counterReading.dropFirst()
@@ -1233,14 +1233,14 @@ extension KanaKanjiConverter {
         return !trimmed.isEmpty && trimmed != text
     }
 
-    func applyGodanImperativeBoost(
+    func applyConsonantStemImperativeBoost(
         for reading: String,
         ajoutVocabulary: [String: [String]],
         initialAjoutVocabulary: [String: [String]],
         systemCandidateMode: KanaKanjiCandidateSourceMode,
         to scores: inout [String: Int]
     ) {
-        for pattern in Self.godanPatterns where reading.hasSuffix(pattern.eForm) {
+        for pattern in Self.consonantStemPatterns where reading.hasSuffix(pattern.eForm) {
             guard let stem = removingSuffix(reading, suffix: pattern.eForm) else {
                 continue
             }
@@ -1267,7 +1267,7 @@ extension KanaKanjiConverter {
                     continue
                 }
 
-                scores[candidate, default: 0] += Self.godanImperativeCandidateBoost
+                scores[candidate, default: 0] += Self.consonantStemImperativeCandidateBoost
             }
         }
     }
@@ -1276,15 +1276,15 @@ extension KanaKanjiConverter {
     // 「いこう→意向/移行/以降…」のような同音異義の名詞群(辞書1200)に埋もれて最下位に
     // 落ちるのを防ぐため、基本形(行く 等)が辞書にあることを確認したうえでブーストする。
     // 一段/カ変/サ変の意志形(よう/こよう/しよう)は inflectionRankingSuffixes 側で +500 され
-    // るため対象外。ここは godan(oForm≠よ)専用。
-    func applyGodanVolitionalBoost(
+    // るため対象外。ここは consonantStem(oForm≠よ)専用。
+    func applyConsonantStemVolitionalBoost(
         for reading: String,
         ajoutVocabulary: [String: [String]],
         initialAjoutVocabulary: [String: [String]],
         systemCandidateMode: KanaKanjiCandidateSourceMode,
         to scores: inout [String: Int]
     ) {
-        for pattern in Self.godanPatterns {
+        for pattern in Self.consonantStemPatterns {
             let volitionalEnding = pattern.oForm + "う"
 
             guard reading.hasSuffix(volitionalEnding),
@@ -1309,7 +1309,7 @@ extension KanaKanjiConverter {
             // サ変名詞の五段化(解す=解する/会す=会する 等)の意向形はまれ。真正五段(話す→
             // 話そう)だけを優先したいので、基底の語幹がサ変名詞(〜する が成立)の時は
             // 意向ブーストを外す(かいそう→解そう/会そう/介そう が名詞・様態を押しのける対策)。
-            let stemIsSahenNoun: Bool = {
+            let stemIsSuruVerbNoun: Bool = {
                 guard pattern.dictionaryEnding == "す" else { return false }
                 let suruReading = stem + "する"
                 let suruCandidates = candidatesForReading(
@@ -1331,11 +1331,11 @@ extension KanaKanjiConverter {
                 // サ変名詞語幹(解/会/介)+する が成立し、その漢字語幹の場合は五段化意向の
                 // ブーストを外す(解そう 等)。真正五段(話す)の 話そう は suruReading=はなする が
                 // 成立しないので従来どおりブーストされる。
-                if stemIsSahenNoun, containsKanji(candidateStem) {
+                if stemIsSuruVerbNoun, containsKanji(candidateStem) {
                     continue
                 }
 
-                scores[candidate, default: 0] += Self.godanVolitionalCandidateBoost
+                scores[candidate, default: 0] += Self.consonantStemVolitionalCandidateBoost
             }
         }
     }
@@ -1456,7 +1456,7 @@ extension KanaKanjiConverter {
         }
     }
 
-    func applyAdjectiveRenyouBoost(
+    func applyAdjectiveContinuativeBoost(
         for reading: String,
         dictionaryCandidates: [String],
         inflectionDerivedCandidates: Set<String>,

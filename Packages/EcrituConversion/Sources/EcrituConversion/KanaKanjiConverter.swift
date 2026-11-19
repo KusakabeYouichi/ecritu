@@ -69,22 +69,22 @@ public final class KanaKanjiConverter {
     // カタカナ強調表記(ウマイ/ばかリ 等=表層のひらがな化が読みと一致)と
     // 交ぜ書き(まん延/作ひん 等=常用漢字外を嫌ったかな開き)の扱い。既定は抑制。
     var katakanaEmphasisCandidateMode: ScriptVariantCandidateMode = .suppress
-    var mazegakiCandidateMode: ScriptVariantCandidateMode = .suppress
+    var mixedScriptCandidateMode: ScriptVariantCandidateMode = .suppress
     // 旧字体・異体字の抑制(小分類ごとにコンテナー設定。人名は分類に関わらず常に対象外。2991)
     var scriptVariantSuppressionCategories: Set<ScriptVariantSuppressionCategory> =
         ScriptVariantSuppressionCategory.defaultEnabled
-    // かなで書く言葉(所謂/即ち/下さい/事/此処 等。KanaGakiTable)を抑制する仲間。入っていない仲間は抑制せず、
+    // かなで書く言葉(所謂/即ち/下さい/事/此処 等。KanaSpellingTable)を抑制する仲間。入っていない仲間は抑制せず、
     // かなを先頭にして漢字はその後ろに置く(3404)。初期設定は全部抑制
     // 初期設定: 副詞(漢字も残す) 以外を抑制(3552)。実機は設定読み込みで上書きされる
-    var kanaGakiSuppressedCategories: Set<KanaGakiCategory> = Set(KanaGakiCategory.allCases.filter(\.suppressedByDefault))
-    // 同音の漢字による書きかえ(臆測⇄憶測。KakikaeTable、3422)。キーボードが設定を読んで入れる。
+    var kanaSpellingSuppressedCategories: Set<KanaSpellingCategory> = Set(KanaSpellingCategory.allCases.filter(\.suppressedByDefault))
+    // 同音の漢字による書きかえ(臆測⇄憶測。KanjiRewriteTable、3422)。キーボードが設定を読んで入れる。
     // nil(設定を入れる前)は並びに触らない。キーボードは値の無い端末でも 両方(前を先に) を入れる
-    var kakikaePreference: KakikaePreference?
-    // 報告の後に常用漢字に加わった字の組(臆測⇄憶測、肝腎⇄肝心。KakikaeTable.lateStandardizedPairs、X.10。3570)。
-    // kakikaePreference とは別に選ぶ。nil は並びに触らない(テストの既定)
-    var lateStandardizedRewritePreference: KakikaePreference?
-    // 書きかえの例外グループ(KakikaePreference.everydayAfterFirstPairs)を設定にかかわらず常用漢字先にする(3644)
-    var kakikaeEverydayException = true
+    var kanjiRewritePreference: KanjiRewritePreference?
+    // 報告の後に常用漢字に加わった字の組(臆測⇄憶測、肝腎⇄肝心。KanjiRewriteTable.lateStandardizedPairs、X.10。3570)。
+    // kanjiRewritePreference とは別に選ぶ。nil は並びに触らない(テストの既定)
+    var lateStandardizedRewritePreference: KanjiRewritePreference?
+    // 書きかえの例外グループ(KanjiRewritePreference.everydayAfterFirstPairs)を設定にかかわらず常用漢字先にする(3644)
+    var kanjiRewriteEverydayException = true
     // 変換候補に絵文字を出すか。コンテナーの emoji 候補(X.15)に従う(3423)。読みからの絵文字(ねこ→🐱)はキーボード側で
     // 止めているが、国旗(drapeaux の 🇫🇷 等は辞書に入っている)と学習した絵文字はここで止める。
     // 追加語彙(ショートカット)の絵文字はこの設定に関わらず出す
@@ -98,7 +98,7 @@ public final class KanaKanjiConverter {
     // 数詞+助数詞の表記(アラビア数字/漢数字の順と有無。コンテナー設定 X.18。3702)。テスト(設定なし)は両方・アラビア数字が先
     var numeralStylePreference: NumeralStylePreference = .arabicFirst
     // 送り仮名の許容形(終る/取扱う/届)の扱い(コンテナー設定。2820)
-    var okuriganaVariantPreference: OkuriganaVariantPreference = .default
+    var inflectionalKanaVariantPreference: InflectionalKanaVariantPreference = .default
     var adjectiveMeKanjiCandidatesEnabled: Bool = false
     // 形式名詞の 目(ひどい目に遭う/痛い目を見る)に ひらがなの め の候補も出す(コンテナー設定 X.14 のサブ項目。3790)。
     // true=目 の次に め の形も出す(組み込みの値)。false=め の形は出さない(applyFormalNounMeKana 参照)
@@ -146,8 +146,8 @@ public final class KanaKanjiConverter {
         updateSetting(\.kaCounterVariantPreference, to: preference)
     }
 
-    public func setOkuriganaVariantPreference(_ preference: OkuriganaVariantPreference) {
-        updateSetting(\.okuriganaVariantPreference, to: preference)
+    public func setInflectionalKanaVariantPreference(_ preference: InflectionalKanaVariantPreference) {
+        updateSetting(\.inflectionalKanaVariantPreference, to: preference)
     }
 
     public func setAdjectiveMeKanjiCandidatesEnabled(_ enabled: Bool) {
@@ -170,8 +170,8 @@ public final class KanaKanjiConverter {
         updateSetting(\.scriptVariantSuppressionCategories, to: categories)
     }
 
-    public func setKanaGakiSuppressedCategories(_ categories: Set<KanaGakiCategory>) {
-        updateSetting(\.kanaGakiSuppressedCategories, to: categories)
+    public func setKanaSpellingSuppressedCategories(_ categories: Set<KanaSpellingCategory>) {
+        updateSetting(\.kanaSpellingSuppressedCategories, to: categories)
     }
 
     public func setEmojiCandidatesEnabled(_ enabled: Bool) {
@@ -193,20 +193,20 @@ public final class KanaKanjiConverter {
         return false
     }
 
-    public func setKakikaeEverydayException(_ enabled: Bool) {
-        updateSetting(\.kakikaeEverydayException, to: enabled)
+    public func setKanjiRewriteEverydayException(_ enabled: Bool) {
+        updateSetting(\.kanjiRewriteEverydayException, to: enabled)
     }
 
-    public func setKakikaePreference(_ preference: KakikaePreference) {
-        updateSetting(\.kakikaePreference, to: preference)
+    public func setKanjiRewritePreference(_ preference: KanjiRewritePreference) {
+        updateSetting(\.kanjiRewritePreference, to: preference)
     }
 
-    public func setLateStandardizedRewritePreference(_ preference: KakikaePreference) {
+    public func setLateStandardizedRewritePreference(_ preference: KanjiRewritePreference) {
         updateSetting(\.lateStandardizedRewritePreference, to: preference)
     }
 
-    public func setMazegakiCandidateMode(_ mode: ScriptVariantCandidateMode) {
-        updateSetting(\.mazegakiCandidateMode, to: mode)
+    public func setMixedScriptCandidateMode(_ mode: ScriptVariantCandidateMode) {
+        updateSetting(\.mixedScriptCandidateMode, to: mode)
     }
 
     public func preloadSystemDictionaryIfNeeded(onLoaded: (() -> Void)? = nil) {
@@ -301,7 +301,7 @@ public final class KanaKanjiConverter {
         // 丁寧接頭辞(1100)/序数/数値単位との上下が入れ替わり、同じ おすし が お寿司 先頭のときと 押すし 先頭の
         // ときがあった(実機トレース 3443、Mac でも温めたキャッシュで再現)。2509/2513/3256 も同じ原因の個別対処だった(3534)
         static let bfsPostfix = 1040            // postfix(BFS完全探索)
-        static let wagoDayTailCompound = 1300   // 日付の和語+目/間/前/後/以内(3日以内)。数詞の帯(400/360)を足し、後段の減点(260)を引いても合成(1260)より上に
+        static let nativeWordDayTailCompound = 1300   // 日付の和語+目/間/前/後/以内(3日以内)。数詞の帯(400/360)を足し、後段の減点(260)を引いても合成(1260)より上に
         static let quickPostfix = bfsPostfix    // postfix(語幹キャッシュ利用)
         static let nounKanjiAffix = 1000        // 名詞+漢字接辞(課/可/別 等)
         static let inflection = 980             // 活用形派生
@@ -310,10 +310,10 @@ public final class KanaKanjiConverter {
         // 派生だけの 誘い出し(980)が抜くには合成点を超える加点が要る(3250)。合成点は経路で違い、実機の語幹キャッシュ経由
         // (quickPostfix 1120)は Mac の探索経路(bfsPostfix 1040)より高い(実機トレース 3253: 誘いだし=2099 > 誘い出し=2030)。
         // 高い方の 1120 を超える値にする(3256)
-        static let godanBareRenyouCompoundBoost = 1160
+        static let consonantStemBareContinuativeCompoundBoost = 1160
         // 一段の語幹(辞書語が実質無い読み。ゆで/あずけ/とらえ)への加点。かな識別(1417)+派生のかな(979)=2396 と
         // X+で 合成(湯で 1260)の上に 茹で/預け を出す(3251)
-        static let ichidanStemCompoundBoost = 1500
+        static let vowelStemStemCompoundBoost = 1500
         // 関西方言の ている→とる 縮約形(騙しとった)を同経路の標準形(騙し取った)より後ろへ下げる幅(2887)
         static let kansaiContractionDemotion = 60
         // ガル形派生(許可リストの語だけ)。postfix 合成(1040)より上にする(3722、ユーザ報告: 実機で ほしがって が
@@ -443,7 +443,7 @@ public final class KanaKanjiConverter {
             to: finalCandidates, reading: normalizedReading, enabled: withStateLock { formalNounMeKanaCandidatesEnabled }
         )
         // 月名・日付の 2 つの形(四月/4月)は、seed の並び(しがつ は 四月 が seed 先頭)より X.18 の順を優先する(3804)
-        if let day = Self.wagoDayComposition(for: normalizedReading) {
+        if let day = Self.nativeWordDayComposition(for: normalizedReading) {
             let style = withStateLock { numeralStylePreference }
             let kanjiForm = "\(Self.kanjiNumeralString(day.value))\(day.unit)\(day.tail)"
             let arabicForm = "\(day.value)\(day.unit)\(day.tail)"
@@ -470,20 +470,20 @@ public final class KanaKanjiConverter {
         // 助数詞「か」の表記(1か所/数か月/何か国)を設定順に並べ、出さない表記を外す(2816)
         finalCandidates = applyKaCounterVariantPreference(reading: normalizedReading, to: finalCandidates)
         // 可能動詞の辞書順を五段の並びに揃える(のみほせる: 飲乾せる→…→飲み干せる を 飲み干せる 先頭に。2820)
-        finalCandidates = potentialVerbBaseCandidatesAlignedToGodan(finalCandidates, reading: normalizedReading)
+        finalCandidates = potentialVerbBaseCandidatesAlignedToConsonantStem(finalCandidates, reading: normalizedReading)
         // 送り仮名の許容形(終る/届)を設定に従って並べ替え・除去(2820)
-        finalCandidates = applyOkuriganaVariantPreference(reading: normalizedReading, to: finalCandidates)
+        finalCandidates = applyInflectionalKanaVariantPreference(reading: normalizedReading, to: finalCandidates)
         // カタカナだけ/ラテン文字だけの先頭には、もう一方の文字の候補を 2 番目に(ユーザ指定 3677: Ice/アイス、Kona/コナ)
         finalCandidates = Self.scriptCounterpartSecond(finalCandidates)
         // 同音の漢字による書きかえの組(聯想/連想)は、両方を出す設定のとき隣り合わせに並べる(間の語を割り込ませない。3644)
         // X.10 の組(臆測/憶測)はその設定で(3570)
-        let (kakikae, lateStandardized) = withStateLock { (kakikaePreference, lateStandardizedRewritePreference) }
-        if kakikae != nil || lateStandardized != nil {
-            finalCandidates = Self.kakikaePairsAdjacent(
+        let (kanjiRewrite, lateStandardized) = withStateLock { (kanjiRewritePreference, lateStandardizedRewritePreference) }
+        if kanjiRewrite != nil || lateStandardized != nil {
+            finalCandidates = Self.kanjiRewritePairsAdjacent(
                 finalCandidates,
-                preference: kakikae,
+                preference: kanjiRewrite,
                 lateStandardized: lateStandardized,
-                everydayException: withStateLock { kakikaeEverydayException }
+                everydayException: withStateLock { kanjiRewriteEverydayException }
             )
         }
         // ワイン用語優先(デバッグ版専用。3805)。ほかの並べ替え(送り仮名・書きかえ・可能動詞)の後、最後に掛ける
@@ -687,9 +687,9 @@ public final class KanaKanjiConverter {
         // 4 番手に沈む。基底の辞書順で最初の派生だけを合成の上へ(ユーザ報告 3250: さそいだし→誘い出し)。
         // 読みに辞書語(systemDictionary 1200 以上の直接候補)があるとき(ものがたり=物語)は触らない
         // (物語り が 物語 を抜くのを防ぐ)=供給欠落の穴埋めに限る
-        if reading.count >= Self.godanBareRenyouMinimumStemLength + 1,
+        if reading.count >= Self.consonantStemBareContinuativeMinimumStemLength + 1,
             let tail = reading.last,
-            let rule = Self.godanBareRenyouRuleByTail[tail],
+            let rule = Self.consonantStemBareContinuativeRuleByTail[tail],
             context.systemCandidates.isEmpty {
             let bare = derivedCandidates(
                 for: reading,
@@ -699,21 +699,21 @@ public final class KanaKanjiConverter {
                 systemCandidateMode: context.mode
             ).items
             if let first = bare.first(where: { scores[$0] != nil }) {
-                scores[first, default: 0] += CandidateScore.godanBareRenyouCompoundBoost
+                scores[first, default: 0] += CandidateScore.consonantStemBareContinuativeCompoundBoost
             }
         }
         // 一段の語幹(辞書語が実質無い読み。3251): 湯で(X+で 合成 1260)とかな識別に負けて 茹で が 5 番手だった。
-        // 語幹供給の条件(ichidanRenyouSuppliedForEmptyStem)を満たす読みだけ、漢字の派生の先頭に加点する
-        if Self.ichidanRenyouSuppliedForEmptyStem(reading, wordCostsAreNegligible: { Self.wordCostsAreNegligible(store.wordCosts(for: reading)) }) {
+        // 語幹供給の条件(vowelStemContinuativeSuppliedForEmptyStem)を満たす読みだけ、漢字の派生の先頭に加点する
+        if Self.vowelStemContinuativeSuppliedForEmptyStem(reading, wordCostsAreNegligible: { Self.wordCostsAreNegligible(store.wordCosts(for: reading)) }) {
             let stems = derivedCandidates(
                 for: reading,
-                rule: Self.ichidanBareRenyouRule,
+                rule: Self.vowelStemBareContinuativeRule,
                 ajoutVocabulary: context.ajoutVocabulary,
                 initialAjoutVocabulary: context.initialAjoutVocabulary,
                 systemCandidateMode: context.mode
             ).items
             if let first = stems.first(where: { $0 != reading && scores[$0] != nil }) {
-                scores[first, default: 0] += CandidateScore.ichidanStemCompoundBoost
+                scores[first, default: 0] += CandidateScore.vowelStemStemCompoundBoost
             }
         }
         // 関西方言の ている→とる 縮約(騙しとった)は標準形の複合(騙し取った)の後ろに(ユーザ報告 2887)。
@@ -797,7 +797,7 @@ public final class KanaKanjiConverter {
         addCandidates(kanjiNumeralCompound, baseScore: kanjiBand, to: &scores)
         // 日付・日数の和語の読み(ふつか。3793): 漢数字の形(二日)は misc の登録語や辞書の語として高い点で入っているので、
         // 生成したアラビア数字の形(2日)をその点に揃え、X.18 の順の分(帯の差)だけ前後させる
-        if numeralStyle.includesArabic, let day = Self.wagoDayComposition(for: reading) {
+        if numeralStyle.includesArabic, let day = Self.nativeWordDayComposition(for: reading) {
             let kanjiForm = "\(Self.kanjiNumeralString(day.value))\(day.unit)\(day.tail)"
             let arabicForm = "\(day.value)\(day.unit)\(day.tail)"
             if let kanjiScore = scores[kanjiForm], scores[arabicForm] != nil {
@@ -808,7 +808,7 @@ public final class KanaKanjiConverter {
             if !day.tail.isEmpty {
                 for (form, band) in [(arabicForm, arabicBand), (kanjiForm, kanjiBand)] {
                     if let score = scores[form] {
-                        scores[form] = max(score, CandidateScore.wagoDayTailCompound + band)
+                        scores[form] = max(score, CandidateScore.nativeWordDayTailCompound + band)
                     }
                 }
             }
@@ -823,10 +823,10 @@ public final class KanaKanjiConverter {
         }
 
         // 月名+日付の和語(ごがついつか→5月5日/五月五日。3805)も、生成の帯のままでは合成に負けるので同じ点に置く
-        if let monthDay = Self.monthWagoDayByReading[reading] {
+        if let monthDay = Self.monthNativeWordDayByReading[reading] {
             for (form, band) in [(monthDay.arabic, arabicBand), (monthDay.surface, kanjiBand)] {
                 if let score = scores[form] {
-                    scores[form] = max(score, CandidateScore.wagoDayTailCompound + band)
+                    scores[form] = max(score, CandidateScore.nativeWordDayTailCompound + band)
                 }
             }
         }
@@ -973,7 +973,7 @@ public final class KanaKanjiConverter {
                 to: &scores
             )
             // 形容詞連用形(高く/寒く/近く)の順位補正(2026-08-27)
-            applyAdjectiveRenyouBoost(
+            applyAdjectiveContinuativeBoost(
                 for: context.reading,
                 dictionaryCandidates: context.systemCandidates,
                 inflectionDerivedCandidates: Set(inflectionDerivedCandidates),
@@ -1071,7 +1071,7 @@ public final class KanaKanjiConverter {
                 // 助詞 まで の読みに ま の単漢字+で(真でみたいよ)の合成(3717)
                 || Self.isMaDeFragmentComposition(candidate, reading: context.reading)
                 // 単独入力の候補列では多字表層の連濁収穫(でま→手間/手ま)も弾く
-                || isRendakuHarvestSurface(
+                || isSequentialVoicingHarvestSurface(
                     candidate,
                     reading: context.reading,
                     includingMultiCharacterSurfaces: true
@@ -1085,8 +1085,8 @@ public final class KanaKanjiConverter {
             to: &scores
         )
         applyScriptVariantSurfaceSuppression(context, to: &scores)
-        applyKanaGakiPreference(context, to: &scores)
-        applyKakikaePreference(context, to: &scores)
+        applyKanaSpellingPreference(context, to: &scores)
+        applyKanjiRewritePreference(context, to: &scores)
         // 受け身・尊敬の される が付かない サ変名詞(発酵/発効/発光 等)+される は末尾へ(3483)
         for candidate in Array(scores.keys)
         where Self.isNonPassivizableSuruForm(candidate) && !context.userCandidateSet.contains(candidate) {
@@ -1103,10 +1103,10 @@ public final class KanaKanjiConverter {
 
     // 両方を出す設定で、書きかえの組(好む側→他方)を隣り合わせにする。好む側の直後へ他方を移す(聯想、連想、連奏… の順)。
     // X.9 の組は preference、X.10 の組(臆測/憶測。3570)は lateStandardized で判定する。nil のグループの組は触らない
-    static func kakikaePairsAdjacent(
+    static func kanjiRewritePairsAdjacent(
         _ candidates: [String],
-        preference basePreference: KakikaePreference?,
-        lateStandardized: KakikaePreference? = nil,
+        preference basePreference: KanjiRewritePreference?,
+        lateStandardized: KanjiRewritePreference? = nil,
         everydayException: Bool = true
     ) -> [String] {
         let switchableMayShowBoth = basePreference.map { ($0 != .beforeOnly || everydayException) && $0 != .afterOnly } ?? false
@@ -1118,7 +1118,7 @@ public final class KanaKanjiConverter {
             var rest = Substring(candidate)
             while !rest.isEmpty {
                 for matchingBefore in [true, false] {
-                    guard let pair = kakikaePair(at: rest, matchingBefore: matchingBefore,
+                    guard let pair = kanjiRewritePair(at: rest, matchingBefore: matchingBefore,
                         switchable: switchableMayShowBoth, lateStandardized: lateShowsBoth) else {
                         continue
                     }
@@ -1149,12 +1149,12 @@ public final class KanaKanjiConverter {
         return result
     }
 
-    // 同音の漢字による書きかえ(KakikaeTable、3422)。候補の中の書きかえ前の語(臆測/醗酵前)は書きかえ後の表記を作り、
+    // 同音の漢字による書きかえ(KanjiRewriteTable、3422)。候補の中の書きかえ前の語(臆測/醗酵前)は書きかえ後の表記を作り、
     // 書きかえ後の語(憶測/回転寿司)は書きかえ前の表記を作って、設定どおりに片方を落とすか、好む側を上に並べる。
     // 書きかえ後の語は普通の語の一部になりやすい(一丁→一丁目)ので、前の表記を作るのは候補が語そのものか、
     // 作った表記が同じ読みの候補に既にあるときだけ。追加語彙・学習語彙の語は対象外
     // 候補の rest の先頭から始まる書きかえの組。switchable=X.9 の組、lateStandardized=X.10 の組(3570)を探すか
-    static func kakikaePair(
+    static func kanjiRewritePair(
         at rest: Substring,
         matchingBefore: Bool,
         switchable: Bool,
@@ -1167,26 +1167,26 @@ public final class KanaKanjiConverter {
             index[head]?.first(where: { rest.hasPrefix(matchingBefore ? $0.before : $0.after) })
         }
         if switchable,
-            let pair = find(in: matchingBefore ? KakikaeTable.switchablePairsByBeforeHead : KakikaeTable.switchablePairsByAfterHead) {
+            let pair = find(in: matchingBefore ? KanjiRewriteTable.switchablePairsByBeforeHead : KanjiRewriteTable.switchablePairsByAfterHead) {
             return (pair.before, pair.after, false)
         }
         if lateStandardized,
-            let pair = find(in: matchingBefore ? KakikaeTable.lateStandardizedPairsByBeforeHead : KakikaeTable.lateStandardizedPairsByAfterHead) {
+            let pair = find(in: matchingBefore ? KanjiRewriteTable.lateStandardizedPairsByBeforeHead : KanjiRewriteTable.lateStandardizedPairsByAfterHead) {
             return (pair.before, pair.after, true)
         }
         return nil
     }
 
-    private func applyKakikaePreference(
+    private func applyKanjiRewritePreference(
         _ context: CandidateGenerationContext,
         to scores: inout [String: Int]
     ) {
-        // X.9 の組は kakikaePreference、X.10 の組は lateStandardizedRewritePreference で判定する。nil のグループの組は触らない(3570)
-        let (switchablePreference, latePreference) = withStateLock { (kakikaePreference, lateStandardizedRewritePreference) }
+        // X.9 の組は kanjiRewritePreference、X.10 の組は lateStandardizedRewritePreference で判定する。nil のグループの組は触らない(3570)
+        let (switchablePreference, latePreference) = withStateLock { (kanjiRewritePreference, lateStandardizedRewritePreference) }
         guard switchablePreference != nil || latePreference != nil else {
             return
         }
-        let everydayException = withStateLock { kakikaeEverydayException }
+        let everydayException = withStateLock { kanjiRewriteEverydayException }
         // 対象外は利用者が自分で入れた語(追加語彙=ショートカット、学習語彙)だけ。初期投入の misc/compenser
         // (交叉点/氷酢酸 等の変換対策語)は X.9 に従わせる(ユーザ指定 3427)
         let exempt = Set(context.ajoutVocabulary[context.reading] ?? []).union(context.learnedCandidates)
@@ -1194,7 +1194,7 @@ public final class KanaKanjiConverter {
         func occurrence(in candidate: String, matchingBefore: Bool) -> (before: String, after: String, isLateStandardized: Bool)? {
             var rest = Substring(candidate)
             while !rest.isEmpty {
-                if let pair = Self.kakikaePair(at: rest, matchingBefore: matchingBefore,
+                if let pair = Self.kanjiRewritePair(at: rest, matchingBefore: matchingBefore,
                     switchable: switchablePreference != nil, lateStandardized: latePreference != nil) {
                     return pair
                 }
@@ -1256,15 +1256,15 @@ public final class KanaKanjiConverter {
         }
     }
 
-    // かなで書く言葉(KanaGakiTable、3404)。抑制する仲間は漢字の候補を落としてかなに置き換え、抑制しない仲間は
+    // かなで書く言葉(KanaSpellingTable、3404)。抑制する仲間は漢字の候補を落としてかなに置き換え、抑制しない仲間は
     // かなを漢字の上に置く。読み全体が一致する語(いわゆる→所謂)に加えて、2 字以上の語は合成の中でも置き換える
     // (所謂風邪→いわゆる風邪、して下さい→してください)。1 字の語(事/為/時)は 事件/為替/時計 を巻き込むので読み全体の一致だけ。
     // 追加語彙・学習語彙の語は対象外
-    private func applyKanaGakiPreference(
+    private func applyKanaSpellingPreference(
         _ context: CandidateGenerationContext,
         to scores: inout [String: Int]
     ) {
-        let suppressed = withStateLock { kanaGakiSuppressedCategories }
+        let suppressed = withStateLock { kanaSpellingSuppressedCategories }
         let reading = context.reading
         var exempt = context.userCandidateSet.union(context.learnedCandidates)
         // 部首名から出す字形(また→又 等)は字そのものが目的なので落とさない
@@ -1272,7 +1272,7 @@ public final class KanaKanjiConverter {
         func place(_ kana: String, above score: Int) {
             scores[kana] = max(scores[kana] ?? Int.min, score + 1)
         }
-        if let table = KanaGakiTable.categoryByReadingAndSurface[reading] {
+        if let table = KanaSpellingTable.categoryByReadingAndSurface[reading] {
             for (surface, category) in table {
                 guard let score = scores[surface], !exempt.contains(surface) else {
                     continue
@@ -1285,7 +1285,7 @@ public final class KanaKanjiConverter {
                 place(reading, above: score)
             }
         }
-        for (category, items) in KanaGakiTable.entries {
+        for (category, items) in KanaSpellingTable.entries {
             for item in items where item.surface.count >= 2 && reading.count > item.reading.count
                 && reading.contains(item.reading) {
                 for (candidate, score) in scores where candidate.contains(item.surface) && !exempt.contains(candidate) {
@@ -1361,8 +1361,8 @@ public final class KanaKanjiConverter {
         to scores: inout [String: Int]
     ) {
         let katakanaMode = katakanaEmphasisCandidateMode
-        let mazegakiMode = mazegakiCandidateMode
-        guard katakanaMode != .normal || mazegakiMode != .normal else {
+        let mixedScriptMode = mixedScriptCandidateMode
+        guard katakanaMode != .normal || mixedScriptMode != .normal else {
             return
         }
 
@@ -1376,7 +1376,7 @@ public final class KanaKanjiConverter {
         // 「LM 未収録のカタカナ化」として抑制されていた(3587)
         exemptCandidates.formUnion(store.loadSupplementalSystemDictionary().candidates(for: reading))
         var katakanaTargets: [String] = []
-        var mazegakiTargets: [String] = []
+        var mixedScriptTargets: [String] = []
         var kanjiAlternatives: [String] = []
         var allKanjiSameReading: [String] = []
 
@@ -1411,7 +1411,7 @@ public final class KanaKanjiConverter {
             }
         }
 
-        if mazegakiMode != .normal {
+        if mixedScriptMode != .normal {
             // 全漢字側は LM unigram 実在(蔓延/作品 等の常用語)を要求 — 名前収穫(中野/夏羽 等)を
             // 「開かれた元」と誤認して正当な合成を巻き込まない
             let fullKanjiUni = store.wordLMUnigramCosts(for: allKanjiSameReading)
@@ -1424,19 +1424,19 @@ public final class KanaKanjiConverter {
                 && !inflectionDerivedCandidates.contains(candidate)
                 && KanaKanjiSeedDictionary.seed[reading]?.first != candidate
                 && Self.multiClauseConstellationStandardSurfacesByReading[reading] != candidate {
-                guard let kanjiPart = Self.mazegakiKanjiPart(candidate, reading: reading) else { continue }
+                guard let kanjiPart = Self.mixedScriptKanjiPart(candidate, reading: reading) else { continue }
                 if allKanjiSameReading.contains(where: { full in
                     full != candidate
                         && fullKanjiUni[full] != nil
                         && kanjiPart.count < full.count
                         && Self.isSubsequence(kanjiPart, of: full)
                 }) {
-                    mazegakiTargets.append(candidate)
+                    mixedScriptTargets.append(candidate)
                 }
             }
         }
 
-        guard !katakanaTargets.isEmpty || !mazegakiTargets.isEmpty else {
+        guard !katakanaTargets.isEmpty || !mixedScriptTargets.isEmpty else {
             return
         }
 
@@ -1482,8 +1482,8 @@ public final class KanaKanjiConverter {
             }
         }
 
-        for candidate in katakanaTargets + mazegakiTargets {
-            let mode = katakanaTargets.contains(candidate) ? katakanaMode : mazegakiMode
+        for candidate in katakanaTargets + mixedScriptTargets {
+            let mode = katakanaTargets.contains(candidate) ? katakanaMode : mixedScriptMode
             switch mode {
             case .suppress:
                 scores.removeValue(forKey: candidate)
@@ -1716,7 +1716,7 @@ public final class KanaKanjiConverter {
             candidates: archaicAdjectiveFiltered
         ).filter {
             !(Self.isDecorativeVariantSurface($0, reading: reading) && !supplemental.contains(reading: reading, surface: $0))
-                && !isRendakuHarvestSurface($0, reading: reading)
+                && !isSequentialVoicingHarvestSurface($0, reading: reading)
         }
     }
 

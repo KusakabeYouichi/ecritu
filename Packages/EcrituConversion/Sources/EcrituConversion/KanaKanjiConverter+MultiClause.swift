@@ -236,7 +236,7 @@ extension KanaKanjiConverter {
         minReadingCountOverride: Int? = nil,
         precedingCharacter: Character? = nil
     ) -> [String] {
-        var candidates = multiClauseCandidatesBeforeKakikae(
+        var candidates = multiClauseCandidatesBeforeKanjiRewrite(
             for: reading,
             systemCandidateMode: systemCandidateMode,
             minReadingCountOverride: minReadingCountOverride,
@@ -360,7 +360,7 @@ extension KanaKanjiConverter {
             candidates = candidates.filter { !isNounPpanashi($0) } + candidates.filter(isNounPpanashi)
         }
         // 日付の和語の登録語(二日)は、X.18 の順でアラビア数字の形(2日)と並べる(3793)
-        candidates = Self.wagoDayNumeralStyleOrdered(
+        candidates = Self.nativeWordDayNumeralStyleOrdered(
             reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates,
             style: withStateLock { numeralStylePreference },
             isRegistered: { [initial = store.initialAjoutVocabulary(), manual = store.ajoutVocabulary()] in
@@ -369,19 +369,19 @@ extension KanaKanjiConverter {
         // 月と日の表記は揃える(五月2日 は出さず、5月2日 か 五月二日。3804、ユーザ指定)
         candidates = Self.monthDayNumeralStyleUnified(candidates, style: withStateLock { numeralStylePreference })
         // X.10 の組(臆測/憶測)はその設定で(3570)
-        let (preference, lateStandardized) = withStateLock { (kakikaePreference, lateStandardizedRewritePreference) }
+        let (preference, lateStandardized) = withStateLock { (kanjiRewritePreference, lateStandardizedRewritePreference) }
         guard preference != nil || lateStandardized != nil, !candidates.isEmpty else {
             return candidates
         }
-        return Self.applyKakikae(
+        return Self.applyKanjiRewrite(
             preference,
             lateStandardized: lateStandardized,
             toMultiClauseCandidates: candidates,
-            everydayException: withStateLock { kakikaeEverydayException }
+            everydayException: withStateLock { kanjiRewriteEverydayException }
         )
     }
 
-    private func multiClauseCandidatesBeforeKakikae(
+    private func multiClauseCandidatesBeforeKanjiRewrite(
         for reading: String,
         systemCandidateMode: KanaKanjiCandidateSourceMode,
         minReadingCountOverride: Int?,
@@ -451,9 +451,9 @@ extension KanaKanjiConverter {
         // 先頭の語+格助詞1字のとき、先頭文節の単文節先頭候補に与えるボーナス(定数コメント参照。2720)
         var singleTopLeadNodeBonuses: [String: Int] = [:]
         // (b5) 連用形+に(目的)ノードのキー。直後の移動動詞(来る/行く)を優先するのに使う。
-        var renyouNiNodeKeys = Set<String>()
+        var continuativeNiNodeKeys = Set<String>()
         // (b5b) 連用形+副助詞(呼びさえ/読みすら)ノードのキー。直後の する系で加点、それ以外で減点(定数コメント参照。2894)
-        var renyouFocusNodeKeys = Set<String>()
+        var continuativeFocusNodeKeys = Set<String>()
         // スパン別の活用派生表層(キー "start-end")。かな て の連用形接続判定に使う。
         var inflectedSurfacesBySpan: [String: Set<String>] = [:]
         // 短い追加語彙断片(ろー→ロー/raw 等)のうち、同じ開始位置により長い辞書語(ろーぬ→ローヌ)が
@@ -490,8 +490,8 @@ extension KanaKanjiConverter {
                 return true
             }
             // 表記の頭だけの 1 字語(登=のぼる)は動詞でないので外す(山に登 が先頭になった)
-            let okurigana = surface.dropFirst(head.count)
-            return !okurigana.isEmpty && okurigana.allSatisfy { ("ぁ"..."ゖ").contains($0) }
+            let inflectionalKana = surface.dropFirst(head.count)
+            return !inflectionalKana.isEmpty && inflectionalKana.allSatisfy { ("ぁ"..."ゖ").contains($0) }
         }
         // 連語の名詞スパン("start-end")。変種列挙で名詞表記の変種(めど/メド)の
         // delta 上限を緩和するのに使う(2559)
@@ -588,7 +588,7 @@ extension KanaKanjiConverter {
                         return
                     }
                     // 連濁収穫(墓(ばか)等)もラティスに載せない(ばかすぎる→墓すぎる 対策)
-                    if !exemptDecorative, isRendakuHarvestSurface(surface, reading: segmentReading) {
+                    if !exemptDecorative, isSequentialVoicingHarvestSurface(surface, reading: segmentReading) {
                         return
                     }
                     // かな正書の述語(ある 等)はどの供給経路(curated/seed/word_costs)でも
@@ -854,7 +854,7 @@ extension KanaKanjiConverter {
                     prenominalNoInflectionStarts.insert(end)
                 }
 
-                let segmentEndsWithSokuon = segmentReading.hasSuffix("っ")
+                let segmentEndsWithGeminate = segmentReading.hasSuffix("っ")
                 let costMap = store.wordCosts(for: segmentReading)
 
                 // (b2) の供給ゲートと同条件。a2 の派生形判定でも使うため先に評価する。
@@ -862,8 +862,8 @@ extension KanaKanjiConverter {
                 let inflectionSupplyGateSatisfied = len >= 2
                     && len <= Self.multiClauseInflectionMaxSegmentReadingCount
                     && (segmentReading.last.map { Self.inflectionRuleSuffixLastCharacters.contains($0) } == true
-                        || Self.ichidanRenyouNounBaseReadings.contains(segmentReading + "る")
-                        || Self.ichidanRenyouSuppliedForEmptyStem(segmentReading, wordCostsAreNegligible: { Self.wordCostsAreNegligible(costMap) }))
+                        || Self.vowelStemContinuativeNounBaseReadings.contains(segmentReading + "る")
+                        || Self.vowelStemContinuativeSuppliedForEmptyStem(segmentReading, wordCostsAreNegligible: { Self.wordCostsAreNegligible(costMap) }))
                 // 活用派生の枠(定数コメント参照。3086)
                 let inflectionTopK = Self.multiClauseInflectionWideSupplyReadingPrefixes.contains(where: { segmentReading.hasPrefix($0) })
                     ? Self.multiClauseInflectionTopKWide
@@ -926,7 +926,7 @@ extension KanaKanjiConverter {
                 //      (名前群は一律 dictUnknown/wc10000 等)のタイブレークを seed 順で
                 //      押さえる(ノード列挙順が同 delta 変種の表示順になるため)。
                 for surface in Self.multiClauseSeed(segmentReading) ?? [] {
-                    if segmentEndsWithSokuon, containsKanji(surface) {
+                    if segmentEndsWithGeminate, containsKanji(surface) {
                         continue
                     }
                     // (b) と同じ辞書形述語判定を付ける。無いと seed 掲載の動詞(書く 等)が
@@ -1049,7 +1049,7 @@ extension KanaKanjiConverter {
                                 && store.isShortReadingDictionaryFormPredicate(reading: segmentReading, candidate: surface)
                         }
                     for (surface, cost) in ordered {
-                        if segmentEndsWithSokuon, containsKanji(surface) {
+                        if segmentEndsWithGeminate, containsKanji(surface) {
                             continue
                         }
                         // 辞書形述語判定(ノード定義コメント参照)。床免除(読み≤2)に加えて
@@ -1204,7 +1204,7 @@ extension KanaKanjiConverter {
                         || Self.isAuxiliaryAdjectiveKanaInflectionReading(segmentReading)
                         || (Self.multiClauseSeed(segmentReading)?.contains(segmentReading) ?? false)
                         || spanBaseSuppliesKanaSecond
-                        || (len <= 3 && Self.ichidanRenyouSuppliedForEmptyStem(segmentReading, wordCostsAreNegligible: { Self.wordCostsAreNegligible(costMap) }))
+                        || (len <= 3 && Self.vowelStemContinuativeSuppliedForEmptyStem(segmentReading, wordCostsAreNegligible: { Self.wordCostsAreNegligible(costMap) }))
                     // 関西方言の ている→とる 縮約形(騙しとった/欺しとった/瞞しとった)は標準形の後ろに回してから
                     // topK を採る。surface モードは 欺す/瞞す の異体が残るため縮約形だけで枠が埋まり、
                     // 騙し取った が立たなかった(かれをだましとった→彼を騙しとった。2888)。offset は元の並び
@@ -1327,7 +1327,7 @@ extension KanaKanjiConverter {
                         initialAjoutVocabulary: initialAjoutVocabulary,
                         systemCandidateMode: systemCandidateMode,
                         limit: Self.multiClauseInflectionTopK,
-                        allowsBareSinoJiruRenyou: end < n
+                        allowsBareSinoJiruContinuative: end < n
                     )
                     // 同スパンに実辞書語(収穫底値未満)があれば合成ノードを後置(定数コメント参照)。
                     // 人名(姓/名)は「実辞書語」に数えない: おおくり は 大栗(姓 wc 9219)のために お送り が後置され、
@@ -1346,7 +1346,7 @@ extension KanaKanjiConverter {
                             first == "お" || first == "ご" || first == "御" else {
                             return nil
                         }
-                        return Self.politePrefixRenyouSurfaceForLMCheck(String(surface.dropFirst()))
+                        return Self.politePrefixContinuativeSurfaceForLMCheck(String(surface.dropFirst()))
                     }
                     let politeStemLMCosts = politeStemSurfaces.isEmpty
                         ? [:]
@@ -1354,7 +1354,7 @@ extension KanaKanjiConverter {
                     for surface in polite.prefix(Self.multiClauseInflectionTopK)
                     where surface != segmentReading {
                         if let first = surface.first, first == "お" || first == "ご" || first == "御",
-                            politeStemLMCosts[Self.politePrefixRenyouSurfaceForLMCheck(String(surface.dropFirst()))] == nil {
+                            politeStemLMCosts[Self.politePrefixContinuativeSurfaceForLMCheck(String(surface.dropFirst()))] == nil {
                             continue
                         }
                         add(surface, isDictWord: true, isCurated: false)
@@ -1381,41 +1381,41 @@ extension KanaKanjiConverter {
                     // 日付の和語の読み(ふつか/なのか/いつか。3793)は、数量語の定額で立てるとかなの言い回しを跨いで勝つ
                     // (そうなのかー→そう7日ー、はつかうな→20日ウナ、これはつかまえにいく→これ20日前に行く、いつかごいっしょに→5日後一緒に。
                     // 全網と走査で検出)。読みそのもの(後ろに 間/目 が付かない形)は格子に立てず、登録語(二日)の表記を区切りの後で
-                    // 差し替える(wagoDayNumeralStyleOrdered)。間/目/前/後 が続く形は文頭だけに立てる: 入力の全体のとき(登録語のある読みは
+                    // 差し替える(nativeWordDayNumeralStyleOrdered)。間/目/前/後 が続く形は文頭だけに立てる: 入力の全体のとき(登録語のある読みは
                     // 加点つき。定数コメント参照)と、登録語のある読み+間 の後ろが助詞のとき
                     // 月名+日付の和語(ごがついつか→5月5日/五月五日。定数コメント参照、3805)。なのか は後ろが決まった字のときだけ立てる
-                    let monthDay = len >= 6 ? Self.monthWagoDayByReading[segmentReading] : nil
+                    let monthDay = len >= 6 ? Self.monthNativeWordDayByReading[segmentReading] : nil
                     let monthDayAllowed = monthDay.map {
                         $0.dayReading != "なのか" || (start == 0 && end == n)
                             || (end < n && Self.multiClauseMonthNanokaFollowerCharacters.contains(chars[end]))
                     } ?? true
-                    let wagoDay = Self.wagoDayComposition(for: segmentReading)
-                    var wagoDayAllowed = wagoDay == nil && monthDayAllowed
-                    var wagoDayTailBonus = 0
-                    if let wagoDay, !wagoDay.tail.isEmpty, start == 0 {
-                        let dayReading = String(segmentReading.dropLast(Self.wagoDayTailReadingLength(segmentReading)))
-                        let dayKanji = Self.kanjiNumeralString(wagoDay.value) + "日"
+                    let nativeWordDay = Self.nativeWordDayComposition(for: segmentReading)
+                    var nativeWordDayAllowed = nativeWordDay == nil && monthDayAllowed
+                    var nativeWordDayTailBonus = 0
+                    if let nativeWordDay, !nativeWordDay.tail.isEmpty, start == 0 {
+                        let dayReading = String(segmentReading.dropLast(Self.nativeWordDayTailReadingLength(segmentReading)))
+                        let dayKanji = Self.kanjiNumeralString(nativeWordDay.value) + "日"
                         if (initialAjoutVocabulary[dayReading]?.contains(dayKanji) ?? false)
                             || (manualAjoutVocabulary[dayReading]?.contains(dayKanji) ?? false) {
                             // 文の途中まで立てるのは 間 だけ(二日+感 に負ける形)。前/後/目 は 二日+前 の区切りのまま表記を差し替える
                             // (ノードを立てると後ろの に+あった の つながりが切れ、みっかまえにあった→3日前似合った になった)
-                            wagoDayAllowed = end == n
-                                || (Self.multiClauseWagoDayMidSentenceTails.contains(wagoDay.tail)
-                                    && Self.multiClauseWagoDayFollowerCharacters.contains(chars[end]))
-                            wagoDayTailBonus = Self.multiClauseWagoDayTailBonus
+                            nativeWordDayAllowed = end == n
+                                || (Self.multiClauseNativeWordDayMidSentenceTails.contains(nativeWordDay.tail)
+                                    && Self.multiClauseNativeWordDayFollowerCharacters.contains(chars[end]))
+                            nativeWordDayTailBonus = Self.multiClauseNativeWordDayTailBonus
                         } else {
-                            wagoDayAllowed = end == n
+                            nativeWordDayAllowed = end == n
                         }
                     }
-                    for surface in wagoDayAllowed ? numeralCompoundCandidatesForLattice(for: segmentReading) : []
+                    for surface in nativeWordDayAllowed ? numeralCompoundCandidatesForLattice(for: segmentReading) : []
                     where surface != segmentReading {
                         add(surface, isDictWord: true, isCurated: false, isInflectionDerived: true)
                         suppliedNumeral = true
-                        if wagoDayTailBonus > 0 {
-                            seedOrderNounNodeBonuses[spanKeyByStart[start][end] + "-" + surface, default: 0] += wagoDayTailBonus
+                        if nativeWordDayTailBonus > 0 {
+                            seedOrderNounNodeBonuses[spanKeyByStart[start][end] + "-" + surface, default: 0] += nativeWordDayTailBonus
                         }
                         if monthDay != nil {
-                            seedOrderNounNodeBonuses[spanKeyByStart[start][end] + "-" + surface, default: 0] += Self.multiClauseMonthWagoDayBonus
+                            seedOrderNounNodeBonuses[spanKeyByStart[start][end] + "-" + surface, default: 0] += Self.multiClauseMonthNativeWordDayBonus
                         }
                     }
                     let numeric = numericCounterCompoundCandidates(
@@ -1529,50 +1529,50 @@ extension KanaKanjiConverter {
                         nodes[$0].end == end - 1 && nodes[$0].isDictWord && !nodes[$0].isInflectionDerived
                             && Self.isKanjiPlaceNameSurface(nodes[$0].surface)
                     }) {
-                    let renyouReading = String(segmentReading.dropLast())
-                    let renyouNi = verbRenyouPlusSuffixCandidates(
-                        renyouReading: renyouReading,
+                    let continuativeReading = String(segmentReading.dropLast())
+                    let continuativeNi = verbContinuativePlusSuffixCandidates(
+                        continuativeReading: continuativeReading,
                         trailingSuffix: "に",
                         ajoutVocabulary: manualAjoutVocabulary,
                         initialAjoutVocabulary: initialAjoutVocabulary,
                         systemCandidateMode: systemCandidateMode
                     )
                     // 同じ読みの名詞(海)が連用形(生み)より十分安く、LM に 連用形→に の実績が無いなら立てない(定数コメント参照。3723)
-                    let competingNounSurfaces: [String] = renyouNi.isEmpty ? [] : nodesStartingAt[start].compactMap {
+                    let competingNounSurfaces: [String] = continuativeNi.isEmpty ? [] : nodesStartingAt[start].compactMap {
                         let node = nodes[$0]
                         return node.end == end - 1 && node.isDictWord && !node.isInflectionDerived && !node.isKanaIdentity ? node.surface : nil
                     }
                     let competingNounUnigrams = competingNounSurfaces.isEmpty ? [:]
-                        : store.wordLMUnigramCosts(for: competingNounSurfaces + renyouNi.prefix(Self.multiClauseInflectionTopK).map { String($0.dropLast()) })
+                        : store.wordLMUnigramCosts(for: competingNounSurfaces + continuativeNi.prefix(Self.multiClauseInflectionTopK).map { String($0.dropLast()) })
                     let cheapestCompetingNoun = competingNounSurfaces.compactMap { competingNounUnigrams[$0] }.min()
-                    for surface in renyouNi.prefix(Self.multiClauseInflectionTopK)
+                    for surface in continuativeNi.prefix(Self.multiClauseInflectionTopK)
                     where surface != segmentReading {
                         if let cheapestCompetingNoun {
                             let stem = String(surface.dropLast())
                             if store.wordLMBigramCost(prev: stem, cur: "に") == nil,
-                                cheapestCompetingNoun + Self.multiClauseRenyouNiUnattestedNounMargin <= (competingNounUnigrams[stem] ?? Int.max) {
+                                cheapestCompetingNoun + Self.multiClauseContinuativeNiUnattestedNounMargin <= (competingNounUnigrams[stem] ?? Int.max) {
                                 continue
                             }
                         }
                         add(surface, isDictWord: true, isCurated: false, isInflectionDerived: true)
-                        renyouNiNodeKeys.insert(spanKeyByStart[start][end] + "-" + surface)
+                        continuativeNiNodeKeys.insert(spanKeyByStart[start][end] + "-" + surface)
                     }
                 }
 
                 // (b5b) 連用形+副助詞(呼びさえ/読みすら/書きこそ)。(b5) と同じ供給で末尾だけ副助詞(定数コメント参照。2894)
-                if len >= 4, let focus = Self.multiClauseRenyouFocusParticles.first(where: { segmentReading.hasSuffix($0) }) {
-                    let renyouReading = String(segmentReading.dropLast(focus.count))
-                    let renyouFocus = verbRenyouPlusSuffixCandidates(
-                        renyouReading: renyouReading,
+                if len >= 4, let focus = Self.multiClauseContinuativeFocusParticles.first(where: { segmentReading.hasSuffix($0) }) {
+                    let continuativeReading = String(segmentReading.dropLast(focus.count))
+                    let continuativeFocus = verbContinuativePlusSuffixCandidates(
+                        continuativeReading: continuativeReading,
                         trailingSuffix: focus,
                         ajoutVocabulary: manualAjoutVocabulary,
                         initialAjoutVocabulary: initialAjoutVocabulary,
                         systemCandidateMode: systemCandidateMode
                     )
-                    for surface in renyouFocus.prefix(Self.multiClauseInflectionTopK)
+                    for surface in continuativeFocus.prefix(Self.multiClauseInflectionTopK)
                     where surface != segmentReading {
                         add(surface, isDictWord: true, isCurated: false, isInflectionDerived: true)
-                        renyouFocusNodeKeys.insert(spanKeyByStart[start][end] + "-" + surface)
+                        continuativeFocusNodeKeys.insert(spanKeyByStart[start][end] + "-" + surface)
                     }
                 }
 
@@ -1904,7 +1904,7 @@ extension KanaKanjiConverter {
         // カタカナ強調表記/交ぜ書きのモード適用(供給後の一括分類。単文節側と同じ述語)。
         // curated(ユーザ明示)は対象外。外来語(パン 等)は「カタカナ側が unigram 優位」で保護。
         // suppress は +100000(事実上不採用)、demote は +6000(後方)を transitionCost で加える。
-        if katakanaEmphasisCandidateMode != .normal || mazegakiCandidateMode != .normal {
+        if katakanaEmphasisCandidateMode != .normal || mixedScriptCandidateMode != .normal {
             // LM未収録カタカナの「代替が存在する限り強調」判定(単文節側と同義)用: 同スパンに
             // 漢字ノード(辞書/活用派生。成った 等)が居るか。代替ゼロの外来語(サジェスチョン=
             // 辞書唯一・LM未収録)まで抑制すると、LM実在の断片(さ+ジェス+チョン)がジャンク
@@ -1970,10 +1970,10 @@ extension KanaKanjiConverter {
                     }
                 }
                 // 星座の標準和名(さそり座/おおぐま座)は かな+座 が正書で交ぜ書きではない(定数コメント参照。2895)
-                if mazegakiCandidateMode != .normal,
+                if mixedScriptCandidateMode != .normal,
                     !node.isInflectionDerived,
                     Self.multiClauseConstellationStandardSurfacesByReading[node.reading] != node.surface,
-                    let kanjiPart = KanaKanjiConverter.mazegakiKanjiPart(node.surface, reading: node.reading) {
+                    let kanjiPart = KanaKanjiConverter.mixedScriptKanjiPart(node.surface, reading: node.reading) {
                     let sameReadingCosts = store.wordCosts(for: node.reading)
                     let fullKanjiExists = sameReadingCosts.keys.contains { full in
                         full != node.surface
@@ -1983,7 +1983,7 @@ extension KanaKanjiConverter {
                             && KanaKanjiConverter.isSubsequence(kanjiPart, of: full)
                     }
                     if fullKanjiExists {
-                        if mazegakiCandidateMode == .suppress {
+                        if mixedScriptCandidateMode == .suppress {
                             scriptVariantSuppressedNodeKeys.insert(key)
                         } else {
                             scriptVariantDemotedNodeKeys.insert(key)
@@ -2390,16 +2390,16 @@ extension KanaKanjiConverter {
         }
 
         // 複合動詞の前部要素になる連用形ノード(定数コメント参照)。列挙後に一度だけ走査する。
-        var compoundVerbRenyouNodeKeys = Set<String>()
+        var compoundVerbContinuativeNodeKeys = Set<String>()
         for node in nodes
-        where Self.multiClauseCompoundVerbRenyouStemReadings.contains(node.reading)
+        where Self.multiClauseCompoundVerbContinuativeStemReadings.contains(node.reading)
             && !node.isKanaIdentity
             && node.surface.last == node.reading.last {
-            compoundVerbRenyouNodeKeys.insert(node.key)
+            compoundVerbContinuativeNodeKeys.insert(node.key)
         }
 
         // かなで書く言葉の設定(3404。transitionCost で引く)
-        let kanaGakiSuppressed = withStateLock { kanaGakiSuppressedCategories }
+        let kanaSpellingSuppressed = withStateLock { kanaSpellingSuppressedCategories }
 
         // その分(ぶん)の直後の形容動詞(prev→な の実績)と形容詞の終止形(3726)。遷移の加点と、2 語を辞書の 1 語に
         // 差し替える規則(3570。分+楽→文楽)の除外で共有する。動詞は対象外(ぶん殴る を 分+殴る にしない)
@@ -2696,12 +2696,12 @@ extension KanaKanjiConverter {
                         || (isKanaIdentity
                             && !isCurated
                             && !Self.multiClauseKanaIdentityFloorExemptReadingsID.contains(readingID)
-                            // かなで書く言葉(すぐ/かなり/ここ 等。KanaGakiTable)のかなは正当な高頻度かなで、断片ではない。
+                            // かなで書く言葉(すぐ/かなり/ここ 等。KanaSpellingTable)のかなは正当な高頻度かなで、断片ではない。
                             // 漢字(直ぐ wc 4938)を抑制/かな先頭にしたのに、かな(すぐ wc 8075)が床上げで漢字より高くなり、
                             // なのですぐきづく が なのです+具+気づく に割れていた(ユーザ報告 3630)。
                             // 形式名詞(とき/こと/よう)は述語の直後だけ漢字を下げる仲間なので外さない(時は金なり/赤ワイン用 が崩れた)。
                             // 副詞(漢字も残す)も漢字を下げないので外さない
-                            && !Self.isKanaGakiAlwaysKanaReading(reading)) {
+                            && !Self.isKanaSpellingAlwaysKanaReading(reading)) {
                     base = max(base, wordCost)
                 } else if wordCost == nil,
                     Self.multiClauseRareReadingFloorForcedSurfacesByReadingByID[readingID]?.contains(surface) ?? false {
@@ -3244,7 +3244,7 @@ extension KanaKanjiConverter {
             }
             // いう の未然形はかなより 言わ〜(定数コメント参照。2881)
             if isInflectionDerived, isKanaIdentity, reading.hasPrefix("いわ") {
-                penalty += Self.multiClauseKanaMizenIuPenalty
+                penalty += Self.multiClauseKanaIrrealisIuPenalty
             }
             // bigram 未観測ペアの補完(定数コメント参照)。観測が無いと unigram 差だけで
             // 決まり、文として成立しない組み合わせが勝つ(柔らかくて農耕 等。2564)
@@ -3270,14 +3270,14 @@ extension KanaKanjiConverter {
             // 連用形(活用派生)直後の すぎ は 過ぎ/すぎ。杉/椙 を減点(定数コメント参照。2823)
             // 受身・使役のかな助動詞(られ/れ/させ/され)で切れた連用形の後ろも同じ(間違え+られ+すぎ の 3 分割経路)
             if readingID == SID.すぎ, !Self.multiClauseSugiSuffixSurfacesID.contains(surfaceID),
-                prevIsInflectionDerived || (prevIsKanaIdentity && Self.multiClauseRenyouAuxKanaSurfacesID.contains(prevID)) {
+                prevIsInflectionDerived || (prevIsKanaIdentity && Self.multiClauseContinuativeAuxKanaSurfacesID.contains(prevID)) {
                 penalty += Self.multiClauseSugiOtherAfterDerivedPenalty
             }
             // 辞書形述語(ある/する/行く)の直後に助詞なしで活用派生の述語が続く(ある鳴らさせて)のは非文。形式名詞化
             // (できる限り/する度)は除く(定数コメント参照。2823)
             if prevIsDictionaryFormPredicate, isInflectionDerived, !prevIsBOS,
                 !Self.multiClauseFormalNounKanaReadingsID.contains(readingID),
-                !Self.multiClausePredicateAdjacentRenyouNounReadingsID.contains(readingID) {
+                !Self.multiClausePredicateAdjacentContinuativeNounReadingsID.contains(readingID) {
                 penalty += Self.multiClausePredicateAdjacentDerivedPenalty
             }
             // が を落とした口語の 名詞+ない(返事ない/時間ない)。名詞→が の bigram が強い名詞の直後に限る(定数コメント参照。2823)
@@ -3344,7 +3344,7 @@ extension KanaKanjiConverter {
             if isDictionaryFormPredicate || isInflectionDerived,
                 !prevIsBOS,
                 prev.count >= 2, prev.hasSuffix("な"), containsKanji(prev) {
-                penalty += Self.multiClausePredicateAfterRentaiNaPenalty
+                penalty += Self.multiClausePredicateAfterAttributiveNaPenalty
             }
             // 名詞+まち は接尾 待ち(定数コメント参照。2723)。前の語→町/街 が観測済み(地名)なら触らない
             if readingID == SID.まち, surfaceID == SID.待ち,
@@ -3429,12 +3429,12 @@ extension KanaKanjiConverter {
                         && Self.isAuxiliaryAdjectiveKanaInflectionReading(reading)) {
                 // 読み/分かり/使い のような連用形の送り仮名(い段・え段のかな)で終わる語の直後は連用形とみなして上げる
                 // (辞書の名詞 読み は活用派生でないので減点されていた。格助詞 に は除く。3653)
-                if !prevIsBOS, let last = prev.last, Self.multiClauseRenyouOkuriganaTails.contains(last),
+                if !prevIsBOS, let last = prev.last, Self.multiClauseContinuativeInflectionalKanaTails.contains(last),
                     !Self.multiClauseCaseParticleSurfacesID.contains(prevID) {
-                    penalty -= Self.multiClauseAuxiliaryAdjectiveKanaAfterRenyouKanaBonus
+                    penalty -= Self.multiClauseAuxiliaryAdjectiveKanaAfterContinuativeKanaBonus
                 } else if !prevIsInflectionDerived,
                     !(hasPredicateTail(prevID, prev)) {
-                    penalty += Self.multiClauseAuxiliaryAdjectiveKanaAfterNonRenyouPenalty
+                    penalty += Self.multiClauseAuxiliaryAdjectiveKanaAfterNonContinuativePenalty
                 }
             }
             // 格助詞の直後の裸のかな1字(定数コメント参照。2868)
@@ -3512,7 +3512,7 @@ extension KanaKanjiConverter {
                 // で+リゾット に勝ち、全かなの結果として捨てられて候補が無かった(3729、ユーザ報告)
                 !(reading.first.map { Self.multiClauseOnomatopoeiaExcludedLeadingParticles.contains($0) } ?? false
                     && readingsWithScriptedDictWord.contains(String(reading.dropFirst()))),
-                !Self.multiClauseSokuonToAdverbTails.contains(where: {
+                !Self.multiClauseGeminateToAdverbTails.contains(where: {
                     reading != $0 && reading.hasSuffix($0)
                 }),
                 // 漢字の直後はオノマトペでなく かな断片の誤爆(学主+うりせっと: 学習+リセット の せっと が
@@ -3873,7 +3873,7 @@ extension KanaKanjiConverter {
                 // 接続助詞 から/ので/けど は終止形・た形に付く。連用形の し(サ変の派生 糊塗し)の後ろは非文なのに
                 // 述語扱いでクランプされ、ことしから が 糊塗しから(7200+1200)になって 今年から(6847+3348)を跨いでいた(3723)
                 !(prevIsInflectionDerived && prev.hasSuffix("し")
-                    && Self.multiClauseShuushiConjunctiveParticleReadings.contains(reading)) {
+                    && Self.multiClauseTerminalConjunctiveParticleReadings.contains(reading)) {
                 base = min(base, Self.multiClauseFinalParticleAfterPredicateCost)
             }
             // て形(活用派生の 〜て/〜で)+終助詞 1 字 よ/ね/な は依頼・念押し(読んでよ/見てね/待ってな)。上の 2 字以上のクランプから外れ、
@@ -3917,7 +3917,7 @@ extension KanaKanjiConverter {
             // [直す]、3736。石 4945 が コク 7040 より安く 豊かな石 だった)
             if (surface == "杯" && (reading == "ばい" || reading == "ぱい")) || (surface == "石" && reading == "こく"),
                 prevIsBOS || !(prev.last.map { $0.isNumber || "一二三四五六七八九十百千何数".contains($0) } ?? false) {
-                penalty += Self.multiClauseRendakuHaiAfterNonNumeralPenalty
+                penalty += Self.multiClauseSequentialVoicingHaiAfterNonNumeralPenalty
             }
             // 指示語(その/この/あの/どの)の直後の 間 は あいだ/かん で、ま とは読まない(定数コメント参照。3739)
             // 指示語の直後の助詞(その+まで+も)も、指示語は名詞を修飾するので立たない(なぱでもそのまでも が ソノマ でなかった)
@@ -3939,8 +3939,8 @@ extension KanaKanjiConverter {
             }
             // 連濁した読みでだけ立つ語(喧嘩=げんか)は、前が文頭か かな のときは減点(定数コメント参照。3736)
             if !isKanaIdentity, prevIsBOS || prevIsKanaIdentity,
-                Self.multiClauseRendakuOnlyReadingsBySurface[surface] == reading {
-                penalty += Self.multiClauseRendakuOnlyAfterNonNounPenalty
+                Self.multiClauseSequentialVoicingOnlyReadingsBySurface[surface] == reading {
+                penalty += Self.multiClauseSequentialVoicingOnlyAfterNonNounPenalty
             }
             // だろう/でしょう を途中で漢字・カタカナの語へ区切らない(だ+労使/だろ+牛/でしょ+宇)。いるだろうし が 居るだ労使 だった
             // (ユーザ報告 3710)。かなのまま続く形(読んだ+ろう の口語)は対象外。ID の比較で絞ってから読みを見る
@@ -4096,8 +4096,8 @@ extension KanaKanjiConverter {
             // 酒+よね(未観測、8700)に勝って うまい裂けよね になっていた。名詞を押しのけない(3635)
             if isKanaIdentity, !prevIsBOS, prevIsInflectionDerived,
                 Self.multiClauseSentenceFinalYoReadingsID.contains(readingID),
-                let prevTail = prev.last, Self.multiClauseIchidanImperativeYoStemTails.contains(prevTail) {
-                penalty += Self.multiClauseIchidanImperativeYoPenalty
+                let prevTail = prev.last, Self.multiClauseVowelStemImperativeYoStemTails.contains(prevTail) {
+                penalty += Self.multiClauseVowelStemImperativeYoPenalty
             }
             // 一段動詞の文語命令形 〜けよ/〜べよ(避けよ/裂けよ/食べよ)。口語の断片 さけよ/さけよね の よ は終助詞で、
             // 名詞(酒)+よ が正しいのに、派生 1 ノードが安く うまい酒よ を うまい避けよ が押しのけていた(3635)。
@@ -4106,25 +4106,25 @@ extension KanaKanjiConverter {
                 // 〜けよ / 〜けよね / 〜けよな(命令形+終助詞の派生)
                 let tail = surface.hasSuffix("よ") ? 1 : ((surface.hasSuffix("よね") || surface.hasSuffix("よな")) ? 2 : 0)
                 if tail > 0, surface.count >= tail + 2,
-                    let stemTail = surface.dropLast(tail).last, Self.multiClauseIchidanImperativeYoStemTails.contains(stemTail) {
-                    penalty += Self.multiClauseIchidanImperativeYoPenalty
+                    let stemTail = surface.dropLast(tail).last, Self.multiClauseVowelStemImperativeYoStemTails.contains(stemTail) {
+                    penalty += Self.multiClauseVowelStemImperativeYoPenalty
                 }
             }
-            // かなで書く言葉(所謂/即ち/下さい/事/此処 等。KanaGakiTable、3404)。抑制する仲間は禁止級の減点で実質落とし、
+            // かなで書く言葉(所謂/即ち/下さい/事/此処 等。KanaSpellingTable、3404)。抑制する仲間は禁止級の減点で実質落とし、
             // 抑制しない仲間は かな の後ろに回る程度に下げる。追加語彙・学習語彙(curated)は対象外
             // 形式名詞(事/時/為)は述語の直後(行くとき/食べること)だけ。文頭や名詞の位置(時は金なり/事の起こり)は普通の名詞として残す
             if !isKanaIdentity, !isCurated,
-                let category = KanaGakiTable.categoryByReadingAndSurface[reading]?[surface],
+                let category = KanaSpellingTable.categoryByReadingAndSurface[reading]?[surface],
                 category != .formalNoun || prevIsInflectionDerived || prevIsDictionaryFormPredicate
                     // 連体の な(そんな/こんな/静かな)の直後も述語の直後と同じ形式名詞の用法(そんなとき/静かなところ。3778、ユーザ指定)
                     || prev.hasSuffix("な")
                     // 文頭の 程 は直前の数量(50%+ほど回復した)が入力の外にあるだけで、述語の直後と同じ用法(3600、ユーザ報告)。
                     // 単文節は ほど が先頭なのに連文節だけ 程回復した になっていた。程度の 程 は文頭の名詞用法がほぼ無い
                     || (prevIsBOS && surface == "程") {
-                if kanaGakiSuppressed.contains(category) {
+                if kanaSpellingSuppressed.contains(category) {
                     penalty += Self.multiClauseForbiddenPenaltyCost
                 } else if category != .adverbKanaFirst {
-                    penalty += Self.multiClauseKanaGakiKanaFirstPenalty
+                    penalty += Self.multiClauseKanaSpellingKanaFirstPenalty
                 }
                 // 副詞(漢字も残す)は漢字を下げず、下の かな側の加点だけで「かなをその漢字のすぐ上に」(単文節の place と同じ。3552)。
                 // 漢字を下げると同音の別語(糖分/須玖/始めて)が繰り上がる
@@ -4136,18 +4136,18 @@ extension KanaKanjiConverter {
             // とうぶん は 50 下=当分の間 の次。3634-3636、ユーザ指定)。漢字のコストは bigram(prev→漢字)があればそれ、無ければ
             // unigram+バックオフ(文頭の 当分 7488 = 6988+500。unigram だけと比べると 400 上に置いてしまい とうぶんの間 が先頭だった)。
             // 表に無い読みは従来どおり触らない
-            if isKanaIdentity, !kanaGakiSuppressed.contains(.adverbKanaFirst),
-                let entries = KanaGakiTable.categoryByReadingAndSurface[reading] {
+            if isKanaIdentity, !kanaSpellingSuppressed.contains(.adverbKanaFirst),
+                let entries = KanaSpellingTable.categoryByReadingAndSurface[reading] {
                 let kanjiCosts = entries.compactMap { entry -> (surface: String, unigram: Int)? in
                     guard entry.value == .adverbKanaFirst, let unigram = unigramCosts[entry.key] else { return nil }
                     return (entry.key, unigram)
                 }
                 if let kanji = kanjiCosts.min(by: { $0.unigram < $1.unigram }) {
                     if let kanaUni = unigramCosts[surface] {
-                        if kanaUni + Self.multiClauseKanaGakiKanaFirstMargin > kanji.unigram {
-                            penalty -= kanaUni + Self.multiClauseKanaGakiKanaFirstMargin - kanji.unigram
+                        if kanaUni + Self.multiClauseKanaSpellingKanaFirstMargin > kanji.unigram {
+                            penalty -= kanaUni + Self.multiClauseKanaSpellingKanaFirstMargin - kanji.unigram
                         }
-                    } else if let offset = Self.multiClauseKanaGakiNoUnigramKanaOffsetByReading[reading] {
+                    } else if let offset = Self.multiClauseKanaSpellingNoUnigramKanaOffsetByReading[reading] {
                         let kanjiBigram = bigramCostByIDPair[MultiClauseSymbols.pairKey(prevID, symbolID(kanji.surface))]
                         let kanjiBase = min(kanjiBigram ?? Int.max, kanji.unigram + Self.multiClauseBackoffCost)
                         penalty += kanjiBase + offset - base
@@ -4442,7 +4442,7 @@ extension KanaKanjiConverter {
                         // 連用形+に(目的)は移動動詞が続くときの用法。文末でも格助詞直後の活用割引
                         // (5000)が効くと 千島を裂きに が 千島を先に(を→先4557+先→に532)を
                         // 89 差で押し切るため、文末に限り割引を取り消して素の OOV 値に戻す。
-                        if node.end == n, renyouNiNodeKeys.contains(nodeKeySV),
+                        if node.end == n, continuativeNiNodeKeys.contains(nodeKeySV),
                             Self.multiClauseCaseParticleSurfacesID.contains(prevNode.surfaceID) {
                             cost += Self.multiClauseInflectionDerivedOOVCost
                                 - Self.multiClauseInflectionAfterParticleCost
@@ -5353,21 +5353,21 @@ extension KanaKanjiConverter {
                         }
                         // 連用形+に(目的)の直後は移動動詞(来る/行く 系)が来る(食べに来た/飲みに行く)。
                         // 前ノードが b5 の 連用形+に なら、移動動詞にボーナスを与え 北 等の名詞化を退ける。
-                        if renyouNiNodeKeys.contains(prevNode.key),
+                        if continuativeNiNodeKeys.contains(prevNode.key),
                             Self.isMotionVerbSurface(node.surface) {
-                            cost -= Self.multiClauseRenyouNiMotionVerbBonus
+                            cost -= Self.multiClauseContinuativeNiMotionVerbBonus
                         }
                         // 逆に、連用形+に(目的)の直後に状態の動詞(住む/居る/暮らす/済む)は続かない(3503)。
                         // とかいにすんでる が と+買いに+住んでる で、都会に住んでる(1 点差)に勝っていた(ユーザ指定)
-                        if renyouNiNodeKeys.contains(prevNode.key), node.isInflectionDerived,
-                            Self.multiClauseRenyouNiStatefulVerbPrefixes.contains(where: { node.surface.hasPrefix($0) }) {
-                            cost += Self.multiClauseRenyouNiStatefulVerbPenalty
+                        if continuativeNiNodeKeys.contains(prevNode.key), node.isInflectionDerived,
+                            Self.multiClauseContinuativeNiStatefulVerbPrefixes.contains(where: { node.surface.hasPrefix($0) }) {
+                            cost += Self.multiClauseContinuativeNiStatefulVerbPenalty
                         }
                         // 形容詞(い で終わる活用派生・3 かな以上の追加語彙)の直後に活用派生の動詞は立たない(でかい+言え。3504)。
                         // 形容詞は名詞を修飾する(でかい家)。派生の形容詞・否定(〜い で終わる)と 連用形+に は対象外
                         if node.isInflectionDerived, !node.isKanaIdentity, node.surface.count >= 2,
                             !(node.reading.last.map { $0 == "い" } ?? false),
-                            !renyouNiNodeKeys.contains(node.key),
+                            !continuativeNiNodeKeys.contains(node.key),
                             prevNode.surface.hasSuffix("い"),
                             prevNode.isInflectionDerived
                                 || (prevNode.isCurated && prevNode.isKanaIdentity && prevNode.reading.count >= 3) {
@@ -5429,11 +5429,11 @@ extension KanaKanjiConverter {
                             cost += Self.multiClauseNaAdjectiveCopulaHomophoneNounPenalty
                         }
                         // 連用形+副助詞(呼びさえ)は直後の する系(すれば/しない)で加点、それ以外は減点(定数コメント参照。2894)
-                        if renyouFocusNodeKeys.contains(prevNode.key) {
+                        if continuativeFocusNodeKeys.contains(prevNode.key) {
                             if Self.isSuruFormKanaSurface(node.surface, reading: node.reading) {
-                                cost -= Self.multiClauseRenyouFocusBeforeSuruBonus
+                                cost -= Self.multiClauseContinuativeFocusBeforeSuruBonus
                             } else {
-                                cost += Self.multiClauseRenyouFocusWithoutSuruPenalty
+                                cost += Self.multiClauseContinuativeFocusWithoutSuruPenalty
                             }
                         }
                         // のだ縮約の準体助詞 ん(定数コメント参照)。述語(活用派生)の直後に限る。
@@ -5474,14 +5474,14 @@ extension KanaKanjiConverter {
                         }
                         // 複合動詞の前部要素(連用形)+動詞(定数コメント参照)。取り/撮り忘れている を
                         // 鳥忘れている に勝たせる。
-                        if compoundVerbRenyouNodeKeys.contains(prevNode.key),
+                        if compoundVerbContinuativeNodeKeys.contains(prevNode.key),
                             node.isInflectionDerived || node.isDictionaryFormPredicate
-                                || Self.multiClauseCompoundVerbTailRenyouNounSurfaces.contains(node.surface) {
+                                || Self.multiClauseCompoundVerbTailContinuativeNounSurfaces.contains(node.surface) {
                             // 複合動詞にならない後ろの動詞(取り+買ってきた。鳥買ってきた が正しい。3817)は加点せず減点する
                             if let head = node.surface.first, Self.multiClauseNonCompoundingVerbHeads.contains(head) {
-                                cost += Self.multiClauseCompoundVerbRenyouBonus
+                                cost += Self.multiClauseCompoundVerbContinuativeBonus
                             } else {
-                                cost -= Self.multiClauseCompoundVerbRenyouBonus
+                                cost -= Self.multiClauseCompoundVerbContinuativeBonus
                             }
                         }
                         // 格助詞 に 直後のカ変(来る)活用は移動の到着点用法で最頻(職場に来て/こっちに来た)。
@@ -5490,7 +5490,7 @@ extension KanaKanjiConverter {
                         // 触れない。上に着て(重ね着)は稀用法として許容する。連用形+に(飲みに)の直後にも
                         // 等しく与え、のみ+に+来た が 飲みに+来た を新ボーナス差で逆転しないようにする。
                         if (prevNode.surfaceID == SID.に && prevNode.readingID == SID.に)
-                            || renyouNiNodeKeys.contains(prevNode.key),
+                            || continuativeNiNodeKeys.contains(prevNode.key),
                             node.isInflectionDerived,
                             Self.multiClauseKuruFormSurfacesByID[node.readingID] == node.surface {
                             cost -= Self.multiClauseNiKuruArrivalBonus
@@ -5882,7 +5882,7 @@ extension KanaKanjiConverter {
                     if node.surfaceID == SID.です, prevNode.isInflectionDerived, prevNode.surface.count >= 3,
                         prevNode.surface.hasSuffix("し"), prevNode.reading.hasSuffix("し"),
                         store.isSuruNoun(reading: String(prevNode.reading.dropLast()), candidate: String(prevNode.surface.dropLast())) {
-                        cost += Self.multiClauseSuruRenyouThenDesuPenalty
+                        cost += Self.multiClauseSuruContinuativeThenDesuPenalty
                     }
                     // 問題文の型(正解は/北から/または)・固有名の並び(GrecoやAglianico)の後ろの補助語彙の外来語(定数コメント参照。3738)
                     // 読みが 2 かな以下の語(Tai/Tannat)は、その語で句が終わる・です/だ が続くときだけ(正解はTaiです)。後ろに読みが続くと
@@ -5959,8 +5959,8 @@ extension KanaKanjiConverter {
                         if node.isKanaIdentity, prevNode.isKanaIdentity, !prevNode.isCurated,
                             prevNode.end - prevNode.start >= 2,
                             Self.multiClauseKanaPassiveHeadReadingsID.contains(node.readingID),
-                            Self.isKanaMizenStemReading(prevNode.reading) {
-                            cost += Self.multiClauseKanaMizenStemBeforePassivePenalty
+                            Self.isKanaIrrealisStemReading(prevNode.reading) {
+                            cost += Self.multiClauseKanaIrrealisStemBeforePassivePenalty
                         }
                         #if DEBUG
                         // 時限トレース(2803): MULTI_TRACE_EDGES=1 で全遷移の累積コストを吐く(最良以外の prev も見える)
@@ -6021,8 +6021,8 @@ extension KanaKanjiConverter {
                     eosCost = min(eosCost, Self.multiClauseCuratedEOSCost)
                 }
                 // 連用形+副助詞(呼びさえ)で文が終わることはない(定数コメント参照。2894)
-                if renyouFocusNodeKeys.contains(nodes[idx].key) {
-                    eosCost += Self.multiClauseRenyouFocusWithoutSuruPenalty
+                if continuativeFocusNodeKeys.contains(nodes[idx].key) {
+                    eosCost += Self.multiClauseContinuativeFocusWithoutSuruPenalty
                 }
                 // 形容動詞+だ と同じ読みの名詞(ラクダ)で文が終わるより 楽だ(定数コメント参照。3727)。
                 // 読み全体がその名詞だけ(らくだ)のときと、助詞の直後(あれはラクダ/これもラクダ)は名詞のまま
@@ -7532,7 +7532,7 @@ extension KanaKanjiConverter {
         // 助数詞「か」の表記(数か国対応/数か月前)は設定順に並べ直す(区切りは変えない。2816)
         // 送り仮名の許容形(食い終ってる 等)も同様に設定順へ(2820)
         Self.multiClausePhaseProbe?("結果")
-        return applyOkuriganaVariantPreference(
+        return applyInflectionalKanaVariantPreference(
             reading: normalized,
             to: applyKaCounterVariantPreference(
                 reading: normalized,

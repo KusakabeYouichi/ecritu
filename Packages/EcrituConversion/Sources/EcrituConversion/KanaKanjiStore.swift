@@ -473,11 +473,11 @@ public final class KanaKanjiStore {
         return classMap
     }
 
-    // その読みが五段動詞として登録されているか(inflection_classes の godan-*)。
+    // その読みが五段動詞として登録されているか(inflection_classes の consonantStem-*)。
     // 可能動詞の並べ替え(のみほせる→のみほす)を、基底が本物の五段動詞のときだけに絞るために使う(2868)。
     // おさむ のように動詞として登録が無い読み(人名の 修/収/治)を基底と誤認すると、
     // おさめる の並びが人名の辞書順で塗り替えられる。
-    func hasGodanVerbClass(reading: String) -> Bool {
+    func hasConsonantStemVerbClass(reading: String) -> Bool {
         if let cached = withCacheLock({ cachedInflectionClassMapsByReading[reading] }) {
             return cached.values.contains { $0.hasPrefix("godan") }
         }

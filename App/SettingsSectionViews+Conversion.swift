@@ -310,8 +310,8 @@ struct ScriptVariantSuppressionSettingsSection: View {
     }
 }
 
-// かなで書く言葉(3404)。例は KanaGakiTable(references/kanagaki.plist から生成)の各仲間の先頭から並べる
-struct KanaGakiSettingsSection: View {
+// かなで書く言葉(3404)。例は KanaSpellingTable(references/kanagaki.plist から生成)の各仲間の先頭から並べる
+struct KanaSpellingSettingsSection: View {
     @Binding var adverb: Bool
     @Binding var conjunction: Bool
     @Binding var auxiliary: Bool
@@ -324,17 +324,17 @@ struct KanaGakiSettingsSection: View {
     static let exampleLimit = 12
 
     // body のたびに表を走査していたのを、仲間ごとに 1 回だけ作って持つ(3829。結果と並びは同じ)
-    private static let examplesByCategory: [KanaGakiCategory: String] = Dictionary(
-        uniqueKeysWithValues: KanaGakiCategory.allCases.map { ($0, makeExamples(for: $0)) }
+    private static let examplesByCategory: [KanaSpellingCategory: String] = Dictionary(
+        uniqueKeysWithValues: KanaSpellingCategory.allCases.map { ($0, makeExamples(for: $0)) }
     )
 
-    static func examples(for category: KanaGakiCategory) -> String {
+    static func examples(for category: KanaSpellingCategory) -> String {
         examplesByCategory[category] ?? makeExamples(for: category)
     }
 
-    private static func makeExamples(for category: KanaGakiCategory) -> String {
+    private static func makeExamples(for category: KanaSpellingCategory) -> String {
         var seen = Set<String>()
-        let surfaces = (KanaGakiTable.entries[category] ?? []).map(\.surface).filter { seen.insert($0).inserted }
+        let surfaces = (KanaSpellingTable.entries[category] ?? []).map(\.surface).filter { seen.insert($0).inserted }
         let shown = surfaces.prefix(exampleLimit).joined(separator: "、")
         return surfaces.count > exampleLimit ? shown + " など" : shown
     }
@@ -358,7 +358,7 @@ struct KanaGakiSettingsSection: View {
         .settingsCardStyle()
     }
 
-    private func toggle(_ isOn: Binding<Bool>, _ category: KanaGakiCategory) -> some View {
+    private func toggle(_ isOn: Binding<Bool>, _ category: KanaSpellingCategory) -> some View {
         Toggle(isOn: isOn) {
             Text("\(category.title)を抑制\n(\(Self.examples(for: category)))")
         }
@@ -368,7 +368,7 @@ struct KanaGakiSettingsSection: View {
 
 // 常用漢字による書きかえ(3422。見出しは 3429 で変更)。選択肢はラジオボタン式で全部見せ、前だけ/後だけ には
 // 出る語を同じ順に並べて対応が分かるようにする(ユーザ指定 3429)
-struct KakikaeSettingsSection: View {
+struct KanjiRewriteSettingsSection: View {
     @Binding var rawValue: String
     // 日常語の例外グループ(了解・了承・回復・連想 等)は設定にかかわらず常用漢字を先に(3644)
     @Binding var everydayException: Bool
@@ -378,17 +378,17 @@ struct KakikaeSettingsSection: View {
     static let exampleBefores = [
         "醗酵", "廻転", "衣裳", "暗誦", "編輯", "叡智", "蒸溜", "交叉", "奇蹟", "註釈", "根柢", "洗滌", "刺戟", "綜合", "抒情",
         "障碍", "稀少", "史蹟", "防禦", "颱風", "煽情", "弘報", "熔接", "蒐集", "古稀", "下剋上", "掩護", "恩誼", "遺蹟"
-    ].filter { KakikaeTable.afterByBefore[$0] != nil }
+    ].filter { KanjiRewriteTable.afterByBefore[$0] != nil }
 
     static var beforeExamples: String {
         exampleBefores.joined(separator: "、") + " など"
     }
 
     static var afterExamples: String {
-        exampleBefores.compactMap { KakikaeTable.afterByBefore[$0] }.joined(separator: "、") + " など"
+        exampleBefores.compactMap { KanjiRewriteTable.afterByBefore[$0] }.joined(separator: "、") + " など"
     }
 
-    private func subtitle(for option: KakikaePreference) -> String {
+    private func subtitle(for option: KanjiRewritePreference) -> String {
         switch option {
         case .beforeOnly: return Self.beforeExamples
         case .afterOnly: return Self.afterExamples
@@ -403,7 +403,7 @@ struct KakikaeSettingsSection: View {
 
             KanjiRewriteOptionList(rawValue: $rawValue, subtitle: subtitle(for:))
 
-            Text("表外字を同じ音の常用漢字に置き換えた書き方(1956年 国語審議会報告『同音の漢字による書きかえ』の\(KakikaeTable.switchablePairs.count)語)の扱いを選びます。『醗酵前』『蒸溜所』のような、その語を含む語にも効きます。1字単位の書きかえ(廻→回、智→知 など)は人名・地名を巻き込むので対象外です。報告の後に常用漢字に加わった字の組(臆測⇄憶測、肝腎⇄肝心、研磨⇄研摩 など)は X.10 で選びます。追加語彙に登録した語と、学習した語は対象外です。現代的初期設定は[両方(本来の漢字を先に)]、戦略的初期設定は[本来の漢字だけ]、保守的初期設定は[両方(常用漢字を先に)]です。この設定ができる前から使っている端末は、以前から本来の漢字を先頭にしていた語(醗酵・日蝕・棲息)を変えないよう[両方(本来の漢字を先に)]にしてあります。")
+            Text("表外字を同じ音の常用漢字に置き換えた書き方(1956年 国語審議会報告『同音の漢字による書きかえ』の\(KanjiRewriteTable.switchablePairs.count)語)の扱いを選びます。『醗酵前』『蒸溜所』のような、その語を含む語にも効きます。1字単位の書きかえ(廻→回、智→知 など)は人名・地名を巻き込むので対象外です。報告の後に常用漢字に加わった字の組(臆測⇄憶測、肝腎⇄肝心、研磨⇄研摩 など)は X.10 で選びます。追加語彙に登録した語と、学習した語は対象外です。現代的初期設定は[両方(本来の漢字を先に)]、戦略的初期設定は[本来の漢字だけ]、保守的初期設定は[両方(常用漢字を先に)]です。この設定ができる前から使っている端末は、以前から本来の漢字を先頭にしていた語(醗酵・日蝕・棲息)を変えないよう[両方(本来の漢字を先に)]にしてあります。")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -411,7 +411,7 @@ struct KakikaeSettingsSection: View {
             Toggle("日常語は常用漢字を先に(例外)", isOn: $everydayException)
                 .toggleStyle(.switch)
 
-            Text("了解・了承・回復・連想・制御 のように、日常では常用漢字側ばかりを使う語(\(KakikaePreference.everydayAfterFirstPairs.sorted().joined(separator: "・")))は、上の設定が『本来の漢字だけ』や『本来の漢字を先に』でも、常用漢字を先に出し、本来の漢字は後ろに出します。オフにすると、これらの語も上の設定どおりになります。現代的初期設定と保守的初期設定はオン、戦略的初期設定はオフです。")
+            Text("了解・了承・回復・連想・制御 のように、日常では常用漢字側ばかりを使う語(\(KanjiRewritePreference.everydayAfterFirstPairs.sorted().joined(separator: "・")))は、上の設定が『本来の漢字だけ』や『本来の漢字を先に』でも、常用漢字を先に出し、本来の漢字は後ろに出します。オフにすると、これらの語も上の設定どおりになります。現代的初期設定と保守的初期設定はオン、戦略的初期設定はオフです。")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -420,14 +420,14 @@ struct KakikaeSettingsSection: View {
     }
 }
 
-// 報告の後に書きかえ前の字が常用漢字に加わった組(臆測⇄憶測、肝腎⇄肝心。KakikaeTable.lateStandardizedPairs)の書きかえ(3570)。
+// 報告の後に書きかえ前の字が常用漢字に加わった組(臆測⇄憶測、肝腎⇄肝心。KanjiRewriteTable.lateStandardizedPairs)の書きかえ(3570)。
 // 選択肢は X.9 と同じ 4 択
 struct LateStandardizedRewriteSettingsSection: View {
     @Binding var rawValue: String
 
     // 例に並べる書きかえ前の語(ユーザ指定 3570)。表に無い語は落とす
     static let exampleBefores = ["臆測", "肝腎", "研磨"].filter { before in
-        KakikaeTable.lateStandardizedPairs.contains { $0.before == before }
+        KanjiRewriteTable.lateStandardizedPairs.contains { $0.before == before }
     }
 
     static var beforeExamples: String {
@@ -435,11 +435,11 @@ struct LateStandardizedRewriteSettingsSection: View {
     }
 
     static var afterExamples: String {
-        exampleBefores.compactMap { before in KakikaeTable.lateStandardizedPairs.first { $0.before == before }?.after }
+        exampleBefores.compactMap { before in KanjiRewriteTable.lateStandardizedPairs.first { $0.before == before }?.after }
             .joined(separator: "、") + " など"
     }
 
-    private func subtitle(for option: KakikaePreference) -> String {
+    private func subtitle(for option: KanjiRewritePreference) -> String {
         switch option {
         case .beforeOnly: return Self.beforeExamples
         case .afterOnly: return Self.afterExamples
@@ -454,7 +454,7 @@ struct LateStandardizedRewriteSettingsSection: View {
 
             KanjiRewriteOptionList(rawValue: $rawValue, subtitle: subtitle(for:))
 
-            Text("1956年の報告『同音の漢字による書きかえ』の語のうち、報告の後に本来の漢字が常用漢字表に加わった組(甚・磨・妄は1981年、闇・臆・潰・毀・窟・腎・汎は2010年。\(KakikaeTable.lateStandardizedPairs.count)組)の扱いを選びます。臆測⇄憶測、肝腎⇄肝心、研磨⇄研摩 のような組です。今はどちらの字も常用漢字なので、その字を含む別の語(肝腎症候群、研磨材 など)は書きかえません。追加語彙に登録した語と、学習した語は対象外です。現代的初期設定は[両方(本来の漢字を先に)]、戦略的初期設定は[本来の漢字だけ]、保守的初期設定は[両方(常用漢字を先に)]です。この設定ができる前から使っている端末は、以前と同じく両方を出すよう[両方(本来の漢字を先に)]にしてあります。")
+            Text("1956年の報告『同音の漢字による書きかえ』の語のうち、報告の後に本来の漢字が常用漢字表に加わった組(甚・磨・妄は1981年、闇・臆・潰・毀・窟・腎・汎は2010年。\(KanjiRewriteTable.lateStandardizedPairs.count)組)の扱いを選びます。臆測⇄憶測、肝腎⇄肝心、研磨⇄研摩 のような組です。今はどちらの字も常用漢字なので、その字を含む別の語(肝腎症候群、研磨材 など)は書きかえません。追加語彙に登録した語と、学習した語は対象外です。現代的初期設定は[両方(本来の漢字を先に)]、戦略的初期設定は[本来の漢字だけ]、保守的初期設定は[両方(常用漢字を先に)]です。この設定ができる前から使っている端末は、以前と同じく両方を出すよう[両方(本来の漢字を先に)]にしてあります。")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -463,18 +463,18 @@ struct LateStandardizedRewriteSettingsSection: View {
     }
 }
 
-// 書きかえの 4 択(X.9 と X.10 で共通。3570 で KakikaeSettingsSection から切り出し)。選択肢はラジオボタン式で全部見せる
+// 書きかえの 4 択(X.9 と X.10 で共通。3570 で KanjiRewriteSettingsSection から切り出し)。選択肢はラジオボタン式で全部見せる
 struct KanjiRewriteOptionList: View {
     @Binding var rawValue: String
-    let subtitle: (KakikaePreference) -> String
+    let subtitle: (KanjiRewritePreference) -> String
 
-    private var preference: KakikaePreference {
-        KakikaePreference(rawValue: rawValue) ?? .strategicDefault
+    private var preference: KanjiRewritePreference {
+        KanjiRewritePreference(rawValue: rawValue) ?? .strategicDefault
     }
 
     var body: some View {
         VStack(spacing: 8) {
-            ForEach(KakikaePreference.allCases) { option in
+            ForEach(KanjiRewritePreference.allCases) { option in
                 RadioOptionRow(
                     title: option.title,
                     subtitle: subtitle(option),
@@ -701,11 +701,11 @@ struct KaCounterVariantSettingsSection: View {
 
 // 送り仮名の許容形(終る/取扱う/届)。『送り仮名の付け方』(1973 年内閣告示)の許容を 3 グループに分け、
 // グループごとに 本則だけ/本則を先に/許容を先に を選ぶ。値は "stem:standardOnly,compound:…,noun:…" で共有 UserDefaults に保存(2820)
-struct OkuriganaVariantSettingsSection: View {
+struct InflectionalKanaVariantSettingsSection: View {
     @Binding var rawValue: String
 
-    private var preference: OkuriganaVariantPreference {
-        OkuriganaVariantPreference.decode(rawValue)
+    private var preference: InflectionalKanaVariantPreference {
+        InflectionalKanaVariantPreference.decode(rawValue)
     }
 
     var body: some View {
@@ -713,7 +713,7 @@ struct OkuriganaVariantSettingsSection: View {
             SettingsCardTitle(title: "X.13 送り仮名の許容形 – orthographe", subtitle: "送り仮名の付け方(1973 年内閣告示)の許容")
 
             VStack(alignment: .leading, spacing: 12) {
-                ForEach(OkuriganaVariantGroup.allCases) { group in
+                ForEach(InflectionalKanaVariantGroup.allCases) { group in
                     groupRow(group)
                 }
             }
@@ -726,7 +726,7 @@ struct OkuriganaVariantSettingsSection: View {
         .settingsCardStyle()
     }
 
-    private func groupRow(_ group: OkuriganaVariantGroup) -> some View {
+    private func groupRow(_ group: InflectionalKanaVariantGroup) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(group.title)
                 .font(.subheadline.weight(.semibold))
@@ -742,7 +742,7 @@ struct OkuriganaVariantSettingsSection: View {
                     rawValue = next.encoded
                 }
             )) {
-                ForEach(OkuriganaVariantMode.allCases) { mode in
+                ForEach(InflectionalKanaVariantMode.allCases) { mode in
                     Text(mode.title).tag(mode)
                 }
             }

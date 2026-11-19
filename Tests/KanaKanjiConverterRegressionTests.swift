@@ -248,7 +248,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     }
 
     // のせわすれた: 一段 のせる の連用形 乗せ/載せ が供給されず(載せ は のせ の word_costs に無い)、
-    // の+世話+擦れた が最良になっていた。ichidanRenyouNounBaseReadings に のせる、seed のせ に 載せ、
+    // の+世話+擦れた が最良になっていた。vowelStemContinuativeNounBaseReadings に のせる、seed のせ に 載せ、
     // 複合動詞前部要素ボーナスの対象に のせ(送り仮名一致で判定)を追加(2784)
     func testRegressionRealLMNosewasuretaCompoundVerb() throws {
         try prepareRealLMDictionary()
@@ -828,8 +828,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         try prepareRealLMDictionary()
 
         // 申込み時 は複合語の前部要素の許容形(2820)。初期設定では出さないので保守的設定で並びを見る
-        converter.setOkuriganaVariantPreference(.conservative)
-        defer { converter.setOkuriganaVariantPreference(.default) }
+        converter.setInflectionalKanaVariantPreference(.conservative)
+        defer { converter.setInflectionalKanaVariantPreference(.default) }
         let multi = converter.multiClauseCandidates(for: "もうしこみじ", systemCandidateMode: .surface)
         XCTAssertEqual(Array(multi.prefix(3)), ["申し込み時", "申込み時", "申込時"], "multi=\(multi)")
         XCTAssertEqual(Array(converter.multiClauseCandidates(for: "もうしこみじ", systemCandidateMode: .surface).prefix(2)), ["申し込み時", "申込み時"])
@@ -1093,7 +1093,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     }
 
     // 五段サ行の未然形(話す→話さ)は形容詞さ名詞化ではないので、ブーストの対象外であること。
-    func testRegressionRealLMGodanMizenSaIsNotBoostedAsNominalization() throws {
+    func testRegressionRealLMConsonantStemIrrealisSaIsNotBoostedAsNominalization() throws {
         try prepareRealLMDictionary()
 
         let list = converter.candidates(for: "はなさ", limit: 30, systemCandidateMode: .surface)
@@ -1716,10 +1716,10 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("ぎゅうにゅうでぷりんをつくる").first, "牛乳でプリンを作る")
         XCTAssertEqual(multi("ちーずけーきをつくる").first, "チーズケーキを作る")
         // X.9 を 本来の漢字を先に にしたとき、蒸留酒/蒸留所 のような決まった複合語も 蒸溜 に
-        converter.setKakikaePreference(.bothAfterFirst)
+        converter.setKanjiRewritePreference(.bothAfterFirst)
         XCTAssertEqual(multi("ぶどうしぼりかすのじょうりゅうしゅ").first, "ぶどう絞りかすの蒸留酒")
         // 以降は実機の設定(両方・本来の漢字を先に)のまま見る
-        converter.setKakikaePreference(.bothBeforeFirst)
+        converter.setKanjiRewritePreference(.bothBeforeFirst)
         XCTAssertEqual(multi("じょうりゅうしゅであるものをえらんでください").first, "蒸溜酒であるものを選んでください")
         XCTAssertEqual(multi("ぶどうしぼりかすのじょうりゅうしゅ").first, "ぶどう絞りかすの蒸溜酒")
         // 産出 を先に(教材 54:3)
@@ -2107,8 +2107,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("あるでしょ").first, "あるでしょ", "\(multi("あるでしょ").prefix(3))")
         XCTAssertEqual(multi("かれはがっこうにいった").first, "彼は学校に行った")
         // 書きかえの日常語の例外に 理屈/画期的(本来の漢字を先に でも常用漢字を先に)。理窟 は X.10 の組(ユーザ指定)
-        converter.setKakikaeEverydayException(true)
-        converter.setKakikaePreference(.bothBeforeFirst)
+        converter.setKanjiRewriteEverydayException(true)
+        converter.setKanjiRewritePreference(.bothBeforeFirst)
         converter.setLateStandardizedRewritePreference(.bothBeforeFirst)
         XCTAssertEqual(single("りくつ").first, "理屈", "\(single("りくつ").prefix(4))")
         XCTAssertTrue(single("りくつ").contains("理窟"), "\(single("りくつ").prefix(4))")
@@ -2671,7 +2671,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
     // 送り仮名をカタカナで書いた形(凡テ/殆ド/始メテ 等)は出さない(3714、ユーザ指定。suppr の □ 送り仮名をカタカナで書いた形)。
     // ふつうの書き方は残る
-    func testRegressionRealLMKatakanaOkuriganaSuppressed() throws {
+    func testRegressionRealLMKatakanaInflectionalKanaSuppressed() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
         for (reading, banned, kept) in [
@@ -3054,9 +3054,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(single("りょう").prefix(6)), ["量", "漁", "猟", "寮", "両", "良"])
         XCTAssertEqual(multi("りょうじんえい").first ?? single("りょうじんえい").first, "両陣営")
         XCTAssertEqual(KanaKanjiConverter.sweetnessOrthographyOrdered(reading: "あまみおおしまのわいん", candidates: ["奄美大島のワイン"]), ["奄美大島のワイン"])
-        XCTAssertNil(KanaKanjiConverter.nominalizedOkuriganaRestored("寄付金", reading: "きふきん"))
-        XCTAssertNil(KanaKanjiConverter.nominalizedOkuriganaRestored("気付", reading: "きつけ"))
-        XCTAssertEqual(KanaKanjiConverter.nominalizedOkuriganaRestored("表記付テーブル", reading: "ひょうきつきてーぶる"), "表記付きテーブル")
+        XCTAssertNil(KanaKanjiConverter.nominalizedInflectionalKanaRestored("寄付金", reading: "きふきん"))
+        XCTAssertNil(KanaKanjiConverter.nominalizedInflectionalKanaRestored("気付", reading: "きつけ"))
+        XCTAssertEqual(KanaKanjiConverter.nominalizedInflectionalKanaRestored("表記付テーブル", reading: "ひょうきつきてーぶる"), "表記付きテーブル")
         XCTAssertEqual(Array(multi("がめいなど").prefix(2)), ["Gamayなど", "ガメイなど"])
     }
 
@@ -6131,11 +6131,11 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // オイシい 抑制で オイシそー が導出されないこと
         XCTAssertFalse(adjective.contains("オイシそー"), "adjective=\(adjective)")
 
-        let ichidan = converter.candidates(for: "たべそー", limit: 24, systemCandidateMode: .surface)
-        XCTAssertTrue(ichidan.contains("食べそー"), "ichidan=\(ichidan)")
+        let vowelStem = converter.candidates(for: "たべそー", limit: 24, systemCandidateMode: .surface)
+        XCTAssertTrue(vowelStem.contains("食べそー"), "ichidan=\(vowelStem)")
 
-        let godan = converter.candidates(for: "いきそー", limit: 24, systemCandidateMode: .surface)
-        XCTAssertTrue(godan.contains("行きそー"), "godan=\(godan)")
+        let consonantStem = converter.candidates(for: "いきそー", limit: 24, systemCandidateMode: .surface)
+        XCTAssertTrue(consonantStem.contains("行きそー"), "godan=\(consonantStem)")
     }
 
     // 実LM回帰: かれらは — Sudachi は 彼ら を A単位で 彼+ら に分割するため word_costs に
@@ -6229,8 +6229,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single.first, "送られてきます", "single=\(single)")
 
         // 一段・サ変の同型連鎖も導出されること
-        let ichidan = converter.candidates(for: "たべられてきた", limit: 8, systemCandidateMode: .surface)
-        XCTAssertTrue(ichidan.contains("食べられてきた"), "ichidan=\(ichidan)")
+        let vowelStem = converter.candidates(for: "たべられてきた", limit: 8, systemCandidateMode: .surface)
+        XCTAssertTrue(vowelStem.contains("食べられてきた"), "ichidan=\(vowelStem)")
     }
 
     // 実LM回帰: くわえよう — wc では 加える(9397)が基底先頭なのに並べ替え層で 銜えよう が
@@ -6354,7 +6354,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
-    func testRegressionGodanTeIkuChainDerivesMotteikuVariants() {
+    func testRegressionConsonantStemTeIkuChainDerivesMotteikuVariants() {
         converter.learn(reading: "もつ", candidate: "持つ")
 
         let cases: [(reading: String, expected: String)] = [
@@ -6406,7 +6406,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
-    func testRegressionGodanCausativeImperativeIsDerived() {
+    func testRegressionConsonantStemCausativeImperativeIsDerived() {
         converter.learn(reading: "のむ", candidate: "飲む")
         converter.learn(reading: "かく", candidate: "書く")
 
@@ -6574,7 +6574,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
-    func testRegressionGodanYasuiFormIsDerivedFromBaseVerbCandidate() {
+    func testRegressionConsonantStemYasuiFormIsDerivedFromBaseVerbCandidate() {
         converter.learn(reading: "うつ", candidate: "打つ")
         converter.learn(reading: "かく", candidate: "書く")
 
@@ -6597,7 +6597,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
-    func testRegressionGodanVolitionalFormsAreDerivedFromBaseVerbCandidate() {
+    func testRegressionConsonantStemVolitionalFormsAreDerivedFromBaseVerbCandidate() {
         // -る動詞は五段/一段が読みで曖昧(帰る/変える)なため seed fallback ではクラス
         // 解決できないことがある。ここでは曖昧でない五段(く/む/す/ぐ)で導出を確認する。
         // (帰ろう 等の五段ラ行は本番=実辞書で動作確認済み)
@@ -6627,7 +6627,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
-    func testRegressionGodanVolitionalFormAcceptsTrailingParticles() {
+    func testRegressionConsonantStemVolitionalFormAcceptsTrailingParticles() {
         // ユーザ報告: いこうかと→行こうかと。逐次入力(プレフィックスを順に評価)で
         // 候補キャッシュ連鎖を成立させたうえで、意志形+助詞(かと)が導出されることを確認。
         converter.learn(reading: "いく", candidate: "行く")
@@ -6870,7 +6870,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(candidates.contains("ご勉強する"), "candidates=\(candidates)")
     }
 
-    func testRegressionHonorificOSuruCandidatesAreDerivedFromVerbRenyouForms() {
+    func testRegressionHonorificOSuruCandidatesAreDerivedFromVerbContinuativeForms() {
         converter.learn(reading: "つれる", candidate: "連れる")
         converter.learn(reading: "むかえる", candidate: "迎える")
         converter.learn(reading: "よぶ", candidate: "呼ぶ")
@@ -6898,7 +6898,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
-    func testRegressionHonorificORenyouAndONaruCandidatesAreDerivedFromVerbRenyouForms() {
+    func testRegressionHonorificOContinuativeAndONaruCandidatesAreDerivedFromVerbContinuativeForms() {
         converter.learn(reading: "わすれる", candidate: "忘れる")
         converter.learn(reading: "きめる", candidate: "決める")
         converter.learn(reading: "しらべる", candidate: "調べる")
@@ -6928,7 +6928,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
-    func testRegressionHonorificOSoftRequestCandidatesAreDerivedFromRenyouAndNounStems() {
+    func testRegressionHonorificOSoftRequestCandidatesAreDerivedFromContinuativeAndNounStems() {
         converter.learn(reading: "わすれる", candidate: "忘れる")
         converter.learn(reading: "きづかい", candidate: "気遣い")
 
@@ -6952,7 +6952,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
-    func testRegressionGodanPassiveFormsAreDerivedFromBaseVerbCandidates() {
+    func testRegressionConsonantStemPassiveFormsAreDerivedFromBaseVerbCandidates() {
         converter.learn(reading: "けす", candidate: "消す")
         converter.learn(reading: "うる", candidate: "売る")
 
@@ -6977,7 +6977,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         )
     }
 
-    func testRegressionGodanPassiveRenyouFormIsDerivedFromBaseVerbCandidate() {
+    func testRegressionConsonantStemPassiveContinuativeFormIsDerivedFromBaseVerbCandidate() {
         converter.learn(reading: "つかう", candidate: "使う")
 
         let candidates = converter.candidates(
@@ -6992,7 +6992,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         )
     }
 
-    func testRegressionGodanPassiveTeAspectFormsAreDerivedFromBaseVerbCandidate() {
+    func testRegressionConsonantStemPassiveTeAspectFormsAreDerivedFromBaseVerbCandidate() {
         converter.learn(reading: "ふくむ", candidate: "含む")
 
         let cases: [(reading: String, expected: String)] = [
@@ -7015,7 +7015,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
-    func testRegressionMakuAuxiliaryVariantsAreDerivedFromGodanBase() {
+    func testRegressionMakuAuxiliaryVariantsAreDerivedFromConsonantStemBase() {
         converter.learn(reading: "へる", candidate: "減る")
 
         let cases: [(reading: String, expected: String)] = [
@@ -7037,7 +7037,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
-    func testRegressionSahenNounCandidatesDeriveSuruForms() {
+    func testRegressionSuruVerbNounCandidatesDeriveSuruForms() {
         converter.learn(reading: "かくにん", candidate: "確認")
 
         let suruCandidates = converter.candidates(
@@ -7098,7 +7098,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         )
     }
 
-    func testRegressionSahenNounTeMiruChainDerivesShiteMite() {
+    func testRegressionSuruVerbNounTeMiruChainDerivesShiteMite() {
         converter.learn(reading: "けんさくしてみる", candidate: "検索してみる")
 
         let directCandidates = converter.candidates(
@@ -7235,7 +7235,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
-    func testRegressionTomattariSuruVariantsAreDerivedFromGodanBase() {
+    func testRegressionTomattariSuruVariantsAreDerivedFromConsonantStemBase() {
         converter.learn(reading: "とまる", candidate: "止まる")
 
         let cases: [(reading: String, expected: String)] = [
@@ -7428,7 +7428,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
-    func testRegressionTeKuruFormsAreDerivedFromIchidanBaseCandidate() {
+    func testRegressionTeKuruFormsAreDerivedFromVowelStemBaseCandidate() {
         converter.learn(reading: "でる", candidate: "出る")
 
         let cases: [(reading: String, expected: String)] = [
@@ -7451,7 +7451,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
-    func testRegressionTeKuruFormsAreDerivedFromGodanBaseCandidate() {
+    func testRegressionTeKuruFormsAreDerivedFromConsonantStemBaseCandidate() {
         converter.learn(reading: "うる", candidate: "売る")
         converter.learn(reading: "かく", candidate: "描く")
 
@@ -7868,7 +7868,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
-    func testRegressionGodanTagaruFormsAreDerivedFromBaseVerbCandidate() {
+    func testRegressionConsonantStemTagaruFormsAreDerivedFromBaseVerbCandidate() {
         converter.learn(reading: "よぶ", candidate: "呼ぶ")
 
         let cases: [(reading: String, expected: String)] = [
@@ -7956,7 +7956,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
-    func testRegressionGodanNegativePastConditionalIsDerivedFromBaseVerbCandidate() {
+    func testRegressionConsonantStemNegativePastConditionalIsDerivedFromBaseVerbCandidate() {
         converter.learn(reading: "とどく", candidate: "届く")
 
         let candidates = converter.candidates(
@@ -7971,7 +7971,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         )
     }
 
-    func testRegressionGodanPastConditionalIsDerivedFromBaseVerbCandidate() {
+    func testRegressionConsonantStemPastConditionalIsDerivedFromBaseVerbCandidate() {
         converter.learn(reading: "いれなおす", candidate: "入れ直す")
 
         let candidates = converter.candidates(
@@ -7986,7 +7986,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         )
     }
 
-    func testRegressionGodanCausativeTeFormIsDerivedFromBaseVerbCandidate() {
+    func testRegressionConsonantStemCausativeTeFormIsDerivedFromBaseVerbCandidate() {
         converter.learn(reading: "おわる", candidate: "終わる")
 
         let cases: [(reading: String, expected: String)] = [
@@ -8008,7 +8008,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
-    func testRegressionIchidanZuFormIsDerivedFromBaseVerbCandidate() {
+    func testRegressionVowelStemZuFormIsDerivedFromBaseVerbCandidate() {
         converter.learn(reading: "つける", candidate: "付ける")
 
         let candidates = converter.candidates(
@@ -8023,7 +8023,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         )
     }
 
-    func testRegressionIchidanNegativePastConditionalIsDerivedFromBaseVerbCandidate() {
+    func testRegressionVowelStemNegativePastConditionalIsDerivedFromBaseVerbCandidate() {
         converter.learn(reading: "ひろめる", candidate: "広める")
 
         let candidates = converter.candidates(
@@ -8038,7 +8038,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         )
     }
 
-    func testRegressionIchidanPastConditionalIsDerivedFromBaseVerbCandidate() {
+    func testRegressionVowelStemPastConditionalIsDerivedFromBaseVerbCandidate() {
         converter.learn(reading: "しらべる", candidate: "調べる")
 
         let candidates = converter.candidates(
@@ -8187,7 +8187,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
-    func testRegressionIchidanTeAspectConjunctiveFormsAreDerivedFromBaseVerbCandidate() {
+    func testRegressionVowelStemTeAspectConjunctiveFormsAreDerivedFromBaseVerbCandidate() {
         converter.learn(reading: "にる", candidate: "似る")
 
         let cases: [(reading: String, expected: String)] = [
@@ -8555,7 +8555,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
-    func testRegressionMixedScriptSahenOptInDerivesNeOchiSuru() {
+    func testRegressionMixedScriptSuruVerbOptInDerivesNeOchiSuru() {
         converter.learn(reading: "ねおち", candidate: "寝落ち")
 
         let candidates = converter.candidates(
@@ -8567,7 +8567,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(candidates.contains("寝落ちする"), "candidates=\(candidates)")
     }
 
-    func testRegressionMixedScriptSahenOptInSkipsUnlistedReadings() {
+    func testRegressionMixedScriptSuruVerbOptInSkipsUnlistedReadings() {
         converter.learn(reading: "かくうち", candidate: "架空ち")
 
         let candidates = converter.candidates(
@@ -8772,7 +8772,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(reloaded.hasLearnedKanaIdentity(for: "ちゃんと"))
     }
 
-    func testRegressionInitialAjoutVocabularySahenNounDerivesConjugations() {
+    func testRegressionInitialAjoutVocabularySuruVerbNounDerivesConjugations() {
         // 追加語彙(void.plist=initialAjoutVocabulary)のサ変名詞も活用推論の対象になる
         // (まかいぞうしてる→魔改造してる)。以前は手動追加分のみで、void 由来は
         // し→市 等の誤分割だけが残っていた。
@@ -9707,7 +9707,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     }
 
     // います はかなが正書(そこにいます 等)だが、①かな いる が inflection_classes で
-    // godan-ru のみ登録(要る/入る の巻き添え)で います が導出されず、②連文節では
+    // consonantStem-ru のみ登録(要る/入る の巻き添え)で います が導出されず、②連文節では
     // (b) word_costs の高コスト収穫かな(います wc13367→底値9500)が先着 dedupe で
     // (b2) の安い活用コピー(7200)を潰し、居ます が系統的に勝っていた。
     // 補助クラス表(いる=一段追加)+かな識別の派生フラグ合流で是正。
@@ -9727,7 +9727,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // 連濁収穫フィルタ: 墓(ばか)/蓋・二(ぶた)/口(ぐち)等、Sudachi が複合語内の連濁読みで
     // 収穫した単漢字は単独・合成に出さない(連濁は複合語境界の現象)。判定は「清音化した
     // 読みに同じ表層がより安く実在」— 濁側が主の音読ペア(分=ぶん、台=だい)は誤爆しない。
-    func testRegressionRealLMRendakuHarvestFiltered() throws {
+    func testRegressionRealLMSequentialVoicingHarvestFiltered() throws {
         try prepareRealLMDictionary()
         let multi = converter.multiClauseCandidates(for: "ばかすぎる", systemCandidateMode: .surface)
         XCTAssertFalse(multi.contains(where: { $0.contains("墓") }), "multi=\(multi)")
@@ -10223,7 +10223,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // たべにきたとり→た紅来た鳥 等(食べに来た鳥 が出ない)。動詞連用形は活用エンジンの終点で
     // 供給されず 食べ 単独ノードが立たない構造欠落。(b5)連用形+に を1単位供給+(b4c)カ変来る
     // 供給+連用形+に直後の移動動詞ボーナスで 食べに来た鳥 を成立させる。机に置く/北風 は無影響。
-    func testRegressionRealLMRenyouNiMotion() throws {
+    func testRegressionRealLMContinuativeNiMotion() throws {
         try prepareRealLMDictionary()
         XCTAssertEqual(converter.multiClauseCandidates(for: "たべにきたとり", systemCandidateMode: .surface).first, "食べに来た鳥")
         XCTAssertEqual(converter.multiClauseCandidates(for: "のみにきた", systemCandidateMode: .surface).first, "飲みに来た")
@@ -10280,7 +10280,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // かいそう→{解そう, 会そう, 介そう, …}(サ変名詞 解/会/介 の五段化 解す/会す/介す の意向形)が
     // godanVolitional ブースト(+320)で辞書名詞・様態を押しのけていた。サ変名詞語幹(〜する成立)
     // +漢字の五段化意向はブースト対象外に。真正五段(話す→話そう/書く→書こう)は維持。
-    func testRegressionRealLMKaisouNoSahenVolitional() throws {
+    func testRegressionRealLMKaisouNoSuruVerbVolitional() throws {
         try prepareRealLMDictionary()
         let single = converter.candidates(for: "かいそう", limit: 8, systemCandidateMode: .surface)
         XCTAssertFalse(single.contains(where: { ["解そう", "会そう", "介そう"].contains($0) }), "single=\(single)")
@@ -11158,7 +11158,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         try prepareRealLMDictionary()
         let single = converter.candidates(for: "わからなく", limit: 6, systemCandidateMode: .surface)
         XCTAssertEqual(Array(single.prefix(3)), ["わからなく", "分からなく", "解らなく"], "single=\(single)")
-        // godan なく の一般供給確認(名詞合成の干渉が無い動詞で導出を確認)
+        // consonantStem なく の一般供給確認(名詞合成の干渉が無い動詞で導出を確認)
         let naku = converter.candidates(for: "うごかなく", limit: 6, systemCandidateMode: .surface)
         XCTAssertTrue(naku.contains("動かなく"), "godan なく 一般: \(naku)")
     }
@@ -11519,7 +11519,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(ika.contains("イカ"), "\(ika)")
         // 後方
         converter.setKatakanaEmphasisCandidateMode(.demote)
-        converter.setMazegakiCandidateMode(.demote)
+        converter.setMixedScriptCandidateMode(.demote)
         let umaiDemoted = converter.candidates(for: "うまい", limit: 20, systemCandidateMode: .surface)
         XCTAssertTrue(umaiDemoted.contains("ウマイ"), "\(umaiDemoted)")
         XCTAssertTrue(umaiDemoted.firstIndex(of: "ウマイ")! > umaiDemoted.firstIndex(of: "旨い")!, "\(umaiDemoted)")
@@ -11528,12 +11528,12 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(manenDemoted.firstIndex(of: "まん延")! > manenDemoted.firstIndex(of: "蔓延")!, "\(manenDemoted)")
         // 同列
         converter.setKatakanaEmphasisCandidateMode(.normal)
-        converter.setMazegakiCandidateMode(.normal)
+        converter.setMixedScriptCandidateMode(.normal)
         let umaiNormal = converter.candidates(for: "うまい", limit: 8, systemCandidateMode: .surface)
         XCTAssertTrue(umaiNormal.contains("ウマイ"), "\(umaiNormal)")
         // 連文節: 抑制時に交ぜ書き/強調ノードが最良経路に出ない
         converter.setKatakanaEmphasisCandidateMode(.suppress)
-        converter.setMazegakiCandidateMode(.suppress)
+        converter.setMixedScriptCandidateMode(.suppress)
         let panyasan = converter.multiClauseCandidates(for: "ぱんやさん", systemCandidateMode: .surface)
         XCTAssertEqual(panyasan.first, "パン屋さん", "外来語パンは連文節でも無傷: \(panyasan.prefix(3))")
     }
@@ -12400,7 +12400,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // 2450 の「読みに無い っ/ー の水増し表記」フィルタが、表層のカタカナ促音「ッ」を読みの
     // ひらがな「っ」と突き合わせられず、促音カタカナ 13,348 エントリを装飾表記と誤判定していた。
     // かなの種を揃えて比較する(2466)
-    func testRegressionKatakanaSokuonIsNotDecorativePadding() throws {
+    func testRegressionKatakanaGeminateIsNotDecorativePadding() throws {
         try prepareRealLMDictionary()
         for (reading, expected) in [
             ("りったー", "リッター"), ("へっと", "ヘット"),
@@ -12414,7 +12414,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // 学習語彙に入れた促音カタカナ語(パレット)も、装飾表記フィルタが最終段で
     // どの経路からの候補も落とすため「長押し確定しても学習されない」ように見えていた。
     // 2466 の促音判定修正の学習経路側の防波堤
-    func testRegressionLearnedKatakanaSokuonSurvivesDecorativeFilter() throws {
+    func testRegressionLearnedKatakanaGeminateSurvivesDecorativeFilter() throws {
         try prepareRealLMDictionary()
         converter.store.addLearnedEntry(reading: "ぱれっと", candidate: "パレット")
         converter.invalidateCandidateCache()
@@ -12529,7 +12529,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // とりわすれている→鳥忘れている: 動詞連用形+動詞(取り忘れる/撮り忘れる)は生産的な複合動詞
     // だが、同音の単漢字名詞 鳥 が1ノードで安いため無助詞連結が勝っていた(名詞→動詞の減点600では
     // 届かない)。seed 供給した連用形読みに限り、直後が動詞のときだけ優遇する(2477)
-    func testRegressionCompoundVerbRenyouOutranksHomophoneNoun() throws {
+    func testRegressionCompoundVerbContinuativeOutranksHomophoneNoun() throws {
         try prepareRealLMDictionary()
         let teiru = converter.multiClauseCandidates(for: "とりわすれている", systemCandidateMode: .surface)
         XCTAssertEqual(teiru.first, "取り忘れている", "multi=\(teiru.prefix(4))")
@@ -12586,7 +12586,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
     // おいやって: 追いやる と 追い遣る が同コスト(9426)で辞書順が 追い遣る 先行だったため
     // 追い遣って が先頭だった。「やる」はかな書きが普通なので seed で 追いやる を先頭に(2486)
-    func testRegressionOiyaruPrefersKanaOkurigana() throws {
+    func testRegressionOiyaruPrefersKanaInflectionalKana() throws {
         try prepareRealLMDictionary()
         for reading in ["おいやって", "おいやった", "おいやられた", "おいやる"] {
             let single = converter.candidates(for: reading, limit: 6, systemCandidateMode: .surface)
@@ -13011,7 +13011,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // けいしすべき→ケイしすべき: 当然・義務の べき(文語 す+べき)のサ変規則が無く、断片合成に
     // なっていた(けいしする は規則があるので動いていた)。すべき/すべきだ/すべきです/
     // すべきだった/すべきでない/すべきではない を追加(2509)
-    func testRegressionSahenSubekiInflection() throws {
+    func testRegressionSuruVerbSubekiInflection() throws {
         try prepareRealLMDictionary()
         let keishi = converter.candidates(for: "けいしすべき", limit: 5, systemCandidateMode: .surface)
         XCTAssertTrue(keishi.contains("軽視すべき"), "keishi=\(keishi)")
@@ -13328,7 +13328,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "ずかんで"))
     }
 
-    func testRegressionGodanSuNegativeContractionExcluded() throws {
+    func testRegressionConsonantStemSuNegativeContractionExcluded() throws {
         try prepareRealLMDictionary()
         try injectSuppression(["うまい": ["熟寝", "熟睡", "右舞"]])
 
@@ -13588,7 +13588,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // いやで: SudachiDict の促音/長音の水増し表記(イヤっ rank6 / 嫌ー rank12)が合成の種に
     // なり イヤっで/嫌ーで を作っていた。読みに無い っ/ッ/ー が表層にある候補を装飾表記
     // として一般に除去(読み側にある入力=いやー/やっぱ/こーひー は無傷)(2450)
-    func testRegressionSokuonChoonPaddingFiltered() throws {
+    func testRegressionGeminateChoonPaddingFiltered() throws {
         try prepareRealLMDictionary()
         let iyade = converter.candidates(for: "いやで", limit: 24, systemCandidateMode: .surface)
         XCTAssertFalse(iyade.contains("イヤっで"), "iyade=\(iyade.prefix(8))")
@@ -14115,7 +14115,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // おおいのはどれ: 辞書の連濁収穫動詞読み(どる→取る/捕る/獲る…)から活用エンジンが
     // どれ→取れ を派生し、多いのは取れ/獲れ/捕れ が どれ より先頭に出ていた。連濁は
     // 複合語内でのみ生じ文節頭に立たないため、連濁収穫基底からの活用派生を除去(2419)
-    func testRegressionRendakuVerbBaseNotInflected() throws {
+    func testRegressionSequentialVoicingVerbBaseNotInflected() throws {
         try prepareRealLMDictionary()
         let multi = converter.multiClauseCandidates(for: "おおいのはどれ", systemCandidateMode: .surface)
         XCTAssertEqual(multi.first, "多いのはどれ", "multi=\(multi.prefix(5))")
@@ -14426,7 +14426,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
     // ぜんかい: ユーザ指定順(前回→全開→全快→全壊→全潰→全会)。あわせて 1000回 の誤生成
     // (連濁 ぜん が単独で桁成立していた)を是正。さんぜんかい→3000回/せんかい→1000回 は正当。
-    func testRegressionRealLMZenkaiOrderingAndRendakuDigit() throws {
+    func testRegressionRealLMZenkaiOrderingAndSequentialVoicingDigit() throws {
         try prepareRealLMDictionary()
         converter.clearSharedDataCaches()
         converter.invalidateCandidateCache()
@@ -15172,7 +15172,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
     // 一段の連用形(食べる→食べ)の供給(ユーザ報告 2026-08-27)。五段は iForm(食い/つき)が
     // あるのに一段には規則が無く、さんかくたべ→三角夛部/三角田倍 の人名合成しか出なかった
-    func testRegressionIchidanRenyouNounSupplied() throws {
+    func testRegressionVowelStemContinuativeNounSupplied() throws {
         try prepareRealLMDictionary()
 
         for (probe, expected) in [
@@ -15518,7 +15518,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     }
 
     // りかいしろ: サ変名詞の命令形(しろ/せよ/しろって)。無いと単文節候補なし・連文節 理解白/理解城 だった(2722)
-    func testRegressionRealLMSahenImperative() throws {
+    func testRegressionRealLMSuruVerbImperative() throws {
         try prepareRealLMDictionary()
         XCTAssertEqual(converter.candidates(for: "ちゅういせよ", limit: 3, systemCandidateMode: .surface).first, "注意せよ")
         // 派生1ノードが全体を覆うと連文節は単文節に委ねる(空)。理解白/理解城 が先頭に出ないことを確認
@@ -15998,7 +15998,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // 単文節も 置いた が先頭のまま
         let single = converter.candidates(for: "おいた", limit: 4, systemCandidateMode: .surface)
         XCTAssertEqual(single.first, "置いた", "single=\(single)")
-        // 同型の godan-ku(競合する一段が無い)は無傷
+        // 同型の consonantStem-ku(競合する一段が無い)は無傷
         let kaita = converter.multiClauseCandidates(for: "かいたときに", systemCandidateMode: .surface)
         XCTAssertEqual(kaita.first, "書いたときに", "multi=\(Array(kaita.prefix(3)))")
     }
@@ -16801,10 +16801,10 @@ extension KanaKanjiConverterRegressionTests {
 extension KanaKanjiConverterRegressionTests {
     // 2820: 送り仮名の許容形(終る/取扱う/届)をコンテナー設定の 3 グループで一括制御。戦略的初期設定は本則だけ、
     // 保守的初期設定は本則を先に許容も。慣用で送らない語(受付/取引/話/光/入口)は対象外
-    func testOkuriganaVariantRelationClassification() {
+    func testInflectionalKanaVariantRelationClassification() {
         typealias C = KanaKanjiConverter
-        func rel(_ a: String, _ b: String) -> (String, String, OkuriganaVariantGroup)? {
-            C.okuriganaVariantRelation(a, b).map { ($0.standard, $0.variant, $0.group) }
+        func rel(_ a: String, _ b: String) -> (String, String, InflectionalKanaVariantGroup)? {
+            C.inflectionalKanaVariantRelation(a, b).map { ($0.standard, $0.variant, $0.group) }
         }
         XCTAssertEqual(rel("終わる", "終る").map { "\($0.0)|\($0.1)|\($0.2)" }, "終わる|終る|stemInternal")
         XCTAssertEqual(rel("食い終ってる", "食い終わってる").map { "\($0.0)|\($0.1)|\($0.2)" }, "食い終わってる|食い終ってる|stemInternal")
@@ -16843,17 +16843,17 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertNil(rel("終わる", "終える"))
         XCTAssertNil(rel("もうまく", "もうま"))
         // 永続形式の往復と初期設定
-        XCTAssertEqual(OkuriganaVariantPreference.default.encoded, "stem:standardOnly,compound:standardOnly,noun:standardOnly")
-        let decoded = OkuriganaVariantPreference.decode("noun:permittedFirst,stem:standardFirst")
+        XCTAssertEqual(InflectionalKanaVariantPreference.default.encoded, "stem:standardOnly,compound:standardOnly,noun:standardOnly")
+        let decoded = InflectionalKanaVariantPreference.decode("noun:permittedFirst,stem:standardFirst")
         XCTAssertEqual(decoded.mode(for: .nominalized), .permittedFirst)
         XCTAssertEqual(decoded.mode(for: .stemInternal), .standardFirst)
         XCTAssertEqual(decoded.mode(for: .compoundFront), .standardOnly)
     }
 
-    func testRegressionRealLMOkuriganaVariantPreference() throws {
+    func testRegressionRealLMInflectionalKanaVariantPreference() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
-        defer { converter.setOkuriganaVariantPreference(.default) }
+        defer { converter.setInflectionalKanaVariantPreference(.default) }
         func multi(_ reading: String) -> [String] {
             converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
         }
@@ -16868,18 +16868,18 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(converter.candidates(for: "うけつけ", limit: 8, systemCandidateMode: .surface).contains("受付"))
         XCTAssertTrue(converter.candidates(for: "はなし", limit: 8, systemCandidateMode: .surface).contains("話"))
         // 保守的初期設定: 本則の直後に許容形
-        converter.setOkuriganaVariantPreference(.conservative)
+        converter.setInflectionalKanaVariantPreference(.conservative)
         let owatte = converter.candidates(for: "おわって", limit: 8, systemCandidateMode: .surface)
         XCTAssertEqual(owatte.firstIndex(of: "終って"), owatte.firstIndex(of: "終わって").map { $0 + 1 }, "\(owatte)")
         let todoke = converter.candidates(for: "とどけ", limit: 8, systemCandidateMode: .surface)
         XCTAssertEqual(todoke.firstIndex(of: "届"), todoke.firstIndex(of: "届け").map { $0 + 1 }, "\(todoke)")
         // 許容を先に(語幹の中だけ)
-        converter.setOkuriganaVariantPreference(OkuriganaVariantPreference.decode("stem:permittedFirst,compound:standardOnly,noun:standardOnly"))
+        converter.setInflectionalKanaVariantPreference(InflectionalKanaVariantPreference.decode("stem:permittedFirst,compound:standardOnly,noun:standardOnly"))
         XCTAssertEqual(Array(converter.candidates(for: "おわって", limit: 8, systemCandidateMode: .surface).prefix(2)), ["終って", "終わって"])
         XCTAssertEqual(Array(multi("くいおわってる").prefix(2)), ["食い終ってる", "食い終わってる"])
         // 本則だけでも、追加語彙に登録した許容形は活用形まで守られて出る。行なう は出荷時の追加語彙(sacoche)に
         // 登録済みなので初期設定でも出る。ここでは 断わる を手動登録して同じ経路を確かめる
-        converter.setOkuriganaVariantPreference(.default)
+        converter.setInflectionalKanaVariantPreference(.default)
         XCTAssertTrue(converter.candidates(for: "おこなう", limit: 8, systemCandidateMode: .surface).contains("行なう"))
         XCTAssertFalse(converter.candidates(for: "ことわる", limit: 8, systemCandidateMode: .surface).contains("断わる"))
         var ajout = converter.store.ajoutVocabulary()
@@ -16994,7 +16994,7 @@ extension KanaKanjiConverterRegressionTests {
     // のみほせない(2820): 可能動詞 のみほせる(飲乾せる rank0)の辞書順が五段 のみほす(飲み干す rank0)と食い違い、
     // 派生 飲み乾せない が 2 位、連文節の TopK から 飲み干せない が漏れて スープは飲干せない になっていた。
     // 可能動詞の基底を五段の並びに揃える一般対応。吞(異体字)は全語抑制
-    func testRegressionRealLMNomihosuPotentialAlignedToGodan() throws {
+    func testRegressionRealLMNomihosuPotentialAlignedToConsonantStem() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
         XCTAssertEqual(Array(converter.candidates(for: "のみほせる", limit: 6, systemCandidateMode: .surface).prefix(2)), ["飲み干せる", "飲み乾せる"])
@@ -17724,7 +17724,7 @@ extension KanaKanjiConverterRegressionTests {
     // おさめる(2868、ユーザ報告): 可能動詞の並べ替え(のみほせる→のみほす の順に揃える。2820)が
     // 一段動詞にも当たっていた。おさめる は「おさむ の可能形」ではないのに、おさむ を基底と
     // 誤認して人名の辞書順(オサム/修/収/治/治虫…)で塗り替え、収める 先頭が 治める 先頭に反転していた。
-    // 基底が本物の五段動詞(inflection_classes に godan-*)のときだけ並べ替える
+    // 基底が本物の五段動詞(inflection_classes に consonantStem-*)のときだけ並べ替える
     func testRegressionOsameruKeepsDictionaryOrder() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
@@ -17907,7 +17907,7 @@ extension KanaKanjiConverterRegressionTests {
     // かな やすい の unigram 4890 は「使いやすい」が A 単位で 使い+やすい に割れた統計で、
     // 単独の 安い(6114)より安く出る。補助形容詞は連用形にしか付かない(使いやすい/読みにくい)ので、
     // 文頭や助詞の直後に裸で立つのは形容詞(安い)の誤り。合成済みの 1 ノードは表層が読みと違うので無傷
-    func testRegressionAuxiliaryAdjectiveKanaNeedsRenyou() throws {
+    func testRegressionAuxiliaryAdjectiveKanaNeedsContinuative() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
 
@@ -18142,7 +18142,7 @@ extension KanaKanjiConverterRegressionTests {
     // サ変名詞の連用中止形(2878、抜き取り検査 40 件)。活用ルール表は接続込みの形しか持たず
     // 位置し のノードが立たないため、東部に位置し が 人名 1 ノードの 東部に一志 に負けていた。
     // 1 字の名詞(化)からは作らない ─ 本を貸した が 本を化した になる
-    func testRegressionSuruNounRenyouChushi() throws {
+    func testRegressionSuruNounContinuativeChushi() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
 
@@ -18357,7 +18357,7 @@ extension KanaKanjiConverterRegressionTests {
     // 危ないのは 歯(ば)/墓(ばか)/棚(だな)/種(だね)/癖(ぐせ) のように読みが短く助詞や
     // 口語と衝突するもので、読み3字以上(畑=ばたけ/桜=ざくら/柱=ばしら)は複合語の後部そのもの。
     // 表層が単漢字かどうかは本質ではなかった
-    func testRegressionRendakuHarvestFilterUsesReadingLength() throws {
+    func testRegressionSequentialVoicingHarvestFilterUsesReadingLength() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
 
@@ -18474,7 +18474,7 @@ extension KanaKanjiConverterRegressionTests {
 extension KanaKanjiConverterRegressionTests {
     // サ変の連用中止形は辞書形(〜する)側の登録からも作る(2879)。misc.plist の 有する/瓶詰めする は
     // 名詞単体(有/瓶詰め)がノードとして立たず、名詞ノード経由では 有し が出なかった
-    func testRegressionSuruRenyouChushiFromDictionaryForm() throws {
+    func testRegressionSuruContinuativeChushiFromDictionaryForm() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
 
@@ -18575,7 +18575,7 @@ extension KanaKanjiConverterRegressionTests {
 extension KanaKanjiConverterRegressionTests {
     // 追加語彙に登録した送り仮名(sacoche の 行なう)は文中でも守る(2881、ユーザ報告)。
     // 以前は読みが登録読みで始まるときしか守らず、醗酵を行なう が 醗酵を行う の後ろへ動いていた
-    func testRegressionOkuriganaAjoutProtectedMidSentence() throws {
+    func testRegressionInflectionalKanaAjoutProtectedMidSentence() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
         XCTAssertTrue(converter.store.ajoutVocabulary()["おこなう"]?.contains("行なう") ?? false, "前提: sacoche の 行なう")
@@ -18591,8 +18591,8 @@ extension KanaKanjiConverterRegressionTests {
     // 送り仮名の許容形を本則へ寄せる並べ替えは、組(本則+許容形)を最初のメンバーの位置に出す(2880)。
     // 以前は許容形(醗酵を行なう=最良)を飛ばして本則の位置(3 位)で出していたため、
     // 無関係な 2 位(発行を行なう)が先頭になっていた
-    func testRegressionOkuriganaGroupKeepsRank() {
-        let reordered = converter.applyOkuriganaVariantPreference(
+    func testRegressionInflectionalKanaGroupKeepsRank() {
+        let reordered = converter.applyInflectionalKanaVariantPreference(
             reading: "はっこうをおこなう",
             to: ["醗酵を行なう", "発行を行なう", "醗酵を行う", "発光を行なう"]
         )
@@ -18636,7 +18636,7 @@ extension KanaKanjiConverterRegressionTests {
 extension KanaKanjiConverterRegressionTests {
     // いう の未然形はかなより 言わ〜(2881、ユーザ報告 いわずに→いわずに)。かな活用形との OOV 同点を割る。
     // という/そういう(かなが正書)と 岩(いわ の名詞)は無傷
-    func testRegressionIuMizenPrefersKanji() throws {
+    func testRegressionIuIrrealisPrefersKanji() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
 
@@ -18759,7 +18759,7 @@ extension KanaKanjiConverterRegressionTests {
 
 extension KanaKanjiConverterRegressionTests {
     // 2884: 〜市 の辞書語がある span に連用中止(講習し)を立てない + 甲州市 の seed 順(抜き取り検査 山梨県甲州市→山梨県講習し)。位置し/有し は無傷
-    func testRegressionCitySpanSkipsSuruRenyouChushi() throws {
+    func testRegressionCitySpanSkipsSuruContinuativeChushi() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
 
@@ -19044,7 +19044,7 @@ extension KanaKanjiConverterRegressionTests {
     // 2886: 収穫コストの 4 かな市名(堺市 11165)が 稀な動詞の 連用形+に(境しに、定額 7200)に負けていた
     // (ユーザ報告 さかいしにある→境しにある)。漢字地名は収穫床の免除を読み 4 字から認め、地名の直後には 連用形+に を立てない。
     // 食べに行く/飲みに来る/千島を先に は無傷
-    func testRegressionCityNameBeatsRenyouNi() throws {
+    func testRegressionCityNameBeatsContinuativeNi() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
 
@@ -19170,7 +19170,7 @@ extension KanaKanjiConverterRegressionTests {
 
 extension KanaKanjiConverterRegressionTests {
     // 2887: 五段ら行の口語縮約 らない→んない(変わんない/変わんなかった)。ほぼかわんない は Hobo 側で検査
-    func testRegressionGodanRuNnaiContraction() throws {
+    func testRegressionConsonantStemRuNnaiContraction() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
 
@@ -19732,7 +19732,7 @@ extension KanaKanjiConverterRegressionTests {
 extension KanaKanjiConverterRegressionTests {
     // 2894: 連用形+副助詞(呼びさえ/読みすら)の供給(b5b)。五段の連用形は辞書に無い限りノードが立たず よびさえすれば が
     // 予備さえすれば になっていた(ユーザ報告)。名詞+さえ(予備さえあれば)は無傷
-    func testRegressionRenyouFocusParticleSupply() throws {
+    func testRegressionContinuativeFocusParticleSupply() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
 
@@ -22013,7 +22013,7 @@ extension KanaKanjiConverterRegressionTests {
 extension KanaKanjiConverterRegressionTests {
     // ひろげ(一段の連用形、中止法)が候補なしだった(ユーザ報告 3215)。語幹読みに辞書語が無いときだけ一段連用形を供給する。
     // 辞書語のある語幹(ため→為、はじめ→初め/始め)は opt-in 設計のまま動かさない
-    func testRegressionRealLMIchidanRenyouSuppliedWhenStemHasNoDictionaryWord() throws {
+    func testRegressionRealLMVowelStemContinuativeSuppliedWhenStemHasNoDictionaryWord() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
         let hiroge = converter.candidates(for: "ひろげ", limit: 5, systemCandidateMode: .surface)
@@ -22044,7 +22044,7 @@ extension KanaKanjiConverterRegressionTests {
 extension KanaKanjiConverterRegressionTests {
     // すうひゃっけん が {数百間, 数百軒, すう百間, 吸う百間} で 数百件 が出なかった(ユーザ報告 3224)。桁 百 の促音形
     // (ひゃっ/びゃっ/ぴゃっ)が数詞複合の桁表に無く、数+百間(辞書語)にしか組めなかった。件 は 軒 より先(ユーザ指定)
-    func testRegressionRealLMSokuonHundredCounterCompounds() throws {
+    func testRegressionRealLMGeminateHundredCounterCompounds() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
         let suu = converter.candidates(for: "すうひゃっけん", limit: 4, systemCandidateMode: .surface)
@@ -22097,7 +22097,7 @@ extension KanaKanjiConverterRegressionTests {
     // せいきかした が {世紀かした, 正規かした, 性器かした, 正気化した} で 正規化した が無かった(ユーザ報告 3237)。
     // Sudachi は 正規化 にサ変の印を付けておらず(458 語が同様)、辞書語のサ変推論は追加語彙にしか働かなかった。
     // 接尾 化(読みが か)は生産的なサ変として推論する
-    func testRegressionRealLMKaSuffixNounInflectsAsSahen() throws {
+    func testRegressionRealLMKaSuffixNounInflectsAsSuruVerb() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
         XCTAssertEqual(converter.candidates(for: "せいきかした", limit: 3, systemCandidateMode: .surface).first, "正規化した")
@@ -22213,7 +22213,7 @@ extension KanaKanjiConverterRegressionTests {
     }
 
     // 3247: 連用形+たて を一般則で供給する(ほりたて→掘りたて)。舘 は一般名詞の読みでは出さない
-    func testRenyouTateSuffixIsSupplied() throws {
+    func testContinuativeTateSuffixIsSupplied() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
         let cases: [(String, String)] = [
@@ -22287,14 +22287,14 @@ extension KanaKanjiConverterRegressionTests {
     }
 
     // 3250: 五段の裸の連用形(語幹 3 かな以上)を派生で供給する(さそいだし→誘い出し)。短い語幹は対象外
-    func testGodanBareRenyouForCompoundVerbs() throws {
+    func testConsonantStemBareContinuativeForCompoundVerbs() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
         let sasoi = converter.candidates(for: "さそいだし", limit: 4, systemCandidateMode: .surface)
         XCTAssertEqual(sasoi.first, "誘い出し", "\(sasoi)")
         // 実機の語幹キャッシュ経由(quickPostfix 1120)でも抜けるよう、合成の最高点との差を固定する(3256)
         XCTAssertGreaterThan(
-            KanaKanjiConverter.CandidateScore.inflection + KanaKanjiConverter.CandidateScore.godanBareRenyouCompoundBoost,
+            KanaKanjiConverter.CandidateScore.inflection + KanaKanjiConverter.CandidateScore.consonantStemBareContinuativeCompoundBoost,
             (KanaKanjiConverter.CandidateScore.inflection - 1) + KanaKanjiConverter.CandidateScore.quickPostfix
         )
         let omoi = converter.candidates(for: "おもいだし", limit: 4, systemCandidateMode: .surface)
@@ -22350,7 +22350,7 @@ extension KanaKanjiConverterRegressionTests {
     }
 
     // 3251: 一段の語幹+名詞(ゆでじかん→茹で時間)。語幹読みの辞書語が収穫底値だけ(湯出/油出)なら連用形を供給する
-    func testIchidanStemNounCompoundYudeJikan() throws {
+    func testVowelStemStemNounCompoundYudeJikan() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
         let multi = converter.multiClauseCandidates(for: "ゆでじかん", systemCandidateMode: .surface)
@@ -22375,7 +22375,7 @@ extension KanaKanjiConverterRegressionTests {
     }
 
     // 3251: sacoche の トレイニング(サ変名詞)が活用する
-    func testTrainingSahenFromSacoche() throws {
+    func testTrainingSuruVerbFromSacoche() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
         XCTAssertEqual(converter.candidates(for: "とれいにんぐ", limit: 3, systemCandidateMode: .surface).first, "トレイニング")
@@ -22398,7 +22398,7 @@ extension KanaKanjiConverterRegressionTests {
     }
 
     // 3252: へり→減り は seed で供給(五段の裸の連用形の一般供給は 41 件退行で撤回)。連文節では みずみずしさが減り が先頭
-    func testGodanBareRenyouSuppliesHeri() throws {
+    func testConsonantStemBareContinuativeSuppliesHeri() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
         let heri = converter.candidates(for: "へり", limit: 6, systemCandidateMode: .surface)
@@ -22461,7 +22461,7 @@ extension KanaKanjiConverterRegressionTests {
     }
 
     // 3267: 交ぜ書き 感ジ は出さない
-    func testKanjiMazegakiSuppressed() throws {
+    func testKanjiMixedScriptSuppressed() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
         let list = converter.candidates(for: "かんじ", limit: 20, systemCandidateMode: .surface)
@@ -22932,7 +22932,7 @@ extension KanaKanjiConverterRegressionTests {
     }
 
     // 3283: 抜栓(LM 未収録のサ変名詞)を登録し、ばっせんできない/ばっせんする を 抜栓 先頭に
-    func testBassenSahen() throws {
+    func testBassenSuruVerb() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
         func shown(_ reading: String) -> [String] {
@@ -22956,7 +22956,7 @@ extension KanaKanjiConverterRegressionTests {
 
     // 3379: お+サ変名詞(お勉強/お掃除/お散歩/お仕事)を作る。以前は ご(ご相談)だけ許され、おべんきょう の候補が空で、
     // 連文節は 御+勉強 を選んでいた(今日の分の御勉強)
-    func testPolitePrefixOWithSahenNoun() throws {
+    func testPolitePrefixOWithSuruVerbNoun() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
         XCTAssertEqual(converter.candidates(for: "おべんきょう", limit: 3, systemCandidateMode: .surface).first, "お勉強")
@@ -22987,7 +22987,7 @@ extension KanaKanjiConverterRegressionTests {
     }
 
     // 3607: 漢字 1 字+じる の連用形に、単独の お+ と お〜する を作らない(おへんじ が お変じ→お返事 の順だった)。お〜になる は残す
-    func testPolitePrefixOSkipsBareSinoJiruRenyou() throws {
+    func testPolitePrefixOSkipsBareSinoJiruContinuative() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
         let reply = converter.candidates(for: "おへんじ", limit: 8, systemCandidateMode: .surface)
@@ -23150,7 +23150,7 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(single("にんじん").prefix(4)), ["にんじん", "ニンジン", "人参", "人蔘"], "\(single("にんじん"))")
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "にんじん"))
         XCTAssertEqual(multi("にんじんを").first, "にんじんを", "\(multi("にんじんを"))")
-        XCTAssertTrue(KakikaeTable.pairs.contains { $0.before == "人蔘" && $0.after == "人参" })
+        XCTAssertTrue(KanjiRewriteTable.pairs.contains { $0.before == "人蔘" && $0.after == "人参" })
         // まっくおーえす: 連文節が Mac+OS を合成して MacOS を先頭にしていた。macOS(1 語)を先頭に
         let macos = multi("まっくおーえす")
         XCTAssertTrue(macos.isEmpty || macos.first == "macOS", "\(macos)")
@@ -23369,7 +23369,7 @@ extension KanaKanjiConverterRegressionTests {
 
     // 3422: 同音の漢字による書きかえ(廻転⇄回転)の 4 択。単文節・連文節・複合語(醗酵前)と、後から常用漢字に
     // 加わった字の組(肝腎⇄肝心)は X.9 では動かない(X.10 の設定が nil なので両方。3570)
-    func testKakikaePreferenceModes() throws {
+    func testKanjiRewritePreferenceModes() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
         func single(_ reading: String) -> [String] {
@@ -23377,7 +23377,7 @@ extension KanaKanjiConverterRegressionTests {
         }
         func index(_ list: [String], _ word: String) -> Int? { list.firstIndex(of: word) }
 
-        converter.setKakikaePreference(.afterOnly)
+        converter.setKanjiRewritePreference(.afterOnly)
         var list = single("おくそく")
         XCTAssertNotNil(index(list, "憶測"), "\(list)")
         list = single("かいてん")
@@ -23386,7 +23386,7 @@ extension KanaKanjiConverterRegressionTests {
         var multi = converter.multiClauseCandidates(for: "かいてんがはやい", systemCandidateMode: .surface)
         XCTAssertFalse(multi.contains { $0.contains("廻転") }, "multi=\(multi.prefix(4))")
 
-        converter.setKakikaePreference(.beforeOnly)
+        converter.setKanjiRewritePreference(.beforeOnly)
         list = single("かいてん")
         XCTAssertNotNil(index(list, "廻転"), "\(list)")
         XCTAssertNil(index(list, "回転"), "\(list)")
@@ -23397,9 +23397,9 @@ extension KanaKanjiConverterRegressionTests {
         multi = converter.multiClauseCandidates(for: "たいふうのぜんちょう", systemCandidateMode: .surface)
         XCTAssertEqual(multi.first, "台風の前兆", "multi=\(multi.prefix(4))")
         // 書きかえ後の語の中(一丁目)は書きかえ前にしない
-        XCTAssertFalse(KanaKanjiConverter.applyKakikae(.beforeOnly, toMultiClauseCandidates: ["三一丁目"]).contains("三一挺目"))
+        XCTAssertFalse(KanaKanjiConverter.applyKanjiRewrite(.beforeOnly, toMultiClauseCandidates: ["三一丁目"]).contains("三一挺目"))
 
-        converter.setKakikaePreference(.bothBeforeFirst)
+        converter.setKanjiRewritePreference(.bothBeforeFirst)
         list = single("かいてん")
         if let before = index(list, "廻転"), let after = index(list, "回転") {
             XCTAssertLessThan(before, after, "\(list)")
@@ -23407,7 +23407,7 @@ extension KanaKanjiConverterRegressionTests {
             XCTFail("\(list)")
         }
 
-        converter.setKakikaePreference(.bothAfterFirst)
+        converter.setKanjiRewritePreference(.bothAfterFirst)
         list = single("かいてん")
         if let before = index(list, "廻転"), let after = index(list, "回転") {
             XCTAssertLessThan(after, before, "\(list)")
@@ -23416,16 +23416,16 @@ extension KanaKanjiConverterRegressionTests {
         }
 
         // 複合語の中の書きかえ前(醗酵前 → 発酵前)
-        converter.setKakikaePreference(.afterOnly)
+        converter.setKanjiRewritePreference(.afterOnly)
         list = single("はっこうまえ")
         XCTAssertFalse(list.contains("醗酵前"), "\(list)")
 
         // 後から常用漢字に加わった字の組は X.9 の設定に関わらず両方(X.10 が nil。3570)
-        converter.setKakikaePreference(.afterOnly)
+        converter.setKanjiRewritePreference(.afterOnly)
         list = single("かんじん")
         XCTAssertNotNil(index(list, "肝腎"), "\(list)")
         XCTAssertNotNil(index(list, "肝心"), "\(list)")
-        converter.setKakikaePreference(.bothAfterFirst)
+        converter.setKanjiRewritePreference(.bothAfterFirst)
     }
 
     // 3423: emoji 候補がオフなら国旗(drapeaux)も変換候補に出さない。★ 等の記号は絵文字扱いしない
@@ -23488,7 +23488,7 @@ extension KanaKanjiConverterRegressionTests {
 
     // 3427: 初期投入の misc の語(交叉点/氷醋酸)も X.9 に従う。実機と同じく misc は初期投入(バンドル)から読み、
     // 手動の追加語彙には入れない(手動の追加語彙は対象外)
-    func testKakikaeAppliesToInitialMiscVocabulary() throws {
+    func testKanjiRewriteAppliesToInitialMiscVocabulary() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeMisc: false)
         let store = KanaKanjiStore(appGroupID: defaultsSuiteName)
@@ -23498,14 +23498,14 @@ extension KanaKanjiConverterRegressionTests {
         func single(_ reading: String) -> [String] {
             converter.candidates(for: reading, limit: 12, systemCandidateMode: .surface)
         }
-        converter.setKakikaePreference(.afterOnly)
+        converter.setKanjiRewritePreference(.afterOnly)
         var list = single("こうさてん")
         XCTAssertFalse(list.contains("交叉点"), "\(list)")
         XCTAssertTrue(list.contains("交差点"), "\(list)")
         list = single("ひょうさくさん")
         XCTAssertEqual(list.first, "氷酢酸", "\(list)")
         XCTAssertFalse(list.contains("氷醋酸"), "\(list)")
-        converter.setKakikaePreference(.beforeOnly)
+        converter.setKanjiRewritePreference(.beforeOnly)
         list = single("こうさてん")
         XCTAssertTrue(list.contains("交叉点"), "\(list)")
         XCTAssertFalse(list.contains("交差点"), "\(list)")
@@ -23913,10 +23913,10 @@ extension KanaKanjiConverterRegressionTests {
 
     // 3835: X.8 の補助用言をオフにしても 下さい/御座います/御免なさい が出なかった(辞書にも活用の生成にも無い。ユーザ報告)。
     // seed で供給する。オフなら かな の次、オン(初期設定)なら出さない
-    func testKanaGakiAuxiliaryKanjiSuppliedWhenUnsuppressed() throws {
+    func testKanaSpellingAuxiliaryKanjiSuppliedWhenUnsuppressed() throws {
         try prepareRealLMDictionary()
         let pairs = [("ください", "下さい"), ("ございます", "御座います"), ("ごめんなさい", "御免なさい")]
-        converter.setKanaGakiSuppressedCategories([])
+        converter.setKanaSpellingSuppressedCategories([])
         for (reading, kanji) in pairs {
             let list = converter.candidates(for: reading, limit: 6, systemCandidateMode: .surface)
             XCTAssertEqual(Array(list.prefix(2)), [reading, kanji], "\(list)")
@@ -23925,7 +23925,7 @@ extension KanaKanjiConverterRegressionTests {
         // 文の中の ください は かな のまま
         let mite = converter.multiClauseCandidates(for: "みてください", systemCandidateMode: .surface)
         XCTAssertEqual(mite.first, "見てください", "multi=\(mite.prefix(4))")
-        converter.setKanaGakiSuppressedCategories(Set(KanaGakiCategory.allCases.filter(\.suppressedByDefault)))
+        converter.setKanaSpellingSuppressedCategories(Set(KanaSpellingCategory.allCases.filter(\.suppressedByDefault)))
         for (reading, kanji) in pairs {
             let list = converter.candidates(for: reading, limit: 6, systemCandidateMode: .surface)
             XCTAssertFalse(list.contains(kanji), "\(list)")
@@ -23936,11 +23936,11 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(miteDefault.first, "見てください", "multi=\(miteDefault.prefix(4))")
     }
 
-    // 3404: かなで書く言葉(KanaGakiTable)。初期設定は全部抑制=漢字を出さない。抑制しない仲間は かな が先頭で漢字は後ろ
-    func testKanaGakiSuppressionAndKanaFirst() throws {
+    // 3404: かなで書く言葉(KanaSpellingTable)。初期設定は全部抑制=漢字を出さない。抑制しない仲間は かな が先頭で漢字は後ろ
+    func testKanaSpellingSuppressionAndKanaFirst() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
-        converter.setKanaGakiSuppressedCategories(Set(KanaGakiCategory.allCases.filter(\.suppressedByDefault)))
+        converter.setKanaSpellingSuppressedCategories(Set(KanaSpellingCategory.allCases.filter(\.suppressedByDefault)))
         let iwayuru = converter.candidates(for: "いわゆる", limit: 6, systemCandidateMode: .surface)
         XCTAssertEqual(iwayuru.first, "いわゆる", "\(iwayuru)")
         XCTAssertFalse(iwayuru.contains("所謂"), "\(iwayuru)")
@@ -23957,7 +23957,7 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.candidates(for: "とけい", limit: 3, systemCandidateMode: .surface).first, "時計")
 
         // 抑制しない(保守的初期設定の 形式名詞/指示語): かな が先頭、漢字は残る
-        converter.setKanaGakiSuppressedCategories([.adverb, .conjunction, .auxiliary])
+        converter.setKanaSpellingSuppressedCategories([.adverb, .conjunction, .auxiliary])
         let koto = converter.candidates(for: "こと", limit: 8, systemCandidateMode: .surface)
         XCTAssertEqual(koto.first, "こと", "\(koto)")
         XCTAssertTrue(koto.contains("事"), "\(koto)")
@@ -23966,15 +23966,15 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(kokoKanaFirst.contains("此処"), "\(kokoKanaFirst)")
         // 副詞は抑制のまま
         XCTAssertFalse(converter.candidates(for: "いわゆる", limit: 6, systemCandidateMode: .surface).contains("所謂"))
-        converter.setKanaGakiSuppressedCategories(Set(KanaGakiCategory.allCases.filter(\.suppressedByDefault)))
+        converter.setKanaSpellingSuppressedCategories(Set(KanaSpellingCategory.allCases.filter(\.suppressedByDefault)))
     }
 
     // 3453: なおさら は かなで書く言葉(副詞)。抑制しなくても かな が先頭(なおさらだ も)
     func testNaosaraKanaFirst() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
-        for suppressed in [Set(KanaGakiCategory.allCases.filter(\.suppressedByDefault)), []] {
-            converter.setKanaGakiSuppressedCategories(suppressed)
+        for suppressed in [Set(KanaSpellingCategory.allCases.filter(\.suppressedByDefault)), []] {
+            converter.setKanaSpellingSuppressedCategories(suppressed)
             for reading in ["なおさら", "なおさらだ"] {
                 let list = converter.candidates(for: reading, limit: 6, systemCandidateMode: .surface)
                 XCTAssertEqual(list.first, reading, "\(suppressed.count) \(list)")
@@ -23982,7 +23982,7 @@ extension KanaKanjiConverterRegressionTests {
                 XCTAssertFalse(multi.first?.contains("尚更") ?? false, "multi=\(multi.prefix(4))")
             }
         }
-        converter.setKanaGakiSuppressedCategories(Set(KanaGakiCategory.allCases.filter(\.suppressedByDefault)))
+        converter.setKanaSpellingSuppressedCategories(Set(KanaSpellingCategory.allCases.filter(\.suppressedByDefault)))
     }
 
     // 3455: 14 確定→いがいに は 以外に が先頭(助数詞 位 + がいに の合成を出さない)。かいに→回に は残す
@@ -24011,12 +24011,12 @@ extension KanaKanjiConverterRegressionTests {
     func testAruiwaMoshikuwaSupplied() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
-        converter.setKanaGakiSuppressedCategories([])
+        converter.setKanaSpellingSuppressedCategories([])
         for (reading, kanji) in [("あるいは", "或いは"), ("もしくは", "若しくは")] {
             let list = converter.candidates(for: reading, limit: 6, systemCandidateMode: .surface)
             XCTAssertEqual(Array(list.prefix(2)), [reading, kanji], "\(list)")
         }
-        converter.setKanaGakiSuppressedCategories(Set(KanaGakiCategory.allCases.filter(\.suppressedByDefault)))
+        converter.setKanaSpellingSuppressedCategories(Set(KanaSpellingCategory.allCases.filter(\.suppressedByDefault)))
         for (reading, kanji) in [("あるいは", "或いは"), ("もしくは", "若しくは")] {
             let list = converter.candidates(for: reading, limit: 6, systemCandidateMode: .surface)
             XCTAssertFalse(list.contains(kanji), "\(list)")
@@ -24246,7 +24246,7 @@ extension KanaKanjiConverterRegressionTests {
     }
 
     // 3477: あたっちゃった は 当たっちゃった(能う の促音便 能っ… は無い形。能わず/能う限り は残す)
-    func testAtauOnbinSuppressed() throws {
+    func testAtauEuphonicSuppressed() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
         for reading in ["あたっちゃった", "あたった", "あたって"] {
@@ -24442,7 +24442,7 @@ extension KanaKanjiConverterRegressionTests {
     }
 
     // 3503: とかいにすんでる は 都会に住んでる(連用形+に の直後の状態動詞 住む を減点)。友達と買いに行った/飲みに誘った/食べに来た は無傷
-    func testRenyouNiNotFollowedByStativeVerb() throws {
+    func testContinuativeNiNotFollowedByStativeVerb() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
         for (reading, expected) in [("とかいにすんでる", "都会に住んでる"), ("とかいにすんでいる", "都会に住んでいる"),
@@ -24930,24 +24930,24 @@ extension KanaKanjiConverterRegressionTests {
         for bad in ["必ズ", "必らず", "必"] {
             XCTAssertFalse(single.contains(bad), "\(bad) single=\(single)")
         }
-        XCTAssertEqual(KanaGakiTable.categoryByReadingAndSurface["かならず"]?["必ず"], .adverb, "kanagaki の副詞に 必ず")
+        XCTAssertEqual(KanaSpellingTable.categoryByReadingAndSurface["かならず"]?["必ず"], .adverb, "kanagaki の副詞に 必ず")
     }
 
     // 副詞のかな書きの一括追加(3552): /tmp/t の 97 語は副詞(初期設定は抑制)、漢字でもよく書く 305 語は 副詞(漢字も残す)
     // (初期設定は抑制せず かな先頭)。名詞と同形の語(自然/直接)は入れない。交ぜ書き(一そう/とつ然)は suppr
-    func testRegressionRealLMAdverbKanaGakiBatch() throws {
+    func testRegressionRealLMAdverbKanaSpellingBatch() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
-        XCTAssertFalse(KanaGakiCategory.adverbKanaFirst.suppressedByDefault)
-        XCTAssertTrue(KanaGakiCategory.adverb.suppressedByDefault)
-        XCTAssertEqual(KanaGakiTable.categoryByReadingAndSurface["かなり"]?["可成"], .adverb)
-        XCTAssertEqual(KanaGakiTable.categoryByReadingAndSurface["けっして"]?["決して"], .adverbKanaFirst)
+        XCTAssertFalse(KanaSpellingCategory.adverbKanaFirst.suppressedByDefault)
+        XCTAssertTrue(KanaSpellingCategory.adverb.suppressedByDefault)
+        XCTAssertEqual(KanaSpellingTable.categoryByReadingAndSurface["かなり"]?["可成"], .adverb)
+        XCTAssertEqual(KanaSpellingTable.categoryByReadingAndSurface["けっして"]?["決して"], .adverbKanaFirst)
         // 特に は漢字で書くことが多いので外した(ユーザ指定 3670)
-        XCTAssertNil(KanaGakiTable.categoryByReadingAndSurface["とくに"]?["特に"])
-        XCTAssertNil(KanaGakiTable.categoryByReadingAndSurface["しぜん"]?["自然"], "名詞と同形の語は入れない")
+        XCTAssertNil(KanaSpellingTable.categoryByReadingAndSurface["とくに"]?["特に"])
+        XCTAssertNil(KanaSpellingTable.categoryByReadingAndSurface["しぜん"]?["自然"], "名詞と同形の語は入れない")
         // 初期設定(副詞は抑制、副詞(漢字も残す)は抑制しない)
-        converter.setKanaGakiSuppressedCategories(Set(KanaGakiCategory.allCases.filter(\.suppressedByDefault)))
-        defer { converter.setKanaGakiSuppressedCategories(Set(KanaGakiCategory.allCases.filter(\.suppressedByDefault))) }
+        converter.setKanaSpellingSuppressedCategories(Set(KanaSpellingCategory.allCases.filter(\.suppressedByDefault)))
+        defer { converter.setKanaSpellingSuppressedCategories(Set(KanaSpellingCategory.allCases.filter(\.suppressedByDefault))) }
         let kanari = converter.candidates(for: "かなり", limit: 6, systemCandidateMode: .surface)
         XCTAssertEqual(kanari.first, "かなり", "single=\(kanari)")
         XCTAssertFalse(kanari.contains("可成"), "single=\(kanari)")
@@ -24969,7 +24969,7 @@ extension KanaKanjiConverterRegressionTests {
     func testRegressionRealLMZehiKanaFirstInMultiClause() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
-        XCTAssertEqual(KanaGakiTable.categoryByReadingAndSurface["ぜひ"]?["是非"], .adverbKanaFirst)
+        XCTAssertEqual(KanaSpellingTable.categoryByReadingAndSurface["ぜひ"]?["是非"], .adverbKanaFirst)
         XCTAssertEqual(KanaKanjiConverter.multiClauseAdverbKanaFirstKanjiByReading["ぜひ"], "是非")
         let single = converter.candidates(for: "ぜひ", limit: 4, systemCandidateMode: .surface)
         XCTAssertEqual(Array(single.prefix(2)), ["ぜひ", "是非"], "single=\(single)")
@@ -26177,7 +26177,7 @@ extension KanaKanjiConverterRegressionTests {
 
 extension KanaKanjiConverterRegressionTests {
     // 3563: 三井 が 三つ井 の「省略形」として落とされていた(数詞+つ は送り仮名ではない。ユーザ報告)
-    func testRegressionMitsuiNotDroppedAsOkuriganaVariant() throws {
+    func testRegressionMitsuiNotDroppedAsInflectionalKanaVariant() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
         for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
@@ -26364,7 +26364,7 @@ extension KanaKanjiConverterRegressionTests {
 
 extension KanaKanjiConverterRegressionTests {
     // 3578: 増る/新らしい は誤った送り仮名。ふえた→増た、あたらしくふえた→新らしく/増た が出ていた(ユーザ報告)
-    func testRegressionRealLMFuetaOkurigana() throws {
+    func testRegressionRealLMFuetaInflectionalKana() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
         let single = converter.candidates(for: "ふえた", limit: 10, systemCandidateMode: .surface)
@@ -26532,7 +26532,7 @@ extension KanaKanjiConverterRegressionTests {
 
     // 3593: 一段の受身+てた(まちがえられてた→間違えられてた。五段 選る の 選られてた に負けていた)、
     // サ変名詞+しないの(がいかつみたてしないの→外貨積立しないの。市内の に割れていた)。ユーザ報告
-    func testRegressionRealLMIchidanPassiveAspectAndSuruNainoKana() throws {
+    func testRegressionRealLMVowelStemPassiveAspectAndSuruNainoKana() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
         let cases: [(String, String)] = [
@@ -26702,13 +26702,13 @@ extension KanaKanjiConverterRegressionTests {
     func testRegressionRealLMRyoukaiFirstInBothBeforeFirst() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
-        converter.setKakikaePreference(.bothBeforeFirst)
+        converter.setKanjiRewritePreference(.bothBeforeFirst)
         let single = converter.candidates(for: "りょうかい", limit: 8, systemCandidateMode: .surface)
         XCTAssertEqual(single.first, "了解", "\(single)")
         XCTAssertTrue(single.contains("諒解"), "\(single)")
         let multi = converter.multiClauseCandidates(for: "りょうかいです", systemCandidateMode: .surface)
         XCTAssertEqual(multi.first, "了解です", "\(multi.prefix(4))")
-        converter.setKakikaePreference(.bothAfterFirst)
+        converter.setKanjiRewritePreference(.bothAfterFirst)
         XCTAssertEqual(converter.candidates(for: "りょうしょう", limit: 8, systemCandidateMode: .surface).first, "了承")
     }
 
@@ -26742,7 +26742,7 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "びょうきがなおった", systemCandidateMode: .surface).first, "病気が治った")
         XCTAssertEqual(converter.multiClauseCandidates(for: "かぜがなおった", systemCandidateMode: .surface).first, "風邪が治った")
         // いりぐち: 入口 を先(助詞付きでも、初期設定の本則だけでも 入口に が落ちない)
-        converter.setOkuriganaVariantPreference(.default)
+        converter.setInflectionalKanaVariantPreference(.default)
         XCTAssertEqual(converter.candidates(for: "いりぐち", limit: 3, systemCandidateMode: .surface).prefix(2), ["入口", "入り口"])
         for particle in ["に", "から", "の", "まで"] {
             let single = converter.candidates(for: "いりぐち" + particle, limit: 3, systemCandidateMode: .surface)
@@ -26955,11 +26955,11 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "じかんがたって", systemCandidateMode: .surface).first, "時間が経って")
         XCTAssertEqual(converter.multiClauseCandidates(for: "いえがたって", systemCandidateMode: .surface).first, "家が立って")
         // 恢復→回復 は書きかえ(X.9。恢 は表外字)。本来の漢字を先にする設定でも 回復 を先頭(了解 と同じ例外)
-        converter.setKakikaePreference(.bothBeforeFirst)
+        converter.setKanjiRewritePreference(.bothBeforeFirst)
         let kaifuku = converter.candidates(for: "かいふくしました", limit: 8, systemCandidateMode: .surface)
         XCTAssertEqual(kaifuku.first, "回復しました", "\(kaifuku)")
         XCTAssertTrue(kaifuku.contains("恢復しました"), "\(kaifuku)")
-        converter.setKakikaePreference(.bothAfterFirst)
+        converter.setKanjiRewritePreference(.bothAfterFirst)
         XCTAssertEqual(converter.candidates(for: "かいふくしました", limit: 8, systemCandidateMode: .surface).first, "回復しました")
         // 名詞+よ/よね を 動詞の連用形・命令形が押しのけない
         for (reading, expected) in [("うまいさけよ", "うまい酒よ"), ("うまいさけよね", "うまい酒よね"), ("おさけよね", "お酒よね")] {
@@ -27046,43 +27046,43 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(bttf.prefix(2)), ["バック・トゥー・ザ・フューチャー", "Back to the Future"], "\(bttf)")
         XCTAssertEqual(converter.multiClauseCandidates(for: "ばっくとぅーざふゅーちゃーをみた", systemCandidateMode: .surface).first, "バック・トゥー・ザ・フューチャーを見た")
         // 書きかえの組は隣り合わせ(聯想、連想、連奏)。例外グループのスイッチをオフにして 設定どおりの並びを見る
-        converter.setKakikaeEverydayException(false)
-        converter.setKakikaePreference(.bothBeforeFirst)
+        converter.setKanjiRewriteEverydayException(false)
+        converter.setKanjiRewritePreference(.bothBeforeFirst)
         let rensou = converter.candidates(for: "れんそう", limit: 6, systemCandidateMode: .surface)
         XCTAssertEqual(Array(rensou.prefix(3)), ["聯想", "連想", "連奏"], "\(rensou)")
-        converter.setKakikaePreference(.bothAfterFirst)
+        converter.setKanjiRewritePreference(.bothAfterFirst)
         XCTAssertEqual(Array(converter.candidates(for: "れんそう", limit: 6, systemCandidateMode: .surface).prefix(2)), ["連想", "連奏"])
     }
 
     // 書きかえの例外グループ(了解/了承/回復/連想 と 諒解/諒承/恢復/聯想)のスイッチ(3644)
-    func testRegressionRealLMKakikaeEverydayExceptionSwitch() throws {
+    func testRegressionRealLMKanjiRewriteEverydayExceptionSwitch() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
         func single(_ reading: String) -> [String] {
             converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
         }
         // オン: 設定にかかわらず常用漢字を先に(本来の漢字だけでも両方を出す)
-        converter.setKakikaeEverydayException(true)
-        for preference in [KakikaePreference.beforeOnly, .bothBeforeFirst, .bothAfterFirst] {
-            converter.setKakikaePreference(preference)
+        converter.setKanjiRewriteEverydayException(true)
+        for preference in [KanjiRewritePreference.beforeOnly, .bothBeforeFirst, .bothAfterFirst] {
+            converter.setKanjiRewritePreference(preference)
             XCTAssertEqual(single("りょうかい").first, "了解", "\(preference)")
             XCTAssertEqual(single("かいふく").first, "回復", "\(preference)")
             XCTAssertEqual(single("れんそう").first, "連想", "\(preference)")
             XCTAssertTrue(single("りょうかい").contains("諒解"), "\(preference)")
         }
         // オフ: 設定どおり(本来の漢字を先に/本来の漢字だけ)
-        converter.setKakikaeEverydayException(false)
-        converter.setKakikaePreference(.bothBeforeFirst)
+        converter.setKanjiRewriteEverydayException(false)
+        converter.setKanjiRewritePreference(.bothBeforeFirst)
         XCTAssertEqual(single("りょうかい").first, "諒解")
         XCTAssertEqual(single("れんそう").first, "聯想")
-        converter.setKakikaePreference(.beforeOnly)
+        converter.setKanjiRewritePreference(.beforeOnly)
         XCTAssertEqual(single("りょうかい").first, "諒解")
         XCTAssertFalse(single("りょうかい").contains("了解"))
-        converter.setKakikaePreference(.afterOnly)
+        converter.setKanjiRewritePreference(.afterOnly)
         XCTAssertEqual(single("りょうかい").first, "了解")
         // 例外グループ以外の組(醗酵/発酵)は、スイッチに関わらず設定どおり
-        converter.setKakikaeEverydayException(true)
-        converter.setKakikaePreference(.bothBeforeFirst)
+        converter.setKanjiRewriteEverydayException(true)
+        converter.setKanjiRewritePreference(.bothBeforeFirst)
         XCTAssertEqual(single("はっこう").first(where: { $0 == "醗酵" || $0 == "発酵" }), "醗酵")
     }
 
@@ -27221,7 +27221,7 @@ extension KanaKanjiConverterRegressionTests {
     }
 
     // 3695: はっそう は 発送 を先頭、交ぜ書き 発そう/發そう は抑制。宅急便+発送 の隣接
-    func testRegressionHassouOrderAndMazegaki() throws {
+    func testRegressionHassouOrderAndMixedScript() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
         let list = converter.candidates(for: "はっそう", limit: 8, systemCandidateMode: .surface)
@@ -27318,11 +27318,11 @@ extension KanaKanjiConverterRegressionTests {
     func testRegression3711Batch() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
-        converter.setKakikaePreference(.bothBeforeFirst)
-        converter.setKakikaeEverydayException(true)
+        converter.setKanjiRewritePreference(.bothBeforeFirst)
+        converter.setKanjiRewriteEverydayException(true)
         defer {
-            converter.setKakikaePreference(.beforeOnly)
-            converter.setKakikaeEverydayException(false)
+            converter.setKanjiRewritePreference(.beforeOnly)
+            converter.setKanjiRewriteEverydayException(false)
         }
         func single(_ r: String) -> [String] { converter.candidates(for: r, limit: 12, systemCandidateMode: .surface) }
         func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
@@ -27798,7 +27798,7 @@ extension KanaKanjiConverterRegressionTests {
 
     // 3780: Sudachi の品詞が サ変形状詞可能 の語(安心/邪魔/苦労 等)は suru に入らず、する の活用が作られなかった。
     // ユーザが選んだ 55 語を misc に サ変名詞 で登録した(膨大/妥当 のように する で使わない語は除く)
-    func testRegression3780SahenKeiyoushiNouns() throws {
+    func testRegression3780SuruVerbKeiyoushiNouns() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
         for (reading, expected) in [("あんしんして", "安心して"), ("じゃまされてて", "邪魔されてて"), ("ごぶさたしてます", "ご無沙汰してます"),
@@ -28201,11 +28201,11 @@ extension KanaKanjiConverterRegressionTests {
         try loadDeviceAddedVocabulary(includeSuppression: true)
         func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
         func single(_ r: String) -> [String] { converter.candidates(for: r, limit: 6, systemCandidateMode: .surface) }
-        converter.setKakikaePreference(.bothBeforeFirst)
-        converter.setKakikaeEverydayException(true)
+        converter.setKanjiRewritePreference(.bothBeforeFirst)
+        converter.setKanjiRewriteEverydayException(true)
         XCTAssertEqual(Array(single("ちゅうもん").prefix(2)), ["注文", "註文"], "\(single("ちゅうもん"))")
         XCTAssertEqual(Array(multi("ちゅうもんやのうひん").prefix(2)), ["注文や納品", "註文や納品"], "\(multi("ちゅうもんやのうひん"))")
-        converter.setKakikaeEverydayException(false)
+        converter.setKanjiRewriteEverydayException(false)
         XCTAssertEqual(Array(single("ちゅうもん").prefix(2)), ["註文", "注文"], "\(single("ちゅうもん"))")
         XCTAssertEqual(Array(multi("ちゅうもんやのうひん").prefix(2)), ["註文や納品", "注文や納品"], "\(multi("ちゅうもんやのうひん"))")
     }
@@ -28308,7 +28308,7 @@ extension KanaKanjiConverterRegressionTests {
     }
 
     // 3570: 報告の後に常用漢字に加わった字の組(肝腎⇄肝心、臆測⇄憶測。X.10)は X.9 と別の 4 択で選ぶ。
-    // X.9(kakikaePreference)は nil のまま、X.10 だけを設定する(独立性は IsIndependentOfKakikaePreference)
+    // X.9(kanjiRewritePreference)は nil のまま、X.10 だけを設定する(独立性は IsIndependentOfKakikaePreference)
     private func lateStandardizedSingle(_ reading: String) -> [String] {
         converter.candidates(for: reading, limit: 20, systemCandidateMode: .surface)
     }
@@ -28397,17 +28397,17 @@ extension KanaKanjiConverterRegressionTests {
     }
 
     // X.9 と X.10 はそれぞれの組にだけ効く
-    func testLateStandardizedRewriteIsIndependentOfKakikaePreference() throws {
+    func testLateStandardizedRewriteIsIndependentOfKanjiRewritePreference() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
-        converter.setKakikaePreference(.afterOnly)
+        converter.setKanjiRewritePreference(.afterOnly)
         converter.setLateStandardizedRewritePreference(.beforeOnly)
         var hakkou = lateStandardizedSingle("はっこう")
         var okusoku = lateStandardizedSingle("おくそく")
         XCTAssertTrue(hakkou.contains("発酵") && !hakkou.contains("醗酵"), "\(hakkou)")
         XCTAssertTrue(okusoku.contains("臆測") && !okusoku.contains("憶測"), "\(okusoku)")
 
-        converter.setKakikaePreference(.beforeOnly)
+        converter.setKanjiRewritePreference(.beforeOnly)
         converter.setLateStandardizedRewritePreference(.afterOnly)
         hakkou = lateStandardizedSingle("はっこう")
         okusoku = lateStandardizedSingle("おくそく")
@@ -28419,7 +28419,7 @@ extension KanaKanjiConverterRegressionTests {
     func testLateStandardizedRewriteNilKeepsBothForms() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
-        converter.setKakikaePreference(.afterOnly)
+        converter.setKanjiRewritePreference(.afterOnly)
         let list = lateStandardizedSingle("かんじん")
         XCTAssertTrue(list.contains("肝腎"), "\(list)")
         XCTAssertTrue(list.contains("肝心"), "\(list)")
@@ -28442,7 +28442,7 @@ extension KanaKanjiConverterRegressionTests {
     func testLateStandardizedRewriteMultiClauseMixedGroupsHidesExcludedForm() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
-        converter.setKakikaePreference(.bothBeforeFirst)
+        converter.setKanjiRewritePreference(.bothBeforeFirst)
         converter.setLateStandardizedRewritePreference(.afterOnly)
         // かいてん は格子が 回転 を選ぶので、X.9 の両方(廻転 → 回転)が並ぶ
         let list = converter.multiClauseCandidates(for: "おくそくでかいてんする", systemCandidateMode: .surface)
@@ -28454,14 +28454,14 @@ extension KanaKanjiConverterRegressionTests {
     // 表: X.10 の組は 17 組、X.9 の組は 292 組(3632 で 人蔘/人参 を追加)。2 つのグループは語を共有せず、X.10 の語で日常語の例外に入るのは
     // 理屈/理窟 だけ(ユーザ指定 3739)
     func testLateStandardizedTableSeparatesGroups() {
-        XCTAssertEqual(KakikaeTable.lateStandardizedPairs.count, 17)
-        XCTAssertEqual(KakikaeTable.switchablePairs.count, 292)
-        XCTAssertTrue(KakikaeTable.lateStandardizedPairs.contains { $0.before == "肝腎" && $0.after == "肝心" })
-        XCTAssertNil(KakikaeTable.afterByBefore["肝腎"])
-        let lateWords = Set(KakikaeTable.lateStandardizedPairs.flatMap { [$0.before, $0.after] })
-        let switchableWords = Set(KakikaeTable.switchablePairs.flatMap { [$0.before, $0.after] })
+        XCTAssertEqual(KanjiRewriteTable.lateStandardizedPairs.count, 17)
+        XCTAssertEqual(KanjiRewriteTable.switchablePairs.count, 292)
+        XCTAssertTrue(KanjiRewriteTable.lateStandardizedPairs.contains { $0.before == "肝腎" && $0.after == "肝心" })
+        XCTAssertNil(KanjiRewriteTable.afterByBefore["肝腎"])
+        let lateWords = Set(KanjiRewriteTable.lateStandardizedPairs.flatMap { [$0.before, $0.after] })
+        let switchableWords = Set(KanjiRewriteTable.switchablePairs.flatMap { [$0.before, $0.after] })
         XCTAssertTrue(lateWords.isDisjoint(with: switchableWords), "\(lateWords.intersection(switchableWords))")
-        XCTAssertEqual(lateWords.intersection(KakikaePreference.everydayAfterFirstPairs), ["理屈", "理窟"])
+        XCTAssertEqual(lateWords.intersection(KanjiRewritePreference.everydayAfterFirstPairs), ["理屈", "理窟"])
     }
 
     // 連語表(目的語で決まる動詞の表)を最初に使うときの組み立ての時間(3740。小さなリテラルに分けたので起動時に遅くならないかを見る)。
@@ -28514,21 +28514,21 @@ extension KanaKanjiConverterRegressionTests {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
         // AUDIT_KAKIKAE=afterOnly 等で X.9 の設定を変えて検査する(3683)
-        if let raw = ProcessInfo.processInfo.environment["AUDIT_KAKIKAE"], let preference = KakikaePreference(rawValue: raw) {
-            converter.setKakikaePreference(preference)
+        if let raw = ProcessInfo.processInfo.environment["AUDIT_KAKIKAE"], let preference = KanjiRewritePreference(rawValue: raw) {
+            converter.setKanjiRewritePreference(preference)
         }
         // AUDIT_OKURIGANA=stem:permittedFirst,compound:standardFirst,noun:standardFirst で送り仮名の許容形の設定を実機と揃える
         // (行なう が出る設定の端末で 行う と出るのは検査側の設定の違いか、を見分ける。3693)
         if let raw = ProcessInfo.processInfo.environment["AUDIT_OKURIGANA"] {
-            var modes = OkuriganaVariantPreference.default.modes
+            var modes = InflectionalKanaVariantPreference.default.modes
             for item in raw.split(separator: ",") {
                 let pair = item.split(separator: ":")
-                if pair.count == 2, let group = OkuriganaVariantGroup(rawValue: String(pair[0])),
-                    let mode = OkuriganaVariantMode(rawValue: String(pair[1])) {
+                if pair.count == 2, let group = InflectionalKanaVariantGroup(rawValue: String(pair[0])),
+                    let mode = InflectionalKanaVariantMode(rawValue: String(pair[1])) {
                     modes[group] = mode
                 }
             }
-            converter.setOkuriganaVariantPreference(OkuriganaVariantPreference(modes: modes))
+            converter.setInflectionalKanaVariantPreference(InflectionalKanaVariantPreference(modes: modes))
         }
         // AUDIT_ADJME=1 で X.14 の 目(形状名詞化 め の漢字)をオンにする(実機の adjectiveMeKanjiCandidatesEnabled。3740)
         if ProcessInfo.processInfo.environment["AUDIT_ADJME"] != nil {
@@ -28542,7 +28542,7 @@ extension KanaKanjiConverterRegressionTests {
         #endif
         // AUDIT_KANAGAKI=adverb,conjunction,… で X.8 かなで書く言葉 の分類を実機と揃える(3688)
         if let raw = ProcessInfo.processInfo.environment["AUDIT_KANAGAKI"] {
-            converter.setKanaGakiSuppressedCategories(Set(raw.split(separator: ",").compactMap { KanaGakiCategory(rawValue: String($0)) }))
+            converter.setKanaSpellingSuppressedCategories(Set(raw.split(separator: ",").compactMap { KanaSpellingCategory(rawValue: String($0)) }))
         }
         let tsv = try String(contentsOf: URL(fileURLWithPath: input), encoding: .utf8)
         var out: [String] = []
@@ -28594,7 +28594,7 @@ extension KanaKanjiConverterRegressionTests {
                             tailConversion: { self.converter.counterTailConversion($0) },
                             isCommonWord: { self.converter.isCommonWordForCounterBlock($0) }
                         )
-                        shown = converter.applyOkuriganaVariantPreference(
+                        shown = converter.applyInflectionalKanaVariantPreference(
                             reading: piece.kana,
                             to: converter.applyKaCounterVariantPreference(reading: piece.kana, to: boosted, precedingCharacter: digit)
                         )
@@ -29127,14 +29127,14 @@ extension KanaKanjiConverterRegressionTests {
     func testRegressionRakushouDatta3747() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
-        defer { converter.setOkuriganaVariantPreference(.default) }
+        defer { converter.setInflectionalKanaVariantPreference(.default) }
         let datta = converter.multiClauseCandidates(for: "らくしょうだった", systemCandidateMode: .surface)
         XCTAssertEqual(datta.first, "楽勝だった", "\(datta.prefix(4))")
-        converter.setOkuriganaVariantPreference(.default)
+        converter.setInflectionalKanaVariantPreference(.default)
         XCTAssertFalse(converter.candidates(for: "ゆだった", limit: 20, systemCandidateMode: .surface).contains("茹った"))
         XCTAssertTrue(converter.candidates(for: "ゆだった", limit: 20, systemCandidateMode: .surface).contains("茹だった"))
         XCTAssertFalse(converter.multiClauseCandidates(for: "らくしょだった", systemCandidateMode: .surface).contains { $0.contains("茹った") })
-        converter.setOkuriganaVariantPreference(.conservative)
+        converter.setInflectionalKanaVariantPreference(.conservative)
         let conservative = converter.candidates(for: "ゆだった", limit: 20, systemCandidateMode: .surface)
         if let short = conservative.firstIndex(of: "茹った") {
             XCTAssertLessThan(conservative.firstIndex(of: "茹だった") ?? Int.max, short, "\(conservative.prefix(6))")
@@ -29272,7 +29272,7 @@ extension KanaKanjiConverterRegressionTests {
     }
 
     // 3748(ユーザ指摘): 送り仮名の誤り 回わる/廻わる を出さない(いっしゅうまわった に 回わった、まわった に 廻わった)
-    func testRegressionMawaruOkuriganaSuppressed3748() throws {
+    func testRegressionMawaruInflectionalKanaSuppressed3748() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
         let mawatta = converter.candidates(for: "まわった", limit: 20, systemCandidateMode: .surface)
@@ -29364,7 +29364,7 @@ extension KanaKanjiConverterRegressionTests {
 
     // 3749(ユーザ報告): きょうしになれて が 供しに慣れて(供する の 連用形+に)。目的の に(見に行く)は なる/なれる/慣れる には続かない。
     // 先生になれて/見に行く/食べに来た/都会に住んでる は保つ
-    func testRegressionRenyouNiBeforeNaru3749() throws {
+    func testRegressionContinuativeNiBeforeNaru3749() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
         func multi(_ reading: String) -> [String] { converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface) }
@@ -30097,7 +30097,7 @@ extension KanaKanjiConverterRegressionTests {
 
     // ついたち/ふつか/みっか… から アラビア数字の形(1日/2日/3日)も出す(3793、ユーザ指定。単語は登録せず、和語数詞の処理に日付の読みを足す)。
     // 並びは X.18(数詞の表記)に従う
-    func testRegressionWagoDayArabic3793() throws {
+    func testRegressionNativeWordDayArabic3793() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
         defer { converter.setNumeralStylePreference(.arabicFirst) }
@@ -30220,7 +30220,7 @@ extension KanaKanjiConverterRegressionTests {
     }
 
     // 日付の走査で見つけた誤り(3800、ユーザ指定)
-    func testRegressionWagoDaySweep3800() throws {
+    func testRegressionNativeWordDaySweep3800() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
         converter.invalidateCandidateCache()
@@ -30885,10 +30885,10 @@ extension KanaKanjiConverterRegressionTests {
     // かな の形が先、すぐ下に漢字。オン(現代的・戦略的)では出さない
     func testKudasaiKanjiFormSuppliedInSentenceWhenUnsuppressed3839() throws {
         try prepareRealLMDictionary()
-        converter.setKanaGakiSuppressedCategories([])
+        converter.setKanaSpellingSuppressedCategories([])
         let off = converter.candidates(for: "みてください", limit: 6, systemCandidateMode: .surface)
         XCTAssertEqual(Array(off.prefix(2)), ["見てください", "見て下さい"], "\(off)")
-        converter.setKanaGakiSuppressedCategories(Set(KanaGakiCategory.allCases.filter(\.suppressedByDefault)))
+        converter.setKanaSpellingSuppressedCategories(Set(KanaSpellingCategory.allCases.filter(\.suppressedByDefault)))
         let on = converter.candidates(for: "みてください", limit: 12, systemCandidateMode: .surface)
         XCTAssertEqual(on.first, "見てください", "\(on)")
         XCTAssertFalse(on.contains { $0.hasSuffix("下さい") }, "\(on)")
@@ -31235,11 +31235,11 @@ extension KanaKanjiConverterRegressionTests {
 
     // 3789(ユーザ指定): 送り仮名の残りの組(籠る/嵌る/吊す/跨る/癒す、上る(あがる)/分る/逃す(にがす) など)も 本則だけ の設定で出さない。
     // 複合語の後部要素(組み合せ/打ち合せ)は複合語の設定で扱う
-    func testRegressionOkuriganaRemainingPairs3789() throws {
+    func testRegressionInflectionalKanaRemainingPairs3789() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
-        defer { converter.setOkuriganaVariantPreference(.default) }
-        converter.setOkuriganaVariantPreference(.default)
+        defer { converter.setInflectionalKanaVariantPreference(.default) }
+        converter.setInflectionalKanaVariantPreference(.default)
         for (reading, kept, dropped) in [
             ("こもる", "籠もる", ["籠る", "篭る"]), ("はまる", "嵌まる", ["嵌る"]), ("つるす", "吊るす", ["吊す"]),
             ("またがる", "跨がる", ["跨る"]), ("いやす", "癒やす", ["癒す"]), ("あがって", "上がって", ["上って", "揚って"]),
@@ -31255,13 +31255,13 @@ extension KanaKanjiConverterRegressionTests {
             }
         }
         typealias C = KanaKanjiConverter
-        XCTAssertEqual(C.okuriganaVariantRelation("組み合わせ", "組み合せ")?.group, .compoundFront)
-        XCTAssertEqual(C.okuriganaVariantRelation("打ち合わせ", "打ち合せ")?.group, .compoundFront)
-        XCTAssertEqual(C.okuriganaVariantRelation("合わせる", "合せる")?.group, .stemInternal)
+        XCTAssertEqual(C.inflectionalKanaVariantRelation("組み合わせ", "組み合せ")?.group, .compoundFront)
+        XCTAssertEqual(C.inflectionalKanaVariantRelation("打ち合わせ", "打ち合せ")?.group, .compoundFront)
+        XCTAssertEqual(C.inflectionalKanaVariantRelation("合わせる", "合せる")?.group, .stemInternal)
         // 下一段の語幹のかなを省いた形は複合語でも許容にしない
-        XCTAssertEqual(C.okuriganaVariantRelation("取り上げる", "取り上る")?.group, .stemInternal)
+        XCTAssertEqual(C.inflectionalKanaVariantRelation("取り上げる", "取り上る")?.group, .stemInternal)
         // 複合語は 本則を先に の設定で 2 番め以降に出る
-        converter.setOkuriganaVariantPreference(.conservative)
+        converter.setInflectionalKanaVariantPreference(.conservative)
         let kumi = converter.candidates(for: "くみあわせ", limit: 12, systemCandidateMode: .surface)
         XCTAssertEqual(kumi.first, "組み合わせ")
         XCTAssertTrue(kumi.contains("組み合せ") && kumi.contains("組合せ"), "\(kumi)")
@@ -31340,7 +31340,7 @@ extension KanaKanjiConverterRegressionTests {
 
     // 3805(ユーザ指定): ごがついつか は 5月5日(月名の直後の いつか/むいか/なのか は日付)。むいか は 語がつむいか、なのか+に は
     // ごがつなの下に に崩れていた。文末の なのか は疑問(誕生日は五月なのか)のまま
-    func testRegressionMonthWagoDay3805() throws {
+    func testRegressionMonthNativeWordDay3805() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
         converter.setNumeralStylePreference(.arabicFirst)
@@ -31380,11 +31380,11 @@ extension KanaKanjiConverterRegressionTests {
     }
 
     // 3805(ユーザ指定): 送り仮名が本則でない候補(合せる/過した/回わした/困まった/情ない)は 本則だけ の設定で出さない
-    func testRegressionOkuriganaExtraPairs3805() throws {
+    func testRegressionInflectionalKanaExtraPairs3805() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
-        defer { converter.setOkuriganaVariantPreference(.default) }
-        converter.setOkuriganaVariantPreference(.default)
+        defer { converter.setInflectionalKanaVariantPreference(.default) }
+        converter.setInflectionalKanaVariantPreference(.default)
         for (reading, kept, dropped) in [
             ("あわせる", "合わせる", ["合せる"]), ("すごした", "過ごした", ["過した"]), ("まわした", "回した", ["回わした", "廻わした"]),
             ("かえした", "返した", ["返えした"]), ("きたない", "汚い", ["汚ない", "汚たない"]), ("おどろいた", "驚いた", ["驚ろいた"]),
@@ -31399,8 +31399,8 @@ extension KanaKanjiConverterRegressionTests {
             }
         }
         // 語末の 1 字を省く形・後ろが漢字の形はこの表では触らない
-        XCTAssertEqual(KanaKanjiConverter.okuriganaVariantRelation("振る舞う", "振舞う")?.group, .compoundFront)
-        XCTAssertNil(KanaKanjiConverter.okuriganaVariantRelation("引き分け", "引き分"))
+        XCTAssertEqual(KanaKanjiConverter.inflectionalKanaVariantRelation("振る舞う", "振舞う")?.group, .compoundFront)
+        XCTAssertNil(KanaKanjiConverter.inflectionalKanaVariantRelation("引き分け", "引き分"))
     }
 
     // 月名はどれもアラビア数字の形も出す(いちがつ だけ 1月 が出ていた)。月と日の表記は揃える(五月2日 は出さない)。

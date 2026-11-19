@@ -93,7 +93,7 @@ extension KanaKanjiConverter {
     //
     // 一段動詞の連用形は同じ表層でも正当(立てる→立てに行く)なので、候補ごとに
     // 「一段の基底(語幹+る)が辞書にあるか」で判定する。
-    func filterGodanEDanStemsForCaseParticle(
+    func filterConsonantStemEDanStemsForCaseParticle(
         _ candidates: [String],
         stemReading: String,
         nextSuffix: String
@@ -104,11 +104,11 @@ extension KanaKanjiConverter {
         }
 
         // 語幹読みに対応する五段の辞書形(たて→たつ)と一段の辞書形(たて→たてる)。
-        let godanBaseReading = String(stemReading.dropLast()) + Self.uDanForEDan(stemReading.last!)
-        let ichidanBaseReading = stemReading + "る"
-        let godanMetadata = inflectionMetadata(for: godanBaseReading)
-        let ichidanMetadata = inflectionMetadata(for: ichidanBaseReading)
-        guard godanMetadata.hasMetadata else {
+        let consonantStemBaseReading = String(stemReading.dropLast()) + Self.uDanForEDan(stemReading.last!)
+        let vowelStemBaseReading = stemReading + "る"
+        let consonantStemMetadata = inflectionMetadata(for: consonantStemBaseReading)
+        let vowelStemMetadata = inflectionMetadata(for: vowelStemBaseReading)
+        guard consonantStemMetadata.hasMetadata else {
             return candidates
         }
 
@@ -118,14 +118,14 @@ extension KanaKanjiConverter {
             guard !candidate.isEmpty else {
                 return true
             }
-            let godanBase = String(candidate.dropLast()) + Self.dictionaryFormTail(for: stemReading)
-            let isGodanEDan = godanMetadata.classMap[godanBase]?.hasPrefix("godan-") == true
-            guard isGodanEDan else {
+            let consonantStemBase = String(candidate.dropLast()) + Self.dictionaryFormTail(for: stemReading)
+            let isConsonantStemEDan = consonantStemMetadata.classMap[consonantStemBase]?.hasPrefix("godan-") == true
+            guard isConsonantStemEDan else {
                 return true
             }
             // 同じ表層が一段の連用形としても説明できるなら正当(立て→立てる)
-            let ichidanBase = candidate + "る"
-            return ichidanMetadata.classMap[ichidanBase] == InflectionClass.ichidan
+            let vowelStemBase = candidate + "る"
+            return vowelStemMetadata.classMap[vowelStemBase] == InflectionClass.vowelStem
         }
     }
 
@@ -180,7 +180,7 @@ extension KanaKanjiConverter {
         }
     }
 
-    static let godanPotentialConjugationSuffixes: [String] = [
+    static let consonantStemPotentialConjugationSuffixes: [String] = [
         "る",
         "ない", "なかった",
         "た", "たら", "たり",
@@ -191,10 +191,10 @@ extension KanaKanjiConverter {
         "たい", "たく", "たくて", "たくない", "たくなかった", "たかった", "たければ"
     ]
 
-    static let godanPotentialDeinflectionMappings: [(readingSuffix: String, baseReadingSuffix: String)] = {
+    static let consonantStemPotentialDeinflectionMappings: [(readingSuffix: String, baseReadingSuffix: String)] = {
         var mappings: [(readingSuffix: String, baseReadingSuffix: String)] = []
-        for pattern in godanPatterns {
-            for conjugation in godanPotentialConjugationSuffixes {
+        for pattern in consonantStemPatterns {
+            for conjugation in consonantStemPotentialConjugationSuffixes {
                 mappings.append(
                     (
                         readingSuffix: pattern.eForm + conjugation,
@@ -266,9 +266,9 @@ extension KanaKanjiConverter {
         }
         return merged
     }
-    static let godanPotentialDeinflectionMappingsByReadingLastCharacter: [Character: [(readingSuffix: String, baseReadingSuffix: String)]] = {
+    static let consonantStemPotentialDeinflectionMappingsByReadingLastCharacter: [Character: [(readingSuffix: String, baseReadingSuffix: String)]] = {
         var buckets: [Character: [(readingSuffix: String, baseReadingSuffix: String)]] = [:]
-        for mapping in godanPotentialDeinflectionMappings {
+        for mapping in consonantStemPotentialDeinflectionMappings {
             guard let last = mapping.readingSuffix.last else {
                 continue
             }
@@ -360,7 +360,7 @@ extension KanaKanjiConverter {
         for rule in Self.deinflectionRulesWithEmptyReadingSuffix {
             addProbe(for: rule)
         }
-        for mapping in Self.godanPotentialDeinflectionMappingsByReadingLastCharacter[readingLastCharacter] ?? [] {
+        for mapping in Self.consonantStemPotentialDeinflectionMappingsByReadingLastCharacter[readingLastCharacter] ?? [] {
             guard reading.hasSuffix(mapping.readingSuffix) else { continue }
             let readingStem = String(reading.dropLast(mapping.readingSuffix.count))
             guard !readingStem.isEmpty,
@@ -480,7 +480,7 @@ extension KanaKanjiConverter {
                 return false
             }
 
-            return className == InflectionClass.ichidan
+            return className == InflectionClass.vowelStem
                 || className.hasPrefix("godan-")
                 || className == InflectionClass.kuru
         }
@@ -530,7 +530,7 @@ extension KanaKanjiConverter {
     // 表層がカタカナ語のとき促音は「ッ」だが読みは「っ」なので、かなの種を揃えて突き合わせる。
     // 素朴な文字一致にしていたため、リッター/ヘット/ネット/チケット のような促音カタカナ語
     // (辞書に13,348エントリ)を一律で水増し表記と誤判定して候補から消していた(2466)。
-    static func hasSokuonOrChoonPadding(_ surface: String, reading: String) -> Bool {
+    static func hasGeminateOrChoonPadding(_ surface: String, reading: String) -> Bool {
         for (surfaceCharacter, readingCharacter) in [("っ", "っ"), ("ッ", "っ"), ("ー", "ー")]
         where surface.contains(surfaceCharacter) {
             if !reading.contains(readingCharacter) {
@@ -554,7 +554,7 @@ extension KanaKanjiConverter {
         hasWaveDashElongation(surface, reading: reading)
             || hasNakaguroDecorationSpelling(surface, reading: reading)
             || hasEllipsisElongation(surface, reading: reading)
-            || hasSokuonOrChoonPadding(surface, reading: reading)
+            || hasGeminateOrChoonPadding(surface, reading: reading)
             || isUnusedOkuVerbSurface(surface, reading: reading)
     }
 
@@ -574,7 +574,7 @@ extension KanaKanjiConverter {
     }
 
     // 連濁の清音化マップ(濁音/半濁音→清音)。連濁収穫フィルタ用。
-    static let rendakuDevoicedKanaCharacter: [Character: Character] = [
+    static let sequentialVoicingDevoicedKanaCharacter: [Character: Character] = [
         "が": "か", "ぎ": "き", "ぐ": "く", "げ": "け", "ご": "こ",
         "ざ": "さ", "じ": "し", "ず": "す", "ぜ": "せ", "ぞ": "そ",
         "だ": "た", "ぢ": "ち", "づ": "つ", "で": "て", "ど": "と",
@@ -616,10 +616,10 @@ extension KanaKanjiConverter {
         }
     }
 
-    func isRendakuHarvestVerbBase(_ surface: String, baseReading: String) -> Bool {
+    func isSequentialVoicingHarvestVerbBase(_ surface: String, baseReading: String) -> Bool {
         guard surface != baseReading,
             let firstChar = baseReading.first,
-            let devoicedFirst = Self.rendakuDevoicedKanaCharacter[firstChar] else {
+            let devoicedFirst = Self.sequentialVoicingDevoicedKanaCharacter[firstChar] else {
             return false
         }
         let devoicedReading = String(devoicedFirst) + baseReading.dropFirst()
@@ -645,7 +645,7 @@ extension KanaKanjiConverter {
         reading.count { !smallKanaCharacters.contains($0) }
     }
 
-    func isRendakuHarvestSurface(
+    func isSequentialVoicingHarvestSurface(
         _ surface: String,
         reading: String,
         includingMultiCharacterSurfaces: Bool = false
@@ -660,7 +660,7 @@ extension KanaKanjiConverter {
                 ? Self.containsKanjiCandidate(surface)
                 : (Self.isSingleKanjiCandidate(surface) && Self.moraCount(of: reading) <= 2),
             let firstChar = reading.first,
-            let devoicedFirst = Self.rendakuDevoicedKanaCharacter[firstChar] else {
+            let devoicedFirst = Self.sequentialVoicingDevoicedKanaCharacter[firstChar] else {
             return false
         }
         // seed 掲載の表層は正当な濁音変種(ぎたない→汚い 等)なので免除
@@ -1177,7 +1177,7 @@ extension KanaKanjiConverter {
         return nonPassivizableSuruNouns.contains { candidate.contains($0 + "され") }
     }
 
-    static let mazegakiAllowlistedSurfaces: Set<String> = [
+    static let mixedScriptAllowlistedSurfaces: Set<String> = [
         "子ども", "子どもたち", "子どもの日", "今まで",
         // 正当な送り仮名語が同読み全漢字語の部分列に誤マッチしていた(2637):
         // 長らく←長楽、向かい←向井
@@ -1210,8 +1210,8 @@ extension KanaKanjiConverter {
     // 交ぜ書き判定(LM文脈なしの構造部分): 漢字+ひらがな混在で、かな部分が読みの一部、
     // 漢字部分がより漢字数の多い同読み全漢字候補の部分列(まん延←蔓延/作ひん←作品)。
     // 申し込み(漢字部分==申込 で同数)や送り仮名違いは対象外。
-    static func mazegakiKanjiPart(_ surface: String, reading: String) -> String? {
-        guard !mazegakiAllowlistedSurfaces.contains(surface) else { return nil }
+    static func mixedScriptKanjiPart(_ surface: String, reading: String) -> String? {
+        guard !mixedScriptAllowlistedSurfaces.contains(surface) else { return nil }
         var kanji = ""
         var kana = ""
         for scalar in surface.unicodeScalars {

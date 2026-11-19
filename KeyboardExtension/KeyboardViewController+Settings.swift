@@ -28,14 +28,14 @@ extension KeyboardViewController {
         ) ?? .suppress
         kanaKanjiConverter.setKatakanaEmphasisCandidateMode(katakanaEmphasisMode)
 
-        let mazegakiMode = ScriptVariantCandidateMode(
+        let mixedScriptMode = ScriptVariantCandidateMode(
             rawValue: sharedStringValue(
                 from: sharedDefaults,
-                key: SharedDefaultsKeys.mazegakiCandidateMode,
+                key: SharedDefaultsKeys.mixedScriptCandidateMode,
                 fallback: ScriptVariantCandidateMode.suppress.rawValue
             )
         ) ?? .suppress
-        kanaKanjiConverter.setMazegakiCandidateMode(mazegakiMode)
+        kanaKanjiConverter.setMixedScriptCandidateMode(mixedScriptMode)
 
         // 旧字体・異体字の抑制(小分類ごと。人名で生きている異体字だけ初期設定オフ。2991)
         var variantCategories = Set<ScriptVariantSuppressionCategory>()
@@ -48,31 +48,31 @@ extension KeyboardViewController {
         kanaKanjiConverter.setScriptVariantSuppressionCategories(variantCategories)
 
         // かなで書く言葉(仲間ごと。初期設定は 副詞(漢字も残す) 以外は抑制。3404、3552)
-        var kanaGakiSuppressed = Set<KanaGakiCategory>()
-        for category in KanaGakiCategory.allCases
+        var kanaSpellingSuppressed = Set<KanaSpellingCategory>()
+        for category in KanaSpellingCategory.allCases
         where sharedBoolValue(from: sharedDefaults, key: category.settingsKey, fallback: category.suppressedByDefault) {
-            kanaGakiSuppressed.insert(category)
+            kanaSpellingSuppressed.insert(category)
         }
-        kanaKanjiConverter.setKanaGakiSuppressedCategories(kanaGakiSuppressed)
+        kanaKanjiConverter.setKanaSpellingSuppressedCategories(kanaSpellingSuppressed)
 
         // 国旗・学習した絵文字も emoji 候補(X.15)に従う(3423)
         kanaKanjiConverter.setEmojiCandidatesEnabled(currentEmojiCandidateDisplayEnabled(from: sharedDefaults))
 
-        // 同音の漢字による書きかえ(3422)。値が無い(アプリを開く前の更新直後)ときは 両方(前を先に。KakikaePreference.existingInstallDefault)
-        kanaKanjiConverter.setKakikaePreference(
-            KakikaePreference.decode(sharedDefaults?.string(forKey: SharedDefaultsKeys.kakikaePreference))
+        // 同音の漢字による書きかえ(3422)。値が無い(アプリを開く前の更新直後)ときは 両方(前を先に。KanjiRewritePreference.existingInstallDefault)
+        kanaKanjiConverter.setKanjiRewritePreference(
+            KanjiRewritePreference.decode(sharedDefaults?.string(forKey: SharedDefaultsKeys.kanjiRewritePreference))
         )
         // 例外グループ(了解/回復/連想 等)。値が無い端末(この設定より前から使っている人)は オン(3611 以来の動作を守る)
-        kanaKanjiConverter.setKakikaeEverydayException(
+        kanaKanjiConverter.setKanjiRewriteEverydayException(
             sharedBoolValue(
                 from: sharedDefaults,
-                key: SharedDefaultsKeys.kakikaeEverydayException,
+                key: SharedDefaultsKeys.kanjiRewriteEverydayException,
                 fallback: true
             )
         )
         // 報告の後に常用漢字に加わった字の組(臆測/肝腎。X.10、3570)。値が無い端末は 両方(本来の漢字を先に)
         kanaKanjiConverter.setLateStandardizedRewritePreference(
-            KakikaePreference.decode(sharedDefaults?.string(forKey: SharedDefaultsKeys.lateStandardizedRewritePreference))
+            KanjiRewritePreference.decode(sharedDefaults?.string(forKey: SharedDefaultsKeys.lateStandardizedRewritePreference))
         )
 
         kanaKanjiConverter.setOrdinalMeKanjiPreferred(
@@ -88,8 +88,8 @@ extension KeyboardViewController {
         kanaKanjiConverter.setNumeralStylePreference(
             NumeralStylePreference.decode(sharedDefaults?.string(forKey: SharedDefaultsKeys.numeralStylePreference))
         )
-        kanaKanjiConverter.setOkuriganaVariantPreference(
-            OkuriganaVariantPreference.decode(sharedDefaults?.string(forKey: SharedDefaultsKeys.okuriganaVariantPreference))
+        kanaKanjiConverter.setInflectionalKanaVariantPreference(
+            InflectionalKanaVariantPreference.decode(sharedDefaults?.string(forKey: SharedDefaultsKeys.inflectionalKanaVariantPreference))
         )
         kanaKanjiConverter.setAdjectiveMeKanjiCandidatesEnabled(
             sharedBoolValue(

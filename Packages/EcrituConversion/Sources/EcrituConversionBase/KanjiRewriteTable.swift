@@ -3,7 +3,7 @@ import Foundation
 // 生成ファイル。tools/build_kakikae_table.py が references/kakikae.plist から作る。手で直さない(3422)
 // 同音の漢字による書きかえ(1956 年 国語審議会報告)の語の組。コンテナー設定 X.9 で 書きかえ前だけ/後だけ/両方 を選ぶ。
 // 報告の後に書きかえ前の字が常用漢字に加わった組は X.10 で別に選ぶ(3570)
-public enum KakikaeTable {
+public enum KanjiRewriteTable {
     // (書きかえ前, 書きかえ後, 報告の後に常用漢字に加わった字の組か)。plist の順
     static let pairs: [(before: String, after: String, isLateStandardized: Bool)] = [
         ("愛慾", "愛欲", false),

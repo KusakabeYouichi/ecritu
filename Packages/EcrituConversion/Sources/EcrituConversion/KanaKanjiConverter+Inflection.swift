@@ -3,7 +3,7 @@ import Foundation
 // 活用派生: 活用ルール適用(inflectionCandidates/derivedCandidates)と活用クラス解決
 // (サ変/一段推定・ガル形・行く不規則)。
 extension KanaKanjiConverter {
-    static let mixedScriptSahenOptInReadings: Set<String> = [
+    static let mixedScriptSuruVerbOptInReadings: Set<String> = [
         "ねおち"
     ]
 
@@ -17,12 +17,12 @@ extension KanaKanjiConverter {
         "せんたく"
     ]
 
-    static let sahenPhraseParticleSuffixes: [String] = [
+    static let suruVerbPhraseParticleSuffixes: [String] = [
         "には", "では", "とは", "へは",
         "が", "を", "に", "で", "と", "へ", "は", "も", "の", "や"
     ]
 
-    static let godanRuKanjiSuffixOverrides: [String] = [
+    static let consonantStemRuKanjiSuffixOverrides: [String] = [
         "入る",
         "減る"
     ]
@@ -66,7 +66,7 @@ extension KanaKanjiConverter {
         var preferredDerived: [String] = []
         var otherDerived: [String] = []
         // 基底読みの漢字表層がすべて収穫底値(wc>=10000)のレア動詞族(あやまつ→過つ 10750 等)は、
-        // ルール定義順(godanPatterns の つ が る より先)で常用族(あやまる→謝る/誤る)より前に出て
+        // ルール定義順(consonantStemPatterns の つ が る より先)で常用族(あやまる→謝る/誤る)より前に出て
         // あやまった→過った/あやまっている→過っている になっていた。族ごと後方へ(2731)。
         // 常用表層を1つでも持つ読み(える=選る 10096/得る)は対象外
         var rareBaseDerived: [String] = []
@@ -326,31 +326,31 @@ extension KanaKanjiConverter {
     // 書き言葉で使わず、えらん 等で常用語(選ぶ)の候補列を汚すだけ。知る/分かる 等の常用動詞は残す
     static let kansaiNegativeContractionSuffixes: Set<String> = {
         var set = kansaiContractionReadingSuffixes
-        for pattern in godanPatterns {
+        for pattern in consonantStemPatterns {
             for tail in ["ん", "んかった", "んかったら", "へん", "へんかった", "へんかったら"] {
                 set.insert(pattern.aForm + tail)
             }
         }
-        set.formUnion(godanRuNnaiContractionSuffixes)
-        set.formUnion(ichidanKansaiHenSuffixes)
-        set.formUnion(ichidanKansaiLongHenSuffixes)
+        set.formUnion(consonantStemRuNnaiContractionSuffixes)
+        set.formUnion(vowelStemKansaiHenSuffixes)
+        set.formUnion(vowelStemKansaiLongHenSuffixes)
         return set
     }()
     // 一段の語幹 1 かなの 〜へん/〜ひん は伸ばした形(見いひん/寝えへん/出えへん。3727)。語幹 1 かなのときだけ作る
-    static let ichidanKansaiLongHenSuffixes: Set<String> = ["いひん", "いひんかった", "えへん", "えへんかった"]
+    static let vowelStemKansaiLongHenSuffixes: Set<String> = ["いひん", "いひんかった", "えへん", "えへんかった"]
     // 一段の関西の打ち消し 〜へん/〜ひん(食べへん/できへん。3726)。語幹 1 かなの動詞(得る/寝る/出る)には組まない:
     // えへん(咳払い)が 得へん になった。1 かなの語幹は 寝えへん/出えへん/見いひん と伸ばして言うのがふつう
-    static let ichidanKansaiHenSuffixes: Set<String> = ["へん", "へんかった", "ひん", "ひんかった"]
+    static let vowelStemKansaiHenSuffixes: Set<String> = ["へん", "へんかった", "ひん", "ひんかった"]
     // 五段ら行の口語縮約 らない→んない(わかんない/変わんない。2887)。稀な動詞の同ゲートに加え、語幹 1 かなの
     // 動詞(蹴る→蹴んない/刈る→刈んない/遣る→やんない)には組まない: けんない/かんない の候補列に
     // 蹴んない/刈んない が混ざり、県内/管内 が先頭から落ちた(全網テストで検出)
-    static let godanRuNnaiContractionSuffixes: Set<String> = [
+    static let consonantStemRuNnaiContractionSuffixes: Set<String> = [
         "んない", "んなかった", "んなくて", "んなくちゃ", "んなきゃ", "んなければ"
     ]
 
     // ウ音便の五段う動詞(促音便形 った/って を作らず、うた/うて が正)。
     // 現代語で頻出の 問う/請う/乞う を中心に、辞書に載る同型のみ
-    static let uOnbinGodanUSurfaces: Set<String> = ["問う", "請う", "乞う", "訪う", "厭う", "恋う"]
+    static let uEuphonicConsonantStemUSurfaces: Set<String> = ["問う", "請う", "乞う", "訪う", "厭う", "恋う"]
 
     func derivedCandidates(
         for reading: String,
@@ -365,8 +365,8 @@ extension KanaKanjiConverter {
         if rule.readingSuffix.isEmpty {
             // 一段の連用形は opt-in の基底読みだけ(全一段に開くと 溜め/占め 等が
             // 既存の並びを崩す。ため→為 が 溜め に、買い占めよね が 買いしめよね に退行した)
-            guard Self.ichidanRenyouNounBaseReadings.contains(reading + rule.baseReadingSuffix)
-                || Self.ichidanRenyouSuppliedForEmptyStem(reading, wordCostsAreNegligible: { Self.wordCostsAreNegligible(store.wordCosts(for: reading)) }) else {
+            guard Self.vowelStemContinuativeNounBaseReadings.contains(reading + rule.baseReadingSuffix)
+                || Self.vowelStemContinuativeSuppliedForEmptyStem(reading, wordCostsAreNegligible: { Self.wordCostsAreNegligible(store.wordCosts(for: reading)) }) else {
                 return ([], Int.max)
             }
             readingStem = reading
@@ -387,21 +387,21 @@ extension KanaKanjiConverter {
         // 連文節で派生の定額(7200/助詞直後 5000)が辞書語の word_cost を下回り、でもいい→でも言い/のみはじめ→喫み始め/
         // 貸した→課した など 41 件が退行したので撤回。へり→減り のような欠落は seed で供給する
         if rule.readingSuffix.count == 1,
-            Self.godanBareRenyouRuleKeys.contains(rule.readingSuffix + "\t" + rule.baseReadingSuffix),
-            readingStem.count < Self.godanBareRenyouMinimumStemLength || !store.wordCosts(for: reading).isEmpty {
+            Self.consonantStemBareContinuativeRuleKeys.contains(rule.readingSuffix + "\t" + rule.baseReadingSuffix),
+            readingStem.count < Self.consonantStemBareContinuativeMinimumStemLength || !store.wordCosts(for: reading).isEmpty {
             return ([], Int.max)
         }
         // らない→んない 縮約は語幹 2 かな以上(定義コメント参照。2887)
-        if rule.baseReadingSuffix == "る", Self.godanRuNnaiContractionSuffixes.contains(rule.readingSuffix),
+        if rule.baseReadingSuffix == "る", Self.consonantStemRuNnaiContractionSuffixes.contains(rule.readingSuffix),
             readingStem.count < 2 {
             return ([], Int.max)
         }
         // 一段の 〜へん/〜ひん は語幹 2 かな以上(定義コメント参照。3726)
-        if rule.baseReadingSuffix == "る", Self.ichidanKansaiHenSuffixes.contains(rule.readingSuffix),
+        if rule.baseReadingSuffix == "る", Self.vowelStemKansaiHenSuffixes.contains(rule.readingSuffix),
             readingStem.count < 2 {
             return ([], Int.max)
         }
-        if rule.baseReadingSuffix == "る", Self.ichidanKansaiLongHenSuffixes.contains(rule.readingSuffix),
+        if rule.baseReadingSuffix == "る", Self.vowelStemKansaiLongHenSuffixes.contains(rule.readingSuffix),
             readingStem.count != 1 {
             return ([], Int.max)
         }
@@ -417,7 +417,7 @@ extension KanaKanjiConverter {
         // 命令形の利便を上回る
         if (rule.readingSuffix == "ろ" || rule.readingSuffix == "よ"),
             rule.baseReadingSuffix == "る",
-            Self.ichidanImperativeDeniedBaseReadings.contains(baseReading) {
+            Self.vowelStemImperativeDeniedBaseReadings.contains(baseReading) {
             return ([], Int.max)
         }
         // 形容詞の 連用+する(くして/くしても。3778)は ない(無い)には組まない。かな なくして が 失くす/亡くす の活用
@@ -431,8 +431,8 @@ extension KanaKanjiConverter {
         let isKansaiNegativeContraction = Self.kansaiNegativeContractionSuffixes.contains(rule.readingSuffix)
         // 一段の命令形+引用 って(見ろって/食べろって)も、この読みで稀な動詞(word_cost 9500 以上: 干る 9957/簸る 9897/乾る 9957。
         // 着る 9378/似る 9261 は常用)には組まない。ひろって が 干ろって/簸ろって/乾ろって で 拾って より前だった(3771、ユーザ報告)
-        let isIchidanImperativeQuote = rule.readingSuffix == "ろって" && rule.baseReadingSuffix == "る"
-        let baseWordCostsForKansaiGate = isKansaiNegativeContraction || isIchidanImperativeQuote ? store.wordCosts(for: baseReading) : [:]
+        let isVowelStemImperativeQuote = rule.readingSuffix == "ろって" && rule.baseReadingSuffix == "る"
+        let baseWordCostsForKansaiGate = isKansaiNegativeContraction || isVowelStemImperativeQuote ? store.wordCosts(for: baseReading) : [:]
         var baseCandidates = candidatesForReading(
             baseReading,
             ajoutVocabulary: ajoutVocabulary,
@@ -442,13 +442,13 @@ extension KanaKanjiConverter {
             // カタカナ強調の語幹(ウマい 等)は合成前に弾く(postfix 語幹と同じ判定。2402)
             !isKatakanaEmphasisBaseCandidate($0, reading: baseReading)
                 // 連濁収穫の動詞基底(どる→取る 等)も派生させない(定義コメント参照。2419)
-                && !isRendakuHarvestVerbBase($0, baseReading: baseReading)
+                && !isSequentialVoicingHarvestVerbBase($0, baseReading: baseReading)
                 // 稀な読みの動詞には関西弁縮約を組まない(上の定義コメント参照。2721)
                 && !(isKansaiNegativeContraction
                     && (baseWordCostsForKansaiGate[$0] ?? 0) >= CandidateScore.harvestTierWordCostFloor)
                 // 稀な一段動詞には 命令形+って を組まない(上の定義コメント参照。3771)
-                && !(isIchidanImperativeQuote
-                    && (baseWordCostsForKansaiGate[$0] ?? 0) >= Self.ichidanImperativeQuoteMaxBaseWordCost)
+                && !(isVowelStemImperativeQuote
+                    && (baseWordCostsForKansaiGate[$0] ?? 0) >= Self.vowelStemImperativeQuoteMaxBaseWordCost)
                 // 関西弁縮約(せん/せんで 等)は文語調の漢語一字サ変(有する/科する/幽する)とは
                 // 組まない — ゆうせんで→有せんで が 優先で を乗っ取っていた(2614)。
                 // 勉強する 等の語幹2字以上はそのまま(掃除せんで は自然な口語)
@@ -472,7 +472,7 @@ extension KanaKanjiConverter {
         // 追加語彙(sacoche/misc.plist 等=initialAjoutVocabulary)も手動追加と同様にサ変推論の対象に
         // 含める。以前は「本当の手動追加分のみ」に絞っていたが、まかいぞうしてる→魔改造してる
         // のような追加語彙由来サ変名詞の活用が導出できず、し→市 等の誤分割だけが残っていた。
-        // 暴発は inferredSahen 側のゲート(isLikelySahenPhraseStem 等)で抑えられており、
+        // 暴発は inferredSahen 側のゲート(isLikelySuruVerbPhraseStem 等)で抑えられており、
         // そもそも該当読み(Xしてる)を打った時しか発動しない。
         let initialCandidatesForBase = Set(initialAjoutVocabulary[baseReading] ?? [])
         let initialOrUserCandidateSet = Set(
@@ -505,7 +505,7 @@ extension KanaKanjiConverter {
             )
 
             let inflectionClass = resolvedClass
-                ?? inferredSahenInflectionClass(
+                ?? inferredSuruVerbInflectionClass(
                     for: candidate,
                     baseReading: baseReading,
                     rule: rule,
@@ -537,15 +537,15 @@ extension KanaKanjiConverter {
             // から 得てる/獲てる/得て のような現代語では使わない活用が作られ、うてる→打てる を
             // 押し下げていた(いい 基底の除外と同型の一般対策。2494)。
             // える 読みの 得る/獲る は無傷なので 得られる/得ています 等は従来どおり作れる。
-            if baseReading == "うる", inflectionClass == InflectionClass.ichidan {
+            if baseReading == "うる", inflectionClass == InflectionClass.vowelStem {
                 continue
             }
             // ウ音便動詞(問う/請う/乞う/訪う/厭う/恋う)は促音便形を作らない。
-            // 正しくは 問うた/問うて(ウ音便)で、godan-u の機械適用が 問った/問って を
+            // 正しくは 問うた/問うて(ウ音便)で、consonantStem-u の機械適用が 問った/問って を
             // 誤生成し とった/とって系の上位に紛れ込んでいた(ユーザ報告 2643)
-            if inflectionClass == InflectionClass.godanU,
+            if inflectionClass == InflectionClass.consonantStemU,
                 rule.outputCandidateSuffix.hasPrefix("っ"),
-                Self.uOnbinGodanUSurfaces.contains(candidate) {
+                Self.uEuphonicConsonantStemUSurfaces.contains(candidate) {
                 continue
             }
 
@@ -574,13 +574,13 @@ extension KanaKanjiConverter {
         let isClassicalSuBase = rule.baseReadingSuffix == "す"
         // seed の有無は名詞語幹(なんとか)でも見る: する単独動詞群の基底読み(なんとかする)には seed が無いため、
         // 名詞側の seed(なんとか→かな先頭)を無視して 何とかしろ が先頭になっていた(2739)
-        let sahenNounReading: String = isSuruDictionaryFormBase ? String(baseReading.dropLast(2))
+        let suruVerbNounReading: String = isSuruDictionaryFormBase ? String(baseReading.dropLast(2))
             : (isClassicalSuBase && baseReading.hasSuffix("す") ? String(baseReading.dropLast()) : baseReading)
         if rule.baseReadingSuffix.isEmpty || isSuruDictionaryFormBase || isClassicalSuBase,
             isClassicalSuBase || rule.allowedClasses.contains(className: InflectionClass.suru),
             results.count >= 2,
             KanaKanjiSeedDictionary.seed[baseReading] == nil,
-            KanaKanjiSeedDictionary.seed[sahenNounReading] == nil {
+            KanaKanjiSeedDictionary.seed[suruVerbNounReading] == nil {
             func dictionaryForm(_ base: String) -> String {
                 if isSuruDictionaryFormBase { return base }
                 if isClassicalSuBase { return base.hasSuffix("す") ? String(base.dropLast()) + "する" : base }
@@ -603,7 +603,7 @@ extension KanaKanjiConverter {
                     results = order.map { results[$0] }
                     contributingBases = order.map { contributingBases[$0] }
                 }
-            } else if Self.inflectionNounUnigramOrderReadings.contains(sahenNounReading) {
+            } else if Self.inflectionNounUnigramOrderReadings.contains(suruVerbNounReading) {
                 // 辞書形(Xする)が LM に 1 つも無い読みの、名詞 unigram による並べ替え(定数コメント参照)
                 let nounCosts = store.wordLMUnigramCosts(for: contributingBases.filter { $0 != baseReading })
                 var nounKnown: [(cost: Int, index: Int)] = []
@@ -629,7 +629,7 @@ extension KanaKanjiConverter {
         // 文語サ変(基底 Xす)の派生順は、対応する Xする の seed に従わせる(2740)。そうしちゃう は す 群(奏す/そうす)が
         // する 群(seed: そうする/奏する)より先に走って 奏しちゃう が先着していた
         if isClassicalSuBase, results.count >= 2,
-            let suruSeed = KanaKanjiSeedDictionary.seed[sahenNounReading + "する"] {
+            let suruSeed = KanaKanjiSeedDictionary.seed[suruVerbNounReading + "する"] {
             func seedIndex(_ base: String) -> Int {
                 guard base.hasSuffix("す") else { return Int.max }
                 return suruSeed.firstIndex(of: String(base.dropLast()) + "する") ?? Int.max
@@ -690,7 +690,7 @@ extension KanaKanjiConverter {
         return inferredInflectionClass(for: candidate, baseReading: baseReading)
     }
 
-    func inferredSahenInflectionClass(
+    func inferredSuruVerbInflectionClass(
         for candidate: String,
         baseReading: String,
         rule: InflectionRule,
@@ -729,23 +729,23 @@ extension KanaKanjiConverter {
             return InflectionClass.suru
         }
 
-        if isLikelySahenPhraseStem(candidate) {
+        if isLikelySuruVerbPhraseStem(candidate) {
             return InflectionClass.suru
         }
 
-        guard Self.mixedScriptSahenOptInReadings.contains(baseReading) else {
+        guard Self.mixedScriptSuruVerbOptInReadings.contains(baseReading) else {
             return nil
         }
 
         return InflectionClass.suru
     }
 
-    func isLikelySahenPhraseStem(_ candidate: String) -> Bool {
+    func isLikelySuruVerbPhraseStem(_ candidate: String) -> Bool {
         guard containsKanji(candidate) else {
             return false
         }
 
-        for suffix in Self.sahenPhraseParticleSuffixes where candidate.hasSuffix(suffix) {
+        for suffix in Self.suruVerbPhraseParticleSuffixes where candidate.hasSuffix(suffix) {
             let stem = String(candidate.dropLast(suffix.count))
 
             guard !stem.isEmpty,
@@ -780,19 +780,19 @@ extension KanaKanjiConverter {
             return InflectionClass.kuru
         }
 
-        if Self.godanRuKanjiSuffixOverrides.contains(where: { candidate.hasSuffix($0) }) {
-            return InflectionClass.godanRu
+        if Self.consonantStemRuKanjiSuffixOverrides.contains(where: { candidate.hasSuffix($0) }) {
+            return InflectionClass.consonantStemRu
         }
 
         if baseReading.hasSuffix("る") && candidate.hasSuffix("る") {
-            if isLikelyIchidanBaseReading(baseReading) {
-                return InflectionClass.ichidan
+            if isLikelyVowelStemBaseReading(baseReading) {
+                return InflectionClass.vowelStem
             }
 
-            return InflectionClass.godanRu
+            return InflectionClass.consonantStemRu
         }
 
-        for pattern in Self.godanPatterns where baseReading.hasSuffix(pattern.dictionaryEnding) {
+        for pattern in Self.consonantStemPatterns where baseReading.hasSuffix(pattern.dictionaryEnding) {
             if candidate.hasSuffix(pattern.dictionaryEnding) {
                 // く 終わりは い形容詞の連用形収穫(多く/近く/早く 等、クラス無しエントリ)と
                 // 衝突する。同語幹の い形(おおい→多い)が adjective-i で実在するなら連用形と
@@ -816,7 +816,7 @@ extension KanaKanjiConverter {
         return nil
     }
 
-    func isLikelyIchidanBaseReading(_ reading: String) -> Bool {
+    func isLikelyVowelStemBaseReading(_ reading: String) -> Bool {
         guard reading.hasSuffix("る"),
                 reading.count >= 2 else {
             return false

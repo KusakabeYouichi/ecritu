@@ -36,7 +36,7 @@ extension KanaKanjiConverter {
     // お/ご+連用形+接尾(お送りします/お送りください/お送りになる)の表層から、LM で語幹の実在を見るための
     // 連用形(送り)を取り出す。連文節 (b3) は接尾付きの合成ノードも供給するが、語幹の LM 判定が
     // 接尾ごと(送りします)で引いて必ず外れ、おおくりします が 多く利します になっていた(ユーザ報告 3632)
-    static func politePrefixRenyouSurfaceForLMCheck(_ stemSurface: String) -> String {
+    static func politePrefixContinuativeSurfaceForLMCheck(_ stemSurface: String) -> String {
         var candidates = honorificOSuruInflectionSuffixes()
         candidates.append(contentsOf: ["ください", "くださいませ", "くださいな", "になる", "になります", "になった", "になって",
                                        "になりました", "になれば", "になり", "になろう"])
@@ -178,7 +178,7 @@ extension KanaKanjiConverter {
             // 否定の ない 系(なきゃ 等)の語幹の絞り込みも BFS と同じにする。逐次入力でキャッシュに載った語幹(つくら→津倉)が
             // ここを素通りし、実機だけ 津倉なきゃ が先頭だった(3766、ユーザ報告。テストは読みを一度に渡すので BFS 側しか通らなかった)
             let filteredStemCandidates = filterConjugableStemsForNegativeAuxiliaryPostfix(
-                filterGodanEDanStemsForCaseParticle(
+                filterConsonantStemEDanStemsForCaseParticle(
                     filterNonVerbalCandidatesForVerbalPostfix(
                         filterKanjiStemsForKanaAdverbReading(nEndingFiltered, stemReading: stem),
                         stemReading: stem,
@@ -380,7 +380,7 @@ extension KanaKanjiConverter {
                         nextSuffix: nextSuffix
                     )
                     let filteredStemCandidates = filterConjugableStemsForNegativeAuxiliaryPostfix(
-                        filterGodanEDanStemsForCaseParticle(
+                        filterConsonantStemEDanStemsForCaseParticle(
                             filterNonVerbalCandidatesForVerbalPostfix(
                                 filterKanjiStemsForKanaAdverbReading(nEndingFiltered, stemReading: nextStem),
                                 stemReading: nextStem,
@@ -429,7 +429,7 @@ extension KanaKanjiConverter {
         initialAjoutVocabulary: [String: [String]],
         systemCandidateMode: KanaKanjiCandidateSourceMode,
         limit: Int,
-        allowsBareSinoJiruRenyou: Bool = false
+        allowsBareSinoJiruContinuative: Bool = false
     ) -> [String] {
         guard reading.count >= 2,
             limit > 0 else {
@@ -437,7 +437,7 @@ extension KanaKanjiConverter {
         }
 
         var derived: [String] = []
-        var deferredBareRenyou: [String] = []
+        var deferredBareContinuative: [String] = []
 
         // フル読み自体が「お/ご/御 始まりでない漢字語」(おそい→遅い、おもい→重い 等)を辞書に
         // 持つなら、それは丁寧接頭辞ではなく1語。お+[語幹候補]の総なめ合成(お添い/お沿い/お初位…
@@ -512,37 +512,37 @@ extension KanaKanjiConverter {
             // 同読みの別動詞由来(以つ/保つ)は名詞の後ろへ回す。お持ち→お以ち→お保ち→お餅 と
             // レア動詞の連用形が名詞を押し下げていた(ユーザ報告 2799)
             if !fullReadingHasStandaloneNonPersonWord {
-                let bareRenyou = politePrefixRenyouCandidates(
+                let bareContinuative = politePrefixContinuativeCandidates(
                     prefix: prefix,
                     trailingSuffix: "",
-                    renyouReading: stem,
+                    continuativeReading: stem,
                     ajoutVocabulary: ajoutVocabulary,
                     initialAjoutVocabulary: initialAjoutVocabulary,
                     systemCandidateMode: systemCandidateMode
                 )
                 // 連用形が LM に無いか珍しい(お料り/お以ち)なら作らない(連文節 b3 の語幹 LM 判定と同じ趣旨。3395)
-                let bareRenyouStemCosts = store.wordLMUnigramCosts(
-                    for: bareRenyou.map { String($0.dropFirst(prefix.count)) }
+                let bareContinuativeStemCosts = store.wordLMUnigramCosts(
+                    for: bareContinuative.map { String($0.dropFirst(prefix.count)) }
                 )
-                let usableBareRenyou = (!store.hasWordLMMetadata ? bareRenyou : bareRenyou.filter { surface in
+                let usableBareContinuative = (!store.hasWordLMMetadata ? bareContinuative : bareContinuative.filter { surface in
                     let stemSurface = String(surface.dropFirst(prefix.count))
-                    return (bareRenyouStemCosts[stemSurface] ?? Int.max) <= Self.politePrefixStemMaxUnigramCost
+                    return (bareContinuativeStemCosts[stemSurface] ?? Int.max) <= Self.politePrefixStemMaxUnigramCost
                 }).filter { surface in
                     // 単独の お変じ/お信じ は語にならない(おへんじ が お変じ→お返事 の順だった。3607)。連文節で後ろに
-                    // ください/になる が続く区間では部品として要る(お信じください。allowsBareSinoJiruRenyou、3608)
-                    allowsBareSinoJiruRenyou || !Self.isSinoJiruRenyou(String(surface.dropFirst(prefix.count)))
+                    // ください/になる が続く区間では部品として要る(お信じください。allowsBareSinoJiruContinuative、3608)
+                    allowsBareSinoJiruContinuative || !Self.isSinoJiruContinuative(String(surface.dropFirst(prefix.count)))
                 }
-                derived.append(contentsOf: usableBareRenyou.prefix(1))
-                deferredBareRenyou.append(contentsOf: usableBareRenyou.dropFirst())
+                derived.append(contentsOf: usableBareContinuative.prefix(1))
+                deferredBareContinuative.append(contentsOf: usableBareContinuative.dropFirst())
             }
             derived.append(
-                contentsOf: politePrefixRenyouCandidates(
+                contentsOf: politePrefixContinuativeCandidates(
                     prefix: prefix,
                     stemReading: stem,
                     ajoutVocabulary: ajoutVocabulary,
                     initialAjoutVocabulary: initialAjoutVocabulary,
                     systemCandidateMode: systemCandidateMode,
-                    allowBareRenyou: false
+                    allowBareContinuative: false
                 )
             )
 
@@ -641,7 +641,7 @@ extension KanaKanjiConverter {
             }
         }
 
-        derived.append(contentsOf: deferredBareRenyou)
+        derived.append(contentsOf: deferredBareContinuative)
         return Array(uniqueCandidates(from: derived).prefix(limit))
     }
 
@@ -676,10 +676,10 @@ extension KanaKanjiConverter {
             )
 
             derived.append(
-                contentsOf: politePrefixRenyouCandidates(
+                contentsOf: politePrefixContinuativeCandidates(
                     prefix: prefix,
                     trailingSuffix: requestSuffix,
-                    renyouReading: baseStemReading,
+                    continuativeReading: baseStemReading,
                     ajoutVocabulary: ajoutVocabulary,
                     initialAjoutVocabulary: initialAjoutVocabulary,
                     systemCandidateMode: systemCandidateMode
@@ -740,13 +740,13 @@ extension KanaKanjiConverter {
         return uniqueCandidates(from: derived)
     }
 
-    func politePrefixRenyouCandidates(
+    func politePrefixContinuativeCandidates(
         prefix: String,
         stemReading: String,
         ajoutVocabulary: [String: [String]],
         initialAjoutVocabulary: [String: [String]],
         systemCandidateMode: KanaKanjiCandidateSourceMode,
-        allowBareRenyou: Bool = true
+        allowBareContinuative: Bool = true
     ) -> [String] {
         guard prefix == "お" else {
             return []
@@ -755,14 +755,14 @@ extension KanaKanjiConverter {
         var derived: [String] = []
 
         // バラの お+連用形(接尾辞なし)は お願い/お知らせ 等の名詞化連用のみ有効で、フル読みが
-        // 1語(おそい→遅い)の場合は お添い/お沿い の誤合成になる。allowBareRenyou で抑止する。
+        // 1語(おそい→遅い)の場合は お添い/お沿い の誤合成になる。allowBareContinuative で抑止する。
         // お〜になる(下の naruSuffix ループ)は接尾辞でゲート済みなので常に許可。
-        if allowBareRenyou {
+        if allowBareContinuative {
             derived.append(
-                contentsOf: politePrefixRenyouCandidates(
+                contentsOf: politePrefixContinuativeCandidates(
                     prefix: prefix,
                     trailingSuffix: "",
-                    renyouReading: stemReading,
+                    continuativeReading: stemReading,
                     ajoutVocabulary: ajoutVocabulary,
                     initialAjoutVocabulary: initialAjoutVocabulary,
                     systemCandidateMode: systemCandidateMode
@@ -771,16 +771,16 @@ extension KanaKanjiConverter {
         }
 
         for naruSuffix in Self.honorificONaruInflectionSuffixes where stemReading.hasSuffix(naruSuffix) {
-            guard let renyouReading = removingSuffix(stemReading, suffix: naruSuffix),
-                !renyouReading.isEmpty else {
+            guard let continuativeReading = removingSuffix(stemReading, suffix: naruSuffix),
+                !continuativeReading.isEmpty else {
                 continue
             }
 
             derived.append(
-                contentsOf: politePrefixRenyouCandidates(
+                contentsOf: politePrefixContinuativeCandidates(
                     prefix: prefix,
                     trailingSuffix: naruSuffix,
-                    renyouReading: renyouReading,
+                    continuativeReading: continuativeReading,
                     ajoutVocabulary: ajoutVocabulary,
                     initialAjoutVocabulary: initialAjoutVocabulary,
                     systemCandidateMode: systemCandidateMode
@@ -793,40 +793,40 @@ extension KanaKanjiConverter {
 
     // 動詞の連用形(漢字)+ 指定接尾を生成する。丁寧接頭辞を伴わない素の連用形派生で、
     // 「連用形+に(目的: 食べに来る/飲みに行く)」や「連用形+ながら」等の供給に使う。
-    // politePrefixRenyouCandidates の接頭辞なし版(空 prefix は shouldApplyPolitePrefix を
-    // 通らないため別関数にする)。renyouReading=たべ → 食べ+suffix、のみ → 飲み+suffix。
-    func verbRenyouPlusSuffixCandidates(
-        renyouReading: String,
+    // politePrefixContinuativeCandidates の接頭辞なし版(空 prefix は shouldApplyPolitePrefix を
+    // 通らないため別関数にする)。continuativeReading=たべ → 食べ+suffix、のみ → 飲み+suffix。
+    func verbContinuativePlusSuffixCandidates(
+        continuativeReading: String,
         trailingSuffix: String,
         ajoutVocabulary: [String: [String]],
         initialAjoutVocabulary: [String: [String]],
         systemCandidateMode: KanaKanjiCandidateSourceMode
     ) -> [String] {
-        guard !renyouReading.isEmpty else {
+        guard !continuativeReading.isEmpty else {
             return []
         }
         var derived: [String] = []
         // 一段: 基本形 = 連用形読み + る(食べ→食べる)
-        derived.append(contentsOf: verbRenyouStemsWithSuffix(
-            baseReading: renyouReading + "る",
-            expectedInflectionClass: InflectionClass.ichidan,
+        derived.append(contentsOf: verbContinuativeStemsWithSuffix(
+            baseReading: continuativeReading + "る",
+            expectedInflectionClass: InflectionClass.vowelStem,
             dictionaryEnding: "る",
-            renyouEnding: "",
+            continuativeEnding: "",
             trailingSuffix: trailingSuffix,
             ajoutVocabulary: ajoutVocabulary,
             initialAjoutVocabulary: initialAjoutVocabulary,
             systemCandidateMode: systemCandidateMode
         ))
         // 五段: 連用形(i段)→ 基本形(u段)。飲み→飲む、書き→書く
-        for pattern in Self.godanPatterns where renyouReading.hasSuffix(pattern.iForm) {
-            guard let readingStem = removingSuffix(renyouReading, suffix: pattern.iForm) else {
+        for pattern in Self.consonantStemPatterns where continuativeReading.hasSuffix(pattern.iForm) {
+            guard let readingStem = removingSuffix(continuativeReading, suffix: pattern.iForm) else {
                 continue
             }
-            derived.append(contentsOf: verbRenyouStemsWithSuffix(
+            derived.append(contentsOf: verbContinuativeStemsWithSuffix(
                 baseReading: readingStem + pattern.dictionaryEnding,
                 expectedInflectionClass: pattern.inflectionClass,
                 dictionaryEnding: pattern.dictionaryEnding,
-                renyouEnding: pattern.iForm,
+                continuativeEnding: pattern.iForm,
                 trailingSuffix: trailingSuffix,
                 ajoutVocabulary: ajoutVocabulary,
                 initialAjoutVocabulary: initialAjoutVocabulary,
@@ -836,11 +836,11 @@ extension KanaKanjiConverter {
         return uniqueCandidates(from: derived)
     }
 
-    func verbRenyouStemsWithSuffix(
+    func verbContinuativeStemsWithSuffix(
         baseReading: String,
         expectedInflectionClass: String,
         dictionaryEnding: String,
-        renyouEnding: String,
+        continuativeEnding: String,
         trailingSuffix: String,
         ajoutVocabulary: [String: [String]],
         initialAjoutVocabulary: [String: [String]],
@@ -881,58 +881,58 @@ extension KanaKanjiConverter {
             // かな基本形(食べる が かな のまま=辞書に漢字が無い)は連用形もかなになり
             // 素通りと変わらないので除外(漢字連用形のみ供給)。
             let stem = String(candidate.dropLast(dictionaryEnding.count))
-            let renyouSurface = stem + renyouEnding
-            guard renyouSurface != String(baseReading.dropLast(dictionaryEnding.count)) + renyouEnding else {
+            let continuativeSurface = stem + continuativeEnding
+            guard continuativeSurface != String(baseReading.dropLast(dictionaryEnding.count)) + continuativeEnding else {
                 continue
             }
-            derived.append(renyouSurface + trailingSuffix)
+            derived.append(continuativeSurface + trailingSuffix)
         }
         return uniqueCandidates(from: derived)
     }
 
-    func politePrefixRenyouCandidates(
+    func politePrefixContinuativeCandidates(
         prefix: String,
         trailingSuffix: String,
-        renyouReading: String,
+        continuativeReading: String,
         ajoutVocabulary: [String: [String]],
         initialAjoutVocabulary: [String: [String]],
         systemCandidateMode: KanaKanjiCandidateSourceMode
     ) -> [String] {
-        guard !renyouReading.isEmpty else {
+        guard !continuativeReading.isEmpty else {
             return []
         }
 
         var derived: [String] = []
 
         derived.append(
-            contentsOf: politePrefixRenyouCandidates(
+            contentsOf: politePrefixContinuativeCandidates(
                 prefix: prefix,
                 trailingSuffix: trailingSuffix,
-                baseReading: renyouReading + "る",
-                expectedInflectionClass: InflectionClass.ichidan,
+                baseReading: continuativeReading + "る",
+                expectedInflectionClass: InflectionClass.vowelStem,
                 dictionaryEnding: "る",
-                renyouEnding: "",
+                continuativeEnding: "",
                 ajoutVocabulary: ajoutVocabulary,
                 initialAjoutVocabulary: initialAjoutVocabulary,
                 systemCandidateMode: systemCandidateMode
             )
         )
 
-        for pattern in Self.godanPatterns where renyouReading.hasSuffix(pattern.iForm) {
-            guard let readingStem = removingSuffix(renyouReading, suffix: pattern.iForm) else {
+        for pattern in Self.consonantStemPatterns where continuativeReading.hasSuffix(pattern.iForm) {
+            guard let readingStem = removingSuffix(continuativeReading, suffix: pattern.iForm) else {
                 continue
             }
 
             let baseReading = readingStem + pattern.dictionaryEnding
 
             derived.append(
-                contentsOf: politePrefixRenyouCandidates(
+                contentsOf: politePrefixContinuativeCandidates(
                     prefix: prefix,
                     trailingSuffix: trailingSuffix,
                     baseReading: baseReading,
                     expectedInflectionClass: pattern.inflectionClass,
                     dictionaryEnding: pattern.dictionaryEnding,
-                    renyouEnding: pattern.iForm,
+                    continuativeEnding: pattern.iForm,
                     ajoutVocabulary: ajoutVocabulary,
                     initialAjoutVocabulary: initialAjoutVocabulary,
                     systemCandidateMode: systemCandidateMode
@@ -943,13 +943,13 @@ extension KanaKanjiConverter {
         return uniqueCandidates(from: derived)
     }
 
-    func politePrefixRenyouCandidates(
+    func politePrefixContinuativeCandidates(
         prefix: String,
         trailingSuffix: String,
         baseReading: String,
         expectedInflectionClass: String,
         dictionaryEnding: String,
-        renyouEnding: String,
+        continuativeEnding: String,
         ajoutVocabulary: [String: [String]],
         initialAjoutVocabulary: [String: [String]],
         systemCandidateMode: KanaKanjiCandidateSourceMode
@@ -996,19 +996,19 @@ extension KanaKanjiConverter {
             }
 
             let stem = String(candidate.dropLast(dictionaryEnding.count))
-            let renyouCandidate = stem + renyouEnding
+            let continuativeCandidate = stem + continuativeEnding
 
-            guard shouldApplyPolitePrefix(prefix, to: renyouCandidate) else {
+            guard shouldApplyPolitePrefix(prefix, to: continuativeCandidate) else {
                 continue
             }
             // 漢字 1 字+じる(変じる/感じる/信じる)の連用形は、お〜になる/お〜ください(お感じになる)にはなるが、
             // お〜する には ならない(お変じします。ユーザ報告 3607)。単独(お変じ)は politePrefixPassthroughCandidates で外す
-            if Self.isSinoJiruRenyou(renyouCandidate),
+            if Self.isSinoJiruContinuative(continuativeCandidate),
                 Self.honorificOSuruInflectionSuffixes().contains(trailingSuffix) {
                 continue
             }
 
-            derived.append(prefix + renyouCandidate + trailingSuffix)
+            derived.append(prefix + continuativeCandidate + trailingSuffix)
         }
 
         return uniqueCandidates(from: derived)
@@ -1031,17 +1031,17 @@ extension KanaKanjiConverter {
             // 連用形1文字(い/み 等)の敬語o-suru合成は日本語に無い(お貸しする/お見せする は
             // 連用2文字以上)。一段 居る/射る/鋳る の連用「い」が おいしそー→お射しそー 等の
             // 暴発を作るため、2文字以上に限定する。
-            guard let renyouReading = removingSuffix(stemReading, suffix: suruSuffix),
-                renyouReading.count >= 2 else {
+            guard let continuativeReading = removingSuffix(stemReading, suffix: suruSuffix),
+                continuativeReading.count >= 2 else {
                 continue
             }
 
-            // 一段/五段の連用形+接尾の生成は お〜になる 系と同じ(politePrefixRenyouCandidates の連用形版に委譲)
+            // 一段/五段の連用形+接尾の生成は お〜になる 系と同じ(politePrefixContinuativeCandidates の連用形版に委譲)
             derived.append(
-                contentsOf: politePrefixRenyouCandidates(
+                contentsOf: politePrefixContinuativeCandidates(
                     prefix: prefix,
                     trailingSuffix: suruSuffix,
-                    renyouReading: renyouReading,
+                    continuativeReading: continuativeReading,
                     ajoutVocabulary: ajoutVocabulary,
                     initialAjoutVocabulary: initialAjoutVocabulary,
                     systemCandidateMode: systemCandidateMode
@@ -1074,8 +1074,8 @@ extension KanaKanjiConverter {
     }
 
     // 漢字 1 字+じ(変じ/信じ)。2 文字で じ で終わる連用形は一段の じる 動詞だけ(五段に じ の連用形は無い)
-    static func isSinoJiruRenyou(_ renyou: String) -> Bool {
-        guard renyou.count == 2, renyou.hasSuffix("じ"), let firstScalar = renyou.unicodeScalars.first else {
+    static func isSinoJiruContinuative(_ continuative: String) -> Bool {
+        guard continuative.count == 2, continuative.hasSuffix("じ"), let firstScalar = continuative.unicodeScalars.first else {
             return false
         }
         return (0x4E00...0x9FFF).contains(firstScalar.value) || (0x3400...0x4DBF).contains(firstScalar.value)

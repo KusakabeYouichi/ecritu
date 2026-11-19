@@ -276,19 +276,19 @@ extension ContentView {
         SettingsKeys.accentPalette, SettingsKeys.keyboardBackgroundTheme, SettingsKeys.candidateFontStyle,
         SettingsKeys.delimiterAutoCommitCandidate, SettingsKeys.kanaKanjiCandidateSourceMode,
         SettingsKeys.historicalKanaCandidatesEnabled, SettingsKeys.iterationMarkCandidatesEnabled,
-        SettingsKeys.katakanaEmphasisCandidateMode, SettingsKeys.mazegakiCandidateMode,
+        SettingsKeys.katakanaEmphasisCandidateMode, SettingsKeys.mixedScriptCandidateMode,
         SettingsKeys.scriptVariantSuppressKyujitai, SettingsKeys.scriptVariantSuppressItaiji,
         SettingsKeys.scriptVariantSuppressRyakuji, SettingsKeys.scriptVariantSuppressConfusable, SettingsKeys.scriptVariantSuppressLookalike,
         SettingsKeys.scriptVariantSuppressPersonNameVariant,
-        SettingsKeys.kanaGakiSuppressAdverb, SettingsKeys.kanaGakiSuppressConjunction, SettingsKeys.kanaGakiSuppressAuxiliary,
-        SettingsKeys.kanaGakiSuppressFormalNoun, SettingsKeys.kanaGakiSuppressDemonstrative, SettingsKeys.kanaGakiSuppressAdverbKanaFirst,
+        SettingsKeys.kanaSpellingSuppressAdverb, SettingsKeys.kanaSpellingSuppressConjunction, SettingsKeys.kanaSpellingSuppressAuxiliary,
+        SettingsKeys.kanaSpellingSuppressFormalNoun, SettingsKeys.kanaSpellingSuppressDemonstrative, SettingsKeys.kanaSpellingSuppressAdverbKanaFirst,
         SettingsKeys.emojiCandidateDisplayEnabled, SettingsKeys.radicalStrokeCountStyle,
         SettingsKeys.ordinalMeKanjiPreferred, SettingsKeys.adjectiveMeKanjiCandidatesEnabled, SettingsKeys.formalNounMeKanaCandidatesEnabled,
         SettingsKeys.kaCounterVariantPreference,
         SettingsKeys.numeralStylePreference,
-        SettingsKeys.okuriganaVariantPreference,
-        SettingsKeys.kakikaePreference,
-        SettingsKeys.kakikaeEverydayException,
+        SettingsKeys.inflectionalKanaVariantPreference,
+        SettingsKeys.kanjiRewritePreference,
+        SettingsKeys.kanjiRewriteEverydayException,
         SettingsKeys.lateStandardizedRewritePreference,
         SettingsKeys.suspendMemorySlimmingEnabled, SettingsKeys.kaomojiCandidateDisplayEnabled,
         SettingsKeys.contactCandidateDisplayMode, SettingsKeys.userDictionaryCandidateDisplayMode,
@@ -358,7 +358,7 @@ extension ContentView {
         SettingsKeys.historicalKanaCandidatesEnabled: false,
         SettingsKeys.iterationMarkCandidatesEnabled: false,
         SettingsKeys.katakanaEmphasisCandidateMode: ScriptVariantModeOption.suppress.rawValue,
-        SettingsKeys.mazegakiCandidateMode: ScriptVariantModeOption.suppress.rawValue,
+        SettingsKeys.mixedScriptCandidateMode: ScriptVariantModeOption.suppress.rawValue,
         SettingsKeys.scriptVariantSuppressKyujitai: true,
         SettingsKeys.scriptVariantSuppressItaiji: true,
         SettingsKeys.scriptVariantSuppressRyakuji: true,
@@ -366,12 +366,12 @@ extension ContentView {
         SettingsKeys.scriptVariantSuppressLookalike: true,
         SettingsKeys.scriptVariantSuppressPersonNameVariant: false,
         // かなで書く言葉は 5 つとも抑制(ユーザ指定 3404)
-        SettingsKeys.kanaGakiSuppressAdverb: true,
-        SettingsKeys.kanaGakiSuppressConjunction: true,
-        SettingsKeys.kanaGakiSuppressAuxiliary: true,
-        SettingsKeys.kanaGakiSuppressFormalNoun: true,
-        SettingsKeys.kanaGakiSuppressDemonstrative: true,
-        SettingsKeys.kanaGakiSuppressAdverbKanaFirst: false,
+        SettingsKeys.kanaSpellingSuppressAdverb: true,
+        SettingsKeys.kanaSpellingSuppressConjunction: true,
+        SettingsKeys.kanaSpellingSuppressAuxiliary: true,
+        SettingsKeys.kanaSpellingSuppressFormalNoun: true,
+        SettingsKeys.kanaSpellingSuppressDemonstrative: true,
+        SettingsKeys.kanaSpellingSuppressAdverbKanaFirst: false,
         SettingsKeys.emojiCandidateDisplayEnabled: true,
         SettingsKeys.radicalStrokeCountStyle: "",
         SettingsKeys.ordinalMeKanjiPreferred: true,
@@ -379,11 +379,11 @@ extension ContentView {
         SettingsKeys.formalNounMeKanaCandidatesEnabled: true,   // 戦略的=オン(め も出す。ユーザ指定 3790)
         SettingsKeys.kaCounterVariantPreference: KaCounterVariantPreference.default.encoded,
         SettingsKeys.numeralStylePreference: NumeralStylePreference.strategicDefault.rawValue,   // 戦略的=アラビア数字だけ(3702)
-        SettingsKeys.okuriganaVariantPreference: OkuriganaVariantPreference.default.encoded,
+        SettingsKeys.inflectionalKanaVariantPreference: InflectionalKanaVariantPreference.default.encoded,
         // 同音の漢字による書きかえは 本来の漢字だけ(ユーザ指定 3422)
-        SettingsKeys.kakikaePreference: KakikaePreference.strategicDefault.rawValue,
-        SettingsKeys.kakikaeEverydayException: false,   // 戦略的=オフ(設定どおり。ユーザ指定 3644)
-        SettingsKeys.lateStandardizedRewritePreference: KakikaePreference.strategicDefault.rawValue,  // X.10 も 本来の漢字だけ(ユーザ指定 3570)
+        SettingsKeys.kanjiRewritePreference: KanjiRewritePreference.strategicDefault.rawValue,
+        SettingsKeys.kanjiRewriteEverydayException: false,   // 戦略的=オフ(設定どおり。ユーザ指定 3644)
+        SettingsKeys.lateStandardizedRewritePreference: KanjiRewritePreference.strategicDefault.rawValue,  // X.10 も 本来の漢字だけ(ユーザ指定 3570)
         SettingsKeys.suspendMemorySlimmingEnabled: true,
         SettingsKeys.shortcutVocabularyRecentsFirst: true,
         SettingsKeys.kaomojiCandidateDisplayEnabled: true,
@@ -448,7 +448,7 @@ extension ContentView {
         SettingsKeys.historicalKanaCandidatesEnabled: false,
         SettingsKeys.iterationMarkCandidatesEnabled: false,
         SettingsKeys.katakanaEmphasisCandidateMode: ScriptVariantModeOption.suppress.rawValue,
-        SettingsKeys.mazegakiCandidateMode: ScriptVariantModeOption.suppress.rawValue,
+        SettingsKeys.mixedScriptCandidateMode: ScriptVariantModeOption.suppress.rawValue,
         // 旧字体・異体字の抑制は戦略的・保守的とも同じ(人名で生きている異体字だけオフ。ユーザ指定 2991)
         SettingsKeys.scriptVariantSuppressKyujitai: true,
         SettingsKeys.scriptVariantSuppressItaiji: true,
@@ -459,21 +459,21 @@ extension ContentView {
         // かなで書く言葉: 形式名詞と指示語・代名詞は抑制せず かな を先頭に(ユーザ指定 3404)
         // 保守的=かなで書く言葉は 6 つともオフ(漢字の候補を残す)。副詞・接続詞・補助用言は 3833 でオフに(ユーザ指定:
         // 所謂・即ち・下さい のような表記に親しんだ年配の人に向ける)。すでに保守的を当てた端末の保存値は変えない
-        SettingsKeys.kanaGakiSuppressAdverb: false,
-        SettingsKeys.kanaGakiSuppressConjunction: false,
-        SettingsKeys.kanaGakiSuppressAuxiliary: false,
-        SettingsKeys.kanaGakiSuppressFormalNoun: false,
-        SettingsKeys.kanaGakiSuppressDemonstrative: false,
-        SettingsKeys.kanaGakiSuppressAdverbKanaFirst: false,
+        SettingsKeys.kanaSpellingSuppressAdverb: false,
+        SettingsKeys.kanaSpellingSuppressConjunction: false,
+        SettingsKeys.kanaSpellingSuppressAuxiliary: false,
+        SettingsKeys.kanaSpellingSuppressFormalNoun: false,
+        SettingsKeys.kanaSpellingSuppressDemonstrative: false,
+        SettingsKeys.kanaSpellingSuppressAdverbKanaFirst: false,
         SettingsKeys.emojiCandidateDisplayEnabled: true,
         SettingsKeys.radicalStrokeCountStyle: "140:4,113:5,184:8",
         SettingsKeys.ordinalMeKanjiPreferred: false,
         SettingsKeys.kaCounterVariantPreference: KaCounterVariantPreference.conservative.encoded,  // 保守的=か・箇・ヶ・カ をオン(標準は か のみ)
         SettingsKeys.numeralStylePreference: NumeralStylePreference.conservativeDefault.rawValue,   // 保守的=漢数字が先(3702)
-        SettingsKeys.okuriganaVariantPreference: OkuriganaVariantPreference.conservative.encoded,  // 保守的=本則を先に許容も出す(標準は本則だけ)
-        SettingsKeys.kakikaePreference: KakikaePreference.bothAfterFirst.rawValue,  // 保守的=常用漢字を先に前も出す(ユーザ指定 3422)
-        SettingsKeys.kakikaeEverydayException: true,   // 保守的=オン(ユーザ指定 3644)
-        SettingsKeys.lateStandardizedRewritePreference: KakikaePreference.bothAfterFirst.rawValue,  // 保守的=X.9 と同じ(ユーザ指定 3570)
+        SettingsKeys.inflectionalKanaVariantPreference: InflectionalKanaVariantPreference.conservative.encoded,  // 保守的=本則を先に許容も出す(標準は本則だけ)
+        SettingsKeys.kanjiRewritePreference: KanjiRewritePreference.bothAfterFirst.rawValue,  // 保守的=常用漢字を先に前も出す(ユーザ指定 3422)
+        SettingsKeys.kanjiRewriteEverydayException: true,   // 保守的=オン(ユーザ指定 3644)
+        SettingsKeys.lateStandardizedRewritePreference: KanjiRewritePreference.bothAfterFirst.rawValue,  // 保守的=X.9 と同じ(ユーザ指定 3570)
         SettingsKeys.adjectiveMeKanjiCandidatesEnabled: true,
         SettingsKeys.formalNounMeKanaCandidatesEnabled: false,   // 保守的=オフ(目 だけ。ユーザ指定 3790)
         SettingsKeys.suspendMemorySlimmingEnabled: true,
@@ -542,7 +542,7 @@ extension ContentView {
         SettingsKeys.historicalKanaCandidatesEnabled: false,
         SettingsKeys.iterationMarkCandidatesEnabled: false,
         SettingsKeys.katakanaEmphasisCandidateMode: ScriptVariantModeOption.suppress.rawValue,
-        SettingsKeys.mazegakiCandidateMode: ScriptVariantModeOption.suppress.rawValue,
+        SettingsKeys.mixedScriptCandidateMode: ScriptVariantModeOption.suppress.rawValue,
         // 旧字体・異体字の抑制は戦略的・保守的とも同じ(人名で生きている異体字だけオフ。ユーザ指定 2991)
         SettingsKeys.scriptVariantSuppressKyujitai: true,
         SettingsKeys.scriptVariantSuppressItaiji: true,
@@ -551,21 +551,21 @@ extension ContentView {
         SettingsKeys.scriptVariantSuppressLookalike: true,
         SettingsKeys.scriptVariantSuppressPersonNameVariant: false,
         // かなで書く言葉(X.8): 現代的はすべて抑制(ひらがな側に寄せる。副詞のかな先頭だけオフ。ユーザ指定 3406)
-        SettingsKeys.kanaGakiSuppressAdverb: true,
-        SettingsKeys.kanaGakiSuppressConjunction: true,
-        SettingsKeys.kanaGakiSuppressAuxiliary: true,
-        SettingsKeys.kanaGakiSuppressFormalNoun: true,
-        SettingsKeys.kanaGakiSuppressDemonstrative: true,
-        SettingsKeys.kanaGakiSuppressAdverbKanaFirst: false,
+        SettingsKeys.kanaSpellingSuppressAdverb: true,
+        SettingsKeys.kanaSpellingSuppressConjunction: true,
+        SettingsKeys.kanaSpellingSuppressAuxiliary: true,
+        SettingsKeys.kanaSpellingSuppressFormalNoun: true,
+        SettingsKeys.kanaSpellingSuppressDemonstrative: true,
+        SettingsKeys.kanaSpellingSuppressAdverbKanaFirst: false,
         SettingsKeys.emojiCandidateDisplayEnabled: true,
         SettingsKeys.radicalStrokeCountStyle: "140:4,113:5,184:8",
         SettingsKeys.ordinalMeKanjiPreferred: false,
         SettingsKeys.kaCounterVariantPreference: KaCounterVariantPreference.conservative.encoded,  // 保守的=か・箇・ヶ・カ をオン(標準は か のみ)
         SettingsKeys.numeralStylePreference: NumeralStylePreference.contemporaryDefault.rawValue,   // 現代的=アラビア数字が先(3702)
-        SettingsKeys.okuriganaVariantPreference: OkuriganaVariantPreference.contemporary.encoded,  // 現代的=語幹の中だけ本則だけ、ほかは本則を先に(ユーザ指定 3737)
-        SettingsKeys.kakikaePreference: KakikaePreference.bothBeforeFirst.rawValue,  // 現代的=本来の漢字を先に前も出す(3422、3431 で変更)
-        SettingsKeys.kakikaeEverydayException: true,   // 現代的=オン(ユーザ指定 3644)
-        SettingsKeys.lateStandardizedRewritePreference: KakikaePreference.bothBeforeFirst.rawValue,  // 現代的=X.9 と同じ(ユーザ指定 3570)
+        SettingsKeys.inflectionalKanaVariantPreference: InflectionalKanaVariantPreference.contemporary.encoded,  // 現代的=語幹の中だけ本則だけ、ほかは本則を先に(ユーザ指定 3737)
+        SettingsKeys.kanjiRewritePreference: KanjiRewritePreference.bothBeforeFirst.rawValue,  // 現代的=本来の漢字を先に前も出す(3422、3431 で変更)
+        SettingsKeys.kanjiRewriteEverydayException: true,   // 現代的=オン(ユーザ指定 3644)
+        SettingsKeys.lateStandardizedRewritePreference: KanjiRewritePreference.bothBeforeFirst.rawValue,  // 現代的=X.9 と同じ(ユーザ指定 3570)
         SettingsKeys.adjectiveMeKanjiCandidatesEnabled: true,
         SettingsKeys.formalNounMeKanaCandidatesEnabled: true,   // 現代的=オン(め も出す。ユーザ指定 3790)
         SettingsKeys.suspendMemorySlimmingEnabled: true,
@@ -871,12 +871,12 @@ extension ContentView {
     // 保守的初期設定の かなで書く言葉 は 3833 で 副詞・接続詞・補助用言 もオフ(漢字の候補を残す)になった。それより前に保守的を
     // 当てた端末は、前の値(この 3 つがオン)のまま残る。値が前の保守的の組み合わせそのまま(3 つがオン、形式名詞と指示語が
     // オフ)なら、1 回だけ新しい値に書き換える(ユーザ指定 3839)。本人が 1 つでも変えていれば触らない
-    func migrateConservativeKanaGakiDefaultsIfNeeded() {
+    func migrateConservativeKanaSpellingDefaultsIfNeeded() {
         guard let defaults = Self.sharedDefaults,
-            !defaults.bool(forKey: SettingsKeys.conservativeKanaGakiDefaultsMigrated) else {
+            !defaults.bool(forKey: SettingsKeys.conservativeKanaSpellingDefaultsMigrated) else {
             return
         }
-        defaults.set(true, forKey: SettingsKeys.conservativeKanaGakiDefaultsMigrated)
+        defaults.set(true, forKey: SettingsKeys.conservativeKanaSpellingDefaultsMigrated)
         guard Self.currentBasePreset == .conservative else {
             return
         }
@@ -885,10 +885,10 @@ extension ContentView {
             (defaults.object(forKey: key) as? Bool) ?? true
         }
         let rewrittenKeys = [
-            SettingsKeys.kanaGakiSuppressAdverb, SettingsKeys.kanaGakiSuppressConjunction, SettingsKeys.kanaGakiSuppressAuxiliary
+            SettingsKeys.kanaSpellingSuppressAdverb, SettingsKeys.kanaSpellingSuppressConjunction, SettingsKeys.kanaSpellingSuppressAuxiliary
         ]
         guard rewrittenKeys.allSatisfy(isOn),
-            !isOn(SettingsKeys.kanaGakiSuppressFormalNoun), !isOn(SettingsKeys.kanaGakiSuppressDemonstrative) else {
+            !isOn(SettingsKeys.kanaSpellingSuppressFormalNoun), !isOn(SettingsKeys.kanaSpellingSuppressDemonstrative) else {
             return
         }
         for key in rewrittenKeys {
@@ -897,23 +897,23 @@ extension ContentView {
         SettingsSyncNotification.postSettingsDidChange()
     }
 
-    func applyKakikaeDefaultForExistingInstallIfNeeded() {
+    func applyKanjiRewriteDefaultForExistingInstallIfNeeded() {
         guard let defaults = Self.sharedDefaults,
-            defaults.object(forKey: SettingsKeys.kakikaePreference) == nil else {
+            defaults.object(forKey: SettingsKeys.kanjiRewritePreference) == nil else {
             return
         }
-        defaults.set(KakikaePreference.existingInstallDefault.rawValue, forKey: SettingsKeys.kakikaePreference)
+        defaults.set(KanjiRewritePreference.existingInstallDefault.rawValue, forKey: SettingsKeys.kanjiRewritePreference)
         SettingsSyncNotification.postSettingsDidChange()
     }
 
     // 例外グループのスイッチ(3644)の値がまだ無い端末は オン(3611 以来、了解 等を常用漢字先にしてきた動作を守る)。
     // 組み込みの標準値(戦略的初期設定)はオフなので、書かないと更新した途端に 諒解 が先頭になる
-    func applyKakikaeEverydayExceptionDefaultForExistingInstallIfNeeded() {
+    func applyKanjiRewriteEverydayExceptionDefaultForExistingInstallIfNeeded() {
         guard let defaults = Self.sharedDefaults,
-            defaults.object(forKey: SettingsKeys.kakikaeEverydayException) == nil else {
+            defaults.object(forKey: SettingsKeys.kanjiRewriteEverydayException) == nil else {
             return
         }
-        defaults.set(true, forKey: SettingsKeys.kakikaeEverydayException)
+        defaults.set(true, forKey: SettingsKeys.kanjiRewriteEverydayException)
         SettingsSyncNotification.postSettingsDidChange()
     }
 
@@ -924,7 +924,7 @@ extension ContentView {
             defaults.object(forKey: SettingsKeys.lateStandardizedRewritePreference) == nil else {
             return
         }
-        defaults.set(KakikaePreference.existingInstallDefault.rawValue, forKey: SettingsKeys.lateStandardizedRewritePreference)
+        defaults.set(KanjiRewritePreference.existingInstallDefault.rawValue, forKey: SettingsKeys.lateStandardizedRewritePreference)
         SettingsSyncNotification.postSettingsDidChange()
     }
 

@@ -9,12 +9,12 @@ import Foundation
 extension KanaKanjiConverter {
     // 通則1 の許容: 活用語尾の前の音節から送れる 6 語(表わす/著わす/現われる/行なう/断わる/賜わる)。
     // この 6 語だけは「長い方」が許容形(本則は 表す/行う …)。漢字+送り始めのかな で照合する
-    static let okuriganaTsusoku1LongVariantPairs: Set<String> = ["表わ", "著わ", "現わ", "行な", "断わ", "賜わ"]
+    static let inflectionalKanaTsusoku1LongVariantPairs: Set<String> = ["表わ", "著わ", "現わ", "行な", "断わ", "賜わ"]
     // 通則2 の許容: 送り仮名を省ける 12 語(浮かぶ/生まれる/押さえる/捕らえる/晴れやか/積もる/聞こえる/起こる/落とす/
     // 暮らす/当たる/終わる/変わる)。漢字+省かれるかな で照合し、活用形や派生名詞(当たり/変わり/終わって)にも効く。
     // 語幹の中の送り仮名のゆれはこの 2 つのリストにある語だけを対象にする。辞書には 困まる/謝まる/為め のような
     // 本則より長い誤表記・旧表記もあり、「長い方が本則」を一般則にすると誤表記を守ってしまうため
-    static let okuriganaTsusoku2ShortVariantPairs: Set<String> = [
+    static let inflectionalKanaTsusoku2ShortVariantPairs: Set<String> = [
         "浮か", "生ま", "押さ", "捕ら", "積も", "聞こ", "起こ", "落と", "暮ら", "当た", "終わ", "変わ",
         // 通則4 の許容のうち、語の中のかなを省く 代わり(代り)/向かい(向い) も同じ形なのでここに含める
         "代わ", "向か",
@@ -31,7 +31,7 @@ extension KanaKanjiConverter {
     // 前部要素の設定で扱うため)。
     // 平ら(平らか/平か)は 西平らさん/西平さん(姓)を巻き込むので入れない。
     // 短い方が本則でない(合す/上る(あがる)/掛る/過す/逃す(にがす)/立る/繋る)
-    static let okuriganaStemShortVariantExtraPairs: Set<String> = [
+    static let inflectionalKanaStemShortVariantExtraPairs: Set<String> = [
         "合わ", "上が", "掛か", "明か", "替わ", "曲が", "下が", "止ま", "分か", "詰ま", "下ろ", "溜ま", "泊ま", "向こ", "預か",
         "過ご", "締ま", "逃が", "込め", "住ま", "尽く", "計ら", "兼ね", "飛ば", "揺る", "晴ら", "焦が", "懸か", "延ば", "立て",
         "冷や", "交わ", "覚ま", "澄ま", "留ま", "伸ば", "慣ら", "馴ら", "集ま", "降ろ", "上げ", "決ま", "振る", "散ら", "換え",
@@ -58,12 +58,12 @@ extension KanaKanjiConverter {
         "儲か", "若し", "持た", "基づ", "貰え", "洩ら", "和ら", "揺さ", "緩や", "横た", "喜ば", "悦ば", "忘れ", "煩わ", "侘し",
         "当て", "割れ", "降り", "下り", "落ち", "浴び", "滲み", "酬い", "重な", "合え", "少ね"
     ]
-    static let okuriganaIchidanStemKana: Set<Character> = Set("えけげせぜてでねへべぺめれ")
-    static let okuriganaStemLongVariantTriples: Set<String> = ["明かる"]
-    static let okuriganaListedStemPairs: Set<String> = okuriganaTsusoku1LongVariantPairs.union(okuriganaTsusoku2ShortVariantPairs)
-        .union(okuriganaStemShortVariantExtraPairs).union(okuriganaStemLongVariantExtraPairs)
+    static let inflectionalKanaVowelStemStemKana: Set<Character> = Set("えけげせぜてでねへべぺめれ")
+    static let inflectionalKanaStemLongVariantTriples: Set<String> = ["明かる"]
+    static let inflectionalKanaListedStemPairs: Set<String> = inflectionalKanaTsusoku1LongVariantPairs.union(inflectionalKanaTsusoku2ShortVariantPairs)
+        .union(inflectionalKanaStemShortVariantExtraPairs).union(inflectionalKanaStemLongVariantExtraPairs)
     // 長い方が本則でない(回わす/返えす/汚ない/輝やく/驚ろく/困まる/働らき)
-    static let okuriganaStemLongVariantExtraPairs: Set<String> = [
+    static let inflectionalKanaStemLongVariantExtraPairs: Set<String> = [
         "回わ", "廻わ", "返え", "帰え", "汚な", "汚ね", "汚た", "止ど", "輝や", "慎し", "労わ", "顕わ", "擽ぐ", "喋べ", "珍ら",
         "嘲け", "新ら", "誤ま", "訝か", "失な", "寛ろ", "陥い", "驚ろ", "難か", "困ま", "叫け", "触わ", "叱か", "湿め", "企ら",
         "呟や", "働ら", "開ら", "閃め", "辱し", "与か", "賢こ", "忝け", "落れ", "穢な", "穢ね", "耽け", "暈か", "出だ", "購な", "明き",
@@ -82,8 +82,8 @@ extension KanaKanjiConverter {
     // 「末尾のかなが省かれた組」を機械的に拾うと 甘い/甘(部首名の供給)、勇む/勇・茂る/茂・渡り/渡(人名)、
     // 香り/香(別の名詞)を巻き込むので、名詞化はこのリストの語に限る
     // 付き/付け/向き/向け/入り/寄り は同じ型の名詞化(色付き/格付け/熟成向き/寒冷地向け/卵入り/軟水寄り。learningBOX 検査 3661 で
-    // 色付/格付/向/入/寄 が先頭だった)。受付/日付/作付/番付 などの慣用の形は okuriganaFixedShortForms が守る
-    static let okuriganaTsusoku4NominalizedPairs: Set<String> = ["届け", "願い", "狩り", "答え", "問い", "祭り", "群れ",
+    // 色付/格付/向/入/寄 が先頭だった)。受付/日付/作付/番付 などの慣用の形は inflectionalKanaFixedShortForms が守る
+    static let inflectionalKanaTsusoku4NominalizedPairs: Set<String> = ["届け", "願い", "狩り", "答え", "問い", "祭り", "群れ",
         "付き", "付け", "向き", "向け", "入り", "寄り"]
 
     // 慣用で送り仮名を付けない語(通則7)と、活用のある語から転じた名詞で送らない語(通則4 の例外)。
@@ -92,7 +92,7 @@ extension KanaKanjiConverter {
     // 残る形は動詞の許容形なので対象)。1 字の語は省かれたかなの直前の漢字がその字のとき(話し/次ぎ/何割り/春慶塗りの)に適用。
     // 末尾の「慣用の拡張」は告示にないが一般に固定した表記(入口/締切/振込、天気の 晴/曇)で、初期設定(許容を出さない)
     // で消えると困る語。ここは運用で増減してよい
-    static let okuriganaFixedShortForms: Set<String> = [
+    static let inflectionalKanaFixedShortForms: Set<String> = [
         // 通則4 例外(送り仮名を付けない名詞)
         "謡", "虞", "趣", "氷", "印", "頂", "帯", "畳", "卸", "煙", "恋", "志", "次", "隣", "富", "恥", "話", "光", "舞",
         "折", "係", "掛", "組", "肥", "並", "巻", "割",
@@ -108,19 +108,19 @@ extension KanaKanjiConverter {
         // 慣用の拡張(告示外)
         "入口", "出口", "締切", "振込", "手続", "晴", "曇"
     ]
-    private static let okuriganaNounOnlyFixedShortForms: [String] = ["入口", "出口"]
-    private static let okuriganaSuruConjugationHeads: [String] = [
+    private static let inflectionalKanaNounOnlyFixedShortForms: [String] = ["入口", "出口"]
+    private static let inflectionalKanaSuruConjugationHeads: [String] = [
         "する", "した", "して", "しな", "しま", "しよ", "しろ", "しそ", "しち", "しと", "すれ", "され", "させ", "せず"
     ]
-    private static let okuriganaFixedShortFormsMultiChar: [String] = okuriganaFixedShortForms.filter { $0.count >= 2 }
-    private static let okuriganaFixedShortFormSingleChars: Set<Character> = Set(
-        okuriganaFixedShortForms.filter { $0.count == 1 }.compactMap(\.first)
+    private static let inflectionalKanaFixedShortFormsMultiChar: [String] = inflectionalKanaFixedShortForms.filter { $0.count >= 2 }
+    private static let inflectionalKanaFixedShortFormSingleChars: Set<Character> = Set(
+        inflectionalKanaFixedShortForms.filter { $0.count == 1 }.compactMap(\.first)
     )
 
     // 複合語の前部要素として省かれる送り仮名は 取(り)扱う/打(ち)合わせ/引(っ)越し のような活用語尾の断片で、
     // 助詞ではない。山に登る⇄山登る のような組を送り仮名のゆれと誤認しないための除外
-    private static let okuriganaNeverOmittedKana: Set<Character> = Set("にをがはのとでへもやかてね")
-    private static let okuriganaNumeralKanji: Set<Character> = Set("一二三四五六七八九十百千万")
+    private static let inflectionalKanaNeverOmittedKana: Set<Character> = Set("にをがはのとでへもやかてね")
+    private static let inflectionalKanaNumeralKanji: Set<Character> = Set("一二三四五六七八九十百千万")
 
     private static func isHiragana(_ character: Character) -> Bool {
         guard let scalar = character.unicodeScalars.first else { return false }
@@ -133,16 +133,16 @@ extension KanaKanjiConverter {
             || scalar.value == 0x3005  // 々
     }
 
-    struct OkuriganaVariantRelation {
+    struct InflectionalKanaVariantRelation {
         let standard: String
         let variant: String
-        let group: OkuriganaVariantGroup
+        let group: InflectionalKanaVariantGroup
     }
 
     // 2 候補が送り仮名のゆれの組なら(本則, 許容形, グループ)を返す。漢字列(ひらがな以外の文字列)が同じで
     // 短い方が長い方の部分列、省かれた文字がすべてひらがな、各省略字の直前が漢字か省略字であること。
     // 本則の向き: 通則1 の 6 語は短い方、通則2/4 のリスト語と複合語の前部要素は長い方(送った方)が本則
-    static func okuriganaVariantRelation(_ a: String, _ b: String) -> OkuriganaVariantRelation? {
+    static func inflectionalKanaVariantRelation(_ a: String, _ b: String) -> InflectionalKanaVariantRelation? {
         guard a != b else { return nil }
         let (long, short) = a.count >= b.count ? (Array(a), Array(b)) : (Array(b), Array(a))
         guard long.count > short.count, long.contains(where: isKanji) else { return nil }
@@ -166,17 +166,17 @@ extension KanaKanjiConverter {
             guard precededByKanji || previousRemoved == index - 1 else { return nil }
             if precededByKanji {
                 // 数詞+つ(三つ井→三井)は活用語尾の送り仮名ではない。三井 の側を許容形として落としていた(3563)
-                if long[index] == "つ", okuriganaNumeralKanji.contains(long[index - 1]) {
+                if long[index] == "つ", inflectionalKanaNumeralKanji.contains(long[index - 1]) {
                     return nil
                 }
                 // 助詞と同じかな(か/が/も/て/ね)でも、語幹の中の組として表にある語(上がる/上る、分かる/分る、籠もる/籠る)は照合する
                 // (3789。表に載せても、この門番で落ちて効いていなかった)。後ろにかなが続くときだけ
                 let listedStemPair = removed.count == 1 && index + 1 < long.count && isHiragana(long[index + 1])
-                    && okuriganaListedStemPairs.contains(String(long[(index - 1)...index]))
+                    && inflectionalKanaListedStemPairs.contains(String(long[(index - 1)...index]))
                     // 名詞の 向かい/向い は seed で 向い を先頭にしてあるので触らない(むかい)。向かう/向う は対象
                     && !(long[index - 1] == "向" && long[index] == "か" && long[index + 1] == "い")
-                if (okuriganaNeverOmittedKana.contains(long[index]) && !listedStemPair)
-                    || okuriganaFixedShortFormSingleChars.contains(long[index - 1]) {
+                if (inflectionalKanaNeverOmittedKana.contains(long[index]) && !listedStemPair)
+                    || inflectionalKanaFixedShortFormSingleChars.contains(long[index - 1]) {
                     return nil
                 }
             }
@@ -186,63 +186,63 @@ extension KanaKanjiConverter {
         let longString = String(long)
         // 入口/出口 は活用しない名詞なので、助詞が続いても(入口に/出口から)固定表記。下の判定は 全漢字の短い形だけが対象で、
         // 入口に の に で外れ 入口に が許容形として落ち 入り口に だけになっていた(3617、ユーザ報告: いりぐちに)
-        if okuriganaNounOnlyFixedShortForms.contains(where: { shortString.contains($0) }) {
+        if inflectionalKanaNounOnlyFixedShortForms.contains(where: { shortString.contains($0) }) {
             return nil
         }
-        if !short.contains(where: isHiragana), okuriganaFixedShortFormsMultiChar.contains(where: { shortString.contains($0) }) {
+        if !short.contains(where: isHiragana), inflectionalKanaFixedShortFormsMultiChar.contains(where: { shortString.contains($0) }) {
             return nil
         }
         // 慣用で送らない名詞+サ変(受付する/取引しない)も名詞の固定表記。受け付けする の許容形とみなして
         // 本則だけ で消していた(3772、ユーザ判定で 受付する を並べても出なかった)。取扱う のような動詞は対象のまま
-        if okuriganaFixedShortFormsMultiChar.contains(where: { form in
+        if inflectionalKanaFixedShortFormsMultiChar.contains(where: { form in
             guard let range = shortString.range(of: form) else { return false }
             let rest = shortString[range.upperBound...]
-            return okuriganaSuruConjugationHeads.contains(where: { rest.hasPrefix($0) })
+            return inflectionalKanaSuruConjugationHeads.contains(where: { rest.hasPrefix($0) })
         }) {
             return nil
         }
         // 通則1 の 6 語(表わす 等)は長い方が許容形
         if removed.count == 1, removed[0] > 0,
-            okuriganaTsusoku1LongVariantPairs.contains(String(long[(removed[0] - 1)...removed[0]])) {
-            return OkuriganaVariantRelation(standard: shortString, variant: longString, group: .stemInternal)
+            inflectionalKanaTsusoku1LongVariantPairs.contains(String(long[(removed[0] - 1)...removed[0]])) {
+            return InflectionalKanaVariantRelation(standard: shortString, variant: longString, group: .stemInternal)
         }
         // 通則2 の 12 語(終わる 等)は短い方が許容形
         if removed.count == 1, removed[0] > 0,
-            okuriganaTsusoku2ShortVariantPairs.contains(String(long[(removed[0] - 1)...removed[0]])) {
-            return OkuriganaVariantRelation(standard: longString, variant: shortString, group: .stemInternal)
+            inflectionalKanaTsusoku2ShortVariantPairs.contains(String(long[(removed[0] - 1)...removed[0]])) {
+            return InflectionalKanaVariantRelation(standard: longString, variant: shortString, group: .stemInternal)
         }
         // 告示の表に無い、語幹の中の組(定数コメント参照。3805)。省かれたかなの後ろにかなが続くときだけ
         if removed.count == 1, removed[0] > 0, removed[0] + 1 < long.count, isHiragana(long[removed[0] + 1]) {
             let key = String(long[(removed[0] - 1)...removed[0]])
             // 同じ 2 字で向きが逆の語(明かす/明す は長い方が本則、明かるい/明るい は短い方が本則)は 3 字で見分ける
             if removed[0] + 1 < long.count,
-                okuriganaStemLongVariantTriples.contains(String(long[(removed[0] - 1)...(removed[0] + 1)])) {
-                return OkuriganaVariantRelation(standard: shortString, variant: longString, group: .stemInternal)
+                inflectionalKanaStemLongVariantTriples.contains(String(long[(removed[0] - 1)...(removed[0] + 1)])) {
+                return InflectionalKanaVariantRelation(standard: shortString, variant: longString, group: .stemInternal)
             }
-            if okuriganaStemShortVariantExtraPairs.contains(key) {
+            if inflectionalKanaStemShortVariantExtraPairs.contains(key) {
                 // 複合語の後部要素(組み合わせ/組み合せ、打ち合わせ/打ち合せ、待ち合わせ/待合せ)は、複合語の送り仮名の省略として
                 // 複合語の設定で扱う(3789、ユーザ指定: 慣用の表に 1 語ずつ足すより 複合語 の括りで。語幹の中=本則だけ の設定で
                 // 組み合せ/組合せ が消えていた)。省かれたかなの漢字の前に、同じ語の別の漢字(送り仮名 1 字を挟んでもよい)があるとき
                 let kanjiIndex = removed[0] - 1
                 // 下一段の語幹のかな(取り上げる/取り上る、押し込める/押し込る)を省いた形は許容でなく誤りなので、複合語でも出さない
-                let isCompoundRear = !okuriganaIchidanStemKana.contains(long[removed[0]])
+                let isCompoundRear = !inflectionalKanaVowelStemStemKana.contains(long[removed[0]])
                     && kanjiIndex >= 1 && (isKanji(long[kanjiIndex - 1])
                     || (kanjiIndex >= 2 && isHiragana(long[kanjiIndex - 1]) && isKanji(long[kanjiIndex - 2])))
-                return OkuriganaVariantRelation(
+                return InflectionalKanaVariantRelation(
                     standard: longString, variant: shortString, group: isCompoundRear ? .compoundFront : .stemInternal)
             }
-            if okuriganaStemLongVariantExtraPairs.contains(key) {
-                return OkuriganaVariantRelation(standard: shortString, variant: longString, group: .stemInternal)
+            if inflectionalKanaStemLongVariantExtraPairs.contains(key) {
+                return InflectionalKanaVariantRelation(standard: shortString, variant: longString, group: .stemInternal)
             }
         }
         // 複合語の前部要素: 省略字の直後に漢字が続く(取り|扱う、打ち|合わせ)。長い方が本則
         if removed.contains(where: { index in index + 1 < long.count && isKanji(long[index + 1]) }) {
-            return OkuriganaVariantRelation(standard: longString, variant: shortString, group: .compoundFront)
+            return InflectionalKanaVariantRelation(standard: longString, variant: shortString, group: .compoundFront)
         }
         // 名詞化の省略: 通則4 のリスト語の末尾のかなが省かれる(届け/届、お届け/お届)
         if removed.count == 1, removed[0] == long.count - 1, removed[0] > 0,
-            okuriganaTsusoku4NominalizedPairs.contains(String(long[(removed[0] - 1)...removed[0]])) {
-            return OkuriganaVariantRelation(standard: longString, variant: shortString, group: .nominalized)
+            inflectionalKanaTsusoku4NominalizedPairs.contains(String(long[(removed[0] - 1)...removed[0]])) {
+            return InflectionalKanaVariantRelation(standard: longString, variant: shortString, group: .nominalized)
         }
         // それ以外(困った/困まった、甘い/甘、茂る/茂、香り/香 …)はリスト外なので触らない
         return nil
@@ -253,7 +253,7 @@ extension KanaKanjiConverter {
     // 下の組分けでは並べ替えられなかった(learningBOX 検査 3666)。候補の漢字・カタカナの塊を読みに対応づけ、
     // 塊の末尾の字がリスト語の漢字で、その塊の読みがリスト語の読み(つき/むけ …)で終わり、後ろに送り仮名が続かないときだけ補う。
     // 受付/気付/番付 などの固定の形は補わない
-    private static let okuriganaNominalizedKanaReadings: [Character: [(kana: Character, readings: [String])]] = [
+    private static let inflectionalKanaNominalizedKanaReadings: [Character: [(kana: Character, readings: [String])]] = [
         "付": [("き", ["つき", "づき"]), ("け", ["つけ", "づけ"])],
         "向": [("き", ["むき"]), ("け", ["むけ"])],
         "入": [("り", ["いり"])],
@@ -275,25 +275,25 @@ extension KanaKanjiConverter {
         "振": [("い", ["ふるい", "ぶるい"])],
         "取": [("り", ["とり", "どり"])]
     ]
-    // 補わない語(本則が送らない形、地名)。字ごとの条件は okuriganaNominalizedRestrictedHeads
-    private static let okuriganaNominalizedExcludedHeads: [String] = ["具合", "缶詰", "鳥取", "橋詰", "手合"]
+    // 補わない語(本則が送らない形、地名)。字ごとの条件は inflectionalKanaNominalizedRestrictedHeads
+    private static let inflectionalKanaNominalizedExcludedHeads: [String] = ["具合", "缶詰", "鳥取", "橋詰", "手合"]
     // 字によっては補う語を限る(取 は 板目取/柾目取/木取 だけ。名取/香取 などの地名・人名を巻き込まない)
-    private static let okuriganaNominalizedRestrictedHeads: [Character: [String]] = ["取": ["板目取", "柾目取", "木取"]]
+    private static let inflectionalKanaNominalizedRestrictedHeads: [Character: [String]] = ["取": ["板目取", "柾目取", "木取"]]
     // 語の途中で送り仮名が省かれる複合語(運送人渡条件/運賃込条件)。読みにその部分の読みがあるときだけ補う
-    private static let okuriganaInnerRestorations: [(short: String, long: String, reading: String)] = [
+    private static let inflectionalKanaInnerRestorations: [(short: String, long: String, reading: String)] = [
         ("渡条件", "渡し条件", "わたしじょうけん"), ("込条件", "込み条件", "こみじょうけん")
     ]
 
-    static func nominalizedOkuriganaRestored(_ candidate: String, reading: String) -> String? {
+    static func nominalizedInflectionalKanaRestored(_ candidate: String, reading: String) -> String? {
         var innerRestored = candidate
-        for entry in okuriganaInnerRestorations where innerRestored.contains(entry.short) && reading.contains(entry.reading) {
+        for entry in inflectionalKanaInnerRestorations where innerRestored.contains(entry.short) && reading.contains(entry.reading) {
             innerRestored = innerRestored.replacingOccurrences(of: entry.short, with: entry.long)
         }
         if innerRestored != candidate {
-            return nominalizedOkuriganaRestored(innerRestored, reading: reading) ?? innerRestored
+            return nominalizedInflectionalKanaRestored(innerRestored, reading: reading) ?? innerRestored
         }
         let characters = Array(candidate)
-        guard characters.contains(where: { okuriganaNominalizedKanaReadings[$0] != nil }) else { return nil }
+        guard characters.contains(where: { inflectionalKanaNominalizedKanaReadings[$0] != nil }) else { return nil }
         // 塊(ひらがなの連続/それ以外の連続)に分ける
         // 漢字とカタカナの境目でも分ける(表記付テーブルワイン/レーズン入ブリオッシュ の 付・入 を塊の末尾にする)
         var runs: [(isHiragana: Bool, start: Int, end: Int)] = []
@@ -356,15 +356,15 @@ extension KanaKanjiConverter {
         var inserted = 0
         for (runIndex, run) in runs.enumerated() where !run.isHiragana && run.end - run.start >= 2 {
             let last = characters[run.end - 1]
-            guard let options = okuriganaNominalizedKanaReadings[last] else { continue }
+            guard let options = inflectionalKanaNominalizedKanaReadings[last] else { continue }
             let runReading = String(readingCharacters[spans[runIndex]])
             let matches = options.filter { option in option.readings.contains(where: { runReading.hasSuffix($0) }) }
             guard matches.count == 1, let kana = matches.first?.kana else { continue }
             if runIndex + 1 < runs.count, characters[runs[runIndex + 1].start] == kana { continue }
             let head = String(characters[run.start..<run.end])
-            if okuriganaFixedShortForms.contains(where: { head.hasSuffix($0) }) { continue }
-            if okuriganaNominalizedExcludedHeads.contains(where: { head.hasSuffix($0) }) { continue }
-            if let allowed = okuriganaNominalizedRestrictedHeads[last], !allowed.contains(where: { head.hasSuffix($0) }) { continue }
+            if inflectionalKanaFixedShortForms.contains(where: { head.hasSuffix($0) }) { continue }
+            if inflectionalKanaNominalizedExcludedHeads.contains(where: { head.hasSuffix($0) }) { continue }
+            if let allowed = inflectionalKanaNominalizedRestrictedHeads[last], !allowed.contains(where: { head.hasSuffix($0) }) { continue }
             result.insert(kana, at: run.end + inserted)
             inserted += 1
         }
@@ -373,15 +373,15 @@ extension KanaKanjiConverter {
 
     // 名詞化の省略形に本則の形を補う。並びは 名詞化 の設定に従う(本則だけ=置き換え、本則を先に/許容を先に=両方)。
     // 学習済みの表記は補わない(ユーザが選んだ形)
-    private func restoringNominalizedOkurigana(reading: String, in candidates: [String]) -> [String] {
+    private func restoringNominalizedInflectionalKana(reading: String, in candidates: [String]) -> [String] {
         let normalizedReading = KanaTextNormalizer.normalizedReading(reading)
         let learned = Set(store.learnedDictionary()[normalizedReading] ?? [])
-        let mode = okuriganaVariantPreference.mode(for: .nominalized)
+        let mode = inflectionalKanaVariantPreference.mode(for: .nominalized)
         var result: [String] = []
         var changed = false
         for candidate in candidates {
             guard !learned.contains(candidate),
-                let restored = Self.nominalizedOkuriganaRestored(candidate, reading: normalizedReading) else {
+                let restored = Self.nominalizedInflectionalKanaRestored(candidate, reading: normalizedReading) else {
                 result.append(candidate)
                 continue
             }
@@ -396,7 +396,7 @@ extension KanaKanjiConverter {
     }
 
     // 候補を、漢字列(ひらがなを除いた文字列)が同じものどうしの組に分ける。値は候補の位置(並び順)。
-    // ひらがなだけの候補は組に入れない。applyOkuriganaVariantPreference が 2 回同じループを書いていた(3842)
+    // ひらがなだけの候補は組に入れない。applyInflectionalKanaVariantPreference が 2 回同じループを書いていた(3842)
     private static func kanjiSkeletonBuckets(of candidates: [String]) -> [String: [Int]] {
         var buckets: [String: [Int]] = [:]
         for (index, candidate) in candidates.enumerated() {
@@ -407,12 +407,12 @@ extension KanaKanjiConverter {
         return buckets
     }
 
-    public func applyOkuriganaVariantPreference(reading: String, to inputCandidates: [String]) -> [String] {
-        var candidates = restoringNominalizedOkurigana(reading: reading, in: inputCandidates)
+    public func applyInflectionalKanaVariantPreference(reading: String, to inputCandidates: [String]) -> [String] {
+        var candidates = restoringNominalizedInflectionalKana(reading: reading, in: inputCandidates)
         guard candidates.count >= 2 else {
             return candidates
         }
-        let preference = okuriganaVariantPreference
+        let preference = inflectionalKanaVariantPreference
         // 漢字列(ひらがなを除いた文字列)で組分け。2 つ以上の候補が集まった組だけ調べる
         var buckets = Self.kanjiSkeletonBuckets(of: candidates)
         var candidateBuckets = buckets.values.filter { $0.count >= 2 }
@@ -454,7 +454,7 @@ extension KanaKanjiConverter {
                 for j in members.indices where j > i {
                     let earlier = members[i], later = members[j]
                     guard isProtected(later), !isProtected(earlier),
-                        Self.okuriganaVariantRelation(earlier, later) != nil,
+                        Self.inflectionalKanaVariantRelation(earlier, later) != nil,
                         let from = candidates.firstIndex(of: later), let to = candidates.firstIndex(of: earlier), from > to else {
                         continue
                     }
@@ -470,13 +470,13 @@ extension KanaKanjiConverter {
         candidateBuckets = buckets.values.filter { $0.count >= 2 }
 
         // 許容形 → (本則, グループ)。本則は連鎖(取り扱い→取扱い→取扱)の根へ辿る
-        var relationByVariant: [String: OkuriganaVariantRelation] = [:]
+        var relationByVariant: [String: InflectionalKanaVariantRelation] = [:]
         for bucket in candidateBuckets {
             for i in bucket.indices {
                 for j in bucket.indices where j > i {
                     let a = candidates[bucket[i]], b = candidates[bucket[j]]
                     guard !isProtected(a), !isProtected(b),
-                        let relation = Self.okuriganaVariantRelation(a, b) else { continue }
+                        let relation = Self.inflectionalKanaVariantRelation(a, b) else { continue }
                     if let existing = relationByVariant[relation.variant], existing.standard.count >= relation.standard.count {
                         continue
                     }

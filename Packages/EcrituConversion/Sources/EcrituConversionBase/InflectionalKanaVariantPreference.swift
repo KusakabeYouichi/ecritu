@@ -2,7 +2,7 @@ import Foundation
 
 // 送り仮名の許容形(終る/申込む/届 など)の扱い(2820)。『送り仮名の付け方』(1973 年内閣告示、1981 改正)の
 // 許容をグループに分け、グループごとに 本則だけ / 本則を先に許容も / 許容を先に を選ぶ。両ターゲットに同梱。
-public enum OkuriganaVariantGroup: String, CaseIterable, Identifiable {
+public enum InflectionalKanaVariantGroup: String, CaseIterable, Identifiable {
     // 通則1・2 の許容: 活用語尾の前の音を送る/省く(終わる⇄終る、行う⇄行なう)
     case stemInternal = "stem"
     // 通則6 の許容: 複合語の前部要素の送り仮名を省く(取り扱う⇄取扱う、申し込む⇄申込む)
@@ -29,7 +29,7 @@ public enum OkuriganaVariantGroup: String, CaseIterable, Identifiable {
     }
 }
 
-public enum OkuriganaVariantMode: String, CaseIterable, Identifiable {
+public enum InflectionalKanaVariantMode: String, CaseIterable, Identifiable {
     case standardOnly = "standardOnly"     // 本則だけ(許容形は候補に出さない)
     case standardFirst = "standardFirst"   // 本則を先に、許容形も出す
     case permittedFirst = "permittedFirst" // 許容形を先に
@@ -45,44 +45,44 @@ public enum OkuriganaVariantMode: String, CaseIterable, Identifiable {
     }
 }
 
-public struct OkuriganaVariantPreference: Equatable {
-    public var modes: [OkuriganaVariantGroup: OkuriganaVariantMode]
+public struct InflectionalKanaVariantPreference: Equatable {
+    public var modes: [InflectionalKanaVariantGroup: InflectionalKanaVariantMode]
 
     // 戦略的初期設定(ユーザ指定 2820): 許容形は全グループ出さない。保守的初期設定は本則を先に許容も出す
-    public static let `default` = OkuriganaVariantPreference(modes: [
+    public static let `default` = InflectionalKanaVariantPreference(modes: [
         .stemInternal: .standardOnly, .compoundFront: .standardOnly, .nominalized: .standardOnly
     ])
-    public static let conservative = OkuriganaVariantPreference(modes: [
+    public static let conservative = InflectionalKanaVariantPreference(modes: [
         .stemInternal: .standardFirst, .compoundFront: .standardFirst, .nominalized: .standardFirst
     ])
     // 現代的初期設定: 語幹の中(終る/荒す)だけ本則のみ、ほかは保守的と同じ本則を先に(ユーザ指定 3737)
-    public static let contemporary = OkuriganaVariantPreference(modes: [
+    public static let contemporary = InflectionalKanaVariantPreference(modes: [
         .stemInternal: .standardOnly, .compoundFront: .standardFirst, .nominalized: .standardFirst
     ])
 
-    public func mode(for group: OkuriganaVariantGroup) -> OkuriganaVariantMode {
+    public func mode(for group: InflectionalKanaVariantGroup) -> InflectionalKanaVariantMode {
         modes[group] ?? .standardOnly
     }
 
     // 永続形式: "stem:standardFirst,compound:standardFirst,noun:standardFirst"
     public var encoded: String {
-        OkuriganaVariantGroup.allCases.map { "\($0.rawValue):\(mode(for: $0).rawValue)" }.joined(separator: ",")
+        InflectionalKanaVariantGroup.allCases.map { "\($0.rawValue):\(mode(for: $0).rawValue)" }.joined(separator: ",")
     }
 
-    public static func decode(_ encoded: String?) -> OkuriganaVariantPreference {
+    public static func decode(_ encoded: String?) -> InflectionalKanaVariantPreference {
         guard let encoded, !encoded.isEmpty else {
             return .default
         }
-        var modes = OkuriganaVariantPreference.default.modes
+        var modes = InflectionalKanaVariantPreference.default.modes
         for token in encoded.split(separator: ",") {
             let parts = token.split(separator: ":", maxSplits: 1).map(String.init)
             guard parts.count == 2,
-                let group = OkuriganaVariantGroup(rawValue: parts[0]),
-                let mode = OkuriganaVariantMode(rawValue: parts[1]) else {
+                let group = InflectionalKanaVariantGroup(rawValue: parts[0]),
+                let mode = InflectionalKanaVariantMode(rawValue: parts[1]) else {
                 continue
             }
             modes[group] = mode
         }
-        return OkuriganaVariantPreference(modes: modes)
+        return InflectionalKanaVariantPreference(modes: modes)
     }
 }

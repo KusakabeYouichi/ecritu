@@ -237,16 +237,16 @@ extension KeyboardCandidateMergingTests {
     }
 
     // 3602: 知能/智能 は書きかえの日常語の例外(本来の漢字を先に の設定でも 知能 が先)
-    func testKakikaeEverydayExceptionIncludesChinou() {
-        XCTAssertEqual(KakikaePreference.bothBeforeFirst.demotingEverydayPair(for: "知能"), .bothAfterFirst)
-        XCTAssertEqual(KakikaePreference.bothBeforeFirst.demotingEverydayPair(for: "知能", enabled: false), .bothBeforeFirst)
+    func testKanjiRewriteEverydayExceptionIncludesChinou() {
+        XCTAssertEqual(KanjiRewritePreference.bothBeforeFirst.demotingEverydayPair(for: "知能"), .bothAfterFirst)
+        XCTAssertEqual(KanjiRewritePreference.bothBeforeFirst.demotingEverydayPair(for: "知能", enabled: false), .bothBeforeFirst)
     }
 
     // 3632: 人参/人蔘(蔘→参 の代用)も日常語の例外(本来の漢字を先に の設定でも 人参 が先)
-    func testKakikaeEverydayExceptionIncludesNinjin() {
-        XCTAssertEqual(KakikaePreference.bothBeforeFirst.demotingEverydayPair(for: "人参"), .bothAfterFirst)
-        XCTAssertEqual(KakikaePreference.beforeOnly.demotingEverydayPair(for: "人蔘"), .bothAfterFirst)
-        XCTAssertTrue(KakikaeTable.pairs.contains { $0.before == "人蔘" && $0.after == "人参" && !$0.isLateStandardized })
+    func testKanjiRewriteEverydayExceptionIncludesNinjin() {
+        XCTAssertEqual(KanjiRewritePreference.bothBeforeFirst.demotingEverydayPair(for: "人参"), .bothAfterFirst)
+        XCTAssertEqual(KanjiRewritePreference.beforeOnly.demotingEverydayPair(for: "人蔘"), .bothAfterFirst)
+        XCTAssertTrue(KanjiRewriteTable.pairs.contains { $0.before == "人蔘" && $0.after == "人参" && !$0.isLateStandardized })
     }
 
     // あさって 等の相対の日付語を実際の日付へ(カレンダーの日付書式に合わせる。3445)

@@ -1,22 +1,33 @@
 import Foundation
 
-// 活用ルールデータ: InflectionRule/GodanPattern の型定義と、形容詞/一段/五段/サ変/カ変の
+// 活用ルールデータ: InflectionRule/ConsonantStemPattern の型定義と、形容詞/一段/五段/サ変/カ変の
 // 活用テーブル、te系アスペクト等の派生サフィックス生成、ランキング用サフィックス、
 // postfix 素通りサフィックス。ロジックは KanaKanjiConverter+Inflection.swift 側にあり、
 // 本ファイルは宣言的データの置き場に徹する。
+//
+// 識別子に出てくる文法の用語(3844 でローマ字の名前を英語に替えた。左が識別子の中の語、右が日本語)
+//   consonantStem = 五段(子音語幹の動詞。書く・読む)      vowelStem = 一段(母音語幹の動詞。見る・食べる)
+//   suruVerb = サ変(する・勉強する)                        continuative = 連用形(書き・食べ)
+//   irrealis = 未然形(書か・食べ)                          terminal = 終止形        attributive = 連体形
+//   euphonic = 音便(書いて の い、読んで の ん)           geminate = 促音(っ)
+//   sequentialVoicing = 連濁(やま+かわ→やまがわ)         nativeWord = 和語(ひとつ・ふたつ の数え方など)
+//   inflectionalKana = 送り仮名                            kanjiRewrite = 同音の漢字による書きかえ
+//   kanaSpelling = かなで書く言葉(かな書き)               mixedScript = 交ぜ書き(改ざん・漏えい)
+// 保存されている値(設定のキー kakikaePreference、kanaGakiSuppress…、辞書の活用クラス godan-ku、ichidan など)は
+// 文字列のまま変えていない(変えると既存の端末の設定や辞書が読めなくなる)
 extension KanaKanjiConverter {
     enum InflectionClass {
         static let adjectiveI = "adjective-i"
-        static let ichidan = "ichidan"
-        static let godanU = "godan-u"
-        static let godanKu = "godan-ku"
-        static let godanGu = "godan-gu"
-        static let godanSu = "godan-su"
-        static let godanTsu = "godan-tsu"
-        static let godanNu = "godan-nu"
-        static let godanBu = "godan-bu"
-        static let godanMu = "godan-mu"
-        static let godanRu = "godan-ru"
+        static let vowelStem = "ichidan"
+        static let consonantStemU = "godan-u"
+        static let consonantStemKu = "godan-ku"
+        static let consonantStemGu = "godan-gu"
+        static let consonantStemSu = "godan-su"
+        static let consonantStemTsu = "godan-tsu"
+        static let consonantStemNu = "godan-nu"
+        static let consonantStemBu = "godan-bu"
+        static let consonantStemMu = "godan-mu"
+        static let consonantStemRu = "godan-ru"
         static let suru = "suru"
         static let kuru = "kuru"
     }
@@ -30,16 +41,16 @@ extension KanaKanjiConverter {
         let rawValue: UInt16
 
         static let adjectiveI = InflectionClassSet(rawValue: 1 << 0)
-        static let ichidan = InflectionClassSet(rawValue: 1 << 1)
-        static let godanU = InflectionClassSet(rawValue: 1 << 2)
-        static let godanKu = InflectionClassSet(rawValue: 1 << 3)
-        static let godanGu = InflectionClassSet(rawValue: 1 << 4)
-        static let godanSu = InflectionClassSet(rawValue: 1 << 5)
-        static let godanTsu = InflectionClassSet(rawValue: 1 << 6)
-        static let godanNu = InflectionClassSet(rawValue: 1 << 7)
-        static let godanBu = InflectionClassSet(rawValue: 1 << 8)
-        static let godanMu = InflectionClassSet(rawValue: 1 << 9)
-        static let godanRu = InflectionClassSet(rawValue: 1 << 10)
+        static let vowelStem = InflectionClassSet(rawValue: 1 << 1)
+        static let consonantStemU = InflectionClassSet(rawValue: 1 << 2)
+        static let consonantStemKu = InflectionClassSet(rawValue: 1 << 3)
+        static let consonantStemGu = InflectionClassSet(rawValue: 1 << 4)
+        static let consonantStemSu = InflectionClassSet(rawValue: 1 << 5)
+        static let consonantStemTsu = InflectionClassSet(rawValue: 1 << 6)
+        static let consonantStemNu = InflectionClassSet(rawValue: 1 << 7)
+        static let consonantStemBu = InflectionClassSet(rawValue: 1 << 8)
+        static let consonantStemMu = InflectionClassSet(rawValue: 1 << 9)
+        static let consonantStemRu = InflectionClassSet(rawValue: 1 << 10)
         static let suru = InflectionClassSet(rawValue: 1 << 11)
         static let kuru = InflectionClassSet(rawValue: 1 << 12)
 
@@ -51,16 +62,16 @@ extension KanaKanjiConverter {
         init?(className: String) {
             switch className {
             case InflectionClass.adjectiveI: self = .adjectiveI
-            case InflectionClass.ichidan: self = .ichidan
-            case InflectionClass.godanU: self = .godanU
-            case InflectionClass.godanKu: self = .godanKu
-            case InflectionClass.godanGu: self = .godanGu
-            case InflectionClass.godanSu: self = .godanSu
-            case InflectionClass.godanTsu: self = .godanTsu
-            case InflectionClass.godanNu: self = .godanNu
-            case InflectionClass.godanBu: self = .godanBu
-            case InflectionClass.godanMu: self = .godanMu
-            case InflectionClass.godanRu: self = .godanRu
+            case InflectionClass.vowelStem: self = .vowelStem
+            case InflectionClass.consonantStemU: self = .consonantStemU
+            case InflectionClass.consonantStemKu: self = .consonantStemKu
+            case InflectionClass.consonantStemGu: self = .consonantStemGu
+            case InflectionClass.consonantStemSu: self = .consonantStemSu
+            case InflectionClass.consonantStemTsu: self = .consonantStemTsu
+            case InflectionClass.consonantStemNu: self = .consonantStemNu
+            case InflectionClass.consonantStemBu: self = .consonantStemBu
+            case InflectionClass.consonantStemMu: self = .consonantStemMu
+            case InflectionClass.consonantStemRu: self = .consonantStemRu
             case InflectionClass.suru: self = .suru
             case InflectionClass.kuru: self = .kuru
             default: return nil
@@ -81,13 +92,13 @@ extension KanaKanjiConverter {
 
     // sqlite の inflection_classes は (読み, 表層) につき1クラスしか持てず、同表記に
     // 一段と五段が同居する語で片方が失われる(いる: かな表記が 要る/入る 系の五段に
-    // 巻き添えで godan-ru のみ登録され、居る系一段の います/いた/いて が導出できない)。
+    // 巻き添えで consonantStem-ru のみ登録され、居る系一段の います/いた/いて が導出できない)。
     // 辞書再ビルドで複数クラス化するまでのコード側補完(既存クラスに追加。置換しない)。
     // かかれる: 書かれる/描かれる は seed 供給のみで inflection_classes に無く、かかれる 基底からの
     // 一段派生(かかれている/かかれた 等)が 係れている 族だけになっていた(2784)
     static let supplementaryInflectionClassesByReading: [String: [String: Set<String>]] = [
-        "いる": ["いる": [InflectionClass.ichidan]],
-        "かかれる": ["書かれる": [InflectionClass.ichidan], "描かれる": [InflectionClass.ichidan]]
+        "いる": ["いる": [InflectionClass.vowelStem]],
+        "かかれる": ["書かれる": [InflectionClass.vowelStem], "描かれる": [InflectionClass.vowelStem]]
     ]
 
     struct InflectionRule {
@@ -133,7 +144,7 @@ extension KanaKanjiConverter {
         }
     }
 
-    struct GodanPattern {
+    struct ConsonantStemPattern {
         let dictionaryEnding: String
         let inflectionClass: String
         // 動的生成ルール用のビット版(InflectionClassSet(className:) は13種を必ず解決する)
@@ -242,21 +253,21 @@ extension KanaKanjiConverter {
     // 溜め に、買い占めよね が 買いしめよね に退行)ため、報告のあった語だけ有効にする。
     // 空の readingSuffix = 読み全体が語幹(derivedCandidates 側で分岐)
     // のせる: のせわすれた が の+世話+擦れた になっていた。連用形 乗せ/載せ を供給し、複合動詞の
-    // 前部要素ボーナス(multiClauseCompoundVerbRenyouStemReadings)と対で 載せ忘れた を組む(2784)
+    // 前部要素ボーナス(multiClauseCompoundVerbContinuativeStemReadings)と対で 載せ忘れた を組む(2784)
     // まぜる: まぜぐあい が 馬瀬具合/間瀬具合(姓)にしかならず 混ぜ具合 が組めなかった(ユーザ報告 2834)
-    static let ichidanRenyouNounBaseReadings: Set<String> = ["たべる", "のせる", "まぜる"]
+    static let vowelStemContinuativeNounBaseReadings: Set<String> = ["たべる", "のせる", "まぜる"]
     // opt-in に加えて、語幹読み(2 かな以上、末尾がい段/え段)に辞書語が実質無い(1 つも無いか、全部が収穫底値
     // wc≥10000 のレア姓・地名)ときは一段の連用形を供給する(3215→3251)。ひろげ が候補なし(ひろげて は 広げて が出る)、
     // ゆでじかん が 湯で時間(ゆで は 湯出/油出 の収穫底値だけ)だった(ユーザ報告)。中止法(広げ、〜)と
     // 語幹+名詞の複合(茹で時間/預け先/奏で手)は普通の書き方。辞書語のある語幹(ため/しめ/はじめ/みせ/あげ)は
     // 既存の並びを崩すので従来どおり opt-in のみ。2 かなで該当するのは どけ/ゆで/めで/うせ 等の十数語幹
-    static let ichidanStemTailCharacters: Set<Character> = [
+    static let vowelStemStemTailCharacters: Set<Character> = [
         "い", "き", "し", "ち", "に", "ひ", "み", "り", "ぎ", "じ", "び", "ぴ",
         "え", "け", "せ", "て", "ね", "へ", "め", "れ", "げ", "ぜ", "で", "べ", "ぺ"
     ]
-    static func ichidanRenyouSuppliedForEmptyStem(_ reading: String, wordCostsAreNegligible: () -> Bool) -> Bool {
+    static func vowelStemContinuativeSuppliedForEmptyStem(_ reading: String, wordCostsAreNegligible: () -> Bool) -> Bool {
         reading.count >= 2
-            && reading.last.map { ichidanStemTailCharacters.contains($0) } == true
+            && reading.last.map { vowelStemStemTailCharacters.contains($0) } == true
             && wordCostsAreNegligible()
     }
 
@@ -267,41 +278,41 @@ extension KanaKanjiConverter {
 
     // 一段命令形(ろ/よ)を供給しない基底読み。居ろ が 色 を、射ろ が 意呂 を跨ぐ等、
     // 命令形として使う頻度より同音語の実害が大きいもの(2026-08-27)
-    static let ichidanImperativeDeniedBaseReadings: Set<String> = ["いる", "える", "うる", "おる"]
+    static let vowelStemImperativeDeniedBaseReadings: Set<String> = ["いる", "える", "うる", "おる"]
     // 命令形+引用 って を組む一段動詞の word_cost 上限(3771。定義箇所のコメント参照)
-    static let ichidanImperativeQuoteMaxBaseWordCost = 9500
+    static let vowelStemImperativeQuoteMaxBaseWordCost = 9500
     // 意志を持てない動詞(原因・根拠を表す よる 族、要る)。意志形(因ろう/要ろう)は文法上は組めても意味的にありえないので、
     // 活用派生で作らない(ユーザ指摘 3255)。選る/寄る/撚る/縒る 等の意志動詞は対象外。
     // 関す(〜に関する)も行為ではないので意志形を持たない(関そう。ユーザ指摘 3812)。
     // 靄る(霧がかかる様子)も同じ(こうしもやりましょう が こうし靄りましょう。〜ましょう も作らない。3823、ユーザ報告)
     static let nonVolitionalVerbSurfaces: Set<String> = ["因る", "由る", "縁る", "依る", "拠る", "據る", "要る", "関す", "關す", "靄る", "もやる"]
     // 意志形の活用尾(五段 o段+う、一段 よう)。readingSuffix がこれで始まる規則(ろう/ろうか/ろうと…)が意志形
-    static let volitionalReadingSuffixHeads: [String] = godanPatterns.map { $0.oForm + "う" } + ["よう"]
+    static let volitionalReadingSuffixHeads: [String] = consonantStemPatterns.map { $0.oForm + "う" } + ["よう"]
 
-    private static func makeIchidanRenyouNounRules() -> [InflectionRule] { [
-        InflectionRule(readingSuffix: "", baseReadingSuffix: "る", allowedClasses: .ichidan)
+    private static func makeVowelStemContinuativeNounRules() -> [InflectionRule] { [
+        InflectionRule(readingSuffix: "", baseReadingSuffix: "る", allowedClasses: .vowelStem)
     ] }
 
     // 一段の受身+te-aspect(間違えられている/間違えられてた/間違えられていた 等。3593)。五段は passiveTeForm の te-aspect を
     // 持つが、一段は られ の単体規則しか無く、まちがえられてた が 街が選られてた(五段 選る の受身)に負けていた
-    private static func makeIchidanInflectionRules() -> [InflectionRule] {
-        let base = makeIchidanBaseInflectionRules()
+    private static func makeVowelStemInflectionRules() -> [InflectionRule] {
+        let base = makeVowelStemBaseInflectionRules()
         let existing = Set(base.map { $0.readingSuffix })
         let passiveAspect = KanaKanjiConverter.teAspectInflectionSuffixes(for: "られて")
             .filter { !existing.contains($0) }
-            .map { InflectionRule(readingSuffix: $0, baseReadingSuffix: "る", allowedClasses: .ichidan) }
+            .map { InflectionRule(readingSuffix: $0, baseReadingSuffix: "る", allowedClasses: .vowelStem) }
         return base + passiveAspect
     }
 
     // サ変の受身+te-aspect(発明されてて/されてたら/されてれば 等。3778、ユーザ報告: はつめいされてて→発明されて手)。
     // されて/されてる/されてた は個別にあったが、されていて の縮約 されてて 等が無かった。一段の受身(上)と同じく
     // されて の te-aspect 一式を足す(既にある読みは足さない)
-    private static func addingSuruPassiveTeAspect(_ base: [InflectionRule], sahenNoun: Bool) -> [InflectionRule] {
+    private static func addingSuruPassiveTeAspect(_ base: [InflectionRule], suruVerbNoun: Bool) -> [InflectionRule] {
         let existing = Set(base.map { $0.readingSuffix })
         let added = KanaKanjiConverter.teAspectInflectionSuffixes(for: "されて")
             .filter { !existing.contains($0) }
             .map { suffix in
-                sahenNoun
+                suruVerbNoun
                     ? InflectionRule(readingSuffix: suffix, baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru)
                     : InflectionRule(readingSuffix: suffix, baseReadingSuffix: "する", allowedClasses: .suru)
             }
@@ -311,403 +322,403 @@ extension KanaKanjiConverter {
     // サ変名詞+しかける(断線しかけてる/忘却しかけた。もう少しでそうなる の かける。3778、ユーザ報告:
     // だんせんしかけてる→断線仕掛けてる)。し+かけ の かな正書を 1 ノードで作り、辞書語 仕掛ける に勝たせる。
     // 動詞 する 自体(しかける)には付けない(仕掛ける と同形になる)
-    private static func sahenNounKakeruAspectRules() -> [InflectionRule] {
+    private static func suruVerbNounKakeruAspectRules() -> [InflectionRule] {
         (["しかける", "しかけた", "しかけます", "しかけました", "しかけない", "しかけなかった"]
             + KanaKanjiConverter.teAspectInflectionSuffixes(for: "しかけて"))
             .map { InflectionRule(readingSuffix: $0, baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru) }
     }
 
-    private static func makeIchidanBaseInflectionRules() -> [InflectionRule] { [
-        InflectionRule(readingSuffix: "ない", baseReadingSuffix: "る", allowedClasses: .ichidan),
+    private static func makeVowelStemBaseInflectionRules() -> [InflectionRule] { [
+        InflectionRule(readingSuffix: "ない", baseReadingSuffix: "る", allowedClasses: .vowelStem),
         // 否定の様態(いなさそう/食べなさそう。ない→なさそう)。無くて つかうひといなさそう が 使う人衣なさそう に割れていた(3238)
-        InflectionRule(readingSuffix: "なさそう", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "なさそうだ", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "なさそうです", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "なさそうな", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "なく", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ず", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "なかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "なさそう", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "なさそうだ", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "なさそうです", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "なさそうな", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "なく", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ず", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "なかった", baseReadingSuffix: "る", allowedClasses: .vowelStem),
         // 否定の並列(食べなかったり/食べなかったりする)。連文節の1ノード上限(12字)を超える
         // 食べたり食べなかったりする は 食べたり+食べなかったりする の2ノードで組む必要があり、
         // 後半が派生に無いと しなかった+利する に負ける(2757)
-        InflectionRule(readingSuffix: "なかったり", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "なかったりする", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "なかったりした", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "なかったりして", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "なかったりします", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "なかったら", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "なかったり", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "なかったりする", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "なかったりした", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "なかったりして", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "なかったりします", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "なかったら", baseReadingSuffix: "る", allowedClasses: .vowelStem),
         // 否定テ形(食べなくて/食べなくても)。願望否定テ(たくなくて)だけあって素の形が
         // 無かった(いかなくて→いか+なくて/凧なくて 等の断片合成に全長を取られる)
-        InflectionRule(readingSuffix: "なくて", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "なくても", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "なくて", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "なくても", baseReadingSuffix: "る", allowedClasses: .vowelStem),
         // 否定仮定形(食べなければ/食べなければならない)。口語縮約(なきゃ/なくちゃ)だけあって
         // 標準形が欠けており、ねなければ→ね無ければ、たべなければ→候補なし になっていた
         // (ユーザ報告 2026-08-27)
-        InflectionRule(readingSuffix: "なければ", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "なければならない", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "なければいけない", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "なけれ", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "なければ", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "なければならない", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "なければいけない", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "なけれ", baseReadingSuffix: "る", allowedClasses: .vowelStem),
         // 命令形+引用「って」(食べろって 等の口語)
         // 一段の命令形(食べろ/見ろ/起きろ)。命令+引用の ろって はあるのに素の ろ が無く、
         // たべろ は候補ゼロ、みろ→ミロ、おきろ→お帰路 になっていた(2026-08-27)。
         // ただし いる は除外(こんないろかなー→こんな居ろかなー と 色 を跨ぐ。
-        // ichidanImperativeDeniedBaseReadings)
-        InflectionRule(readingSuffix: "ろ", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "よ", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ろって", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        // vowelStemImperativeDeniedBaseReadings)
+        InflectionRule(readingSuffix: "ろ", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "よ", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ろって", baseReadingSuffix: "る", allowedClasses: .vowelStem),
         // 「〜なくなる」(状態変化の否定): 食べなくなった/食べなくなったら 等
-        InflectionRule(readingSuffix: "なくなる", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "なくなった", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "なくなったら", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "なくなって", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "なくなります", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "なくなりました", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "なくなりません", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "なくなりませんでした", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "なくなれば", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "なくなり", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "なくなる", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "なくなった", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "なくなったら", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "なくなって", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "なくなります", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "なくなりました", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "なくなりません", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "なくなりませんでした", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "なくなれば", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "なくなり", baseReadingSuffix: "る", allowedClasses: .vowelStem),
         // 関西弁・口語の否定縮約形(食べない→食べん, 食べなかった→食べんかった 等)
-        InflectionRule(readingSuffix: "ん", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "んかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "んかったら", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "んで", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "ん", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "んかった", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "んかったら", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "んで", baseReadingSuffix: "る", allowedClasses: .vowelStem),
         // 関西の打ち消し 〜へん/〜ひん(食べへん/見ひん/できへん。3726)
-        InflectionRule(readingSuffix: "へん", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "へんかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ひん", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ひんかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "へん", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "へんかった", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ひん", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ひんかった", baseReadingSuffix: "る", allowedClasses: .vowelStem),
         // 語幹 1 かなは伸ばして言う(見いひん/寝えへん/出えへん。3727)。語幹 1 かなだけ(Inflection 側のゲート)
-        InflectionRule(readingSuffix: "いひん", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "いひんかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "えへん", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "えへんかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "いひん", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "いひんかった", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "えへん", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "えへんかった", baseReadingSuffix: "る", allowedClasses: .vowelStem),
         // 「〜なくては/〜なければ」の口語縮約(食べなくちゃ, 食べなきゃ 等)
-        InflectionRule(readingSuffix: "なくちゃ", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "なきゃ", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "なくちゃいけない", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "なきゃいけない", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "なくちゃならない", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "なきゃならない", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "なくちゃ", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "なきゃ", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "なくちゃいけない", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "なきゃいけない", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "なくちゃならない", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "なきゃならない", baseReadingSuffix: "る", allowedClasses: .vowelStem),
         // 関西方言の「〜ている→〜とる」縮約(食べとる, 食べとった 等)
-        InflectionRule(readingSuffix: "とる", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "とった", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "とって", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "とったら", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "とらない", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "とらん", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "とらなかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "とらんかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "とります", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "とりました", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "とりません", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "とれば", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "とる", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "とった", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "とって", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "とったら", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "とらない", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "とらん", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "とらなかった", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "とらんかった", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "とります", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "とりました", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "とりません", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "とれば", baseReadingSuffix: "る", allowedClasses: .vowelStem),
         // 関西方言の「〜てしまった→〜てもうた」縮約(食べてもうた 等)
-        InflectionRule(readingSuffix: "てもう", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てもうた", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てもうて", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "てもう", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てもうた", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てもうて", baseReadingSuffix: "る", allowedClasses: .vowelStem),
         // 同時進行の ながら(見ながら/食べながら)。連用形+ながら(2518)
-        InflectionRule(readingSuffix: "ながら", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ます", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ました", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ません", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ましょう", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "ながら", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ます", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ました", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ません", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ましょう", baseReadingSuffix: "る", allowedClasses: .vowelStem),
         // ぞんざいな ましょ(ましょう の口語): つなぎましょ が 繋+ましょ(名詞+素通り)に割れていた(2735)
-        InflectionRule(readingSuffix: "ましょ", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "なさい", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "なさいませ", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "たい", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "たく", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "たくて", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "たくない", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "たくなくて", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "たくなかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "たくありません", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "たかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "たければ", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "ましょ", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "なさい", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "なさいませ", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "たい", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "たく", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "たくて", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "たくない", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "たくなくて", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "たくなかった", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "たくありません", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "たかった", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "たければ", baseReadingSuffix: "る", allowedClasses: .vowelStem),
         // 願望+変化(食べたくなって 等。2647)
-        InflectionRule(readingSuffix: "たくなる", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "たくなった", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "たくなって", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "そう", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "たくなる", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "たくなった", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "たくなって", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "そう", baseReadingSuffix: "る", allowedClasses: .vowelStem),
         // 連用形+たて(〜したばかり: 取れたて/生まれたて/出来たて/揚げたて)。辞書に無い動詞でも組めるよう
         // 一般則で供給する(ほりたて→掘りたて。ユーザ報告 3247)
-        InflectionRule(readingSuffix: "たて", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "そうだ", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "そうな", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "そうに", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "そうで", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "そうもない", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "そうにない", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "たて", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "そうだ", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "そうな", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "そうに", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "そうで", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "そうもない", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "そうにない", baseReadingSuffix: "る", allowedClasses: .vowelStem),
         // 様態そう の長音カジュアル表記(たべそー 等)。
-        InflectionRule(readingSuffix: "そー", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "そーだ", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "そーな", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "そーに", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "そーで", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "にくい", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "にくく", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "にくくない", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "にくかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "そー", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "そーだ", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "そーな", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "そーに", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "そーで", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "にくい", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "にくく", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "にくくない", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "にくかった", baseReadingSuffix: "る", allowedClasses: .vowelStem),
         // 補助形容詞の 様態そう(やりにくそう/食べにくそう)。にくい/にくく/にくかった は在るのに
         // にくそう だけ無く、1ノードで供給されないため連文節が 槍+にくそう に割れていた
         // (やりにくそう→槍にくそう。ユーザ報告 2870)
-        InflectionRule(readingSuffix: "にくそう", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "にくそう", baseReadingSuffix: "る", allowedClasses: .vowelStem),
         // 補助形容詞の さ名詞化(食べやすさ/見えにくさ)。やすい は在るのに やすさ が無く
         // うちやすさ→内安さ になっていた(ユーザー報告 2614)
-        InflectionRule(readingSuffix: "にくさ", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "すぎ", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "すぎる", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "すぎない", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "すぎなかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "すぎて", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "すぎた", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "にくさ", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "すぎ", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "すぎる", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "すぎない", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "すぎなかった", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "すぎて", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "すぎた", baseReadingSuffix: "る", allowedClasses: .vowelStem),
         // 連用形+始める(補助動詞)。きはじめる で 着始める(着る)が出ず、カ変ペアの 来始める
         // だけになっていた(ユーザ指定 2658)。他の一段(食べ始める 等)も1ノードで供給される
-        InflectionRule(readingSuffix: "はじめる", baseReadingSuffix: "る", outputCandidateSuffix: "始める", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "はじめた", baseReadingSuffix: "る", outputCandidateSuffix: "始めた", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "はじめて", baseReadingSuffix: "る", outputCandidateSuffix: "始めて", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "はじめない", baseReadingSuffix: "る", outputCandidateSuffix: "始めない", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "はじめなかった", baseReadingSuffix: "る", outputCandidateSuffix: "始めなかった", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "はじめます", baseReadingSuffix: "る", outputCandidateSuffix: "始めます", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "はじめました", baseReadingSuffix: "る", outputCandidateSuffix: "始めました", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "はじめません", baseReadingSuffix: "る", outputCandidateSuffix: "始めません", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "はじめたら", baseReadingSuffix: "る", outputCandidateSuffix: "始めたら", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "はじめれば", baseReadingSuffix: "る", outputCandidateSuffix: "始めれば", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "はじめると", baseReadingSuffix: "る", outputCandidateSuffix: "始めると", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "はじめてる", baseReadingSuffix: "る", outputCandidateSuffix: "始めてる", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "はじめている", baseReadingSuffix: "る", outputCandidateSuffix: "始めている", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "はじめてから", baseReadingSuffix: "る", outputCandidateSuffix: "始めてから", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "すぎます", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "すぎました", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "すぎません", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "すぎれば", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "て", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てある", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てくる", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てきた", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てきて", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てこない", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てこなかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てきます", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てきました", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てきません", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てきちゃう", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てきちゃった", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てきちゃって", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てる", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ている", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てて", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ていて", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "はじめる", baseReadingSuffix: "る", outputCandidateSuffix: "始める", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "はじめた", baseReadingSuffix: "る", outputCandidateSuffix: "始めた", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "はじめて", baseReadingSuffix: "る", outputCandidateSuffix: "始めて", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "はじめない", baseReadingSuffix: "る", outputCandidateSuffix: "始めない", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "はじめなかった", baseReadingSuffix: "る", outputCandidateSuffix: "始めなかった", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "はじめます", baseReadingSuffix: "る", outputCandidateSuffix: "始めます", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "はじめました", baseReadingSuffix: "る", outputCandidateSuffix: "始めました", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "はじめません", baseReadingSuffix: "る", outputCandidateSuffix: "始めません", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "はじめたら", baseReadingSuffix: "る", outputCandidateSuffix: "始めたら", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "はじめれば", baseReadingSuffix: "る", outputCandidateSuffix: "始めれば", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "はじめると", baseReadingSuffix: "る", outputCandidateSuffix: "始めると", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "はじめてる", baseReadingSuffix: "る", outputCandidateSuffix: "始めてる", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "はじめている", baseReadingSuffix: "る", outputCandidateSuffix: "始めている", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "はじめてから", baseReadingSuffix: "る", outputCandidateSuffix: "始めてから", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "すぎます", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "すぎました", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "すぎません", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "すぎれば", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "て", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てある", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てくる", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てきた", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てきて", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てこない", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てこなかった", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てきます", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てきました", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てきません", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てきちゃう", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てきちゃった", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てきちゃって", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てる", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ている", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てて", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ていて", baseReadingSuffix: "る", allowedClasses: .vowelStem),
         // 仮定の縮約 〜てれば(着てれば=着ていれば)。五段は teForm+れば で既存、
         // 一段とカ変が欠けていた(きてれば→木てれば。ユーザ報告 2649)
-        InflectionRule(readingSuffix: "てれば", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ていれば", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てた", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ていた", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "てれば", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ていれば", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てた", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ていた", baseReadingSuffix: "る", allowedClasses: .vowelStem),
         // 〜てた/〜ていた の派生「〜てたり/〜ていたり」(食べてたり, 食べていたりする 等)
-        InflectionRule(readingSuffix: "てたり", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てたりする", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てたりしない", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てたりしなかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てたりします", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てたりしました", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てたりしません", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ていたり", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ていたりする", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ていたりしない", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ていたりしなかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ていたりします", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ていたりしました", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ていたりしません", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てない", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ていない", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てなかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ていなかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てます", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ています", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てました", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ていました", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てません", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ていません", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ておく", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ておいた", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ておいて", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ておかない", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ておかなかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ておきます", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ておきました", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ておきません", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "とく", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "といた", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "といて", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "とけば", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "とけ", baseReadingSuffix: "る", allowedClasses: .ichidan),   // 命令形 やめとけ(3638、ユーザ報告)
-        InflectionRule(readingSuffix: "とかない", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "とかなかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ときます", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ときました", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ときません", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てみる", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てみた", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てみて", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てみない", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てみなかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てみます", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てみました", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てみません", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てみたい", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てみたく", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てみたくて", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てみたくない", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てみたくなくて", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てみたくなかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てみたくありません", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てみたかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てみたければ", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てしまう", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てしまわない", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てしまわなかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てしまいます", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てしまいました", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てしまい", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てしまいません", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てしまった", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "てしまって", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ちゃう", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ちゃわない", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ちゃわなかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ちゃいます", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ちゃいました", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ちゃいません", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ちゃった", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ちゃって", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ちゃおう", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ちゃ", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "かた", baseReadingSuffix: "る", outputCandidateSuffix: "方", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "た", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "たら", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "たり", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "たりする", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "たりしない", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "たりしなかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "てたり", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てたりする", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てたりしない", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てたりしなかった", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てたりします", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てたりしました", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てたりしません", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ていたり", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ていたりする", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ていたりしない", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ていたりしなかった", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ていたりします", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ていたりしました", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ていたりしません", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てない", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ていない", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てなかった", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ていなかった", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てます", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ています", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てました", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ていました", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てません", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ていません", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ておく", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ておいた", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ておいて", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ておかない", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ておかなかった", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ておきます", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ておきました", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ておきません", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "とく", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "といた", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "といて", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "とけば", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "とけ", baseReadingSuffix: "る", allowedClasses: .vowelStem),   // 命令形 やめとけ(3638、ユーザ報告)
+        InflectionRule(readingSuffix: "とかない", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "とかなかった", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ときます", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ときました", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ときません", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てみる", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てみた", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てみて", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てみない", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てみなかった", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てみます", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てみました", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てみません", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てみたい", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てみたく", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てみたくて", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てみたくない", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てみたくなくて", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てみたくなかった", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てみたくありません", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てみたかった", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てみたければ", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てしまう", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てしまわない", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てしまわなかった", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てしまいます", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てしまいました", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てしまい", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てしまいません", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てしまった", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "てしまって", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ちゃう", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ちゃわない", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ちゃわなかった", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ちゃいます", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ちゃいました", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ちゃいません", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ちゃった", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ちゃって", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ちゃおう", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ちゃ", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "かた", baseReadingSuffix: "る", outputCandidateSuffix: "方", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "た", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "たら", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "たり", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "たりする", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "たりしない", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "たりしなかった", baseReadingSuffix: "る", allowedClasses: .vowelStem),
         // 〜たりしなかったりする(食べたり食べなかったりする)。たり+し+なかった+り+する の
         // 断片連鎖は しなかったり が派生に無く、しなかった+利する に負けていた(2757)
-        InflectionRule(readingSuffix: "たりしなかったりする", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "たりしなかったりした", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "たりしなかったりして", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "たりしなかったりします", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "たりします", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "たりしますか", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "たりしました", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "たりしません", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "たりしませんか", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "たりするのですか", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "よう", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "たりしなかったりする", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "たりしなかったりした", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "たりしなかったりして", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "たりしなかったりします", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "たりします", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "たりしますか", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "たりしました", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "たりしません", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "たりしませんか", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "たりするのですか", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "よう", baseReadingSuffix: "る", allowedClasses: .vowelStem),
         // 意志形+口語の引用促音(買ってみよっと/たべようっと)。よっと/ようっと で終わる読みは
         // 語彙が無く候補ゼロになっていた(かってみよっと、2534)。よう と同じ基底(る)から生成する
-        InflectionRule(readingSuffix: "よっと", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "ようっと", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "れば", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "られ", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "られる", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "られない", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "よっと", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "ようっと", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "れば", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "られ", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "られる", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "られない", baseReadingSuffix: "る", allowedClasses: .vowelStem),
         // 受身+ん(口語の否定縮約: 食べられん/見られん)
-        InflectionRule(readingSuffix: "られん", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "られん", baseReadingSuffix: "る", allowedClasses: .vowelStem),
         // 受身・可能の過去/丁寧/仮定(変えられます/食べられた/見られれば)。五段(帰られます)と使役受身(させられます)には
         // あるのに一段だけ無く、あじをかえられます が 変えられ+ます の 2 ノードに割れて 味を帰られます に負けていた(3777、ユーザ報告)。
         // たべられます は候補が空だった
-        InflectionRule(readingSuffix: "られた", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "られて", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "られたら", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "られれば", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "られなかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "られます", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "られました", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "られません", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "られませんでした", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "られた", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "られて", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "られたら", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "られれば", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "られなかった", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "られます", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "られました", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "られません", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "られませんでした", baseReadingSuffix: "る", allowedClasses: .vowelStem),
         // 受身+てくる アスペクト連鎖(見られてくる/食べられてきます 等)。
-        InflectionRule(readingSuffix: "られてくる", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "られてきた", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "られてきて", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "られてきます", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "られてきました", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "られてくる", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "られてきた", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "られてきて", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "られてきます", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "られてきました", baseReadingSuffix: "る", allowedClasses: .vowelStem),
         // 受身+たい 願望連鎖(見られたくない/食べられたかった 等)。プレーン語幹の たい 系
         // (readingSuffix: たくない)はあるが受身を挟む形が未定義で、おくられたくないね→
         // 置く+られたくない(かな断片合成)等に全長を取られる。
-        InflectionRule(readingSuffix: "られたい", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "られたく", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "られたくない", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "られたくなくて", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "られたくなかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "られたかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "られたければ", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "させる", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "させない", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "させなかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "させた", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "させて", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "させてる", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "させている", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "させてた", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "させていた", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "させたら", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "させたり", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "させれば", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "させよう", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "させます", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "させました", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "させません", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "させませんでした", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "させなさい", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "させたい", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "させたく", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "させたくない", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "させたかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "させられる", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "させられない", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "させられなかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "させられた", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "させられて", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "させられたら", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "させられれば", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "させられます", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "させられました", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "させられません", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "やすい", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "やすく", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "やすくない", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "やすかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "やすそう", baseReadingSuffix: "る", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "やすさ", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "られたい", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "られたく", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "られたくない", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "られたくなくて", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "られたくなかった", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "られたかった", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "られたければ", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "させる", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "させない", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "させなかった", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "させた", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "させて", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "させてる", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "させている", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "させてた", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "させていた", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "させたら", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "させたり", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "させれば", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "させよう", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "させます", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "させました", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "させません", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "させませんでした", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "させなさい", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "させたい", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "させたく", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "させたくない", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "させたかった", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "させられる", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "させられない", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "させられなかった", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "させられた", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "させられて", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "させられたら", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "させられれば", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "させられます", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "させられました", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "させられません", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "やすい", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "やすく", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "やすくない", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "やすかった", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "やすそう", baseReadingSuffix: "る", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "やすさ", baseReadingSuffix: "る", allowedClasses: .vowelStem),
         // 「〜やすい」の漢字「易い」候補(食べ易い 等)
-        InflectionRule(readingSuffix: "やすい", baseReadingSuffix: "る", outputCandidateSuffix: "易い", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "やすく", baseReadingSuffix: "る", outputCandidateSuffix: "易く", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "やすくない", baseReadingSuffix: "る", outputCandidateSuffix: "易くない", allowedClasses: .ichidan),
-        InflectionRule(readingSuffix: "やすかった", baseReadingSuffix: "る", outputCandidateSuffix: "易かった", allowedClasses: .ichidan)
+        InflectionRule(readingSuffix: "やすい", baseReadingSuffix: "る", outputCandidateSuffix: "易い", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "やすく", baseReadingSuffix: "る", outputCandidateSuffix: "易く", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "やすくない", baseReadingSuffix: "る", outputCandidateSuffix: "易くない", allowedClasses: .vowelStem),
+        InflectionRule(readingSuffix: "やすかった", baseReadingSuffix: "る", outputCandidateSuffix: "易かった", allowedClasses: .vowelStem)
     ] }
 
     // 五段の裸の連用形ルール(iForm 単独)の識別キー(iForm\t辞書形語尾)。derivedCandidates の語幹長ゲート用
-    static let godanBareRenyouRuleKeys: Set<String> = Set(godanPatterns.map { $0.iForm + "\t" + $0.dictionaryEnding })
-    static let godanBareRenyouMinimumStemLength = 3
+    static let consonantStemBareContinuativeRuleKeys: Set<String> = Set(consonantStemPatterns.map { $0.iForm + "\t" + $0.dictionaryEnding })
+    static let consonantStemBareContinuativeMinimumStemLength = 3
     // 一段の裸の連用形(語幹)ルール。単文節の順位付け用(collectDerivedCandidates 参照。3251)
-    static let ichidanBareRenyouRule = InflectionRule(readingSuffix: "", baseReadingSuffix: "る", allowedClasses: .ichidan)
+    static let vowelStemBareContinuativeRule = InflectionRule(readingSuffix: "", baseReadingSuffix: "る", allowedClasses: .vowelStem)
     // 裸の連用形ルールを iForm の末尾かなで引く(単文節の順位付け用。collectDerivedCandidates 参照)
-    static let godanBareRenyouRuleByTail: [Character: InflectionRule] = Dictionary(
-        uniqueKeysWithValues: godanPatterns.map {
+    static let consonantStemBareContinuativeRuleByTail: [Character: InflectionRule] = Dictionary(
+        uniqueKeysWithValues: consonantStemPatterns.map {
             (Character($0.iForm), InflectionRule(readingSuffix: $0.iForm, baseReadingSuffix: $0.dictionaryEnding, allowedClasses: $0.classBit))
         }
     )
 
-    static let godanPatterns: [GodanPattern] = [
-        GodanPattern(dictionaryEnding: "う", inflectionClass: InflectionClass.godanU, aForm: "わ", iForm: "い", eForm: "え", oForm: "お", teForm: "って", taForm: "った"),
-        GodanPattern(dictionaryEnding: "く", inflectionClass: InflectionClass.godanKu, aForm: "か", iForm: "き", eForm: "け", oForm: "こ", teForm: "いて", taForm: "いた"),
-        GodanPattern(dictionaryEnding: "ぐ", inflectionClass: InflectionClass.godanGu, aForm: "が", iForm: "ぎ", eForm: "げ", oForm: "ご", teForm: "いで", taForm: "いだ"),
-        GodanPattern(dictionaryEnding: "す", inflectionClass: InflectionClass.godanSu, aForm: "さ", iForm: "し", eForm: "せ", oForm: "そ", teForm: "して", taForm: "した"),
-        GodanPattern(dictionaryEnding: "つ", inflectionClass: InflectionClass.godanTsu, aForm: "た", iForm: "ち", eForm: "て", oForm: "と", teForm: "って", taForm: "った"),
-        GodanPattern(dictionaryEnding: "ぬ", inflectionClass: InflectionClass.godanNu, aForm: "な", iForm: "に", eForm: "ね", oForm: "の", teForm: "んで", taForm: "んだ"),
-        GodanPattern(dictionaryEnding: "ぶ", inflectionClass: InflectionClass.godanBu, aForm: "ば", iForm: "び", eForm: "べ", oForm: "ぼ", teForm: "んで", taForm: "んだ"),
-        GodanPattern(dictionaryEnding: "む", inflectionClass: InflectionClass.godanMu, aForm: "ま", iForm: "み", eForm: "め", oForm: "も", teForm: "んで", taForm: "んだ"),
-        GodanPattern(dictionaryEnding: "る", inflectionClass: InflectionClass.godanRu, aForm: "ら", iForm: "り", eForm: "れ", oForm: "ろ", teForm: "って", taForm: "った")
+    static let consonantStemPatterns: [ConsonantStemPattern] = [
+        ConsonantStemPattern(dictionaryEnding: "う", inflectionClass: InflectionClass.consonantStemU, aForm: "わ", iForm: "い", eForm: "え", oForm: "お", teForm: "って", taForm: "った"),
+        ConsonantStemPattern(dictionaryEnding: "く", inflectionClass: InflectionClass.consonantStemKu, aForm: "か", iForm: "き", eForm: "け", oForm: "こ", teForm: "いて", taForm: "いた"),
+        ConsonantStemPattern(dictionaryEnding: "ぐ", inflectionClass: InflectionClass.consonantStemGu, aForm: "が", iForm: "ぎ", eForm: "げ", oForm: "ご", teForm: "いで", taForm: "いだ"),
+        ConsonantStemPattern(dictionaryEnding: "す", inflectionClass: InflectionClass.consonantStemSu, aForm: "さ", iForm: "し", eForm: "せ", oForm: "そ", teForm: "して", taForm: "した"),
+        ConsonantStemPattern(dictionaryEnding: "つ", inflectionClass: InflectionClass.consonantStemTsu, aForm: "た", iForm: "ち", eForm: "て", oForm: "と", teForm: "って", taForm: "った"),
+        ConsonantStemPattern(dictionaryEnding: "ぬ", inflectionClass: InflectionClass.consonantStemNu, aForm: "な", iForm: "に", eForm: "ね", oForm: "の", teForm: "んで", taForm: "んだ"),
+        ConsonantStemPattern(dictionaryEnding: "ぶ", inflectionClass: InflectionClass.consonantStemBu, aForm: "ば", iForm: "び", eForm: "べ", oForm: "ぼ", teForm: "んで", taForm: "んだ"),
+        ConsonantStemPattern(dictionaryEnding: "む", inflectionClass: InflectionClass.consonantStemMu, aForm: "ま", iForm: "み", eForm: "め", oForm: "も", teForm: "んで", taForm: "んだ"),
+        ConsonantStemPattern(dictionaryEnding: "る", inflectionClass: InflectionClass.consonantStemRu, aForm: "ら", iForm: "り", eForm: "れ", oForm: "ろ", teForm: "って", taForm: "った")
     ]
 
     static func teShimauInflectionSuffixes(for teForm: String) -> [String] {
@@ -809,7 +820,7 @@ extension KanaKanjiConverter {
         return suffixes
     }
 
-    static func godanCausativeInflectionSuffixes(for aForm: String) -> [String] {
+    static func consonantStemCausativeInflectionSuffixes(for aForm: String) -> [String] {
         // 五段の使役・使役受身。「〜せる」「〜させられる」は一段動詞として活用する。
         // 例: 書く → 書かせる/書かせた/書かせて/書かせられた 等
         guard !aForm.isEmpty else {
@@ -1005,24 +1016,24 @@ extension KanaKanjiConverter {
         ]
     }
 
-    static func makuInflectionSuffixes(for renyouForm: String) -> [String] {
-        guard !renyouForm.isEmpty else {
+    static func makuInflectionSuffixes(for continuativeForm: String) -> [String] {
+        guard !continuativeForm.isEmpty else {
             return []
         }
 
         return [
-            renyouForm + "まくる",
-            renyouForm + "まくらない",
-            renyouForm + "まくらなかった",
-            renyouForm + "まくり",
-            renyouForm + "まくります",
-            renyouForm + "まくりました",
-            renyouForm + "まくりません",
-            renyouForm + "まくれ",
-            renyouForm + "まくれば",
-            renyouForm + "まくろう",
-            renyouForm + "まくった",
-            renyouForm + "まくって"
+            continuativeForm + "まくる",
+            continuativeForm + "まくらない",
+            continuativeForm + "まくらなかった",
+            continuativeForm + "まくり",
+            continuativeForm + "まくります",
+            continuativeForm + "まくりました",
+            continuativeForm + "まくりません",
+            continuativeForm + "まくれ",
+            continuativeForm + "まくれば",
+            continuativeForm + "まくろう",
+            continuativeForm + "まくった",
+            continuativeForm + "まくって"
         ]
     }
 
@@ -1112,10 +1123,10 @@ extension KanaKanjiConverter {
         return suffixes
     }
 
-    private static func makeGodanInflectionRules() -> [InflectionRule] {
+    private static func makeConsonantStemInflectionRules() -> [InflectionRule] {
         var rules: [InflectionRule] = []
 
-        for pattern in godanPatterns {
+        for pattern in consonantStemPatterns {
             let passiveTeForm = pattern.aForm + "れて"
 
             var suffixes = [
@@ -1274,7 +1285,7 @@ extension KanaKanjiConverter {
             // 「〜んで」(否定の連用: 選らんで=選らないで)は関西でも「ん」以外の形では稀で、
             // 稀な動詞(選る/彫る=える)と組んで 選らんで/彫らんで を えらんで の候補に混ぜていた
             // (ユーザ報告 2721)ため供給しない。ん/んかった/んかったら は残す
-            if pattern.inflectionClass != InflectionClass.godanSu {
+            if pattern.inflectionClass != InflectionClass.consonantStemSu {
                 suffixes.append(contentsOf: [
                     pattern.aForm + "ん",
                     pattern.aForm + "んかった",
@@ -1292,7 +1303,7 @@ extension KanaKanjiConverter {
             // つまらない→つまんない、やらない→やんない)。無いと かわんない が 買わん+ない の
             // 2 ノードにしか組めず 保母買わんない/ほぼ買わんない になる(ユーザ報告 2887)。
             // ら行だけの縮約なので pattern.aForm(ら)を ん に置き換えた形を足す
-            if pattern.inflectionClass == InflectionClass.godanRu {
+            if pattern.inflectionClass == InflectionClass.consonantStemRu {
                 suffixes.append(contentsOf: [
                     "んない",
                     "んなかった",
@@ -1308,7 +1319,7 @@ extension KanaKanjiConverter {
             suffixes.append(contentsOf: KanaKanjiConverter.makuInflectionSuffixes(for: pattern.iForm))
             suffixes.append(contentsOf: KanaKanjiConverter.teAspectInflectionSuffixes(for: pattern.teForm))
             suffixes.append(contentsOf: KanaKanjiConverter.teAspectInflectionSuffixes(for: passiveTeForm))
-            suffixes.append(contentsOf: KanaKanjiConverter.godanCausativeInflectionSuffixes(for: pattern.aForm))
+            suffixes.append(contentsOf: KanaKanjiConverter.consonantStemCausativeInflectionSuffixes(for: pattern.aForm))
             // 使役/使役受身の te-aspect 派生(書かせている, 書かせていた, 書かせられている 等)
             suffixes.append(contentsOf: KanaKanjiConverter.teAspectInflectionSuffixes(for: pattern.aForm + "せて"))
             suffixes.append(contentsOf: KanaKanjiConverter.teAspectInflectionSuffixes(for: pattern.aForm + "せられて"))
@@ -1608,7 +1619,7 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "したりする", baseReadingSuffix: "する", allowedClasses: .suru),
         InflectionRule(readingSuffix: "したりしない", baseReadingSuffix: "する", allowedClasses: .suru),
         InflectionRule(readingSuffix: "したりしなかった", baseReadingSuffix: "する", allowedClasses: .suru),
-        // 〜したりしなかったりする(再現したりしなかったりする。ichidan 側のコメント参照)
+        // 〜したりしなかったりする(再現したりしなかったりする。vowelStem 側のコメント参照)
         InflectionRule(readingSuffix: "したりしなかったりする", baseReadingSuffix: "する", allowedClasses: .suru),
         InflectionRule(readingSuffix: "したりしなかったりした", baseReadingSuffix: "する", allowedClasses: .suru),
         InflectionRule(readingSuffix: "したりしなかったりして", baseReadingSuffix: "する", allowedClasses: .suru),
@@ -1620,7 +1631,7 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "したりしませんか", baseReadingSuffix: "する", allowedClasses: .suru),
         InflectionRule(readingSuffix: "したりするのですか", baseReadingSuffix: "する", allowedClasses: .suru),
         InflectionRule(readingSuffix: "しよう", baseReadingSuffix: "する", allowedClasses: .suru),
-        // 意志形+口語の引用促音(掃除しよっと 等。ichidan 側の よっと/ようっと と対)
+        // 意志形+口語の引用促音(掃除しよっと 等。vowelStem 側の よっと/ようっと と対)
         InflectionRule(readingSuffix: "しよっと", baseReadingSuffix: "する", allowedClasses: .suru),
         InflectionRule(readingSuffix: "しようっと", baseReadingSuffix: "する", allowedClasses: .suru),
         InflectionRule(readingSuffix: "すれば", baseReadingSuffix: "する", allowedClasses: .suru),
@@ -1686,7 +1697,7 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "させられなかった", baseReadingSuffix: "する", allowedClasses: .suru)
     ] }
 
-    private static func makeSahenNounSuruInflectionRules() -> [InflectionRule] { [
+    private static func makeSuruVerbNounSuruInflectionRules() -> [InflectionRule] { [
         InflectionRule(readingSuffix: "する", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "できる", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "できない", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
@@ -2209,12 +2220,12 @@ extension KanaKanjiConverter {
     private static let inflectionRuleTable: (rules: [InflectionRule], suruRange: Range<Int>) = {
         var rules: [InflectionRule] = []
         rules.append(contentsOf: makeAdjectiveInflectionRules())
-        rules.append(contentsOf: makeIchidanInflectionRules())
-        rules.append(contentsOf: makeIchidanRenyouNounRules())
-        rules.append(contentsOf: makeGodanInflectionRules())
-        rules.append(contentsOf: addingSuruPassiveTeAspect(makeSahenNounSuruInflectionRules(), sahenNoun: true) + sahenNounKakeruAspectRules())
+        rules.append(contentsOf: makeVowelStemInflectionRules())
+        rules.append(contentsOf: makeVowelStemContinuativeNounRules())
+        rules.append(contentsOf: makeConsonantStemInflectionRules())
+        rules.append(contentsOf: addingSuruPassiveTeAspect(makeSuruVerbNounSuruInflectionRules(), suruVerbNoun: true) + suruVerbNounKakeruAspectRules())
         let suruStart = rules.count
-        rules.append(contentsOf: addingSuruPassiveTeAspect(makeSuruInflectionRules(), sahenNoun: false))
+        rules.append(contentsOf: addingSuruPassiveTeAspect(makeSuruInflectionRules(), suruVerbNoun: false))
         let suruRange = suruStart..<rules.count
         rules.append(contentsOf: makeKuruInflectionRules())
         // 追加で育てた配列は入れ物が倍々に広がり、7,927 本(64B×7,927=約 500KB)に対して約 900KB を占めていた

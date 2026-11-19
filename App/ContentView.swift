@@ -380,21 +380,21 @@ struct ContentView: View {
     private var numeralStylePreferenceRawValue: String = NumeralStylePreference.strategicDefault.rawValue
 
     @AppStorage(
-        SettingsKeys.okuriganaVariantPreference,
+        SettingsKeys.inflectionalKanaVariantPreference,
         store: Self.sharedDefaults
     )
-    private var okuriganaVariantPreferenceRawValue: String = OkuriganaVariantPreference.default.encoded
+    private var inflectionalKanaVariantPreferenceRawValue: String = InflectionalKanaVariantPreference.default.encoded
 
-    @AppStorage(SettingsKeys.kakikaePreference, store: Self.sharedDefaults)
-    private var kakikaePreferenceRawValue: String = KakikaePreference.strategicDefault.rawValue
+    @AppStorage(SettingsKeys.kanjiRewritePreference, store: Self.sharedDefaults)
+    private var kanjiRewritePreferenceRawValue: String = KanjiRewritePreference.strategicDefault.rawValue
 
     // 書きかえの例外グループ(了解/了承/回復/連想 等)を設定にかかわらず常用漢字先にする。戦略的初期設定はオフ(3644)
-    @AppStorage(SettingsKeys.kakikaeEverydayException, store: Self.sharedDefaults)
-    private var kakikaeEverydayException: Bool = false
+    @AppStorage(SettingsKeys.kanjiRewriteEverydayException, store: Self.sharedDefaults)
+    private var kanjiRewriteEverydayException: Bool = false
 
     // 報告の後に常用漢字に加わった字の組(臆測/肝腎。X.10、3570)
     @AppStorage(SettingsKeys.lateStandardizedRewritePreference, store: Self.sharedDefaults)
-    private var lateStandardizedRewritePreferenceRawValue: String = KakikaePreference.strategicDefault.rawValue
+    private var lateStandardizedRewritePreferenceRawValue: String = KanjiRewritePreference.strategicDefault.rawValue
 
     @AppStorage(
         SettingsKeys.adjectiveMeKanjiCandidatesEnabled,
@@ -464,10 +464,10 @@ struct ContentView: View {
     private var katakanaEmphasisCandidateModeRawValue: String = ScriptVariantModeOption.suppress.rawValue
 
     @AppStorage(
-        SettingsKeys.mazegakiCandidateMode,
+        SettingsKeys.mixedScriptCandidateMode,
         store: Self.sharedDefaults
     )
-    private var mazegakiCandidateModeRawValue: String = ScriptVariantModeOption.suppress.rawValue
+    private var mixedScriptCandidateModeRawValue: String = ScriptVariantModeOption.suppress.rawValue
 
     // 旧字体・異体字の抑制(小分類ごと。2991)。人名(Sudachi の姓/名)は分類に関わらず常に残す
     @AppStorage(SettingsKeys.scriptVariantSuppressKyujitai, store: Self.sharedDefaults)
@@ -488,23 +488,23 @@ struct ContentView: View {
     @AppStorage(SettingsKeys.scriptVariantSuppressPersonNameVariant, store: Self.sharedDefaults)
     private var scriptVariantSuppressPersonNameVariant = false
 
-    @AppStorage(SettingsKeys.kanaGakiSuppressAdverb, store: Self.sharedDefaults)
-    private var kanaGakiSuppressAdverb = true
+    @AppStorage(SettingsKeys.kanaSpellingSuppressAdverb, store: Self.sharedDefaults)
+    private var kanaSpellingSuppressAdverb = true
 
-    @AppStorage(SettingsKeys.kanaGakiSuppressConjunction, store: Self.sharedDefaults)
-    private var kanaGakiSuppressConjunction = true
+    @AppStorage(SettingsKeys.kanaSpellingSuppressConjunction, store: Self.sharedDefaults)
+    private var kanaSpellingSuppressConjunction = true
 
-    @AppStorage(SettingsKeys.kanaGakiSuppressAuxiliary, store: Self.sharedDefaults)
-    private var kanaGakiSuppressAuxiliary = true
+    @AppStorage(SettingsKeys.kanaSpellingSuppressAuxiliary, store: Self.sharedDefaults)
+    private var kanaSpellingSuppressAuxiliary = true
 
-    @AppStorage(SettingsKeys.kanaGakiSuppressFormalNoun, store: Self.sharedDefaults)
-    private var kanaGakiSuppressFormalNoun = true
+    @AppStorage(SettingsKeys.kanaSpellingSuppressFormalNoun, store: Self.sharedDefaults)
+    private var kanaSpellingSuppressFormalNoun = true
 
-    @AppStorage(SettingsKeys.kanaGakiSuppressDemonstrative, store: Self.sharedDefaults)
-    private var kanaGakiSuppressDemonstrative = true
+    @AppStorage(SettingsKeys.kanaSpellingSuppressDemonstrative, store: Self.sharedDefaults)
+    private var kanaSpellingSuppressDemonstrative = true
 
-    @AppStorage(SettingsKeys.kanaGakiSuppressAdverbKanaFirst, store: Self.sharedDefaults)
-    private var kanaGakiSuppressAdverbKanaFirst = false
+    @AppStorage(SettingsKeys.kanaSpellingSuppressAdverbKanaFirst, store: Self.sharedDefaults)
+    private var kanaSpellingSuppressAdverbKanaFirst = false
 
     @State var ajoutVocabularyEntries: [VocabularyEntry] = []
     @State var ajoutVocabularyReadingInput = ""
@@ -706,9 +706,9 @@ struct ContentView: View {
             String(ordinalMeKanjiPreferred),
             kaCounterVariantPreferenceRawValue,
             numeralStylePreferenceRawValue,
-            okuriganaVariantPreferenceRawValue,
-            kakikaePreferenceRawValue,
-            String(kakikaeEverydayException),
+            inflectionalKanaVariantPreferenceRawValue,
+            kanjiRewritePreferenceRawValue,
+            String(kanjiRewriteEverydayException),
             lateStandardizedRewritePreferenceRawValue,
             String(adjectiveMeKanjiCandidatesEnabled),
             String(formalNounMeKanaCandidatesEnabled),
@@ -717,19 +717,19 @@ struct ContentView: View {
             String(historicalKanaCandidatesEnabled),
             String(iterationMarkCandidatesEnabled),
             katakanaEmphasisCandidateModeRawValue,
-            mazegakiCandidateModeRawValue,
+            mixedScriptCandidateModeRawValue,
             String(scriptVariantSuppressKyujitai),
             String(scriptVariantSuppressItaiji),
             String(scriptVariantSuppressRyakuji),
             String(scriptVariantSuppressConfusable),
             String(scriptVariantSuppressLookalike),
             String(scriptVariantSuppressPersonNameVariant),
-            String(kanaGakiSuppressAdverb),
-            String(kanaGakiSuppressConjunction),
-            String(kanaGakiSuppressAuxiliary),
-            String(kanaGakiSuppressFormalNoun),
-            String(kanaGakiSuppressDemonstrative),
-            String(kanaGakiSuppressAdverbKanaFirst),
+            String(kanaSpellingSuppressAdverb),
+            String(kanaSpellingSuppressConjunction),
+            String(kanaSpellingSuppressAuxiliary),
+            String(kanaSpellingSuppressFormalNoun),
+            String(kanaSpellingSuppressDemonstrative),
+            String(kanaSpellingSuppressAdverbKanaFirst),
             String(latinLexiconEnglishEnabled),
             String(latinLexiconFrenchEnabled),
             String(latinLexiconGermanEnabled),
@@ -845,28 +845,28 @@ struct ContentView: View {
         bool(SettingsKeys.historicalKanaCandidatesEnabled, historicalKanaCandidatesEnabled, "旧仮名遣い候補")
         bool(SettingsKeys.iterationMarkCandidatesEnabled, iterationMarkCandidatesEnabled, "仮名の踊り字候補")
         str(SettingsKeys.katakanaEmphasisCandidateMode, katakanaEmphasisCandidateModeRawValue, "カタカナ強調表記の候補")
-        str(SettingsKeys.mazegakiCandidateMode, mazegakiCandidateModeRawValue, "交ぜ書きの候補")
+        str(SettingsKeys.mixedScriptCandidateMode, mixedScriptCandidateModeRawValue, "交ぜ書きの候補")
         bool(SettingsKeys.scriptVariantSuppressKyujitai, scriptVariantSuppressKyujitai, "旧字体を抑制")
         bool(SettingsKeys.scriptVariantSuppressItaiji, scriptVariantSuppressItaiji, "異体字を抑制")
         bool(SettingsKeys.scriptVariantSuppressRyakuji, scriptVariantSuppressRyakuji, "略字を抑制")
         bool(SettingsKeys.scriptVariantSuppressConfusable, scriptVariantSuppressConfusable, "紛らわしい別字を抑制")
         bool(SettingsKeys.scriptVariantSuppressLookalike, scriptVariantSuppressLookalike, "見分けにくい字形を抑制")
         bool(SettingsKeys.scriptVariantSuppressPersonNameVariant, scriptVariantSuppressPersonNameVariant, "人名で生きている異体字を抑制")
-        bool(SettingsKeys.kanaGakiSuppressAdverb, kanaGakiSuppressAdverb, "かなで書く言葉: 副詞を抑制")
-        bool(SettingsKeys.kanaGakiSuppressConjunction, kanaGakiSuppressConjunction, "かなで書く言葉: 接続詞を抑制")
-        bool(SettingsKeys.kanaGakiSuppressAuxiliary, kanaGakiSuppressAuxiliary, "かなで書く言葉: 補助の言葉・挨拶を抑制")
-        bool(SettingsKeys.kanaGakiSuppressFormalNoun, kanaGakiSuppressFormalNoun, "かなで書く言葉: 形式名詞を抑制")
-        bool(SettingsKeys.kanaGakiSuppressDemonstrative, kanaGakiSuppressDemonstrative, "かなで書く言葉: 指示語・代名詞を抑制")
-        bool(SettingsKeys.kanaGakiSuppressAdverbKanaFirst, kanaGakiSuppressAdverbKanaFirst, "かなで書く言葉: 副詞(漢字も残す)を抑制")
-        str(SettingsKeys.kakikaePreference, kakikaePreferenceRawValue, "常用漢字による書きかえ: beforeOnly(本来の漢字だけ)/afterOnly(常用漢字だけ)/bothBeforeFirst(両方、前を先に)/bothAfterFirst(両方、後を先に)")
-        bool(SettingsKeys.kakikaeEverydayException, kakikaeEverydayException, "常用漢字による書きかえ: 日常語(了解・回復・連想 等)は常用漢字を先に")
+        bool(SettingsKeys.kanaSpellingSuppressAdverb, kanaSpellingSuppressAdverb, "かなで書く言葉: 副詞を抑制")
+        bool(SettingsKeys.kanaSpellingSuppressConjunction, kanaSpellingSuppressConjunction, "かなで書く言葉: 接続詞を抑制")
+        bool(SettingsKeys.kanaSpellingSuppressAuxiliary, kanaSpellingSuppressAuxiliary, "かなで書く言葉: 補助の言葉・挨拶を抑制")
+        bool(SettingsKeys.kanaSpellingSuppressFormalNoun, kanaSpellingSuppressFormalNoun, "かなで書く言葉: 形式名詞を抑制")
+        bool(SettingsKeys.kanaSpellingSuppressDemonstrative, kanaSpellingSuppressDemonstrative, "かなで書く言葉: 指示語・代名詞を抑制")
+        bool(SettingsKeys.kanaSpellingSuppressAdverbKanaFirst, kanaSpellingSuppressAdverbKanaFirst, "かなで書く言葉: 副詞(漢字も残す)を抑制")
+        str(SettingsKeys.kanjiRewritePreference, kanjiRewritePreferenceRawValue, "常用漢字による書きかえ: beforeOnly(本来の漢字だけ)/afterOnly(常用漢字だけ)/bothBeforeFirst(両方、前を先に)/bothAfterFirst(両方、後を先に)")
+        bool(SettingsKeys.kanjiRewriteEverydayException, kanjiRewriteEverydayException, "常用漢字による書きかえ: 日常語(了解・回復・連想 等)は常用漢字を先に")
         str(SettingsKeys.lateStandardizedRewritePreference, lateStandardizedRewritePreferenceRawValue, "常用漢字による書きかえ(後に追加): beforeOnly(本来の漢字だけ)/afterOnly(常用漢字だけ)/bothBeforeFirst(両方、前を先に)/bothAfterFirst(両方、後を先に)")
         bool(SettingsKeys.emojiCandidateDisplayEnabled, emojiCandidateDisplayEnabled, "emojis & les émoticônes: emoji 😀")
         str(SettingsKeys.radicalStrokeCountStyle, radicalStrokeCountStyleRawValue, "部首の画数の数え方")
         bool(SettingsKeys.ordinalMeKanjiPreferred, ordinalMeKanjiPreferred, "suffixe – me(め/目)の 序数化(première…): 順序の『目』を漢字で先に")
         str(SettingsKeys.kaCounterVariantPreference, kaCounterVariantPreferenceRawValue, "助数詞型suffixe / 数詞類別suffixe – ka(un endroit…): か の表記(出す表記と順。- は出さない)")
         str(SettingsKeys.numeralStylePreference, numeralStylePreferenceRawValue, "数詞の表記 – chiffres: arabicFirst(アラビア数字が先)/kanjiFirst(漢数字が先)/arabicOnly(アラビア数字だけ)/kanjiOnly(漢数字だけ)")
-        str(SettingsKeys.okuriganaVariantPreference, okuriganaVariantPreferenceRawValue, "送り仮名の許容形 – orthographe: 語幹の中(stem)/複合語の前部要素(compound)/名詞化(noun)ごとに standardOnly(本則だけ)/standardFirst(本則を先に)/permittedFirst(許容を先に)")
+        str(SettingsKeys.inflectionalKanaVariantPreference, inflectionalKanaVariantPreferenceRawValue, "送り仮名の許容形 – orthographe: 語幹の中(stem)/複合語の前部要素(compound)/名詞化(noun)ごとに standardOnly(本則だけ)/standardFirst(本則を先に)/permittedFirst(許容を先に)")
         bool(SettingsKeys.adjectiveMeKanjiCandidatesEnabled, adjectiveMeKanjiCandidatesEnabled, "suffixe – me(め/目)の 形状名詞化 / 傾向派生(un peu …): 形容詞語幹の『目』候補も出す")
         bool(SettingsKeys.formalNounMeKanaCandidatesEnabled, formalNounMeKanaCandidatesEnabled, "suffixe – me(め/目)の 形式名詞化(nom vide): 形式名詞の『目』に『め』の候補も出す")
         bool(SettingsKeys.suspendMemorySlimmingEnabled, suspendMemorySlimmingEnabled, "キーボードが閉じたときにメモリを整理")
@@ -1279,7 +1279,7 @@ struct ContentView: View {
 
         ScriptVariantModeSettingsSection(
             title: "X.6 交ぜ書きの候補",
-            selectionRawValue: $mazegakiCandidateModeRawValue,
+            selectionRawValue: $mixedScriptCandidateModeRawValue,
             footnote: "『まん延(蔓延)』『作ひん(作品)』のような、漢字の一部をかなに開いた交ぜ書き表記の扱いです。抑制=候補に出さない(3つの初期設定とも)、リスト後方=候補の末尾に回す、同列に使う=通常の順位。『子ども』など定着した表記は対象外です。"
         )
         .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.6"))
@@ -1294,17 +1294,17 @@ struct ContentView: View {
         )
         .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.7"))
 
-        KanaGakiSettingsSection(
-            adverb: $kanaGakiSuppressAdverb,
-            conjunction: $kanaGakiSuppressConjunction,
-            auxiliary: $kanaGakiSuppressAuxiliary,
-            formalNoun: $kanaGakiSuppressFormalNoun,
-            demonstrative: $kanaGakiSuppressDemonstrative,
-            adverbKanaFirst: $kanaGakiSuppressAdverbKanaFirst
+        KanaSpellingSettingsSection(
+            adverb: $kanaSpellingSuppressAdverb,
+            conjunction: $kanaSpellingSuppressConjunction,
+            auxiliary: $kanaSpellingSuppressAuxiliary,
+            formalNoun: $kanaSpellingSuppressFormalNoun,
+            demonstrative: $kanaSpellingSuppressDemonstrative,
+            adverbKanaFirst: $kanaSpellingSuppressAdverbKanaFirst
         )
         .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.8"))
 
-        KakikaeSettingsSection(rawValue: $kakikaePreferenceRawValue, everydayException: $kakikaeEverydayException)
+        KanjiRewriteSettingsSection(rawValue: $kanjiRewritePreferenceRawValue, everydayException: $kanjiRewriteEverydayException)
             .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.9"))
     }
 
@@ -1322,7 +1322,7 @@ struct ContentView: View {
         KaCounterVariantSettingsSection(rawValue: $kaCounterVariantPreferenceRawValue)
             .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.12"))
 
-        OkuriganaVariantSettingsSection(rawValue: $okuriganaVariantPreferenceRawValue)
+        InflectionalKanaVariantSettingsSection(rawValue: $inflectionalKanaVariantPreferenceRawValue)
             .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.13"))
 
         // X.14 は め/目 の 3 つのサブ項目(序数化・形式名詞化・形状名詞化/傾向派生)を 1 枚にまとめたカード(3790、ユーザ指定)。

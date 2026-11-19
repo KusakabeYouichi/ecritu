@@ -1321,22 +1321,22 @@ extension KanaKanjiConverter {
         return [promoted] + candidates.filter { $0 != promoted }
     }
 
-    // 同音の漢字による書きかえ(KakikaeTable、3422)を連文節の結果に当てる。ラティスでノードを下げると区切りごと
+    // 同音の漢字による書きかえ(KanjiRewriteTable、3422)を連文節の結果に当てる。ラティスでノードを下げると区切りごと
     // 変わる(颱風 は語コストが高く、台風 を禁止すると たいふうのぜんちょう が 大風の全長 になる)ので、区切りは
     // そのままにして表記だけ差し替える。書きかえ前→後(醗酵→発酵)はどこでも、後→前(回転→廻転)は語の終わり
     // (直後が漢字でない)ときだけ(一丁目→一挺目 のような語の中を巻き込まない)。両方を出すときは好む側を先に並べる。
     // X.9 の組は preference、X.10 の組(臆測/憶測)は lateStandardized で選ぶ(nil のグループは触らない。3570)。
     // 先に『だけ』のグループを全部書きかえ、その結果を基準に『両方』のグループの好む形→他方を並べる(出さない表記を漏らさない)
-    static func applyKakikae(
-        _ preference: KakikaePreference?,
-        lateStandardized: KakikaePreference? = nil,
+    static func applyKanjiRewrite(
+        _ preference: KanjiRewritePreference?,
+        lateStandardized: KanjiRewritePreference? = nil,
         toMultiClauseCandidates candidates: [String],
         everydayException: Bool = true
     ) -> [String] {
         func rewritten(_ text: String, toBefore: Bool, late: Bool) -> String {
             let index = late
-                ? (toBefore ? KakikaeTable.lateStandardizedPairsByAfterHead : KakikaeTable.lateStandardizedPairsByBeforeHead)
-                : (toBefore ? KakikaeTable.switchablePairsByAfterHead : KakikaeTable.switchablePairsByBeforeHead)
+                ? (toBefore ? KanjiRewriteTable.lateStandardizedPairsByAfterHead : KanjiRewriteTable.lateStandardizedPairsByBeforeHead)
+                : (toBefore ? KanjiRewriteTable.switchablePairsByAfterHead : KanjiRewriteTable.switchablePairsByBeforeHead)
             var result = ""
             var rest = Substring(text)
             while let head = rest.first {
@@ -1348,7 +1348,7 @@ extension KanaKanjiConverter {
                     // X.10 の組は前→後も語の終わりだけ(肝腎症候群→肝心症候群 にしない。3570)。
                     // 決まった複合語の後ろの字(蒸留酒/蒸留所)だけは語の途中でも戻す(定数コメント参照。3695)
                     if (!toBefore && !late) || following.map({ !isKanjiCharacter($0) }) ?? true
-                        || (toBefore && !late && following.map({ kakikaeCompoundTailsAllowingRewrite[from]?.contains($0) ?? false }) ?? false) {
+                        || (toBefore && !late && following.map({ kanjiRewriteCompoundTailsAllowingRewrite[from]?.contains($0) ?? false }) ?? false) {
                         result += to
                         rest = rest.dropFirst(from.count)
                         continue
@@ -1372,7 +1372,7 @@ extension KanaKanjiConverter {
                 (preference: preference?.demotingEverydayPair(for: candidate, enabled: everydayException), late: false),
                 (preference: lateStandardized?.demotingEverydayPair(for: candidate, enabled: everydayException), late: true),
             ].compactMap { group in group.preference.map { (preference: $0, late: group.late) } }
-            let showsBoth: (KakikaePreference) -> Bool = { $0 == .bothBeforeFirst || $0 == .bothAfterFirst }
+            let showsBoth: (KanjiRewritePreference) -> Bool = { $0 == .bothBeforeFirst || $0 == .bothAfterFirst }
             var base = candidate
             for group in groups where !showsBoth(group.preference) {
                 base = rewritten(base, toBefore: group.preference.prefersBefore, late: group.late)
