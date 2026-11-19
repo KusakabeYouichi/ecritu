@@ -320,6 +320,7 @@ extension KanaKanjiConverter {
             scriptCounterpartSurface(for: reading, wantsLatin: true, plainKatakana: nil)
         }
         candidates = leadingLatinKatakanaCounterpart(reading: reading, candidates: candidates)
+        candidates = latinFirstForRegisteredWordPlusParticle(reading: reading, candidates: candidates)
         candidates = placeNameSanOrdered(reading: reading, candidates: candidates, systemCandidateMode: systemCandidateMode)
         candidates = Self.liquorCategoryOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.brewingTsukuruOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)

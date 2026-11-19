@@ -30675,6 +30675,35 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("ぜんさいをたべる").first, "前菜を食べる")
     }
 
+    // 3846: 文の頭が IT の語(it.plist)+助詞 のときは、ラテン文字の形を先頭に(てすとふらいとに が テストフライトに
+    // だった。読みだけなら TestFlight が先頭。ユーザ指定)。文の途中のカタカナ語は今までどおり 2 番め
+    func testLatinFirstForRegisteredWordPlusParticle3845() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        XCTAssertEqual(converter.candidates(for: "てすとふらいと", limit: 3, systemCandidateMode: .surface).first, "TestFlight")
+        for (reading, expected) in [
+            ("てすとふらいとに", ["TestFlightに", "テストフライトに"]), ("てすとふらいとで", ["TestFlightで", "テストフライトで"]),
+            ("てすとふらいとから", ["TestFlightから", "テストフライトから"])
+        ] {
+            XCTAssertEqual(Array(multi(reading).prefix(2)), expected, "\(reading): \(multi(reading).prefix(4))")
+        }
+        // ラテン文字の表記が無い語はそのまま
+        XCTAssertEqual(multi("てすとを").first, "テストを", "\(multi("てすとを").prefix(3))")
+        // 文の途中のカタカナ語は 2 番めのまま(3677)
+        XCTAssertEqual(Array(multi("せいかいはばーでんです").prefix(2)), ["正解はバーデンです", "正解はBadenです"])
+        // 助詞の後ろに語が続いても、文の頭の登録語はラテン文字を先に(ユーザ指定)
+        // あげる は 上げる(アップロードの意味。挙げる だった。連語の表)
+        XCTAssertEqual(Array(multi("てすとふらいとにあげる").prefix(2)), ["TestFlightに上げる", "テストフライトに上げる"])
+        XCTAssertEqual(multi("さーばーにあげる").first, "サーバーに上げる")
+        // 語彙にラテン文字の表記があっても、単独でカタカナが先頭の語は動かさない
+        XCTAssertEqual(multi("わいんをのむ").first, "ワインを飲む")
+        XCTAssertEqual(multi("ふらんすのわいん").first, "フランスのワイン")
+        XCTAssertEqual(multi("のんぶるを").first, "ノンブルを")
+        // ワインの語は、単独でラテン文字が先頭でも、文の中ではカタカナが先のまま(3661 ほかの指定。IT の語だけに効かせる)
+        XCTAssertEqual(multi("めるろーです").first, "メルローです")
+    }
+
     // 3845: かねははらわない が 鐘は払わない だった(ユーザ指摘)。金+を/は/も/が+払う・貸す・借りる・返す・稼ぐ・貯める と
     // 金がかかる を連語の表に。鐘 の文は崩さない
     func testMoneyCollocations3845() throws {

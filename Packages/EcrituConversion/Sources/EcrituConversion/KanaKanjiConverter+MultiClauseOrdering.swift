@@ -8,6 +8,46 @@ extension KanaKanjiConverter {
     // ラテン文字とカタカナの両方があればラテン文字が先、カタカナが 2 位)。かーねろすはなぱ で CarnerosはNapa の次が
     // カーネロスはNapa/Carnerosはナパ の混ぜ書きで、カーネロスはナパ は 4 番目だった。
     // 対応の判定は、ラテン文字もカタカナも除いた残り(助詞・漢字)が先頭と同じで、ラテン文字を含まない候補
+    // 読み全体が「ラテン文字の表記を持つ登録語+助詞」のとき(てすとふらいと+に)は、ラテン文字の形を先頭にする
+    // (ユーザ指定 3845)。読みだけなら TestFlight が先頭なのに、助詞を付けると テストフライトに が先頭で、TestFlightに は
+    // 2 番めだった(連文節は テスト+フライト の 2 語が安く、ラテン文字は latinCounterpartOfKatakanaTop が 2 番めに足すだけ)。
+    // 文の途中のカタカナ語(正解はバーデンです)は今までどおり 2 番め。先頭の候補が カタカナの語+助詞 で始まるときだけ動かす
+    // (助詞の後ろに語が続いてもよい: てすとふらいとにあげる→TestFlightに挙げる)
+    static let registeredWordTrailingParticles: [String] = [
+        "には", "では", "から", "まで", "より", "とは", "は", "が", "を", "に", "の", "も", "で", "と", "へ", "や",
+    ]
+    func latinFirstForRegisteredWordPlusParticle(reading: String, candidates: [String]) -> [String] {
+        guard let top = candidates.first else { return candidates }
+        // 先頭の候補の頭の カタカナ(と ー・中黒)の語
+        let characters = Array(top)
+        var end = 0
+        while end < characters.count, ("ァ"..."ヺ").contains(characters[end]) || characters[end] == "ー" || characters[end] == "・" {
+            end += 1
+        }
+        guard end >= 2, end < characters.count else { return candidates }
+        // その語の読み(カタカナをひらがなに。ー はそのまま、中黒は読まない)
+        let stem = String(characters[..<end].filter { $0 != "・" }.map { character -> Character in
+            guard character != "ー", let scalar = character.unicodeScalars.first, let hiragana = Unicode.Scalar(scalar.value - 0x60) else {
+                return character
+            }
+            return Character(hiragana)
+        })
+        // 語の直後が助詞であること(文の頭の 登録語+助詞。後ろに語が続いてもよい: てすとふらいとにあげる。ユーザ指定 3845)。
+        // 読みもその形で始まること(カタカナの語が読みの頭と対応していることの確認)
+        let rest = String(characters[end...])
+        let normalized = KanaTextNormalizer.normalizedReading(reading)
+        guard Self.registeredWordTrailingParticles.contains(where: { rest.hasPrefix($0) && normalized.hasPrefix(stem + $0) }),
+            let latin = scriptCounterpartSurface(for: stem, wantsLatin: true, plainKatakana: nil),
+            // IT の語(references/it.plist。TestFlight/iPhone)に限る(ユーザ指定 3846)。ワインの語(Merlot/Riesling/Málaga)は
+            // 文の中ではカタカナを先にする以前の指定(3661 ほか)があり、ワインを飲む/フランスのワイン も動かさない
+            ITTermTable.readingAndLatinSurfaces.contains(stem + "\t" + latin) else {
+            return candidates
+        }
+        // ラテン文字の形を先頭、元の先頭(カタカナの形)を 2 番めに
+        let latinForm = latin + rest
+        return [latinForm, top] + candidates.filter { $0 != latinForm && $0 != top }
+    }
+
     // 読みに対する ラテン文字だけ/カタカナだけ の表記(seed → 補助語彙 → 辞書 の順)。カタカナは語彙の表記(グラン・クリュ の中黒)を優先し、
     // 無ければ plainKatakana(かなをそのままカタカナにしたもの)が辞書・seed にあるときだけそれを返す(3677)
     func scriptCounterpartSurface(for reading: String, wantsLatin: Bool, plainKatakana: String?) -> String? {
