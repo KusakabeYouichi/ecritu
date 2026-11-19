@@ -30675,6 +30675,33 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("ぜんさいをたべる").first, "前菜を食べる")
     }
 
+    // 3841: て形+は+いる(やってはいる。強調・限定の は)が やって入る だった。入り方を言う動詞の後ろ(走って入る)と
+    // 〜に入る はそのまま。みせのかいてん は 店の開店(回転率 などはそのまま)。数字を確定した直後の じかいてん は 時開店
+    // (次かいてん/字かいてん が先頭だった)。ユーザ指定
+    func testTeHaIruAndShopOpening3841() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func top(_ r: String) -> String? { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface).first }
+        for (reading, expected) in [
+            ("やってはいる", "やってはいる"), ("ひやしてはいる", "冷やしてはいる"), ("しってはいる", "知ってはいる"),
+            ("わかってはいる", "分かってはいる"), ("よんではいる", "読んではいる"), ("やってはいない", "やってはいない"),
+            // 崩さないもの
+            ("はしってはいる", "走って入る"), ("ならんではいる", "並んで入る"), ("あるいてはいる", "歩いて入る"),
+            ("へやにはいる", "部屋に入る"), ("ふろにはいる", "風呂に入る"),
+            ("みせのかいてん", "店の開店"), ("おみせのかいてん", "お店の開店"), ("みせのかいてんじかん", "店の開店時間"),
+            ("みせのかいてんりつ", "店の回転率"), ("たいやのかいてん", "タイヤの回転"), ("あたまのかいてん", "頭の回転")
+        ] {
+            XCTAssertEqual(top(reading), expected, reading)
+        }
+        for (reading, expected) in [("じかいてん", "時開店"), ("じはんかいてん", "時半開店"), ("じへいてん", "時閉店"), ("じかん", "時間")] {
+            let base = converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+            let boosted = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+                base, reading: reading, precedingCharacter: "8",
+                tailConversion: { [converter] tail in converter!.counterTailConversion(tail) })
+            XCTAssertEqual(boosted.first, expected, "8+\(reading): \(boosted.prefix(5))")
+        }
+    }
+
     // 3840: だんの は 段の(ワイン用語優先がオンでも。Dãoの が先頭だった)。数字の直後の だんめ は X.14 に従い、
     // 『ひらがなが先』なら 段め、『漢字が先』なら 段目(段め が 6 番めだった)。ユーザ指定
     func testDanNoAndOrdinalDanMe3840() throws {

@@ -1119,6 +1119,12 @@ extension KanaKanjiConverter {
         // きげんがあった で文が終わるときは 期限(期限があった)。のか などが続くとき(起源があったのか)は LM どおり 起源 のまま
         // (ユーザ指定 3840)。$ で終わる from は先頭の候補の末尾だけを差し替える
         ("きげんがあった", "きげんがあった", "起源があった$", "期限があった"),
+        // 店の開店(みせのかいてん が 店の回転 だった。ユーザ指定 3841)。店の回転率/回転数/回転寿司 はそのまま(文の終わりと、
+        // 助詞・時・前・日 が続くときだけ)
+        ("みせのかいてん", "みせのかいてん", "店の回転$", "店の開店"), ("みせのかいてんは", "みせのかいてん", "店の回転は", "店の開店は"),
+        ("みせのかいてんが", "みせのかいてん", "店の回転が", "店の開店が"), ("みせのかいてんを", "みせのかいてん", "店の回転を", "店の開店を"),
+        ("みせのかいてんに", "みせのかいてん", "店の回転に", "店の開店に"), ("みせのかいてんじ", "みせのかいてん", "店の回転時", "店の開店時"),
+        ("みせのかいてんまえ", "みせのかいてん", "店の回転前", "店の開店前"), ("みせのかいてんび", "みせのかいてん", "店の回転日", "店の開店日"),
         // ひどい目に遭う(酷い目 でなく かな。単独の ひどい は かな が先頭。3788、ユーザ指定)
         ("ひどいめにあ", "ひどいめ", "酷い目", "ひどい目"),
         // チリ(国名)を連文節でも通常の語にした(3776)ので、塵/地理 の言い回しを守る
@@ -5768,6 +5774,7 @@ extension KanaKanjiConverter {
                     lazy var nodeIsNonPassivizableSuruForm = Self.isNonPassivizableSuruForm(node.surface)
                     lazy var nodeReadingStartsWithSuruCluster = Self.readingStartsWithSuruCluster(node.reading)
                     lazy var nodeIsCrawlVerbForm = node.surface.first.map { $0 == "這" || $0 == "匍" || $0 == "匐" } ?? false
+                    lazy var nodeIsEnterVerbForm = node.surface.first == "入" && node.reading.hasPrefix("はい")
                     for prevIdx in nodesEndingAt[node.start] {
                         let prevCost = best[prevIdx]
                         if prevCost >= infinity {
@@ -6577,6 +6584,16 @@ extension KanaKanjiConverter {
                             (prevNode.reading.count >= 2
                                 && (prevNode.surface.hasSuffix("て") || prevNode.surface.hasSuffix("で")))
                                 || (prevNode.surface == "で" && node.start >= 2 && chars[node.start - 2] == "ん") {
+                            cost += Self.multiClauseCrawlVerbAfterTeFormPenalty
+                        }
+                        // て形の直後の 入る(やって入る/冷やして入る)。〜ては+いる(やってはいる。強調・限定の は)が普通なので 入る を
+                        // 下げる(ユーザ指定 3841)。走って入る/並んで入る のように、入り方を言う動詞の後ろはそのまま
+                        if nodeIsEnterVerbForm,
+                            (prevNode.reading.count >= 2
+                                && (prevNode.surface.hasSuffix("て") || prevNode.surface.hasSuffix("で"))
+                                && !Self.multiClauseEnterMannerTeForms.contains(prevNode.surface))
+                                || (prevNode.surface == "で" && node.start >= 2 && chars[node.start - 2] == "ん"
+                                    && !Self.multiClauseEnterMannerTeForms.contains(nodes[backPointer[prevIdx]].surface + "で")) {
                             cost += Self.multiClauseCrawlVerbAfterTeFormPenalty
                         }
                         // 受け身・尊敬の される が付かない サ変名詞(発酵/発効/発光 等。3483)。1 ノード(発酵される)でも、
