@@ -1,6 +1,157 @@
 import SwiftUI
 import UIKit
 
+// 追加語彙と抑制語彙のカードで同じ形だった部分(3830 でまとめた)。どれもカードの VStack の直下に置く。
+// 見出しと登録欄は、包む入れ物を足さずに並べて返す(VStack の子として前と同じ並びになる)
+struct ReadingVocabularyRegistrationControls: View {
+    // 「追加語彙」「抑制語彙」
+    let vocabularyName: String
+    // 「追加単語」「抑制単語」
+    let wordName: String
+    let candidatePlaceholder: String
+    let count: Int
+    let canAddEntry: Bool
+    @Binding var editingEntry: VocabularyEntry?
+    @Binding var readingInput: String
+    @Binding var candidateInput: String
+    @Binding var isRegistrationVisible: Bool
+    let onAddEntry: () -> Void
+    let onUpdateEntry: (VocabularyEntry) -> Void
+
+    var body: some View {
+        DictionaryRegistrationHeaderView(
+            title: vocabularyName,
+            count: count,
+            isRegistrationVisible: isRegistrationVisible,
+            showAccessibilityLabel: "\(wordName)の登録欄を表示",
+            hideAccessibilityLabel: "\(wordName)の登録欄を閉じる",
+            onToggleRegistration: {
+                if isRegistrationVisible {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        isRegistrationVisible = false
+                    }
+                    return
+                }
+
+                editingEntry = nil
+                readingInput = ""
+                candidateInput = ""
+
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    isRegistrationVisible = true
+                }
+            }
+        )
+
+        if isRegistrationVisible {
+            DictionaryRegistrationForm(
+                title: editingEntry == nil ? "\(wordName)の登録" : "\(wordName)の編集",
+                isEditing: editingEntry != nil,
+                canSubmit: canAddEntry,
+                onSubmit: {
+                    if let editingEntry {
+                        onUpdateEntry(editingEntry)
+                    } else {
+                        onAddEntry()
+                    }
+                    editingEntry = nil
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        isRegistrationVisible = false
+                    }
+                },
+                onCancel: {
+                    editingEntry = nil
+                    readingInput = ""
+                    candidateInput = ""
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        isRegistrationVisible = false
+                    }
+                }
+            ) {
+                DictionaryInputField(placeholder: candidatePlaceholder, text: $candidateInput)
+                DictionaryInputField(placeholder: "よみ", text: $readingInput)
+            }
+            .transition(.opacity.combined(with: .move(edge: .top)))
+        }
+    }
+}
+
+// 一覧(無ければ 1 行の文)。行に触れると登録欄へ読み込み、[削除]は確認待ちにする
+struct ReadingVocabularyEntryList: View {
+    let entries: [VocabularyEntry]
+    let emptyText: String
+    let listHeight: CGFloat
+    @Binding var editingEntry: VocabularyEntry?
+    @Binding var pendingDeletionEntry: VocabularyEntry?
+    @Binding var readingInput: String
+    @Binding var candidateInput: String
+    @Binding var isRegistrationVisible: Bool
+    @Binding var scrollIndexTitle: String
+    @Binding var isScrollIndexVisible: Bool
+
+    var body: some View {
+        if entries.isEmpty {
+            Text(emptyText)
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        } else {
+            IndexedVocabularyList(
+                entries: entries,
+                listHeight: listHeight,
+                selectedEntryID: editingEntry?.id,
+                pendingDeletionEntryID: pendingDeletionEntry?.id,
+                onDelete: { entry in
+                    if editingEntry?.id == entry.id {
+                        editingEntry = nil
+                        readingInput = ""
+                        candidateInput = ""
+                    }
+                    pendingDeletionEntry = entry
+                },
+                onSelect: { entry in
+                    editingEntry = entry
+                    readingInput = entry.reading
+                    candidateInput = entry.candidate
+
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        isRegistrationVisible = true
+                    }
+                },
+                onIndexIndicatorStateChange: scrollIndexIndicatorStateHandler(
+                    scrollIndexTitle: $scrollIndexTitle,
+                    isScrollIndexVisible: $isScrollIndexVisible
+                )
+            )
+            .frame(height: listHeight)
+        }
+    }
+}
+
+// 自分で登録したものだけを 読み<TAB>語 の行でコピーする(一覧の絞り込みのスイッチにかかわらず。3778)
+struct UserRegisteredVocabularyCopyButton: View {
+    let userRegisteredEntries: [VocabularyEntry]
+
+    @State private var didCopyUserRegistered = false
+
+    var body: some View {
+        Button {
+            UIPasteboard.general.string = userRegisteredEntries
+                .map { $0.reading + "\t" + $0.candidate }
+                .joined(separator: "\n")
+            didCopyUserRegistered = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                didCopyUserRegistered = false
+            }
+        } label: {
+            Text(didCopyUserRegistered ? "コピーしました" : "コピー")
+                .font(.footnote)
+        }
+        .buttonStyle(.bordered)
+        .controlSize(.small)
+        .disabled(userRegisteredEntries.isEmpty)
+    }
+}
+
 struct AjoutVocabularySettingsSection: View {
     @Binding var entries: [VocabularyEntry]
     @Binding var readingInput: String
@@ -21,7 +172,6 @@ struct AjoutVocabularySettingsSection: View {
     @State private var isReimportConfirmationPresented = false
     @State private var editingEntry: VocabularyEntry?
     @State private var pendingDeletionEntry: VocabularyEntry?
-    @State private var didCopyUserRegistered = false
     // 自分で登録したものだけを出す(3778。初期設定はオフ)
     @AppStorage(SettingsKeys.ajoutVocabularyShowsUserRegisteredOnly) private var showsUserRegisteredOnly = false
 
@@ -35,60 +185,19 @@ struct AjoutVocabularySettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            DictionaryRegistrationHeaderView(
-                title: "追加語彙",
+            ReadingVocabularyRegistrationControls(
+                vocabularyName: "追加語彙",
+                wordName: "追加単語",
+                candidatePlaceholder: "候補",
                 count: displayedEntries.count,
-                isRegistrationVisible: isRegistrationVisible,
-                showAccessibilityLabel: "追加単語の登録欄を表示",
-                hideAccessibilityLabel: "追加単語の登録欄を閉じる",
-                onToggleRegistration: {
-                    if isRegistrationVisible {
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            isRegistrationVisible = false
-                        }
-                        return
-                    }
-
-                    editingEntry = nil
-                    readingInput = ""
-                    candidateInput = ""
-
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        isRegistrationVisible = true
-                    }
-                }
+                canAddEntry: canAddEntry,
+                editingEntry: $editingEntry,
+                readingInput: $readingInput,
+                candidateInput: $candidateInput,
+                isRegistrationVisible: $isRegistrationVisible,
+                onAddEntry: onAddEntry,
+                onUpdateEntry: onUpdateEntry
             )
-
-            if isRegistrationVisible {
-                DictionaryRegistrationForm(
-                    title: editingEntry == nil ? "追加単語の登録" : "追加単語の編集",
-                    isEditing: editingEntry != nil,
-                    canSubmit: canAddEntry,
-                    onSubmit: {
-                        if let editingEntry {
-                            onUpdateEntry(editingEntry)
-                        } else {
-                            onAddEntry()
-                        }
-                        editingEntry = nil
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            isRegistrationVisible = false
-                        }
-                    },
-                    onCancel: {
-                        editingEntry = nil
-                        readingInput = ""
-                        candidateInput = ""
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            isRegistrationVisible = false
-                        }
-                    }
-                ) {
-                    DictionaryInputField(placeholder: "候補", text: $candidateInput)
-                    DictionaryInputField(placeholder: "よみ", text: $readingInput)
-                }
-                .transition(.opacity.combined(with: .move(edge: .top)))
-            }
 
             ScrollIndexBadgeView(
                 title: scrollIndexTitle,
@@ -106,40 +215,18 @@ struct AjoutVocabularySettingsSection: View {
             }
             .controlSize(.small)
 
-            if displayedEntries.isEmpty {
-                Text(showsUserRegisteredOnly ? "自分で登録した追加単語はありません。" : "登録済みの追加単語はありません。")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-            } else {
-                IndexedVocabularyList(
-                    entries: displayedEntries,
-                    listHeight: listHeight,
-                    selectedEntryID: editingEntry?.id,
-                    pendingDeletionEntryID: pendingDeletionEntry?.id,
-                    onDelete: { entry in
-                        if editingEntry?.id == entry.id {
-                            editingEntry = nil
-                            readingInput = ""
-                            candidateInput = ""
-                        }
-                        pendingDeletionEntry = entry
-                    },
-                    onSelect: { entry in
-                        editingEntry = entry
-                        readingInput = entry.reading
-                        candidateInput = entry.candidate
-
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            isRegistrationVisible = true
-                        }
-                    },
-                    onIndexIndicatorStateChange: scrollIndexIndicatorStateHandler(
-                        scrollIndexTitle: $scrollIndexTitle,
-                        isScrollIndexVisible: $isScrollIndexVisible
-                    )
-                )
-                .frame(height: listHeight)
-            }
+            ReadingVocabularyEntryList(
+                entries: displayedEntries,
+                emptyText: showsUserRegisteredOnly ? "自分で登録した追加単語はありません。" : "登録済みの追加単語はありません。",
+                listHeight: listHeight,
+                editingEntry: $editingEntry,
+                pendingDeletionEntry: $pendingDeletionEntry,
+                readingInput: $readingInput,
+                candidateInput: $candidateInput,
+                isRegistrationVisible: $isRegistrationVisible,
+                scrollIndexTitle: $scrollIndexTitle,
+                isScrollIndexVisible: $isScrollIndexVisible
+            )
 
             VStack(alignment: .leading, spacing: 8) {
                 HStack(spacing: 12) {
@@ -164,22 +251,7 @@ struct AjoutVocabularySettingsSection: View {
                         Text("現在の追加語彙を残したまま、初期追加語彙を再投入します。")
                     }
 
-                    // 自分で登録したものだけを 読み<TAB>語 の行でコピーする(スイッチの状態にかかわらず。3778)
-                    Button {
-                        UIPasteboard.general.string = userRegisteredEntries
-                            .map { $0.reading + "\t" + $0.candidate }
-                            .joined(separator: "\n")
-                        didCopyUserRegistered = true
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                            didCopyUserRegistered = false
-                        }
-                    } label: {
-                        Text(didCopyUserRegistered ? "コピーしました" : "コピー")
-                            .font(.footnote)
-                    }
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
-                    .disabled(userRegisteredEntries.isEmpty)
+                    UserRegisteredVocabularyCopyButton(userRegisteredEntries: userRegisteredEntries)
 
                     if !entries.isEmpty {
                         Button(role: .destructive) {
@@ -335,7 +407,6 @@ struct SuppressionDictionarySettingsSection: View {
 
     @State private var editingEntry: VocabularyEntry?
     @State private var pendingDeletionEntry: VocabularyEntry?
-    @State private var didCopyUserRegistered = false
     // 自分で登録したものだけを出す(追加語彙と同じ。初期設定はオフ)
     @AppStorage(SettingsKeys.suppressionVocabularyShowsUserRegisteredOnly) private var showsUserRegisteredOnly = false
 
@@ -349,60 +420,19 @@ struct SuppressionDictionarySettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            DictionaryRegistrationHeaderView(
-                title: "抑制語彙",
+            ReadingVocabularyRegistrationControls(
+                vocabularyName: "抑制語彙",
+                wordName: "抑制単語",
+                candidatePlaceholder: "単語",
                 count: displayedEntries.count,
-                isRegistrationVisible: isRegistrationVisible,
-                showAccessibilityLabel: "抑制単語の登録欄を表示",
-                hideAccessibilityLabel: "抑制単語の登録欄を閉じる",
-                onToggleRegistration: {
-                    if isRegistrationVisible {
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            isRegistrationVisible = false
-                        }
-                        return
-                    }
-
-                    editingEntry = nil
-                    readingInput = ""
-                    candidateInput = ""
-
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        isRegistrationVisible = true
-                    }
-                }
+                canAddEntry: canAddEntry,
+                editingEntry: $editingEntry,
+                readingInput: $readingInput,
+                candidateInput: $candidateInput,
+                isRegistrationVisible: $isRegistrationVisible,
+                onAddEntry: onAddEntry,
+                onUpdateEntry: onUpdateEntry
             )
-
-            if isRegistrationVisible {
-                DictionaryRegistrationForm(
-                    title: editingEntry == nil ? "抑制単語の登録" : "抑制単語の編集",
-                    isEditing: editingEntry != nil,
-                    canSubmit: canAddEntry,
-                    onSubmit: {
-                        if let editingEntry {
-                            onUpdateEntry(editingEntry)
-                        } else {
-                            onAddEntry()
-                        }
-                        editingEntry = nil
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            isRegistrationVisible = false
-                        }
-                    },
-                    onCancel: {
-                        editingEntry = nil
-                        readingInput = ""
-                        candidateInput = ""
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            isRegistrationVisible = false
-                        }
-                    }
-                ) {
-                    DictionaryInputField(placeholder: "単語", text: $candidateInput)
-                    DictionaryInputField(placeholder: "よみ", text: $readingInput)
-                }
-                .transition(.opacity.combined(with: .move(edge: .top)))
-            }
 
             ScrollIndexBadgeView(
                 title: scrollIndexTitle,
@@ -415,57 +445,20 @@ struct SuppressionDictionarySettingsSection: View {
             }
             .controlSize(.small)
 
-            if displayedEntries.isEmpty {
-                Text(showsUserRegisteredOnly ? "自分で登録した抑制単語はありません。" : "登録済みの抑制単語はありません。")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-            } else {
-                IndexedVocabularyList(
-                    entries: displayedEntries,
-                    listHeight: listHeight,
-                    selectedEntryID: editingEntry?.id,
-                    pendingDeletionEntryID: pendingDeletionEntry?.id,
-                    onDelete: { entry in
-                        if editingEntry?.id == entry.id {
-                            editingEntry = nil
-                            readingInput = ""
-                            candidateInput = ""
-                        }
-                        pendingDeletionEntry = entry
-                    },
-                    onSelect: { entry in
-                        editingEntry = entry
-                        readingInput = entry.reading
-                        candidateInput = entry.candidate
+            ReadingVocabularyEntryList(
+                entries: displayedEntries,
+                emptyText: showsUserRegisteredOnly ? "自分で登録した抑制単語はありません。" : "登録済みの抑制単語はありません。",
+                listHeight: listHeight,
+                editingEntry: $editingEntry,
+                pendingDeletionEntry: $pendingDeletionEntry,
+                readingInput: $readingInput,
+                candidateInput: $candidateInput,
+                isRegistrationVisible: $isRegistrationVisible,
+                scrollIndexTitle: $scrollIndexTitle,
+                isScrollIndexVisible: $isScrollIndexVisible
+            )
 
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            isRegistrationVisible = true
-                        }
-                    },
-                    onIndexIndicatorStateChange: scrollIndexIndicatorStateHandler(
-                        scrollIndexTitle: $scrollIndexTitle,
-                        isScrollIndexVisible: $isScrollIndexVisible
-                    )
-                )
-                .frame(height: listHeight)
-            }
-
-            // 自分で登録したものだけを 読み<TAB>語 の行でコピーする(スイッチの状態にかかわらず。追加語彙と同じ)
-            Button {
-                UIPasteboard.general.string = userRegisteredEntries
-                    .map { $0.reading + "\t" + $0.candidate }
-                    .joined(separator: "\n")
-                didCopyUserRegistered = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                    didCopyUserRegistered = false
-                }
-            } label: {
-                Text(didCopyUserRegistered ? "コピーしました" : "コピー")
-                    .font(.footnote)
-            }
-            .buttonStyle(.bordered)
-            .controlSize(.small)
-            .disabled(userRegisteredEntries.isEmpty)
+            UserRegisteredVocabularyCopyButton(userRegisteredEntries: userRegisteredEntries)
 
             Text("[コピー]は、自分で登録した単語だけを、[よみ]と[単語]をタブで区切った行にしてクリップボードにコピーします。")
                 .font(.footnote)

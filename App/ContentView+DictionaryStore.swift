@@ -517,6 +517,47 @@ extension ContentView {
         }
     }
 
+    // 1 つの読みに持てる候補の数(超えた分は後ろから落とす)
+    static let ajoutVocabularyCandidateLimit = 32
+    static let suppressionVocabularyCandidateLimit = 128
+
+    // 登録欄の入力から登録する組を作る。読みはかなに正規化し、候補は前後の空白を落とす。どちらかが空なら nil
+    func validatedVocabularyEntry(readingInput: String, candidateInput: String) -> VocabularyEntry? {
+        let reading = normalizedKanaReading(from: readingInput)
+        let candidate = candidateInput.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !reading.isEmpty, !candidate.isEmpty else {
+            return nil
+        }
+        return VocabularyEntry(reading: reading, candidate: candidate)
+    }
+
+    // その読みの先頭に候補を置く(すでにあれば先頭へ移す)。追加語彙・抑制語彙の登録と編集で共通
+    static func dictionaryByPromoting(
+        _ entry: VocabularyEntry, in dictionary: [String: [String]], candidateLimit: Int
+    ) -> [String: [String]] {
+        var dictionary = dictionary
+        var candidates = dictionary[entry.reading] ?? []
+        if let existingIndex = candidates.firstIndex(of: entry.candidate) {
+            candidates.remove(at: existingIndex)
+        }
+        candidates.insert(entry.candidate, at: 0)
+        dictionary[entry.reading] = Array(candidates.prefix(candidateLimit))
+        return dictionary
+    }
+
+    // その読みから候補を外す。候補が無くなった読みは表から消す。追加語彙・抑制語彙・学習語彙の削除で共通
+    static func dictionaryByRemoving(_ entry: VocabularyEntry, from dictionary: [String: [String]]) -> [String: [String]] {
+        var dictionary = dictionary
+        var candidates = dictionary[entry.reading] ?? []
+        candidates.removeAll { $0 == entry.candidate }
+        if candidates.isEmpty {
+            dictionary.removeValue(forKey: entry.reading)
+        } else {
+            dictionary[entry.reading] = candidates
+        }
+        return dictionary
+    }
+
     func loadAjoutVocabularyEntries() {
         ajoutVocabularyEntries = ajoutVocabularyEntriesSnapshot()
     }
@@ -534,26 +575,15 @@ extension ContentView {
     }
 
     func addAjoutVocabularyEntry() {
-        let reading = normalizedKanaReading(from: ajoutVocabularyReadingInput)
-        let candidate = ajoutVocabularyCandidateInput.trimmingCharacters(in: .whitespacesAndNewlines)
-
-        guard !reading.isEmpty,
-                !candidate.isEmpty else {
+        guard let entry = validatedVocabularyEntry(
+            readingInput: ajoutVocabularyReadingInput, candidateInput: ajoutVocabularyCandidateInput
+        ) else {
             return
         }
 
-        var dictionary = loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiAjoutVocabulary)
-
-        var candidates = dictionary[reading] ?? []
-
-        if let existingIndex = candidates.firstIndex(of: candidate) {
-            candidates.remove(at: existingIndex)
-        }
-
-        candidates.insert(candidate, at: 0)
-        dictionary[reading] = Array(candidates.prefix(32))
-        saveAjoutVocabulary(dictionary)
-        updateUserRegisteredAjoutVocabulary(adding: VocabularyEntry(reading: reading, candidate: candidate), removing: nil)
+        let dictionary = loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiAjoutVocabulary)
+        saveAjoutVocabulary(Self.dictionaryByPromoting(entry, in: dictionary, candidateLimit: Self.ajoutVocabularyCandidateLimit))
+        updateUserRegisteredAjoutVocabulary(adding: entry, removing: nil)
 
         ajoutVocabularyReadingInput = ""
         ajoutVocabularyCandidateInput = ""
@@ -561,55 +591,26 @@ extension ContentView {
     }
 
     func updateAjoutVocabularyEntry(_ originalEntry: VocabularyEntry) {
-        let reading = normalizedKanaReading(from: ajoutVocabularyReadingInput)
-        let candidate = ajoutVocabularyCandidateInput.trimmingCharacters(in: .whitespacesAndNewlines)
-
-        guard !reading.isEmpty,
-            !candidate.isEmpty else {
+        guard let entry = validatedVocabularyEntry(
+            readingInput: ajoutVocabularyReadingInput, candidateInput: ajoutVocabularyCandidateInput
+        ) else {
             return
         }
 
-        var dictionary = loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiAjoutVocabulary)
-
-        var originalCandidates = dictionary[originalEntry.reading] ?? []
-        originalCandidates.removeAll { $0 == originalEntry.candidate }
-
-        if originalCandidates.isEmpty {
-            dictionary.removeValue(forKey: originalEntry.reading)
-        } else {
-            dictionary[originalEntry.reading] = originalCandidates
-        }
-
-        var targetCandidates = dictionary[reading] ?? []
-
-        if let existingIndex = targetCandidates.firstIndex(of: candidate) {
-            targetCandidates.remove(at: existingIndex)
-        }
-
-        targetCandidates.insert(candidate, at: 0)
-        dictionary[reading] = Array(targetCandidates.prefix(32))
-
-        saveAjoutVocabulary(dictionary)
+        let dictionary = Self.dictionaryByRemoving(
+            originalEntry, from: loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiAjoutVocabulary)
+        )
+        saveAjoutVocabulary(Self.dictionaryByPromoting(entry, in: dictionary, candidateLimit: Self.ajoutVocabularyCandidateLimit))
         // 編集した語は初期語彙だったものでも自分で登録したものとして扱う
-        updateUserRegisteredAjoutVocabulary(adding: VocabularyEntry(reading: reading, candidate: candidate), removing: originalEntry)
+        updateUserRegisteredAjoutVocabulary(adding: entry, removing: originalEntry)
         ajoutVocabularyReadingInput = ""
         ajoutVocabularyCandidateInput = ""
         loadAjoutVocabularyEntries()
     }
 
     func removeAjoutVocabularyEntry(_ entry: VocabularyEntry) {
-        var dictionary = loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiAjoutVocabulary)
-
-        var candidates = dictionary[entry.reading] ?? []
-        candidates.removeAll { $0 == entry.candidate }
-
-        if candidates.isEmpty {
-            dictionary.removeValue(forKey: entry.reading)
-        } else {
-            dictionary[entry.reading] = candidates
-        }
-
-        saveAjoutVocabulary(dictionary)
+        let dictionary = loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiAjoutVocabulary)
+        saveAjoutVocabulary(Self.dictionaryByRemoving(entry, from: dictionary))
         updateUserRegisteredAjoutVocabulary(adding: nil, removing: entry)
         loadAjoutVocabularyEntries()
     }
@@ -621,17 +622,8 @@ extension ContentView {
     }
 
     func removeLearnedDictionaryEntry(_ entry: VocabularyEntry) {
-        var dictionary = loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiLearnedVocabulary)
-        var candidates = dictionary[entry.reading] ?? []
-        candidates.removeAll { $0 == entry.candidate }
-
-        if candidates.isEmpty {
-            dictionary.removeValue(forKey: entry.reading)
-        } else {
-            dictionary[entry.reading] = candidates
-        }
-
-        saveLearnedDictionary(dictionary)
+        let dictionary = loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiLearnedVocabulary)
+        saveLearnedDictionary(Self.dictionaryByRemoving(entry, from: dictionary))
         loadLearnedDictionaryEntries()
     }
 
@@ -676,25 +668,15 @@ extension ContentView {
     }
 
     func addSuppressionDictionaryEntry() {
-        let reading = normalizedKanaReading(from: suppressionDictionaryReadingInput)
-        let candidate = suppressionDictionaryCandidateInput.trimmingCharacters(in: .whitespacesAndNewlines)
-
-        guard !reading.isEmpty,
-                !candidate.isEmpty else {
+        guard let entry = validatedVocabularyEntry(
+            readingInput: suppressionDictionaryReadingInput, candidateInput: suppressionDictionaryCandidateInput
+        ) else {
             return
         }
 
-        var dictionary = loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiSuppressionVocabulary)
-        var candidates = dictionary[reading] ?? []
-
-        if let existingIndex = candidates.firstIndex(of: candidate) {
-            candidates.remove(at: existingIndex)
-        }
-
-        candidates.insert(candidate, at: 0)
-        dictionary[reading] = Array(candidates.prefix(128))
-        saveSuppressionDictionary(dictionary)
-        updateUserRegisteredSuppressionVocabulary(adding: VocabularyEntry(reading: reading, candidate: candidate), removing: nil)
+        let dictionary = loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiSuppressionVocabulary)
+        saveSuppressionDictionary(Self.dictionaryByPromoting(entry, in: dictionary, candidateLimit: Self.suppressionVocabularyCandidateLimit))
+        updateUserRegisteredSuppressionVocabulary(adding: entry, removing: nil)
 
         suppressionDictionaryReadingInput = ""
         suppressionDictionaryCandidateInput = ""
@@ -702,54 +684,26 @@ extension ContentView {
     }
 
     func updateSuppressionDictionaryEntry(_ originalEntry: VocabularyEntry) {
-        let reading = normalizedKanaReading(from: suppressionDictionaryReadingInput)
-        let candidate = suppressionDictionaryCandidateInput.trimmingCharacters(in: .whitespacesAndNewlines)
-
-        guard !reading.isEmpty,
-            !candidate.isEmpty else {
+        guard let entry = validatedVocabularyEntry(
+            readingInput: suppressionDictionaryReadingInput, candidateInput: suppressionDictionaryCandidateInput
+        ) else {
             return
         }
 
-        var dictionary = loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiSuppressionVocabulary)
-
-        var originalCandidates = dictionary[originalEntry.reading] ?? []
-        originalCandidates.removeAll { $0 == originalEntry.candidate }
-
-        if originalCandidates.isEmpty {
-            dictionary.removeValue(forKey: originalEntry.reading)
-        } else {
-            dictionary[originalEntry.reading] = originalCandidates
-        }
-
-        var targetCandidates = dictionary[reading] ?? []
-
-        if let existingIndex = targetCandidates.firstIndex(of: candidate) {
-            targetCandidates.remove(at: existingIndex)
-        }
-
-        targetCandidates.insert(candidate, at: 0)
-        dictionary[reading] = Array(targetCandidates.prefix(128))
-
-        saveSuppressionDictionary(dictionary)
+        let dictionary = Self.dictionaryByRemoving(
+            originalEntry, from: loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiSuppressionVocabulary)
+        )
+        saveSuppressionDictionary(Self.dictionaryByPromoting(entry, in: dictionary, candidateLimit: Self.suppressionVocabularyCandidateLimit))
         // 編集した語は初期語彙だったものでも自分で登録したものとして扱う(追加語彙と同じ)
-        updateUserRegisteredSuppressionVocabulary(adding: VocabularyEntry(reading: reading, candidate: candidate), removing: originalEntry)
+        updateUserRegisteredSuppressionVocabulary(adding: entry, removing: originalEntry)
         suppressionDictionaryReadingInput = ""
         suppressionDictionaryCandidateInput = ""
         loadSuppressionDictionaryEntries()
     }
 
     func removeSuppressionDictionaryEntry(_ entry: VocabularyEntry) {
-        var dictionary = loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiSuppressionVocabulary)
-        var candidates = dictionary[entry.reading] ?? []
-        candidates.removeAll { $0 == entry.candidate }
-
-        if candidates.isEmpty {
-            dictionary.removeValue(forKey: entry.reading)
-        } else {
-            dictionary[entry.reading] = candidates
-        }
-
-        saveSuppressionDictionary(dictionary)
+        let dictionary = loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiSuppressionVocabulary)
+        saveSuppressionDictionary(Self.dictionaryByRemoving(entry, from: dictionary))
         updateUserRegisteredSuppressionVocabulary(adding: nil, removing: entry)
         loadSuppressionDictionaryEntries()
     }
