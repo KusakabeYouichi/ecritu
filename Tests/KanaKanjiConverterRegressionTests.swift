@@ -21508,9 +21508,9 @@ extension KanaKanjiConverterRegressionTests {
         let hisahito = converter.candidates(for: "ひさひと", limit: 6, systemCandidateMode: .surface)
         XCTAssertEqual(hisahito.first, "悠仁", "single=\(hisahito)")
         for (reading, expected) in [
-            // 人名の後の さま は 様 が先(まつおさま→松尾様 と同じ規則)。佳子さま は 3 番め
-            ("かこさま", "佳子様"), ("かこないしんのう", "佳子内親王"),
-            ("ひさひとさま", "悠仁様"), ("ひさひとしんのう", "悠仁親王"),
+            // 皇族の名前の後ろの さま は かな が先(3839。それまでは人名の規則どおり 佳子様 が先だった)
+            ("かこさま", "佳子さま"), ("かこないしんのう", "佳子内親王"),
+            ("ひさひとさま", "悠仁さま"), ("ひさひとしんのう", "悠仁親王"),
             // 過去 の文は崩さない
             ("かこの", "過去の"), ("かこに", "過去に"), ("かこのじれい", "過去の事例"), ("かこさいこう", "過去最高"),
             ("かこをふりかえる", "過去を振り返る")
@@ -30673,6 +30673,55 @@ extension KanaKanjiConverterRegressionTests {
         // 前菜 は文の中でも 前妻 より先(単独は 3619 から 前菜 が先。ユーザ指定 3806)
         XCTAssertEqual(multi("ぜんさいにする").first, "前菜にする")
         XCTAssertEqual(multi("ぜんさいをたべる").first, "前菜を食べる")
+    }
+
+    // 3839: 日常の丁寧な言い回し 3 件(ユーザ指定。おまちください を調べる途中で見つかった)。
+    // 少々 は LM で 少将 に負け、くださいませ は 増す の命令形 増せ・稀な語 籬 に、お待ちして は 雄町+し+て に負けていた
+    func testPoliteEverydayPhrases3839() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func top(_ r: String) -> String? {
+            converter.multiClauseCandidates(for: r, systemCandidateMode: .surface).first
+                ?? converter.candidates(for: r, limit: 3, systemCandidateMode: .surface).first
+        }
+        for (reading, expected) in [
+            ("しょうしょうおまちください", "少々お待ちください"), ("くださいませ", "くださいませ"),
+            ("おまちくださいませ", "お待ちくださいませ"), ("みてくださいませ", "見てくださいませ"),
+            ("おまちしております", "お待ちしております"), ("おまちしています", "お待ちしています"),
+            // 崩さないもの
+            ("おまちをつかったさけ", "雄町を使った酒"), ("しょうしょうがしきする", "少将が指揮する")
+        ] {
+            XCTAssertEqual(top(reading), expected, reading)
+        }
+    }
+
+    // 3839: 皇族の名前の後ろの さま は かな を先頭に(佳子さま/悠仁さま/彬子さま。ユーザ指定)。同じ字でも読みが違えば
+    // 普通の人名(よしこさま→佳子様)。彬子(あきこ)は辞書に無かったので補う(位置は 明子 の次)
+    func testImperialFamilyNamesTakeKanaSama3839() throws {
+        try prepareRealLMDictionary()
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        XCTAssertEqual(multi("かこさま").first, "佳子さま", "\(multi("かこさま").prefix(4))")
+        XCTAssertFalse(multi("かこさま").prefix(3).contains("かこさま"), "かな だけの形は後ろへ")
+        XCTAssertEqual(multi("ひさひとさま").first, "悠仁さま")
+        // あきこ は 明子 が先(普通の人名なので 明子様)。彬子 は さま の形で続く
+        XCTAssertEqual(multi("あきこさま").first, "明子様", "\(multi("あきこさま").prefix(4))")
+        XCTAssertTrue(multi("あきこさま").prefix(4).contains("彬子さま"), "\(multi("あきこさま").prefix(4))")
+        XCTAssertEqual(multi("よしこさま").first, "佳子様")
+        XCTAssertEqual(multi("まつおさま").first, "松尾様")
+        XCTAssertEqual(Array(converter.candidates(for: "あきこ", limit: 4, systemCandidateMode: .surface).prefix(2)), ["明子", "彬子"])
+    }
+
+    // 3839: 補助用言をオフ(保守的初期設定)にしたとき、文の中の ください にも 下さい の形を 1 つ補う(ユーザ指定)。
+    // かな の形が先、すぐ下に漢字。オン(現代的・戦略的)では出さない
+    func testKudasaiKanjiFormSuppliedInSentenceWhenUnsuppressed3839() throws {
+        try prepareRealLMDictionary()
+        converter.setKanaGakiSuppressedCategories([])
+        let off = converter.candidates(for: "みてください", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(off.prefix(2)), ["見てください", "見て下さい"], "\(off)")
+        converter.setKanaGakiSuppressedCategories(Set(KanaGakiCategory.allCases.filter(\.suppressedByDefault)))
+        let on = converter.candidates(for: "みてください", limit: 12, systemCandidateMode: .surface)
+        XCTAssertEqual(on.first, "見てください", "\(on)")
+        XCTAssertFalse(on.contains { $0.hasSuffix("下さい") }, "\(on)")
     }
 
     // 3836: ワイン用語優先がオン(デバッグ版の初期値)だと、おまちください が 雄町ください だった(ユーザ報告、実機)。
