@@ -30675,6 +30675,35 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("ぜんさいをたべる").first, "前菜を食べる")
     }
 
+    // 3845: かねははらわない が 鐘は払わない だった(ユーザ指摘)。金+を/は/も/が+払う・貸す・借りる・返す・稼ぐ・貯める と
+    // 金がかかる を連語の表に。鐘 の文は崩さない
+    func testMoneyCollocations3845() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func top(_ r: String) -> String? { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface).first }
+        for (reading, expected) in [
+            ("かねははらわない", "金は払わない"), ("かねをはらう", "金を払う"), ("かねをかりる", "金を借りる"),
+            ("かねをかえす", "金を返す"), ("かねがかかる", "金がかかる"), ("おかねをはらう", "お金を払う"),
+            ("かねをならす", "鐘を鳴らす"), ("かねがなる", "鐘が鳴る")
+        ] {
+            XCTAssertEqual(top(reading), expected, reading)
+        }
+    }
+
+    // 3845: ぜんしゃ の並び(前者、全社、全車、全射、前車、禅者)と、2 かなの語幹+車 の意味のない合成(ゼン車/膳車/善車/禅車/然車)を
+    // 出さないこと(ユーザ指定)。フランス車/日本車 のような 3 かな以上の語幹+車 はそのまま
+    func testZenshaOrderAndNoShortStemCarCompounds3845() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let zensha = converter.candidates(for: "ぜんしゃ", limit: 16, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(zensha.prefix(6)), ["前者", "全社", "全車", "全射", "前車", "禅者"], "\(zensha)")
+        XCTAssertFalse(zensha.contains { ["ゼン車", "膳車", "善車", "禅車", "然車"].contains($0) }, "\(zensha)")
+        for (reading, expected) in [("ふらんすしゃ", "フランス車"), ("にほんしゃ", "日本車"), ("しんしゃ", "新車"), ("がいしゃ", "外車")] {
+            let list = converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+            XCTAssertTrue(list.prefix(3).contains(expected), "\(reading): \(list)")
+        }
+    }
+
     // 3843: 人名・称号の後ろの でんか は 殿下(ひさひとでんか が 悠仁電化、ひさひとしんのうでんか が 悠仁親王電化 だった。
     // ほかの皇族の方も。ユーザ指定)。電化/電荷 の文は崩さない
     func testImperialHighnessTitleAfterNames3843() throws {
@@ -30689,6 +30718,7 @@ extension KanaKanjiConverterRegressionTests {
             ("かこでんか", "佳子殿下"), ("かこないしんのうでんか", "佳子内親王殿下"),
             ("あいこないしんのうでんか", "愛子内親王殿下"), ("あきこじょおうでんか", "彬子女王殿下"),
             ("こうたいしでんか", "皇太子殿下"), ("ひでんか", "妃殿下"),
+            ("こうたいしひでんか", "皇太子妃殿下"), ("こうしひでんか", "皇嗣妃殿下"), ("しんのうひでんか", "親王妃殿下"),
             // 崩さないもの
             ("おーるでんか", "オール電化"), ("でんかせいひん", "電化製品"), ("でんかをおびる", "電荷を帯びる"), ("でんか", "電化")
         ] {
