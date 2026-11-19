@@ -46,6 +46,12 @@ extension KanaKanjiConverter {
     // 3 つの環境変数は DEBUG だけで読む(3316)。消費側(MULTITRACE/SINGLETRACE の print)はすべて #if DEBUG で、
     // Release では読むだけ読んで使っていなかった(セキュリティー検査 2026-10-02)。Release に環境変数の参照を残さない
     static let multiClauseTraceEdgesEnabled = ProcessInfo.processInfo.environment["MULTI_TRACE_EDGES"] != nil
+    // Viterbi で前の語として調べる幅(3849)。前の語の点が、同じ位置で終わる語の最良よりこれ以上高ければ、その組は調べない。
+    // 長い文 8 つを測ると、組の 24% は前の語が位置の最良から 20,000 より離れていた(加点・減点の規則を 1 組ずつ全部
+    // 調べていて、連文節の時間の半分以上が Viterbi だった)。一括検査の 5,118 読みでは、選ばれた経路の語の前の語は
+    // 位置の最良から最大 5,884。経路から外れた語には 20,000 を超えて離れた前の語が最良のもの(安い前の語からの組に
+    // 大きな減点が付く語。35 読み)があり、その語の点は変わるが、変換結果は 5,305 読みで前と同じ。加点は 1 つで最大 10,000
+    static let multiClauseViterbiPrevCostMargin = 20000
     static let singleTraceEnabled = ProcessInfo.processInfo.environment["SINGLE_TRACE"] != nil
     #endif
     // 連語ボーナス表の頭(紙\t印刷 → 紙)。変換ごとに split で組み直していた(3096)。
@@ -4225,6 +4231,7 @@ extension KanaKanjiConverter {
             var best = Array(repeating: infinity, count: nodes.count)
             var backPointer = Array(repeating: -1, count: nodes.count)
             let requiredNodes = requiredNodeIndices.map { nodes[$0] }
+            var prevCostCeilingByBoundary = [Int?](repeating: nil, count: n + 1)
 
             for boundary in 1...n {
                 for idx in nodesEndingAt[boundary] {
@@ -4401,9 +4408,18 @@ extension KanaKanjiConverter {
                     lazy var nodeIsImperialHighnessTitle = node.surface == "殿下"
                     // なんか/なんて で始まるノードか(なんかの判定を前の語ごとに呼ばないため。3849)
                     lazy var nodeStartsWithNankaReading = Self.multiClauseNankaAdverbialReadings.contains(where: { node.reading.hasPrefix($0) })
+                    // 前の語の点がその位置の最良より大きく離れている組は調べない(定数コメント参照。3849)。
+                    // node.start で終わる語は、この語より前の境界で点が決まっている
+                    if prevCostCeilingByBoundary[node.start] == nil {
+                        let minimum = nodesEndingAt[node.start].map { best[$0] }.min() ?? infinity
+                        prevCostCeilingByBoundary[node.start] = minimum >= infinity
+                            ? infinity
+                            : minimum + Self.multiClauseViterbiPrevCostMargin
+                    }
+                    let prevCostCeiling = prevCostCeilingByBoundary[node.start] ?? infinity
                     for prevIdx in nodesEndingAt[node.start] {
                         let prevCost = best[prevIdx]
-                        if prevCost >= infinity {
+                        if prevCost >= infinity || prevCost > prevCostCeiling {
                             continue
                         }
                         let prevNode = nodes[prevIdx]

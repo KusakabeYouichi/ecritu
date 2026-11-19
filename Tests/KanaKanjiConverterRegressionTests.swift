@@ -16532,7 +16532,9 @@ extension KanaKanjiConverterRegressionTests {
         try XCTSkipUnless(ProcessInfo.processInfo.environment["PERF_PROFILE"] != nil, "TEST_RUNNER_PERF_PROFILE=1 で実行")
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
-        let readings = ["としによる", "かねもってて", "たとえていうなら", "おんどをはかる", "すうかこくたいおう", "まともにかけんのか", "さくじょしておきながら", "でないようにした", "かいさつとおって", "せいこうすべく", "きょうはてんきがいいのででかけよう", "あしたのかいぎはじゅうじからです", "ぱそこんのでんげんをいれてください"]
+        // TEST_RUNNER_PERF_READINGS=読み,読み,… で差し替えられる(長い文だけを測るとき)
+        let readings = ProcessInfo.processInfo.environment["PERF_READINGS"].map { $0.split(separator: ",").map(String.init) }
+            ?? ["としによる", "かねもってて", "たとえていうなら", "おんどをはかる", "すうかこくたいおう", "まともにかけんのか", "さくじょしておきながら", "でないようにした", "かいさつとおって", "せいこうすべく", "きょうはてんきがいいのででかけよう", "あしたのかいぎはじゅうじからです", "ぱそこんのでんげんをいれてください"]
         // warm
         for r in readings { _ = converter.multiClauseCandidates(for: r, systemCandidateMode: .surface); _ = converter.candidates(for: r, limit: 8, systemCandidateMode: .surface) }
         converter.clearAllCaches()
