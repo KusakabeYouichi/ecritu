@@ -14,15 +14,6 @@ final class SettingsKeyTableConsistencyTests: XCTestCase {
     // 設定画面の項目ではない @AppStorage(初期設定に戻す対象にしない)
     private static let nonUserSettingStorageKeyNames: Set<String> = ["setupStepsDismissed"]
 
-    // 署名に入っていない項目(3829 の棚卸しで見つかった分。足すかどうかは未決定)。
-    // 署名へ足したらここから外す。新しい項目をここへ足して済ませない
-    private static let keyNamesKnownMissingFromSyncSignature: Set<String> = [
-        "composingTextStyle", "idleCommitEnabled", "idleCommitInterval",
-        "kanaPostModifierEmptyTapAction", "kanaPostModifierEmptyTapEmojiCategory",
-        "kanaPostModifierEmptyTapKaomojiCategory", "kanaPostModifierEmptyTapSymbolCategory",
-        "kanaPostModifierFlickDakutenEnabled"
-    ]
-
     private func source(_ relativePath: String) throws -> String {
         try String(contentsOfFile: "\(ecrituRepositoryRoot)/\(relativePath)", encoding: .utf8)
     }
@@ -117,7 +108,7 @@ final class SettingsKeyTableConsistencyTests: XCTestCase {
         XCTAssertEqual(Set(exportedNames).subtracting(nameSet).sorted(), [], "userSettingsKeys に無いキーを書き出している")
     }
 
-    func testSyncSignatureCoversUserSettingsExceptKnownGaps() throws {
+    func testSyncSignatureCoversAllUserSettings() throws {
         let namesByProperty = try storageKeyNamesByProperty()
         let contentView = try source("App/ContentView.swift")
         let body = try slice(contentView, from: "private var settingsSyncSignature", to: ".joined(separator:")
@@ -125,10 +116,7 @@ final class SettingsKeyTableConsistencyTests: XCTestCase {
         let signedNames = Set(identifiers.compactMap { namesByProperty[$0] })
         let allNames = Set(namesByProperty.values).subtracting(Self.nonUserSettingStorageKeyNames)
         let missing = allNames.subtracting(signedNames)
-        XCTAssertEqual(
-            missing.sorted(),
-            Self.keyNamesKnownMissingFromSyncSignature.sorted(),
-            "settingsSyncSignature に入っていない設定(足し忘れ、または既知の一覧の消し忘れ)"
-        )
+        // 3837 で、入っていなかった 8 項目(放置で確定、未確定の方式、後置修飾の空タップなど)を足した
+        XCTAssertEqual(missing.sorted(), [], "settingsSyncSignature に入っていない設定(変えてもキーボードへ知らせが飛ばない)")
     }
 }

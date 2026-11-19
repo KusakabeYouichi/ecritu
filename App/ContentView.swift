@@ -733,7 +733,17 @@ struct ContentView: View {
             String(latinLexiconEnglishEnabled),
             String(latinLexiconFrenchEnabled),
             String(latinLexiconGermanEnabled),
-            String(latinLexiconItalianEnabled)
+            String(latinLexiconItalianEnabled),
+            // 以下の 8 つは 3837 まで入っておらず、変えてもキーボードへの知らせが飛ばなかった(次にキーボードを
+            // 出し直すまで前の値で動いた)。足し忘れは Tests/SettingsKeyTableConsistencyTests が見つける
+            String(idleCommitEnabled),
+            String(idleCommitInterval),
+            composingTextStyleRawValue,
+            kanaPostModifierEmptyTapActionRawValue,
+            kanaPostModifierEmptyTapKaomojiCategoryID,
+            kanaPostModifierEmptyTapEmojiCategoryID,
+            kanaPostModifierEmptyTapSymbolCategoryID,
+            String(kanaPostModifierFlickDakutenEnabled)
         ]
             .joined(separator: "|")
     }
