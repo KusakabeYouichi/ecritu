@@ -30675,6 +30675,48 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("ぜんさいをたべる").first, "前菜を食べる")
     }
 
+    // 3843: 人名・称号の後ろの でんか は 殿下(ひさひとでんか が 悠仁電化、ひさひとしんのうでんか が 悠仁親王電化 だった。
+    // ほかの皇族の方も。ユーザ指定)。電化/電荷 の文は崩さない
+    func testImperialHighnessTitleAfterNames3843() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func top(_ r: String) -> String? {
+            converter.multiClauseCandidates(for: r, systemCandidateMode: .surface).first
+                ?? converter.candidates(for: r, limit: 3, systemCandidateMode: .surface).first
+        }
+        for (reading, expected) in [
+            ("ひさひとでんか", "悠仁殿下"), ("ひさひとしんのうでんか", "悠仁親王殿下"),
+            ("かこでんか", "佳子殿下"), ("かこないしんのうでんか", "佳子内親王殿下"),
+            ("あいこないしんのうでんか", "愛子内親王殿下"), ("あきこじょおうでんか", "彬子女王殿下"),
+            ("こうたいしでんか", "皇太子殿下"), ("ひでんか", "妃殿下"),
+            // 崩さないもの
+            ("おーるでんか", "オール電化"), ("でんかせいひん", "電化製品"), ("でんかをおびる", "電荷を帯びる"), ("でんか", "電化")
+        ] {
+            XCTAssertEqual(top(reading), expected, reading)
+        }
+    }
+
+    // 3843: きげんがあったのか を 1 字ずつ打つあいだ、期限/起源 が入れ替わらないこと(ユーザ指摘)。最後まで 期限 のまま
+    func testKigenStaysStableWhileTyping3843() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func top(_ r: String) -> String? {
+            converter.multiClauseCandidates(for: r, systemCandidateMode: .surface).first
+                ?? converter.candidates(for: r, limit: 3, systemCandidateMode: .surface).first
+        }
+        for reading in ["きげん", "きげんが", "きげんがあ", "きげんがあっ", "きげんがあった", "きげんがあったの", "きげんがあったのか"] {
+            XCTAssertEqual(top(reading).map { String($0.prefix(2)) }, "期限", "\(reading): \(top(reading) ?? "")")
+        }
+        // ほかの きげん は崩さない
+        for (reading, expected) in [
+            ("じんるいのきげん", "人類の起源"), ("せいめいのきげん", "生命の起源"), ("きげんをまもる", "期限を守る"),
+            ("きげんがわるい", "機嫌が悪い"), ("きげんがいい", "機嫌がいい"), ("きげんをそこねる", "機嫌を損ねる"),
+            ("きげんぜん", "紀元前"), ("しょうみきげん", "賞味期限"), ("きげんがきれる", "期限が切れる")
+        ] {
+            XCTAssertEqual(top(reading), expected, reading)
+        }
+    }
+
     // 3841: て形+は+いる(やってはいる。強調・限定の は)が やって入る だった。入り方を言う動詞の後ろ(走って入る)と
     // 〜に入る はそのまま。みせのかいてん は 店の開店(回転率 などはそのまま)。数字を確定した直後の じかいてん は 時開店
     // (次かいてん/字かいてん が先頭だった)。ユーザ指定
@@ -30758,9 +30800,10 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(single("ごたっぷ").first, "誤タップ")
         XCTAssertEqual(single("ごたっち").first, "誤タッチ")
         XCTAssertEqual(top("がめんをたっぷ"), "画面をタップ")
-        // きげんがあった で終われば 期限、のか が続けば 起源
+        // きげんがあった は 期限。3840 では のか が続けば 起源 としたが、打っている途中で入れ替わるので 3843 で 期限 に揃えた
+        // (起源があったのか は 2 番め。testKigenStaysStableWhileTyping3843)
         XCTAssertEqual(top("きげんがあった"), "期限があった")
-        XCTAssertEqual(top("きげんがあったのか"), "起源があったのか")
+        XCTAssertEqual(top("きげんがあったのか"), "期限があったのか")
         // て形+は+います(強調・限定の は)。這う は て形の後ろでなければそのまま
         for (reading, expected) in [
             ("ひやしてはいます", "冷やしてはいます"), ("みてはいます", "見てはいます"), ("よんではいます", "読んではいます"),
