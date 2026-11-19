@@ -23911,6 +23911,31 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(list.prefix(5)), ["1人", "ひとり", "一人", "火取り", "独り"], "\(list)")
     }
 
+    // 3835: X.8 の補助用言をオフにしても 下さい/御座います/御免なさい が出なかった(辞書にも活用の生成にも無い。ユーザ報告)。
+    // seed で供給する。オフなら かな の次、オン(初期設定)なら出さない
+    func testKanaGakiAuxiliaryKanjiSuppliedWhenUnsuppressed() throws {
+        try prepareRealLMDictionary()
+        let pairs = [("ください", "下さい"), ("ございます", "御座います"), ("ごめんなさい", "御免なさい")]
+        converter.setKanaGakiSuppressedCategories([])
+        for (reading, kanji) in pairs {
+            let list = converter.candidates(for: reading, limit: 6, systemCandidateMode: .surface)
+            XCTAssertEqual(Array(list.prefix(2)), [reading, kanji], "\(list)")
+            XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: reading), reading)
+        }
+        // 文の中の ください は かな のまま
+        let mite = converter.multiClauseCandidates(for: "みてください", systemCandidateMode: .surface)
+        XCTAssertEqual(mite.first, "見てください", "multi=\(mite.prefix(4))")
+        converter.setKanaGakiSuppressedCategories(Set(KanaGakiCategory.allCases.filter(\.suppressedByDefault)))
+        for (reading, kanji) in pairs {
+            let list = converter.candidates(for: reading, limit: 6, systemCandidateMode: .surface)
+            XCTAssertFalse(list.contains(kanji), "\(list)")
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertFalse(multi.contains(kanji), "multi=\(multi)")
+        }
+        let miteDefault = converter.multiClauseCandidates(for: "みてください", systemCandidateMode: .surface)
+        XCTAssertEqual(miteDefault.first, "見てください", "multi=\(miteDefault.prefix(4))")
+    }
+
     // 3404: かなで書く言葉(KanaGakiTable)。初期設定は全部抑制=漢字を出さない。抑制しない仲間は かな が先頭で漢字は後ろ
     func testKanaGakiSuppressionAndKanaFirst() throws {
         try prepareRealLMDictionary()
