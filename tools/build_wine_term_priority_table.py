@@ -38,6 +38,9 @@ LM_SQLITE = os.path.join(ROOT, "tmp", "kana_kanji_dictionary.sqlite")
 # 表に入れない読み(ユーザ指定 3810): こじょう=弧状(古城は が 弧状は。弧状 は は に続きにくい)、げんさん=減酸(原産 が先。地名+原産)、
 # いか=イカ(以下の が イカの。一般語でも 以下 が先)
 EXCLUDED_READINGS = {"こじょう", "げんさん", "いか"}
+# 文の中では上げない読み(ユーザ報告 3836): おまち=雄町。語 LM には稀でも、同じ読みの お待ち(お待ちください/お待ちになって)が
+# 日常の文に頻出で、おまちください が 雄町ください になっていた。読みだけ・読み+助詞 のときは 雄町 を先頭のままにする
+NOT_IN_SENTENCE_READINGS = {"おまち"}
 # 拾った語を差し替える読み(ユーザ指定 3810): しゅし は 手指 でなく 種子 を先に(アニスの種子 が アニスの手指)。
 # 読み → (先頭に置く語, 説明に出す一般語)
 OVERRIDES = {"しゅし": (["種子"], "趣旨")}
@@ -112,7 +115,8 @@ def write_table(src):
             rows.append((reading, ordered, top))
     rows.sort(key=lambda r: r[0])
     body = "".join("    " + reading + "\t" + "|".join(surfaces) + "\t" + top + "\t"
-                   + "|".join(s for s in surfaces if in_sentence(s)) + "\n" for reading, surfaces, top in rows)
+                   + "|".join(s for s in surfaces if reading not in NOT_IN_SENTENCE_READINGS and in_sentence(s)) + "\n"
+                   for reading, surfaces, top in rows)
     text = open(SWIFT, encoding="utf-8").read()
     begin = text.index("// BEGIN GENERATED TABLE")
     end = text.index("    // END GENERATED TABLE")

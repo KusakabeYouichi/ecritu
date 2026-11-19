@@ -30675,6 +30675,26 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("ぜんさいをたべる").first, "前菜を食べる")
     }
 
+    // 3836: ワイン用語優先がオン(デバッグ版の初期値)だと、おまちください が 雄町ください だった(ユーザ報告、実機)。
+    // 雄町(酒米)は おまち の先頭のままにし、ください/になる/して が続くときは お待ち にする
+    func testWineTermPriorityKeepsOmachiKudasai() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        func top(_ r: String) -> String? { multi(r).first ?? converter.candidates(for: r, limit: 3, systemCandidateMode: .surface).first }
+        converter.setWineTermPriorityEnabled(true)
+        defer { converter.setWineTermPriorityEnabled(false) }
+        for (reading, expected) in [
+            ("おまちください", "お待ちください"), ("おまちになって", "お待ちになって"),
+            ("おまちしています", "お待ちしています"), ("なかでおまちに", "中でお待ちに"),
+            // 酒米の 雄町 は崩さない
+            ("おまちをつかったさけ", "雄町を使った酒")
+        ] {
+            XCTAssertEqual(top(reading), expected, "\(reading): \(multi(reading).prefix(4))")
+        }
+        XCTAssertEqual(converter.candidates(for: "おまち", limit: 3, systemCandidateMode: .surface).first, "雄町")
+    }
+
     // 3805(ユーザ指定): ワイン用語優先(デバッグ版専用のスイッチ)。オンのとき、表(WineTermPriority)の読みは全部、ワイン用語が
     // 同じ読みの一般語より先(どうろ→Douro、たな→Tannat、こな→Kona)。助詞が 1 つ付いた形(どうろは)も。文の中では、読みが
     // 3 かな以上で日常の文にまず出ない語だけ(ドウロを擁します)。オフ(変換の本体の初期値。ほかのテストは全部この状態)では
