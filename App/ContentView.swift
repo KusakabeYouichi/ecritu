@@ -896,87 +896,19 @@ struct ContentView: View {
         }
     }
 
+    // 保存値(rawValue の文字列)の Binding を、選択肢の型の Binding に読み替える。読めない値は fallback。
+    // 以前は項目ごとに同じ形の計算プロパティが 39 個あった(3830 でここへ寄せ、使う側に直接書く)
     private func rawValueSelection<Option: RawRepresentable>(
-        from rawValue: String,
-        default fallback: Option,
-        onUpdate: @escaping (String) -> Void
+        _ rawValue: Binding<String>,
+        default fallback: Option
     ) -> Binding<Option> where Option.RawValue == String {
-        Binding(
-            get: { Option(rawValue: rawValue) ?? fallback },
-            set: { onUpdate($0.rawValue) }
+        // 値はここ(画面を組み立てている最中)で読んでおく。以前の計算プロパティと同じく、渡した先は
+        // この時点の値を見て、値が変われば組み立て直しで新しい値が渡る
+        let currentRawValue = rawValue.wrappedValue
+        return Binding(
+            get: { Option(rawValue: currentRawValue) ?? fallback },
+            set: { rawValue.wrappedValue = $0.rawValue }
         )
-    }
-
-    private var directionSelection: Binding<DirectionOption> {
-        rawValueSelection(from: directionProfileRawValue, default: .ecritu) {
-            directionProfileRawValue = $0
-        }
-    }
-
-    private var kanaLayoutSelection: Binding<KanaLayoutOption> {
-        rawValueSelection(from: kanaLayoutModeRawValue, default: .fiveByTwo) {
-            kanaLayoutModeRawValue = $0
-        }
-    }
-
-    private var landscapeCandidateSideSelection: Binding<LandscapeCandidateSideOption> {
-        rawValueSelection(from: landscapeCandidateSideRawValue, default: .left) {
-            landscapeCandidateSideRawValue = $0
-        }
-    }
-
-    private var landscapeNumberPaneSideSelection: Binding<LandscapeCandidateSideOption> {
-        rawValueSelection(from: landscapeNumberPaneSideRawValue, default: .left) {
-            landscapeNumberPaneSideRawValue = $0
-        }
-    }
-
-    private var landscapeLatinSuggestionModeSelection: Binding<LandscapeLatinSuggestionModeOption> {
-        rawValueSelection(from: landscapeLatinSuggestionModeRawValue, default: .sidebar) {
-            landscapeLatinSuggestionModeRawValue = $0
-        }
-    }
-
-    private var numeralStyleSelection: Binding<NumeralStylePreference> {
-        rawValueSelection(from: numeralStylePreferenceRawValue, default: .strategicDefault) {
-            numeralStylePreferenceRawValue = $0
-        }
-    }
-
-    private var kanaYaBracketSelection: Binding<KanaYaBracketOption> {
-        rawValueSelection(from: kanaYaBracketStyleRawValue, default: .doubleCorner) {
-            kanaYaBracketStyleRawValue = $0
-        }
-    }
-
-    private var kanaModifierPlacementSelection: Binding<KanaModifierPlacementOption> {
-        rawValueSelection(from: kanaModifierPlacementRawValue, default: .prefix) {
-            kanaModifierPlacementRawValue = $0
-        }
-    }
-
-    private var latinLayoutSelection: Binding<LatinLayoutOption> {
-        rawValueSelection(from: latinLayoutModeRawValue, default: .azerty) {
-            latinLayoutModeRawValue = $0
-        }
-    }
-
-    private var numberLayoutSelection: Binding<NumberLayoutOption> {
-        rawValueSelection(from: numberLayoutModeRawValue, default: .calculette) {
-            numberLayoutModeRawValue = $0
-        }
-    }
-
-    private var formattedNumberKeypadSelection: Binding<FormattedNumberKeypadOption> {
-        rawValueSelection(from: formattedNumberKeypadLayoutRawValue, default: .calculette) {
-            formattedNumberKeypadLayoutRawValue = $0
-        }
-    }
-
-    private var dateFormatStyleSelection: Binding<DateFormatStyleOption> {
-        rawValueSelection(from: dateFormatStyleRawValue, default: .japanese) {
-            dateFormatStyleRawValue = $0
-        }
     }
 
     // 桁区切りと小数点は同じ記号(, または .)にできない。衝突する変更をしたら、もう一方を
@@ -995,24 +927,6 @@ struct ContentView: View {
         )
     }
 
-    private var numberUnitProductSeparatorSelection: Binding<UnitProductSeparatorOption> {
-        rawValueSelection(from: numberUnitProductSeparatorRawValue, default: .middleDot) {
-            numberUnitProductSeparatorRawValue = $0
-        }
-    }
-
-    private var numberLitreSymbolSelection: Binding<LitreSymbolOption> {
-        rawValueSelection(from: numberLitreSymbolRawValue, default: .small) {
-            numberLitreSymbolRawValue = $0
-        }
-    }
-
-    private var degreeSymbolSelection: Binding<DegreeSymbolOption> {
-        rawValueSelection(from: degreeSymbolRawValue, default: .composed) {
-            degreeSymbolRawValue = $0
-        }
-    }
-
     private var numberDecimalSeparatorSelection: Binding<DecimalSeparatorOption> {
         Binding(
             get: { DecimalSeparatorOption(rawValue: numberDecimalSeparatorRawValue) ?? .dot },
@@ -1027,102 +941,12 @@ struct ContentView: View {
         )
     }
 
-    private var calendarWeekStartSelection: Binding<CalendarWeekStartOption> {
-        rawValueSelection(from: calendarWeekStartRawValue, default: .monday) {
-            calendarWeekStartRawValue = $0
-        }
-    }
-
-    private var calendarSundayColorSelection: Binding<CalendarDayColorOption> {
-        rawValueSelection(from: calendarSundayColorRawValue, default: .off) {
-            calendarSundayColorRawValue = $0
-        }
-    }
-
-    private var calendarFridayColorSelection: Binding<CalendarDayColorOption> {
-        rawValueSelection(from: calendarFridayColorRawValue, default: .off) {
-            calendarFridayColorRawValue = $0
-        }
-    }
-
-    private var calendarSaturdayColorSelection: Binding<CalendarDayColorOption> {
-        rawValueSelection(from: calendarSaturdayColorRawValue, default: .off) {
-            calendarSaturdayColorRawValue = $0
-        }
-    }
-
-    private var calendarWeekdayLanguageSelection: Binding<CalendarWeekdayLanguageOption> {
-        rawValueSelection(from: calendarWeekdayLanguageRawValue, default: .japanese) {
-            calendarWeekdayLanguageRawValue = $0
-        }
-    }
-
-    private var basicSymbolOrderSelection: Binding<BasicSymbolOrderOption> {
-        rawValueSelection(from: basicSymbolOrderRawValue, default: .ascii) {
-            basicSymbolOrderRawValue = $0
-        }
-    }
-
-    private var kanaFlickGuideDisplayModeSelection: Binding<FlickGuideDisplayOption> {
-        rawValueSelection(from: kanaFlickGuideDisplayModeRawValue, default: .fourDirections) {
-            kanaFlickGuideDisplayModeRawValue = $0
-        }
-    }
-
-    private var latinFlickGuideDisplayModeSelection: Binding<FlickGuideDisplayOption> {
-        rawValueSelection(from: latinFlickGuideDisplayModeRawValue, default: .fourDirections) {
-            latinFlickGuideDisplayModeRawValue = $0
-        }
-    }
-
-    private var numberFlickGuideDisplayModeSelection: Binding<FlickGuideDisplayOption> {
-        rawValueSelection(from: numberFlickGuideDisplayModeRawValue, default: .fourDirections) {
-            numberFlickGuideDisplayModeRawValue = $0
-        }
-    }
-
-    private var modifierFlickGuideDisplayModeSelection: Binding<FlickGuideDisplayOption> {
-        rawValueSelection(from: modifierFlickGuideDisplayModeRawValue, default: .fourDirections) {
-            modifierFlickGuideDisplayModeRawValue = $0
-        }
-    }
-
     private var isLatinFlickLayoutSelected: Bool {
         (LatinLayoutOption(rawValue: latinLayoutModeRawValue) ?? .azerty) == .flick
     }
 
-    private var kanaKanjiCandidateSourceModeSelection: Binding<KanaKanjiCandidateSourceModeOption> {
-        rawValueSelection(from: kanaKanjiCandidateSourceModeRawValue, default: .surface) {
-            kanaKanjiCandidateSourceModeRawValue = $0
-        }
-    }
-
-    private var contactCandidateDisplayModeSelection: Binding<ContactCandidateDisplayModeOption> {
-        rawValueSelection(from: contactCandidateDisplayModeRawValue, default: .off) {
-            contactCandidateDisplayModeRawValue = $0
-        }
-    }
-
-    private var userDictionaryCandidateDisplayModeSelection: Binding<UserDictionaryCandidateDisplayModeOption> {
-        rawValueSelection(from: userDictionaryCandidateDisplayModeRawValue, default: .on) {
-            userDictionaryCandidateDisplayModeRawValue = $0
-        }
-    }
-
     var shouldUseContactCandidates: Bool {
         (ContactCandidateDisplayModeOption(rawValue: contactCandidateDisplayModeRawValue) ?? .off) != .off
-    }
-
-    private var accentPaletteSelection: Binding<AccentColorOption> {
-        rawValueSelection(from: accentPaletteRawValue, default: .emeraude) {
-            accentPaletteRawValue = $0
-        }
-    }
-
-    private var keyboardBackgroundThemeSelection: Binding<KeyboardBackgroundThemeOption> {
-        rawValueSelection(from: keyboardBackgroundThemeRawValue, default: .bleu) {
-            keyboardBackgroundThemeRawValue = $0
-        }
     }
 
     // スライダーの値が初期値の近傍(snapThreshold 以内)なら初期値に吸着させる
@@ -1157,60 +981,6 @@ struct ContentView: View {
                 )
             }
         )
-    }
-
-    private var leftModeSwitchNumberKeyRightFlickActionSelection: Binding<KanaModeSwitcherActionOption> {
-        rawValueSelection(from: leftModeSwitchNumberKeyRightFlickActionRawValue, default: .formattedNumber) {
-            leftModeSwitchNumberKeyRightFlickActionRawValue = $0
-        }
-    }
-
-    private var leftModeSwitchLatinKeyRightFlickActionSelection: Binding<KanaModeSwitcherActionOption> {
-        rawValueSelection(from: leftModeSwitchLatinKeyRightFlickActionRawValue, default: .emoji) {
-            leftModeSwitchLatinKeyRightFlickActionRawValue = $0
-        }
-    }
-
-    private var leftModeSwitchKanaKeyRightFlickActionSelection: Binding<KanaModeSwitcherActionOption> {
-        rawValueSelection(from: leftModeSwitchKanaKeyRightFlickActionRawValue, default: .kanjiRadical) {
-            leftModeSwitchKanaKeyRightFlickActionRawValue = $0
-        }
-    }
-
-    private var kanaModeSwitcherTapActionSelection: Binding<KanaModeSwitcherActionOption> {
-        rawValueSelection(from: kanaModeSwitcherTapActionRawValue, default: .emoji) {
-            kanaModeSwitcherTapActionRawValue = $0
-        }
-    }
-
-    private var kanaModeSwitcherRightFlickActionSelection: Binding<KanaModeSwitcherActionOption> {
-        rawValueSelection(from: kanaModeSwitcherRightFlickActionRawValue, default: .kaomoji) {
-            kanaModeSwitcherRightFlickActionRawValue = $0
-        }
-    }
-
-    private var compactKeyboardSwitchKeyRightFlickActionSelection: Binding<KanaModeSwitcherActionOption> {
-        rawValueSelection(from: compactKeyboardSwitchKeyRightFlickActionRawValue, default: .kaomoji) {
-            compactKeyboardSwitchKeyRightFlickActionRawValue = $0
-        }
-    }
-
-    private var compactKeyboardSwitchKeyUpFlickActionSelection: Binding<KanaModeSwitcherActionOption> {
-        rawValueSelection(from: compactKeyboardSwitchKeyUpFlickActionRawValue, default: .symbols) {
-            compactKeyboardSwitchKeyUpFlickActionRawValue = $0
-        }
-    }
-
-    private var kanaPostModifierEmptyTapActionSelection: Binding<KanaPostModifierEmptyTapActionOption> {
-        rawValueSelection(from: kanaPostModifierEmptyTapActionRawValue, default: .default) {
-            kanaPostModifierEmptyTapActionRawValue = $0
-        }
-    }
-
-    private var delimiterAutoCommitCandidateSelection: Binding<DelimiterAutoCommitCandidateOption> {
-        rawValueSelection(from: delimiterAutoCommitCandidateRawValue, default: .one) {
-            delimiterAutoCommitCandidateRawValue = $0
-        }
     }
 
     private var canAddAjoutVocabularyEntry: Bool {
@@ -1320,28 +1090,28 @@ struct ContentView: View {
     // 各カードの .id は題字のメニュー(項目へ飛ぶ。SettingsJumpMenu、3699)の目印
     @ViewBuilder
     private var layoutSettingsCards: some View {
-        KanaLayoutSettingsSection(selection: kanaLayoutSelection)
+        KanaLayoutSettingsSection(selection: rawValueSelection($kanaLayoutModeRawValue, default: .fiveByTwo))
             .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("L.1"))
 
-        LatinLayoutSettingsSection(selection: latinLayoutSelection)
+        LatinLayoutSettingsSection(selection: rawValueSelection($latinLayoutModeRawValue, default: .azerty))
             .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("L.2"))
 
         NumberLayoutSettingsSection(
-            selection: numberLayoutSelection,
-            formattedNumberKeypad: formattedNumberKeypadSelection
+            selection: rawValueSelection($numberLayoutModeRawValue, default: .calculette),
+            formattedNumberKeypad: rawValueSelection($formattedNumberKeypadLayoutRawValue, default: .calculette)
         )
         .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("L.3"))
 
-        BasicSymbolOrderSettingsSection(selection: basicSymbolOrderSelection)
+        BasicSymbolOrderSettingsSection(selection: rawValueSelection($basicSymbolOrderRawValue, default: .ascii))
             .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("L.4"))
 
-        KanaModifierSettingsSection(selection: kanaModifierPlacementSelection)
+        KanaModifierSettingsSection(selection: rawValueSelection($kanaModifierPlacementRawValue, default: .prefix))
             .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("L.5"))
     }
 
     @ViewBuilder
     private var inputSettingsCards: some View {
-        DirectionSettingsSection(selection: directionSelection)
+        DirectionSettingsSection(selection: rawValueSelection($directionProfileRawValue, default: .ecritu))
             .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("E.1"))
 
         KeyRepeatSettingsSection(
@@ -1367,18 +1137,18 @@ struct ContentView: View {
             .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("E.4"))
 
         KanaModeSwitcherAssignmentSection(
-            numberKeyRightFlickSelection: leftModeSwitchNumberKeyRightFlickActionSelection,
-            latinKeyRightFlickSelection: leftModeSwitchLatinKeyRightFlickActionSelection,
-            kanaKeyRightFlickSelection: leftModeSwitchKanaKeyRightFlickActionSelection,
-            tapSelection: kanaModeSwitcherTapActionSelection,
-            rightFlickSelection: kanaModeSwitcherRightFlickActionSelection,
-            compactKeyRightFlickSelection: compactKeyboardSwitchKeyRightFlickActionSelection,
-            compactKeyUpFlickSelection: compactKeyboardSwitchKeyUpFlickActionSelection
+            numberKeyRightFlickSelection: rawValueSelection($leftModeSwitchNumberKeyRightFlickActionRawValue, default: .formattedNumber),
+            latinKeyRightFlickSelection: rawValueSelection($leftModeSwitchLatinKeyRightFlickActionRawValue, default: .emoji),
+            kanaKeyRightFlickSelection: rawValueSelection($leftModeSwitchKanaKeyRightFlickActionRawValue, default: .kanjiRadical),
+            tapSelection: rawValueSelection($kanaModeSwitcherTapActionRawValue, default: .emoji),
+            rightFlickSelection: rawValueSelection($kanaModeSwitcherRightFlickActionRawValue, default: .kaomoji),
+            compactKeyRightFlickSelection: rawValueSelection($compactKeyboardSwitchKeyRightFlickActionRawValue, default: .kaomoji),
+            compactKeyUpFlickSelection: rawValueSelection($compactKeyboardSwitchKeyUpFlickActionRawValue, default: .symbols)
         )
         .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("E.5"))
 
         KanaPostModifierEmptyTapAssignmentSection(
-            actionSelection: kanaPostModifierEmptyTapActionSelection,
+            actionSelection: rawValueSelection($kanaPostModifierEmptyTapActionRawValue, default: .default),
             kaomojiCategoryID: $kanaPostModifierEmptyTapKaomojiCategoryID,
             emojiCategoryID: $kanaPostModifierEmptyTapEmojiCategoryID,
             symbolCategoryID: $kanaPostModifierEmptyTapSymbolCategoryID
@@ -1398,17 +1168,17 @@ struct ContentView: View {
         )
         .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("E.8"))
 
-        KanaYaBracketSettingsSection(selection: kanaYaBracketSelection)
+        KanaYaBracketSettingsSection(selection: rawValueSelection($kanaYaBracketStyleRawValue, default: .doubleCorner))
             .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("E.9"))
     }
 
     @ViewBuilder
     private var keyDisplaySettingsCards: some View {
         FlickGuideDisplaySettingsSection(
-            kanaSelection: kanaFlickGuideDisplayModeSelection,
-            latinSelection: latinFlickGuideDisplayModeSelection,
-            numberSelection: numberFlickGuideDisplayModeSelection,
-            modifierSelection: modifierFlickGuideDisplayModeSelection,
+            kanaSelection: rawValueSelection($kanaFlickGuideDisplayModeRawValue, default: .fourDirections),
+            latinSelection: rawValueSelection($latinFlickGuideDisplayModeRawValue, default: .fourDirections),
+            numberSelection: rawValueSelection($numberFlickGuideDisplayModeRawValue, default: .fourDirections),
+            modifierSelection: rawValueSelection($modifierFlickGuideDisplayModeRawValue, default: .fourDirections),
             isLatinGuideAvailable: isLatinFlickLayoutSelected
         )
         .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("G.1"))
@@ -1417,18 +1187,18 @@ struct ContentView: View {
     @ViewBuilder
     private var displaySettingsCards: some View {
         LandscapeCandidateSideSettingsSection(
-            selection: landscapeCandidateSideSelection,
-            latinSuggestionMode: landscapeLatinSuggestionModeSelection
+            selection: rawValueSelection($landscapeCandidateSideRawValue, default: .left),
+            latinSuggestionMode: rawValueSelection($landscapeLatinSuggestionModeRawValue, default: .sidebar)
         )
         .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("V.1"))
 
-        LandscapeNumberPaneSideSettingsSection(selection: landscapeNumberPaneSideSelection)
+        LandscapeNumberPaneSideSettingsSection(selection: rawValueSelection($landscapeNumberPaneSideRawValue, default: .left))
             .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("V.2"))
 
-        AccentColorSettingsSection(selection: accentPaletteSelection)
+        AccentColorSettingsSection(selection: rawValueSelection($accentPaletteRawValue, default: .emeraude))
             .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("V.3"))
 
-        ThemeColorSettingsSection(selection: keyboardBackgroundThemeSelection)
+        ThemeColorSettingsSection(selection: rawValueSelection($keyboardBackgroundThemeRawValue, default: .bleu))
             .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("V.4"))
 
         CandidateFontStyleSettingsSection(
@@ -1446,21 +1216,21 @@ struct ContentView: View {
             thousandsSeparator: numberThousandsSeparatorSelection,
             groupFourDigits: $numberGroupFourDigits,
             decimalSeparator: numberDecimalSeparatorSelection,
-            unitProductSeparator: numberUnitProductSeparatorSelection,
-            litreSymbol: numberLitreSymbolSelection
+            unitProductSeparator: rawValueSelection($numberUnitProductSeparatorRawValue, default: .middleDot),
+            litreSymbol: rawValueSelection($numberLitreSymbolRawValue, default: .small)
         )
         .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("F.1"))
 
-        DegreSettingsSection(degreeSymbol: degreeSymbolSelection)
+        DegreSettingsSection(degreeSymbol: rawValueSelection($degreeSymbolRawValue, default: .composed))
             .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("F.2"))
 
         CalendarSettingsGroupSection(
-            weekStart: calendarWeekStartSelection,
-            weekdayLanguage: calendarWeekdayLanguageSelection,
-            sundayColor: calendarSundayColorSelection,
-            fridayColor: calendarFridayColorSelection,
-            saturdayColor: calendarSaturdayColorSelection,
-            dateFormatStyle: dateFormatStyleSelection
+            weekStart: rawValueSelection($calendarWeekStartRawValue, default: .monday),
+            weekdayLanguage: rawValueSelection($calendarWeekdayLanguageRawValue, default: .japanese),
+            sundayColor: rawValueSelection($calendarSundayColorRawValue, default: .off),
+            fridayColor: rawValueSelection($calendarFridayColorRawValue, default: .off),
+            saturdayColor: rawValueSelection($calendarSaturdayColorRawValue, default: .off),
+            dateFormatStyle: rawValueSelection($dateFormatStyleRawValue, default: .japanese)
         )
         .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("F.3"))
     }
@@ -1468,12 +1238,12 @@ struct ContentView: View {
     @ViewBuilder
     private var conversionSettingsCards: some View {
         DelimiterAutoCommitCandidateSettingsSection(
-            selection: delimiterAutoCommitCandidateSelection
+            selection: rawValueSelection($delimiterAutoCommitCandidateRawValue, default: .one)
         )
         .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.1"))
 
         KanaKanjiCandidateSourceModeSettingsSection(
-            selection: kanaKanjiCandidateSourceModeSelection
+            selection: rawValueSelection($kanaKanjiCandidateSourceModeRawValue, default: .surface)
         )
         .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.2"))
 
@@ -1558,16 +1328,16 @@ struct ContentView: View {
         .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.15"))
 
         ContactCandidateDisplaySettingsSection(
-            selection: contactCandidateDisplayModeSelection
+            selection: rawValueSelection($contactCandidateDisplayModeRawValue, default: .off)
         )
         .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.16"))
 
         UserDictionaryCandidateDisplaySettingsSection(
-            selection: userDictionaryCandidateDisplayModeSelection
+            selection: rawValueSelection($userDictionaryCandidateDisplayModeRawValue, default: .on)
         )
         .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.17"))
 
-        NumeralStyleSettingsSection(selection: numeralStyleSelection)
+        NumeralStyleSettingsSection(selection: rawValueSelection($numeralStylePreferenceRawValue, default: .strategicDefault))
             .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.18"))
     }
 
