@@ -30868,7 +30868,7 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(shown("るいけい").prefix(2)), ["累計", "類型"])
     }
 
-    // 3860: 藩の名前(references/fiefs.plist)。登録なしでは候補に出なかった 42 藩を、読み全体がその読みのときだけ候補の
+    // 3860: 藩の名前(references/provinces-fiefs.plist)。登録なしでは候補に出なかった 42 藩を、読み全体がその読みのときだけ候補の
     // 3 番め以内に足す(先頭は奪わない)。1 語として登録すると ほかの文を奪った(高梁藩 → 高橋班長 が 高梁藩長、館藩 → 縦半分 が 館藩分、
     // 水戸藩 → 水戸藩士 が 水戸藩市)ので、文の中の変換は変えない
     func testFiefNamesAppearWithoutStealingSentences3860() throws {
@@ -30881,8 +30881,8 @@ extension KanaKanjiConverterRegressionTests {
             if let first = single.first, !list.isEmpty, !list.contains(first) { merged.insert(first, at: 1) }
             return merged + single.filter { !merged.contains($0) }
         }
-        XCTAssertEqual(TrailingCandidateTable.surfacesByReading.values.reduce(0) { $0 + $1.count }, 42)
-        for (reading, surfaces) in TrailingCandidateTable.surfacesByReading {
+        XCTAssertEqual(TrailingCandidateTable.surfacesByReading.values.reduce(0) { $0 + $1.count }, 137)
+        for (reading, surfaces) in TrailingCandidateTable.surfacesByReading where reading.hasSuffix("はん") {
             let list = shown(reading)
             for surface in surfaces {
                 XCTAssertTrue(list.prefix(4).contains(surface), "\(reading): \(surface) が 4 番め以内に無い \(list.prefix(6))")
@@ -30899,6 +30899,35 @@ extension KanaKanjiConverterRegressionTests {
             XCTAssertEqual(shown(reading).first, expected, "\(reading): \(shown(reading).prefix(4))")
         }
         XCTAssertFalse(shown("たかはしはんちょう").contains { $0.contains("高梁藩") })
+    }
+
+    // 3861: 旧国名と州(references/provinces-fiefs.plist)。名前+国(むさしのくに → 武蔵国)は 86 国とも候補に出ず 〜の国 だけだった。
+    // 州の別名 8 つと 石狩 も出なかった。藩と同じく、読み全体がその読みのときだけ 4 番め以内に足し、先頭と文の中は変えない
+    func testProvinceNamesAppearWithoutStealingSentences3861() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func shown(_ r: String) -> [String] {
+            let list = converter.multiClauseCandidates(for: r, systemCandidateMode: .surface)
+            let single = converter.candidates(for: r, limit: 30, systemCandidateMode: .surface)
+            var merged = list
+            if let first = single.first, !list.isEmpty, !list.contains(first) { merged.insert(first, at: 1) }
+            return merged + single.filter { !merged.contains($0) }
+        }
+        for (reading, surfaces) in TrailingCandidateTable.surfacesByReading where !reading.hasSuffix("はん") {
+            let list = shown(reading)
+            for surface in surfaces {
+                // 同じ読みに 2 つあるとき(あわのくに の 安房国/阿波国、としゅう の 渡州/土州)は 7 番めまで
+                let window = surfaces.count > 1 ? 7 : 5
+                XCTAssertTrue(list.prefix(window).contains(surface), "\(reading): \(surface) が \(window) 番め以内に無い \(list.prefix(8))")
+            }
+        }
+        // 先頭は奪わない
+        for (reading, expected) in [
+            ("むさしのくに", "武蔵野国"), ("やまとのくに", "大和の国"), ("いしゅう", "異臭"), ("こうしゅう", "甲州"),
+            ("ゆめのくに", "夢の国"), ("むさしのくににいく", "武蔵野国に行く"),
+        ] {
+            XCTAssertEqual(shown(reading).first, expected, "\(reading): \(shown(reading).prefix(4))")
+        }
     }
 
     // 3859: ユーザ指定 3 件。(1) しゅき は 酒器 が先頭(手記、朱熹 の順だった)。(2) 数字の直後の だけん は 打鍵(100駄犬 だった)。
