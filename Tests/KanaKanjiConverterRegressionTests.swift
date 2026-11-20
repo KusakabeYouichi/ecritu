@@ -28459,7 +28459,8 @@ extension KanaKanjiConverterRegressionTests {
     // 理屈/理窟 だけ(ユーザ指定 3739)
     func testLateStandardizedTableSeparatesGroups() {
         XCTAssertEqual(KanjiRewriteTable.lateStandardizedPairs.count, 17)
-        XCTAssertEqual(KanjiRewriteTable.switchablePairs.count, 292)
+        // 292 から 智慧/知恵 を外した数(3854)
+        XCTAssertEqual(KanjiRewriteTable.switchablePairs.count, 291)
         XCTAssertTrue(KanjiRewriteTable.lateStandardizedPairs.contains { $0.before == "肝腎" && $0.after == "肝心" })
         XCTAssertNil(KanjiRewriteTable.afterByBefore["肝腎"])
         let lateWords = Set(KanjiRewriteTable.lateStandardizedPairs.flatMap { [$0.before, $0.after] })
@@ -30865,6 +30866,30 @@ extension KanaKanjiConverterRegressionTests {
             XCTAssertEqual(list.first, expected, "\(reading): \(list)")
         }
         XCTAssertEqual(Array(shown("るいけい").prefix(2)), ["累計", "類型"])
+    }
+
+    // 3854: 智慧/知恵 は 同音の漢字による書きかえ(X.9)の対象から外す(ユーザ指定)。智慧 は 知恵 の意味に加えて仏教の語でも
+    // あり、字を替えただけの組でない。X.9 が 両方(本来の漢字を先に)のとき ちえ の先頭が 智慧 になり、3853 の並びが崩れていた
+    func testChieIsNotAKanjiRewritePair3854() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let expected = ["知恵", "千恵", "智恵", "千絵", "智慧", "智絵", "千枝", "知絵", "千江", "知枝", "智枝"]
+        for preference in KanjiRewritePreference.allCases {
+            converter.setKanjiRewritePreference(preference)
+            converter.invalidateCandidateCache()
+            let chie = converter.candidates(for: "ちえ", limit: 30, systemCandidateMode: .surface)
+            XCTAssertEqual(Array(chie.prefix(11)), expected, "\(preference.rawValue): \(chie)")
+        }
+        // ほかの組は今までどおり(本来の漢字を先に なら 醗酵 が 発酵 の前)
+        converter.setKanjiRewritePreference(.bothBeforeFirst)
+        converter.invalidateCandidateCache()
+        let hakkou = converter.candidates(for: "はっこう", limit: 60, systemCandidateMode: .surface)
+        XCTAssertEqual(hakkou.first, "醗酵", "\(hakkou)")
+        converter.setKanjiRewritePreference(.afterOnly)
+        converter.invalidateCandidateCache()
+        let hakkouAfterOnly = converter.candidates(for: "はっこう", limit: 60, systemCandidateMode: .surface)
+        XCTAssertTrue(hakkouAfterOnly.contains("発酵"), "\(hakkouAfterOnly)")
+        XCTAssertFalse(hakkouAfterOnly.contains("醗酵"), "\(hakkouAfterOnly)")
     }
 
     // 3852: ユーザ指定。(1) あなをほっとく は 穴を掘っとく(放っとく の登録で 穴を放っとく になった)。(2) まい の前の区切り:
