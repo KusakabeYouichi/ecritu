@@ -30,7 +30,8 @@ def main() -> int:
         if header:
             section = header.group(1)
             continue
-        entry = ENTRY.search(line)
+        # コメントアウトした組(行頭の <!--<dict>…</dict>-->)は載せない(智慧/知恵。3854)
+        entry = ENTRY.search(re.sub(r"<!--.*?-->", "", line))
         if entry and section:
             before, after = entry.group(1), entry.group(2)
             if len(before) != len(after):

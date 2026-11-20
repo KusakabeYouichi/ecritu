@@ -208,7 +208,7 @@
 	<dict><key>before</key><string>短篇</string><key>after</key><string>短編</string></dict>
 	<dict><key>before</key><string>煖房</string><key>after</key><string>暖房</string></dict>	<!-- (建) -->
 	<dict><key>before</key><string>煖炉</string><key>after</key><string>暖炉</string></dict>	<!-- (建) -->
-	<dict><key>before</key><string>智慧</string><key>after</key><string>知恵</string></dict>
+<!--	<dict><key>before</key><string>智慧</string><key>after</key><string>知恵</string></dict>-->	<!-- 智慧/知恵 は対象から外す(ユーザ指定 3854): 字を替えただけの 1 対 1 の組でなく、智慧 は 知恵 の意味に加えて仏教の 真理を悟る力(般若)も指す。X.9 が 本来の漢字を先に のとき ちえ の先頭が 智慧 になり、指定の並び(知恵、千恵、智恵、千絵、智慧…)が崩れていた -->
 	<dict><key>before</key><string>智能</string><key>after</key><string>知能</string></dict>
 	<dict><key>before</key><string>智謀</string><key>after</key><string>知謀</string></dict>
 	<dict><key>before</key><string>註解</string><key>after</key><string>注解</string></dict>

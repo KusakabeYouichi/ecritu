@@ -209,7 +209,6 @@ public enum KanjiRewriteTable {
         ("短篇", "短編", false),
         ("煖房", "暖房", false),
         ("煖炉", "暖炉", false),
-        ("智慧", "知恵", false),
         ("智能", "知能", false),
         ("智謀", "知謀", false),
         ("註解", "注解", false),
