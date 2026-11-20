@@ -30817,6 +30817,56 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertFalse(shown("あるまいし").contains { $0.contains("毎") || $0.contains("マイ") || $0.contains("枚") })
     }
 
+    // 3853: がめいきんしれい は ガメイ禁止令(ワイン用語優先がオンだと きんし が 菌糸 に寄り、菌糸+例 との差が 860 しかなく、
+    // 実機で ガメイ菌糸例 が先頭になることがあった。禁止+令 の組に加点。ユーザ指定)
+    func testKinshireiWithWineTermPriority3853() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for wine in [false, true] {
+            converter.setWineTermPriorityEnabled(wine)
+            converter.invalidateCandidateCache()
+            for (reading, expected) in [("がめいきんしれい", "ガメイ禁止令"), ("がいしゅつきんしれい", "外出禁止令"), ("きんしれいをだす", "禁止令を出す")] {
+                let list = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+                XCTAssertEqual(list.first, expected, "ワイン用語優先=\(wine) \(reading): \(list)")
+            }
+        }
+        converter.setWineTermPriorityEnabled(false)
+    }
+
+    // 3853: ユーザ指定 3 件。(1) ちえ の並び(語の 知恵 の後ろに人名)。(2) いしきさん は人名を先に(一色さん、意識さん… の順だった。
+    // 一色 は ふつう いっしき と読むので人名の後ろ、人名でない 意識/違式 はその後ろ)。(3) るいけい は 累計 が先(類型 が先だった)
+    func testChieIshikiSanAndRuikeiOrder3853() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func shown(_ r: String) -> [String] {
+            let list = converter.multiClauseCandidates(for: r, systemCandidateMode: .surface)
+            return list + converter.candidates(for: r, limit: 30, systemCandidateMode: .surface).filter { !list.contains($0) }
+        }
+        let chie = converter.candidates(for: "ちえ", limit: 30, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(chie.prefix(11)), ["知恵", "千恵", "智恵", "千絵", "智慧", "智絵", "千枝", "知絵", "千江", "知枝", "智枝"], "\(chie)")
+        XCTAssertEqual(shown("ちえをかりる").first, "知恵を借りる")
+        let ishiki = shown("いしきさん")
+        XCTAssertEqual(Array(ishiki.prefix(2)), ["伊敷さん", "石木さん"], "\(ishiki)")
+        for name in ["伊敷さん", "石木さん", "石喜さん", "居敷さん", "石記さん"] {
+            for other in ["一色さん", "意識さん", "違式さん"] {
+                guard let nameIndex = ishiki.firstIndex(of: name), let otherIndex = ishiki.firstIndex(of: other) else { continue }
+                XCTAssertLessThan(nameIndex, otherIndex, "\(name) は \(other) より前: \(ishiki)")
+            }
+        }
+        if let isshiki = ishiki.firstIndex(of: "一色さん"), let consciousness = ishiki.firstIndex(of: "意識さん") {
+            XCTAssertLessThan(isshiki, consciousness, "\(ishiki)")
+        }
+        for (reading, expected) in [
+            ("いしきさんがきた", "伊敷さんが来た"), ("いしき", "意識"), ("いしきがたかい", "意識が高い"),
+            ("いっしきさん", "一色さん"), ("おかやまさん", "岡山さん"),
+            ("るいけい", "累計"), ("るいけいで", "累計で"), ("るいけいか", "類型化"), ("るいけいてきに", "類型的に"),
+        ] {
+            let list = shown(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list)")
+        }
+        XCTAssertEqual(Array(shown("るいけい").prefix(2)), ["累計", "類型"])
+    }
+
     // 3852: ユーザ指定。(1) あなをほっとく は 穴を掘っとく(放っとく の登録で 穴を放っとく になった)。(2) まい の前の区切り:
     // にどとするまい(に度とする毎 だった。二度と を登録)、だれもくるまい(誰も来米)、そうはさせまい/そうはさせない(走破させ…)、
     // きっぷをかうまい(下+うまい)。(3) それはなんだい は それは何だい(何台 だった)。(4) いってた は 言ってた が先頭

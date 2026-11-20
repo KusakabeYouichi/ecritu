@@ -1144,7 +1144,9 @@ extension KanaKanjiConverter {
     // おかやまさん が 丘やまさん、おおさかさん に 大坂サン が出て、地名+産 は単文節の後ろにしか無かった
     func placeNameSanOrdered(reading: String, candidates: [String], systemCandidateMode: KanaKanjiCandidateSourceMode) -> [String] {
         let normalized = KanaTextNormalizer.normalizedReading(reading)
-        guard candidates.count >= 2, normalized.count >= 4, normalized.hasSuffix("さん") else {
+        // seed で並びを決めた読み(いしきさん: 人名を先に、地名でもある 一色 は後ろ。3853)は、その並びのまま
+        guard candidates.count >= 2, normalized.count >= 4, normalized.hasSuffix("さん"),
+            Self.multiClauseSeed(normalized) == nil else {
             return candidates
         }
         // 補った地名(区分 登録。琉球の地名など)は名字と同じ表記が多いので、地名+さん の並べ替えには使わない

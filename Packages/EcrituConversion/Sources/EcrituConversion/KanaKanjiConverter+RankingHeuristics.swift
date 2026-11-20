@@ -111,7 +111,8 @@ extension KanaKanjiConverter {
         learned: Set<String>,
         to scores: inout [String: Int]
     ) {
-        guard reading.count >= 4, reading.hasSuffix("さん") else {
+        // seed で並びを決めた読み(いしきさん: 人名を先に、地名でもある 一色 は後ろ。3853)は、その並びのまま
+        guard reading.count >= 4, reading.hasSuffix("さん"), Self.multiClauseSeed(reading) == nil else {
             return
         }
         let stemReading = String(reading.dropLast(2))
