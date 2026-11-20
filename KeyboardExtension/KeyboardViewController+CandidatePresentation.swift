@@ -237,6 +237,11 @@ extension KeyboardViewController {
             let timingQueueStartAt = CFAbsoluteTimeGetCurrent()
             var timingMultiMs = 0.0
             var timingTraceMs = 0.0
+            // 連文節の段ごとの時間(3857)
+            if KanaKanjiConverter.multiClausePhaseProbe == nil {
+                KanaKanjiConverter.multiClausePhaseProbe = { ConversionPhaseRecorder.mark($0) }
+            }
+            ConversionPhaseRecorder.begin()
             #endif
             let converterLimit = max(
                 presentationLimit * ExternalCandidateLimits.lookupMultiplier,
@@ -266,6 +271,9 @@ extension KeyboardViewController {
             if Self.isMultiClauseConversionEnabled {
                 // 直前の確定済み文字が数字なら文頭の助数詞を持ち上げる(2 確定→じしけんが→次試験が。2887)。
                 // 単文節側の digitContextCounterBoostedCandidates と同じ文脈判定(値は kickoff 時に main で読んだもの)
+                #if DEBUG
+                ConversionPhaseRecorder.restart()
+                #endif
                 var multiClause = autoreleasepool {
                     converter.multiClauseCandidates(
                         for: reading,
@@ -286,6 +294,7 @@ extension KeyboardViewController {
                     }
                 }
                 #if DEBUG
+                ConversionPhaseRecorder.pause()
                 let timingMultiEndAt = CFAbsoluteTimeGetCurrent()
                 timingMultiMs = (timingMultiEndAt - timingSingleEndAt) * 1000
                 #endif
@@ -385,6 +394,7 @@ extension KeyboardViewController {
             let timingQueueEndAt = CFAbsoluteTimeGetCurrent()
             let timingMulti = timingMultiMs
             let timingTrace = timingTraceMs
+            let timingMultiPhases = ConversionPhaseRecorder.end()
             #endif
             DispatchQueue.main.async {
                 defer {
@@ -416,7 +426,8 @@ extension KeyboardViewController {
                         traceMs: timingTrace,
                         mainWaitMs: (timingMainStartAt - timingQueueEndAt) * 1000,
                         applyMs: (timingEndAt - timingMainStartAt) * 1000,
-                        totalMs: (timingEndAt - timingKickoffAt) * 1000
+                        totalMs: (timingEndAt - timingKickoffAt) * 1000,
+                        multiPhaseMs: timingMultiPhases
                     ))
                 }
                 #else

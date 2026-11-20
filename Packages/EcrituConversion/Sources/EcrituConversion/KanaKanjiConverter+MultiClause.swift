@@ -6,7 +6,8 @@ import Foundation
 extension KanaKanjiConverter {
     // 確保の実測用(3096): multiClauseCandidates の段階境界で呼ぶ。テストが差し込んで段階ごとの確保数を数える。
     // 通常は nil(Optional の nil 判定 1 回だけ)
-    nonisolated(unsafe) static var multiClausePhaseProbe: ((String) -> Void)?
+    // キーボード側のデバッグ版の計測(ConversionPhaseRecorder。3857)も差し込むので public
+    nonisolated(unsafe) public static var multiClausePhaseProbe: ((String) -> Void)?
     // トレース用の環境変数は 1 回だけ読む(ProcessInfo.environment は呼ぶたびに辞書を組み直し、変換ごとに約 800 回確保していた。3096)
     // 変換ごとの大きな作業容器を使い回す(計画文書 案 2。3097)。ノード配列や ID 対の表は 1 回の変換で数十 KB の
     // 大きな確保になり、毎回作り直すとアリーナの大きな塊の区画を出入りして断片化を育てる。容量を保ったまま空にして
