@@ -16550,7 +16550,8 @@ extension KanaKanjiConverterRegressionTests {
         print(String(format: "PERF cold multi=%.1fms single=%.1fms (n=%d)", multiMs, singleMs, readings.count))
         var hotMs = 0.0
         let rounds = Int(ProcessInfo.processInfo.environment["PERF_ROUNDS"] ?? "") ?? 3
-        for _ in 0..<rounds { for r in readings {
+        // TEST_RUNNER_PERF_HOT_ROUNDS=0 で、この巡回を飛ばして下の打鍵どおりの計測だけにできる(プロファイル用)
+        for _ in 0..<(Int(ProcessInfo.processInfo.environment["PERF_HOT_ROUNDS"] ?? "") ?? rounds) { for r in readings {
             converter.invalidateCandidateCache()
             let t = CFAbsoluteTimeGetCurrent()
             _ = converter.multiClauseCandidates(for: r, systemCandidateMode: .surface)
@@ -30814,6 +30815,34 @@ extension KanaKanjiConverterRegressionTests {
         }
         XCTAssertTrue(shown("はじめてみた").prefix(3).contains("始めてみた"))
         XCTAssertFalse(shown("あるまいし").contains { $0.contains("毎") || $0.contains("マイ") || $0.contains("枚") })
+    }
+
+    // 3852: ユーザ指定。(1) あなをほっとく は 穴を掘っとく(放っとく の登録で 穴を放っとく になった)。(2) まい の前の区切り:
+    // にどとするまい(に度とする毎 だった。二度と を登録)、だれもくるまい(誰も来米)、そうはさせまい/そうはさせない(走破させ…)、
+    // きっぷをかうまい(下+うまい)。(3) それはなんだい は それは何だい(何台 だった)。(4) いってた は 言ってた が先頭
+    // (行く か 言う か決められない場面。に/へ/まで の後ろは 行ってた)
+    func testMaiSegmentationNandaiAndIttetaUserReports3852() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func shown(_ r: String) -> [String] {
+            let list = converter.multiClauseCandidates(for: r, systemCandidateMode: .surface)
+            return list + converter.candidates(for: r, limit: 30, systemCandidateMode: .surface).filter { !list.contains($0) }
+        }
+        for (reading, expected) in [
+            ("あなをほっとく", "穴を掘っとく"), ("いどをほっとく", "井戸を掘っとく"), ("それをほっとく", "それを放っとく"),
+            ("にどとするまい", "二度とするまい"), ("にどとしない", "二度としない"), ("にどといかない", "二度と行かない"),
+            ("だれもくるまい", "誰も来るまい"), ("そうはさせまい", "そうはさせまい"), ("そうはさせない", "そうはさせない"),
+            ("にほんじゅうをそうはする", "日本中を走破する"), ("くるまいす", "車椅子"),
+            ("それはなんだい", "それは何だい"), ("どうなんだい", "どうなんだい"), ("なんだいもある", "何台もある"),
+            ("いってた", "言ってた"), ("いってたよ", "言ってたよ"), ("かれがいってた", "彼が言ってた"), ("そういってた", "そう言ってた"),
+            ("がっこうにいってた", "学校に行ってた"), ("とうきょうへいってた", "東京へ行ってた"), ("えきまでいってた", "駅まで行ってた"),
+            ("どこにいってたの", "どこに行ってたの"),
+        ] {
+            let list = shown(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list)")
+        }
+        XCTAssertTrue(shown("きっぷをかうまい").prefix(2).contains("切符を買うまい"), "\(shown("きっぷをかうまい"))")
+        XCTAssertEqual(Array(shown("いってた").prefix(3)), ["言ってた", "行ってた", "いってた"])
     }
 
     // 3848: はなっとく は 放っとく と かな だけで、は納得 が無かった(1+はなっとく。ユーザ指定: 先頭でなく 2 番めでよい)

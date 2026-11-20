@@ -47,6 +47,7 @@ extension KanaKanjiConverter {
     // Release では読むだけ読んで使っていなかった(セキュリティー検査 2026-10-02)。Release に環境変数の参照を残さない
     // 動詞の辞書形の直後の かなの まい への加点(使う所のコメント参照。3851)
     static let multiClauseNegativeConjectureMaiAfterVerbBonus = 3000
+    static let multiClauseNegativeConjectureMaiAfterVerbCost = 1500
     // かなで書く動詞の辞書形(かなの語は辞書形の述語の印が付かないので名指しする)
     static let multiClauseKanaVerbsBeforeNegativeConjectureMai: Set<String> = [
         "ある", "じゃある", "ではある", "でもある", "する", "いる", "なる", "くる", "やる", "できる", "いく", "わかる", "しれる",
@@ -5248,7 +5249,11 @@ extension KanaKanjiConverter {
                         if nodeIsKanaNegativeConjectureMai,
                             prevNode.isDictionaryFormPredicate
                                 || Self.multiClauseKanaVerbsBeforeNegativeConjectureMai.contains(prevNode.surface) {
-                            cost -= Self.multiClauseNegativeConjectureMaiAfterVerbBonus
+                            // 前の語によって組の値段が大きく違う(ある→まい 4951、する→まい 8813)ので、加点に加えて上限も掛ける
+                            // (にどとするまい が する毎、きっぷをかうまい が 下+うまい だった。3852)
+                            cost = min(
+                                cost - Self.multiClauseNegativeConjectureMaiAfterVerbBonus,
+                                prevCost + Self.multiClauseNegativeConjectureMaiAfterVerbCost)
                         }
                         // て形の直後の 入る(やって入る/冷やして入る)。〜ては+いる(やってはいる。強調・限定の は)が普通なので 入る を
                         // 下げる(ユーザ指定 3841)。走って入る/並んで入る のように、入り方を言う動詞の後ろはそのまま
