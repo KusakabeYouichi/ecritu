@@ -9,6 +9,11 @@ import PackageDescription
 // 付けないと 1 打鍵が 2 割ほど遅くなる(切り出し前は拡張の 1 module でまとめて最適化されていた)。
 let crossModuleOptimization: [SwiftSetting] = [
     .unsafeFlags(["-cross-module-optimization"], .when(configuration: .release)),
+    // デバッグ版でも変換は最適化する(3856)。⌘R と TestFlight はデバッグ版で、変換が最適化なしだと 1 打鍵 36ms、
+    // 長い文の連文節 140ms。最適化すると 16ms / 58ms(Mac。2.3〜2.4 倍)。1 ファイル直した後のビルドは 50〜66 秒で変わらない。
+    // 代わりに、デバッガーで変換のコードを 1 行ずつ止めたときに変数が見えにくい(ユーザ判断: その予定は無い)。
+    // DEBUG の条件(#if DEBUG のトレース・診断)は別の指定なので、そのまま有効
+    .unsafeFlags(["-O"], .when(configuration: .debug)),
 ]
 
 let package = Package(
