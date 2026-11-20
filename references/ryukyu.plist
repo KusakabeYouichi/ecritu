@@ -6417,5 +6417,68 @@
 	<dict><key>phrase</key><string>よか寿司</string><key>shortcut</key><string>よかずし</string></dict>
 	<dict><key>phrase</key><string>マーミヤ</string><key>shortcut</key><string>まーみや</string></dict>
 	<dict><key>phrase</key><string>Neuchātel</string><key>shortcut</key><string>ぬーしゃてる</string></dict>
+	<!-- 沖縄の地名・人物・名所の追加分(2026-11-20。行末の #2026écritu が印) -->
+	<dict><key>phrase</key><string>龍潭</string><key>shortcut</key><string>りゅうたん</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>弁財天堂</string><key>shortcut</key><string>べざいてんどう</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>於茂登岳</string><key>shortcut</key><string>おもとだけ</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>仲間川</string><key>shortcut</key><string>なかまがわ</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>底仁屋</string><key>shortcut</key><string>そこにや</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>茅打ちバンタ</string><key>shortcut</key><string>かやうちばんた</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>伊江島タッチュー</string><key>shortcut</key><string>いえじまたっちゅー</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>タッチュー</string><key>shortcut</key><string>たっちゅー</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>謝名親方</string><key>shortcut</key><string>じゃなうえかた</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>野国総管</string><key>shortcut</key><string>のぐにそうかん</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>恩納なべ</string><key>shortcut</key><string>おんななべ</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>吉屋チルー</string><key>shortcut</key><string>よしやちるー</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>伊波普猷</string><key>shortcut</key><string>いはふゆう</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>謝花昇</string><key>shortcut</key><string>じゃはなのぼる</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>瀬長亀次郎</string><key>shortcut</key><string>せながかめじろう</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>具志堅宗精</string><key>shortcut</key><string>ぐしけんそうせい</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>船越義珍</string><key>shortcut</key><string>ふなこしぎちん</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>宮城長順</string><key>shortcut</key><string>みやぎちょうじゅん</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>摩文仁賢和</string><key>shortcut</key><string>まぶにけんわ</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>知花朝信</string><key>shortcut</key><string>ちばなちょうしん</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>喜屋武朝徳</string><key>shortcut</key><string>きゃんちょうとく</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>本部朝基</string><key>shortcut</key><string>もとぶちょうき</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>糸洲安恒</string><key>shortcut</key><string>いとすあんこう</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>松村宗棍</string><key>shortcut</key><string>まつむらそうこん</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>佐久川寛賀</string><key>shortcut</key><string>さくがわかんが</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>喜納昌吉</string><key>shortcut</key><string>きなしょうきち</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>登川誠仁</string><key>shortcut</key><string>のぼりかわせいじん</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>嘉手苅林昌</string><key>shortcut</key><string>かでかるりんしょう</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>知名定男</string><key>shortcut</key><string>ちなさだお</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>古謝美佐子</string><key>shortcut</key><string>こじゃみさこ</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>夏川りみ</string><key>shortcut</key><string>なつかわりみ</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>新垣結衣</string><key>shortcut</key><string>あらがきゆい</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>仲間由紀恵</string><key>shortcut</key><string>なかまゆきえ</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>比嘉愛未</string><key>shortcut</key><string>ひがまなみ</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>国仲涼子</string><key>shortcut</key><string>くになかりょうこ</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>山田優</string><key>shortcut</key><string>やまだゆう</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>黒木メイサ</string><key>shortcut</key><string>くろきめいさ</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>満島ひかり</string><key>shortcut</key><string>みつしまひかり</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>二階堂ふみ</string><key>shortcut</key><string>にかいどうふみ</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>宮里藍</string><key>shortcut</key><string>みやざとあい</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>宮里優作</string><key>shortcut</key><string>みやざとゆうさく</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>東浜巨</string><key>shortcut</key><string>ひがしはまなお</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>山川穂高</string><key>shortcut</key><string>やまかわほたか</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>又吉直樹</string><key>shortcut</key><string>またよしなおき</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>浦添ようどれ</string><key>shortcut</key><string>うらそえようどれ</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>安慶名城</string><key>shortcut</key><string>あげなじょう</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>北山城</string><key>shortcut</key><string>ほくざんじょう</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>豊見城城</string><key>shortcut</key><string>とみぐすくじょう</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>普天満宮</string><key>shortcut</key><string>ふてんまぐう</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>知念岬</string><key>shortcut</key><string>ちねんみさき</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>ニライカナイ橋</string><key>shortcut</key><string>にらいかないばし</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>摩文仁の丘</string><key>shortcut</key><string>まぶにのおか</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>北谷アメリカンビレッジ</string><key>shortcut</key><string>ちゃたんあめりかんびれっじ</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>嘉手納基地</string><key>shortcut</key><string>かでなきち</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>普天間基地</string><key>shortcut</key><string>ふてんまきち</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>キャンプシュワブ</string><key>shortcut</key><string>きゃんぷしゅわぶ</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>キャンプハンセン</string><key>shortcut</key><string>きゃんぷはんせん</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>牧港補給地区</string><key>shortcut</key><string>まきみなとほきゅうちく</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>奥武山公園駅</string><key>shortcut</key><string>おうのやまこうえんえき</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>市立病院前駅</string><key>shortcut</key><string>しりつびょういんまええき</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>横臥褶曲</string><key>shortcut</key><string>おうがしゅうきょく</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>嘉陽層</string><key>shortcut</key><string>かようそう</string></dict>	<!-- #2026écritu -->
 </array>
 </plist>
