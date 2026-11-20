@@ -6486,5 +6486,6 @@
 	<dict><key>phrase</key><string>円覚寺跡</string><key>shortcut</key><string>えんかくじあと</string></dict>	<!-- #2026écritu -->
 	<dict><key>phrase</key><string>放生池</string><key>shortcut</key><string>ほうじょうち</string></dict>	<!-- #2026écritu -->
 	<dict><key>phrase</key><string>放生橋</string><key>shortcut</key><string>ほうじょうばし</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>龍淵橋</string><key>shortcut</key><string>りゅうえんきょう</string></dict>	<!-- #2026écritu -->
 </array>
 </plist>
