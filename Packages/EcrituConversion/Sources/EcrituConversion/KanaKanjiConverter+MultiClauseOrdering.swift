@@ -853,6 +853,18 @@ extension KanaKanjiConverter {
         ("はしのほう", ["端のほう", "箸のほう", "橋のほう", "端の方", "箸の方", "橋の方"]),
     ]
 
+    // て形の後ろの ほしい は補助の用法でかなが先(してほしかった/教えてほしいです/やめてほしくない。して欲しかった が先頭だった。
+    // 3859、ユーザ指定)。それが欲しかった/水が欲しい のように動詞に付かない 欲しい は漢字のまま。活用したかなの ほしかった は
+    // ラティスに語が無く(ほしい だけ)、全部かなの最良(してほしい)は捨てられて 欲しい への差し替えが先頭になるので、
+    // 並びの最後で 先頭の候補の て欲し/で欲し を かなに替えた形を先頭に置き、元の先頭を 2 番めに残す
+    static func teHoshiiKanaFirstOrdered(_ candidates: [String]) -> [String] {
+        guard let top = candidates.first, top.contains("て欲し") || top.contains("で欲し") else {
+            return candidates
+        }
+        let kana = top.replacingOccurrences(of: "て欲し", with: "てほし").replacingOccurrences(of: "で欲し", with: "でほし")
+        return [kana, top] + candidates.filter { $0 != kana && $0 != top }
+    }
+
     static func leadingSurfaceOrdered(reading: String, candidates: [String]) -> [String] {
         // 手がかりは、頭が表の表記の最初の候補(単文節は 橋野ほうがいいね が先頭で、表の表記で始まる候補はその後ろにある。
         // 画面は単文節の先頭を連文節の 2 番めに差し込むので、単文節の先頭も揃えておく)

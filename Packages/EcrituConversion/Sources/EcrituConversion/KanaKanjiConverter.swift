@@ -505,6 +505,8 @@ public final class KanaKanjiConverter {
         finalCandidates = Self.kanaLastOrdered(reading: normalizedReading, candidates: finalCandidates)
         // 文の頭の表記の並びを決めた読み(はしのほうがいいね。連文節の側と揃える。3855)
         finalCandidates = Self.leadingSurfaceOrdered(reading: normalizedReading, candidates: finalCandidates)
+        // て形の後ろの ほしい はかなが先(してほしい。連文節の側と揃える。3859)
+        finalCandidates = Self.teHoshiiKanaFirstOrdered(finalCandidates)
 
         if !finalCandidates.isEmpty {
             withStateLock {

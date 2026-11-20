@@ -30868,6 +30868,59 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(shown("るいけい").prefix(2)), ["累計", "類型"])
     }
 
+    // 3859: ユーザ指定 3 件。(1) しゅき は 酒器 が先頭(手記、朱熹 の順だった)。(2) 数字の直後の だけん は 打鍵(100駄犬 だった)。
+    // (3) て形の後ろの ほしい/ほしかった はかなが先(して欲しかった だった)、動詞に付かない 欲しい は漢字のまま(それが欲しかった)
+    func testShukiDakenCounterAndTeHoshiiKana3859() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func shown(_ r: String, after digit: Character? = nil) -> [String] {
+            let list = converter.multiClauseCandidates(for: r, systemCandidateMode: .surface, precedingCharacter: digit)
+            let single = converter.candidates(for: r, limit: 30, systemCandidateMode: .surface)
+            var merged = list
+            if let first = single.first, !list.isEmpty, !list.contains(first) { merged.insert(first, at: 1) }
+            return merged + single.filter { !merged.contains($0) }
+        }
+        XCTAssertEqual(Array(shown("しゅき").prefix(3)), ["酒器", "手記", "朱熹"])
+        XCTAssertEqual(shown("しゅきをかく").first, "手記を書く")
+        let afterDigit = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+            converter.candidates(for: "だけん", limit: 8, systemCandidateMode: .surface), reading: "だけん", precedingCharacter: "0",
+            tailConversion: { self.converter.counterTailConversion($0) },
+            isCommonWord: { self.converter.isCommonWordForCounterBlock($0) })
+        XCTAssertEqual(afterDigit.first, "打鍵", "\(afterDigit)")
+        XCTAssertEqual(shown("だけんごとに", after: "0").first, "打鍵ごとに")
+        for (reading, first, second) in [
+            ("してほしかった", "してほしかった", "して欲しかった"), ("してほしい", "してほしい", "して欲しい"),
+            ("おしえてほしいです", "教えてほしいです", "教えて欲しいです"), ("やめてほしくない", "やめてほしくない", "やめて欲しくない"),
+            ("てつだってほしかったのに", "手伝ってほしかったのに", "手伝って欲しかったのに"), ("よんでほしかった", "読んでほしかった", "読んで欲しかった"),
+        ] {
+            let list = shown(reading)
+            XCTAssertEqual(Array(list.prefix(2)), [first, second], "\(reading): \(list)")
+        }
+        for (reading, expected) in [
+            ("それがほしかった", "それが欲しかった"), ("ほしかった", "欲しかった"), ("ほしい", "欲しい"), ("これがほしい", "これが欲しい"),
+            ("みずがほしい", "水が欲しい"), ("おかねがほしくて", "お金が欲しくて"), ("あたらしいのがほしかったんだ", "新しいのが欲しかったんだ"),
+            ("みてほしい", "見てほしい"), ("かってほしい", "買ってほしい"),
+        ] {
+            let list = shown(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list)")
+        }
+    }
+
+    // 3859: ryukyu に足した語(印 #2026écritu)が、付けた読みで出る
+    func testRyukyuAdditions3859() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("おうがしゅうきょく", "横臥褶曲"), ("かようそう", "嘉陽層"), ("じゃなうえかた", "謝名親方"), ("おもとだけ", "於茂登岳"),
+            ("ひがしはまなお", "東浜巨"), ("べざいてんどう", "弁財天堂"), ("いはふゆう", "伊波普猷"), ("きゃんぷしゅわぶ", "キャンプシュワブ"),
+            ("ふてんまぐう", "普天満宮"), ("おうのやまこうえんえき", "奥武山公園駅"),
+        ] {
+            let list = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+                + converter.candidates(for: reading, limit: 30, systemCandidateMode: .surface)
+            XCTAssertTrue(list.prefix(3).contains(expected), "\(reading): \(list.prefix(6))")
+        }
+    }
+
     // 3855: ユーザ指摘 2 件。(1) はしのほうがいいね は 端のほう、箸のほう、橋のほう、端の方、箸の方、橋の方 の順(橋の方がいいね、
     // 橋野ほうがいいね、橋のほうがいいね、端の方がいいね… だった)。(2) ふぞく は どの形でも 附属、付属、付嘱 の順(3772 の指定は
     // 活用した 5 形だけに効いていて、ふぞく/ふぞくしている/ふぞくの は 付属 が先。打っている途中で入れ替わっていた)
