@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<!-- 候補の後ろのほうに足す語(3860)。読み全体がこの読みのときだけ、単文節の候補の 3 番めに足す。先頭は奪わず、文の中の変換にも
+	     効かない。compenser や補助語彙に 1 語として入れると値段が安く、ほかの文を奪う語のための置き場
+	     (高梁藩 を入れると 高橋班長 が 高梁藩長、館藩 を入れると 縦半分 が 館藩分 になった)。
+	     直したら python3 tools/build_trailing_candidate_table.py を流してコミットする -->
+	<!-- ■ 旧国名(令制国 68+明治の分割 6+北海道 11+琉球 の 86 国を 名前/名前+国/州 の 3 つの形で確かめ(239 形)、登録なしでは
+	     候補に出なかったもの。名前そのものは 石狩 だけ、名前+国 は 86 国とも出なかった(〜の国 になる)。3861。ユーザ指定 2026-11-20) -->
+	<!-- □ 名前 -->
+	<dict><key>phrase</key><string>石狩</string><key>shortcut</key><string>いしかり</string></dict>
+	<!-- □ 名前+国(読みは 〜のくに) -->
+	<dict><key>phrase</key><string>山城国</string><key>shortcut</key><string>やましろのくに</string></dict>
+	<dict><key>phrase</key><string>大和国</string><key>shortcut</key><string>やまとのくに</string></dict>
+	<dict><key>phrase</key><string>河内国</string><key>shortcut</key><string>かわちのくに</string></dict>
+	<dict><key>phrase</key><string>和泉国</string><key>shortcut</key><string>いずみのくに</string></dict>
+	<dict><key>phrase</key><string>摂津国</string><key>shortcut</key><string>せっつのくに</string></dict>
+	<dict><key>phrase</key><string>伊賀国</string><key>shortcut</key><string>いがのくに</string></dict>
+	<dict><key>phrase</key><string>伊勢国</string><key>shortcut</key><string>いせのくに</string></dict>
+	<dict><key>phrase</key><string>志摩国</string><key>shortcut</key><string>しまのくに</string></dict>
+	<dict><key>phrase</key><string>尾張国</string><key>shortcut</key><string>おわりのくに</string></dict>
+	<dict><key>phrase</key><string>三河国</string><key>shortcut</key><string>みかわのくに</string></dict>
+	<dict><key>phrase</key><string>遠江国</string><key>shortcut</key><string>とおとうみのくに</string></dict>
+	<dict><key>phrase</key><string>駿河国</string><key>shortcut</key><string>するがのくに</string></dict>
+	<dict><key>phrase</key><string>伊豆国</string><key>shortcut</key><string>いずのくに</string></dict>
+	<dict><key>phrase</key><string>甲斐国</string><key>shortcut</key><string>かいのくに</string></dict>
+	<dict><key>phrase</key><string>相模国</string><key>shortcut</key><string>さがみのくに</string></dict>
+	<dict><key>phrase</key><string>武蔵国</string><key>shortcut</key><string>むさしのくに</string></dict>
+	<dict><key>phrase</key><string>安房国</string><key>shortcut</key><string>あわのくに</string></dict>
+	<dict><key>phrase</key><string>上総国</string><key>shortcut</key><string>かずさのくに</string></dict>
+	<dict><key>phrase</key><string>下総国</string><key>shortcut</key><string>しもうさのくに</string></dict>
+	<dict><key>phrase</key><string>常陸国</string><key>shortcut</key><string>ひたちのくに</string></dict>
+	<dict><key>phrase</key><string>近江国</string><key>shortcut</key><string>おうみのくに</string></dict>
+	<dict><key>phrase</key><string>美濃国</string><key>shortcut</key><string>みののくに</string></dict>
+	<dict><key>phrase</key><string>飛騨国</string><key>shortcut</key><string>ひだのくに</string></dict>
+	<dict><key>phrase</key><string>信濃国</string><key>shortcut</key><string>しなののくに</string></dict>
+	<dict><key>phrase</key><string>上野国</string><key>shortcut</key><string>こうずけのくに</string></dict>
+	<dict><key>phrase</key><string>下野国</string><key>shortcut</key><string>しもつけのくに</string></dict>
+	<dict><key>phrase</key><string>陸奥国</string><key>shortcut</key><string>むつのくに</string></dict>
+	<dict><key>phrase</key><string>出羽国</string><key>shortcut</key><string>でわのくに</string></dict>
+	<dict><key>phrase</key><string>磐城国</string><key>shortcut</key><string>いわきのくに</string></dict>
+	<dict><key>phrase</key><string>岩代国</string><key>shortcut</key><string>いわしろのくに</string></dict>
+	<dict><key>phrase</key><string>陸前国</string><key>shortcut</key><string>りくぜんのくに</string></dict>
+	<dict><key>phrase</key><string>陸中国</string><key>shortcut</key><string>りくちゅうのくに</string></dict>
+	<dict><key>phrase</key><string>羽前国</string><key>shortcut</key><string>うぜんのくに</string></dict>
+	<dict><key>phrase</key><string>羽後国</string><key>shortcut</key><string>うごのくに</string></dict>
+	<dict><key>phrase</key><string>若狭国</string><key>shortcut</key><string>わかさのくに</string></dict>
+	<dict><key>phrase</key><string>越前国</string><key>shortcut</key><string>えちぜんのくに</string></dict>
+	<dict><key>phrase</key><string>加賀国</string><key>shortcut</key><string>かがのくに</string></dict>
+	<dict><key>phrase</key><string>能登国</string><key>shortcut</key><string>のとのくに</string></dict>
+	<dict><key>phrase</key><string>越中国</string><key>shortcut</key><string>えっちゅうのくに</string></dict>
+	<dict><key>phrase</key><string>越後国</string><key>shortcut</key><string>えちごのくに</string></dict>
+	<dict><key>phrase</key><string>佐渡国</string><key>shortcut</key><string>さどのくに</string></dict>
+	<dict><key>phrase</key><string>丹波国</string><key>shortcut</key><string>たんばのくに</string></dict>
+	<dict><key>phrase</key><string>丹後国</string><key>shortcut</key><string>たんごのくに</string></dict>
+	<dict><key>phrase</key><string>但馬国</string><key>shortcut</key><string>たじまのくに</string></dict>
+	<dict><key>phrase</key><string>因幡国</string><key>shortcut</key><string>いなばのくに</string></dict>
+	<dict><key>phrase</key><string>伯耆国</string><key>shortcut</key><string>ほうきのくに</string></dict>
+	<dict><key>phrase</key><string>出雲国</string><key>shortcut</key><string>いずものくに</string></dict>
+	<dict><key>phrase</key><string>石見国</string><key>shortcut</key><string>いわみのくに</string></dict>
+	<dict><key>phrase</key><string>隠岐国</string><key>shortcut</key><string>おきのくに</string></dict>
+	<dict><key>phrase</key><string>播磨国</string><key>shortcut</key><string>はりまのくに</string></dict>
+	<dict><key>phrase</key><string>美作国</string><key>shortcut</key><string>みまさかのくに</string></dict>
+	<dict><key>phrase</key><string>備前国</string><key>shortcut</key><string>びぜんのくに</string></dict>
+	<dict><key>phrase</key><string>備中国</string><key>shortcut</key><string>びっちゅうのくに</string></dict>
+	<dict><key>phrase</key><string>備後国</string><key>shortcut</key><string>びんごのくに</string></dict>
+	<dict><key>phrase</key><string>安芸国</string><key>shortcut</key><string>あきのくに</string></dict>
+	<dict><key>phrase</key><string>周防国</string><key>shortcut</key><string>すおうのくに</string></dict>
+	<dict><key>phrase</key><string>長門国</string><key>shortcut</key><string>ながとのくに</string></dict>
+	<dict><key>phrase</key><string>紀伊国</string><key>shortcut</key><string>きいのくに</string></dict>
+	<dict><key>phrase</key><string>淡路国</string><key>shortcut</key><string>あわじのくに</string></dict>
+	<dict><key>phrase</key><string>阿波国</string><key>shortcut</key><string>あわのくに</string></dict>
+	<dict><key>phrase</key><string>讃岐国</string><key>shortcut</key><string>さぬきのくに</string></dict>
+	<dict><key>phrase</key><string>伊予国</string><key>shortcut</key><string>いよのくに</string></dict>
+	<dict><key>phrase</key><string>土佐国</string><key>shortcut</key><string>とさのくに</string></dict>
+	<dict><key>phrase</key><string>筑前国</string><key>shortcut</key><string>ちくぜんのくに</string></dict>
+	<dict><key>phrase</key><string>筑後国</string><key>shortcut</key><string>ちくごのくに</string></dict>
+	<dict><key>phrase</key><string>豊前国</string><key>shortcut</key><string>ぶぜんのくに</string></dict>
+	<dict><key>phrase</key><string>豊後国</string><key>shortcut</key><string>ぶんごのくに</string></dict>
+	<dict><key>phrase</key><string>肥前国</string><key>shortcut</key><string>ひぜんのくに</string></dict>
+	<dict><key>phrase</key><string>肥後国</string><key>shortcut</key><string>ひごのくに</string></dict>
+	<dict><key>phrase</key><string>日向国</string><key>shortcut</key><string>ひゅうがのくに</string></dict>
+	<dict><key>phrase</key><string>大隅国</string><key>shortcut</key><string>おおすみのくに</string></dict>
+	<dict><key>phrase</key><string>薩摩国</string><key>shortcut</key><string>さつまのくに</string></dict>
+	<dict><key>phrase</key><string>壱岐国</string><key>shortcut</key><string>いきのくに</string></dict>
+	<dict><key>phrase</key><string>対馬国</string><key>shortcut</key><string>つしまのくに</string></dict>
+	<dict><key>phrase</key><string>渡島国</string><key>shortcut</key><string>おしまのくに</string></dict>
+	<dict><key>phrase</key><string>後志国</string><key>shortcut</key><string>しりべしのくに</string></dict>
+	<dict><key>phrase</key><string>胆振国</string><key>shortcut</key><string>いぶりのくに</string></dict>
+	<dict><key>phrase</key><string>石狩国</string><key>shortcut</key><string>いしかりのくに</string></dict>
+	<dict><key>phrase</key><string>天塩国</string><key>shortcut</key><string>てしおのくに</string></dict>
+	<dict><key>phrase</key><string>北見国</string><key>shortcut</key><string>きたみのくに</string></dict>
+	<dict><key>phrase</key><string>日高国</string><key>shortcut</key><string>ひだかのくに</string></dict>
+	<dict><key>phrase</key><string>十勝国</string><key>shortcut</key><string>とかちのくに</string></dict>
+	<dict><key>phrase</key><string>釧路国</string><key>shortcut</key><string>くしろのくに</string></dict>
+	<dict><key>phrase</key><string>根室国</string><key>shortcut</key><string>ねむろのくに</string></dict>
+	<dict><key>phrase</key><string>千島国</string><key>shortcut</key><string>ちしまのくに</string></dict>
+	<dict><key>phrase</key><string>琉球国</string><key>shortcut</key><string>りゅうきゅうのくに</string></dict>
+	<!-- ■ 州(旧国名の別の呼び名 67 形のうち、登録なしでは候補に出なかった 8 つ。山城/安房/陸奥/佐渡/土佐/日向/壱岐 の別名と 雍州。参州/濃州/江州 など 20 語は compenser.plist の 令制国の別称 の節にある) -->
+	<dict><key>phrase</key><string>山州</string><key>shortcut</key><string>さんしゅう</string></dict>
+	<dict><key>phrase</key><string>雍州</string><key>shortcut</key><string>ようしゅう</string></dict>
+	<dict><key>phrase</key><string>安州</string><key>shortcut</key><string>あんしゅう</string></dict>
+	<dict><key>phrase</key><string>陸州</string><key>shortcut</key><string>りくしゅう</string></dict>
+	<dict><key>phrase</key><string>渡州</string><key>shortcut</key><string>としゅう</string></dict>
+	<dict><key>phrase</key><string>土州</string><key>shortcut</key><string>としゅう</string></dict>
+	<dict><key>phrase</key><string>向州</string><key>shortcut</key><string>こうしゅう</string></dict>
+	<dict><key>phrase</key><string>壱州</string><key>shortcut</key><string>いしゅう</string></dict>
+	<!-- ■ 藩(江戸時代の終わりごろの藩と通称のうち、登録なしでは候補に出なかった 42 藩。約 310 藩を確かめ、残りは 地名+藩 の合成で
+	     出る。読みは 語幹の地名の読み+はん。鹿奴藩・豊浦藩 は読みが不確かで入れていない。ユーザ指定 2026-11-20) -->
+	<dict><key>phrase</key><string>館藩</string><key>shortcut</key><string>たてはん</string></dict>
+	<dict><key>phrase</key><string>黒石藩</string><key>shortcut</key><string>くろいしはん</string></dict>
+	<dict><key>phrase</key><string>新庄藩</string><key>shortcut</key><string>しんじょうはん</string></dict>
+	<dict><key>phrase</key><string>松嶺藩</string><key>shortcut</key><string>まつみねはん</string></dict>
+	<dict><key>phrase</key><string>佐野藩</string><key>shortcut</key><string>さのはん</string></dict>
+	<dict><key>phrase</key><string>吹上藩</string><key>shortcut</key><string>ふきあげはん</string></dict>
+	<dict><key>phrase</key><string>忍藩</string><key>shortcut</key><string>おしはん</string></dict>
+	<dict><key>phrase</key><string>大多喜藩</string><key>shortcut</key><string>おおたきはん</string></dict>
+	<dict><key>phrase</key><string>佐貫藩</string><key>shortcut</key><string>さぬきはん</string></dict>
+	<dict><key>phrase</key><string>飯野藩</string><key>shortcut</key><string>いいのはん</string></dict>
+	<dict><key>phrase</key><string>請西藩</string><key>shortcut</key><string>じょうざいはん</string></dict>
+	<dict><key>phrase</key><string>多古藩</string><key>shortcut</key><string>たこはん</string></dict>
+	<dict><key>phrase</key><string>田野口藩</string><key>shortcut</key><string>たのくちはん</string></dict>
+	<dict><key>phrase</key><string>加納藩</string><key>shortcut</key><string>かのうはん</string></dict>
+	<dict><key>phrase</key><string>挙母藩</string><key>shortcut</key><string>ころもはん</string></dict>
+	<dict><key>phrase</key><string>津藩</string><key>shortcut</key><string>つはん</string></dict>
+	<dict><key>phrase</key><string>神戸藩</string><key>shortcut</key><string>かんべはん</string></dict>
+	<dict><key>phrase</key><string>山上藩</string><key>shortcut</key><string>やまかみはん</string></dict>
+	<dict><key>phrase</key><string>山家藩</string><key>shortcut</key><string>やまがはん</string></dict>
+	<dict><key>phrase</key><string>狭山藩</string><key>shortcut</key><string>さやまはん</string></dict>
+	<dict><key>phrase</key><string>安志藩</string><key>shortcut</key><string>あんじはん</string></dict>
+	<dict><key>phrase</key><string>山崎藩</string><key>shortcut</key><string>やまさきはん</string></dict>
+	<dict><key>phrase</key><string>母里藩</string><key>shortcut</key><string>もりはん</string></dict>
+	<dict><key>phrase</key><string>備前藩</string><key>shortcut</key><string>びぜんはん</string></dict>
+	<dict><key>phrase</key><string>生坂藩</string><key>shortcut</key><string>いくさかはん</string></dict>
+	<dict><key>phrase</key><string>真島藩</string><key>shortcut</key><string>ましまはん</string></dict>
+	<dict><key>phrase</key><string>高梁藩</string><key>shortcut</key><string>たかはしはん</string></dict>
+	<dict><key>phrase</key><string>安芸藩</string><key>shortcut</key><string>あきはん</string></dict>
+	<dict><key>phrase</key><string>新谷藩</string><key>shortcut</key><string>にいやはん</string></dict>
+	<dict><key>phrase</key><string>筑前藩</string><key>shortcut</key><string>ちくぜんはん</string></dict>
+	<dict><key>phrase</key><string>香春藩</string><key>shortcut</key><string>かわらはん</string></dict>
+	<dict><key>phrase</key><string>千束藩</string><key>shortcut</key><string>ちづかはん</string></dict>
+	<dict><key>phrase</key><string>日出藩</string><key>shortcut</key><string>ひじはん</string></dict>
+	<dict><key>phrase</key><string>岡藩</string><key>shortcut</key><string>おかはん</string></dict>
+	<dict><key>phrase</key><string>森藩</string><key>shortcut</key><string>もりはん</string></dict>
+	<dict><key>phrase</key><string>五島藩</string><key>shortcut</key><string>ごとうはん</string></dict>
+	<dict><key>phrase</key><string>斗南藩</string><key>shortcut</key><string>となみはん</string></dict>
+	<dict><key>phrase</key><string>湯長谷藩</string><key>shortcut</key><string>ゆながやはん</string></dict>
+	<dict><key>phrase</key><string>生実藩</string><key>shortcut</key><string>おゆみはん</string></dict>
+	<dict><key>phrase</key><string>西端藩</string><key>shortcut</key><string>にしばたはん</string></dict>
+	<dict><key>phrase</key><string>伯太藩</string><key>shortcut</key><string>はかたはん</string></dict>
+	<dict><key>phrase</key><string>蓮池藩</string><key>shortcut</key><string>はすのいけはん</string></dict>
+</array>
+</plist>

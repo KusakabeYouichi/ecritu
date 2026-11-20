@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""references/fiefs.plist(候補の後ろのほうに足す語)から
+"""references/provinces-fiefs.plist(候補の後ろのほうに足す語)から
 Packages/EcrituConversion/Sources/EcrituConversionBase/TrailingCandidateTable.swift を作る(3860)。
 
 plist を直したらこれを流してコミットする。コメントアウトした行(行頭の <!--<dict>…</dict>-->)は載せない。
@@ -10,7 +10,7 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SRC = ROOT / "references" / "fiefs.plist"
+SRC = ROOT / "references" / "provinces-fiefs.plist"
 DST = ROOT / "Packages" / "EcrituConversion" / "Sources" / "EcrituConversionBase" / "TrailingCandidateTable.swift"
 
 ENTRY = re.compile(r"<key>phrase</key><string>([^<]+)</string><key>shortcut</key><string>([^<]+)</string>")
@@ -32,8 +32,8 @@ def main() -> int:
     out = [
         "import Foundation",
         "",
-        "// 生成ファイル。tools/build_trailing_candidate_table.py が references/fiefs.plist から作る。手で直さない(3860)",
-        "// 候補の後ろのほうに足す語(藩の名前)。読み全体がこの読みのときだけ、単文節の候補に足す(先頭は奪わない)",
+        "// 生成ファイル。tools/build_trailing_candidate_table.py が references/provinces-fiefs.plist から作る。手で直さない(3860)",
+        "// 候補の後ろのほうに足す語(旧国名・州・藩の名前)。読み全体がこの読みのときだけ、単文節の候補に足す(先頭は奪わない)",
         "public enum TrailingCandidateTable {",
         "    public static let surfacesByReading: [String: [String]] = [",
     ]
