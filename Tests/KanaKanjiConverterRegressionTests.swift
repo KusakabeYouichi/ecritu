@@ -30868,6 +30868,41 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(shown("るいけい").prefix(2)), ["累計", "類型"])
     }
 
+    // 3855: ユーザ指摘 2 件。(1) はしのほうがいいね は 端のほう、箸のほう、橋のほう、端の方、箸の方、橋の方 の順(橋の方がいいね、
+    // 橋野ほうがいいね、橋のほうがいいね、端の方がいいね… だった)。(2) ふぞく は どの形でも 附属、付属、付嘱 の順(3772 の指定は
+    // 活用した 5 形だけに効いていて、ふぞく/ふぞくしている/ふぞくの は 付属 が先。打っている途中で入れ替わっていた)
+    func testHashiNoHouOrderAndFuzokuConsistency3855() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func shown(_ r: String) -> [String] {
+            let list = converter.multiClauseCandidates(for: r, systemCandidateMode: .surface)
+            // 画面と同じく、単文節の先頭を連文節の 2 番めに差し込む(連文節に無いときだけ)
+            let single = converter.candidates(for: r, limit: 30, systemCandidateMode: .surface)
+            var merged = list
+            if let first = single.first, !list.isEmpty, !list.contains(first) { merged.insert(first, at: 1) }
+            return merged + single.filter { !merged.contains($0) }
+        }
+        for tail in ["がいいね", "がいい", "にすわる"] {
+            let list = shown("はしのほう" + tail)
+            let rest = list.first.map { String($0.dropFirst("端のほう".count)) } ?? ""
+            XCTAssertEqual(
+                Array(list.prefix(6)),
+                ["端のほう", "箸のほう", "橋のほう", "端の方", "箸の方", "橋の方"].map { $0 + rest }, "\(tail): \(list)")
+        }
+        XCTAssertEqual(shown("はしをわたる").first, "橋を渡る")
+        for reading in [
+            "ふぞく", "ふぞくする", "ふぞくした", "ふぞくして", "ふぞくしてる", "ふぞくしない", "ふぞくしている", "ふぞくしているの",
+            "ふぞくしているのだが", "ふぞくしています", "ふぞくしていた", "ふぞくの", "ふぞくびょういん",
+        ] {
+            let list = shown(reading)
+            XCTAssertTrue(list.first?.hasPrefix("附属") ?? false, "\(reading): \(list)")
+            if let attached = list.firstIndex(where: { $0.hasPrefix("付属") }), let entrusted = list.firstIndex(where: { $0.hasPrefix("付嘱") }) {
+                XCTAssertLessThan(attached, entrusted, "\(reading): \(list)")
+            }
+        }
+        XCTAssertEqual(shown("だいがくにふぞくしている").first, "大学に附属している")
+    }
+
     // 3854: 智慧/知恵 は 同音の漢字による書きかえ(X.9)の対象から外す(ユーザ指定)。智慧 は 知恵 の意味に加えて仏教の語でも
     // あり、字を替えただけの組でない。X.9 が 両方(本来の漢字を先に)のとき ちえ の先頭が 智慧 になり、3853 の並びが崩れていた
     func testChieIsNotAKanjiRewritePair3854() throws {

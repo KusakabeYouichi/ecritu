@@ -503,6 +503,8 @@ public final class KanaKanjiConverter {
         finalCandidates = WineScriptOrdering.katakanaFirst(reading: normalizedReading, candidates: finalCandidates)
         // 読みそのままのかなを末尾に置く読み(よぶんだよね。連文節の側と揃える。3850)
         finalCandidates = Self.kanaLastOrdered(reading: normalizedReading, candidates: finalCandidates)
+        // 文の頭の表記の並びを決めた読み(はしのほうがいいね。連文節の側と揃える。3855)
+        finalCandidates = Self.leadingSurfaceOrdered(reading: normalizedReading, candidates: finalCandidates)
 
         if !finalCandidates.isEmpty {
             withStateLock {

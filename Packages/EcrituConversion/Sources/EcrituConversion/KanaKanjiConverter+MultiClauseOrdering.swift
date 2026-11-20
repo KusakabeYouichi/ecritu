@@ -846,6 +846,26 @@ extension KanaKanjiConverter {
         return candidates.filter { $0 != reading } + (removes ? [] : [reading])
     }
 
+    // 文の頭の読みごとの、頭の表記の並び(3855、ユーザ指定)。先頭の候補の頭がこの表記のどれかなら、頭を並びの順に
+    // 差し替えた形を先頭から並べる(後ろは先頭の候補のまま)。はしのほうがいいね が 橋の方がいいね、橋野ほうがいいね、
+    // 橋のほうがいいね、端の方がいいね… だった(端/箸/橋 のどれか決められず、比べる ほう はかなが先)
+    static let leadingSurfaceOrdersByReadingPrefix: [(readingPrefix: String, surfaces: [String])] = [
+        ("はしのほう", ["端のほう", "箸のほう", "橋のほう", "端の方", "箸の方", "橋の方"]),
+    ]
+
+    static func leadingSurfaceOrdered(reading: String, candidates: [String]) -> [String] {
+        // 手がかりは、頭が表の表記の最初の候補(単文節は 橋野ほうがいいね が先頭で、表の表記で始まる候補はその後ろにある。
+        // 画面は単文節の先頭を連文節の 2 番めに差し込むので、単文節の先頭も揃えておく)
+        guard let rule = leadingSurfaceOrdersByReadingPrefix.first(where: { reading.hasPrefix($0.readingPrefix) }),
+            let top = candidates.first(where: { candidate in rule.surfaces.contains(where: { candidate.hasPrefix($0) }) }),
+            let head = rule.surfaces.first(where: { top.hasPrefix($0) }) else {
+            return candidates
+        }
+        let rest = top.dropFirst(head.count)
+        let lead = rule.surfaces.map { $0 + rest }
+        return lead + candidates.filter { !lead.contains($0) }
+    }
+
     // from の先頭が ^ の規則は、先頭の候補の頭にあるときだけ差し替える(持って来たが の 来たが を巻き込まない)
 
     static func contextCuedHomophoneOrdered(reading: String, candidates: [String]) -> [String] {
