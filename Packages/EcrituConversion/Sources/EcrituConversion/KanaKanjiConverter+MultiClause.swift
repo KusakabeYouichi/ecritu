@@ -351,6 +351,7 @@ extension KanaKanjiConverter {
         candidates = Self.sweetnessOrthographyOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.kanaSecondVariantOrdered(candidates)
         candidates = Self.kanaScriptVariantSecond(candidates)
+        candidates = Self.kanaLastOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates, removes: true)
         candidates = Self.brewingMakeOrthographyOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.cocktailMakeOrthographyOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         // 名詞+っぱなし(沖っぱなし/槍っぱなし/山車っぱなし)は後ろへ。経路は 連用形+っぱなし でも、区間の兄弟表記の差し替えで

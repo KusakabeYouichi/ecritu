@@ -30747,6 +30747,45 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3850: ユーザ指定 3 件。(1) 文の頭の よぶんだ… は 余分 が先頭、呼ぶんだ が 2 番め、読みそのままのかなは末尾(連文節の候補には
+    // 入れず、単文節の末尾)。前に語があれば 呼ぶ のまま。(2) はじめてみる/はじめてみるな は 初めて見る が先頭(始めてみる だけだった)。
+    // を の後ろは 始めてみる のまま。(3) どうなんだろう は かなの どう(同なんだろう/比べて銅なんだろう だった)
+    func testYobunHajimeteMiruDouNanUserReports3850() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        // 画面と同じく、連文節の候補の後ろに単文節の候補を並べる
+        func shown(_ r: String) -> [String] {
+            let list = multi(r)
+            return list + converter.candidates(for: r, limit: 30, systemCandidateMode: .surface).filter { !list.contains($0) }
+        }
+        for (reading, first, second) in [
+            ("よぶんだよね", "余分だよね", "呼ぶんだよね"), ("よぶんだ", "余分だ", "呼ぶんだ"), ("よぶんだった", "余分だった", "呼ぶんだった"),
+            ("よぶんです", "余分です", "呼ぶんです"),
+        ] {
+            let list = multi(reading)
+            XCTAssertEqual(Array(list.prefix(2)), [first, second], "\(reading): \(list)")
+            XCTAssertFalse(list.contains(reading), "\(reading): \(list)")
+            let single = converter.candidates(for: reading, limit: 30, systemCandidateMode: .surface)
+            if single.contains(reading) {
+                XCTAssertEqual(single.last, reading, "\(reading): \(single)")
+            }
+        }
+        for (reading, expected) in [
+            ("なまえをよぶんだよね", "名前を呼ぶんだよね"), ("たくしーをよぶんだ", "タクシーを呼ぶんだ"), ("おおごえでよぶんだ", "大声で呼ぶんだ"),
+            ("だれをよぶんですか", "誰を呼ぶんですか"), ("よぶんにかった", "余分に買った"),
+            ("はじめてみる", "初めて見る"), ("はじめてみるな", "初めて見るな"), ("はじめてみるけしき", "初めて見る景色"),
+            ("しごとをはじめてみる", "仕事を始めてみる"), ("はじめてみます", "始めてみます"),
+            ("どうなんだろう", "どうなんだろう"), ("くらべてどうなんだろう", "比べてどうなんだろう"),
+            ("それとくらべてどうなんだろう", "それと比べてどうなんだろう"), ("どうなんでしょう", "どうなんでしょう"),
+            ("どうなんですか", "どうなんですか"), ("どうなんだろうか", "どうなんだろうか"),
+        ] {
+            let list = shown(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list)")
+        }
+        XCTAssertTrue(shown("はじめてみる").prefix(3).contains("始めてみる"), "\(shown("はじめてみる"))")
+    }
+
     // 3848: はなっとく は 放っとく と かな だけで、は納得 が無かった(1+はなっとく。ユーザ指定: 先頭でなく 2 番めでよい)
     func testHaNattokuSecondCandidate3848() throws {
         try prepareRealLMDictionary()

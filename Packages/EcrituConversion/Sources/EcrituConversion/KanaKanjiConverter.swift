@@ -501,6 +501,8 @@ public final class KanaKanjiConverter {
         #endif
         // ワインの語はカタカナの形を先に(単独・助詞つき・文の中で揃える。ユーザ指定 3846)
         finalCandidates = WineScriptOrdering.katakanaFirst(reading: normalizedReading, candidates: finalCandidates)
+        // 読みそのままのかなを末尾に置く読み(よぶんだよね。連文節の側と揃える。3850)
+        finalCandidates = Self.kanaLastOrdered(reading: normalizedReading, candidates: finalCandidates)
 
         if !finalCandidates.isEmpty {
             withStateLock {

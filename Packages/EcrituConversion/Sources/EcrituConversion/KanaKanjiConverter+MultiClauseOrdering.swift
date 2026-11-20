@@ -429,6 +429,9 @@ extension KanaKanjiConverter {
     // (落下させる+病害、首席+として+析出、鮮明 と 船積みされた)
     static let contextCuedHomophoneRewrites: [(cue: String, targetReading: String, from: String, to: String)] = [
         ("びょうがい", "らっか", "落下", "落果"),
+        // 文の頭の よぶんだ/よぶんです は 余分(よぶんだよね が 呼ぶんだよね だった。呼ぶんだ は 2 番め。名前を呼ぶんだよね のように
+        // 前に語があれば 呼ぶ のまま。ラティスの加点では を の後ろまで 余分 になった。3850、ユーザ指定)
+        ("よぶんだ", "よぶんだ", "^呼ぶんだ", "余分だ"), ("よぶんです", "よぶんです", "^呼ぶんです", "余分です"),
         // 似る は状態の動詞で、勧める・命じる言い方には付かない(にるといいよ が 似るといいよ。煮る が先。3819、ユーザ指定)
         ("にるといい", "にるといい", "似るといい", "煮るといい"), ("にればいい", "にればいい", "似ればいい", "煮ればいい"),
         ("にたらいい", "にたらいい", "似たらいい", "煮たらいい"), ("になさい", "になさい", "似なさい", "煮なさい"),
@@ -819,7 +822,22 @@ extension KanaKanjiConverter {
         ("かじゅうにつけたじょうたい", "つけた", "につけた", "に漬けた"), ("あたためてじゅくせい", "あたためて", "暖めて", "温めて"), ("おおくてさぎょうがちゅうしん", "おおくてさぎょう", "多くて作業", "多く手作業"),
     ]
 
+    // 読みそのままのかなの候補を末尾に置く読みの頭(よぶんだよね は 余分だよね、呼ぶんだよね… の後ろ。かなが 2〜3 番めだった。
+    // 3850、ユーザ指定)
+    static let kanaLastReadingPrefixes: [String] = ["よぶんだ", "よぶんです"]
+
+    // かなを 2 番めに置く並べ替え(kanaSecondVariantOrdered)の後に呼ぶ。単文節では末尾へ移す。連文節では外す
+    // (画面は連文節の候補の後ろに単文節の候補を並べるので、連文節の中の末尾では 3 番めに残る)
+    static func kanaLastOrdered(reading: String, candidates: [String], removes: Bool = false) -> [String] {
+        guard candidates.count >= 2, kanaLastReadingPrefixes.contains(where: { reading.hasPrefix($0) }),
+            candidates.contains(reading) else {
+            return candidates
+        }
+        return candidates.filter { $0 != reading } + (removes ? [] : [reading])
+    }
+
     // from の先頭が ^ の規則は、先頭の候補の頭にあるときだけ差し替える(持って来たが の 来たが を巻き込まない)
+
     static func contextCuedHomophoneOrdered(reading: String, candidates: [String]) -> [String] {
         guard var rewritten = candidates.first else { return candidates }
         for rule in contextCuedHomophoneRewrites
