@@ -22,6 +22,7 @@ extension KanaKanjiConverter {
         var seenPairs = Set<UInt64>()
         var bigramCostByIDPair: [UInt64: Int] = [:]
         var bigramCosts: [String: Int] = [:]
+        var edgeDeltaMemo: [UInt64: Int] = [:]
     }
 
     func takeMultiClauseScratch() -> MultiClauseScratch {
@@ -4233,6 +4234,13 @@ extension KanaKanjiConverter {
         let traceEdges = Self.multiClauseTraceEdgesEnabled
         let traceEnabled = Self.multiClauseTraceEnabled
         #endif
+        // 組の点の控え(solveViterbi の中のコメント参照。3858)。鍵は 語の番号 4 つ(各 16 ビット)なので、語が 65,535 以上なら使わない。
+        // 入れ物は変換をまたいで使い回す(容量を保ったまま空にする)
+        let edgeMemoEnabled = nodes.count < 0xFFFF
+        var edgeDeltaMemo = scratch.edgeDeltaMemo
+        scratch.edgeDeltaMemo = [:]
+        edgeDeltaMemo.removeAll(keepingCapacity: true)
+        defer { scratch.edgeDeltaMemo = edgeDeltaMemo }
         func solveViterbi(
             allowedStartNodeIndex: Int?,
             forcedBoundary: Int? = nil,
@@ -4438,11 +4446,27 @@ extension KanaKanjiConverter {
                         if let head = node.boundHeadSurface, prevNode.surface != head {
                             continue
                         }
+                        // 組の点(前の語の点に足す分)は、別の区切りを探す 2 回め以降の Viterbi でも同じなので覚えておく(3858)。
+                        // 下の規則が見るのは 前の語・この語 と、前の語の 1 つ前・2 つ前の語(backPointer を 2 段まで)だけ。
+                        // 実機の計測で、長い文では 代替の経路 が Viterbi 本体と同じだけ時間を使っていた
+                        // (字下げは変えていない。edgeDelta: の塊の終わりは下の「組の点を覚える」の所)
+                        let previousOfPrev = backPointer[prevIdx]
+                        let edgeMemoKey: UInt64 = edgeMemoEnabled
+                            ? (UInt64(truncatingIfNeeded: prevIdx) << 48) | (UInt64(truncatingIfNeeded: idx) << 32)
+                                | (UInt64(UInt16(truncatingIfNeeded: previousOfPrev)) << 16)
+                                | UInt64(UInt16(truncatingIfNeeded: previousOfPrev >= 0 ? backPointer[previousOfPrev] : -1))
+                            : 0
+                        var cost: Int
+                        edgeDelta: do {
+                        if edgeMemoEnabled, let delta = edgeDeltaMemo[edgeMemoKey] {
+                            cost = prevCost + delta
+                            break edgeDelta
+                        }
                         let prevDeniesOutgoingBigram = (Self.multiClauseOutgoingBigramBorrowDeniedReadingsBySurfaceByID[prevNode.surfaceID]?
                             .contains(prevNode.reading) ?? false)
                             // かな正書の読みの漢字/カタカナ表層(最も/ブドウ)は出側の bigram も引かない(transitionCost 側のコメント参照。2884)
                             || kanaOrthodoxDemotedByNode[prevIdx]
-                        var cost = prevCost + transitionCost(
+                        cost = prevCost + transitionCost(
                             prev: prevNode.surface,
                             prevAuxTail: auxTailByNode[prevIdx],
                             surface: node.surface,
@@ -6009,6 +6033,11 @@ extension KanaKanjiConverter {
                             Self.multiClauseKanaPassiveHeadReadingsID.contains(node.readingID),
                             Self.isKanaIrrealisStemReading(prevNode.reading) {
                             cost += Self.multiClauseKanaIrrealisStemBeforePassivePenalty
+                        }
+                        // 組の点を覚える(edgeDelta: の塊の終わり。3858)
+                        if edgeMemoEnabled {
+                            edgeDeltaMemo[edgeMemoKey] = cost - prevCost
+                        }
                         }
                         #if DEBUG
                         // 時限トレース(2803): MULTI_TRACE_EDGES=1 で全遷移の累積コストを吐く(最良以外の prev も見える)
