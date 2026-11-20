@@ -12,6 +12,7 @@
 	<dict><key>phrase</key><string>嘘吐く</string><key>shortcut</key><string>うそつく</string><key>pos</key><string>五段</string></dict>
 	<dict><key>phrase</key><string>うそ吐く</string><key>shortcut</key><string>うそつく</string><key>pos</key><string>五段</string></dict>
 	<dict><key>phrase</key><string>放っとく</string><key>shortcut</key><string>ほっとく</string><key>pos</key><string>五段</string></dict>	<!-- 放っとく(ほっとく): 辞書の 放っとく は読み はなっとく だけで、ほっとく は 掘っとく/彫っとく しか出なかった(ユーザ指定 3851)。並びは seed(放っとく、掘っとく、彫っとく、ほっとく) -->
+	<dict><key>phrase</key><string>二度と</string><key>shortcut</key><string>にどと</string></dict>	<!-- 二度と: 辞書に語が無く、にどとしない/にどとするまい が に+度+と に割れて に度としない だった(ユーザ指定 3852) -->
 	<dict><key>phrase</key><string>日が暮れる</string><key>shortcut</key><string>ひがくれる</string><key>pos</key><string>一段</string></dict>	<!-- 日が暮れる: 連文節は 比→が の bigram(1076。Wikipedia の 〜の比が)が 日→が(2959)より安く、ひがくれて→比がくれて/比が暮れて になっていた。が→くれて/暮れて は同点でかなが勝つので 日が+暮れ* を句で供給する(ユーザ報告 3527) -->
 	<dict><key>phrase</key><string>再定義する</string><key>shortcut</key><string>さいていぎする</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 再定義(する): 辞書にも LM にも無く さいていぎし が 最低技師/最低義士 だった(ユーザ報告 3791) -->
 	<dict><key>phrase</key><string>気がする</string><key>shortcut</key><string>きがする</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 気がする: 単独では供給経路が無い(気が+する はサ変名詞と見なされず、逆に 帰臥/起臥 の2字漢語がサ変推論で 帰臥した 等を作る)。きがした→帰臥した 対策。気が 単独の curated は 危害(きがい)/着替え(きがえ)/気軽(きがる)/飢餓 を分断するため句で登録する -->
