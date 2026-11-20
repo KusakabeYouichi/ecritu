@@ -6480,5 +6480,11 @@
 	<dict><key>phrase</key><string>市立病院前駅</string><key>shortcut</key><string>しりつびょういんまええき</string></dict>	<!-- #2026écritu -->
 	<dict><key>phrase</key><string>横臥褶曲</string><key>shortcut</key><string>おうがしゅうきょく</string></dict>	<!-- #2026écritu -->
 	<dict><key>phrase</key><string>嘉陽層</string><key>shortcut</key><string>かようそう</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>円鑑池</string><key>shortcut</key><string>えんかんち</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>天女橋</string><key>shortcut</key><string>てんにょばし</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>方冊蔵経</string><key>shortcut</key><string>ほうさつぞうきょう</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>円覚寺跡</string><key>shortcut</key><string>えんかくじあと</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>放生池</string><key>shortcut</key><string>ほうじょうち</string></dict>	<!-- #2026écritu -->
+	<dict><key>phrase</key><string>放生橋</string><key>shortcut</key><string>ほうじょうばし</string></dict>	<!-- #2026écritu -->
 </array>
 </plist>
