@@ -45,6 +45,12 @@ extension KanaKanjiConverter {
     static let multiClauseTraceEnabledFromEnvironment = ProcessInfo.processInfo.environment["MULTI_TRACE"] != nil
     // 3 つの環境変数は DEBUG だけで読む(3316)。消費側(MULTITRACE/SINGLETRACE の print)はすべて #if DEBUG で、
     // Release では読むだけ読んで使っていなかった(セキュリティー検査 2026-10-02)。Release に環境変数の参照を残さない
+    // 動詞の辞書形の直後の かなの まい への加点(使う所のコメント参照。3851)
+    static let multiClauseNegativeConjectureMaiAfterVerbBonus = 3000
+    // かなで書く動詞の辞書形(かなの語は辞書形の述語の印が付かないので名指しする)
+    static let multiClauseKanaVerbsBeforeNegativeConjectureMai: Set<String> = [
+        "ある", "じゃある", "ではある", "でもある", "する", "いる", "なる", "くる", "やる", "できる", "いく", "わかる", "しれる",
+    ]
     static let multiClauseTraceEdgesEnabled = ProcessInfo.processInfo.environment["MULTI_TRACE_EDGES"] != nil
     // Viterbi で前の語として調べる幅(3849)。前の語の点が、同じ位置で終わる語の最良よりこれ以上高ければ、その組は調べない。
     // 長い文 8 つを測ると、組の 24% は前の語が位置の最良から 20,000 より離れていた(加点・減点の規則を 1 組ずつ全部
@@ -4407,6 +4413,7 @@ extension KanaKanjiConverter {
                     lazy var nodeIsCrawlVerbForm = node.surface.first.map { $0 == "這" || $0 == "匍" || $0 == "匐" } ?? false
                     lazy var nodeIsEnterVerbForm = node.surface.first == "入" && node.reading.hasPrefix("はい")
                     lazy var nodeIsImperialHighnessTitle = node.surface == "殿下"
+                    lazy var nodeIsKanaNegativeConjectureMai = node.isKanaIdentity && (node.reading == "まい" || node.reading == "まいし")
                     // なんか/なんて で始まるノードか(なんかの判定を前の語ごとに呼ばないため。3849)
                     lazy var nodeStartsWithNankaReading = Self.multiClauseNankaAdverbialReadings.contains(where: { node.reading.hasPrefix($0) })
                     // 前の語の点がその位置の最良より大きく離れている組は調べない(定数コメント参照。3849)。
@@ -5235,6 +5242,13 @@ extension KanaKanjiConverter {
                         // 称号の後ろ(親王殿下/内親王殿下/妃殿下)は組の加点の表(multiClauseBigramPairBonuses)
                         if nodeIsImperialHighnessTitle, personNameKindByNodeKey[prevNode.key] != nil {
                             cost -= Self.multiClauseHonorificSamaAfterPersonNameBonus
+                        }
+                        // 動詞の辞書形の直後の まい は、打ち消しの推量・意志の助動詞(あるまいし/行くまい/するまい)。かなの まい を
+                        // 上げる(うどんじゃあるまいし が ある毎し、いくまい が 行くマイ だった。毎/枚/舞 と僅差で負けていた。ユーザ指定 3851)
+                        if nodeIsKanaNegativeConjectureMai,
+                            prevNode.isDictionaryFormPredicate
+                                || Self.multiClauseKanaVerbsBeforeNegativeConjectureMai.contains(prevNode.surface) {
+                            cost -= Self.multiClauseNegativeConjectureMaiAfterVerbBonus
                         }
                         // て形の直後の 入る(やって入る/冷やして入る)。〜ては+いる(やってはいる。強調・限定の は)が普通なので 入る を
                         // 下げる(ユーザ指定 3841)。走って入る/並んで入る のように、入り方を言う動詞の後ろはそのまま
@@ -6833,7 +6847,15 @@ extension KanaKanjiConverter {
             // 先頭に出ていた。提示層は「かな先頭の維持」しかしないため、エンジンが
             // かなを返さないと漢字が先頭のままになる
             && !shouldKeepKanaIdentityLeading(for: normalized)
-
+            // 動詞の辞書形+かなの まい(あるまいし/するまい)を選んだ全かなは、かなが正書(うどんじゃあるまいし が捨てられ、
+            // 饂飩じゃあるまいし が先頭になる。3851、ユーザ指定)
+            && !pathIndices.indices.contains(where: { position in
+                let node = nodes[pathIndices[position]]
+                guard position > 0, node.isKanaIdentity, node.reading == "まい" || node.reading == "まいし" else { return false }
+                let prevNode = nodes[pathIndices[position - 1]]
+                return prevNode.isDictionaryFormPredicate
+                    || Self.multiClauseKanaVerbsBeforeNegativeConjectureMai.contains(prevNode.surface)
+            })
 
         // --- 7. Nベスト風バリアント: 最良経路の1文節だけを同区間の別表層に差し替えた変種を
         //        コスト差の小さい順に付ける。bigram が拮抗する読み(しかくとらないと→
@@ -7064,6 +7086,15 @@ extension KanaKanjiConverter {
                     alt.surface != alt.reading,
                     nextNode.map({ $0.surface == $0.reading }) ?? true {
                     variantSkipTrace("指示副詞の漢字")
+                    continue
+                }
+                // 動詞の辞書形の直後で best がかなの まい(打ち消しの推量・意志)を選んでいるとき、毎/枚/マイ への差し替えは
+                // 出さない(あるまいし が ある毎し、わかるまい が わかるマイ だった。3851、ユーザ指定)
+                if chosen.surface == chosen.reading, chosen.reading == "まい" || chosen.reading == "まいし",
+                    alt.surface != alt.reading, pos > 0,
+                    nodes[pathIndices[pos - 1]].isDictionaryFormPredicate
+                        || Self.multiClauseKanaVerbsBeforeNegativeConjectureMai.contains(prevSurface) {
+                    variantSkipTrace("辞書形の直後の まい")
                     continue
                 }
                 // 敬称区間(さん/さま)の漢字表層(三/讃/様 等)も変種として出さない。

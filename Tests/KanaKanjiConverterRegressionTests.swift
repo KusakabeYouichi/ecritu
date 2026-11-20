@@ -30786,6 +30786,36 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(shown("はじめてみる").prefix(3).contains("始めてみる"), "\(shown("はじめてみる"))")
     }
 
+    // 3851: ユーザ指定 5 件。(1) はじめてみた/はじめてみたとき は 初めて見た(始めてみた だけだった)。(2) どうなんだい は かな
+    // (どう何台 だった)。(3) はなっとく+です/でした/だ は は納得(放っとくです だった)。(4) ほっとく は 放っとく が先頭(掘っとく/
+    // 彫っとく だけだった。misc に登録)。(5) 動詞の辞書形+まい はかな(うどんじゃあるまいし が うどんじゃある毎し だった)
+    func testHajimeteMitaDouNandaiHottokuAndNegativeConjectureMai3851() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        // 画面と同じく、連文節の候補の後ろに単文節の候補を並べる
+        func shown(_ r: String) -> [String] {
+            let list = converter.multiClauseCandidates(for: r, systemCandidateMode: .surface)
+            return list + converter.candidates(for: r, limit: 30, systemCandidateMode: .surface).filter { !list.contains($0) }
+        }
+        for (reading, expected) in [
+            ("はじめてみた", "初めて見た"), ("はじめてみたとき", "初めて見たとき"),
+            ("しごとをはじめてみた", "仕事を始めてみた"), ("ぶろぐをはじめてみた", "ブログを始めてみた"),
+            ("どうなんだい", "どうなんだい"), ("なんだいもある", "何台もある"),
+            ("はなっとくです", "は納得です"), ("はなっとくでした", "は納得でした"), ("はなっとくだ", "は納得だ"),
+            ("はなっとくよ", "放っとくよ"), ("はなっとく", "放っとく"),
+            ("ほっとく", "放っとく"), ("ほっといて", "放っといて"), ("ほっとけ", "放っとけ"), ("ほっとけない", "放っとけない"),
+            ("うどんじゃあるまいし", "うどんじゃあるまいし"), ("こどもじゃあるまいし", "子供じゃあるまいし"),
+            ("そんなことはあるまい", "そんなことはあるまい"), ("いくまい", "行くまい"), ("いうまでもあるまい", "言うまでもあるまい"),
+            ("まけるまいとがんばる", "負けるまいと頑張る"),
+            ("まいにちあるく", "毎日歩く"), ("まいかいある", "毎回ある"), ("しゃしんがあるまいすうは", "写真がある枚数は"),
+        ] {
+            let list = shown(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list)")
+        }
+        XCTAssertTrue(shown("はじめてみた").prefix(3).contains("始めてみた"))
+        XCTAssertFalse(shown("あるまいし").contains { $0.contains("毎") || $0.contains("マイ") || $0.contains("枚") })
+    }
+
     // 3848: はなっとく は 放っとく と かな だけで、は納得 が無かった(1+はなっとく。ユーザ指定: 先頭でなく 2 番めでよい)
     func testHaNattokuSecondCandidate3848() throws {
         try prepareRealLMDictionary()
