@@ -30868,6 +30868,39 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(shown("るいけい").prefix(2)), ["累計", "類型"])
     }
 
+    // 3860: 藩の名前(references/fiefs.plist)。登録なしでは候補に出なかった 42 藩を、読み全体がその読みのときだけ候補の
+    // 3 番め以内に足す(先頭は奪わない)。1 語として登録すると ほかの文を奪った(高梁藩 → 高橋班長 が 高梁藩長、館藩 → 縦半分 が 館藩分、
+    // 水戸藩 → 水戸藩士 が 水戸藩市)ので、文の中の変換は変えない
+    func testFiefNamesAppearWithoutStealingSentences3860() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func shown(_ r: String) -> [String] {
+            let list = converter.multiClauseCandidates(for: r, systemCandidateMode: .surface)
+            let single = converter.candidates(for: r, limit: 30, systemCandidateMode: .surface)
+            var merged = list
+            if let first = single.first, !list.isEmpty, !list.contains(first) { merged.insert(first, at: 1) }
+            return merged + single.filter { !merged.contains($0) }
+        }
+        XCTAssertEqual(TrailingCandidateTable.surfacesByReading.values.reduce(0) { $0 + $1.count }, 42)
+        for (reading, surfaces) in TrailingCandidateTable.surfacesByReading {
+            let list = shown(reading)
+            for surface in surfaces {
+                XCTAssertTrue(list.prefix(4).contains(surface), "\(reading): \(surface) が 4 番め以内に無い \(list.prefix(6))")
+            }
+        }
+        // 先頭は奪わない(読み全体が合っても、今までの先頭のまま)。候補が無かった つはん だけは 津藩 が先頭
+        XCTAssertEqual(shown("たかはしはん").first, "高橋藩")
+        XCTAssertEqual(shown("つはん").first, "津藩")
+        // 登録なしで出る藩と、文の中はそのまま
+        for (reading, expected) in [
+            ("さつまはん", "薩摩藩"), ("あいづはん", "会津藩"), ("みとはんし", "水戸藩士"), ("もりおかはん", "盛岡藩"),
+            ("たてはんぶんにきる", "縦半分に切る"), ("やまがたはんぶん", "山形半分"), ("はかたはんぶん", "博多半分"), ("ごはん", "ご飯"),
+        ] {
+            XCTAssertEqual(shown(reading).first, expected, "\(reading): \(shown(reading).prefix(4))")
+        }
+        XCTAssertFalse(shown("たかはしはんちょう").contains { $0.contains("高梁藩") })
+    }
+
     // 3859: ユーザ指定 3 件。(1) しゅき は 酒器 が先頭(手記、朱熹 の順だった)。(2) 数字の直後の だけん は 打鍵(100駄犬 だった)。
     // (3) て形の後ろの ほしい/ほしかった はかなが先(して欲しかった だった)、動詞に付かない 欲しい は漢字のまま(それが欲しかった)
     func testShukiDakenCounterAndTeHoshiiKana3859() throws {

@@ -507,6 +507,9 @@ public final class KanaKanjiConverter {
         finalCandidates = Self.leadingSurfaceOrdered(reading: normalizedReading, candidates: finalCandidates)
         // て形の後ろの ほしい はかなが先(してほしい。連文節の側と揃える。3859)
         finalCandidates = Self.teHoshiiKanaFirstOrdered(finalCandidates)
+        // 候補の後ろのほうに足す語(藩の名前。references/fiefs.plist。3860)。読み全体が表の読みのときだけ 3 番めに足す。
+        // 1 語として登録すると ほかの文を奪う(高梁藩 → 高橋班長 が 高梁藩長)ので、先頭を奪わない形で候補に出す
+        finalCandidates = TrailingCandidateTable.inserted(reading: normalizedReading, candidates: finalCandidates)
 
         if !finalCandidates.isEmpty {
             withStateLock {
