@@ -156,6 +156,7 @@
 	        <dict><key>phrase</key><string>扁桃体</string><key>shortcut</key><string>へんとうたい</string></dict>
 	        <dict><key>phrase</key><string>帯状疱疹</string><key>shortcut</key><string>たいじょうほうしん</string></dict>
 	        <dict><key>phrase</key><string>改源</string><key>shortcut</key><string>かいげん</string></dict>
+	        <dict><key>phrase</key><string>龍角散</string><key>shortcut</key><string>りゅうかくさん</string></dict>
 	<!-- 暦 -->
 	        <dict><key>phrase</key><string>一粒万倍日</string><key>shortcut</key><string>いちりゅうまんばいび</string></dict>
 	        <dict><key>phrase</key><string>六曜</string><key>shortcut</key><string>ろくよう</string></dict>
