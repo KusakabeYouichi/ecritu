@@ -97,7 +97,7 @@
 	<dict><key>phrase</key><string>根室国</string><key>shortcut</key><string>ねむろのくに</string></dict>
 	<dict><key>phrase</key><string>千島国</string><key>shortcut</key><string>ちしまのくに</string></dict>
 	<dict><key>phrase</key><string>琉球国</string><key>shortcut</key><string>りゅうきゅうのくに</string></dict>
-	<!-- ■ 州(旧国名の別の呼び名 67 形のうち、登録なしでは候補に出なかった 8 つ。山城/安房/陸奥/佐渡/土佐/日向/壱岐 の別名と 雍州。参州/濃州/江州 など 20 語は compenser.plist の 令制国の別称 の節にある) -->
+	<!-- ■ 州(旧国名の別の呼び名 67 形のうち、登録なしでは候補に出なかった 8 つ。山城/安房/陸奥/佐渡/土佐/日向/壱岐 の別名と 雍州) -->
 	<dict><key>phrase</key><string>山州</string><key>shortcut</key><string>さんしゅう</string></dict>
 	<dict><key>phrase</key><string>雍州</string><key>shortcut</key><string>ようしゅう</string></dict>
 	<dict><key>phrase</key><string>安州</string><key>shortcut</key><string>あんしゅう</string></dict>
@@ -106,6 +106,28 @@
 	<dict><key>phrase</key><string>土州</string><key>shortcut</key><string>としゅう</string></dict>
 	<dict><key>phrase</key><string>向州</string><key>shortcut</key><string>こうしゅう</string></dict>
 	<dict><key>phrase</key><string>壱州</string><key>shortcut</key><string>いしゅう</string></dict>
+	<!-- □ compenser.plist から移した 18 語(隠州 は読みが 2 つで 19 行。3862。Sudachi に無い、または別の読みでだけ入っていた州。compenser では読みの先頭を取り、
+	     さんしゅう の 参集、ぼうしゅう の 防臭 などを隠していた。ユーザ指定 2026-11-21) -->
+	<dict><key>phrase</key><string>参州</string><key>shortcut</key><string>さんしゅう</string></dict>
+	<dict><key>phrase</key><string>濃州</string><key>shortcut</key><string>のうしゅう</string></dict>
+	<dict><key>phrase</key><string>江州</string><key>shortcut</key><string>ごうしゅう</string></dict>
+	<dict><key>phrase</key><string>阿州</string><key>shortcut</key><string>あしゅう</string></dict>
+	<dict><key>phrase</key><string>防州</string><key>shortcut</key><string>ぼうしゅう</string></dict>
+	<dict><key>phrase</key><string>淡州</string><key>shortcut</key><string>たんしゅう</string></dict>
+	<dict><key>phrase</key><string>河州</string><key>shortcut</key><string>かしゅう</string></dict>
+	<dict><key>phrase</key><string>城州</string><key>shortcut</key><string>じょうしゅう</string></dict>
+	<dict><key>phrase</key><string>但州</string><key>shortcut</key><string>たんしゅう</string></dict>
+	<dict><key>phrase</key><string>若州</string><key>shortcut</key><string>じゃくしゅう</string></dict>
+	<dict><key>phrase</key><string>佐州</string><key>shortcut</key><string>さしゅう</string></dict>
+	<dict><key>phrase</key><string>勢州</string><key>shortcut</key><string>せいしゅう</string></dict>
+	<dict><key>phrase</key><string>志州</string><key>shortcut</key><string>ししゅう</string></dict>
+	<dict><key>phrase</key><string>美州</string><key>shortcut</key><string>びしゅう</string></dict>
+	<dict><key>phrase</key><string>豊州</string><key>shortcut</key><string>ほうしゅう</string></dict>
+	<dict><key>phrase</key><string>肥州</string><key>shortcut</key><string>ひしゅう</string></dict>
+	<dict><key>phrase</key><string>隅州</string><key>shortcut</key><string>ぐうしゅう</string></dict>
+<!--	<dict><key>phrase</key><string>壱州</string><key>shortcut</key><string>いっしゅう</string></dict>	(compenser のときに いっしゅう の先頭を取り 一周/一週 が出なかった。ユーザ指摘 3748。読みは いしゅう のほうで載せている) -->
+	<dict><key>phrase</key><string>隠州</string><key>shortcut</key><string>おんしゅう</string></dict>
+	<dict><key>phrase</key><string>隠州</string><key>shortcut</key><string>いんしゅう</string></dict>
 	<!-- ■ 藩(江戸時代の終わりごろの藩と通称のうち、登録なしでは候補に出なかった 42 藩。約 310 藩を確かめ、残りは 地名+藩 の合成で
 	     出る。読みは 語幹の地名の読み+はん。鹿奴藩・豊浦藩 は読みが不確かで入れていない。ユーザ指定 2026-11-20) -->
 	<dict><key>phrase</key><string>館藩</string><key>shortcut</key><string>たてはん</string></dict>
