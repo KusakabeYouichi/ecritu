@@ -5433,6 +5433,13 @@ extension KanaKanjiConverter {
                         }
                         // サ変名詞+後(ご): 受諾後/終了後/確認後 は最も生産的な接尾で、語(ご) は 国名+語 以外では立たない。
                         // 後(ご) は床免除後も 語→EOS 2114 < 後→EOS 2716 の文末統計で 46 差負けていた(定数コメント参照。3054)
+                        // ラテン文字の語の直後の がわ は 側(iOS側/Android側。あいおーえすがわのもんだい が iOSが倭の問題 だった。
+                        // ラテン文字の語と 側 の連接は LM に無く、が+倭 に 850 負けていた。アプリ側/サーバー側 は出ている。3865、ユーザ指定)
+                        if node.surface == "側", node.reading == "がわ",
+                            !prevNode.surface.isEmpty,
+                            prevNode.surface.unicodeScalars.allSatisfy({ $0.isASCII && ($0.properties.isAlphabetic || $0.properties.numericType != nil) }) {
+                            cost -= Self.multiClauseLatinWordSideSuffixBonus
+                        }
                         if node.readingID == SID.ご, node.surface == "後",
                             !prevNode.isKanaIdentity, !prevNode.isInflectionDerived, containsKanji(prevNode.surface),
                             store.isSuruNoun(reading: prevNode.reading, candidate: prevNode.surface) {

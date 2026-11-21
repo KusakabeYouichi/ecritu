@@ -30936,6 +30936,29 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("すぐれたさくひん").first, "優れた作品")
     }
 
+    // 3865: ユーザ指定 4 件。(1) らくてん は 楽天(ら句点、楽天、ら区点 の順だった。ら句点/ら区点 は出さない)。(2) かといって は
+    // かと言って(かと行って だった)。(3) ラテン文字の語の直後の がわ は 側(iOSが倭の問題っぽい だった)。(4) またのきかい は
+    // またの機会(またの機械 だった)
+    func testRakutenKatoitteLatinSideMatanoKikai3865() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        for reading in ["らくてん", "らくてんで", "らくてんでかう"] {
+            let list = multi(reading) + converter.candidates(for: reading, limit: 30, systemCandidateMode: .surface)
+            XCTAssertTrue(list.first?.hasPrefix("楽天") == true, "\(reading): \(list.prefix(4))")
+            XCTAssertFalse(list.contains { $0.contains("ら句点") || $0.contains("ら区点") }, "\(reading): \(list)")
+        }
+        for (reading, expected) in [
+            ("かといって", "かと言って"), ("かといってなにもしない", "かと言って何もしない"), ("そうかといって", "そうかと言って"),
+            ("あいおーえすがわのもんだいっぽい", "iOS側の問題っぽい"), ("あいおーえすがわ", "iOS側"), ("あいおーえすがわるい", "iOSが悪い"),
+            ("あぷりがわのもんだい", "アプリ側の問題"),
+            ("またのきかい", "またの機会"), ("またのきかいに", "またの機会に"), ("きかいがあれば", "機会があれば"),
+        ] {
+            XCTAssertEqual(multi(reading).first, expected, "\(reading): \(multi(reading).prefix(4))")
+        }
+        XCTAssertEqual(converter.candidates(for: "きかい", limit: 3, systemCandidateMode: .surface).first, "機械")
+    }
+
     // 3861: 旧国名と州(references/provinces-fiefs.plist)。名前+国(むさしのくに → 武蔵国)は 86 国とも候補に出ず 〜の国 だけだった。
     // 州の別名 8 つと 石狩 も出なかった。藩と同じく、読み全体がその読みのときだけ 4 番め以内に足し、先頭と文の中は変えない
     func testProvinceNamesAppearWithoutStealingSentences3861() throws {
