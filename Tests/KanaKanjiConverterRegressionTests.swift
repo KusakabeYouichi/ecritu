@@ -30922,6 +30922,20 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3864: 体や気持ちの具合が すぐれない はかなが先(たいちょうがすぐれない が 体調が優れない、隊長が優れない、体調が勝れない の順
+    // だった。ユーザ指定)。性能が優れない、優れた作品 はそのまま
+    func testConditionSugurenaiKanaFirst3864() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        XCTAssertEqual(Array(multi("たいちょうがすぐれない").prefix(3)), ["体調がすぐれない", "体調が優れない", "体調が勝れない"])
+        XCTAssertEqual(Array(multi("たいちょうがすぐれません").prefix(2)), ["体調がすぐれません", "体調が優れません"])
+        XCTAssertEqual(Array(multi("きぶんがすぐれない").prefix(2)), ["気分がすぐれない", "気分が優れない"])
+        XCTAssertEqual(multi("かおいろがすぐれない").first, "顔色がすぐれない")
+        XCTAssertEqual(multi("せいのうがすぐれない").first, "性能が優れない")
+        XCTAssertEqual(multi("すぐれたさくひん").first, "優れた作品")
+    }
+
     // 3861: 旧国名と州(references/provinces-fiefs.plist)。名前+国(むさしのくに → 武蔵国)は 86 国とも候補に出ず 〜の国 だけだった。
     // 州の別名 8 つと 石狩 も出なかった。藩と同じく、読み全体がその読みのときだけ 4 番め以内に足し、先頭と文の中は変えない
     func testProvinceNamesAppearWithoutStealingSentences3861() throws {
