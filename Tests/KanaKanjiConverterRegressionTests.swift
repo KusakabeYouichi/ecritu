@@ -30959,6 +30959,33 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.candidates(for: "きかい", limit: 3, systemCandidateMode: .surface).first, "機械")
     }
 
+    // 3866: きかいをこわす が 機会を壊す、あしたかあさってに が アシタカ明後日に、しあさっての が かなのまま先頭、
+    // たいこうしゃせん が たい降車せん だった(ユーザ指定 4 件)。機会を逃す、アシタカ 単独、今日から明日まで はそのまま
+    func testMachineBreakDayAlternativesShiasatteOncomingLane3866() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        for (reading, expected) in [
+            ("きかいをこわす", "機械を壊す"), ("きかいをこわした", "機械を壊した"), ("きかいがこわれる", "機械が壊れる"),
+            ("きかいをのがす", "機会を逃す"), ("きかいをうしなう", "機会を失う"), ("きかいがあればこわす", "機会があれば壊す"),
+            ("あしたかあさってに", "明日か明後日に"), ("あしたかあさって", "明日か明後日"), ("あしたかあさってにはとどく", "明日か明後日には届く"),
+            ("きょうかあした", "今日か明日"), ("きょうかあしたにはおくる", "今日か明日には送る"), ("きのうかきょう", "昨日か今日"),
+            ("こんしゅうからいしゅう", "今週か来週"), ("げつようかかよう", "月曜か火曜"),
+            ("きょうからあしたまで", "今日から明日まで"),
+            ("しあさっての", "明々後日の"), ("しあさってから", "明々後日から"), ("しあさってにいく", "明々後日に行く"),
+            ("たいこうしゃせんにはみだす", "対向車線にはみ出す"),
+        ] {
+            XCTAssertEqual(multi(reading).first, expected, "\(reading): \(multi(reading).prefix(4))")
+        }
+        // 1 語だけの読みは連文節が空で、単文節の側が出す
+        XCTAssertEqual(converter.candidates(for: "たいこうしゃせん", limit: 3, systemCandidateMode: .surface).first, "対向車線")
+        XCTAssertEqual(converter.candidates(for: "きょうかしょ", limit: 3, systemCandidateMode: .surface).first, "教科書")
+        XCTAssertEqual(Array(multi("しあさっての").prefix(3)), ["明々後日の", "明明後日の", "しあさっての"])
+        XCTAssertEqual(Array(converter.candidates(for: "しあさって", limit: 3, systemCandidateMode: .surface)), ["明々後日", "明明後日", "しあさって"])
+        XCTAssertEqual(converter.candidates(for: "あしたか", limit: 3, systemCandidateMode: .surface).first, "アシタカ")
+        XCTAssertEqual(converter.candidates(for: "たいこう", limit: 3, systemCandidateMode: .surface).first, "対抗")
+    }
+
     // 3861: 旧国名と州(references/provinces-fiefs.plist)。名前+国(むさしのくに → 武蔵国)は 86 国とも候補に出ず 〜の国 だけだった。
     // 州の別名 8 つと 石狩 も出なかった。藩と同じく、読み全体がその読みのときだけ 4 番め以内に足し、先頭と文の中は変えない
     func testProvinceNamesAppearWithoutStealingSentences3861() throws {

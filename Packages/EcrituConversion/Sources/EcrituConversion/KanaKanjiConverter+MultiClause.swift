@@ -1807,7 +1807,10 @@ extension KanaKanjiConverter {
                 let isBridge = Self.multiClauseCollocationBridgeParticles.contains(particle.surface)
                 let isPairParticle = Self.multiClauseSupplementalPairParticles.contains(particle.surface)
                 let isFrameParticle = Self.multiClauseSupplementalFrameParticles.contains(particle.surface)
-                guard isBridge || isPairParticle || isFrameParticle else { continue }
+                // 日を指す語+か+日を指す語(今日か明日)の か も頭固定で複製する(か の最良の前ノードはかなの きょう や 糊塗し で、頭が見えなかった。3866)
+                let isDayAlternativeParticle = particle.surface == "か" && particle.end < n
+                    && nodesStartingAt[particle.end].contains { Self.multiClauseRelativeDayWords.contains(nodes[$0].surface) }
+                guard isBridge || isPairParticle || isFrameParticle || isDayAlternativeParticle else { continue }
                 let hasSupplementalTail = (isPairParticle || isFrameParticle) && particle.end < n
                     && nodesStartingAt[particle.end].contains { isSupplementalLoanwordNode[$0] }
                 for headIndex in nodesEndingAt[particle.start] {
@@ -1819,7 +1822,8 @@ extension KanaKanjiConverter {
                     let bindsSupplemental = hasSupplementalTail
                         && ((isPairParticle && isSupplementalLoanwordNode[headIndex])
                             || (Self.multiClauseSupplementalFrameHeads[head]?.particles.contains(particle.surface) ?? false))
-                    guard bindsCollocation || bindsSupplemental else { continue }
+                    let bindsDayAlternative = isDayAlternativeParticle && Self.multiClauseRelativeDayWords.contains(head)
+                    guard bindsCollocation || bindsSupplemental || bindsDayAlternative else { continue }
                     var bound = particle
                     bound.boundHeadSurface = head
                     bound.boundHeadIsSupplementalLoanword = isSupplementalLoanwordNode[headIndex]
@@ -5439,6 +5443,14 @@ extension KanaKanjiConverter {
                             !prevNode.surface.isEmpty,
                             prevNode.surface.unicodeScalars.allSatisfy({ $0.isASCII && ($0.properties.isAlphabetic || $0.properties.numericType != nil) }) {
                             cost -= Self.multiClauseLatinWordSideSuffixBonus
+                        }
+                        // 日・週・月・年を指す語+か+同じ仲間の語(明日か明後日。定数コメント参照。3866、ユーザ指定)
+                        // 頭固定の複製の か なら頭は確定、通常の か は最良の前ノードで見る
+                        if prevNode.surfaceID == SID.か, prevNode.isKanaIdentity,
+                            Self.multiClauseRelativeDayWords.contains(node.surface),
+                            let headSurface = prevNode.boundHeadSurface ?? (backPointer[prevIdx] >= 0 ? nodes[backPointer[prevIdx]].surface : nil),
+                            Self.multiClauseRelativeDayWords.contains(headSurface) {
+                            cost -= Self.multiClauseRelativeDayAlternativeBonus
                         }
                         if node.readingID == SID.ご, node.surface == "後",
                             !prevNode.isKanaIdentity, !prevNode.isInflectionDerived, containsKanji(prevNode.surface),
