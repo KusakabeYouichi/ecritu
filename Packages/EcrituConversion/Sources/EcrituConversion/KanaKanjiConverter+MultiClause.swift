@@ -363,6 +363,20 @@ extension KanaKanjiConverter {
         candidates = Self.kanaLastOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates, removes: true)
         candidates = Self.leadingSurfaceOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.teHoshiiKanaFirstOrdered(candidates)
+        // 候補の後ろのほうに足す語(旧国名・州・藩。3862)を連文節の側にも 2 番めに足す。単文節の側だけだと、連文節の候補が多い読みで
+        // 7 番め以降に落ちた(あわのくに の 阿波国、さしゅう の 佐州)。読み全体に辞書の語がほかに無いとき(単文節の先頭が表の語)は
+        // 表の語が先頭(じゃくしゅう が 弱集、ぐうしゅう が ぐう集 と、区切った当て字が 若州/隅州 の前に来ていた)
+        if !candidates.isEmpty,
+           let surfaces = TrailingCandidateTable.surfacesByReading[KanaTextNormalizer.normalizedReading(reading)] {
+            let singleTop = self.candidates(for: reading, limit: 1, systemCandidateMode: systemCandidateMode).first
+            if let singleTop, surfaces.contains(singleTop) {
+                candidates.removeAll { surfaces.contains($0) }
+                candidates.insert(contentsOf: surfaces, at: 0)
+            } else {
+                let missing = surfaces.filter { !candidates.contains($0) }
+                candidates.insert(contentsOf: missing, at: 1)
+            }
+        }
         candidates = Self.brewingMakeOrthographyOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.cocktailMakeOrthographyOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         // 名詞+っぱなし(沖っぱなし/槍っぱなし/山車っぱなし)は後ろへ。経路は 連用形+っぱなし でも、区間の兄弟表記の差し替えで

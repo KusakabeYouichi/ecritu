@@ -30881,15 +30881,15 @@ extension KanaKanjiConverterRegressionTests {
             if let first = single.first, !list.isEmpty, !list.contains(first) { merged.insert(first, at: 1) }
             return merged + single.filter { !merged.contains($0) }
         }
-        XCTAssertEqual(TrailingCandidateTable.surfacesByReading.values.reduce(0) { $0 + $1.count }, 137)
+        XCTAssertEqual(TrailingCandidateTable.surfacesByReading.values.reduce(0) { $0 + $1.count }, 156)
         for (reading, surfaces) in TrailingCandidateTable.surfacesByReading where reading.hasSuffix("はん") {
             let list = shown(reading)
             for surface in surfaces {
                 XCTAssertTrue(list.prefix(4).contains(surface), "\(reading): \(surface) が 4 番め以内に無い \(list.prefix(6))")
             }
         }
-        // 先頭は奪わない(読み全体が合っても、今までの先頭のまま)。候補が無かった つはん だけは 津藩 が先頭
-        XCTAssertEqual(shown("たかはしはん").first, "高橋藩")
+        // 読み全体に辞書の語がほかに無いときは表の語が先頭(3862。それまでは 高橋藩 が先頭で 高梁藩 は 2 番めだった)
+        XCTAssertEqual(Array(shown("たかはしはん").prefix(2)), ["高梁藩", "高橋藩"])
         XCTAssertEqual(shown("つはん").first, "津藩")
         // 登録なしで出る藩と、文の中はそのまま
         for (reading, expected) in [
@@ -30921,9 +30921,12 @@ extension KanaKanjiConverterRegressionTests {
                 XCTAssertTrue(list.prefix(window).contains(surface), "\(reading): \(surface) が \(window) 番め以内に無い \(list.prefix(8))")
             }
         }
-        // 先頭は奪わない
+        // 辞書にほかの語がある読みは先頭を奪わない(いしゅう/こうしゅう)。無い読みは表の語が先頭で、今までの先頭は 2 番め(3862)
         for (reading, expected) in [
-            ("むさしのくに", "武蔵野国"), ("やまとのくに", "大和の国"), ("いしゅう", "異臭"), ("こうしゅう", "甲州"),
+            ("むさしのくに", "武蔵国"), ("やまとのくに", "大和国"), ("いしゅう", "異臭"), ("こうしゅう", "甲州"),
+            // 3862: compenser から移した州。ふつうの語が先頭に戻り、州は 3 番め以内。辞書にほかの語が無い読みは州が先頭
+            ("さんしゅう", "参集"), ("ぼうしゅう", "防臭"), ("ごうしゅう", "豪州"), ("いっしゅう", "1周"),
+            ("じゃくしゅう", "若州"), ("ぐうしゅう", "隅州"), ("さんしゅうする", "参集する"),
             ("ゆめのくに", "夢の国"), ("むさしのくににいく", "武蔵野国に行く"),
         ] {
             XCTAssertEqual(shown(reading).first, expected, "\(reading): \(shown(reading).prefix(4))")
