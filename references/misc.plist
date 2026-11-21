@@ -107,6 +107,9 @@
 	<dict><key>phrase</key><string>氷酢酸</string><key>shortcut</key><string>ひょうさくさん</string><key>pos</key><string>名詞</string></dict>	<!-- 氷酢酸(ひょうさくさん、高純度の酢酸): 辞書は さくさん→酢酸 のみで未登録 -->
 	<dict><key>phrase</key><string>氷醋酸</string><key>shortcut</key><string>ひょうさくさん</string><key>pos</key><string>名詞</string></dict>	<!-- 氷酢酸 の書きかえ前の表記(醋酸→酢酸)。どちらを出すかは X.9 に従う(ユーザ指定 3427) -->
 	<dict><key>phrase</key><string>一昨日</string><key>shortcut</key><string>いっさくじつ</string><key>pos</key><string>名詞</string></dict>	<!-- 一昨日(いっさくじつ、改まった言い方): 辞書は おととい/おとつい 読みのみで、連文節が 一昨+実 を組んでいた(3448) -->
+	<dict><key>phrase</key><string>対向車線</string><key>shortcut</key><string>たいこうしゃせん</string><key>pos</key><string>名詞</string></dict>	<!-- 対向車線(たいこうしゃせん): 辞書にも LM にも無く、たい+降車せん、文の中では 対抗+社線 だった(ユーザ報告 3866) -->
+	<dict><key>phrase</key><string>明々後日</string><key>shortcut</key><string>しあさって</string><key>pos</key><string>名詞</string></dict>	<!-- 明々後日(しあさって): 辞書にはあるが LM に無く、かなの しあさって が先頭、しあさってから は し+漁ってから だった。明々後日 → 明明後日 の順(ユーザ指定 3866) -->
+	<dict><key>phrase</key><string>明明後日</string><key>shortcut</key><string>しあさって</string><key>pos</key><string>名詞</string></dict>
 	<dict><key>phrase</key><string>来来月</string><key>shortcut</key><string>らいらいげつ</string><key>pos</key><string>名詞</string></dict>	<!-- 来来月(らいらいげつ、再来月の口語): 辞書に無く、連文節が 雷+来月 を組んでいた。来来月 → 来々月 の順(ユーザ指定 3451) -->
 	<dict><key>phrase</key><string>来々月</string><key>shortcut</key><string>らいらいげつ</string><key>pos</key><string>名詞</string></dict>
 	<dict><key>phrase</key><string>来来年</string><key>shortcut</key><string>らいらいねん</string><key>pos</key><string>名詞</string></dict>	<!-- 来来年/来来週: らいらいげつ と同じく辞書に無く、来来念/来来集 等の合成になっていた(ユーザ指定 3458) -->
