@@ -30901,6 +30901,27 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertFalse(shown("たかはしはんちょう").contains { $0.contains("高梁藩") })
     }
 
+    // 3863: 文の頭の あさって+助詞 は 明後日 が先頭、かなが 2 番め(あさっての が 漁っての、明後日の、あさっての の順だった。ユーザ指定)。
+    // 目的語のある 漁って と、あさっている はそのまま
+    func testAsatteWithParticleAtSentenceHead3863() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        for (reading, expected) in [
+            ("あさっての", ["明後日の", "あさっての"]), ("あさってのよてい", ["明後日の予定", "あさっての予定"]),
+            ("あさってから", ["明後日から", "あさってから"]), ("あさっては", ["明後日は", "あさっては"]),
+            ("あさってにする", ["明後日にする", "あさってにする"]), ("あさってまでに", ["明後日までに", "あさってまでに"]),
+        ] {
+            XCTAssertEqual(Array(multi(reading).prefix(2)), expected, "\(reading): \(multi(reading).prefix(4))")
+        }
+        for (reading, expected) in [
+            ("ごみをあさって", "ゴミを漁って"), ("ごみをあさっては", "ゴミを漁っては"), ("ごみばこをあさっている", "ゴミ箱を漁っている"),
+            ("あさっている", "漁っている"),
+        ] {
+            XCTAssertEqual(multi(reading).first, expected, "\(reading): \(multi(reading).prefix(4))")
+        }
+    }
+
     // 3861: 旧国名と州(references/provinces-fiefs.plist)。名前+国(むさしのくに → 武蔵国)は 86 国とも候補に出ず 〜の国 だけだった。
     // 州の別名 8 つと 石狩 も出なかった。藩と同じく、読み全体がその読みのときだけ 4 番め以内に足し、先頭と文の中は変えない
     func testProvinceNamesAppearWithoutStealingSentences3861() throws {
