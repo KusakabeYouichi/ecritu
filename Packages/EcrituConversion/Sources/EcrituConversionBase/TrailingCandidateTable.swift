@@ -1,7 +1,7 @@
 import Foundation
 
 // 生成ファイル。tools/build_trailing_candidate_table.py が references/provinces-fiefs.plist から作る。手で直さない(3860)
-// 候補の後ろのほうに足す語(旧国名・州・藩の名前)。読み全体がこの読みのときだけ、単文節の候補に足す(先頭は奪わない)
+// 候補の後ろのほうに足す語(旧国名・州・藩の名前)。読み全体がこの読みのときだけ、候補に足す(辞書にほかの語がある読みでは先頭を奪わない)
 public enum TrailingCandidateTable {
     public static let surfacesByReading: [String: [String]] = [
         "あきのくに": ["安芸国"],

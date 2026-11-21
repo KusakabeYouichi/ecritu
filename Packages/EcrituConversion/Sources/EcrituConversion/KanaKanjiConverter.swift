@@ -508,7 +508,7 @@ public final class KanaKanjiConverter {
         // て形の後ろの ほしい はかなが先(してほしい。連文節の側と揃える。3859)
         finalCandidates = Self.teHoshiiKanaFirstOrdered(finalCandidates)
         // 候補の後ろのほうに足す語(旧国名・州・藩の名前。references/provinces-fiefs.plist。3860、3861)。読み全体が表の読みのときだけ 3 番めに足す。
-        // 1 語として登録すると ほかの文を奪う(高梁藩 → 高橋班長 が 高梁藩長)ので、先頭を奪わない形で候補に出す
+        // 1 語として登録すると ほかの文を奪う(高梁藩 → 高橋班長 が 高梁藩長)ので、読み全体が合うときだけ候補に出す(辞書にほかの語が無い読みでは連文節の側で先頭になる。3862)
         finalCandidates = TrailingCandidateTable.inserted(reading: normalizedReading, candidates: finalCandidates)
 
         if !finalCandidates.isEmpty {
