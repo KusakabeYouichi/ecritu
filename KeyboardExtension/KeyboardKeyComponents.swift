@@ -2047,7 +2047,13 @@ final class EmojiGridCell: UICollectionViewCell {
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        label.frame = contentView.bounds
+        // ラベルの描画面は絵文字の幅まで(3868)。セルいっぱい(幅 47pt 前後)だと、絵文字の左右の透明な部分まで
+        // 3 倍の解像度の描画面になり、絵文字面を開いた瞬間の footprint を押し上げていた。見た目は同じ(中央のまま)
+        let bounds = contentView.bounds
+        let labelWidth = min(bounds.width, ceil(label.intrinsicContentSize.width) + 2)
+        // 押している間は縮小の変形が掛かっているので、frame でなく bounds と center で置く
+        label.bounds = CGRect(x: 0, y: 0, width: labelWidth, height: bounds.height)
+        label.center = CGPoint(x: bounds.midX, y: bounds.midY)
         feedbackCircle.frame = CGRect(
             x: contentView.bounds.midX - 12,
             y: contentView.bounds.midY - 12,
@@ -2059,6 +2065,7 @@ final class EmojiGridCell: UICollectionViewCell {
     func configure(emoji: String, accessibilityText: String) {
         label.text = emoji
         accessibilityLabel = accessibilityText
+        setNeedsLayout()
     }
 
     // 旧 EmojiTapFeedbackButtonStyle と同じ押下表現(0.84 倍+中央の薄い円)
