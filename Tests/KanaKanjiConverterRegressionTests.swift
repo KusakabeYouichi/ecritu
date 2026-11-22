@@ -30986,6 +30986,24 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.candidates(for: "たいこう", limit: 3, systemCandidateMode: .surface).first, "対抗")
     }
 
+    // 3867: あしたからいく が あしたから行く(明日から行く が 2 番め)、しあさってる が 明々後日る だった(ユーザ指定)。
+    // きょうかあしたか は 3866 の加点で 今日か明日か になっている。ああしたから は変えない
+    func testAshitaKaraKanjiFirstAndShiasatteRuDropped3867() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        for (reading, expected) in [
+            ("あしたからいく", ["明日から行く", "あしたから行く"]), ("あしたからやすみ", ["明日から休み", "あしたから休み"]),
+            ("あしたからがんばる", ["明日から頑張る", "あしたから頑張る"]), ("あしたから", ["明日から", "あしたから"]),
+            ("きょうかあしたか", ["今日か明日か"]), ("あしたかあさってか", ["明日か明後日か"]),
+            ("かれはあしたからいく", ["彼は明日から行く"]), ("あしたからだをうごかす", ["明日体を動かす"]),
+            ("しあさってる", ["しあさってる"]), ("ああしたから", ["ああしたから"]),
+        ] {
+            XCTAssertEqual(Array(multi(reading).prefix(expected.count)), expected, "\(reading): \(multi(reading).prefix(4))")
+        }
+        XCTAssertFalse(multi("しあさってる").contains { $0.hasSuffix("後日る") })
+    }
+
     // 3861: 旧国名と州(references/provinces-fiefs.plist)。名前+国(むさしのくに → 武蔵国)は 86 国とも候補に出ず 〜の国 だけだった。
     // 州の別名 8 つと 石狩 も出なかった。藩と同じく、読み全体がその読みのときだけ 4 番め以内に足し、先頭と文の中は変えない
     func testProvinceNamesAppearWithoutStealingSentences3861() throws {
