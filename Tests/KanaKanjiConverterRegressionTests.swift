@@ -21394,6 +21394,70 @@ enum AllocationCensus {
 }
 
 extension KanaKanjiConverterRegressionTests {
+    // TEST_RUNNER_RESIDENT_CENSUS=1 で実行。常駐する表とキャッシュが malloc を何 MB 使うかを段階ごとに出す(3873)。
+    // 表は初めて触れたときにヒープへ組み立てられ、プロセスが終わるまで残る。触れる順に差を取るので、先に触れた表が
+    // 後の表の部品(共通の文字列)を持っていると後ろが小さく出る。目安として読む
+    func testDiagResidentTableCensus() throws {
+        try XCTSkipUnless(ProcessInfo.processInfo.environment["RESIDENT_CENSUS"] != nil, "TEST_RUNNER_RESIDENT_CENSUS=1 で実行")
+        func usedMB() -> Double {
+            var total = 0
+            var zones: UnsafeMutablePointer<vm_address_t>?
+            var count: UInt32 = 0
+            guard malloc_get_all_zones(mach_task_self_, nil, &zones, &count) == KERN_SUCCESS, let zones else { return 0 }
+            for index in 0..<Int(count) {
+                guard let zone = UnsafeMutablePointer<malloc_zone_t>(bitPattern: zones[index]) else { continue }
+                var stats = malloc_statistics_t()
+                malloc_zone_statistics(zone, &stats)
+                total += stats.size_in_use
+            }
+            return Double(total) / 1_048_576
+        }
+        var last = usedMB()
+        var lines: [String] = []
+        func mark(_ label: String) {
+            let now = usedMB()
+            lines.append(String(format: "RESIDENT %@\t%+.2f\t%.1f", label, now - last, now))
+            last = now
+        }
+        mark("開始")
+        _ = KanaKanjiSeedDictionary.seed.count
+        mark("seed の表")
+        _ = KanaKanjiConverter.multiClauseObjectVerbCollocations.count
+        _ = KanaKanjiConverter.multiClauseObjectVerbAdjacentBonusesByNoun.count
+        mark("連語の表")
+        _ = KanaKanjiConverter.MultiClauseSymbols.count
+        mark("連文節の記号表")
+        _ = KanaKanjiConverter.multiClauseBigramPairBonusesID.count
+        mark("組の加点の表(ID)")
+        _ = TrailingCandidateTable.surfacesByReading.count
+        mark("旧国名・州・藩の表")
+        try prepareRealLMDictionary()
+        mark("辞書の準備")
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        mark("追加・抑制語彙")
+        _ = converter.multiClauseCandidates(for: "きょうはいいてんきですね", systemCandidateMode: .surface)
+        _ = converter.candidates(for: "きょう", limit: 30, systemCandidateMode: .surface)
+        mark("最初の変換(残りの表と活用規則)")
+        let sentences = [
+            "あしたからあさってまでやすみます", "じゅこうしゃもきっとまよわない", "ぜんかいのさいけんじにかくにんした", "そとからほうすいする",
+            "きかいをこわしてしまった", "わたしのなまえはなかのです", "でんしゃがおくれているのでちこくします", "しようをかくにんしてください",
+            "らいしゅうのかいぎのしりょうをおくります", "おつかれさまでした", "こんばんはなにをたべようか", "あたらしいきのうをついかしました",
+        ]
+        for sentence in sentences {
+            for length in 1...sentence.count {
+                let prefix = String(sentence.prefix(length))
+                _ = converter.multiClauseCandidates(for: prefix, systemCandidateMode: .surface)
+                _ = converter.candidates(for: prefix, limit: 30, systemCandidateMode: .surface)
+            }
+        }
+        mark("12 文を 1 字ずつ打った変換(キャッシュ)")
+        converter.store.clearSystemDictionaryJSONCaches()
+        mark("辞書系キャッシュを空に")
+        converter.clearAllCaches()
+        mark("全キャッシュを空に")
+        print(lines.joined(separator: "\n"))
+    }
+
     func testDiagAllocationCensusMultiClause() throws {
         try XCTSkipUnless(ProcessInfo.processInfo.environment["ALLOC_CENSUS"] != nil, "TEST_RUNNER_ALLOC_CENSUS=1 で実行")
         try prepareRealLMDictionary()
