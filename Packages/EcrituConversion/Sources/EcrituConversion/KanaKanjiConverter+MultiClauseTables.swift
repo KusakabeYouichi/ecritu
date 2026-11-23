@@ -3199,6 +3199,8 @@ extension KanaKanjiConverter {
     // サ変名詞の直後の 後(ご)。受諾後/終了後/確認後 は最も生産的な接尾で、語(ご) は 国名+語 以外では立たない。
     // 後(ご) の床免除(multiClauseRareReadingFloorExemptSurfacesByReading)だけでは 語→EOS 2114 < 後→EOS 2716 の文末統計で 46 差負ける(3054)
     static let multiClauseSuruNounGoSuffixBonus = 1000
+    // サ変名詞の直後の 時(じ)。再建時/更新時/変更時(3870)
+    static let multiClauseSuruNounJiSuffixBonus = 1500
     // ラテン文字の語の直後の 側(がわ)の加点(iOS側。が+倭 との差 850 を越え、の が続く形でも勝つ幅。3865)
     static let multiClauseLatinWordSideSuffixBonus = 3000
     // 日・週・月・年を指す語+か+同じ仲間の語(明日か明後日/今日か明日/今週か来週)の 2 つめへの加点。

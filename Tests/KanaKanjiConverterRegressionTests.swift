@@ -31065,6 +31065,25 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3870: ぜんかいのさいけんじ が 前回の際健二、そとからほうすい が 外から豊水 だった(ユーザ指定)。
+    // サ変名詞+時(じ)は接尾として加点。文の中の ほうすい は 放水 が先頭で 豊水 が 2 番め。その際健二が来た、梨の 豊水 はそのまま
+    func testSuruNounJiSuffixAndHousuiInSentence3870() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        for (reading, expected) in [
+            ("ぜんかいのさいけんじ", "前回の再建時"), ("ぜんかいのこうしんじ", "前回の更新時"), ("ぜんかいのへんこうじ", "前回の変更時"),
+            ("かくにんじにみる", "確認時に見る"), ("そのさいけんじがきた", "その際健二が来た"), ("ぜんかいのさいけん", "前回の再建"),
+            ("そとからほうすい", "外から放水"), ("だむのほうすい", "ダムの放水"), ("そとからほうすいする", "外から放水する"),
+            ("ほうすいのなし", "豊水のなし"),
+        ] {
+            XCTAssertEqual(multi(reading).first, expected, "\(reading): \(multi(reading).prefix(4))")
+        }
+        XCTAssertEqual(Array(multi("そとからほうすい").prefix(2)), ["外から放水", "外から豊水"])
+        XCTAssertEqual(Array(converter.candidates(for: "ほうすい", limit: 3, systemCandidateMode: .surface).prefix(2)), ["放水", "豊水"])
+        XCTAssertEqual(multi("さいけんじ").first, "再建時")
+    }
+
     // 3861: 旧国名と州(references/provinces-fiefs.plist)。名前+国(むさしのくに → 武蔵国)は 86 国とも候補に出ず 〜の国 だけだった。
     // 州の別名 8 つと 石狩 も出なかった。藩と同じく、読み全体がその読みのときだけ 4 番め以内に足し、先頭と文の中は変えない
     func testProvinceNamesAppearWithoutStealingSentences3861() throws {
