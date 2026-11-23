@@ -31270,6 +31270,22 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3875: みやつぐちからてをいれる が 身八つ口空手を入れる、そでぐちからてをいれる が 袖口空手を入れる だった(ユーザ指定)。
+    // 文の途中の から の直後の 手 に加点。文の頭の からて と、助詞の後ろの 空手 はそのまま
+    func testHandAfterMidSentenceKara3875() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        for (reading, expected) in [
+            ("みやつぐちからてをいれる", "身八つ口から手を入れる"), ("そでぐちからてをいれる", "袖口から手を入れる"),
+            ("はっかけからてをいれる", "八掛から手を入れる"), ("まどからてをだす", "窓から手を出す"), ("それからてをあらう", "それから手を洗う"),
+            ("からてをならう", "空手を習う"), ("からてのけいこ", "空手の稽古"), ("こどもがからてをはじめた", "子供が空手を始めた"),
+            ("あにはからてがつよい", "兄は空手が強い"), ("がっこうでからてをならう", "学校で空手を習う"), ("むかしからてがみをかく", "昔から手紙を書く"),
+        ] {
+            XCTAssertEqual(multi(reading).first, expected, "\(reading): \(multi(reading).prefix(4))")
+        }
+    }
+
     // 3861: 旧国名と州(references/provinces-fiefs.plist)。名前+国(むさしのくに → 武蔵国)は 86 国とも候補に出ず 〜の国 だけだった。
     // 州の別名 8 つと 石狩 も出なかった。藩と同じく、読み全体がその読みのときだけ 4 番め以内に足し、先頭と文の中は変えない
     func testProvinceNamesAppearWithoutStealingSentences3861() throws {

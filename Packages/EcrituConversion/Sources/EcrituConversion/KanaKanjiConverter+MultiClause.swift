@@ -5489,6 +5489,11 @@ extension KanaKanjiConverter {
                             Self.multiClauseRelativeDayWords.contains(headSurface) {
                             cost -= Self.multiClauseRelativeDayAlternativeBonus
                         }
+                        // 文の途中の から の直後の 手(袖口から手を入れる。定数コメント参照。3875、ユーザ指定)
+                        if node.end - node.start == 1, prevNode.end - prevNode.start == 2, prevNode.start > 0,
+                            prevNode.isKanaIdentity, node.surface == "手", prevNode.surface == "から" {
+                            cost -= Self.multiClauseHandAfterMidSentenceKaraBonus
+                        }
                         // サ変名詞+時(じ): 再建時/更新時/変更時 も 後(ご) と同じ生産的な接尾(ぜんかいのさいけんじ が 前回の+際+健二 だった。
                         // 再建+時 は途中まで 際+健二 より安いのに、文末の統計で負けていた。3870、ユーザ指定)
                         if node.end - node.start == 1, node.surface == "時", node.reading == "じ",

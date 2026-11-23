@@ -3199,6 +3199,10 @@ extension KanaKanjiConverter {
     // サ変名詞の直後の 後(ご)。受諾後/終了後/確認後 は最も生産的な接尾で、語(ご) は 国名+語 以外では立たない。
     // 後(ご) の床免除(multiClauseRareReadingFloorExemptSurfacesByReading)だけでは 語→EOS 2114 < 後→EOS 2716 の文末統計で 46 差負ける(3054)
     static let multiClauseSuruNounGoSuffixBonus = 1000
+    // 文の途中の から の直後の 手(袖口から手を入れる)。から の前の名詞と から の連接が LM に無いと、名詞+空手 に 700 ほど負けていた
+    // (そでぐちからてをいれる が 袖口空手を入れる、みやつぐちからてをいれる が 身八つ口空手を入れる。窓から手を出す は出ていた)。
+    // 文の頭の からて(からてをならう)は対象外(組の加点の表に入れると から手を習う になった)。3875、ユーザ指定
+    static let multiClauseHandAfterMidSentenceKaraBonus = 1200
     // サ変名詞の直後の 時(じ)。再建時/更新時/変更時(3870)
     static let multiClauseSuruNounJiSuffixBonus = 1500
     // ラテン文字の語の直後の 側(がわ)の加点(iOS側。が+倭 との差 850 を越え、の が続く形でも勝つ幅。3865)
