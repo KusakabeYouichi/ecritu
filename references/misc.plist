@@ -531,6 +531,58 @@
 	<dict><key>phrase</key><string>二日酔い</string><key>shortcut</key><string>ふつかよい</string><key>pos</key><string>名詞</string></dict>	<!-- 二日酔い: 辞書に無く、ふつかよい が 二日よい だった(日付の走査で検出、ユーザ指定 3800) -->
 	<dict><key>phrase</key><string>三日三晩</string><key>shortcut</key><string>みっかみばん</string><key>pos</key><string>名詞</string></dict>	<!-- 三日三晩: 辞書に無く、みっかみばん が 三日3晩 だった(同上) -->
 
+	<!-- □ 年忌・法要(ユーザ指定 3887: いっしゅうき が 1周木、にじゅうごかいき が 25回木 だった。辞書にあって出る語も形だけ置いてコメントアウト。
+	     算用数字の形(3回忌)は周忌・回忌だけ、漢数字の後ろに出す。二七日〜七七日 はかなが先頭(いつなのか の疑問文とぶつかる。並びは seed)) -->
+	<dict><key>phrase</key><string>一周忌</string><key>shortcut</key><string>いっしゅうき</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>一回忌</string><key>shortcut</key><string>いっかいき</string><key>pos</key><string>名詞</string></dict>
+<!--	<dict><key>phrase</key><string>三回忌</string><key>shortcut</key><string>さんかいき</string><key>pos</key><string>名詞</string></dict>-->	<!-- 辞書にある -->
+	<dict><key>phrase</key><string>七回忌</string><key>shortcut</key><string>しちかいき</string><key>pos</key><string>名詞</string></dict>
+<!--	<dict><key>phrase</key><string>七回忌</string><key>shortcut</key><string>ななかいき</string><key>pos</key><string>名詞</string></dict>-->	<!-- 辞書にある -->
+<!--	<dict><key>phrase</key><string>十三回忌</string><key>shortcut</key><string>じゅうさんかいき</string><key>pos</key><string>名詞</string></dict>-->	<!-- 辞書にある -->
+	<dict><key>phrase</key><string>十七回忌</string><key>shortcut</key><string>じゅうしちかいき</string><key>pos</key><string>名詞</string></dict>
+<!--	<dict><key>phrase</key><string>十七回忌</string><key>shortcut</key><string>じゅうななかいき</string><key>pos</key><string>名詞</string></dict>-->	<!-- 辞書にある -->
+	<dict><key>phrase</key><string>二十三回忌</string><key>shortcut</key><string>にじゅうさんかいき</string><key>pos</key><string>名詞</string></dict>	<!-- 廿三回忌 が先頭だった -->
+	<dict><key>phrase</key><string>二十五回忌</string><key>shortcut</key><string>にじゅうごかいき</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>二十七回忌</string><key>shortcut</key><string>にじゅうしちかいき</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>二十七回忌</string><key>shortcut</key><string>にじゅうななかいき</string><key>pos</key><string>名詞</string></dict>	<!-- 廿七回忌 が先頭だった -->
+	<dict><key>phrase</key><string>三十三回忌</string><key>shortcut</key><string>さんじゅうさんかいき</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>三十七回忌</string><key>shortcut</key><string>さんじゅうしちかいき</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>三十七回忌</string><key>shortcut</key><string>さんじゅうななかいき</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>四十三回忌</string><key>shortcut</key><string>よんじゅうさんかいき</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>四十三回忌</string><key>shortcut</key><string>しじゅうさんかいき</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>四十七回忌</string><key>shortcut</key><string>よんじゅうしちかいき</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>四十七回忌</string><key>shortcut</key><string>よんじゅうななかいき</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>四十七回忌</string><key>shortcut</key><string>しじゅうしちかいき</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>五十回忌</string><key>shortcut</key><string>ごじっかいき</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>五十回忌</string><key>shortcut</key><string>ごじゅっかいき</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>五十回忌</string><key>shortcut</key><string>ごじゅうかいき</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>百回忌</string><key>shortcut</key><string>ひゃっかいき</string><key>pos</key><string>名詞</string></dict>
+<!--	<dict><key>phrase</key><string>回忌</string><key>shortcut</key><string>かいき</string><key>pos</key><string>名詞</string></dict>-->	<!-- 辞書にある -->
+<!--	<dict><key>phrase</key><string>周忌</string><key>shortcut</key><string>しゅうき</string><key>pos</key><string>名詞</string></dict>-->	<!-- 辞書にある(周期/臭気/秋季 の後ろ) -->
+<!--	<dict><key>phrase</key><string>年忌</string><key>shortcut</key><string>ねんき</string><key>pos</key><string>名詞</string></dict>-->	<!-- 辞書にある(年季 の次) -->
+	<dict><key>phrase</key><string>年回法要</string><key>shortcut</key><string>ねんかいほうよう</string><key>pos</key><string>名詞</string></dict>
+<!--	<dict><key>phrase</key><string>初七日</string><key>shortcut</key><string>しょなのか</string><key>pos</key><string>名詞</string></dict>-->	<!-- 辞書にある -->
+	<dict><key>phrase</key><string>初七日</string><key>shortcut</key><string>しょなぬか</string><key>pos</key><string>名詞</string></dict>
+<!--	<dict><key>phrase</key><string>二七日</string><key>shortcut</key><string>ふたなのか</string><key>pos</key><string>名詞</string></dict>-->	<!-- seed で 2 番めに出す(ラティスに入れると いつなのかわからない が 五七日わからない になる) -->
+<!--	<dict><key>phrase</key><string>三七日</string><key>shortcut</key><string>みなのか</string><key>pos</key><string>名詞</string></dict>-->	<!-- seed で 2 番めに出す(ラティスに入れると いつなのかわからない が 五七日わからない になる) -->
+<!--	<dict><key>phrase</key><string>四七日</string><key>shortcut</key><string>よなのか</string><key>pos</key><string>名詞</string></dict>-->	<!-- seed で 2 番めに出す(ラティスに入れると いつなのかわからない が 五七日わからない になる) -->
+<!--	<dict><key>phrase</key><string>五七日</string><key>shortcut</key><string>いつなのか</string><key>pos</key><string>名詞</string></dict>-->	<!-- seed で 2 番めに出す(ラティスに入れると いつなのかわからない が 五七日わからない になる) -->
+<!--	<dict><key>phrase</key><string>六七日</string><key>shortcut</key><string>むなのか</string><key>pos</key><string>名詞</string></dict>-->	<!-- seed で 2 番めに出す(ラティスに入れると いつなのかわからない が 五七日わからない になる) -->
+<!--	<dict><key>phrase</key><string>七七日</string><key>shortcut</key><string>なななのか</string><key>pos</key><string>名詞</string></dict>-->	<!-- seed で 2 番めに出す(ラティスに入れると いつなのかわからない が 五七日わからない になる) -->
+	<dict><key>phrase</key><string>七七日</string><key>shortcut</key><string>しちしちにち</string><key>pos</key><string>名詞</string></dict>
+<!--	<dict><key>phrase</key><string>四十九日</string><key>shortcut</key><string>しじゅうくにち</string><key>pos</key><string>名詞</string></dict>-->	<!-- 辞書にある -->
+	<dict><key>phrase</key><string>百か日</string><key>shortcut</key><string>ひゃっかにち</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>百箇日</string><key>shortcut</key><string>ひゃっかにち</string><key>pos</key><string>名詞</string></dict>
+<!--	<dict><key>phrase</key><string>祥月命日</string><key>shortcut</key><string>しょうつきめいにち</string><key>pos</key><string>名詞</string></dict>-->	<!-- 辞書にある -->
+<!--	<dict><key>phrase</key><string>月命日</string><key>shortcut</key><string>つきめいにち</string><key>pos</key><string>名詞</string></dict>-->	<!-- 辞書にある -->
+<!--	<dict><key>phrase</key><string>新盆</string><key>shortcut</key><string>にいぼん</string><key>pos</key><string>名詞</string></dict>-->	<!-- 辞書にある -->
+<!--	<dict><key>phrase</key><string>初盆</string><key>shortcut</key><string>はつぼん</string><key>pos</key><string>名詞</string></dict>-->	<!-- 辞書にある -->
+<!--	<dict><key>phrase</key><string>満中陰</string><key>shortcut</key><string>まんちゅういん</string><key>pos</key><string>名詞</string></dict>-->	<!-- 辞書にある -->
+<!--	<dict><key>phrase</key><string>忌明け</string><key>shortcut</key><string>きあけ</string><key>pos</key><string>名詞</string></dict>-->	<!-- 辞書にある -->
+	<dict><key>phrase</key><string>忌明け</string><key>shortcut</key><string>いみあけ</string><key>pos</key><string>名詞</string></dict>	<!-- 忌み明け、忌明 の後ろだった -->
+<!--	<dict><key>phrase</key><string>弔い上げ</string><key>shortcut</key><string>とむらいあげ</string><key>pos</key><string>名詞</string></dict>-->	<!-- 辞書にある -->
+<!--	<dict><key>phrase</key><string>遠忌</string><key>shortcut</key><string>おんき</string><key>pos</key><string>名詞</string></dict>-->	<!-- 辞書にある -->
+
 	<!-- □ 銘柄牛(ユーザ指定 3735: おざきぎゅう が 尾崎ギュウ だった。主な銘柄も合わせて。前沢牛/宮崎牛 は辞書に既存) -->
 	<dict><key>phrase</key><string>尾崎牛</string><key>shortcut</key><string>おざきぎゅう</string></dict>
 	<dict><key>phrase</key><string>松阪牛</string><key>shortcut</key><string>まつさかうし</string></dict>
@@ -879,6 +931,8 @@
 	<dict><key>phrase</key><string>禿げる</string><key>shortcut</key><string>はげる</string></dict>	<!-- 禿げる: Sudachi に有り dict rank0 だが LM uni 未収録(=連文節ノード8700)で、は+ゲル(uni6785)の断片連結に負ける(おおいとはげるよ→多いとはゲルよ)。curated で連文節を担保(供給欠落ではないので本節。2742) -->
 	<dict><key>phrase</key><string>これ安い</string><key>shortcut</key><string>これやすい</string></dict>	<!-- これ安い: 口語の 指示詞+形容詞(これ、安い)。活用合成(来れやすい 等)しか出ず、ユーザ第一希望の これ安い が組めないため curated 供給 -->
 	<dict><key>phrase</key><string>夜行性</string><key>shortcut</key><string>やこうせい</string></dict>	<!-- 夜行性: Sudachi実在だが wc10555 のジャンク級+LM unigram 7792 で、や(2998)+後世(bigram4885)+の(413) の接着剤ジャンクに1979差で負ける(やこうせいのどうぶつ→や後世の動物) -->	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>法事</string><key>shortcut</key><string>ほうじ</string><key>pos</key><string>名詞</string></dict>	<!-- 法事: 単独は seed で 法事 が先頭だが、連文節は LM の値段で 報時(6847)が 法事(7989)より安く、ほうじがあったんでしょうか が 報時があったんでしょうか だった(ユーザ指定 3888) -->	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>ほうじ茶</string><key>shortcut</key><string>ほうじちゃ</string><key>pos</key><string>名詞</string></dict>	<!-- ほうじ茶: ほうじちゃをのむ が 報じちゃを飲む だった(3888、法事 の確認中に見つけた) -->
 	<dict><key>phrase</key><string>水は</string><key>shortcut</key><string>みずは</string></dict>	<!-- 水は: みずは のレア人名11件(suppr済)が単文節で 水+は 合成より前に並んでいた。固定句curatedで先頭化(からだが と同処方) -->
 	<dict><key>phrase</key><string>数年後</string><key>shortcut</key><string>すうねんご</string></dict>	<!-- 数年後: 単文節は ご→語(word_cost 語4401<後6845)で 数年語 を作る。LM連文節では 年→後 bigram で 数年後 が正しく勝つが、過去に 数年語 を学習(2280)してしまうと上書きできない。追加語彙(2400)で確実に先頭化する -->
 	<dict><key>phrase</key><string>ビン</string><key>shortcut</key><string>びん</string></dict>	<!-- びん はLMで 便(5265)が最安のため 便に詰めて 等になる。容器の ビン/瓶 を優先(便 は2位以下でも その便で 等は文脈選択可) -->	<!-- Sudachiにもある -->
