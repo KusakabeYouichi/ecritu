@@ -31387,6 +31387,22 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3883(ユーザ指定): かみをきるはさみ が 髪を切る挟み、ひにひに が 日に火に、よんだり が 呼んだり(読んだり は 6 番め)だった。
+    // 髪を切る の次の かみを切る は出さない。友達を呼んだり はそのまま
+    func testScissorsDayByDayAndYondari3883() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("かみをきるはさみ", ["髪を切るハサミ", "髪を切る鋏"]), ("ひにひに", ["日に日に"]), ("よんだり", ["読んだり", "呼んだり"]),
+            ("ほんをよんだり", ["本を読んだり"]), ("ともだちをよんだり", ["友達を呼んだり"]), ("いしゃをよんだり", ["医者を呼んだり"]),
+            ("かみをきる", ["髪を切る", "紙を切る"]), ("かみをきった", ["髪を切った", "紙を切った"]),
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(Array(list.prefix(expected.count)), expected, "\(reading): \(list.prefix(5))")
+        }
+        XCTAssertEqual(leadingCandidates3879("ひにひによくなる").first?.hasPrefix("日に日に"), true)
+    }
+
     // 3861: 旧国名と州(references/provinces-fiefs.plist)。名前+国(むさしのくに → 武蔵国)は 86 国とも候補に出ず 〜の国 だけだった。
     // 州の別名 8 つと 石狩 も出なかった。藩と同じく、読み全体がその読みのときだけ 4 番め以内に足し、先頭と文の中は変えない
     func testProvinceNamesAppearWithoutStealingSentences3861() throws {
