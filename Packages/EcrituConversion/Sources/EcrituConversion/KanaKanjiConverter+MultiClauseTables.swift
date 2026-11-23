@@ -3207,6 +3207,9 @@ extension KanaKanjiConverter {
     // 人名の 李 や 利/吏 が続くことはまず無い(にいどうさせたり が に移動させた李。移動させた+李 が 移動+させたり より 2800 安かった)。
     // 見た李さん のような文は候補から選べる。3880、ユーザ指定
     static let multiClauseSingleKanjiRiAfterPastFormPenalty = 6000
+    // 人数の直後の いた は 居る の過去形で、板 が続くことはまず無い(ひとりいた が 一人板、1人板、一人いた、火取り板。
+    // ふたりいた/さんにんいた/こどもがひとりいた も 板 だった)。3885、ユーザ指定
+    static let multiClauseBoardAfterHeadcountPenalty = 6000
     // サ変名詞の直後の 時(じ)。再建時/更新時/変更時(3870)
     static let multiClauseSuruNounJiSuffixBonus = 1500
     // ラテン文字の語の直後の 側(がわ)の加点(iOS側。が+倭 との差 850 を越え、の が続く形でも勝つ幅。3865)

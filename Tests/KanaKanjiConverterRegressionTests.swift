@@ -31406,6 +31406,35 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3885(ユーザ指定): ひとりいた が 一人板、1人板、一人いた、火取り板 だった。人数の直後の 板 は出さず、
+    // 1人いた、ひとりいた、一人いた、1人居た、ひとり居た、一人居た の順に。板を切る の 板 はそのまま
+    func testHeadcountFollowedByItaIsNotBoard3885() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let alone = leadingCandidates3879("ひとりいた")
+        XCTAssertEqual(Array(alone.prefix(6)), ["1人いた", "ひとりいた", "一人いた", "1人居た", "ひとり居た", "一人居た"])
+        for reading in ["ひとりいた", "ひとりいたが", "ふたりいた", "さんにんいた", "こどもがひとりいた"] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertFalse(list.contains(where: { $0.contains("板") }), "\(reading): \(list.prefix(6))")
+        }
+        XCTAssertEqual(Array(leadingCandidates3879("さんにんいた").prefix(2)), ["3人いた", "3人居た"])
+        XCTAssertEqual(leadingCandidates3879("ふたりいた").first, "2人いた")
+        XCTAssertEqual(leadingCandidates3879("ひとりいる").first, "1人いる")
+        XCTAssertTrue(leadingCandidates3879("いたをきる").contains("板を切る"))
+    }
+
+    // 3886(ユーザ指定): さんまもつかうけどな が 三間も使うけどな、三摩も使うけどな で 秋刀魚 が出なかった。
+    // 単独の さんま は さんま、秋刀魚、サンマ、三摩
+    func testSauryLeadsBeforeParticle3886() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(Array(leadingCandidates3879("さんま").prefix(4)), ["さんま", "秋刀魚", "サンマ", "三摩"])
+        XCTAssertEqual(
+            Array(leadingCandidates3879("さんまもつかうけどな").prefix(5)),
+            ["秋刀魚も使うけどな", "サンマも使うけどな", "さんまも使うけどな", "三間も使うけどな", "三摩も使うけどな"])
+        XCTAssertEqual(leadingCandidates3879("さんまをやく").first, "秋刀魚を焼く")
+    }
+
     // 3883(ユーザ指定): かみをきるはさみ が 髪を切る挟み、ひにひに が 日に火に、よんだり が 呼んだり(読んだり は 6 番め)だった。
     // 髪を切る の次の かみを切る は出さない。友達を呼んだり はそのまま
     func testScissorsDayByDayAndYondari3883() throws {

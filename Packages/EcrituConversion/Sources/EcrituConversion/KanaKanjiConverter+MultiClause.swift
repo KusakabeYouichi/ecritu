@@ -5507,6 +5507,11 @@ extension KanaKanjiConverter {
                             containsKanji(prevNode.surface) {
                             cost += Self.multiClauseSingleKanjiRiAfterPastFormPenalty
                         }
+                        // 人数(1人/一人/ひとり/3人…)の直後の 板(定数コメント参照。3885、ユーザ指定)
+                        if node.surface == "板", node.reading == "いた",
+                            prevNode.surface.hasSuffix("人") || prevNode.reading == "ひとり" || prevNode.reading == "ふたり" {
+                            cost += Self.multiClauseBoardAfterHeadcountPenalty
+                        }
                         // サ変名詞+時(じ): 再建時/更新時/変更時 も 後(ご) と同じ生産的な接尾(ぜんかいのさいけんじ が 前回の+際+健二 だった。
                         // 再建+時 は途中まで 際+健二 より安いのに、文末の統計で負けていた。3870、ユーザ指定)
                         if node.end - node.start == 1, node.surface == "時", node.reading == "じ",
