@@ -31063,6 +31063,12 @@ extension KanaKanjiConverterRegressionTests {
             XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
             XCTAssertFalse(list.contains { $0.contains("名の") }, "\(reading): \(list.prefix(8))")
         }
+        // 3872: 連文節の側も 年なの が先頭(年ナノ だった。実機ではこちらが先頭に出ていた)。ナノメートル/ナノです はそのまま
+        let multi = converter.multiClauseCandidates(for: "ねんなの", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(multi.prefix(2)), ["年なの", "年ナノ"], "\(multi.prefix(4))")
+        // 数字を付けた読みでは、返る候補に数字は含まれない
+        XCTAssertEqual(converter.multiClauseCandidates(for: "10ねんなの", systemCandidateMode: .surface).first, "年なの")
+        XCTAssertEqual(converter.candidates(for: "なのめーとる", limit: 3, systemCandidateMode: .surface).first, "ナノメートル")
     }
 
     // 3870: ぜんかいのさいけんじ が 前回の際健二、そとからほうすい が 外から豊水 だった(ユーザ指定)。
