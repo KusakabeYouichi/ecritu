@@ -31270,6 +31270,42 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3876: 和装の用語の続き(着付け小物・帯・着物の種類。references/kimono.plist)。振袖/留袖/打掛 は送り仮名の許容形と見られて
+    // 初期設定で出ず、伊達締め/帯締め は め を 目 にした合成が前に出ていた。和服+を+着る は 切る だった
+    func testKimonoAccessoriesObiAndGarments3876() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func shown(_ r: String) -> [String] {
+            let multi = converter.multiClauseCandidates(for: r, systemCandidateMode: .surface)
+            let single = converter.candidates(for: r, limit: 48, systemCandidateMode: .surface)
+            var merged = multi
+            if let first = single.first, !multi.isEmpty, !multi.contains(first) { merged.insert(first, at: 1) }
+            return merged + single.filter { !merged.contains($0) }
+        }
+        for (reading, expected) in [
+            ("ふりそで", ["振袖", "振り袖"]), ("とめそで", ["留袖"]), ("くろとめそで", ["黒留袖"]), ("だてじめ", ["伊達締め"]),
+            ("おびじめ", ["帯締め", "帯〆"]), ("さんぶひも", ["三分紐"]), ("おびいた", ["帯板"]), ("えどこもん", ["江戸小紋"]),
+            ("きょうゆうぜん", ["京友禅"]), ("さむえ", ["作務衣"]), ("ひとつみ", ["一つ身"]), ("よつみ", ["四つ身"]),
+            ("にじゅうだいこ", ["二重太鼓"]), ("えもんかけ", ["衣紋掛け"]), ("はんはばおび", ["半幅帯", "半巾帯"]), ("つけさげ", ["付け下げ", "付下げ"]),
+        ] {
+            XCTAssertEqual(Array(shown(reading).prefix(expected.count)), expected, "\(reading): \(shown(reading).prefix(5))")
+        }
+        for (reading, term) in [("うちかけ", "打掛"), ("いこう", "衣桁"), ("しゃ", "紗"), ("おめし", "御召"), ("みつみ", "三つ身"), ("ねつけ", "根付"), ("もんつき", "紋付")] {
+            let index = shown(reading).firstIndex(of: term)
+            XCTAssertTrue(index.map { $0 <= 4 } ?? false, "\(reading): \(term) が 5 番め以内に無い \(shown(reading).prefix(8))")
+        }
+        XCTAssertEqual(shown("いこう").first, "いこう")
+        XCTAssertEqual(shown("しゃ").first, "者")
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        for (reading, expected) in [
+            ("ゆかたをきる", "浴衣を着る"), ("さむえをきる", "作務衣を着る"), ("はおりをきる", "羽織を着る"), ("つむぎをきる", "紬を着る"),
+            ("ひとつみる", "1つ見る"), ("おびをしめる", "帯を締める"),
+        ] {
+            XCTAssertEqual(multi(reading).first, expected, "\(reading): \(multi(reading).prefix(4))")
+        }
+        XCTAssertTrue(multi("ふりそでをきる").first?.hasSuffix("を着る") == true, "\(multi("ふりそでをきる").prefix(3))")
+    }
+
     // 3875: みやつぐちからてをいれる が 身八つ口空手を入れる、そでぐちからてをいれる が 袖口空手を入れる だった(ユーザ指定)。
     // 文の途中の から の直後の 手 に加点。文の頭の からて と、助詞の後ろの 空手 はそのまま
     func testHandAfterMidSentenceKara3875() throws {

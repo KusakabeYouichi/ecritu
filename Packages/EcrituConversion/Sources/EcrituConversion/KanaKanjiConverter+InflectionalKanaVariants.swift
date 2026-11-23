@@ -106,7 +106,10 @@ extension KanaKanjiConverter {
         "物置", "物語", "役割", "屋敷", "夕立", "割合", "合図", "合間", "植木", "置物", "織物", "貸家", "敷石", "敷地",
         "敷物", "立場", "建物", "並木", "巻紙", "受付", "受取", "浮世絵", "絵巻物", "仕立屋",
         // 慣用の拡張(告示外)
-        "入口", "出口", "締切", "振込", "手続", "晴", "曇"
+        "入口", "出口", "締切", "振込", "手続", "晴", "曇",
+        // 和装で固定した語(告示外)。振り袖/留め袖/打ち掛け の許容形と見て、初期設定で 振袖/留袖/打掛 が出なかった
+        // (references/kimono.plist に登録しても消えていた。3876、ユーザ指定)
+        "振袖", "留袖", "打掛"
     ]
     private static let inflectionalKanaNounOnlyFixedShortForms: [String] = ["入口", "出口"]
     private static let inflectionalKanaSuruConjugationHeads: [String] = [

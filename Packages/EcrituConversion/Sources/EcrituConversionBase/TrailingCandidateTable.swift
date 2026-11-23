@@ -177,15 +177,26 @@ public enum TrailingCandidateTable {
     // 日常語と同じ読みの専門語(裄=ゆき、袷=あわせ)が後ろのほうに埋もれないようにする。無ければ足し、もっと前にあれば動かさない
     public static let promotedByReading: [String: [(surface: String, position: Int)]] = [
         "あわせ": [("袷", 4)],
+        "いこう": [("衣桁", 4)],
+        "おめし": [("御召", 3)],
         "かたはば": [("肩巾", 2)],
+        "しゃ": [("紗", 4)],
         "たてえり": [("竪衿", 2)],
+        "だてまき": [("伊達巻き", 2)],
+        "つけさげ": [("付下げ", 2)],
+        "ねつけ": [("根付", 2)],
+        "はんはばおび": [("半巾帯", 2)],
+        "ひとつみ": [("一つ身", 1)],
         "ふき": [("袘", 4)],
         "みたけ": [("身丈", 4)],
+        "みつみ": [("三つ身", 3)],
+        "もんつき": [("紋付", 2)],
         "ゆき": [("裄", 4)],
+        "よつみ": [("四つ身", 1)],
     ]
 
     public static func promoted(reading: String, candidates: [String]) -> [String] {
-        guard let items = promotedByReading[reading], !candidates.isEmpty else {
+        guard let items = promotedByReading[reading] else {
             return candidates
         }
         var result = candidates

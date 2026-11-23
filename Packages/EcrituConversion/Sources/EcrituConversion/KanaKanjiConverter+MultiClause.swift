@@ -377,6 +377,11 @@ extension KanaKanjiConverter {
                 candidates.insert(contentsOf: missing, at: 1)
             }
         }
+        // 決めた番めへ動かす語(references/kimono.plist の position のある行)は、連文節が候補を返す読みではこちらにも置く
+        // (ひとつみ は連文節が 人積み などを返し、単文節の側に置いた 一つ身 が後ろに埋もれた。3876)
+        if !candidates.isEmpty {
+            candidates = TrailingCandidateTable.promoted(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
+        }
         candidates = Self.brewingMakeOrthographyOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.cocktailMakeOrthographyOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         // 名詞+っぱなし(沖っぱなし/槍っぱなし/山車っぱなし)は後ろへ。経路は 連用形+っぱなし でも、区間の兄弟表記の差し替えで

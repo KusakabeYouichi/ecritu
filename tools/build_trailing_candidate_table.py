@@ -79,7 +79,7 @@ def main() -> int:
         "    ]",
         "",
         "    public static func promoted(reading: String, candidates: [String]) -> [String] {",
-        "        guard let items = promotedByReading[reading], !candidates.isEmpty else {",
+        "        guard let items = promotedByReading[reading] else {",
         "            return candidates",
         "        }",
         "        var result = candidates",
