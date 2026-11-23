@@ -114,6 +114,7 @@
 	<dict><key>phrase</key><string>棟瓦</string><key>shortcut</key><string>むながわら</string><key>pos</key><string>名詞</string></dict>	<!-- 棟瓦(むながわら/むねがわら、屋根の棟に載せる瓦): 辞書に無く 胸河原/棟河原 が先頭だった(ユーザ指摘 3869) -->
 	<dict><key>phrase</key><string>棟瓦</string><key>shortcut</key><string>むねがわら</string><key>pos</key><string>名詞</string></dict>
 	<dict><key>phrase</key><string>日にち</string><key>shortcut</key><string>ひにち</string><key>pos</key><string>名詞</string></dict>	<!-- 日にち(ひにち): 候補が 日日/ひにち の 2 つだけだった。交ぜ書きは抑制することが多いが、これは普通の書き方なので例外にして先頭へ(ユーザ指定 3882) -->
+	<dict><key>phrase</key><string>日に日に</string><key>shortcut</key><string>ひにひに</string></dict>	<!-- 日に日に(ひにひに): 1 語で無く、日に火に/火に火に しか出なかった(ユーザ指定 3883) -->
 	<dict><key>phrase</key><string>対向車線</string><key>shortcut</key><string>たいこうしゃせん</string><key>pos</key><string>名詞</string></dict>	<!-- 対向車線(たいこうしゃせん): 辞書にも LM にも無く、たい+降車せん、文の中では 対抗+社線 だった(ユーザ報告 3866) -->
 	<dict><key>phrase</key><string>明々後日</string><key>shortcut</key><string>しあさって</string><key>pos</key><string>名詞</string></dict>	<!-- 明々後日(しあさって): 辞書にはあるが LM に無く、かなの しあさって が先頭、しあさってから は し+漁ってから だった。明々後日 → 明明後日 の順(ユーザ指定 3866) -->
 	<dict><key>phrase</key><string>明明後日</string><key>shortcut</key><string>しあさって</string><key>pos</key><string>名詞</string></dict>
