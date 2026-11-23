@@ -31490,6 +31490,19 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3889(ユーザ指定): 板を切る の次の いたを切る、板に書く の前の いたに描く(名詞だけかな)は出さない。
+    // そこにいたに違いない の いた はそのまま
+    func testKanaItaBeforeParticleIsDropped3889() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("いたにかく", "板に書く"), ("いたをきる", "板を切る"), ("そこにいたをおく", "そこに板を置く")] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+            XCTAssertFalse(list.contains(where: { $0.contains("いたを") || $0.contains("いたに") }), "\(reading): \(list.prefix(5))")
+        }
+        XCTAssertEqual(leadingCandidates3879("そこにいたにちがいない").first, "そこにいたに違いない")
+    }
+
     // 3883(ユーザ指定): かみをきるはさみ が 髪を切る挟み、ひにひに が 日に火に、よんだり が 呼んだり(読んだり は 6 番め)だった。
     // 髪を切る の次の かみを切る は出さない。友達を呼んだり はそのまま
     func testScissorsDayByDayAndYondari3883() throws {
