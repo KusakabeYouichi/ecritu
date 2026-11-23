@@ -348,6 +348,8 @@
 
 	<!-- ■ 交ぜ書き・表記ゆれの収穫(石ユ/ぜい金 等、意味のない混ぜ表記) -->
 	<dict><key>phrase</key><string>漏えい</string><key>shortcut</key><string>ろうえい</string></dict>	<!-- 漏洩 の交ぜ書き。下の一括登録(3699)は活用する語を外したので漏れていた。品詞を付けず、漏えいしてる などの活用した形も出さない(ユーザ指定 3840) -->
+	<dict><key>phrase</key><string>皮ふ</string><key>shortcut</key><string>ひふ</string></dict>	<!-- 皮膚 の交ぜ書き。手書きのときぐらいしか使わない(ユーザ指定 3879)。皮ふ科/皮フ科 は看板にあるのでそのまま -->
+	<dict><key>phrase</key><string>皮フ</string><key>shortcut</key><string>ひふ</string></dict>	<!-- 同上 -->
 	<dict><key>phrase</key><string>捕そく</string><key>shortcut</key><string>ほそく</string></dict>	<!-- 捕捉 の交ぜ書き(捉 が常用漢字に入る前の表記)。ほそくできる の 5 番めに 捕そくできる が出ていた(ユーザ指定 3747) -->
 	<dict><key>phrase</key><string>仕こみ</string><key>shortcut</key><string>じこみ</string></dict>	<!-- 仕込み の交ぜ書き(辞書の じこみ 1 位)。きおけじこみ が 木桶仕こみ だった(ユーザ報告 3678) -->
 	<dict><key>phrase</key><string>受け付</string><key>shortcut</key><string>うけつけ</string></dict>	<!-- 受付/受け付け/受付け があれば足りる(ユーザ指定 3674) -->
