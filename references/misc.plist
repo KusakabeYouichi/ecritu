@@ -530,6 +530,7 @@
 	<dict><key>phrase</key><string>無残業</string><key>shortcut</key><string>むざんぎょう</string><key>pos</key><string>名詞</string></dict>
 	<dict><key>phrase</key><string>二日酔い</string><key>shortcut</key><string>ふつかよい</string><key>pos</key><string>名詞</string></dict>	<!-- 二日酔い: 辞書に無く、ふつかよい が 二日よい だった(日付の走査で検出、ユーザ指定 3800) -->
 	<dict><key>phrase</key><string>三日三晩</string><key>shortcut</key><string>みっかみばん</string><key>pos</key><string>名詞</string></dict>	<!-- 三日三晩: 辞書に無く、みっかみばん が 三日3晩 だった(同上) -->
+	<dict><key>phrase</key><string>熟語訓</string><key>shortcut</key><string>じゅくごくん</string><key>pos</key><string>名詞</string></dict>	<!-- 熟語訓: 辞書に無く、じゅくごくん が 熟語君、熟語勲、熟語くん だった(ユーザ指定 3890) -->
 
 	<!-- □ 年忌・法要(ユーザ指定 3887: いっしゅうき が 1周木、にじゅうごかいき が 25回木 だった。辞書にあって出る語も形だけ置いてコメントアウト。
 	     算用数字の形(3回忌)は周忌・回忌だけ、漢数字の後ろに出す。二七日〜七七日 はかなが先頭(いつなのか の疑問文とぶつかる。並びは seed)) -->
