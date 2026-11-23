@@ -64,5 +64,181 @@
 <!--<dict><key>phrase</key><string>力布</string><key>shortcut</key><string>ちからぬの</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
 <!--<dict><key>phrase</key><string>縫い代</string><key>shortcut</key><string>ぬいしろ</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
 <!--<dict><key>phrase</key><string>袖口布</string><key>shortcut</key><string>そでぐちぬの</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+
+	<!-- ■ 小物・帯・着物の種類(3876)。有効にしたのは、出なかった語と、先頭が当て字(伊達締目/三部紐/江戸顧問 など)だった語 -->
+
+	<!-- □ 着付け小物・肌着・履物 -->
+<!--<dict><key>phrase</key><string>腰紐</string><key>shortcut</key><string>こしひも</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+	<dict><key>phrase</key><string>伊達締め</string><key>shortcut</key><string>だてじめ</string><key>pos</key><string>名詞</string></dict>	<!-- 2 番めだった(先頭は 伊達締目) -->
+	<dict><key>phrase</key><string>伊達巻き</string><key>shortcut</key><string>だてまき</string><key>pos</key><string>名詞</string><key>position</key><integer>2</integer></dict>	<!-- 出ていなかった(先頭は 伊達巻)。2 番めに置く -->
+<!--<dict><key>phrase</key><string>伊達巻</string><key>shortcut</key><string>だてまき</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+	<dict><key>phrase</key><string>帯板</string><key>shortcut</key><string>おびいた</string><key>pos</key><string>名詞</string></dict>	<!-- 3 番めだった(先頭は 誘いた) -->
+<!--<dict><key>phrase</key><string>前板</string><key>shortcut</key><string>まえいた</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+	<dict><key>phrase</key><string>後板</string><key>shortcut</key><string>うしろいた</string><key>pos</key><string>名詞</string></dict>	<!-- 出ていなかった(先頭は 後ろ板) -->
+<!--<dict><key>phrase</key><string>帯枕</string><key>shortcut</key><string>おびまくら</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>帯揚げ</string><key>shortcut</key><string>おびあげ</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+	<dict><key>phrase</key><string>帯締め</string><key>shortcut</key><string>おびじめ</string><key>pos</key><string>名詞</string></dict>	<!-- 2 番めだった(先頭は 帯締目) -->
+<!--<dict><key>phrase</key><string>帯〆</string><key>shortcut</key><string>おびじめ</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で 3 番め(先頭は 帯締目) -->
+<!--<dict><key>phrase</key><string>帯留め</string><key>shortcut</key><string>おびどめ</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で 4 番め(先頭は 帯留) -->
+<!--<dict><key>phrase</key><string>帯留</string><key>shortcut</key><string>おびどめ</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+	<dict><key>phrase</key><string>三分紐</string><key>shortcut</key><string>さんぶひも</string><key>pos</key><string>名詞</string></dict>	<!-- 5 番めだった(先頭は 三部紐) -->
+<!--<dict><key>phrase</key><string>半衿</string><key>shortcut</key><string>はんえり</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で 2 番め(先頭は 半襟) -->
+<!--<dict><key>phrase</key><string>半襟</string><key>shortcut</key><string>はんえり</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>衿芯</string><key>shortcut</key><string>えりしん</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で 2 番め(先頭は 襟芯) -->
+<!--<dict><key>phrase</key><string>襟芯</string><key>shortcut</key><string>えりしん</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>重ね衿</string><key>shortcut</key><string>かさねえり</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で 2 番め(先頭は 重ね襟) -->
+<!--<dict><key>phrase</key><string>重ね襟</string><key>shortcut</key><string>かさねえり</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+	<dict><key>phrase</key><string>伊達衿</string><key>shortcut</key><string>だてえり</string><key>pos</key><string>名詞</string></dict>	<!-- 出ていなかった(先頭は 伊達エリ) -->
+	<dict><key>phrase</key><string>伊達襟</string><key>shortcut</key><string>だてえり</string><key>pos</key><string>名詞</string></dict>	<!-- 3 番めだった(先頭は 伊達エリ) -->
+<!--<dict><key>phrase</key><string>肌襦袢</string><key>shortcut</key><string>はだじゅばん</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>長襦袢</string><key>shortcut</key><string>ながじゅばん</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>半襦袢</string><key>shortcut</key><string>はんじゅばん</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>襦袢</string><key>shortcut</key><string>じゅばん</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>裾除け</string><key>shortcut</key><string>すそよけ</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>蹴出し</string><key>shortcut</key><string>けだし</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で 2 番め(先頭は けだし) -->
+<!--<dict><key>phrase</key><string>湯文字</string><key>shortcut</key><string>ゆもじ</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>足袋</string><key>shortcut</key><string>たび</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で 2 番め(先頭は 度) -->
+<!--<dict><key>phrase</key><string>草履</string><key>shortcut</key><string>ぞうり</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で 2 番め(先頭は ゾウリ) -->
+<!--<dict><key>phrase</key><string>下駄</string><key>shortcut</key><string>げた</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で 2 番め(先頭は げた) -->
+<!--<dict><key>phrase</key><string>雪駄</string><key>shortcut</key><string>せった</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で 5 番め(先頭は セッタ) -->
+<!--<dict><key>phrase</key><string>仮紐</string><key>shortcut</key><string>かりひも</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+	<dict><key>phrase</key><string>三重仮紐</string><key>shortcut</key><string>さんじゅうかりひも</string><key>pos</key><string>名詞</string></dict>	<!-- 3 番めだった(先頭は 三十仮紐) -->
+<!--<dict><key>phrase</key><string>コーリンベルト</string><key>shortcut</key><string>こーりんべると</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+	<dict><key>phrase</key><string>根付</string><key>shortcut</key><string>ねつけ</string><key>pos</key><string>名詞</string><key>position</key><integer>2</integer></dict>	<!-- 出ていなかった(先頭は 寝付け)。2 番めに置く -->
+<!--<dict><key>phrase</key><string>帯飾り</string><key>shortcut</key><string>おびかざり</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>末広</string><key>shortcut</key><string>すえひろ</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で 2 番め(先頭は 末廣) -->
+<!--<dict><key>phrase</key><string>筥迫</string><key>shortcut</key><string>はこせこ</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>懐剣</string><key>shortcut</key><string>かいけん</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で 6 番め(先頭は 会見) -->
+<!--<dict><key>phrase</key><string>抱え帯</string><key>shortcut</key><string>かかえおび</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>扱き</string><key>shortcut</key><string>しごき</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で 2 番め(先頭は しごき) -->
+<!--<dict><key>phrase</key><string>丸ぐけ</string><key>shortcut</key><string>まるぐけ</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で 3 番め(先頭は 丸絎け) -->
+<!--<dict><key>phrase</key><string>巾着</string><key>shortcut</key><string>きんちゃく</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>信玄袋</string><key>shortcut</key><string>しんげんぶくろ</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>風呂敷</string><key>shortcut</key><string>ふろしき</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+	<dict><key>phrase</key><string>衣紋掛け</string><key>shortcut</key><string>えもんかけ</string><key>pos</key><string>名詞</string></dict>	<!-- 出ていなかった(先頭は 右衛門かけ) -->
+	<dict><key>phrase</key><string>衣桁</string><key>shortcut</key><string>いこう</string><key>pos</key><string>名詞</string><key>position</key><integer>4</integer></dict>	<!-- 9 番めだった(先頭は いこう)。4 番めに置く -->
+	<dict><key>phrase</key><string>畳紙</string><key>shortcut</key><string>たとうし</string><key>pos</key><string>名詞</string></dict>	<!-- 出ていなかった(先頭は 立とうし) -->
+	<dict><key>phrase</key><string>たとう紙</string><key>shortcut</key><string>たとうし</string><key>pos</key><string>名詞</string></dict>	<!-- 出ていなかった(先頭は 立とうし) -->
+	<dict><key>phrase</key><string>文庫紙</string><key>shortcut</key><string>ぶんこし</string><key>pos</key><string>名詞</string></dict>	<!-- 出ていなかった(先頭は 分腰) -->
+<!--<dict><key>phrase</key><string>補正</string><key>shortcut</key><string>ほせい</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+	<dict><key>phrase</key><string>和装小物</string><key>shortcut</key><string>わそうこもの</string><key>pos</key><string>名詞</string></dict>	<!-- 3 番めだった(先頭は 和そう小物) -->
+<!--<dict><key>phrase</key><string>着付け</string><key>shortcut</key><string>きつけ</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で 2 番め(先頭は 気付け) -->
+
+	<!-- □ 帯 -->
+<!--<dict><key>phrase</key><string>丸帯</string><key>shortcut</key><string>まるおび</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>袋帯</string><key>shortcut</key><string>ふくろおび</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>名古屋帯</string><key>shortcut</key><string>なごやおび</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+	<dict><key>phrase</key><string>京袋帯</string><key>shortcut</key><string>きょうぶくろおび</string><key>pos</key><string>名詞</string></dict>	<!-- 出ていなかった(先頭は 胸部黒帯) -->
+<!--<dict><key>phrase</key><string>半幅帯</string><key>shortcut</key><string>はんはばおび</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+	<dict><key>phrase</key><string>半巾帯</string><key>shortcut</key><string>はんはばおび</string><key>pos</key><string>名詞</string><key>position</key><integer>2</integer></dict>	<!-- 出ていなかった(先頭は 半幅帯)。2 番めに置く -->
+<!--<dict><key>phrase</key><string>細帯</string><key>shortcut</key><string>ほそおび</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>角帯</string><key>shortcut</key><string>かくおび</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>兵児帯</string><key>shortcut</key><string>へこおび</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>博多帯</string><key>shortcut</key><string>はかたおび</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+	<dict><key>phrase</key><string>八寸帯</string><key>shortcut</key><string>はっすんおび</string><key>pos</key><string>名詞</string></dict>	<!-- 出ていなかった(先頭は 発すん帯) -->
+<!--<dict><key>phrase</key><string>九寸帯</string><key>shortcut</key><string>きゅうすんおび</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>昼夜帯</string><key>shortcut</key><string>ちゅうやおび</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>腹合わせ帯</string><key>shortcut</key><string>はらあわせおび</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>単帯</string><key>shortcut</key><string>ひとえおび</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>夏帯</string><key>shortcut</key><string>なつおび</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>掛下帯</string><key>shortcut</key><string>かけしたおび</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>作り帯</string><key>shortcut</key><string>つくりおび</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>付け帯</string><key>shortcut</key><string>つけおび</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>お太鼓</string><key>shortcut</key><string>おたいこ</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+	<dict><key>phrase</key><string>二重太鼓</string><key>shortcut</key><string>にじゅうだいこ</string><key>pos</key><string>名詞</string></dict>	<!-- 出ていなかった(先頭は 二十代子) -->
+	<dict><key>phrase</key><string>一重太鼓</string><key>shortcut</key><string>ひとえだいこ</string><key>pos</key><string>名詞</string></dict>	<!-- 出ていなかった(先頭は 単太鼓) -->
+	<dict><key>phrase</key><string>太鼓結び</string><key>shortcut</key><string>たいこむすび</string><key>pos</key><string>名詞</string></dict>	<!-- 出ていなかった(先頭は 対小結) -->
+<!--<dict><key>phrase</key><string>文庫結び</string><key>shortcut</key><string>ぶんこむすび</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>貝の口</string><key>shortcut</key><string>かいのくち</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>手先</string><key>shortcut</key><string>てさき</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>垂れ先</string><key>shortcut</key><string>たれさき</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で 2 番め(先頭は たれ先) -->
+<!--<dict><key>phrase</key><string>たれ先</string><key>shortcut</key><string>たれさき</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>帯山</string><key>shortcut</key><string>おびやま</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+	<dict><key>phrase</key><string>お太鼓柄</string><key>shortcut</key><string>おたいこがら</string><key>pos</key><string>名詞</string></dict>	<!-- 出ていなかった(先頭は 御太鼓柄) -->
+<!--<dict><key>phrase</key><string>全通</string><key>shortcut</key><string>ぜんつう</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>六通</string><key>shortcut</key><string>ろくつう</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>帯芯</string><key>shortcut</key><string>おびしん</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>献上柄</string><key>shortcut</key><string>けんじょうがら</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>帯結び</string><key>shortcut</key><string>おびむすび</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+
+	<!-- □ 着物の種類・素材・紋・寸法 -->
+	<dict><key>phrase</key><string>振袖</string><key>shortcut</key><string>ふりそで</string><key>pos</key><string>名詞</string></dict>	<!-- 出ていなかった(先頭は ふり袖) -->
+	<dict><key>phrase</key><string>留袖</string><key>shortcut</key><string>とめそで</string><key>pos</key><string>名詞</string></dict>	<!-- 出ていなかった(先頭は 留め袖) -->
+	<dict><key>phrase</key><string>黒留袖</string><key>shortcut</key><string>くろとめそで</string><key>pos</key><string>名詞</string></dict>	<!-- 出ていなかった(先頭は 黒留め袖) -->
+	<dict><key>phrase</key><string>色留袖</string><key>shortcut</key><string>いろとめそで</string><key>pos</key><string>名詞</string></dict>	<!-- 出ていなかった(先頭は 色留め袖) -->
+<!--<dict><key>phrase</key><string>訪問着</string><key>shortcut</key><string>ほうもんぎ</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>付け下げ</string><key>shortcut</key><string>つけさげ</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+	<dict><key>phrase</key><string>付下げ</string><key>shortcut</key><string>つけさげ</string><key>pos</key><string>名詞</string><key>position</key><integer>2</integer></dict>	<!-- 出ていなかった(先頭は 付け下げ)。2 番めに置く -->
+<!--<dict><key>phrase</key><string>色無地</string><key>shortcut</key><string>いろむじ</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>小紋</string><key>shortcut</key><string>こもん</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で 2 番め(先頭は 顧問) -->
+	<dict><key>phrase</key><string>江戸小紋</string><key>shortcut</key><string>えどこもん</string><key>pos</key><string>名詞</string></dict>	<!-- 2 番めだった(先頭は 江戸顧問) -->
+<!--<dict><key>phrase</key><string>紬</string><key>shortcut</key><string>つむぎ</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>大島紬</string><key>shortcut</key><string>おおしまつむぎ</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>結城紬</string><key>shortcut</key><string>ゆうきつむぎ</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+	<dict><key>phrase</key><string>御召</string><key>shortcut</key><string>おめし</string><key>pos</key><string>名詞</string><key>position</key><integer>3</integer></dict>	<!-- 出ていなかった(先頭は 尾食)。3 番めに置く -->
+<!--<dict><key>phrase</key><string>浴衣</string><key>shortcut</key><string>ゆかた</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>喪服</string><key>shortcut</key><string>もふく</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+	<dict><key>phrase</key><string>打掛</string><key>shortcut</key><string>うちかけ</string><key>pos</key><string>名詞</string></dict>	<!-- 出ていなかった(先頭は 打ち欠け) -->
+	<dict><key>phrase</key><string>色打掛</string><key>shortcut</key><string>いろうちかけ</string><key>pos</key><string>名詞</string></dict>	<!-- 4 番めだった(先頭は 色打ち欠け) -->
+<!--<dict><key>phrase</key><string>白無垢</string><key>shortcut</key><string>しろむく</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+	<dict><key>phrase</key><string>引き振袖</string><key>shortcut</key><string>ひきふりそで</string><key>pos</key><string>名詞</string></dict>	<!-- 出ていなかった(先頭は 引き振り袖) -->
+	<dict><key>phrase</key><string>本振袖</string><key>shortcut</key><string>ほんふりそで</string><key>pos</key><string>名詞</string></dict>	<!-- 出ていなかった(先頭は 本振り袖) -->
+	<dict><key>phrase</key><string>中振袖</string><key>shortcut</key><string>ちゅうふりそで</string><key>pos</key><string>名詞</string></dict>	<!-- 出ていなかった(先頭は 中振り袖) -->
+	<dict><key>phrase</key><string>小振袖</string><key>shortcut</key><string>こふりそで</string><key>pos</key><string>名詞</string></dict>	<!-- 出ていなかった(先頭は 湖振り袖) -->
+<!--<dict><key>phrase</key><string>羽織</string><key>shortcut</key><string>はおり</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>道行</string><key>shortcut</key><string>みちゆき</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+	<dict><key>phrase</key><string>道中着</string><key>shortcut</key><string>どうちゅうぎ</string><key>pos</key><string>名詞</string></dict>	<!-- 出ていなかった(先頭は 同忠義) -->
+<!--<dict><key>phrase</key><string>被布</string><key>shortcut</key><string>ひふ</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で 6 番め(先頭は 皮膚) -->
+<!--<dict><key>phrase</key><string>袴</string><key>shortcut</key><string>はかま</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>長着</string><key>shortcut</key><string>ながぎ</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>絽</string><key>shortcut</key><string>ろ</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で 6 番め(先頭は 櫓) -->
+	<dict><key>phrase</key><string>紗</string><key>shortcut</key><string>しゃ</string><key>pos</key><string>名詞</string><key>position</key><integer>4</integer></dict>	<!-- 10 番めだった(先頭は 者)。4 番めに置く -->
+<!--<dict><key>phrase</key><string>羅</string><key>shortcut</key><string>ら</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で 3 番め(先頭は ら) -->
+<!--<dict><key>phrase</key><string>上布</string><key>shortcut</key><string>じょうふ</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>縮</string><key>shortcut</key><string>ちぢみ</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で 3 番め(先頭は 縮み) -->
+<!--<dict><key>phrase</key><string>銘仙</string><key>shortcut</key><string>めいせん</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で 4 番め(先頭は 名泉) -->
+<!--<dict><key>phrase</key><string>友禅</string><key>shortcut</key><string>ゆうぜん</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で 2 番め(先頭は 遊然) -->
+	<dict><key>phrase</key><string>京友禅</string><key>shortcut</key><string>きょうゆうぜん</string><key>pos</key><string>名詞</string></dict>	<!-- 2 番めだった(先頭は 今日友禅) -->
+<!--<dict><key>phrase</key><string>加賀友禅</string><key>shortcut</key><string>かがゆうぜん</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>紅型</string><key>shortcut</key><string>びんがた</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>絣</string><key>shortcut</key><string>かすり</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>絞り</string><key>shortcut</key><string>しぼり</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>総絞り</string><key>shortcut</key><string>そうしぼり</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>縮緬</string><key>shortcut</key><string>ちりめん</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で 2 番め(先頭は ちりめん) -->
+<!--<dict><key>phrase</key><string>綸子</string><key>shortcut</key><string>りんず</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>羽二重</string><key>shortcut</key><string>はぶたえ</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>塩瀬</string><key>shortcut</key><string>しおぜ</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+	<dict><key>phrase</key><string>紋付</string><key>shortcut</key><string>もんつき</string><key>pos</key><string>名詞</string><key>position</key><integer>2</integer></dict>	<!-- 出ていなかった(先頭は 紋付き)。2 番めに置く -->
+	<dict><key>phrase</key><string>五つ紋</string><key>shortcut</key><string>いつつもん</string><key>pos</key><string>名詞</string></dict>	<!-- 出ていなかった(先頭は 5つもん) -->
+<!--<dict><key>phrase</key><string>三つ紋</string><key>shortcut</key><string>みつもん</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+	<dict><key>phrase</key><string>一つ紋</string><key>shortcut</key><string>ひとつもん</string><key>pos</key><string>名詞</string></dict>	<!-- 出ていなかった(先頭は 1つもん) -->
+	<dict><key>phrase</key><string>染め抜き紋</string><key>shortcut</key><string>そめぬきもん</string><key>pos</key><string>名詞</string></dict>	<!-- 出ていなかった(先頭は 染抜き門) -->
+<!--<dict><key>phrase</key><string>縫い紋</string><key>shortcut</key><string>ぬいもん</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>絵羽</string><key>shortcut</key><string>えば</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で 3 番め(先頭は エバ) -->
+	<dict><key>phrase</key><string>絵羽模様</string><key>shortcut</key><string>えばもよう</string><key>pos</key><string>名詞</string></dict>	<!-- 3 番めだった(先頭は 江波模様) -->
+	<dict><key>phrase</key><string>裾模様</string><key>shortcut</key><string>すそもよう</string><key>pos</key><string>名詞</string></dict>	<!-- 7 番めだった(先頭は 裾もよう) -->
+<!--<dict><key>phrase</key><string>産着</string><key>shortcut</key><string>うぶぎ</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+	<dict><key>phrase</key><string>一つ身</string><key>shortcut</key><string>ひとつみ</string><key>pos</key><string>名詞</string><key>position</key><integer>1</integer></dict>	<!-- 出ていなかった(先頭は 人積み)。語彙に入れると ひとつみる が 一つ身る になるので、読み全体が合うときだけ先頭に置く -->
+	<dict><key>phrase</key><string>三つ身</string><key>shortcut</key><string>みつみ</string><key>pos</key><string>名詞</string><key>position</key><integer>3</integer></dict>	<!-- 出ていなかった(先頭は ミツミ)。3 番めに置く -->
+	<dict><key>phrase</key><string>四つ身</string><key>shortcut</key><string>よつみ</string><key>pos</key><string>名詞</string><key>position</key><integer>1</integer></dict>	<!-- 出ていなかった。一つ身 と同じ理由で、読み全体が合うときだけ先頭に置く -->
+<!--<dict><key>phrase</key><string>本裁ち</string><key>shortcut</key><string>ほんだち</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>甚平</string><key>shortcut</key><string>じんべい</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+	<dict><key>phrase</key><string>作務衣</string><key>shortcut</key><string>さむえ</string><key>pos</key><string>名詞</string></dict>	<!-- 出ていなかった -->
+<!--<dict><key>phrase</key><string>丹前</string><key>shortcut</key><string>たんぜん</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>半纏</string><key>shortcut</key><string>はんてん</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で 2 番め(先頭は 反転) -->
+<!--<dict><key>phrase</key><string>法被</string><key>shortcut</key><string>はっぴ</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で 2 番め(先頭は はっぴ) -->
+<!--<dict><key>phrase</key><string>割烹着</string><key>shortcut</key><string>かっぽうぎ</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+	<dict><key>phrase</key><string>雨コート</string><key>shortcut</key><string>あまこーと</string><key>pos</key><string>名詞</string></dict>	<!-- 出ていなかった(先頭は 海人コート) -->
+<!--<dict><key>phrase</key><string>対丈</string><key>shortcut</key><string>ついたけ</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>おはしょり</string><key>shortcut</key><string>おはしょり</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で 2 番め(先頭は お端折り) -->
+<!--<dict><key>phrase</key><string>着丈</string><key>shortcut</key><string>きたけ</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>反物</string><key>shortcut</key><string>たんもの</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>着尺</string><key>shortcut</key><string>きじゃく</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>羽尺</string><key>shortcut</key><string>はじゃく</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で 2 番め(先頭は 端尺) -->
+<!--<dict><key>phrase</key><string>鯨尺</string><key>shortcut</key><string>くじらじゃく</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>悉皆</string><key>shortcut</key><string>しっかい</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>洗い張り</string><key>shortcut</key><string>あらいはり</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>丸洗い</string><key>shortcut</key><string>まるあらい</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>誂え</string><key>shortcut</key><string>あつらえ</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
 </array>
 </plist>

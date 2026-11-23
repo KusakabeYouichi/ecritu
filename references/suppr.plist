@@ -445,6 +445,8 @@
 	<dict><key>phrase</key><string>引ツ</string><key>shortcut</key><string>ひっ</string></dict>
 
 	<!-- ■ 非文法・実用ゼロの合成(学習しても出さない) -->
+	<dict><key>phrase</key><string>伊達締目</string><key>shortcut</key><string>だてじめ</string></dict>	<!-- 伊達締め の め を序数の 目 にした合成。伊達締め の前に出ていた(和装用語の調査 3876) -->
+	<dict><key>phrase</key><string>帯締目</string><key>shortcut</key><string>おびじめ</string></dict>	<!-- 帯締め の め を序数の 目 にした合成。帯締め の前に出ていた(3876) -->
 	<dict><key>phrase</key><string>お蛭</string><key>shortcut</key><string>おひる</string></dict>	<!-- お+蛭 の丁寧接頭辞の合成。使わず見苦しい。きのうのおひるは→昨日のお蛭は が 2 番めに出ていた(ユーザ報告 3778) -->
 	<dict><key>phrase</key><string>後悔注</string><key>shortcut</key><string>こうかいちゅう</string></dict>	<!-- 名詞+注 の合成。〜中(ちゅう)の取り違えで使えない(ユーザ報告 3778) -->
 	<dict><key>phrase</key><string>括弧悪い</string><key>shortcut</key><string>かっこわるい</string></dict>	<!-- かっこ+悪い の合成(括弧/確固/各戸)。かっこわるい は かっこ悪い(misc)が先頭、かなが次。恰好悪い/格好悪い は読み かっこう の かっこうわるい で出す(ユーザ指定 3726)。活用形(括弧悪かった)も消える -->
