@@ -5500,6 +5500,13 @@ extension KanaKanjiConverter {
                             prevNode.isKanaIdentity, node.surface == "手", prevNode.surface == "から" {
                             cost -= Self.multiClauseHandAfterMidSentenceKaraBonus
                         }
+                        // た/だ で終わる活用した形の直後の、読み り の 1 字の漢字(李/利/吏…)を下げる(定数コメント参照。3880、ユーザ指定)
+                        if node.end - node.start == 1, !node.isKanaIdentity, node.reading == "り",
+                            prevNode.end - prevNode.start >= 2,
+                            prevNode.surface.hasSuffix("た") || prevNode.surface.hasSuffix("だ"),
+                            containsKanji(prevNode.surface) {
+                            cost += Self.multiClauseSingleKanjiRiAfterPastFormPenalty
+                        }
                         // サ変名詞+時(じ): 再建時/更新時/変更時 も 後(ご) と同じ生産的な接尾(ぜんかいのさいけんじ が 前回の+際+健二 だった。
                         // 再建+時 は途中まで 際+健二 より安いのに、文末の統計で負けていた。3870、ユーザ指定)
                         if node.end - node.start == 1, node.surface == "時", node.reading == "じ",

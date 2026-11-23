@@ -31322,6 +31322,71 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 文があれば連文節の並び、1 語なら単文節の並びを返す(1 語の読みは連文節が空を返す)
+    private func leadingCandidates3879(_ reading: String) -> [String] {
+        let list = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+        return list.isEmpty ? converter.candidates(for: reading, limit: 12, systemCandidateMode: .surface) : list
+    }
+
+    // 3879(ユーザ指定): うちかけ は 打ち欠け が先頭、かみをきる は 神を切る、ふりそでをきる は 振り袖を着る だった。
+    // かいけん/ひふ/ろ/えり は和装の語(懐剣/被布/絽/衿)が 6 番めだった。皮ふ/皮フ は出さない
+    func testKimonoOrderHairCutAndFurisode3879() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("うちかけ", ["打掛"]), ("かいけん", ["会見", "改憲", "懐剣"]), ("ひふ", ["皮膚", "被布"]),
+            ("ろ", ["炉", "絽", "魯", "露", "路", "呂"]), ("えり", ["襟", "衿"]), ("ふりそで", ["振袖", "振り袖"]),
+            ("かみをきる", ["髪を切る"]), ("かみをきった", ["髪を切った"]), ("ふりそでをきる", ["振袖を着る", "振り袖を着る"]),
+            ("とめそでをきる", ["留袖を着る"]), ("うちかけをきる", ["打掛を着る"]), ("えりをただす", ["襟を正す"]), ("ひふか", ["皮膚科"]),
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(Array(list.prefix(expected.count)), expected, "\(reading): \(list.prefix(7))")
+        }
+        let skin = leadingCandidates3879("ひふ")
+        XCTAssertFalse(skin.contains("皮ふ") || skin.contains("皮フ"), "ひふ: \(skin)")
+    }
+
+    // 3880(ユーザ指定): ろうかにつんでおくとか が 老化につんでおくとか、にいどうさせたり が に移動させた李 だった。
+    // 老化が進む/老化を防ぐ はそのまま
+    func testCorridorCollocationAndTariAfterPastForm3880() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("ろうかにつんでおくとか", "廊下に積んでおくとか"), ("ろうかをはしる", "廊下を走る"), ("ろうかにおく", "廊下に置く"),
+            ("ろうかがすすむ", "老化が進む"), ("ろうかをふせぐ", "老化を防ぐ"),
+            ("にいどうさせたり", "に移動させたり"), ("いどうさせたり", "移動させたり"), ("たべたりのんだり", "食べたり飲んだり"),
+            ("いったりきたり", "行ったり来たり"),
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
+    // 3881(ユーザ指定): みんながいきたくなる が みんなが生きたくなる だった。長生きしたくなる はそのまま
+    func testIkitakunaruIsGo3881() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("みんながいきたくなる", ["みんなが行きたくなる", "みんなが生きたくなる"]), ("いきたくなる", ["行きたくなる", "生きたくなる"]),
+            ("いきたくなくなる", ["行きたくなくなる"]), ("ながいきしたくなる", ["長生きしたくなる"]),
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(Array(list.prefix(expected.count)), expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
+    // 3882(ユーザ指定): ひにち は 日日/ひにち の 2 つだけだった。日にち は交ぜ書きの例外で先頭
+    func testHinichiMixedWritingIsLeading3882() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("ひにち", "日にち"), ("ひにちがちょくぜん", "日にちが直前"), ("ひにちをきめる", "日にちを決める"),
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
     // 3861: 旧国名と州(references/provinces-fiefs.plist)。名前+国(むさしのくに → 武蔵国)は 86 国とも候補に出ず 〜の国 だけだった。
     // 州の別名 8 つと 石狩 も出なかった。藩と同じく、読み全体がその読みのときだけ 4 番め以内に足し、先頭と文の中は変えない
     func testProvinceNamesAppearWithoutStealingSentences3861() throws {

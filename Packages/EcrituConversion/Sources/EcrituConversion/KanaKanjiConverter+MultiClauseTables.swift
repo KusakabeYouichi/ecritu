@@ -3203,6 +3203,10 @@ extension KanaKanjiConverter {
     // (そでぐちからてをいれる が 袖口空手を入れる、みやつぐちからてをいれる が 身八つ口空手を入れる。窓から手を出す は出ていた)。
     // 文の頭の からて(からてをならう)は対象外(組の加点の表に入れると から手を習う になった)。3875、ユーザ指定
     static let multiClauseHandAfterMidSentenceKaraBonus = 1200
+    // た/だ で終わる活用した形(移動させた/読んだ)の直後の、読み り の 1 字の漢字。〜たり/〜だり は助詞の たり がほとんどで、
+    // 人名の 李 や 利/吏 が続くことはまず無い(にいどうさせたり が に移動させた李。移動させた+李 が 移動+させたり より 2800 安かった)。
+    // 見た李さん のような文は候補から選べる。3880、ユーザ指定
+    static let multiClauseSingleKanjiRiAfterPastFormPenalty = 6000
     // サ変名詞の直後の 時(じ)。再建時/更新時/変更時(3870)
     static let multiClauseSuruNounJiSuffixBonus = 1500
     // ラテン文字の語の直後の 側(がわ)の加点(iOS側。が+倭 との差 850 を越え、の が続く形でも勝つ幅。3865)
