@@ -172,4 +172,31 @@ public enum TrailingCandidateTable {
         result.insert(contentsOf: missing, at: min(insertionIndex, result.count))
         return result
     }
+
+    // 読み全体がこの読みのときだけ、候補のその番め(1 始まり)へ動かす語(references/kimono.plist の position のある行。3874)。
+    // 日常語と同じ読みの専門語(裄=ゆき、袷=あわせ)が後ろのほうに埋もれないようにする。無ければ足し、もっと前にあれば動かさない
+    public static let promotedByReading: [String: [(surface: String, position: Int)]] = [
+        "あわせ": [("袷", 4)],
+        "かたはば": [("肩巾", 2)],
+        "たてえり": [("竪衿", 2)],
+        "ふき": [("袘", 4)],
+        "みたけ": [("身丈", 4)],
+        "ゆき": [("裄", 4)],
+    ]
+
+    public static func promoted(reading: String, candidates: [String]) -> [String] {
+        guard let items = promotedByReading[reading], !candidates.isEmpty else {
+            return candidates
+        }
+        var result = candidates
+        for item in items {
+            let target = min(max(0, item.position - 1), result.count)
+            if let index = result.firstIndex(of: item.surface) {
+                guard index > target else { continue }
+                result.remove(at: index)
+            }
+            result.insert(item.surface, at: min(target, result.count))
+        }
+        return result
+    }
 }

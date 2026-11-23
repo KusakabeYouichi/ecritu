@@ -510,6 +510,9 @@ public final class KanaKanjiConverter {
         // 候補の後ろのほうに足す語(旧国名・州・藩の名前。references/provinces-fiefs.plist。3860、3861)。読み全体が表の読みのときだけ 3 番めに足す。
         // 1 語として登録すると ほかの文を奪う(高梁藩 → 高橋班長 が 高梁藩長)ので、読み全体が合うときだけ候補に出す(辞書にほかの語が無い読みでは連文節の側で先頭になる。3862)
         finalCandidates = TrailingCandidateTable.inserted(reading: normalizedReading, candidates: finalCandidates)
+        // 日常語と同じ読みの専門語(裄=ゆき、袷=あわせ、袘=ふき)は、読み全体が合うときだけ決めた番めへ動かす(references/kimono.plist の
+        // position のある行。3874、ユーザ指定)。先頭は変えない
+        finalCandidates = TrailingCandidateTable.promoted(reading: normalizedReading, candidates: finalCandidates)
 
         if !finalCandidates.isEmpty {
             withStateLock {

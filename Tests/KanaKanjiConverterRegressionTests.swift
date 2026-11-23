@@ -31237,6 +31237,39 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3874: 和装の用語(references/kimono.plist)。みやつぐち が 宮次地 など、12 の読みで出なかった(ユーザ報告)。
+    // 日常語と同じ読みの語(裄/袷/袘/身丈)は、読み全体が合うときだけ 4 番めへ。先頭と文の中の変換は変えない
+    func testKimonoTermsAppearWithoutStealingDailyWords3874() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func shown(_ r: String) -> [String] {
+            let multi = converter.multiClauseCandidates(for: r, systemCandidateMode: .surface)
+            let single = converter.candidates(for: r, limit: 48, systemCandidateMode: .surface)
+            var merged = multi
+            if let first = single.first, !multi.isEmpty, !multi.contains(first) { merged.insert(first, at: 1) }
+            return merged + single.filter { !merged.contains($0) }
+        }
+        for (reading, expected) in [
+            ("みやつぐち", ["身八つ口"]), ("うしろみごろ", ["後身頃"]), ("だきはば", ["抱き巾", "抱き幅"]), ("そではば", ["袖巾", "袖幅"]),
+            ("かたはば", ["肩幅", "肩巾"]), ("たてえり", ["立て襟", "竪衿"]), ("ともえり", ["共衿", "共襟"]), ("じえり", ["地衿"]),
+            ("えりかたあき", ["衿肩明き"]), ("はっかけ", ["八掛"]), ("いしきあて", ["居敷当て"]), ("せぶせ", ["背伏せ"]),
+        ] {
+            XCTAssertEqual(Array(shown(reading).prefix(expected.count)), expected, "\(reading): \(shown(reading).prefix(5))")
+        }
+        for (reading, top, term) in [("ゆき", "ゆき", "裄"), ("あわせ", "合わせ", "袷"), ("ふき", "吹き", "袘"), ("みたけ", "みたけ", "身丈")] {
+            let list = shown(reading)
+            XCTAssertEqual(list.first, top, "\(reading): \(list.prefix(5))")
+            XCTAssertEqual(list.firstIndex(of: term), 3, "\(reading): \(term) は 4 番め \(list.prefix(6))")
+        }
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        for (reading, expected) in [
+            ("ゆきがふる", "雪が降る"), ("あわせてください", "合わせてください"), ("かたはばがひろい", "肩幅が広い"),
+            ("みやつぐちをぬう", "身八つ口を縫う"),
+        ] {
+            XCTAssertEqual(multi(reading).first, expected, "\(reading): \(multi(reading).prefix(4))")
+        }
+    }
+
     // 3861: 旧国名と州(references/provinces-fiefs.plist)。名前+国(むさしのくに → 武蔵国)は 86 国とも候補に出ず 〜の国 だけだった。
     // 州の別名 8 つと 石狩 も出なかった。藩と同じく、読み全体がその読みのときだけ 4 番め以内に足し、先頭と文の中は変えない
     func testProvinceNamesAppearWithoutStealingSentences3861() throws {

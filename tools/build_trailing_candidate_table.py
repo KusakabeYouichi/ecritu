@@ -6,11 +6,14 @@ plist を直したらこれを流してコミットする。コメントアウ�
 
 使い方: python3 tools/build_trailing_candidate_table.py
 """
+import plistlib
 import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "references" / "provinces-fiefs.plist"
+# position のある行を「候補のその番めへ動かす語」として読むファイル(和装の用語。3874)
+PROMOTED_SRCS = [ROOT / "references" / "kimono.plist"]
 DST = ROOT / "Packages" / "EcrituConversion" / "Sources" / "EcrituConversionBase" / "TrailingCandidateTable.swift"
 
 ENTRY = re.compile(r"<key>phrase</key><string>([^<]+)</string><key>shortcut</key><string>([^<]+)</string>")
@@ -29,6 +32,12 @@ def main() -> int:
         surface, reading = entry.group(1), entry.group(2)
         if surface not in by_reading.setdefault(reading, []):
             by_reading[reading].append(surface)
+    promoted = {}  # 読み → [(表記, 番め)]
+    for src in PROMOTED_SRCS:
+        with src.open("rb") as f:
+            for entry in plistlib.load(f):
+                if isinstance(entry, dict) and "position" in entry:
+                    promoted.setdefault(entry["shortcut"], []).append((entry["phrase"], int(entry["position"])))
     out = [
         "import Foundation",
         "",
@@ -58,11 +67,37 @@ def main() -> int:
         "        result.insert(contentsOf: missing, at: min(insertionIndex, result.count))",
         "        return result",
         "    }",
+        "",
+        "    // 読み全体がこの読みのときだけ、候補のその番め(1 始まり)へ動かす語(references/kimono.plist の position のある行。3874)。",
+        "    // 日常語と同じ読みの専門語(裄=ゆき、袷=あわせ)が後ろのほうに埋もれないようにする。無ければ足し、もっと前にあれば動かさない",
+        "    public static let promotedByReading: [String: [(surface: String, position: Int)]] = [",
+    ]
+    for reading in sorted(promoted):
+        items = ", ".join(f"({swift_string(s)}, {n})" for s, n in promoted[reading])
+        out.append(f"        {swift_string(reading)}: [{items}],")
+    out += [
+        "    ]",
+        "",
+        "    public static func promoted(reading: String, candidates: [String]) -> [String] {",
+        "        guard let items = promotedByReading[reading], !candidates.isEmpty else {",
+        "            return candidates",
+        "        }",
+        "        var result = candidates",
+        "        for item in items {",
+        "            let target = min(max(0, item.position - 1), result.count)",
+        "            if let index = result.firstIndex(of: item.surface) {",
+        "                guard index > target else { continue }",
+        "                result.remove(at: index)",
+        "            }",
+        "            result.insert(item.surface, at: min(target, result.count))",
+        "        }",
+        "        return result",
+        "    }",
         "}",
         "",
     ]
     DST.write_text("\n".join(out), encoding="utf-8")
-    print(f"wrote {DST.relative_to(ROOT)}: {len(by_reading)} 読み")
+    print(f"wrote {DST.relative_to(ROOT)}: {len(by_reading)} 読み、動かす語 {len(promoted)} 読み")
     return 0
 
 

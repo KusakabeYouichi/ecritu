@@ -149,6 +149,11 @@ def load_plist(
         if not reading or not phrase:
             continue
 
+        # position のある行は語彙に入れない(読み全体が合うときだけ候補のその番めへ動かす語。kimono.plist。
+        # tools/build_trailing_candidate_table.py が表にする。3874)
+        if "position" in entry:
+            continue
+
         # pos=名詞 の抑制は「この語だけ」(活用の語幹として本体まで抑制しない。3700)。--output-nouns 指定時は別ファイルへ
         if nouns is not None and isinstance(entry.get("pos"), str) and entry["pos"].strip() == "名詞":
             merge_pair(nouns, reading, phrase)
