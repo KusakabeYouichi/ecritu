@@ -272,10 +272,8 @@ final class KeyboardViewController: UIInputViewController {
     var lastKanaPostModifierAppliedAt: CFAbsoluteTime = 0
     var lastKanaPostModifierResultCharacter: Character?
     var lastTextProxyEditAt: CFAbsoluteTime = 0
-    // 表示の 1 秒後に窓が key=false だった個体で、その後に key になるか打鍵が届いたら true(scheduleNonKeyWindowFollowUp)
-    var nonKeyWindowStreakBroken = false
-    // 追跡中の表示の時刻。出し直された後に、前の表示ぶんの追跡が引っ込めてしまわないための照合用
-    var nonKeyWindowFollowUpAppearedAt: CFAbsoluteTime = 0
+    // 追跡中の表示の時刻。出し直された後に、前の表示ぶんの記録を残さないための照合用(scheduleAttachStateFollowUp)
+    var attachStateFollowUpAppearedAt: CFAbsoluteTime = 0
     let externalTextChangeDetectionWindow: CFTimeInterval = 0.35
     // メモリ警告を1イベント(バースト)にまとめる窓(定義は Diagnostics の memoryWarningBurstCountThisSession 参照)
     static let memoryWarningBurstWindow: CFTimeInterval = 2.0
@@ -1133,7 +1131,7 @@ final class KeyboardViewController: UIInputViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         recentLearnedCommit = nil
-        nonKeyWindowFollowUpAppearedAt = 0
+        attachStateFollowUpAppearedAt = 0
         recordDisappearanceKindIfNeeded(animated: animated)
         updateKeyboardDiagnosticsHeartbeat(event: "viewWillDisappear", appendLog: true)
         persistBufferedKeyboardDiagnostics()
@@ -2312,45 +2310,36 @@ final class KeyboardViewController: UIInputViewController {
             } else {
                 self.appendKeyboardDiagnosticsLog("表示1秒後の状態 \(state)", file: #fileID, line: #line, function: #function)
             }
-            if self.view.window?.isKeyWindow == false {
-                self.nonKeyWindowStreakBroken = false
-                self.scheduleNonKeyWindowFollowUp(appearedAt: CFAbsoluteTimeGetCurrent() - 1.0)
-            }
+            self.scheduleAttachStateFollowUp(appearedAt: CFAbsoluteTimeGetCurrent() - 1.0)
         }
     }
 
-    // 調査用ログ(真っ白 3878): 2026-11-23 19:35、メモからメッセージへ戻ったらキーボードの領域が真っ白で無反応。
-    // 統合ログでは iOS の調停役が Rejecting attach のまま取り付けをやり直さず、この個体は表示済みのつもりだった。
-    // そのとき窓が key=false だったが、白くなかったかもしれない key=false も 1 件あり、検知に使えるか分からない。
-    // key=false で始まった表示について、その後に窓が key になったか、打鍵が届いたか、シーンの状態を残して確かめる。
-    // 回避策(ユーザ指定): 表示の 1 秒後・3 秒後・6 秒後のすべてで key=false、その間に打鍵が 1 つも無く、この個体が
-    // 表示中のままなら、取り付けに失敗した枠とみなして自分でキーボードを引っ込める(入力欄のタップで出し直せる。
-    // ユーザ談: 閉じて開き直すと直ることがある)。key=false でも正常な表示があるなら、6 秒触らないだけで閉じてしまう。
-    // そのときは「取り付け失敗とみなして引っ込めた」の行と、直後に打鍵できていたかで分かるので、この回避策を外す
-    private func scheduleNonKeyWindowFollowUp(appearedAt: CFAbsoluteTime) {
-        nonKeyWindowFollowUpAppearedAt = appearedAt
-        for (delay, isLast) in [(2.0, false), (5.0, true)] {
-            DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
-                guard let self, self.nonKeyWindowFollowUpAppearedAt == appearedAt,
-                    let window = self.view.window else { return }
-                let hasInput = self.lastTextProxyEditAt > appearedAt
-                let isDisplayed = self.isObservingSettingsDidChange && self.lostActiveOwnershipAt == 0
-                if window.isKeyWindow || hasInput {
-                    self.nonKeyWindowStreakBroken = true
-                }
-                self.appendKeyboardDiagnosticsLog(
-                    "窓が key でない表示のその後 +\(Int(delay) + 1)秒 key=\(window.isKeyWindow)"
-                        + " 打鍵=\(hasInput ? "あり" : "なし") 表示中=\(isDisplayed)"
-                        + " シーン=\(window.windowScene.map { "\($0.activationState.rawValue)" } ?? "なし")",
-                    critical: true, file: #fileID, line: #line, function: #function
-                )
-                guard isLast, !self.nonKeyWindowStreakBroken, isDisplayed else { return }
-                self.appendKeyboardDiagnosticsLog(
-                    "取り付け失敗とみなして引っ込めた(key=false が 6 秒続き打鍵なし)",
-                    critical: true, file: #fileID, line: #line, function: #function
-                )
-                self.dismissKeyboard()
-            }
+    // 調査用ログ(真っ白 3878→3889): キーボードの領域が真っ白で無反応になる件。統合ログでは 2 回とも(11-23 19:35 メモ→メッセージ、
+    // 11-24 00:27 メモ→Spotlight→メモ)、iOS の調停役が前のアプリを活性のまま Rejecting attach とし、取り付けをやり直さなかった。
+    // この個体は表示済みのつもりで、大きさも不透明度も正常。3878 では「表示の 1 秒後に窓が key=false」を目印に 6 秒後に
+    // 自分で引っ込める回避策を入れたが、2 回めに拒まれた個体は key=true で発動せず、key=false だったのは Spotlight の
+    // (たぶん正常な)個体だった。目印にならず、正常なキーボードを閉じる恐れがあるので引っ込めるのはやめた(3889)。
+    // 代わりに、表示のたびに 3 秒後の状態(窓・シーン・外観の活性・入力欄の文脈の有無・打鍵の有無)を残し、
+    // 真っ白の個体と正常な個体で違う項目を探す。文脈は有無だけで中身は書かない
+    private func scheduleAttachStateFollowUp(appearedAt: CFAbsoluteTime) {
+        attachStateFollowUpAppearedAt = appearedAt
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [weak self] in
+            guard let self, self.attachStateFollowUpAppearedAt == appearedAt,
+                let window = self.view.window else { return }
+            let hasInput = self.lastTextProxyEditAt > appearedAt
+            let isDisplayed = self.isObservingSettingsDidChange && self.lostActiveOwnershipAt == 0
+            let proxy = self.textDocumentProxy
+            let hasContext = proxy.documentContextBeforeInput != nil || proxy.documentContextAfterInput != nil
+            let frame = window.frame
+            self.appendKeyboardDiagnosticsLog(
+                "表示3秒後の取り付け状態 key=\(window.isKeyWindow) 打鍵=\(hasInput ? "あり" : "なし") 表示中=\(isDisplayed)"
+                    + " シーン=\(window.windowScene.map { "\($0.activationState.rawValue)" } ?? "なし")"
+                    + " 外観の活性=\(self.traitCollection.activeAppearance.rawValue)"
+                    + " 文脈=\(hasContext ? "あり" : "なし") hasText=\(proxy.hasText)"
+                    + " 窓枠=\(Int(frame.origin.x)),\(Int(frame.origin.y)) \(Int(frame.width))x\(Int(frame.height))"
+                    + " 画面=\(window.screen === UIScreen.main ? "主" : "他")",
+                critical: true, file: #fileID, line: #line, function: #function
+            )
         }
     }
 
