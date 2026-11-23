@@ -421,6 +421,10 @@ public final class KanaKanjiConverter {
         inflectionDerivedCandidatesForScriptVariant = []
 
         var finalCandidates = finalizeSortedCandidates(context, scores: scores)
+        // その読みでは意味をなさない候補を単文節でも外す(じゅくごくん の 熟語くん: 敬称の合成。3890)
+        for rule in Self.contextCuedDroppedSurfaces where normalizedReading.contains(rule.cue) {
+            finalCandidates.removeAll { $0.contains(rule.surface) }
+        }
         // 星座の標準和名(さそり座)を先頭へ(2897、実機報告 さそりざ→蠍座)。Sudachi の別表記(蠍座 wc 3703)は辞書点 1200、
         // 標準名(18554)は収穫底値点 1030 で負け、normalise モードでは正規化形(魚座)の並び替えにも押される。
         // 点数でなく最終列で動かす(連文節側の標準名供給と対)。学習・追加語彙がある読みは触らない

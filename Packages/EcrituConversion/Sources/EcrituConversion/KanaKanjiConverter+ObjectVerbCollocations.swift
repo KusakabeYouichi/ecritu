@@ -13,7 +13,7 @@ extension KanaKanjiConverter {
     typealias ObjectVerbCollocationRow = (particle: Character, prefixes: [String], heads: [String], nouns: [String], nounBonus: Int)
     static let multiClauseObjectVerbCollocations: [String: [ObjectVerbCollocationRow]] = {
         var table: [String: [ObjectVerbCollocationRow]] = [:]
-        table.reserveCapacity(1505)
+        table.reserveCapacity(1506)
         for chunk in [
             objectVerbCollocationChunk0(),
             objectVerbCollocationChunk1(),
@@ -1439,6 +1439,9 @@ extension KanaKanjiConverter {
             ],
             "きんだいか": [
                 ("が", ["はからな", "はからせ", "はかられ", "はからず", "はからぬ", "はかりま", "はかりた", "はかりだ", "はかりな", "はかりそ", "はかりに", "はかりつ", "はかりや", "はかる", "はかろう", "はかった", "はかって", "はかっだ", "はかっで", "はかっち", "はかっじ"], ["図"], ["近代化"], 0),  // 近代化が図る
+            ],
+            "きー": [
+                ("を", ["うたな", "うたせ", "うたれ", "うたず", "うたぬ", "うちま", "うちた", "うちだ", "うちな", "うちそ", "うちに", "うちつ", "うちや", "うつ", "うとう", "うった", "うって", "うっだ", "うっで", "うっち", "うっじ"], ["打"], ["キー"], 2500),  // キーを打つ(手)
             ],
             "きーぼーど": [
                 ("を", ["うたな", "うたせ", "うたれ", "うたず", "うたぬ", "うちま", "うちた", "うちだ", "うちな", "うちそ", "うちに", "うちつ", "うちや", "うつ", "うとう", "うった", "うって", "うっだ", "うっで", "うっち", "うっじ"], ["打"], ["キーボード"], 2500),  // キーボードを打つ(手)

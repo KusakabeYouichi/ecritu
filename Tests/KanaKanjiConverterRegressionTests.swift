@@ -31503,6 +31503,23 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(leadingCandidates3879("そこにいたにちがいない").first, "そこにいたに違いない")
     }
 
+    // 3890(ユーザ指定): きーをうっている が キーを売っている だった。キー は キーボード と同じく 打つ の目的語。
+    // じゅくごくん は 熟語訓 が先頭で、熟語君、熟語勲、熟語くん は出さない。ごじっかいき に ご実家行き も出す
+    func testKeyIsTypedAndCompoundReading3890() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("きーをうっている", "キーを打っている"), ("きーをうった", "キーを打った"), ("きーをうる", "キーを売る"), ("じゅくごくん", "熟語訓")] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+        let list = leadingCandidates3879("じゅくごくん")
+        XCTAssertFalse(list.contains(where: { ["熟語君", "熟語勲", "熟語くん"].contains($0) }), "\(list.prefix(6))")
+        // ごじっかいき は 五十回忌、50回忌 の後ろに ご実家行き、御実家行き(ごじゅっかいき には出さない)
+        XCTAssertEqual(Array(leadingCandidates3879("ごじっかいき").prefix(4)), ["五十回忌", "50回忌", "ご実家行き", "御実家行き"])
+        XCTAssertFalse(leadingCandidates3879("ごじゅっかいき").contains("ご実家行き"))
+        XCTAssertEqual(leadingCandidates3879("たなかくん").first, "田中くん")
+    }
+
     // 3883(ユーザ指定): かみをきるはさみ が 髪を切る挟み、ひにひに が 日に火に、よんだり が 呼んだり(読んだり は 6 番め)だった。
     // 髪を切る の次の かみを切る は出さない。友達を呼んだり はそのまま
     func testScissorsDayByDayAndYondari3883() throws {
