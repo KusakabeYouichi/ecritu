@@ -31387,6 +31387,25 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3884(ユーザ報告): 実機では 振り袖を着る、振袖を着る の順だった。エンジンの出力は 振袖を着る が先でも、
+    // 表示側がもう一度かける送り仮名の設定(名詞化=本則を先に)で入れ替わっていた。seed で順を決めた語は動かさない
+    func testFurisodeOrderSurvivesPresentationPass3884() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        converter.setInflectionalKanaVariantPreference(
+            .decode("stem:standardOnly,compound:standardFirst,noun:standardFirst"))
+        defer { converter.setInflectionalKanaVariantPreference(.default) }
+        for (reading, expected) in [
+            ("ふりそでをきる", ["振袖を着る", "振り袖を着る"]), ("ふりそで", ["振袖", "振り袖"]),
+            ("とめそで", ["留袖", "留め袖"])
+        ] {
+            let engine = leadingCandidates3879(reading)
+            let shown = converter.applyInflectionalKanaVariantPreference(reading: reading, to: engine)
+            XCTAssertEqual(Array(engine.prefix(2)), expected, "エンジン \(reading): \(engine.prefix(5))")
+            XCTAssertEqual(Array(shown.prefix(2)), expected, "表示 \(reading): \(shown.prefix(5))")
+        }
+    }
+
     // 3883(ユーザ指定): かみをきるはさみ が 髪を切る挟み、ひにひに が 日に火に、よんだり が 呼んだり(読んだり は 6 番め)だった。
     // 髪を切る の次の かみを切る は出さない。友達を呼んだり はそのまま
     func testScissorsDayByDayAndYondari3883() throws {

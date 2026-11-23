@@ -111,7 +111,9 @@ extension KanaKanjiConverter {
         // (references/kimono.plist に登録しても消えていた。3876、ユーザ指定)
         "振袖", "留袖", "打掛"
     ]
-    private static let inflectionalKanaNounOnlyFixedShortForms: [String] = ["入口", "出口"]
+    // 振袖/留袖/打掛 も活用しない名詞。振袖を着る が 振り袖を着る の許容形と見られ、表示側の 2 回目の適用で
+    // 振り袖を着る が前に出ていた(3884、ユーザ報告。設定が 名詞化=本則を先に の端末だけ)
+    private static let inflectionalKanaNounOnlyFixedShortForms: [String] = ["入口", "出口", "振袖", "留袖", "打掛"]
     private static let inflectionalKanaSuruConjugationHeads: [String] = [
         "する", "した", "して", "しな", "しま", "しよ", "しろ", "しそ", "しち", "しと", "すれ", "され", "させ", "せず"
     ]
