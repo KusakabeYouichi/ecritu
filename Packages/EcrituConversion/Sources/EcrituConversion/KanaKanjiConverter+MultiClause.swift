@@ -37,6 +37,20 @@ extension KanaKanjiConverter {
         }
     }
 
+    // 動詞の辞書形の直後の かなの まい への加点(使う所のコメント参照。3851)。3851 では下の DEBUG 専用の囲みの中に置いていて、
+    // Release 構成だけビルドが通らなかった(3877 で外へ出した)
+    static let multiClauseNegativeConjectureMaiAfterVerbBonus = 3000
+    static let multiClauseNegativeConjectureMaiAfterVerbCost = 1500
+    // かなで書く動詞の辞書形(かなの語は辞書形の述語の印が付かないので名指しする)
+    static let multiClauseKanaVerbsBeforeNegativeConjectureMai: Set<String> = [
+        "ある", "じゃある", "ではある", "でもある", "する", "いる", "なる", "くる", "やる", "できる", "いく", "わかる", "しれる",
+    ]
+    // Viterbi で前の語として調べる幅(3849。これも 3877 まで DEBUG 専用の囲みの中にあった)。前の語の点が、同じ位置で終わる語の最良よりこれ以上高ければ、その組は調べない。
+    // 長い文 8 つを測ると、組の 24% は前の語が位置の最良から 20,000 より離れていた(加点・減点の規則を 1 組ずつ全部
+    // 調べていて、連文節の時間の半分以上が Viterbi だった)。一括検査の 5,118 読みでは、選ばれた経路の語の前の語は
+    // 位置の最良から最大 5,884。経路から外れた語には 20,000 を超えて離れた前の語が最良のもの(安い前の語からの組に
+    // 大きな減点が付く語。35 読み)があり、その語の点は変わるが、変換結果は 5,305 読みで前と同じ。加点は 1 つで最大 10,000
+    static let multiClauseViterbiPrevCostMargin = 20000
     #if DEBUG
     // テストからトレースを点けるための口。xcodebuild のコマンドラインからは
     // 環境変数がテスト実行プロセスまで届かないことがあるため(3141)
@@ -47,20 +61,7 @@ extension KanaKanjiConverter {
     static let multiClauseTraceEnabledFromEnvironment = ProcessInfo.processInfo.environment["MULTI_TRACE"] != nil
     // 3 つの環境変数は DEBUG だけで読む(3316)。消費側(MULTITRACE/SINGLETRACE の print)はすべて #if DEBUG で、
     // Release では読むだけ読んで使っていなかった(セキュリティー検査 2026-10-02)。Release に環境変数の参照を残さない
-    // 動詞の辞書形の直後の かなの まい への加点(使う所のコメント参照。3851)
-    static let multiClauseNegativeConjectureMaiAfterVerbBonus = 3000
-    static let multiClauseNegativeConjectureMaiAfterVerbCost = 1500
-    // かなで書く動詞の辞書形(かなの語は辞書形の述語の印が付かないので名指しする)
-    static let multiClauseKanaVerbsBeforeNegativeConjectureMai: Set<String> = [
-        "ある", "じゃある", "ではある", "でもある", "する", "いる", "なる", "くる", "やる", "できる", "いく", "わかる", "しれる",
-    ]
     static let multiClauseTraceEdgesEnabled = ProcessInfo.processInfo.environment["MULTI_TRACE_EDGES"] != nil
-    // Viterbi で前の語として調べる幅(3849)。前の語の点が、同じ位置で終わる語の最良よりこれ以上高ければ、その組は調べない。
-    // 長い文 8 つを測ると、組の 24% は前の語が位置の最良から 20,000 より離れていた(加点・減点の規則を 1 組ずつ全部
-    // 調べていて、連文節の時間の半分以上が Viterbi だった)。一括検査の 5,118 読みでは、選ばれた経路の語の前の語は
-    // 位置の最良から最大 5,884。経路から外れた語には 20,000 を超えて離れた前の語が最良のもの(安い前の語からの組に
-    // 大きな減点が付く語。35 読み)があり、その語の点は変わるが、変換結果は 5,305 読みで前と同じ。加点は 1 つで最大 10,000
-    static let multiClauseViterbiPrevCostMargin = 20000
     static let singleTraceEnabled = ProcessInfo.processInfo.environment["SINGLE_TRACE"] != nil
     #endif
     // 連語ボーナス表の頭(紙\t印刷 → 紙)。変換ごとに split で組み直していた(3096)。
