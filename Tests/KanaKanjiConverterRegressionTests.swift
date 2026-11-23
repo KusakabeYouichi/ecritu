@@ -31084,6 +31084,25 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("さいけんじ").first, "再建時")
     }
 
+    // 3871: ワイン用語優先(デバッグ版専用)がオンだと じゅこうしゃもきっとまよわない が 樹高+軍鶏+きっと迷わない だった(ユーザ報告。
+    // 学習はリセット済みで、原因は 樹高 の値段の上限)。長い辞書語(受講者)の頭に当たる位置では上げない。じゅこうがたかい は上げる
+    #if DEBUG
+    func testWineTermPriorityDoesNotSplitLongerDictionaryWord3871() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        converter.setWineTermPriorityEnabled(true)
+        defer { converter.setWineTermPriorityEnabled(false) }
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        for (reading, expected) in [
+            ("じゅこうしゃもきっとまよわない", "受講者もきっと迷わない"), ("じゅこうしゃも", "受講者も"), ("じゅこうしゃもきっと", "受講者もきっと"),
+            ("じゅこうがたかい", "樹高が高い"), ("しゅせきさんがおおい", "酒石酸が多い"), ("こうちゅうでの", "口中での"),
+            ("どうろをようします", "ドウロを擁します"),
+        ] {
+            XCTAssertEqual(multi(reading).first, expected, "\(reading): \(multi(reading).prefix(4))")
+        }
+    }
+    #endif
+
     // 3861: 旧国名と州(references/provinces-fiefs.plist)。名前+国(むさしのくに → 武蔵国)は 86 国とも候補に出ず 〜の国 だけだった。
     // 州の別名 8 つと 石狩 も出なかった。藩と同じく、読み全体がその読みのときだけ 4 番め以内に足し、先頭と文の中は変えない
     func testProvinceNamesAppearWithoutStealingSentences3861() throws {

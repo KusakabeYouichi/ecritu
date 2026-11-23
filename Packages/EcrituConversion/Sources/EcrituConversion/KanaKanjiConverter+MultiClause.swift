@@ -494,6 +494,10 @@ extension KanaKanjiConverter {
         // 短い追加語彙断片(ろー→ロー/raw 等)のうち、同じ開始位置により長い辞書語(ろーぬ→ローヌ)が
         // 実在するものは「長語を分断する断片」とみなし、conn/床(1500)を与えないノードのキー。
         var shortCuratedFragmentNodeKeys = Set<String>()
+        // ワイン用語優先の値段の上限を掛けないノード(長い辞書語の頭に当たる位置。3871)。遷移の計算は語だけで上限を決めて
+        // 覚えるので、位置で外すぶんは「いま計算しているノードが対象か」を呼び出し側が立ててから呼ぶ
+        var wineCapExemptNodeKeys = Set<String>()
+        var wineCapExemptForCurrentNode = false
         // 漢字 1 字+助詞で始まる句の登録語(気になる/気がある)のうち、手前の常用語(病気/元気/勇気)を跨ぐものの
         // キー → 跨ぐ常用語の開始位置。3765 の床外し(上限 5000)に漏れた常用語(病気 5456/勇気 6037)向けに、直前のノードが
         // その常用語と同じ位置から始まる(秒+気になる の 病気、言う+気がある の 勇気)ときだけ床を外す(定数コメント参照。3634-3635)
@@ -747,18 +751,23 @@ extension KanaKanjiConverter {
                 // 同じ位置から始まるもっと長い辞書語(受講者=じゅこうしゃ)の頭に当たる学習語彙(樹高=じゅこう)も床を与えない。
                 // 樹高 を 1 度確定すると じゅこうしゃもきっとまよわない が 樹高+軍鶏+きっと迷わない になっていた(3869、ユーザ報告)。
                 // 長い語が続かない読み(じゅこうをはかる)では床を残す。長い語はレア人名の底値より安いものに限る
-                var learnedSplitsLongerWord = false
-                if !learnedSurfaces.isEmpty, !learnedIsParticleReading, !learnedCrossesCommonWord, start + len < n {
+                // その語で始まる長い語(樹高計)は「割る」に数えない
+                func splitsLongerCommonDictionaryWord(headSurfaces: [String]) -> Bool {
                     var probeLen = len + 1
                     while probeLen <= maxLen, start + probeLen <= n {
                         let longerCosts = store.wordCosts(for: Self.spanString(chars, start..<start + probeLen))
-                        if longerCosts.contains(where: { $0.value < KanaKanjiConverter.CandidateScore.harvestTierWordCostFloor && containsKanji($0.key) }) {
-                            learnedSplitsLongerWord = true
-                            break
+                        if longerCosts.contains(where: { entry in
+                            entry.value < KanaKanjiConverter.CandidateScore.harvestTierWordCostFloor && containsKanji(entry.key)
+                                && !headSurfaces.contains(where: { entry.key.hasPrefix($0) })
+                        }) {
+                            return true
                         }
                         probeLen += 1
                     }
+                    return false
                 }
+                let learnedSplitsLongerWord = !learnedSurfaces.isEmpty && !learnedIsParticleReading && !learnedCrossesCommonWord
+                    && start + len < n && splitsLongerCommonDictionaryWord(headSurfaces: learnedSurfaces)
                 for surface in learnedSurfaces {
                     if learnedIsParticleReading {
                         continue
@@ -1523,9 +1532,17 @@ extension KanaKanjiConverter {
                 // ワイン用語優先: 文の中でも上げる語は、供給の上限で切られていても格子に立てる(こうちゅうでの が 鋼+中+での。
                 // 口中 は語コスト順の上限で落ちていて、値段の上限を掛ける相手が無かった。3810、ユーザ報告)
                 if let wineSurfaces = wineTermPrioritySurfaces?[segmentReading] {
-                    for surface in wineSurfaces {
-                        add(surface, isDictWord: true, isCurated: false, exemptDecorative: true, isInflectionDerived: false,
-                            wordCost: WineTermPriority.inSentenceWordCostCap)
+                    // 同じ位置から始まるもっと長い辞書語(受講者=じゅこうしゃ)の頭に当たる位置では上げない(樹高=じゅこう。
+                    // じゅこうしゃもきっとまよわない が 樹高+軍鶏+きっと迷わない だった。3871、ユーザ報告)。じゅこうがたかい は上げる
+                    if start + len < n, splitsLongerCommonDictionaryWord(headSurfaces: wineSurfaces) {
+                        for surface in wineSurfaces {
+                            wineCapExemptNodeKeys.insert("\(start)-\(end)-\(surface)")
+                        }
+                    } else {
+                        for surface in wineSurfaces {
+                            add(surface, isDictWord: true, isCurated: false, exemptDecorative: true, isInflectionDerived: false,
+                                wordCost: WineTermPriority.inSentenceWordCostCap)
+                        }
                     }
                 }
                 #endif
@@ -2885,7 +2902,7 @@ extension KanaKanjiConverter {
             // (Gin=じん、Dão=だん)と日常語でもある語(帰還/発声)は表の側で外してある(普通の文が軒並み崩れる)
             // 判定は語(読み・表記・辞書の語か)だけで決まるので、語ごとに 1 回だけ求めて覚える。遷移のたびに読みの字数を数え、
             // 読みの先頭を切り出して表を引いていて、オンのとき 1 打鍵が 2ms(4%)遅かった(3827)
-            if let wineTermPrioritySurfaces {
+            if let wineTermPrioritySurfaces, !wineCapExemptForCurrentNode {
                 let memoKey = (Int64(readingID) << 33) | (Int64(surfaceID) << 1) | (isDictWord ? 1 : 0)
                 let isCapped: Bool
                 if let known = wineTermCapMemo[memoKey] {
@@ -4322,6 +4339,7 @@ extension KanaKanjiConverter {
                         + (singleTopLeadNodeBonuses[nodeKeySV] ?? 0)
                         + naAdjectiveSaStemBonus
                     let nodeIsShortCuratedFragment = shortCuratedFragmentNodeKeys.contains(nodeKeySV)
+                    wineCapExemptForCurrentNode = !wineCapExemptNodeKeys.isEmpty && wineCapExemptNodeKeys.contains(nodeKeySV)
                     let nodeCrossedCommonWordStarts = phraseCrossedCommonWordStartsByNodeKey[nodeKeySV]
                     let nodeIsCollocationPreferredKana = collocationPreferredKanaNodeKeys.contains(nodeKeySV)
                     let nodeIsCollocationPreferredVerb = collocationPreferredVerbNodeKeys.contains(nodeKeySV)
@@ -6136,6 +6154,7 @@ extension KanaKanjiConverter {
                 if best[idx] >= infinity {
                     continue
                 }
+                wineCapExemptForCurrentNode = false
                 var eosCost = transitionCost(
                     prev: nodes[idx].surface,
                     prevAuxTail: auxTailByNode[idx],
@@ -6256,6 +6275,7 @@ extension KanaKanjiConverter {
             var leadBestIdx = -1
             var leadBestTotal = infinity
             for idx in nodesEndingAt[leadEnd] where best[idx] < infinity {
+                wineCapExemptForCurrentNode = false
                 let eosCost = transitionCost(
                     prev: nodes[idx].surface,
                     prevAuxTail: auxTailByNode[idx],
@@ -6996,6 +7016,8 @@ extension KanaKanjiConverter {
                     ? nodes[pathIndices[pos - 1]].isDictionaryFormPredicate
                     : false
                 let nodeFlags = variantFlags(node)
+                wineCapExemptForCurrentNode = !wineCapExemptNodeKeys.isEmpty && wineCapExemptNodeKeys.contains(node.key)
+                defer { wineCapExemptForCurrentNode = false }
                 let incoming = transitionCost(
                     prev: prevSurface,
                     prevAuxTail: prevAuxTail,
@@ -7096,6 +7118,7 @@ extension KanaKanjiConverter {
                 let outgoing: Int
                 if let nextNode {
                     let nextFlags = variantFlags(nextNode)
+                    wineCapExemptForCurrentNode = !wineCapExemptNodeKeys.isEmpty && wineCapExemptNodeKeys.contains(nextNode.key)
                     outgoing = transitionCost(
                         prev: node.surface,
                         prevAuxTail: Self.auxTailForBigramBorrow(of: node),
