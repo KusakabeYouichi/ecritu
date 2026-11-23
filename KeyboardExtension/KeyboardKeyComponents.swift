@@ -2022,10 +2022,14 @@ final class EmojiGridUICollectionView: UICollectionView {
 final class EmojiGridCell: UICollectionViewCell {
     static let reuseIdentifier = "EmojiGridCell"
     private let label = UILabel()
+    // アプリ本体が作った絵文字の画像(EmojiTileStore。3873)。あればこちらで描き、無ければ label で文字として描く
+    private let tileView = UIImageView()
     private let feedbackCircle = UIView()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
+        tileView.isHidden = true
+        tileView.isAccessibilityElement = false
         feedbackCircle.backgroundColor = UIColor(KeyboardThemePalette.pressFeedbackCircle)
         feedbackCircle.layer.cornerRadius = 12
         feedbackCircle.isHidden = true
@@ -2036,6 +2040,7 @@ final class EmojiGridCell: UICollectionViewCell {
         label.isAccessibilityElement = false
         contentView.addSubview(feedbackCircle)
         contentView.addSubview(label)
+        contentView.addSubview(tileView)
         isAccessibilityElement = true
         accessibilityTraits = .button
     }
@@ -2054,6 +2059,14 @@ final class EmojiGridCell: UICollectionViewCell {
         // 押している間は縮小の変形が掛かっているので、frame でなく bounds と center で置く
         label.bounds = CGRect(x: 0, y: 0, width: labelWidth, height: bounds.height)
         label.center = CGPoint(x: bounds.midX, y: bounds.midY)
+        if let image = tileView.image {
+            // ラベルが文字を置くのと同じく、中央に置いて画素の格子に合わせる
+            let scale = max(1, window?.screen.scale ?? traitCollection.displayScale)
+            let originX = ((bounds.width - image.size.width) / 2 * scale).rounded() / scale
+            let originY = ((bounds.height - image.size.height) / 2 * scale).rounded() / scale
+            tileView.bounds = CGRect(origin: .zero, size: image.size)
+            tileView.center = CGPoint(x: bounds.minX + originX + image.size.width / 2, y: bounds.minY + originY + image.size.height / 2)
+        }
         feedbackCircle.frame = CGRect(
             x: contentView.bounds.midX - 12,
             y: contentView.bounds.midY - 12,
@@ -2063,7 +2076,19 @@ final class EmojiGridCell: UICollectionViewCell {
     }
 
     func configure(emoji: String, accessibilityText: String) {
-        label.text = emoji
+        let scale = max(1, traitCollection.displayScale)
+        if let directory = EmojiTileStore.keyboardDirectory(scale: scale),
+            let image = EmojiTileStore.image(for: emoji, in: directory, scale: scale) {
+            tileView.image = image
+            tileView.isHidden = false
+            label.text = nil
+            label.isHidden = true
+        } else {
+            tileView.image = nil
+            tileView.isHidden = true
+            label.text = emoji
+            label.isHidden = false
+        }
         accessibilityLabel = accessibilityText
         setNeedsLayout()
     }
@@ -2074,6 +2099,7 @@ final class EmojiGridCell: UICollectionViewCell {
             let pressed = isHighlighted
             UIView.animate(withDuration: 0.08, delay: 0, options: [.curveEaseOut, .beginFromCurrentState]) {
                 self.label.transform = pressed ? CGAffineTransform(scaleX: 0.84, y: 0.84) : .identity
+                self.tileView.transform = self.label.transform
                 self.feedbackCircle.isHidden = !pressed
             }
         }
@@ -2082,6 +2108,9 @@ final class EmojiGridCell: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         label.transform = .identity
+        tileView.transform = .identity
+        // 画面から外れたセルは画像を手放す(展開した画素を持ち続けない)
+        tileView.image = nil
         feedbackCircle.isHidden = true
     }
 }

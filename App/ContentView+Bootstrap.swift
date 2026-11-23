@@ -796,7 +796,23 @@ extension ContentView {
         defaults.set(true, forKey: SettingsKeys.kanaKanjiLearningVocabularyMigrationCompleted)
     }
 
+    // 絵文字面の絵文字の画像を、無い・古いときに裏で作る(EmojiTileStore。3873)。キーボードは自分では作れない
+    // (キーボードのプロセスで絵文字を描くと、その展開画像が iOS に積まれるのを避けるのが目的なので)。
+    // そろっていれば目録を 1 つ読むだけで終わる
+    private static var isGeneratingEmojiTiles = false
+
+    static func generateEmojiTilesInBackgroundIfNeeded() {
+        guard !isGeneratingEmojiTiles else {
+            return
+        }
+        isGeneratingEmojiTiles = true
+        EmojiTileStore.generateInBatchesIfNeeded(scale: UIScreen.main.scale) { _ in
+            isGeneratingEmojiTiles = false
+        }
+    }
+
     func handleContainerAppAppear() {
+        Self.generateEmojiTilesInBackgroundIfNeeded()
         if didRunFirstAppearanceBootstrap {
             guard !isBootstrappingInitialData else {
                 return

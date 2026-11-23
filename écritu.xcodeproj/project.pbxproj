@@ -46,6 +46,7 @@
 		0DCCA3903BD7D63921F10452 /* LatinSuggestionSupplemental.txt in Resources */ = {isa = PBXBuildFile; fileRef = 47994CBD17D5B21F0D8F4067 /* LatinSuggestionSupplemental.txt */; };
 		0F8A21202683F7A7645F26B6 /* KeyboardCandidateMergingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2626823DE41575D1188F5DEA /* KeyboardCandidateMergingTests.swift */; };
 		11A915FC905E04AF64E07BC6 /* KeyboardModeTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76B28FF828484D75B08C5780 /* KeyboardModeTransition.swift */; };
+		AB000000000000000000E3C1 /* AppleEmojiCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F54F6835629848F61C8D81 /* AppleEmojiCatalog.swift */; };
 		121829EFE660D70A60BCE836 /* ContentView+Bootstrap.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD29F752D4216C2DEF3BD80 /* ContentView+Bootstrap.swift */; };
 		12943D63AB06654429DA11D6 /* KeyboardRootView+GridLayouts.swift in Sources */ = {isa = PBXBuildFile; fileRef = A884772319A4160D03A970D9 /* KeyboardRootView+GridLayouts.swift */; };
 		A1B2C3D4E5F600000000FF01 /* KeyboardRootView+MainContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000FF02 /* KeyboardRootView+MainContent.swift */; };
@@ -910,6 +911,7 @@
 				29464649B09976E4E9780859 /* ContentView+LogoMenu.swift in Sources */,
 				5E7A9C3D1B2F4A6081D4C7E1 /* SVGPathShape.swift in Sources */,
 				121829EFE660D70A60BCE836 /* ContentView+Bootstrap.swift in Sources */,
+				AB000000000000000000E3C1 /* AppleEmojiCatalog.swift in Sources */,
 				AB00000000000000000038C4 /* EcrituConversionBaseImport.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

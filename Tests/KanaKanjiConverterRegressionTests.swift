@@ -31173,6 +31173,70 @@ extension KanaKanjiConverterRegressionTests {
     }
     #endif
 
+    // 3873: 絵文字面の絵文字を画像ファイルから描く(EmojiTileStore)。アプリ本体が作った画像がそろい、目録が今の条件と合うときだけ
+    // 使える。画像は、ラベルが文字として描いたものと同じ絵になる(同じ大きさのセルの中央に置いて画素を比べる)
+    func testEmojiTileStoreGeneratesTilesMatchingLabelRendering3873() throws {
+        let container = FileManager.default.temporaryDirectory.appendingPathComponent("emoji-tiles-\(UUID().uuidString)", isDirectory: true)
+        defer { try? FileManager.default.removeItem(at: container) }
+        let scale: CGFloat = 3
+        XCTAssertNil(EmojiTileStore.validDirectory(container: container, scale: scale))
+        XCTAssertTrue(EmojiTileStore.generateIfNeeded(container: container, scale: scale))
+        let directory = try XCTUnwrap(EmojiTileStore.validDirectory(container: container, scale: scale))
+        XCTAssertFalse(EmojiTileStore.generateIfNeeded(container: container, scale: scale), "そろっていれば作り直さない")
+        XCTAssertNil(EmojiTileStore.validDirectory(container: container, scale: 2), "解像度が違えば使わない")
+        let names = Set(EmojiTileStore.allEmojis.map(EmojiTileStore.fileName(for:)))
+        XCTAssertEqual(names.count, EmojiTileStore.allEmojis.count, "ファイル名が重ならない")
+        var totalBytes = 0
+        for emoji in EmojiTileStore.allEmojis {
+            let url = directory.appendingPathComponent(EmojiTileStore.fileName(for: emoji))
+            let size = (try? url.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0
+            XCTAssertGreaterThan(size, 0, "\(emoji) の画像が無い")
+            totalBytes += size
+        }
+        print("EMOJITILES count=\(EmojiTileStore.allEmojis.count) totalMB=\(String(format: "%.1f", Double(totalBytes) / 1_048_576))")
+        // 見た目の一致: セル(47×28pt)にラベルで描いたものと、画像を中央(画素の格子)に置いたものの画素の差
+        let cell = CGSize(width: 47, height: 28)
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = scale
+        format.opaque = false
+        func pixels(_ image: UIImage) -> [UInt8] {
+            let width = Int(cell.width * scale), height = Int(cell.height * scale)
+            var buffer = [UInt8](repeating: 0, count: width * height * 4)
+            let context = CGContext(data: &buffer, width: width, height: height, bitsPerComponent: 8, bytesPerRow: width * 4,
+                                    space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)!
+            context.draw(image.cgImage!, in: CGRect(x: 0, y: 0, width: width, height: height))
+            return buffer
+        }
+        for emoji in ["😀", "🇯🇵", "🍷", "🐶"] {
+            let label = UILabel(frame: CGRect(origin: .zero, size: cell))
+            label.font = .systemFont(ofSize: EmojiTileStore.fontSize)
+            label.textAlignment = .center
+            label.text = emoji
+            let byLabel = UIGraphicsImageRenderer(size: cell, format: format).image { context in label.layer.render(in: context.cgContext) }
+            let tile = try XCTUnwrap(EmojiTileStore.image(for: emoji, in: directory, scale: scale))
+            let originX = ((cell.width - tile.size.width) / 2 * scale).rounded() / scale
+            let originY = ((cell.height - tile.size.height) / 2 * scale).rounded() / scale
+            let byTile = UIGraphicsImageRenderer(size: cell, format: format).image { _ in tile.draw(at: CGPoint(x: originX, y: originY)) }
+            let a = pixels(byLabel), b = pixels(byTile)
+            var differing = 0, maxDifference = 0
+            for index in a.indices {
+                let difference = abs(Int(a[index]) - Int(b[index]))
+                if difference > 8 { differing += 1 }
+                maxDifference = max(maxDifference, difference)
+            }
+            func inkBox(_ buffer: [UInt8]) -> String {
+                let width = Int(cell.width * scale), height = Int(cell.height * scale)
+                var minX = width, maxX = -1, minY = height, maxY = -1
+                for y in 0..<height { for x in 0..<width where buffer[(y * width + x) * 4 + 3] > 16 {
+                    minX = min(minX, x); maxX = max(maxX, x); minY = min(minY, y); maxY = max(maxY, y)
+                } }
+                return "x\(minX)-\(maxX) y\(minY)-\(maxY)"
+            }
+            print("EMOJITILES \(emoji) tile=\(tile.size) differing=\(differing)/\(a.count) max=\(maxDifference) label[\(inkBox(a))] tile[\(inkBox(b))]")
+            XCTAssertLessThan(Double(differing) / Double(a.count), 0.01, "\(emoji): ラベルの絵と画像の絵が合わない")
+        }
+    }
+
     // 3861: 旧国名と州(references/provinces-fiefs.plist)。名前+国(むさしのくに → 武蔵国)は 86 国とも候補に出ず 〜の国 だけだった。
     // 州の別名 8 つと 石狩 も出なかった。藩と同じく、読み全体がその読みのときだけ 4 番め以内に足し、先頭と文の中は変えない
     func testProvinceNamesAppearWithoutStealingSentences3861() throws {
