@@ -31435,6 +31435,61 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(leadingCandidates3879("さんまをやく").first, "秋刀魚を焼く")
     }
 
+    // 3887(ユーザ指定): 年忌の語。いっしゅうき が 1周木、にじゅうごかいき が 25回木、にじゅうさんかいき が 廿三回忌 だった。
+    // 漢数字が先、算用数字の形が次。二七日〜七七日 はかなの次で、いつなのかわからない は崩さない
+    func testMemorialAnniversaryTerms3887() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("いっしゅうき", ["一周忌", "1周忌"]), ("さんかいき", ["三回忌", "3回忌"]), ("しちかいき", ["七回忌", "7回忌"]),
+            ("ななかいき", ["七回忌", "7回忌"]), ("じゅうさんかいき", ["十三回忌", "13回忌"]),
+            ("じゅうしちかいき", ["十七回忌", "17回忌"]), ("にじゅうさんかいき", ["二十三回忌", "23回忌"]),
+            ("にじゅうごかいき", ["二十五回忌", "25回忌"]), ("にじゅうななかいき", ["二十七回忌", "27回忌"]),
+            ("さんじゅうさんかいき", ["三十三回忌", "33回忌"]), ("さんじゅうしちかいき", ["三十七回忌", "37回忌"]),
+            ("しじゅうさんかいき", ["四十三回忌", "43回忌"]), ("よんじゅうななかいき", ["四十七回忌", "47回忌"]),
+            ("ごじっかいき", ["五十回忌", "50回忌"]), ("ごじゅっかいき", ["五十回忌", "50回忌"]),
+            ("ひゃっかいき", ["百回忌", "100回忌"]), ("いつなのか", ["いつなのか", "五七日"]),
+            ("なななのか", ["なななのか", "七七日"]), ("しょなぬか", ["初七日"]), ("ひゃっかにち", ["百か日"]),
+            ("いみあけ", ["忌明け"]), ("ねんかいほうよう", ["年回法要"]),
+            ("いっしゅうきのほうよう", ["一周忌の法要"]), ("そふのじゅうしちかいき", ["祖父の十七回忌"]),
+            ("ちちのななかいき", ["父の七回忌"]), ("いつなのかわからない", ["いつなのかわからない"])
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(Array(list.prefix(expected.count)), expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
+    // 3887(ユーザ指定): ごにんいた が 誤認板、じゅうにんいた が 住人いた、いたをきる が いたを切る だった
+    func testHeadcountReadingsAndBoardObject3887() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("ごにんいた", "5人いた"), ("ごにんいる", "5人いる"), ("じゅうにんいた", "10人いた"), ("じゅうにんいる", "10人いる"),
+            ("よにんいた", "4人いた"), ("にじゅうにんいた", "20人いた"),
+            ("いたをきる", "板を切る"), ("いたをかう", "板を買う"), ("いたがわれる", "板が割れる"), ("いたのまにすわる", "板の間に座る"),
+            ("そこにいた", "そこにいた"), ("いえにいた", "家にいた")
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+        XCTAssertFalse(leadingCandidates3879("ごにんいた").contains("誤認板"))
+    }
+
+    // 3888(ユーザ指定): ほうじが は 法事が なのに、ほうじがあったんでしょうか は 報時があったんでしょうか だった。
+    // 報じる の活用(ほうじて/新聞が報じた)はそのまま
+    func testHoujiIsMemorialServiceInPhrases3888() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("ほうじがあったんでしょうか", "法事があったんでしょうか"), ("ほうじがある", "法事がある"), ("ほうじにいく", "法事に行く"),
+            ("あしたほうじがあります", "明日法事があります"), ("ほうじちゃをのむ", "ほうじ茶を飲む"),
+            ("しんぶんがほうじた", "新聞が報じた"), ("ほうじて", "報じて")
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
     // 3883(ユーザ指定): かみをきるはさみ が 髪を切る挟み、ひにひに が 日に火に、よんだり が 呼んだり(読んだり は 6 番め)だった。
     // 髪を切る の次の かみを切る は出さない。友達を呼んだり はそのまま
     func testScissorsDayByDayAndYondari3883() throws {
