@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<!-- 和装(kimono): 着物の部位・仕立ての用語。補助語彙(ÉcrituSecondVocab)に入る。2026-11-23 新設(ユーザ指定 3874)。
+	     今の辞書で出なかった語だけを有効にし、すでに出る語は同じ節に行頭コメントアウトで置く(行末のコメントに今の位置)。
+	     position のある行は語彙には入れず、読み全体がその読みのときだけ候補のその番めへ動かす(日常語と同じ読みの語。
+	     tools/build_trailing_candidate_table.py が TrailingCandidateTable.swift の表にする。plist を直したらこれを流す)。 -->
+
+	<!-- ■ 着物の部位・仕立て -->
+
+	<!-- □ 袖まわり -->
+<!--<dict><key>phrase</key><string>振り</string><key>shortcut</key><string>ふり</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>袖付け</string><key>shortcut</key><string>そでつけ</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>袖口</string><key>shortcut</key><string>そでぐち</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>袖丈</string><key>shortcut</key><string>そでたけ</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+	<dict><key>phrase</key><string>袖巾</string><key>shortcut</key><string>そではば</string><key>pos</key><string>名詞</string></dict>	<!-- 袖幅 だけが出ていた。和裁では 巾 と書く -->
+<!--<dict><key>phrase</key><string>袖幅</string><key>shortcut</key><string>そではば</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書にある -->
+<!--<dict><key>phrase</key><string>袖丸み</string><key>shortcut</key><string>そでまるみ</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭(袖+丸み) -->
+<!--<dict><key>phrase</key><string>人形</string><key>shortcut</key><string>にんぎょう</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+	<dict><key>phrase</key><string>身八つ口</string><key>shortcut</key><string>みやつぐち</string><key>pos</key><string>名詞</string></dict>	<!-- 宮次地 になっていた(ユーザ報告) -->
+
+	<!-- □ 身頃まわり -->
+<!--<dict><key>phrase</key><string>身頃</string><key>shortcut</key><string>みごろ</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>前身頃</string><key>shortcut</key><string>まえみごろ</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+	<dict><key>phrase</key><string>後身頃</string><key>shortcut</key><string>うしろみごろ</string><key>pos</key><string>名詞</string></dict>	<!-- 後ろ身ごろ になっていた -->
+	<dict><key>phrase</key><string>抱き巾</string><key>shortcut</key><string>だきはば</string><key>pos</key><string>名詞</string></dict>	<!-- 唾棄幅 になっていた。抱き巾 → 抱き幅 の順 -->
+	<dict><key>phrase</key><string>抱き幅</string><key>shortcut</key><string>だきはば</string><key>pos</key><string>名詞</string></dict>
+<!--<dict><key>phrase</key><string>脇縫い</string><key>shortcut</key><string>わきぬい</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>背縫い</string><key>shortcut</key><string>せぬい</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>肩山</string><key>shortcut</key><string>かたやま</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で 2 番め(片山 の次) -->
+	<dict><key>phrase</key><string>身丈</string><key>shortcut</key><string>みたけ</string><key>pos</key><string>名詞</string><key>position</key><integer>4</integer></dict>	<!-- 7 番めだった(御嶽/三岳 などの後ろ) -->
+	<dict><key>phrase</key><string>裄</string><key>shortcut</key><string>ゆき</string><key>pos</key><string>名詞</string><key>position</key><integer>4</integer></dict>	<!-- 10 番めだった(雪/行き などの後ろ) -->
+<!--<dict><key>phrase</key><string>肩幅</string><key>shortcut</key><string>かたはば</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+	<dict><key>phrase</key><string>肩巾</string><key>shortcut</key><string>かたはば</string><key>pos</key><string>名詞</string><key>position</key><integer>2</integer></dict>	<!-- 出ていなかった。日常語の 肩幅 の次に置く -->
+<!--<dict><key>phrase</key><string>背中心</string><key>shortcut</key><string>せちゅうしん</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+
+	<!-- □ 衿・前合わせ -->
+<!--<dict><key>phrase</key><string>衽</string><key>shortcut</key><string>おくみ</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+	<dict><key>phrase</key><string>竪衿</string><key>shortcut</key><string>たてえり</string><key>pos</key><string>名詞</string><key>position</key><integer>2</integer></dict>	<!-- 出ていなかった。立て襟 の次に置く -->
+<!--<dict><key>phrase</key><string>剣先</string><key>shortcut</key><string>けんさき</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>掛け衿</string><key>shortcut</key><string>かけえり</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>掛け襟</string><key>shortcut</key><string>かけえり</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で 3 番め -->
+	<dict><key>phrase</key><string>共衿</string><key>shortcut</key><string>ともえり</string><key>pos</key><string>名詞</string></dict>	<!-- 共襟 だけが出ていた。掛け衿 と同じく 衿 を先に -->
+<!--<dict><key>phrase</key><string>共襟</string><key>shortcut</key><string>ともえり</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書にある -->
+<!--<dict><key>phrase</key><string>本衿</string><key>shortcut</key><string>ほんえり</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で 3 番め -->
+	<dict><key>phrase</key><string>地衿</string><key>shortcut</key><string>じえり</string><key>pos</key><string>名詞</string></dict>	<!-- 候補が 1 つも無かった -->
+<!--<dict><key>phrase</key><string>衿先</string><key>shortcut</key><string>えりさき</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で 2 番め(襟先 の次) -->
+	<dict><key>phrase</key><string>衿肩明き</string><key>shortcut</key><string>えりかたあき</string><key>pos</key><string>名詞</string></dict>	<!-- 選り方秋 になっていた -->
+<!--<dict><key>phrase</key><string>繰り越し</string><key>shortcut</key><string>くりこし</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>衣紋</string><key>shortcut</key><string>えもん</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で 2 番め(右衛門 の次) -->
+<!--<dict><key>phrase</key><string>衿</string><key>shortcut</key><string>えり</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で 6 番め -->
+
+	<!-- □ 裾・裏地・仕立て -->
+<!--<dict><key>phrase</key><string>裾回し</string><key>shortcut</key><string>すそまわし</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+	<dict><key>phrase</key><string>八掛</string><key>shortcut</key><string>はっかけ</string><key>pos</key><string>名詞</string></dict>	<!-- 齒かけ になっていた -->
+	<dict><key>phrase</key><string>袷</string><key>shortcut</key><string>あわせ</string><key>pos</key><string>名詞</string><key>position</key><integer>4</integer></dict>	<!-- 8 番めだった(合わせ/併せ などの後ろ) -->
+<!--<dict><key>phrase</key><string>胴裏</string><key>shortcut</key><string>どううら</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+	<dict><key>phrase</key><string>袘</string><key>shortcut</key><string>ふき</string><key>pos</key><string>名詞</string><key>position</key><integer>4</integer></dict>	<!-- 17 番めだった(吹き/葺き/蕗 などの後ろ) -->
+	<dict><key>phrase</key><string>居敷当て</string><key>shortcut</key><string>いしきあて</string><key>pos</key><string>名詞</string></dict>	<!-- 意識当て になっていた -->
+<!--<dict><key>phrase</key><string>単衣</string><key>shortcut</key><string>ひとえ</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で 3 番め -->
+<!--<dict><key>phrase</key><string>薄物</string><key>shortcut</key><string>うすもの</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で 2 番め -->
+	<dict><key>phrase</key><string>背伏せ</string><key>shortcut</key><string>せぶせ</string><key>pos</key><string>名詞</string></dict>	<!-- 候補が 1 つも無かった -->
+<!--<dict><key>phrase</key><string>力布</string><key>shortcut</key><string>ちからぬの</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>縫い代</string><key>shortcut</key><string>ぬいしろ</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+<!--<dict><key>phrase</key><string>袖口布</string><key>shortcut</key><string>そでぐちぬの</string><key>pos</key><string>名詞</string></dict>-->	<!-- 今の辞書で先頭 -->
+</array>
+</plist>
