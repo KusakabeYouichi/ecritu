@@ -744,11 +744,26 @@ extension KanaKanjiConverter {
                         }
                     }
                 }
+                // 同じ位置から始まるもっと長い辞書語(受講者=じゅこうしゃ)の頭に当たる学習語彙(樹高=じゅこう)も床を与えない。
+                // 樹高 を 1 度確定すると じゅこうしゃもきっとまよわない が 樹高+軍鶏+きっと迷わない になっていた(3869、ユーザ報告)。
+                // 長い語が続かない読み(じゅこうをはかる)では床を残す。長い語はレア人名の底値より安いものに限る
+                var learnedSplitsLongerWord = false
+                if !learnedSurfaces.isEmpty, !learnedIsParticleReading, !learnedCrossesCommonWord, start + len < n {
+                    var probeLen = len + 1
+                    while probeLen <= maxLen, start + probeLen <= n {
+                        let longerCosts = store.wordCosts(for: Self.spanString(chars, start..<start + probeLen))
+                        if longerCosts.contains(where: { $0.value < KanaKanjiConverter.CandidateScore.harvestTierWordCostFloor && containsKanji($0.key) }) {
+                            learnedSplitsLongerWord = true
+                            break
+                        }
+                        probeLen += 1
+                    }
+                }
                 for surface in learnedSurfaces {
                     if learnedIsParticleReading {
                         continue
                     }
-                    if learnedCrossesCommonWord || learnedLosingToCommonHomophone.contains(surface) {
+                    if learnedCrossesCommonWord || learnedSplitsLongerWord || learnedLosingToCommonHomophone.contains(surface) {
                         add(surface, isDictWord: true, isCurated: false)
                         continue
                     }
@@ -1808,7 +1823,8 @@ extension KanaKanjiConverter {
                 let isPairParticle = Self.multiClauseSupplementalPairParticles.contains(particle.surface)
                 let isFrameParticle = Self.multiClauseSupplementalFrameParticles.contains(particle.surface)
                 // 日を指す語+か+日を指す語(今日か明日)の か も頭固定で複製する(か の最良の前ノードはかなの きょう や 糊塗し で、頭が見えなかった。3866)
-                let isDayAlternativeParticle = particle.surface == "か" && particle.end < n
+                // から も同じ(明日から明後日まで。あしたからあさってまで が 明日から漁ってまで だった。3869、ユーザ指定)
+                let isDayAlternativeParticle = (particle.surface == "か" || particle.surface == "から") && particle.end < n
                     && nodesStartingAt[particle.end].contains { Self.multiClauseRelativeDayWords.contains(nodes[$0].surface) }
                 guard isBridge || isPairParticle || isFrameParticle || isDayAlternativeParticle else { continue }
                 let hasSupplementalTail = (isPairParticle || isFrameParticle) && particle.end < n
@@ -5445,10 +5461,13 @@ extension KanaKanjiConverter {
                             cost -= Self.multiClauseLatinWordSideSuffixBonus
                         }
                         // 日・週・月・年を指す語+か+同じ仲間の語(明日か明後日。定数コメント参照。3866、ユーザ指定)
-                        // 頭固定の複製の か なら頭は確定、通常の か は最良の前ノードで見る
-                        if prevNode.surfaceID == SID.か, prevNode.isKanaIdentity,
+                        // 頭固定の複製の か なら頭は確定、通常の か は最良の前ノードで見る。から も同じ(明日から明後日まで。3869)
+                        if prevNode.isKanaIdentity,
+                            prevNode.surfaceID == SID.か || (prevNode.end - prevNode.start == 2 && prevNode.surface == "から"),
                             Self.multiClauseRelativeDayWords.contains(node.surface),
                             let headSurface = prevNode.boundHeadSurface ?? (backPointer[prevIdx] >= 0 ? nodes[backPointer[prevIdx]].surface : nil),
+                            // 同じ語の繰り返しは対象外(きょうからきょうとにいく が 今日から今日とに行く になった)
+                            headSurface != node.surface,
                             Self.multiClauseRelativeDayWords.contains(headSurface) {
                             cost -= Self.multiClauseRelativeDayAlternativeBonus
                         }

@@ -28545,6 +28545,13 @@ extension KanaKanjiConverterRegressionTests {
             converter.setWineTermPriorityEnabled(true)
         }
         #endif
+        // AUDIT_LEARN=しゃも=軍鶏,じゅこう=樹高 で学習を入れてから検査する(実機だけで起きる並びの再現。3869)
+        if let raw = ProcessInfo.processInfo.environment["AUDIT_LEARN"] {
+            for pair in raw.split(separator: ",") {
+                let parts = pair.split(separator: "=", maxSplits: 1).map(String.init)
+                if parts.count == 2 { _ = converter.learn(reading: parts[0], candidate: parts[1]) }
+            }
+        }
         // AUDIT_KANAGAKI=adverb,conjunction,… で X.8 かなで書く言葉 の分類を実機と揃える(3688)
         if let raw = ProcessInfo.processInfo.environment["AUDIT_KANAGAKI"] {
             converter.setKanaSpellingSuppressedCategories(Set(raw.split(separator: ",").compactMap { KanaSpellingCategory(rawValue: String($0)) }))
@@ -30998,10 +31005,64 @@ extension KanaKanjiConverterRegressionTests {
             ("きょうかあしたか", ["今日か明日か"]), ("あしたかあさってか", ["明日か明後日か"]),
             ("かれはあしたからいく", ["彼は明日から行く"]), ("あしたからだをうごかす", ["明日体を動かす"]),
             ("しあさってる", ["しあさってる"]), ("ああしたから", ["ああしたから"]),
+            // 3869: から でつなぐ形(あしたからあさってまで が 明日から漁ってまで だった)。同じ語の繰り返しは対象外
+            ("あしたからあさってまで", ["明日から明後日まで"]), ("きょうからあさってまで", ["今日から明後日まで"]),
+            ("あしたからあさってにかけて", ["明日から明後日にかけて"]), ("げつようからきんようまで", ["月曜から金曜まで"]),
+            ("きょうからきょうとにいく", ["今日から京都に行く"]),
         ] {
             XCTAssertEqual(Array(multi(reading).prefix(expected.count)), expected, "\(reading): \(multi(reading).prefix(4))")
         }
         XCTAssertFalse(multi("しあさってる").contains { $0.hasSuffix("後日る") })
+    }
+
+    // 3869: じゅこう を 樹高 と学習していると じゅこうしゃもきっとまよわない が 樹高+軍鶏+きっと迷わない になっていた(ユーザ報告)。
+    // 同じ位置から始まるもっと長い辞書語(受講者)の頭に当たる学習語彙には床を与えない。長い語が続かない読みでは学習が効く
+    func testLearnedWordDoesNotSplitLongerDictionaryWord3869() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        converter.learn(reading: "じゅこう", candidate: "樹高")
+        converter.store.waitForPendingLearningPersists()
+        for (reading, expected) in [
+            ("じゅこうしゃもきっとまよわない", "受講者もきっと迷わない"), ("じゅこうしゃも", "受講者も"), ("じゅこうしゃがまよう", "受講者が迷う"),
+            ("じゅこうがたかい", "樹高が高い"),
+        ] {
+            XCTAssertEqual(multi(reading).first, expected, "\(reading): \(multi(reading).prefix(4))")
+        }
+        XCTAssertEqual(converter.candidates(for: "じゅこう", limit: 3, systemCandidateMode: .surface).first, "樹高")
+    }
+
+    // 3869: れんがぐら は 煉瓦蔵、レンガ蔵、煉瓦倉、レンガ倉 の順(レンガぐら、煉瓦ぐら、連歌ぐら、棟瓦ぐら だった。ユーザ指定)。
+    // 棟瓦(むながわら)が れんが の読みで出るのは辞書の誤エントリなので出さない
+    func testBrickStorehouseOrderAndMisreadRidgeTile3869() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let list = converter.candidates(for: "れんがぐら", limit: 30, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(4)), ["煉瓦蔵", "レンガ蔵", "煉瓦倉", "レンガ倉"], "\(list.prefix(8))")
+        for reading in ["れんが", "れんがぐら", "れんがのいえ"] {
+            let all = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+                + converter.candidates(for: reading, limit: 50, systemCandidateMode: .surface)
+            // 辞書にあったのは 楝瓦(楝 は おうち の木の字)。棟瓦 に見える
+            XCTAssertFalse(all.contains { $0.contains("棟瓦") || $0.contains("楝瓦") }, "\(reading): \(all.filter { $0.contains("瓦") })")
+        }
+        XCTAssertEqual(converter.candidates(for: "むながわら", limit: 3, systemCandidateMode: .surface).first, "棟瓦")
+        XCTAssertEqual(converter.candidates(for: "むねがわら", limit: 3, systemCandidateMode: .surface).first, "棟瓦")
+    }
+
+    // 3869: 10+ねんなの が 年名の、年ナノ、年なの の順だった(ユーザ報告)。数量+なの/なん の な は断定でかなのまま
+    func testDigitCounterCopulaTailStaysKana3869() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func afterDigit(_ reading: String) -> [String] {
+            KanaKanjiConverter.digitContextCounterBoostedCandidates(
+                converter.candidates(for: reading, limit: 30, systemCandidateMode: .surface), reading: reading, precedingCharacter: "0",
+                tailConversion: { self.converter.counterTailConversion($0) })
+        }
+        for (reading, expected) in [("ねんなの", "年なの"), ("かいなの", "回なの"), ("ねんなんだ", "年なんだ"), ("ねんなのか", "年なのか"), ("ねんなのです", "年なのです")] {
+            let list = afterDigit(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+            XCTAssertFalse(list.contains { $0.contains("名の") }, "\(reading): \(list.prefix(8))")
+        }
     }
 
     // 3861: 旧国名と州(references/provinces-fiefs.plist)。名前+国(むさしのくに → 武蔵国)は 86 国とも候補に出ず 〜の国 だけだった。
