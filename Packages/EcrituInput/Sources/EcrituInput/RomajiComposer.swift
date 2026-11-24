@@ -149,10 +149,17 @@ struct RomajiComposer {
         return table
     }()
 
-    /// 記号の綴り。z に続けて h j k l(左・下・上・右)で矢印を入れる。かなではないので読みには入れない
+    /// 記号の綴り。かなではないので読みには入れない。
+    /// z に続けて h j k l(左・下・上・右)で矢印(純正と同じ)。z に続けて . , / - で … ‥ ・ 〜(écritu 独自。ユーザ指定)
     static let symbolTable: [String: String] = [
         "zh": "\u{2190}", "zj": "\u{2193}", "zk": "\u{2191}", "zl": "\u{2192}",
+        "z.": "\u{2026}", "z,": "\u{2025}", "z/": "\u{30FB}", "z-": "\u{301C}",
     ]
+
+    /// 打ちかけが z のとき、記号の綴りの続きとして受け取る文字か(. , / は普段は記号として確定するので、呼び出し側が先に尋ねる)
+    func continuesSymbolSpelling(with character: Character) -> Bool {
+        Self.symbolTable[pending + String(character)] != nil
+    }
 
     /// 表のキーの真の接頭辞(打ちかけとして待つもの)
     private static let prefixes: Set<String> = {

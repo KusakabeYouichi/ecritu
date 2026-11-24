@@ -132,7 +132,11 @@ final class RomajiComposerTests: XCTestCase {
 
     // R26: z に続けて h j k l で矢印(左・下・上・右)。読みにも打ちかけにも残らない
     func testR26ZThenHJKLEmitsArrowsOutsideTheReading() {
-        let cases: [(String, String)] = [("zh", "\u{2190}"), ("zj", "\u{2193}"), ("zk", "\u{2191}"), ("zl", "\u{2192}")]
+        // z に続けて . , / - は … ‥ ・ 〜
+        let cases: [(String, String)] = [
+            ("zh", "\u{2190}"), ("zj", "\u{2193}"), ("zk", "\u{2191}"), ("zl", "\u{2192}"),
+            ("z.", "\u{2026}"), ("z,", "\u{2025}"), ("z/", "\u{30FB}"), ("z-", "\u{301C}"),
+        ]
         for (keys, arrow) in cases {
             var composer = RomajiComposer()
             for character in keys {

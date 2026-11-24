@@ -150,7 +150,8 @@ public final class InputSession {
     private func handleComposing(_ key: KeyInput) -> Bool {
         switch key {
         case .character(let character):
-            if character.isLowercaseLatinLetter || character == "-" || (character == "'" && composer.pending == "n") {
+            if character.isLowercaseLatinLetter || character == "-" || (character == "'" && composer.pending == "n")
+                || composer.continuesSymbolSpelling(with: character) {
                 displayOverride = .none
                 composer.input(character)
                 if !commitEmittedSymbolIfAny() {

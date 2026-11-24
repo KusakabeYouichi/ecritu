@@ -168,6 +168,30 @@ final class InputSessionTests: XCTestCase {
         XCTAssertEqual(fake.learned, [])
     }
 
+    // S68: z に続けて . , / - → … ‥ ・ 〜 をそのまま確定(句読点や ー にならない)
+    func testS68ZThenPunctuationCommitsEllipsisAndOthers() {
+        let cases: [(Character, String)] = [(".", "\u{2026}"), (",", "\u{2025}"), ("/", "\u{30FB}"), ("-", "\u{301C}")]
+        for (key, symbol) in cases {
+            session.handle(.character("z"))
+            let result = session.handle(.character(key))
+            XCTAssertEqual(result.committed, symbol, String(key))
+            XCTAssertTrue(result.handled, String(key))
+            XCTAssertNil(result.marked, String(key))
+        }
+    }
+
+    // S69: 入力中の z. は、表示中の文字列に続けて … を確定する。z を挟まない . は今までどおり 。
+    func testS69EllipsisAfterComposingAndPlainPeriodUnchanged() {
+        session.type("kanjiz")
+        let ellipsis = session.handle(.character("."))
+        XCTAssertEqual(ellipsis.committed, "漢字\u{2026}")
+        XCTAssertNil(ellipsis.marked)
+
+        session.type("kanji")
+        let period = session.handle(.character("."))
+        XCTAssertEqual(period.committed, "漢字。")
+    }
+
     // S67: 矢印の直後は空の状態に戻っていて、続きは新しい読みになる
     func testS67TypingContinuesAfterArrow() {
         session.type("zl")
