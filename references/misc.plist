@@ -533,6 +533,10 @@
 	<dict><key>phrase</key><string>熟語訓</string><key>shortcut</key><string>じゅくごくん</string><key>pos</key><string>名詞</string></dict>	<!-- 熟語訓: 辞書に無く、じゅくごくん が 熟語君、熟語勲、熟語くん だった(ユーザ指定 3890) -->
 	<dict><key>phrase</key><string>厄払い</string><key>shortcut</key><string>やくばらい</string><key>pos</key><string>名詞</string></dict>	<!-- 辞書に無く、やくばらい が 役払い、訳払い だった(ユーザ指定 3896)。先頭は seed で 厄祓い -->
 	<dict><key>phrase</key><string>厄祓い</string><key>shortcut</key><string>やくばらい</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>対蹠点</string><key>shortcut</key><string>たいせきてん</string><key>pos</key><string>名詞</string></dict>	<!-- 地理の語。辞書に無く、たいせきてん が 体積店、たいせきち が 体積地、たいけんこうろ が 体験航路 だった(ユーザ指定 3897)。対蹠地 は たいしょち だけ辞書にあった -->
+	<dict><key>phrase</key><string>対蹠点</string><key>shortcut</key><string>たいしょてん</string><key>pos</key><string>名詞</string></dict>	<!-- 慣用の読み -->
+	<dict><key>phrase</key><string>対蹠地</string><key>shortcut</key><string>たいせきち</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>大圏航路</string><key>shortcut</key><string>たいけんこうろ</string><key>pos</key><string>名詞</string></dict>
 
 	<!-- □ 年忌・法要(ユーザ指定 3887: いっしゅうき が 1周木、にじゅうごかいき が 25回木 だった。辞書にあって出る語も形だけ置いてコメントアウト。
 	     算用数字の形(3回忌)は周忌・回忌だけ、漢数字の後ろに出す。二七日〜七七日 はかなが先頭(いつなのか の疑問文とぶつかる。並びは seed)) -->
