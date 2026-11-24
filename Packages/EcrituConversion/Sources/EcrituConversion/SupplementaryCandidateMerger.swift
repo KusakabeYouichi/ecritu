@@ -42,13 +42,14 @@ public enum SupplementaryCandidateMerger {
         guard let seed = KanaKanjiSeedDictionary.seed[normalizedReading], !seed.isEmpty else {
             return nil
         }
-        return min(emojiWindowIndexOverrides[normalizedReading] ?? seed.count, seed.count)
+        return emojiWindowIndexOverrides[normalizedReading] ?? seed.count
     }
 
     // seed の途中に絵文字を出す読み(読み → 絵文字の前に並べる seed の数)。たこ は 蛸/タコ/凧/鮹/章魚 の次に 🐙、
     // その後ろに 胼胝/胝/…/たこ/多古 を並べる(3749、ユーザ指定)
     // とう は とう/等/問う/塔/糖/党/唐 の次に絵文字、その後ろに 当/頭(3810、ユーザ指定)
-    static let emojiWindowIndexOverrides: [String: Int] = ["たこ": 5, "とう": 7]
+    // いえ は いえ/家/言え の次に絵文字(seed は いえ/家 の 2 つ。言え を seed に入れると 私の言え などが上がるので位置だけ指定。3894、ユーザ指定)
+    static let emojiWindowIndexOverrides: [String: Int] = ["たこ": 5, "とう": 7, "いえ": 3]
 
     private static func applyEmojiWindow(
         to mergedCandidates: inout [String],

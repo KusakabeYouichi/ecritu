@@ -11717,8 +11717,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(uchiawase.first, "打ち合わせ", "uchiawase=\(uchiawase)")
         let uchigawa = converter.candidates(for: "うちがわ", limit: 4, systemCandidateMode: .surface)
         XCTAssertEqual(uchigawa.first, "内側", "uchigawa=\(uchigawa)")
+        // いえ は 3894 のユーザ指定で かな が先頭(否定の返事にも使う)。それまでは 家 が先頭
         let ie = converter.candidates(for: "いえ", limit: 4, systemCandidateMode: .surface)
-        XCTAssertEqual(ie.first, "家", "ie=\(ie)")
+        XCTAssertEqual(Array(ie.prefix(2)), ["いえ", "家"], "ie=\(ie)")
     }
 
     // ってことかと: エンジンはかな最良(こと 優先の一般機構=LM+述語直後ペナルティは機能済み)
@@ -31563,6 +31564,20 @@ extension KanaKanjiConverterRegressionTests {
         ] {
             let list = leadingCandidates3879(reading)
             XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
+    // 3894(ユーザ指定): いえ は 家、いえ、絵文字、言え の順だった。否定の返事にも使うので いえ、家、言え、絵文字 の順に
+    func testIeKanaLeadsAndEmojiAfterIe3894() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let list = converter.candidates(for: "いえ", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(3)), ["いえ", "家", "言え"], "\(list)")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "いえ"))
+        XCTAssertEqual(SupplementaryCandidateMerger.emojiWindowIndex(forReading: "いえ"), 3)
+        XCTAssertEqual(SupplementaryCandidateMerger.emojiWindowIndex(forReading: "たこ"), 5)
+        for (reading, expected) in [("いえにかえる", "家に帰る"), ("わたしのいえ", "私の家"), ("いえをでる", "家を出る"), ("いえない", "言えない")] {
+            XCTAssertEqual(leadingCandidates3879(reading).first, expected, reading)
         }
     }
 
