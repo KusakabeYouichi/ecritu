@@ -3499,7 +3499,8 @@ extension KanaKanjiConverter {
             // 期間の直後の たつ は「経つ」(定数コメント参照。2873)
             if !prevIsBOS,
                 startsWithElapsedTimeVerbStem(surfaceID, surface),
-                Self.isDurationNounSurface(prev) || Self.multiClauseDurationCounterBareSurfacesID.contains(prevID) {
+                Self.isDurationNounSurface(prev) || Self.multiClauseDurationCounterBareSurfacesID.contains(prevID)
+                    || Self.isIndefiniteDurationSurface(prev) {
                 penalty -= Self.multiClauseElapsedTimeAfterDurationBonus
             }
             // 補助形容詞のかな(やすい/にくい/づらい)は連用形にしか付かない(定数コメント参照。2872)。
@@ -5886,14 +5887,29 @@ extension KanaKanjiConverter {
                             tatsuKanji != "経",
                             node.reading.hasPrefix("たっ") || node.reading.hasPrefix("たつ") || node.reading.hasPrefix("たち") {
                             let nounSurface: String?
-                            if prevNode.surfaceID == SID.が || prevNode.surfaceID == SID.も || prevNode.surfaceID == SID.は {
+                            if prevNode.surfaceID == SID.が || prevNode.surfaceID == SID.も || prevNode.surfaceID == SID.は || prevNode.surfaceID == SID.か {
                                 nounSurface = backPointer[prevIdx] >= 0 ? nodes[backPointer[prevIdx]].surface : nil
                             } else {
                                 nounSurface = prevNode.surface
                             }
-                            if let nounSurface, Self.multiClauseTemporalElapseNounSurfaces.contains(nounSurface) {
+                            if let nounSurface, Self.multiClauseTemporalElapseNounSurfaces.contains(nounSurface)
+                                || Self.isIndefiniteDurationSurface(nounSurface) {
                                 cost += Self.multiClauseAuPersonMismatchPenalty
                             }
+                        }
+                        // 期間+か/も/は/が の後の 経つ(何年か経った。3891)。直後の形は遷移コスト側の加点が効く
+                        if prevNode.surfaceID == SID.か || prevNode.surfaceID == SID.も || prevNode.surfaceID == SID.は || prevNode.surfaceID == SID.が,
+                            Self.multiClauseElapsedTimeVerbStems.contains(where: { node.surface.hasPrefix($0) }),
+                            backPointer[prevIdx] >= 0 {
+                            let nounSurface = nodes[backPointer[prevIdx]].surface
+                            if Self.isIndefiniteDurationSurface(nounSurface) || Self.isDurationNounSurface(nounSurface) {
+                                cost -= Self.multiClauseElapsedTimeAfterDurationParticleBonus
+                            }
+                        }
+                        // 何年/何日 の直後の かたる 族は 何年か+経った に譲る(定数コメント参照。3891)
+                        if node.reading.hasPrefix("かた"), node.surface.hasPrefix("語") || node.surface.hasPrefix("騙"),
+                            prevNode.surface.first == "何", Self.isIndefiniteDurationSurface(prevNode.surface) {
+                            cost += Self.multiClauseNarrateAfterIndefiniteDurationPenalty
                         }
                         // 準体の ん(=の。飲むん+でしょ/行くん+じゃない)は述語(辞書形・活用派生)直後で、直後に だ/で/じ/か/の/な/
                         // よ/ね/け(んだ/んでしょ/んじゃ/んか/んの/んな/んよ/んね/んけど)が続くときだけ名詞化節と同じ水準に。

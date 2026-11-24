@@ -3660,6 +3660,21 @@ extension KanaKanjiConverter {
         "か月", "ヶ月", "カ月", "ケ月", "箇月", "ヵ月", "年", "日", "時間", "週間", "週", "分", "秒", "年間", "日間", "月"
     ]
     static let multiClauseElapsedTimeAfterDurationBonus = 2000
+    // 数を言わない期間(何年/何日/数日/半年/しばらく)。年・日 は 3日(日付)と紛れるので isDurationNounSurface には無い。
+    // なんねんたっても が 何年立っても、なんねんかたったとき が 何年語ったとき だった(3891、ユーザ指定)
+    static let multiClauseIndefiniteDurationSurfaces: Set<String> = ["半年", "半月", "半日", "しばらく", "暫く"]
+    static func isIndefiniteDurationSurface(_ surface: String) -> Bool {
+        if multiClauseIndefiniteDurationSurfaces.contains(surface) { return true }
+        guard let first = surface.first, "何数幾".contains(first), surface.count >= 2 else { return false }
+        if surface.hasSuffix("年") || surface.hasSuffix("日") {
+            return surface.dropLast().allSatisfy { multiClauseNumeralCharacters.contains($0) }
+        }
+        return isDurationNounSurface(surface)
+    }
+    // 期間+か/も/は/が を挟んだ 経つ への加点(何年か経った、何年も経った)
+    static let multiClauseElapsedTimeAfterDurationParticleBonus = 2500
+    // 何年/何日/何か月 の直後の かたる 族(何年語った)。何年か+経った と読むのが普通
+    static let multiClauseNarrateAfterIndefiniteDurationPenalty = 4000
     // 裸の格助詞の直後に立てる文末の終助詞1字(のにな/からな/までね/のにさ)。2873
     static let multiClauseSentenceFinalKanaParticles: Set<String> = ["な", "ね", "よ", "さ", "か"]
     // 文頭の 事+助詞(ことさえ/ことも/ことは)は形式名詞の用法で、かな こと が正書(3713、ユーザ指定: ことさえわかってない)。

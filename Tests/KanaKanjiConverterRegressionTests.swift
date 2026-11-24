@@ -31520,6 +31520,22 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(leadingCandidates3879("たなかくん").first, "田中くん")
     }
 
+    // 3891(ユーザ指定): なんねんかたったとき が 何年語ったとき、なんねんたっても が 何年立っても だった。
+    // 数を言わない期間(何年/何日/数日/半年/しばらく)の後の たつ は 経つ。か/も を挟んでも同じ。人や物は 立つ のまま
+    func testElapsedTimeAfterIndefiniteDuration3891() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("なんねんかたったとき", "何年か経ったとき"), ("なんねんたっても", "何年経っても"), ("なんねんもたった", "何年も経った"),
+            ("なんにちかたって", "何日か経って"), ("すうじつたって", "数日経って"), ("はんとしたって", "半年経って"),
+            ("しばらくたって", "しばらく経って"), ("なんかげつかたった", "何か月か経った"),
+            ("むかしをかたったとき", "昔を語ったとき"), ("だれかたっている", "誰か立っている"), ("なんにんかたっている", "何人か立っている")
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
     // 3883(ユーザ指定): かみをきるはさみ が 髪を切る挟み、ひにひに が 日に火に、よんだり が 呼んだり(読んだり は 6 番め)だった。
     // 髪を切る の次の かみを切る は出さない。友達を呼んだり はそのまま
     func testScissorsDayByDayAndYondari3883() throws {
