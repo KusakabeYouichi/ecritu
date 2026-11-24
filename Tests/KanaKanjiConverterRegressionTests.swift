@@ -31581,6 +31581,16 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3895(ユーザ指定): とうき の 2 番め以降が 登記、冬季、当帰、東輝、冬期 の順で、当期/投機 が遠かった。先頭の 陶器 は 2963 のまま
+    func testToukiOrder3895() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let list = converter.candidates(for: "とうき", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(7)), ["陶器", "登記", "冬期", "当期", "冬季", "投機", "投棄"], "\(list)")
+        XCTAssertEqual(leadingCandidates3879("とうきには").first, "冬季には")
+        XCTAssertEqual(leadingCandidates3879("とうきは").first, "陶器は")
+    }
+
     // 3883(ユーザ指定): かみをきるはさみ が 髪を切る挟み、ひにひに が 日に火に、よんだり が 呼んだり(読んだり は 6 番め)だった。
     // 髪を切る の次の かみを切る は出さない。友達を呼んだり はそのまま
     func testScissorsDayByDayAndYondari3883() throws {
