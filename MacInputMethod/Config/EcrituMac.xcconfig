@@ -1,0 +1,25 @@
+// Mac の入力メソッド(EcrituMac)とそのテスト束の共通の設定。
+// Edition.xcconfig(版の番号)と、その末尾の Signing.local.xcconfig(ECRITU_INCLUDE_MEDICAUX など手元の値)を取り込む。
+// Mac の値は include の後ろに書き、Signing.local の上書きに負けないようにする
+#include "../../Config/Edition.xcconfig"
+
+MACOSX_DEPLOYMENT_TARGET = 14.0
+SWIFT_VERSION = 5.0
+SDKROOT = macosx
+
+// 署名は ad hoc。サンドボックス無し、entitlements 無し
+CODE_SIGN_STYLE = Manual
+CODE_SIGN_IDENTITY = -
+DEVELOPMENT_TEAM =
+ENABLE_APP_SANDBOX = NO
+
+// 辞書のビルドスクリプトが tmp/ へ書くので、スクリプトのサンドボックスは使わない。
+// Mac のビルドからダイアログとネットワーク取得を出さない
+ENABLE_USER_SCRIPT_SANDBOXING = NO
+ECRITU_PROMPT_ON_SUDACHI_FALLBACK = 0
+ECRITU_AUTO_FETCH_SUDACHI_ON_BUILD = 0
+
+MARKETING_VERSION = 0.1
+CURRENT_PROJECT_VERSION = $(ECRITU_EDITION_NUMBER)
+
+ECRITU_MAC_BUNDLE_IDENTIFIER = jp.or.pleiades.merope.inputmethod.ecritu

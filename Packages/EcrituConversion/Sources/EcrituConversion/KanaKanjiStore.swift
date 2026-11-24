@@ -207,7 +207,7 @@ public final class KanaKanjiStore {
     // テスト用: App Group コンテナの代わりに使うディレクトリー。テスト環境の偽 group ID での
     // containerURL(forSecurityApplicationGroupIdentifier:) はプロセス初回に約40秒かかる
     // (containermanagerd の解決/作成)ため、テストはローカルディレクトリーで代替する(2515)。
-    static var sharedContainerURLOverride: URL?
+    public static var sharedContainerURLOverride: URL?
 
     func sharedOrBundledDictionaryURL(filename: String) -> URL? {
         let sharedURL: URL? = (Self.sharedContainerURLOverride
