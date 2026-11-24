@@ -31591,6 +31591,23 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(leadingCandidates3879("とうきは").first, "陶器は")
     }
 
+    // 3896(ユーザ指定): きゅうにおくれなくなった が 急に遅れなくなった(文の頭でないと 送れなく が効かなかった)、やくばらい が 役払い だった。
+    // 時間に/学校に/電車が の後は 遅れる のまま
+    func testCannotSendMidSentenceAndYakubarai3896() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("きゅうにおくれなくなった", "急に送れなくなった"), ("なぜかおくれなくなった", "なぜか送れなくなった"), ("おくれなくなったな", "送れなくなったな"),
+            ("でんしゃがおくれなくなった", "電車が遅れなくなった"), ("たいおうがおくれなかった", "対応が遅れなかった"),
+            ("じかんにおくれないように", "時間に遅れないように"), ("がっこうにおくれない", "学校に遅れない"),
+            ("やくばらい", "厄祓い"), ("やくばらいにいく", "厄祓いに行く"), ("やくばらいをする", "厄祓いをする")
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+        XCTAssertEqual(Array(leadingCandidates3879("やくばらい").prefix(2)), ["厄祓い", "厄払い"])
+    }
+
     // 3883(ユーザ指定): かみをきるはさみ が 髪を切る挟み、ひにひに が 日に火に、よんだり が 呼んだり(読んだり は 6 番め)だった。
     // 髪を切る の次の かみを切る は出さない。友達を呼んだり はそのまま
     func testScissorsDayByDayAndYondari3883() throws {
