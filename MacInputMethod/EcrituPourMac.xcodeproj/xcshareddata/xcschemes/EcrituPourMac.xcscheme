@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "46B25A71EB514EECEDA80F5C7E22E93B"
+               BlueprintIdentifier = "561C3626EDD864E888D3C63AC550DE14"
                BuildableName = "ecritu.app"
                BlueprintName = "EcrituPourMac"
                ReferencedContainer = "container:EcrituPourMac.xcodeproj">
@@ -30,7 +30,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "46B25A71EB514EECEDA80F5C7E22E93B"
+            BlueprintIdentifier = "561C3626EDD864E888D3C63AC550DE14"
             BuildableName = "ecritu.app"
             BlueprintName = "EcrituPourMac"
             ReferencedContainer = "container:EcrituPourMac.xcodeproj">
@@ -63,7 +63,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "46B25A71EB514EECEDA80F5C7E22E93B"
+            BlueprintIdentifier = "561C3626EDD864E888D3C63AC550DE14"
             BuildableName = "ecritu.app"
             BlueprintName = "EcrituPourMac"
             ReferencedContainer = "container:EcrituPourMac.xcodeproj">
@@ -80,7 +80,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "46B25A71EB514EECEDA80F5C7E22E93B"
+            BlueprintIdentifier = "561C3626EDD864E888D3C63AC550DE14"
             BuildableName = "ecritu.app"
             BlueprintName = "EcrituPourMac"
             ReferencedContainer = "container:EcrituPourMac.xcodeproj">

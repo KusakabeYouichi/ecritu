@@ -91,6 +91,13 @@ test_references = TEST_SOURCES.map { |name| tests_group.new_file(name) }
 resources_group = main_group.new_group('Resources', 'Resources')
 resources_group.new_file('Info.plist')
 icon_reference = resources_group.new_file(ICON_FILE)
+# 入力ソースの一覧と入力メニューに出る名前(入力モードの ID → 表示名)。これが無いと一覧に ID のまま出る
+info_strings_group = resources_group.new_variant_group('InfoPlist.strings')
+%w[en ja].each do |language|
+  reference = info_strings_group.new_file("#{language}.lproj/InfoPlist.strings")
+  reference.name = language
+end
+project.root_object.known_regions = (project.root_object.known_regions + %w[en ja]).uniq
 
 keyboard_group = main_group.new_group('KeyboardExtension', '../KeyboardExtension')
 default_dictionary_group = keyboard_group.new_group('DefaultDictionaryResources', 'DefaultDictionaryResources')
@@ -119,7 +126,7 @@ configure_target(app, xcconfig_reference, {
   'GENERATE_INFOPLIST_FILE' => 'NO'
 })
 app.add_file_references(APP_SOURCES.map { |name| source_references[name] })
-app.add_resources(resource_references)
+app.add_resources(resource_references + [info_strings_group])
 link_package_product(project, app, conversion_package, 'EcrituConversion')
 link_package_product(project, app, input_package, 'EcrituInput')
 

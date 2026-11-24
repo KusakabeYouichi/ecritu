@@ -1,0 +1,5 @@
+/* 入力ソースの一覧と入力メニューに出る名前 */
+"CFBundleName" = "écritu";
+"CFBundleDisplayName" = "écritu";
+"com.apple.inputmethod.Japanese" = "écritu";
+"com.apple.inputmethod.Roman" = "écritu(ラテン文字)";

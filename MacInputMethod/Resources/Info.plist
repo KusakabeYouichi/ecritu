@@ -38,6 +38,8 @@
 	</array>
 	<key>tsInputMethodIconFileKey</key>
 	<string>ecritu.tiff</string>
+	<key>TISInputSourceID</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>TISIntendedLanguage</key>
 	<string>ja</string>
 	<key>ComponentInputModeDict</key>
