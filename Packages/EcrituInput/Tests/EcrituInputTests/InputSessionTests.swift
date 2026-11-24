@@ -144,6 +144,38 @@ final class InputSessionTests: XCTestCase {
         XCTAssertTrue(period.handled)
     }
 
+    // S65: 空の状態で z に続けて h j k l → 矢印をそのまま確定。未確定は残らない
+    func testS65ZThenHJKLCommitsArrowWhenEmpty() {
+        let cases: [(Character, String)] = [("h", "\u{2190}"), ("j", "\u{2193}"), ("k", "\u{2191}"), ("l", "\u{2192}")]
+        for (key, arrow) in cases {
+            let first = session.handle(.character("z"))
+            XCTAssertEqual(first.committed, "")
+            XCTAssertEqual(first.marked?.segments.map(\.text).joined(), "z")
+            let second = session.handle(.character(key))
+            XCTAssertEqual(second.committed, arrow)
+            XCTAssertTrue(second.handled)
+            XCTAssertNil(second.marked)
+        }
+    }
+
+    // S66: 入力中なら、表示中の文字列に続けて矢印を 1 つの結果で確定(対応のある記号と同じ。学習しない)
+    func testS66ArrowAfterComposingCommitsDisplayedTextAndArrow() {
+        session.type("kanjiz")
+        let result = session.handle(.character("l"))
+        XCTAssertEqual(result.committed, "漢字\u{2192}")
+        XCTAssertTrue(result.handled)
+        XCTAssertNil(result.marked)
+        XCTAssertEqual(fake.learned, [])
+    }
+
+    // S67: 矢印の直後は空の状態に戻っていて、続きは新しい読みになる
+    func testS67TypingContinuesAfterArrow() {
+        session.type("zl")
+        let result = session.type("ka")
+        XCTAssertEqual(result.committed, "")
+        XCTAssertEqual(result.marked?.segments.map(\.text).joined(), "か")
+    }
+
     func testS14MappedSymbolsCommitWhenEmpty() {
         let cases: [(Character, String)] = [(",", "、"), (".", "。"), ("[", "『"), ("]", "』"), ("{", "「"), ("}", "」"), ("/", "・"), ("~", "\u{301C}")]
         for (key, expected) in cases {

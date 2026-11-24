@@ -130,6 +130,27 @@ final class RomajiComposerTests: XCTestCase {
         assertComposes("ko-hi-", text: "こーひー", pending: "")
     }
 
+    // R26: z に続けて h j k l で矢印(左・下・上・右)。読みにも打ちかけにも残らない
+    func testR26ZThenHJKLEmitsArrowsOutsideTheReading() {
+        let cases: [(String, String)] = [("zh", "\u{2190}"), ("zj", "\u{2193}"), ("zk", "\u{2191}"), ("zl", "\u{2192}")]
+        for (keys, arrow) in cases {
+            var composer = RomajiComposer()
+            for character in keys {
+                composer.input(character)
+            }
+            XCTAssertEqual(composer.takeEmittedSymbol(), arrow, keys)
+            XCTAssertEqual(composer.text, "", keys)
+            XCTAssertEqual(composer.pending, "", keys)
+            XCTAssertNil(composer.takeEmittedSymbol(), "2 回めは返さない: \(keys)")
+        }
+    }
+
+    // R27: z で始まるかなの綴りは今までどおり
+    func testR27ZaRowStillComposesKana() {
+        assertComposes("zazizuzezo", text: "ざじずぜぞ", pending: "")
+        assertComposes("zya", text: "じゃ", pending: "")
+    }
+
     func testR23HyphenAfterConsonantLeavesConsonantLatin() {
         assertComposes("kok-", text: "こkー", pending: "")
     }

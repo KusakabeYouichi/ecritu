@@ -115,6 +115,7 @@ public final class InputSession {
             if character.isLowercaseLatinLetter {
                 composer.input(character)
                 state = .composing
+                commitEmittedSymbolIfAny()
                 return true
             }
             if character.isUppercaseLatinLetter {
@@ -152,7 +153,9 @@ public final class InputSession {
             if character.isLowercaseLatinLetter || character == "-" || (character == "'" && composer.pending == "n") {
                 displayOverride = .none
                 composer.input(character)
-                autoCommitIfLong()
+                if !commitEmittedSymbolIfAny() {
+                    autoCommitIfLong()
+                }
                 return true
             }
             // 数字・記号・大文字: 表示中の文字列を確定してから、空の状態としてキーを扱う(対応のある記号は常に対応先)
@@ -355,6 +358,15 @@ public final class InputSession {
     private func commitDisplayed() {
         commit(displayedText())
         resetComposition()
+    }
+
+    /// 記号の綴り(zh など)が完成していたら、表示中の文字列に続けてその記号を確定する(対応のある記号と同じ扱い。学習しない)
+    @discardableResult
+    private func commitEmittedSymbolIfAny() -> Bool {
+        guard let symbol = composer.takeEmittedSymbol() else { return false }
+        commit(displayedText() + symbol)
+        resetComposition()
+        return true
     }
 
     private func resetComposition() {

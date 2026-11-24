@@ -12,8 +12,21 @@ struct RomajiComposer {
         !text.isEmpty && !text.unicodeScalars.contains { $0.isASCII }
     }
 
+    /// 直前の入力で記号の綴り(zh など)が完成したとき、その記号を 1 回だけ返す。記号は読みに入れず、呼び出し側がそのまま確定する
+    mutating func takeEmittedSymbol() -> String? {
+        defer { emittedSymbol = nil }
+        return emittedSymbol
+    }
+
+    private var emittedSymbol: String?
+
     mutating func input(_ character: Character) {
         let joined = pending + String(character)
+        if let symbol = Self.symbolTable[joined] {
+            emittedSymbol = symbol
+            pending = ""
+            return
+        }
         if let kana = Self.table[joined] {
             text += kana
             pending = ""
@@ -136,10 +149,15 @@ struct RomajiComposer {
         return table
     }()
 
+    /// 記号の綴り。z に続けて h j k l(左・下・上・右)で矢印を入れる。かなではないので読みには入れない
+    static let symbolTable: [String: String] = [
+        "zh": "\u{2190}", "zj": "\u{2193}", "zk": "\u{2191}", "zl": "\u{2192}",
+    ]
+
     /// 表のキーの真の接頭辞(打ちかけとして待つもの)
     private static let prefixes: Set<String> = {
         var prefixes = Set<String>()
-        for key in table.keys where key.count > 1 {
+        for key in Array(table.keys) + Array(symbolTable.keys) where key.count > 1 {
             for length in 1..<key.count {
                 prefixes.insert(String(key.prefix(length)))
             }
