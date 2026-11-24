@@ -38,7 +38,7 @@ public final class InputSession {
 
     /// 記号の対応
     private static let symbolMapping: [Character: String] = [
-        ",": "、", ".": "。", "[": "「", "]": "」", "/": "・", "~": "\u{301C}",
+        ",": "、", ".": "。", "[": "『", "]": "』", "/": "・", "~": "\u{301C}",
     ]
     /// 直前が ASCII の数字のときは対応させない記号
     private static let symbolsKeptAfterDigit: Set<Character> = [",", ".", "/"]

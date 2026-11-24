@@ -145,7 +145,7 @@ final class InputSessionTests: XCTestCase {
     }
 
     func testS14MappedSymbolsCommitWhenEmpty() {
-        let cases: [(Character, String)] = [(",", "、"), (".", "。"), ("[", "「"), ("]", "」"), ("/", "・"), ("~", "\u{301C}")]
+        let cases: [(Character, String)] = [(",", "、"), (".", "。"), ("[", "『"), ("]", "』"), ("/", "・"), ("~", "\u{301C}")]
         for (key, expected) in cases {
             let result = session.handle(.character(key))
             XCTAssertEqual(result.committed, expected, String(key))
