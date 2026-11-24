@@ -31536,6 +31536,20 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3892(ユーザ指定): きゅうに が 旧に、宮に、球に の順、おくれなく/おくれなくなった が 遅れなく(おくれない は 送れない)だった
+    func testSuddenlyAndCannotSendOrder3892() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(Array(leadingCandidates3879("きゅうに").prefix(3)), ["急に", "灸に", "旧に"])
+        for (reading, expected) in [
+            ("おくれない", ["送れない", "遅れない"]), ("おくれなく", ["送れなく", "遅れなく"]), ("おくれなくなった", ["送れなくなった", "遅れなくなった"]),
+            ("でんしゃがおくれなくなった", ["電車が遅れなくなった"]), ("おくれる", ["遅れる", "送れる"])
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(Array(list.prefix(expected.count)), expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
     // 3883(ユーザ指定): かみをきるはさみ が 髪を切る挟み、ひにひに が 日に火に、よんだり が 呼んだり(読んだり は 6 番め)だった。
     // 髪を切る の次の かみを切る は出さない。友達を呼んだり はそのまま
     func testScissorsDayByDayAndYondari3883() throws {
