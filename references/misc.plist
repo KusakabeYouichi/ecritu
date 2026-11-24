@@ -537,6 +537,7 @@
 	<dict><key>phrase</key><string>対蹠点</string><key>shortcut</key><string>たいしょてん</string><key>pos</key><string>名詞</string></dict>	<!-- 慣用の読み -->
 	<dict><key>phrase</key><string>対蹠地</string><key>shortcut</key><string>たいせきち</string><key>pos</key><string>名詞</string></dict>
 	<dict><key>phrase</key><string>大圏航路</string><key>shortcut</key><string>たいけんこうろ</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>体験コース</string><key>shortcut</key><string>たいけんこーす</string><key>pos</key><string>名詞</string></dict>	<!-- 辞書の 大圏コース が 1 語で、たいけんこーす の候補が 大圏コース だけだった(むりょうたいけんこーす も 無料大圏コース。ユーザ指定 3898) -->
 
 	<!-- □ 年忌・法要(ユーザ指定 3887: いっしゅうき が 1周木、にじゅうごかいき が 25回木 だった。辞書にあって出る語も形だけ置いてコメントアウト。
 	     算用数字の形(3回忌)は周忌・回忌だけ、漢数字の後ろに出す。二七日〜七七日 はかなが先頭(いつなのか の疑問文とぶつかる。並びは seed)) -->
