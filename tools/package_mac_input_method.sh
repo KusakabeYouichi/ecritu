@@ -149,7 +149,7 @@ run_self_check() {
   echo "  起動時のログ:"
   grep '自己検査' "$log" | sed 's/^/    /' || true
   if (( ok == 0 )); then echo "  NG: 自己検査のログ 3 行が出なかった(ログ全体: $log)"; return 1; fi
-  if grep '自己検査' "$log" | grep -q '失敗'; then echo "  NG: 自己検査に失敗があった(ログ全体: $log)"; return 1; fi
+  if grep -q '自己検査.*失敗' "$log"; then echo "  NG: 自己検査に失敗があった(ログ全体: $log)"; return 1; fi
   echo "  OK: 自己検査 3 行とも成功"
 }
 
@@ -270,7 +270,10 @@ main() {
     echo "署名します(タイムスタンプの取得で Apple のサーバーへ通信します)"
     codesign --force --options runtime --timestamp --sign "$app_identity" "$built"
     codesign --verify --strict --verbose=2 "$built"
-    if codesign -dv "$built" 2>&1 | grep -q 'flags=.*runtime'; then echo "  OK: hardened runtime あり"; else echo "  NG: hardened runtime が無い"; exit 1; fi
+    # 出力をいったん変数に受ける(pipefail の下で grep -q が先に読み終えると、パイプ全体が失敗扱いになるため)
+    local sign_info
+    sign_info="$(codesign -dv "$built" 2>&1 || true)"
+    if grep -q 'flags=.*runtime' <<< "$sign_info"; then echo "  OK: hardened runtime あり"; else echo "  NG: hardened runtime が無い"; exit 1; fi
   fi
 
   # 9. pkg
@@ -298,7 +301,7 @@ main() {
       local out id
       if out="$(xcrun notarytool submit "$pkg" --keychain-profile "$notarize_profile" --wait 2>&1)"; then
         echo "$out" | tail -n 8
-        if echo "$out" | grep -q 'status: Accepted'; then
+        if grep -q 'status: Accepted' <<< "$out"; then
           # ステープルと確認が済むまでは -not-notarized の名前のままにする(途中で失敗したものを成果物の名前で残さない)
           xcrun stapler staple "$pkg"
           xcrun stapler validate "$pkg"
