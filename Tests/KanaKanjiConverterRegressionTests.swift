@@ -31627,6 +31627,24 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(leadingCandidates3879("どふぃのわをつくる").dropFirst().first, "ドフィノワを作る")
     }
 
+    // 3897(ユーザ指定): おなかにつめて が 小中に詰めて(名字の 小中 が 小中学校 の頻度を借りていた)、
+    // ちょっとおそいね が ちょっとお添い寝 だけで 遅いね が無かった。おそいねする(お添い寝する)と地理の語はそのまま
+    func testBellyStuffedSlowAndAntipodes3897() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("おなかにつめて", "お腹に詰めて"), ("おなかに", "お腹に"), ("おなかにいれる", "お腹に入れる"), ("とりのおなかにつめて", "鳥のお腹に詰めて"),
+            ("おなかのなか", "お腹の中"), ("おなかをこわした", "お腹を壊した"),
+            ("ちょっとおそいね", "ちょっと遅いね"), ("かえりがおそいね", "帰りが遅いね"), ("おそいねえ", "遅いねえ"), ("おそいねする", "お添い寝する"),
+            ("たいせきてん", "対蹠点"), ("たいしょてん", "対蹠点"), ("たいせきち", "対蹠地"), ("たいけんこうろ", "大圏航路"),
+            ("たいけんこーす", "大圏コース"), ("だいえんこーす", "大円コース"), ("ほんしょしごせん", "本初子午線")
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+        XCTAssertEqual(Array(leadingCandidates3879("おなかにつめて").prefix(3)), ["お腹に詰めて", "小中に詰めて", "おなかに詰めて"])
+    }
+
     // 3883(ユーザ指定): かみをきるはさみ が 髪を切る挟み、ひにひに が 日に火に、よんだり が 呼んだり(読んだり は 6 番め)だった。
     // 髪を切る の次の かみを切る は出さない。友達を呼んだり はそのまま
     func testScissorsDayByDayAndYondari3883() throws {
