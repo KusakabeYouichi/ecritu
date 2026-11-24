@@ -1,0 +1,14 @@
+#!/bin/bash
+# pkg のインストール後に走る(root)。入れ替えた ecritu の古いプロセスを終了する。
+# 終了するのは /Library/Input Methods の実行ファイルだけ(先頭を固定した正規表現)。ホームの中には触れない
+/usr/bin/pkill -f '^/Library/Input Methods/ecritu\.app/Contents/MacOS/' || true
+
+# 開発版(ホーム側の ecritu.app)が残っていると同じ ID が 2 つ並ぶ。触れず、警告だけ残す
+console_user="$(/usr/bin/stat -f%Su /dev/console 2>/dev/null || true)"
+if [[ -n "$console_user" && "$console_user" != "root" ]]; then
+  user_home="$(/usr/bin/dscl . -read "/Users/$console_user" NFSHomeDirectory 2>/dev/null | /usr/bin/sed 's/^NFSHomeDirectory: //')"
+  if [[ -n "$user_home" && -d "$user_home/Library/Input Methods/ecritu.app" ]]; then
+    echo "警告: $user_home/Library/Input Methods/ecritu.app(開発版)が残っています。入力ソースから外して消してください"
+  fi
+fi
+exit 0

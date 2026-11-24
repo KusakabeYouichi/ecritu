@@ -35,8 +35,10 @@ mv "$staging" "$INSTALLED_APP"
 echo "入れました: $INSTALLED_APP"
 
 # 3. 動いている ecritu を終了する。入れ替えの後に行なう(先に終了すると、macOS が古い版を起動し直すことがある)。
-#    対象は名前でなく、インストール先の実行ファイルの場所で絞る
-if pkill -f "$INSTALLED_APP/Contents/MacOS/"; then
+#    対象は名前でなく、インストール先の実行ファイルの場所で絞る。ホームの絶対パスを正規表現として先頭に固定する
+#    (固定しないと、別の場所の同名パスを含むコマンドラインにも当たる)
+kill_pattern="^$(printf '%s' "$INSTALLED_APP/Contents/MacOS/" | sed 's/[][\.*^$+?(){}|]/\\&/g')"
+if pkill -f "$kill_pattern"; then
   echo "動いていた ecritu を終了しました(次に使うときに新しい版が起動します)"
 fi
 
