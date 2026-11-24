@@ -65,7 +65,7 @@ adversarial:
 
 ## 未検証
 
-- 署名(codesign、pkgbuild --sign)、公証(notarytool)、ステープル、Gatekeeper の評価: 証明書が無いので 1 度も実行していない。引数はレビュー役が静的に確認しただけ
+- (2026-11-25 に確認済み)署名・公証・ステープル・Gatekeeper の評価: `--notarize` で通して終了コード 0。公証は Accepted、`spctl -a -t install` は「accepted / source=Notarized Developer ID」。tmp/mac-dist/ecritu-0.1-3896.pkg(31,803,765 バイト、コミット 580848f0)
 - pkg の実際のインストールと、/Library/Input Methods に入れた版が入力ソースとして働くこと
 - 開発版が動いているときの自己検査: IMKServer の作成のログは「成功」と出たが、同じ接続名が 2 つあるときに登録できているかは見ていない(自己検査のこの 1 行は弱い)
 - eccs の検査の対照(病名ありの eccs で当たること)
@@ -73,9 +73,9 @@ adversarial:
 
 ## 残課題 / 申し送り
 
-1. Developer ID の証明書(Application と Installer)が要る。Xcode で作ろうとしたところ「Account Holder だけができる操作」と断られた(Xcode の表示では権限が Admin)。ユーザは自分が Account Holder のはずと認識しており、食い違いの原因は未確認。App Store Connect の [ユーザとアクセス] と developer.apple.com の [メンバーシップの詳細] で確認する
-2. 公証用の資格情報をキーチェーンに登録する(`xcrun notarytool store-credentials`。ユーザが行なう)
-3. 証明書ができたら、署名ありで通して未検証の項目を確かめる。この Mac で pkg を試すときは、先に ~/Library/Input Methods の開発版を外す
+1. (済み)Developer ID の証明書(Application と Installer)は、developer.apple.com の証明書のページで要求ファイルから作った。Xcode では「Account Holder だけができる操作」と断られた(Xcode の表示では権限が Admin。登録の種類は個人)。Xcode の表示が食い違う原因は未確認
+2. (済み)公証用の資格情報はキーチェーンに `ecritu-notary` の名前で登録済み(ユーザが登録)
+3. pkg の実際のインストールを確かめる。この Mac で試すときは、先に ~/Library/Input Methods の開発版を外す
 4. 販売の経路(Mac 版を無料で配る / Mac 版だけ自前で売る / Apple の回答を待つ)は未決。Apple への質問文の下書きは作成済み(送るかどうかはユーザの判断)
 5. この作業ツリーの tmp/ は病名なしの辞書になった。references/médicaux.plist がこの作業ツリーに無いので、ここでの開発ビルドにも病名語彙は入らない(最初のビルドからそうだった)
 6. 証明書を名前で指定しているので、同じ名前の証明書が 2 つあると署名が「ambiguous」で失敗する(更新の時期に起きうる。失敗は見える)
