@@ -38,6 +38,8 @@
 	</array>
 	<key>tsInputMethodIconFileKey</key>
 	<string>ecritu.tiff</string>
+	<key>TISIconIsTemplate</key>
+	<true/>
 	<key>TISInputSourceID</key>
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>TISIntendedLanguage</key>
@@ -50,6 +52,11 @@
 			<dict>
 				<key>TISInputSourceID</key>
 				<string>$(PRODUCT_BUNDLE_IDENTIFIER).Japanese</string>
+				<key>TISIconLabels</key>
+				<dict>
+					<key>Primary</key>
+					<string>é</string>
+				</dict>
 				<key>TISIntendedLanguage</key>
 				<string>ja</string>
 				<key>tsInputModeScriptKey</key>
@@ -71,6 +78,11 @@
 			<dict>
 				<key>TISInputSourceID</key>
 				<string>$(PRODUCT_BUNDLE_IDENTIFIER).Roman</string>
+				<key>TISIconLabels</key>
+				<dict>
+					<key>Primary</key>
+					<string>e</string>
+				</dict>
 				<key>TISIntendedLanguage</key>
 				<string>en</string>
 				<key>tsInputModeScriptKey</key>
