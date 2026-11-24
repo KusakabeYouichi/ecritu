@@ -31608,6 +31608,25 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(leadingCandidates3879("やくばらい").prefix(2)), ["厄祓い", "厄払い"])
     }
 
+    // 3897(ユーザ指定): じぶんがまぬけなこといった が 自分が間抜けな湖といった だった。定義の ことをいう はかなのまま(3713)。
+    // どふぃのわ は 度フィの和 だった(dauphinois、ドフィノワ の順)。琵琶湖といった/男といった はそのまま
+    func testSaidSuchThingAndDauphinois3897() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("じぶんがまぬけなこといった", "自分が間抜けなこと言った"), ("へんなこといった", "変なこと言った"), ("おなじこといった", "同じこと言った"),
+            ("へんなこといって", "変なこと言って"), ("ことをいう", "ことをいう"), ("そんなこといっても", "そんなこと言っても"),
+            ("びわこといった", "琵琶湖といった"), ("おとこといった", "男といった"), ("みずうみといった", "湖といった"),
+            ("どふぃのわ", "dauphinois"), ("ぐらたんどふぃのわ", "gratin dauphinois")
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+        XCTAssertEqual(Array(leadingCandidates3879("じぶんがまぬけなこといった").prefix(2)), ["自分が間抜けなこと言った", "自分がマヌケなこと言った"])
+        XCTAssertEqual(Array(leadingCandidates3879("どふぃのわ").prefix(2)), ["dauphinois", "ドフィノワ"])
+        XCTAssertEqual(leadingCandidates3879("どふぃのわをつくる").dropFirst().first, "ドフィノワを作る")
+    }
+
     // 3883(ユーザ指定): かみをきるはさみ が 髪を切る挟み、ひにひに が 日に火に、よんだり が 呼んだり(読んだり は 6 番め)だった。
     // 髪を切る の次の かみを切る は出さない。友達を呼んだり はそのまま
     func testScissorsDayByDayAndYondari3883() throws {
