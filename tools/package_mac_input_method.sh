@@ -287,9 +287,18 @@ main() {
   rm -f "$pkg" "$final_pkg"
   local sign_args=()
   if (( ! unsigned )); then sign_args=(--sign "$inst_identity" --timestamp); fi
+  # 部品の pkg を作り、入れ先を [すべてのユーザ用] と [自分専用] から選べる配布用の pkg で包む(distribution.xml の domains)。
+  # [自分専用] では、install-location はホームからの相対の場所として働く(~/Library/Input Methods)
+  local component_dir="$dist/component"
+  rm -rf "$component_dir"; mkdir -p "$component_dir"
   pkgbuild --root "$dist/root" --component-plist "$ROOT_DIR/MacInputMethod/Packaging/component.plist" \
     --install-location "/Library/Input Methods" --identifier "$PKG_ID" --version "0.1.$edition" \
-    --scripts "$dist/scripts" ${sign_args[@]+"${sign_args[@]}"} "$pkg"
+    --scripts "$dist/scripts" "$component_dir/ecritu-component.pkg"
+  sed -e "s/@PKG_ID@/$PKG_ID/g" -e "s/@VERSION@/0.1.$edition/g" -e "s/@COMPONENT@/ecritu-component.pkg/g" \
+    "$ROOT_DIR/MacInputMethod/Packaging/distribution.xml" > "$dist/distribution.xml"
+  productbuild --distribution "$dist/distribution.xml" --package-path "$component_dir" \
+    --resources "$ROOT_DIR/MacInputMethod/Packaging/Resources" \
+    ${sign_args[@]+"${sign_args[@]}"} "$pkg"
   if (( ! unsigned )); then
     pkgutil --check-signature "$pkg"
   fi
