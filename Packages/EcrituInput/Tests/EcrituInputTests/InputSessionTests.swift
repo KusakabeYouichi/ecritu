@@ -172,7 +172,7 @@ final class InputSessionTests: XCTestCase {
     func testS68ZThenPunctuationCommitsEllipsisAndOthers() {
         let cases: [(Character, String)] = [(".", "\u{2026}"), (",", "\u{2025}"), ("/", "\u{30FB}"), ("-", "\u{301C}")]
         for (key, symbol) in cases {
-            session.handle(.character("z"))
+            _ = session.handle(.character("z"))
             let result = session.handle(.character(key))
             XCTAssertEqual(result.committed, symbol, String(key))
             XCTAssertTrue(result.handled, String(key))
