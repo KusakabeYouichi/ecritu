@@ -27021,7 +27021,8 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(tatte.prefix(13)), ["立って", "経って", "断って", "建って", "勃って", "発って", "絶って", "裁って", "截って", "佇って", "起って", "足って", "たって"], "\(tatte)")
         XCTAssertEqual(converter.multiClauseCandidates(for: "さんにちたって", systemCandidateMode: .surface).first, "三日経って")
         XCTAssertEqual(converter.multiClauseCandidates(for: "じかんがたって", systemCandidateMode: .surface).first, "時間が経って")
-        XCTAssertEqual(converter.multiClauseCandidates(for: "いえがたって", systemCandidateMode: .surface).first, "家が立って")
+        // 時間語でなければ 経って にしない。家 は 建つ(3893、ユーザ指定。それまでは 家が立って)
+        XCTAssertEqual(converter.multiClauseCandidates(for: "いえがたって", systemCandidateMode: .surface).first, "家が建って")
         // 恢復→回復 は書きかえ(X.9。恢 は表外字)。本来の漢字を先にする設定でも 回復 を先頭(了解 と同じ例外)
         converter.setKanjiRewritePreference(.bothBeforeFirst)
         let kaifuku = converter.candidates(for: "かいふくしました", limit: 8, systemCandidateMode: .surface)
@@ -31547,6 +31548,21 @@ extension KanaKanjiConverterRegressionTests {
         ] {
             let list = leadingCandidates3879(reading)
             XCTAssertEqual(Array(list.prefix(expected.count)), expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
+    // 3893(ユーザ指定): おくれなかった が 遅れなかった、めーるがおくれなくなった が メールが遅れなくなった、いえがたった が 家が立った だった
+    func testCouldNotSendAndHouseBuilt3893() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("おくれなかった", "送れなかった"), ("めーるがおくれなくなった", "メールが送れなくなった"), ("しゃしんがおくれなかった", "写真が送れなかった"),
+            ("でんしゃがおくれなかった", "電車が遅れなかった"), ("でんしゃがおくれた", "電車が遅れた"),
+            ("いえがたった", "家が建った"), ("びるがたっている", "ビルが建っている"),
+            ("ひとがたっている", "人が立っている"), ("じかんがたった", "時間が経った")
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
         }
     }
 
