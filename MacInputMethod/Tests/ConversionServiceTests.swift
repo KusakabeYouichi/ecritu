@@ -13,7 +13,7 @@ final class ConversionServiceTests: XCTestCase {
         try super.setUpWithError()
         suiteName = "jp.or.pleiades.merope.inputmethod.ecritu.tests.\(UUID().uuidString)"
         containerDirectory = FileManager.default.temporaryDirectory
-            .appendingPathComponent("EcrituMacTests-\(UUID().uuidString)", isDirectory: true)
+            .appendingPathComponent("EcrituPourMacTests-\(UUID().uuidString)", isDirectory: true)
         try FileManager.default.createDirectory(at: containerDirectory, withIntermediateDirectories: true)
         service = ConversionService(appGroupID: suiteName, containerDirectory: containerDirectory)
         service.preload()

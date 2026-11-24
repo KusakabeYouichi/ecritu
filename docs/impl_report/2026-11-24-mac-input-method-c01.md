@@ -32,7 +32,7 @@ adversarial:
 |---|---|
 | Packages/EcrituInput/ | UI を持たない入力ロジック。ローマ字→かな(RomajiComposer)、入力の状態機械(InputSession)。依存は Foundation だけ |
 | MacInputMethod/ | Mac のターゲット。IMKInputController、キーの読み替え、自前の候補ウインドウ、エンジンの呼び出し(ConversionService)、Info.plist |
-| MacInputMethod/EcrituMac.xcodeproj | tools/generate_mac_project.rb の生成物(正は生成スクリプト。手で直さない) |
+| MacInputMethod/EcrituPourMac.xcodeproj | tools/generate_mac_project.rb の生成物(正は生成スクリプト。手で直さない) |
 | tools/install_mac_input_method.sh | ビルド済みの ecritu.app を ~/Library/Input Methods へ入れる(実行するのはユーザ) |
 | Packages/EcrituConversion/…/KanaKanjiStore.swift | `sharedContainerURLOverride` を public に(1 語。挙動は変えない) |
 
@@ -76,7 +76,7 @@ iOS のプロジェクト・ソース・既存のスクリプトは変更して�
 | 検証 | 結果 |
 |---|---|
 | `swift test`(Packages/EcrituInput) | 94 件成功、失敗 0 |
-| `xcodebuild test`(EcrituMac、実辞書) | 32 件成功、失敗 0、expected failure 1(下の速度) |
+| `xcodebuild test`(EcrituPourMac、実辞書) | 32 件成功、失敗 0、expected failure 1(下の速度) |
 | ビルド | BUILD SUCCEEDED |
 | .app の Resources | 指定の 14 本すべてあり、辞書 86MB |
 | 実行ファイルの直接起動 | コントローラーのクラスの解決・IMKServer の作成・辞書を開く、の 3 つとも成功のログ |

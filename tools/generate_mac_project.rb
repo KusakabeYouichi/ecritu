@@ -1,22 +1,22 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# Mac の入力メソッドのプロジェクト(MacInputMethod/EcrituMac.xcodeproj)を作り直す。
+# Mac の入力メソッドのプロジェクト(MacInputMethod/EcrituPourMac.xcodeproj)を作り直す。
 # 正はこのスクリプトで、生成物の pbxproj は手で直さない。iOS のプロジェクト(écritu.xcodeproj)には触れない。
 # 使い方: ruby tools/generate_mac_project.rb(xcodeproj gem 1.27.0)
 #
 # 生成するもの:
-# - ターゲット EcrituMac(macOS アプリ。製品名 ecritu)と EcrituMacTests(ホストアプリ無しの単体テスト束)
+# - ターゲット EcrituPourMac(macOS アプリ。製品名 ecritu)と EcrituPourMacTests(ホストアプリ無しの単体テスト束)
 # - ローカルの Swift パッケージ参照(Packages/EcrituConversion、Packages/EcrituInput)
 # - Copy Bundle Resources(辞書の仮置き・初期語彙・grammaire.plist・アイコン)と、最後の辞書スクリプトのフェーズ
-# - 共有 scheme EcrituMac(build と test)
+# - 共有 scheme EcrituPourMac(build と test)
 
 require 'fileutils'
 require 'xcodeproj'
 
 ROOT_DIR = File.expand_path('..', __dir__)
 MAC_DIR = File.join(ROOT_DIR, 'MacInputMethod')
-PROJECT_PATH = File.join(MAC_DIR, 'EcrituMac.xcodeproj')
+PROJECT_PATH = File.join(MAC_DIR, 'EcrituPourMac.xcodeproj')
 DEPLOYMENT_TARGET = '14.0'
 
 APP_SOURCES = %w[
@@ -80,7 +80,7 @@ project = Xcodeproj::Project.new(PROJECT_PATH, false, 77)
 # グループとファイルの参照
 main_group = project.main_group
 config_group = main_group.new_group('Config', 'Config')
-xcconfig_reference = config_group.new_file('EcrituMac.xcconfig')
+xcconfig_reference = config_group.new_file('EcrituPourMac.xcconfig')
 
 sources_group = main_group.new_group('Sources', 'Sources')
 source_references = APP_SOURCES.to_h { |name| [name, sources_group.new_file(name)] }
@@ -111,7 +111,7 @@ conversion_package = add_local_package(project, '../Packages/EcrituConversion')
 input_package = add_local_package(project, '../Packages/EcrituInput')
 
 # アプリ
-app = project.new_target(:application, 'EcrituMac', :osx, DEPLOYMENT_TARGET, nil, :swift, 'ecritu')
+app = project.new_target(:application, 'EcrituPourMac', :osx, DEPLOYMENT_TARGET, nil, :swift, 'ecritu')
 configure_target(app, xcconfig_reference, {
   'PRODUCT_NAME' => 'ecritu',
   'PRODUCT_BUNDLE_IDENTIFIER' => '$(ECRITU_MAC_BUNDLE_IDENTIFIER)',
@@ -124,7 +124,7 @@ link_package_product(project, app, conversion_package, 'EcrituConversion')
 link_package_product(project, app, input_package, 'EcrituInput')
 
 # テスト束(ホストアプリ無し)。Bundle(for: KanaKanjiStore.self) はテスト束を指すので、同じ資源と同じ辞書のフェーズを持つ
-tests = project.new_target(:unit_test_bundle, 'EcrituMacTests', :osx, DEPLOYMENT_TARGET, nil, :swift, 'EcrituMacTests')
+tests = project.new_target(:unit_test_bundle, 'EcrituPourMacTests', :osx, DEPLOYMENT_TARGET, nil, :swift, 'EcrituPourMacTests')
 configure_target(tests, xcconfig_reference, {
   'PRODUCT_NAME' => '$(TARGET_NAME)',
   'PRODUCT_BUNDLE_IDENTIFIER' => '$(ECRITU_MAC_BUNDLE_IDENTIFIER).tests',
@@ -151,6 +151,6 @@ scheme = Xcodeproj::XCScheme.new
 scheme.add_build_target(app)
 scheme.add_test_target(tests)
 scheme.set_launch_target(app)
-scheme.save_as(PROJECT_PATH, 'EcrituMac', true)
+scheme.save_as(PROJECT_PATH, 'EcrituPourMac', true)
 
 puts "generated #{PROJECT_PATH}"

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Mac の入力メソッド(ecritu.app)を ~/Library/Input Methods/ へ入れる。実行するのはユーザ。
 # 使い方: bash tools/install_mac_input_method.sh [ビルド済みの ecritu.app の場所]
-#   場所を省くと、DerivedData から EcrituMac のビルド(Debug)を探す
+#   場所を省くと、DerivedData から EcrituPourMac のビルド(Debug)を探す
 set -euo pipefail
 
 APP_NAME="ecritu.app"
@@ -10,13 +10,13 @@ INSTALLED_APP="$INSTALL_DIR/$APP_NAME"
 
 usage() {
   echo "使い方: bash tools/install_mac_input_method.sh [ビルド済みの $APP_NAME の場所]"
-  echo "  先に xcodebuild -project MacInputMethod/EcrituMac.xcodeproj -scheme EcrituMac -destination 'platform=macOS' build でビルドしてください"
+  echo "  先に xcodebuild -project MacInputMethod/EcrituPourMac.xcodeproj -scheme EcrituPourMac -destination 'platform=macOS' build でビルドしてください"
 }
 
 # 1. ビルド済みの ecritu.app の場所。末尾が ecritu.app で Contents/Info.plist を持つものだけ受け付ける
 app_path="${1:-}"
 if [[ -z "$app_path" ]]; then
-  app_path="$(ls -dt "$HOME"/Library/Developer/Xcode/DerivedData/EcrituMac-*/Build/Products/Debug/"$APP_NAME" 2>/dev/null | head -n 1 || true)"
+  app_path="$(ls -dt "$HOME"/Library/Developer/Xcode/DerivedData/EcrituPourMac-*/Build/Products/Debug/"$APP_NAME" 2>/dev/null | head -n 1 || true)"
 fi
 app_path="${app_path%/}"
 if [[ -z "$app_path" || "$(basename "$app_path")" != "$APP_NAME" || ! -f "$app_path/Contents/Info.plist" ]]; then

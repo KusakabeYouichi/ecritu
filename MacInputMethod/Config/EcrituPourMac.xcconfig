@@ -1,4 +1,4 @@
-// Mac の入力メソッド(EcrituMac)とそのテスト束の共通の設定。
+// Mac の入力メソッド(EcrituPourMac)とそのテスト束の共通の設定。
 // Edition.xcconfig(版の番号)と、その末尾の Signing.local.xcconfig(ECRITU_INCLUDE_MEDICAUX など手元の値)を取り込む。
 // Mac の値は include の後ろに書き、Signing.local の上書きに負けないようにする
 #include "../../Config/Edition.xcconfig"

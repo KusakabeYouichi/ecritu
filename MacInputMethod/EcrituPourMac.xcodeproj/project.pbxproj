@@ -1,0 +1,649 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0119AA4B5569512CA05ED2158C216AA6 /* kana_kanji_dictionary.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 3CCFF0FB3585FB94F70234FE3BBE11FE /* kana_kanji_dictionary.sqlite */; };
+		011F4650245EA867BBF4BDC49ADC86CA /* LatinSuggestionSupplemental.txt in Resources */ = {isa = PBXBuildFile; fileRef = 7F19DE29D05045286CFD56C82958472C /* LatinSuggestionSupplemental.txt */; };
+		03D92DA7CEE46A034B503783124A2B84 /* ConversionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA86628C9B0B9903EF372D2943D60E51 /* ConversionService.swift */; };
+		0535903E700B9FCB63C3C529FB931D6B /* kana_kanji_inflection_dictionary.json in Resources */ = {isa = PBXBuildFile; fileRef = F699F19168AD036CC03BED9C4947B1A8 /* kana_kanji_inflection_dictionary.json */; };
+		06E89FC23EA9EC4DA1364DB121A57499 /* KeyEventTranslatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C145D828231DB0E73433F8DC64E9A284 /* KeyEventTranslatorTests.swift */; };
+		08AE7919A66FB6C26AD14F0580A67832 /* EcrituInputController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 625ACC0138885557B402FDFA0DFEBA0B /* EcrituInputController.swift */; };
+		0BB6E107FDF10E12A2DF8C35736C80B2 /* InitialAjoutVocabMigration.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A15270266B3C24FB37F32B89DE39315 /* InitialAjoutVocabMigration.json */; };
+		1307B8FEDB8AD6751562252D4362FBA3 /* kana_kanji_candidate_sources.json in Resources */ = {isa = PBXBuildFile; fileRef = F3CD04BBBC368D4B3906992946311F68 /* kana_kanji_candidate_sources.json */; };
+		1E9A4FDA0C33376373644E2F8D752F2C /* KeyEventTranslator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63531BA93A0A6A90ED3436B6CCF258F0 /* KeyEventTranslator.swift */; };
+		2C22C098D8A1FB81E18D534D8FDF239F /* InitialMiscVocabMigration.json in Resources */ = {isa = PBXBuildFile; fileRef = 32484D0B90B54641C52F015DA50D699C /* InitialMiscVocabMigration.json */; };
+		3E7E8187235A30F7BB6827EDB3695AFF /* EcrituInput in Frameworks */ = {isa = PBXBuildFile; productRef = FEAEFC2F9E7B255DA16E184F53EC6BFE /* EcrituInput */; };
+		4C8511395E9B9729714B99D51B4B0812 /* LatinSuggestionSupplemental.txt in Resources */ = {isa = PBXBuildFile; fileRef = 7F19DE29D05045286CFD56C82958472C /* LatinSuggestionSupplemental.txt */; };
+		5226105B733FDF383EA3015B36001CDA /* InitialMiscVocabMigration.json in Resources */ = {isa = PBXBuildFile; fileRef = 32484D0B90B54641C52F015DA50D699C /* InitialMiscVocabMigration.json */; };
+		54B04D73262C9D0595B419B81300F8F4 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 36D8DF509C4E01C70AB3B0CCAE3C0D51 /* Cocoa.framework */; };
+		5B42402869D423D6C66AA748843F6538 /* ÉcrituPremierVocab.json in Resources */ = {isa = PBXBuildFile; fileRef = 3579B7E3ED707A164DD6B6BA0F1EFF8B /* ÉcrituPremierVocab.json */; };
+		656B8906C610ACBCE22AF472AA7FACDA /* InitialShortcutVocabMigration.json in Resources */ = {isa = PBXBuildFile; fileRef = 8204CFC53AFD995D238EA198E1026DCD /* InitialShortcutVocabMigration.json */; };
+		68958C666195F1A07C4EB90B2120CFD5 /* InitialAjoutVocabMigration.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A15270266B3C24FB37F32B89DE39315 /* InitialAjoutVocabMigration.json */; };
+		6970C8B85287D8B04FA9631D932082ED /* ConversionServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72F011E295302939CE097B0BE3B12844 /* ConversionServiceTests.swift */; };
+		6B9A0C4690E7F83E132929191DB84FA3 /* CandidateWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD92A85913817849F3D1FEF223F2BC60 /* CandidateWindow.swift */; };
+		6F39F94391438C520B1DC9198B3D5CB9 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 36D8DF509C4E01C70AB3B0CCAE3C0D51 /* Cocoa.framework */; };
+		7EE7E5706E6FB3116A50EEE24D0128FD /* InitialSupprHiddenNounVocabMigration.json in Resources */ = {isa = PBXBuildFile; fileRef = 8FF9CD0B34330F1311B705C7B3B63775 /* InitialSupprHiddenNounVocabMigration.json */; };
+		7F9F4C0A6B918C967DA1B8C2156A9975 /* kana_kanji_inflection_dictionary.json in Resources */ = {isa = PBXBuildFile; fileRef = F699F19168AD036CC03BED9C4947B1A8 /* kana_kanji_inflection_dictionary.json */; };
+		9303F62096CFECCDE468F8FA6571E6FD /* InitialSupprHiddenNounVocabMigration.json in Resources */ = {isa = PBXBuildFile; fileRef = 8FF9CD0B34330F1311B705C7B3B63775 /* InitialSupprHiddenNounVocabMigration.json */; };
+		99B85497CCD037E29C13DD81B49985DE /* InitialSupprHiddenVocabMigration.json in Resources */ = {isa = PBXBuildFile; fileRef = 6791BE26A1B3FFD1301E679E6FF54866 /* InitialSupprHiddenVocabMigration.json */; };
+		B3E64AFD94D4844358AB0CD42AE5FC8D /* EcrituConversion in Frameworks */ = {isa = PBXBuildFile; productRef = 505A3C30269826EE827C77986D5D6627 /* EcrituConversion */; };
+		B4075201053A279540443C8C741BE49B /* kana_kanji_candidate_sources.json in Resources */ = {isa = PBXBuildFile; fileRef = F3CD04BBBC368D4B3906992946311F68 /* kana_kanji_candidate_sources.json */; };
+		C55325751E15EB740CBAB18331482623 /* InfoPlistTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22C6FF263289574E616B2B26B852982 /* InfoPlistTests.swift */; };
+		C715299D3C2DE393905880E26950376C /* ÉcrituSecondVocab.json in Resources */ = {isa = PBXBuildFile; fileRef = 0EFBE07682E88C797CA05B513836F959 /* ÉcrituSecondVocab.json */; };
+		C83F158C27B25A657CF7D71CDCFB9521 /* InitialShortcutVocabMigration.json in Resources */ = {isa = PBXBuildFile; fileRef = 8204CFC53AFD995D238EA198E1026DCD /* InitialShortcutVocabMigration.json */; };
+		CD23AD045FA0A0B3BB802649DE010ED0 /* kana_kanji_dictionary.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 3CCFF0FB3585FB94F70234FE3BBE11FE /* kana_kanji_dictionary.sqlite */; };
+		D07D1F14E7BC79095356D2FC5C2F4453 /* InitialSupprVocabMigration.json in Resources */ = {isa = PBXBuildFile; fileRef = 397A8193B4C2BF168B3A46E78A74E98B /* InitialSupprVocabMigration.json */; };
+		D172AD050C0BB2EC3CD31F38E126179F /* ecritu.tiff in Resources */ = {isa = PBXBuildFile; fileRef = EEE53CEFB156AFFDC6732F1E333578C5 /* ecritu.tiff */; };
+		DD0D7503ABFA96F93ADC109E0215DF3B /* InitialSupprHiddenVocabMigration.json in Resources */ = {isa = PBXBuildFile; fileRef = 6791BE26A1B3FFD1301E679E6FF54866 /* InitialSupprHiddenVocabMigration.json */; };
+		DDBFA58829493451A682A315B6C78F4E /* KeyEventTranslator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63531BA93A0A6A90ED3436B6CCF258F0 /* KeyEventTranslator.swift */; };
+		E0EDEAEEEAD157D4E3A3701572827B5B /* ÉcrituSecondVocab.json in Resources */ = {isa = PBXBuildFile; fileRef = 0EFBE07682E88C797CA05B513836F959 /* ÉcrituSecondVocab.json */; };
+		E486C3644B7428C541FB1C604170031F /* grammaire.plist in Resources */ = {isa = PBXBuildFile; fileRef = F5473E2F9D4C1A4A9A50F3EB8B1A7358 /* grammaire.plist */; };
+		E4CC5E4293082B7D9CF9423FB7EAF3DC /* EcrituInput in Frameworks */ = {isa = PBXBuildFile; productRef = CD86D78FA64354BD5418ED0E1AEF4EC2 /* EcrituInput */; };
+		E77BC97ECB651FB0E6492FCE2FFF5FD2 /* ecritu.tiff in Resources */ = {isa = PBXBuildFile; fileRef = EEE53CEFB156AFFDC6732F1E333578C5 /* ecritu.tiff */; };
+		EB70076D668E98561AEA9B5B7CC60AED /* InitialSupprVocabMigration.json in Resources */ = {isa = PBXBuildFile; fileRef = 397A8193B4C2BF168B3A46E78A74E98B /* InitialSupprVocabMigration.json */; };
+		F3A08A123102CFF5F38EA5242E79E30A /* ConversionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA86628C9B0B9903EF372D2943D60E51 /* ConversionService.swift */; };
+		F3A2A17080FA3ED27DF0B146820FAA19 /* grammaire.plist in Resources */ = {isa = PBXBuildFile; fileRef = F5473E2F9D4C1A4A9A50F3EB8B1A7358 /* grammaire.plist */; };
+		F848B0C3CA334BB09A590142F04A6A3F /* EcrituConversion in Frameworks */ = {isa = PBXBuildFile; productRef = 68FD9E449E7E34A58BD6967BA143BA42 /* EcrituConversion */; };
+		F8A06666FE6E1C95323A0D7988D00B47 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A8A29A8F8F6A61231D787B33DFC6957 /* main.swift */; };
+		F9F182E4FF550E98F138DEB87D42F5F9 /* ÉcrituPremierVocab.json in Resources */ = {isa = PBXBuildFile; fileRef = 3579B7E3ED707A164DD6B6BA0F1EFF8B /* ÉcrituPremierVocab.json */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		0392F8C8B6B62F5772B37EA0FB74824F /* ecritu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ecritu.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		0EFBE07682E88C797CA05B513836F959 /* ÉcrituSecondVocab.json */ = {isa = PBXFileReference; includeInIndex = 1; path = "ÉcrituSecondVocab.json"; sourceTree = "<group>"; };
+		16D49B84926B6B25CD72266706CA0F7B /* EcrituPourMacTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EcrituPourMacTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		32484D0B90B54641C52F015DA50D699C /* InitialMiscVocabMigration.json */ = {isa = PBXFileReference; includeInIndex = 1; path = InitialMiscVocabMigration.json; sourceTree = "<group>"; };
+		3579B7E3ED707A164DD6B6BA0F1EFF8B /* ÉcrituPremierVocab.json */ = {isa = PBXFileReference; includeInIndex = 1; path = "ÉcrituPremierVocab.json"; sourceTree = "<group>"; };
+		36D8DF509C4E01C70AB3B0CCAE3C0D51 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
+		397A8193B4C2BF168B3A46E78A74E98B /* InitialSupprVocabMigration.json */ = {isa = PBXFileReference; includeInIndex = 1; path = InitialSupprVocabMigration.json; sourceTree = "<group>"; };
+		3A15270266B3C24FB37F32B89DE39315 /* InitialAjoutVocabMigration.json */ = {isa = PBXFileReference; includeInIndex = 1; path = InitialAjoutVocabMigration.json; sourceTree = "<group>"; };
+		3CCFF0FB3585FB94F70234FE3BBE11FE /* kana_kanji_dictionary.sqlite */ = {isa = PBXFileReference; includeInIndex = 1; path = kana_kanji_dictionary.sqlite; sourceTree = "<group>"; };
+		625ACC0138885557B402FDFA0DFEBA0B /* EcrituInputController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EcrituInputController.swift; sourceTree = "<group>"; };
+		63531BA93A0A6A90ED3436B6CCF258F0 /* KeyEventTranslator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = KeyEventTranslator.swift; sourceTree = "<group>"; };
+		6791BE26A1B3FFD1301E679E6FF54866 /* InitialSupprHiddenVocabMigration.json */ = {isa = PBXFileReference; includeInIndex = 1; path = InitialSupprHiddenVocabMigration.json; sourceTree = "<group>"; };
+		72F011E295302939CE097B0BE3B12844 /* ConversionServiceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ConversionServiceTests.swift; sourceTree = "<group>"; };
+		7F19DE29D05045286CFD56C82958472C /* LatinSuggestionSupplemental.txt */ = {isa = PBXFileReference; includeInIndex = 1; path = LatinSuggestionSupplemental.txt; sourceTree = "<group>"; };
+		8204CFC53AFD995D238EA198E1026DCD /* InitialShortcutVocabMigration.json */ = {isa = PBXFileReference; includeInIndex = 1; path = InitialShortcutVocabMigration.json; sourceTree = "<group>"; };
+		8A8A29A8F8F6A61231D787B33DFC6957 /* main.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		8FF9CD0B34330F1311B705C7B3B63775 /* InitialSupprHiddenNounVocabMigration.json */ = {isa = PBXFileReference; includeInIndex = 1; path = InitialSupprHiddenNounVocabMigration.json; sourceTree = "<group>"; };
+		94F302D145A694100EC75524CBE6414F /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9B7F06B4D8D065598355D6F62D5F9D12 /* EcrituPourMac.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EcrituPourMac.xcconfig; sourceTree = "<group>"; };
+		B22C6FF263289574E616B2B26B852982 /* InfoPlistTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = InfoPlistTests.swift; sourceTree = "<group>"; };
+		C145D828231DB0E73433F8DC64E9A284 /* KeyEventTranslatorTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = KeyEventTranslatorTests.swift; sourceTree = "<group>"; };
+		EEE53CEFB156AFFDC6732F1E333578C5 /* ecritu.tiff */ = {isa = PBXFileReference; includeInIndex = 1; path = ecritu.tiff; sourceTree = "<group>"; };
+		F3CD04BBBC368D4B3906992946311F68 /* kana_kanji_candidate_sources.json */ = {isa = PBXFileReference; includeInIndex = 1; path = kana_kanji_candidate_sources.json; sourceTree = "<group>"; };
+		F5473E2F9D4C1A4A9A50F3EB8B1A7358 /* grammaire.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = grammaire.plist; sourceTree = "<group>"; };
+		F699F19168AD036CC03BED9C4947B1A8 /* kana_kanji_inflection_dictionary.json */ = {isa = PBXFileReference; includeInIndex = 1; path = kana_kanji_inflection_dictionary.json; sourceTree = "<group>"; };
+		FA86628C9B0B9903EF372D2943D60E51 /* ConversionService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ConversionService.swift; sourceTree = "<group>"; };
+		FD92A85913817849F3D1FEF223F2BC60 /* CandidateWindow.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CandidateWindow.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		231818989FE3A7004F9E853BEEC80187 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				54B04D73262C9D0595B419B81300F8F4 /* Cocoa.framework in Frameworks */,
+				F848B0C3CA334BB09A590142F04A6A3F /* EcrituConversion in Frameworks */,
+				E4CC5E4293082B7D9CF9423FB7EAF3DC /* EcrituInput in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9E301CEA1041AC3073315592B9A3488E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6F39F94391438C520B1DC9198B3D5CB9 /* Cocoa.framework in Frameworks */,
+				B3E64AFD94D4844358AB0CD42AE5FC8D /* EcrituConversion in Frameworks */,
+				3E7E8187235A30F7BB6827EDB3695AFF /* EcrituInput in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		182AE649FEA5027A82A6D245B1BE818B /* references */ = {
+			isa = PBXGroup;
+			children = (
+				F5473E2F9D4C1A4A9A50F3EB8B1A7358 /* grammaire.plist */,
+			);
+			name = references;
+			path = ../references;
+			sourceTree = "<group>";
+		};
+		25B53DC9BF36493E9F4AE391508DEFF7 /* OS X */ = {
+			isa = PBXGroup;
+			children = (
+				36D8DF509C4E01C70AB3B0CCAE3C0D51 /* Cocoa.framework */,
+			);
+			name = "OS X";
+			sourceTree = "<group>";
+		};
+		28AE9B8E4FB0F769BE76B1AE557A4680 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				9B7F06B4D8D065598355D6F62D5F9D12 /* EcrituPourMac.xcconfig */,
+			);
+			name = Config;
+			path = Config;
+			sourceTree = "<group>";
+		};
+		37D10777DA3245680173FF4BC68987DC /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				72F011E295302939CE097B0BE3B12844 /* ConversionServiceTests.swift */,
+				C145D828231DB0E73433F8DC64E9A284 /* KeyEventTranslatorTests.swift */,
+				B22C6FF263289574E616B2B26B852982 /* InfoPlistTests.swift */,
+			);
+			name = Tests;
+			path = Tests;
+			sourceTree = "<group>";
+		};
+		467A55848507DA0D95E2C8A50241EC72 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				94F302D145A694100EC75524CBE6414F /* Info.plist */,
+				EEE53CEFB156AFFDC6732F1E333578C5 /* ecritu.tiff */,
+			);
+			name = Resources;
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		5BF5A2B0B8999F31BDB4D5D01D89DA1B = {
+			isa = PBXGroup;
+			children = (
+				9A5062094A3D257795DF8BBD50A72938 /* Products */,
+				AA17BBEC660DDD1B1D0DF0D3ABB7E923 /* Frameworks */,
+				28AE9B8E4FB0F769BE76B1AE557A4680 /* Config */,
+				FCE07021665DEF49185AD1E9F0B6992D /* Sources */,
+				37D10777DA3245680173FF4BC68987DC /* Tests */,
+				467A55848507DA0D95E2C8A50241EC72 /* Resources */,
+				6FADC2D9305B785999A4E788EEA3BA02 /* KeyboardExtension */,
+				182AE649FEA5027A82A6D245B1BE818B /* references */,
+			);
+			sourceTree = "<group>";
+		};
+		6FADC2D9305B785999A4E788EEA3BA02 /* KeyboardExtension */ = {
+			isa = PBXGroup;
+			children = (
+				CF0CEF7207FA33D27F9515B7C3183EB4 /* DefaultDictionaryResources */,
+				3A15270266B3C24FB37F32B89DE39315 /* InitialAjoutVocabMigration.json */,
+				32484D0B90B54641C52F015DA50D699C /* InitialMiscVocabMigration.json */,
+				8204CFC53AFD995D238EA198E1026DCD /* InitialShortcutVocabMigration.json */,
+				8FF9CD0B34330F1311B705C7B3B63775 /* InitialSupprHiddenNounVocabMigration.json */,
+				6791BE26A1B3FFD1301E679E6FF54866 /* InitialSupprHiddenVocabMigration.json */,
+				397A8193B4C2BF168B3A46E78A74E98B /* InitialSupprVocabMigration.json */,
+			);
+			name = KeyboardExtension;
+			path = ../KeyboardExtension;
+			sourceTree = "<group>";
+		};
+		9A5062094A3D257795DF8BBD50A72938 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0392F8C8B6B62F5772B37EA0FB74824F /* ecritu.app */,
+				16D49B84926B6B25CD72266706CA0F7B /* EcrituPourMacTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		AA17BBEC660DDD1B1D0DF0D3ABB7E923 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				25B53DC9BF36493E9F4AE391508DEFF7 /* OS X */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		CF0CEF7207FA33D27F9515B7C3183EB4 /* DefaultDictionaryResources */ = {
+			isa = PBXGroup;
+			children = (
+				7F19DE29D05045286CFD56C82958472C /* LatinSuggestionSupplemental.txt */,
+				F3CD04BBBC368D4B3906992946311F68 /* kana_kanji_candidate_sources.json */,
+				3CCFF0FB3585FB94F70234FE3BBE11FE /* kana_kanji_dictionary.sqlite */,
+				F699F19168AD036CC03BED9C4947B1A8 /* kana_kanji_inflection_dictionary.json */,
+				3579B7E3ED707A164DD6B6BA0F1EFF8B /* ÉcrituPremierVocab.json */,
+				0EFBE07682E88C797CA05B513836F959 /* ÉcrituSecondVocab.json */,
+			);
+			name = DefaultDictionaryResources;
+			path = DefaultDictionaryResources;
+			sourceTree = "<group>";
+		};
+		FCE07021665DEF49185AD1E9F0B6992D /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				8A8A29A8F8F6A61231D787B33DFC6957 /* main.swift */,
+				625ACC0138885557B402FDFA0DFEBA0B /* EcrituInputController.swift */,
+				63531BA93A0A6A90ED3436B6CCF258F0 /* KeyEventTranslator.swift */,
+				FD92A85913817849F3D1FEF223F2BC60 /* CandidateWindow.swift */,
+				FA86628C9B0B9903EF372D2943D60E51 /* ConversionService.swift */,
+			);
+			name = Sources;
+			path = Sources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		088B2A9A60DCF872C117FD626C9C9859 /* EcrituPourMacTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E01B2C64AF254138685CC336649E7B8F /* Build configuration list for PBXNativeTarget "EcrituPourMacTests" */;
+			buildPhases = (
+				8276AB7BB59A3B75C915C5DC8138C5EB /* Sources */,
+				9E301CEA1041AC3073315592B9A3488E /* Frameworks */,
+				E10A5F5F9C94E2178B5914315BAD4846 /* Resources */,
+				F12A5725169B846E33B0829BB1F3019C /* Refresh Dictionary Artifacts */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = EcrituPourMacTests;
+			packageProductDependencies = (
+				505A3C30269826EE827C77986D5D6627 /* EcrituConversion */,
+				FEAEFC2F9E7B255DA16E184F53EC6BFE /* EcrituInput */,
+			);
+			productName = EcrituPourMacTests;
+			productReference = 16D49B84926B6B25CD72266706CA0F7B /* EcrituPourMacTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		46B25A71EB514EECEDA80F5C7E22E93B /* EcrituPourMac */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E145C70E1B16E0CFCAB6A7D41C4E3BAB /* Build configuration list for PBXNativeTarget "EcrituPourMac" */;
+			buildPhases = (
+				CBC6779D638B6DE1A5A82C6D5F7CA297 /* Sources */,
+				231818989FE3A7004F9E853BEEC80187 /* Frameworks */,
+				A3B9006A25E52E959DA025F189EA893C /* Resources */,
+				70501464F493E4EB8057DEE8BA954996 /* Refresh Dictionary Artifacts */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = EcrituPourMac;
+			packageProductDependencies = (
+				68FD9E449E7E34A58BD6967BA143BA42 /* EcrituConversion */,
+				CD86D78FA64354BD5418ED0E1AEF4EC2 /* EcrituInput */,
+			);
+			productName = ecritu;
+			productReference = 0392F8C8B6B62F5772B37EA0FB74824F /* ecritu.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		36A5EADC21D634D5AEB96256BEADFE4A /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+			};
+			buildConfigurationList = 679B0C69A4AB1D1315EA6820777F9F6A /* Build configuration list for PBXProject "EcrituPourMac" */;
+			compatibilityVersion = "Xcode 16.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 5BF5A2B0B8999F31BDB4D5D01D89DA1B;
+			minimizedProjectReferenceProxies = 0;
+			packageReferences = (
+				AE11B4C57732F13F9C317A91B41CC05B /* XCLocalSwiftPackageReference "EcrituConversion" */,
+				E1516772BADA1391E0C22627788F77BB /* XCLocalSwiftPackageReference "EcrituInput" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 9A5062094A3D257795DF8BBD50A72938 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				46B25A71EB514EECEDA80F5C7E22E93B /* EcrituPourMac */,
+				088B2A9A60DCF872C117FD626C9C9859 /* EcrituPourMacTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A3B9006A25E52E959DA025F189EA893C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				011F4650245EA867BBF4BDC49ADC86CA /* LatinSuggestionSupplemental.txt in Resources */,
+				1307B8FEDB8AD6751562252D4362FBA3 /* kana_kanji_candidate_sources.json in Resources */,
+				CD23AD045FA0A0B3BB802649DE010ED0 /* kana_kanji_dictionary.sqlite in Resources */,
+				0535903E700B9FCB63C3C529FB931D6B /* kana_kanji_inflection_dictionary.json in Resources */,
+				F9F182E4FF550E98F138DEB87D42F5F9 /* ÉcrituPremierVocab.json in Resources */,
+				C715299D3C2DE393905880E26950376C /* ÉcrituSecondVocab.json in Resources */,
+				68958C666195F1A07C4EB90B2120CFD5 /* InitialAjoutVocabMigration.json in Resources */,
+				5226105B733FDF383EA3015B36001CDA /* InitialMiscVocabMigration.json in Resources */,
+				C83F158C27B25A657CF7D71CDCFB9521 /* InitialShortcutVocabMigration.json in Resources */,
+				7EE7E5706E6FB3116A50EEE24D0128FD /* InitialSupprHiddenNounVocabMigration.json in Resources */,
+				DD0D7503ABFA96F93ADC109E0215DF3B /* InitialSupprHiddenVocabMigration.json in Resources */,
+				D07D1F14E7BC79095356D2FC5C2F4453 /* InitialSupprVocabMigration.json in Resources */,
+				F3A2A17080FA3ED27DF0B146820FAA19 /* grammaire.plist in Resources */,
+				D172AD050C0BB2EC3CD31F38E126179F /* ecritu.tiff in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E10A5F5F9C94E2178B5914315BAD4846 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4C8511395E9B9729714B99D51B4B0812 /* LatinSuggestionSupplemental.txt in Resources */,
+				B4075201053A279540443C8C741BE49B /* kana_kanji_candidate_sources.json in Resources */,
+				0119AA4B5569512CA05ED2158C216AA6 /* kana_kanji_dictionary.sqlite in Resources */,
+				7F9F4C0A6B918C967DA1B8C2156A9975 /* kana_kanji_inflection_dictionary.json in Resources */,
+				5B42402869D423D6C66AA748843F6538 /* ÉcrituPremierVocab.json in Resources */,
+				E0EDEAEEEAD157D4E3A3701572827B5B /* ÉcrituSecondVocab.json in Resources */,
+				0BB6E107FDF10E12A2DF8C35736C80B2 /* InitialAjoutVocabMigration.json in Resources */,
+				2C22C098D8A1FB81E18D534D8FDF239F /* InitialMiscVocabMigration.json in Resources */,
+				656B8906C610ACBCE22AF472AA7FACDA /* InitialShortcutVocabMigration.json in Resources */,
+				9303F62096CFECCDE468F8FA6571E6FD /* InitialSupprHiddenNounVocabMigration.json in Resources */,
+				99B85497CCD037E29C13DD81B49985DE /* InitialSupprHiddenVocabMigration.json in Resources */,
+				EB70076D668E98561AEA9B5B7CC60AED /* InitialSupprVocabMigration.json in Resources */,
+				E486C3644B7428C541FB1C604170031F /* grammaire.plist in Resources */,
+				E77BC97ECB651FB0E6492FCE2FFF5FD2 /* ecritu.tiff in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		70501464F493E4EB8057DEE8BA954996 /* Refresh Dictionary Artifacts */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Refresh Dictionary Artifacts";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "bash \"$SRCROOT/../tools/refresh_simulator_dictionary_on_build.sh\"\n";
+		};
+		F12A5725169B846E33B0829BB1F3019C /* Refresh Dictionary Artifacts */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Refresh Dictionary Artifacts";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "bash \"$SRCROOT/../tools/refresh_simulator_dictionary_on_build.sh\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8276AB7BB59A3B75C915C5DC8138C5EB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1E9A4FDA0C33376373644E2F8D752F2C /* KeyEventTranslator.swift in Sources */,
+				F3A08A123102CFF5F38EA5242E79E30A /* ConversionService.swift in Sources */,
+				6970C8B85287D8B04FA9631D932082ED /* ConversionServiceTests.swift in Sources */,
+				06E89FC23EA9EC4DA1364DB121A57499 /* KeyEventTranslatorTests.swift in Sources */,
+				C55325751E15EB740CBAB18331482623 /* InfoPlistTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CBC6779D638B6DE1A5A82C6D5F7CA297 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F8A06666FE6E1C95323A0D7988D00B47 /* main.swift in Sources */,
+				08AE7919A66FB6C26AD14F0580A67832 /* EcrituInputController.swift in Sources */,
+				DDBFA58829493451A682A315B6C78F4E /* KeyEventTranslator.swift in Sources */,
+				6B9A0C4690E7F83E132929191DB84FA3 /* CandidateWindow.swift in Sources */,
+				03D92DA7CEE46A034B503783124A2B84 /* ConversionService.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		16C6783C0DE6E69D7EC93E02E88D8F67 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9B7F06B4D8D065598355D6F62D5F9D12 /* EcrituPourMac.xcconfig */;
+			buildSettings = {
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(ECRITU_MAC_BUNDLE_IDENTIFIER).tests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		884FBB7F713788B62951DB9AAF3ADD3D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		8AF5DD31A74C06951D682BB5A5636F0E /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9B7F06B4D8D065598355D6F62D5F9D12 /* EcrituPourMac.xcconfig */;
+			buildSettings = {
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(ECRITU_MAC_BUNDLE_IDENTIFIER).tests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		C517761F1AF276B0F6E24259F46E0DB4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9B7F06B4D8D065598355D6F62D5F9D12 /* EcrituPourMac.xcconfig */;
+			buildSettings = {
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Resources/Info.plist;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(ECRITU_MAC_BUNDLE_IDENTIFIER)";
+				PRODUCT_NAME = ecritu;
+			};
+			name = Debug;
+		};
+		CF4AC53A044A6390B7AA61040F48BA03 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		DFA57D3DF6DBB6BD8DCF2317650F412D /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9B7F06B4D8D065598355D6F62D5F9D12 /* EcrituPourMac.xcconfig */;
+			buildSettings = {
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Resources/Info.plist;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(ECRITU_MAC_BUNDLE_IDENTIFIER)";
+				PRODUCT_NAME = ecritu;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		679B0C69A4AB1D1315EA6820777F9F6A /* Build configuration list for PBXProject "EcrituPourMac" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				884FBB7F713788B62951DB9AAF3ADD3D /* Debug */,
+				CF4AC53A044A6390B7AA61040F48BA03 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E01B2C64AF254138685CC336649E7B8F /* Build configuration list for PBXNativeTarget "EcrituPourMacTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8AF5DD31A74C06951D682BB5A5636F0E /* Release */,
+				16C6783C0DE6E69D7EC93E02E88D8F67 /* Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E145C70E1B16E0CFCAB6A7D41C4E3BAB /* Build configuration list for PBXNativeTarget "EcrituPourMac" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DFA57D3DF6DBB6BD8DCF2317650F412D /* Release */,
+				C517761F1AF276B0F6E24259F46E0DB4 /* Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		AE11B4C57732F13F9C317A91B41CC05B /* XCLocalSwiftPackageReference "EcrituConversion" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../Packages/EcrituConversion;
+		};
+		E1516772BADA1391E0C22627788F77BB /* XCLocalSwiftPackageReference "EcrituInput" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../Packages/EcrituInput;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		505A3C30269826EE827C77986D5D6627 /* EcrituConversion */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AE11B4C57732F13F9C317A91B41CC05B /* XCLocalSwiftPackageReference "EcrituConversion" */;
+			productName = EcrituConversion;
+		};
+		68FD9E449E7E34A58BD6967BA143BA42 /* EcrituConversion */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AE11B4C57732F13F9C317A91B41CC05B /* XCLocalSwiftPackageReference "EcrituConversion" */;
+			productName = EcrituConversion;
+		};
+		CD86D78FA64354BD5418ED0E1AEF4EC2 /* EcrituInput */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E1516772BADA1391E0C22627788F77BB /* XCLocalSwiftPackageReference "EcrituInput" */;
+			productName = EcrituInput;
+		};
+		FEAEFC2F9E7B255DA16E184F53EC6BFE /* EcrituInput */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E1516772BADA1391E0C22627788F77BB /* XCLocalSwiftPackageReference "EcrituInput" */;
+			productName = EcrituInput;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 36A5EADC21D634D5AEB96256BEADFE4A /* Project object */;
+}
