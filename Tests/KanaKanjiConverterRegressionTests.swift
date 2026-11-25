@@ -31710,6 +31710,22 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertFalse(leadingCandidates3879("おまえがしらない").contains { $0.contains("前頭") })
     }
 
+    // 3902(ユーザ指定): きもする が 肝する、胆する で 気もする が無かった(きはする も 木はする)。肝を冷やす/気持ち/天気もする はそのまま
+    func testFeelsLikeItToo3902() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("きもする", "気もする"), ("きもします", "気もします"), ("きもした", "気もした"), ("きもするけど", "気もするけど"),
+            ("きもしない", "気もしない"), ("きもして", "気もして"), ("きもしてきた", "気もしてきた"), ("そんなきもする", "そんな気もする"),
+            ("いいようなきもする", "いいような気もする"), ("きはする", "気はする"), ("わるいきはしない", "悪い気はしない"), ("きがする", "気がする"),
+            ("きもをひやす", "肝を冷やす"), ("きもち", "気持ち"), ("きもの", "着物"), ("きもだめし", "肝試し"),
+            ("てんきもする", "天気もする"), ("げんきもする", "元気もする"), ("そうじきもする", "掃除機もする")
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
     // 3901(ユーザ指摘): ずいぶんいれかえた が ずいぶん入れ換た(辞書の誤エントリ 入れ換る からの活用形)で、入れ換えた が無かった。
     // え の落ちた形は出さず、文の途中でも 入れ替え〜、入れ換え〜 の順にする
     func testSwappedOkurigana3901() throws {
