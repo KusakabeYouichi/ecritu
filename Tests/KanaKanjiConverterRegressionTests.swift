@@ -31710,6 +31710,22 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertFalse(leadingCandidates3879("おまえがしらない").contains { $0.contains("前頭") })
     }
 
+    // 3901(ユーザ指摘): ずいぶんいれかえた が ずいぶん入れ換た(辞書の誤エントリ 入れ換る からの活用形)で、入れ換えた が無かった。
+    // え の落ちた形は出さず、文の途中でも 入れ替え〜、入れ換え〜 の順にする
+    func testSwappedOkurigana3901() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, first, second) in [
+            ("ずいぶんいれかえた", "ずいぶん入れ替えた", "ずいぶん入れ換えた"), ("じゅんばんをいれかえた", "順番を入れ替えた", "順番を入れ換えた"),
+            ("ずいぶんいれかえて", "ずいぶん入れ替えて", "ずいぶん入れ換えて"), ("くうきをいれかえて", "空気を入れ替えて", "空気を入れ換えて"),
+            ("いれかえた", "入れ替えた", "入れ換えた"), ("いれかえる", "入れ替える", "入れ換える")
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(Array(list.prefix(2)), [first, second], "\(reading): \(list.prefix(5))")
+            XCTAssertFalse(list.contains { $0.contains("入れ換た") || $0.contains("入れ換て") || $0.contains("入れ換る") }, "\(reading): \(list)")
+        }
+    }
+
     // 3899(ユーザ指定): ねんのため が 年のため だった。数字や漢字の直後の 〜年のため(三年のため/来年のため)と、
     // 数字+年+の(毎年のこと/四年の間)はそのまま
     func testJustInCase3899() throws {
