@@ -1099,7 +1099,7 @@ enum SettingsJumpMenu {
     static let showsResetItem = false
     #endif
 
-    // 画面の並び(キー配列 L → 見た目 V → キーの割り当て T → 入力の動作 E → 変換 X → 候補に足すもの C → 書式 F → 部首 R。
+    // 画面の並び(キー配列 L → 見た目 V → キーの割り当て T → 入力の動作 E → 変換 X → 候補の追加 C → 書式 F → 部首 R。
     // 3899 の分類替え)。見出しの文言と同じ
     static let items: [SettingsJumpMenuItem] = rawItems.map { SettingsJumpMenuItem(cardID: $0.0, title: $0.1) }
     private static let rawItems: [(String, String)] = [
@@ -1123,7 +1123,7 @@ enum SettingsJumpMenu {
 
     // 群の名前(設定の一覧の区分と同じ)
     static let groupNames: [Character: String] = [
-        "L": "キー配列", "V": "見た目", "T": "キーの割り当て", "E": "入力の動作", "X": "変換", "C": "候補に足すもの", "F": "書式", "R": "部首"
+        "L": "キー配列", "V": "見た目", "T": "キーの割り当て", "E": "入力の動作", "X": "変換", "C": "候補の追加", "F": "書式", "R": "部首"
     ]
 
     static let entries: [SettingsJumpMenuEntry] = {

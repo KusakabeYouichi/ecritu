@@ -6,7 +6,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20261125164110"
+    private static let editionUpdatedAtRaw: String = "20261125172350"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -849,7 +849,7 @@ struct ContentView: View {
         bool(SettingsKeys.adjectiveMeKanjiCandidatesEnabled, adjectiveMeKanjiCandidatesEnabled, "suffixe – me(め/目)の 形状名詞化 / 傾向派生(un peu …): 形容詞語幹の『目』候補も出す")
         str(SettingsKeys.numeralStylePreference, numeralStylePreferenceRawValue, "数詞の表記 – chiffres: arabicFirst(アラビア数字が先)/kanjiFirst(漢数字が先)/arabicOnly(アラビア数字だけ)/kanjiOnly(漢数字だけ)")
 
-        group("候補に足すもの")
+        group("候補の追加")
         bool(SettingsKeys.emojiCandidateDisplayEnabled, emojiCandidateDisplayEnabled, "emojis & les émoticônes: emoji 😀")
         bool(SettingsKeys.kaomojiCandidateDisplayEnabled, kaomojiCandidateDisplayEnabled, "emojis & les émoticônes: émoticône (^_^)")
         str(SettingsKeys.contactCandidateDisplayMode, contactCandidateDisplayModeRawValue, "iOSの連絡先の姓、名、会社名")
@@ -1308,7 +1308,7 @@ struct ContentView: View {
             .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.13"))
     }
 
-    // 候補に足すもの(C)。エンジンの辞書の外(絵文字の表・連絡先・iOS のユーザ辞書・欧文の語彙)から来る候補(3899 の分類替え)
+    // 候補の追加(C)。エンジンの辞書の外(絵文字の表・連絡先・iOS のユーザ辞書・欧文の語彙)から来る候補(3899 の分類替え)
     @ViewBuilder
     private var candidateSourceSettingsCards: some View {
         EmojiKaomojiCandidateSettingsSection(
@@ -1635,7 +1635,7 @@ struct ContentView: View {
                         if settingsCardStagesBuilt >= 6 {
                             conversionLateSettingsCards
                         }
-                        // ──── 候補に足すもの(C) ────
+                        // ──── 候補の追加(C) ────
                         if settingsCardStagesBuilt >= 7 {
                             candidateSourceSettingsCards
                         }
