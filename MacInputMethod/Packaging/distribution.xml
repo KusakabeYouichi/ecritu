@@ -12,5 +12,8 @@
     <choice id="default" title="écritu">
         <pkg-ref id="@PKG_ID@"/>
     </choice>
-    <pkg-ref id="@PKG_ID@" version="@VERSION@" onConclusion="none">@COMPONENT@</pkg-ref>
+    <!-- 最後の画面で [ログアウト] を求める。[すべてのユーザ用] は、ログインし直すまで OS が入力メソッドとして認めない。
+         案内の文だけでは読まずに閉じられ、テスターが「切り替えても使えない」となった(2026-11-25)。
+         [自分専用] には本当は要らないが、入れ先によって出し分けられないので両方に出す(ユーザ決定) -->
+    <pkg-ref id="@PKG_ID@" version="@VERSION@" onConclusion="RequireLogout">@COMPONENT@</pkg-ref>
 </installer-gui-script>
