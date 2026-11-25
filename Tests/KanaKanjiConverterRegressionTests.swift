@@ -31665,6 +31665,19 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(leadingCandidates3879("てんめい").prefix(3)), ["店名", "天明", "天命"])
     }
 
+    // 3899(ユーザ指定): ごいけい が ご異形、ご畏敬 だけで 語彙系 が無かった。ご意見 はそのまま
+    func testVocabularyRelated3899() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("ごいけい", "語彙系"), ("ごいけいのさぶん", "語彙系の差分"), ("ごいけいのへんこう", "語彙系の変更"), ("ごいけいは", "語彙系は"),
+            ("ごいけんをください", "ご意見をください"), ("ぶんぽうけい", "文法系"), ("ふじやほてる", "富士屋ホテル")
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
     // 3883(ユーザ指定): かみをきるはさみ が 髪を切る挟み、ひにひに が 日に火に、よんだり が 呼んだり(読んだり は 6 番め)だった。
     // 髪を切る の次の かみを切る は出さない。友達を呼んだり はそのまま
     func testScissorsDayByDayAndYondari3883() throws {
