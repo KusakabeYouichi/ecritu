@@ -31695,6 +31695,21 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3901(ユーザ指定): おまえがしらない が お前頭ない(敬語の お+前頭)で、お前が知らない が候補に無かった。前頭 に お は付かない
+    func testYouDoNotKnow3901() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("おまえがしらない", "お前が知らない"), ("おまえがしらないだけ", "お前が知らないだけ"), ("おまえがしらないうちに", "お前が知らないうちに"),
+            ("おまえがしらなくても", "お前が知らなくても"), ("おまえがしらん", "お前が知らん"), ("おまえがしった", "お前が知った"),
+            ("まえがしらになる", "前頭になる"), ("まえがしらひっとう", "前頭筆頭"), ("おおぜきとまえがしら", "大関と前頭")
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+        XCTAssertFalse(leadingCandidates3879("おまえがしらない").contains { $0.contains("前頭") })
+    }
+
     // 3899(ユーザ指定): ねんのため が 年のため だった。数字や漢字の直後の 〜年のため(三年のため/来年のため)と、
     // 数字+年+の(毎年のこと/四年の間)はそのまま
     func testJustInCase3899() throws {
