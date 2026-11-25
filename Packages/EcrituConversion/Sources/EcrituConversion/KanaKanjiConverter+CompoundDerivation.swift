@@ -71,7 +71,7 @@ extension KanaKanjiConverter {
         // とう(頭)は短いが かな数詞からも作る(にとう/よんとう/ごとう→二頭/四頭/五頭 が無かった。ユーザ指定 3649)。
         // 数詞複合の帯なので 後藤/山東 等の辞書語の先頭は動かさない。棟/等 は数字文脈の表だけに残す
         "とう": ["頭"],
-        // 列(2列/3列め)。表に無く、連文節の 目→め の並べ替え(X.14)が 列目 を助数詞と見なかった
+        // 列(2列/3列め)。表に無く、連文節の 目→め の並べ替え(X.12)が 列目 を助数詞と見なかった
         // (2+れつめを が 列目を だった。ユーザ報告 3655)
         "れつ": ["列"],
         "こ": ["個"],
@@ -419,7 +419,7 @@ extension KanaKanjiConverter {
         return results
     }
 
-    // 連文節の格子に載せる数詞+助数詞(設定 X.18 に従い、アラビア数字と漢数字を先の方から。3702)
+    // 連文節の格子に載せる数詞+助数詞(設定 X.13 に従い、アラビア数字と漢数字を先の方から。3702)
     func numeralCompoundCandidatesForLattice(for reading: String) -> [String] {
         let style = withStateLock { numeralStylePreference }
         let arabic = style.includesArabic ? arabicNumericCompoundCandidates(for: reading) : []
@@ -965,7 +965,7 @@ extension KanaKanjiConverter {
         return preferred + candidates.filter { !preferred.contains($0) }
     }
 
-    // 数字の直後の助数詞のうち、序数の 〜め(段め/個め)として X.14 に従わせる読み(3840)
+    // 数字の直後の助数詞のうち、序数の 〜め(段め/個め)として X.12 に従わせる読み(3840)
     static let digitContextOrdinalMeCounterReadings: Set<String> = ["だんめ", "こめ"]
 
     static func digitBoostCounterSurfaces(for reading: String) -> [String]? {
@@ -1098,7 +1098,7 @@ extension KanaKanjiConverter {
                 let first = converted.first, containsKanjiCandidate(String(first)),
                 converted.contains(where: { ("ぁ"..."ゖ").contains($0) }),
                 !suppressedCandidates.contains("つ" + converted) {
-                // 序数の つめ(4つめにしか)は つ+目にしか でなく X.14(め/目 の先後)に従う。『ひらがなが先』なら つめ… を先に
+                // 序数の つめ(4つめにしか)は つ+目にしか でなく X.12(め/目 の先後)に従う。『ひらがなが先』なら つめ… を先に
                 // (4+つめにしか の先頭が つ目にしか だった。つめに だけなら かな が先頭。3789、ユーザ報告)
                 if ordinalMeKanaFirst, tail.hasPrefix("め"), converted.hasPrefix("目") {
                     boosted.append("つめ" + converted.dropFirst())
@@ -1118,7 +1118,7 @@ extension KanaKanjiConverter {
                 .filter { !boosted.contains($0) && !suppressedCandidates.contains($0) }
         }
         if var counterSurfaces = Self.digitBoostCounterSurfaces(for: reading) {
-            // 序数の 〜め(1段め/3個め)は X.14(め/目 の先後)に従う。『ひらがなが先』なら 〜目 の前に 〜め を置く
+            // 序数の 〜め(1段め/3個め)は X.12(め/目 の先後)に従う。『ひらがなが先』なら 〜目 の前に 〜め を置く
             // (1+だんめ の 段め が 6 番めだった。表は 段目/個目 だけを持つ。ユーザ指定 3840)。丁目/貫目 は序数ではないので対象外
             if ordinalMeKanaFirst, Self.digitContextOrdinalMeCounterReadings.contains(reading) {
                 counterSurfaces = counterSurfaces.flatMap { $0.hasSuffix("目") ? [String($0.dropLast()) + "め", $0] : [$0] }

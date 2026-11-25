@@ -10,7 +10,7 @@ struct KanaPostModifierFlickDakutenSettingsSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             Toggle(isOn: $isEnabled) {
-                SettingsCardHeadline("E.7 後置修飾キーのフリックで濁点・半濁点")
+                SettingsCardHeadline("T.3 後置修飾キーのフリックで濁点・半濁点")
             }
 
             Text("オンの場合、後置修飾キーを上フリックで濁点(゛)、右フリックで半濁点(゜)を強制します。オフにすると上/右フリックは中央タップと同じ扱いになり、誤って『つ→づ』になるのを抑止できます(2タップで『つ→っ→づ』は引き続き可能)。")
@@ -26,7 +26,7 @@ struct DelimiterAutoCommitCandidateSettingsSection: View {
 
     var body: some View {
         SegmentedSettingsCard(
-            title: "X.1 句読点入力時の自動確定候補",
+            title: "E.4 句読点入力時の自動確定候補",
             pickerTitle: "句読点入力時の自動確定候補",
             selection: $selection,
             options: Array(DelimiterAutoCommitCandidateOption.allCases),
@@ -41,7 +41,7 @@ struct KanaKanjiCandidateSourceModeSettingsSection: View {
 
     var body: some View {
         SegmentedSettingsCard(
-            title: "X.2 かな漢字候補モード",
+            title: "X.1 かな漢字候補モード",
             pickerTitle: "かな漢字候補モード",
             selection: $selection,
             options: Array(KanaKanjiCandidateSourceModeOption.allCases),
@@ -56,7 +56,7 @@ struct ContactCandidateDisplaySettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SettingsCardHeadline("X.16 iOSの連絡先の姓、名、会社名")
+            SettingsCardHeadline("C.2 iOSの連絡先の姓、名、会社名")
 
             VStack(spacing: 8) {
                 ForEach(ContactCandidateDisplayModeOption.allCases) { option in
@@ -84,7 +84,7 @@ struct UserDictionaryCandidateDisplaySettingsSection: View {
 
     var body: some View {
         SegmentedSettingsCard(
-            title: "X.17 iOSのユーザ辞書の単語",
+            title: "C.3 iOSのユーザ辞書の単語",
             pickerTitle: "iOSのユーザ辞書の単語",
             selection: $selection,
             options: Array(UserDictionaryCandidateDisplayModeOption.allCases),
@@ -100,7 +100,7 @@ struct RadicalStrokeCountSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            SettingsCardHeadline("X.11 部首の画数の数え方")
+            SettingsCardHeadline("R.1 部首の画数の数え方")
 
             Text("単漢字入力(モード切替キーの下フリック)の部首一覧を並べる画数です。流儀が分かれる部首だけ個別に選べます(艸/辵/食 は単独では6画/7画/9画で、ここの数字はその部首として数えるときの画数です)。")
                 .font(.footnote)
@@ -159,7 +159,7 @@ enum OrdinalMePreferenceOption: String, CaseIterable {
     }
 }
 
-// X.14 suffixe – me(め/目)。3 つのサブ項目を 1 枚のカードにまとめる(3790、ユーザ指定。それまでは X.14 序数化 と X.15 形状名詞化 の 2 枚)
+// X.12 suffixe – me(め/目)。3 つのサブ項目を 1 枚のカードにまとめる(3790、ユーザ指定。それまでは 序数化 と 形状名詞化 の 2 枚)
 struct MeSuffixCandidateSettingsSection: View {
     @Binding var ordinalKanjiPreferred: Bool
     @Binding var formalNounKanaEnabled: Bool
@@ -174,7 +174,7 @@ struct MeSuffixCandidateSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            SettingsCardTitle(title: "X.14 suffixe – me (め/目)", subtitle: "序数化 / 形式名詞化 / 形状名詞化・傾向派生")
+            SettingsCardTitle(title: "X.12 suffixe – me (め/目)", subtitle: "序数化 / 形式名詞化 / 形状名詞化・傾向派生")
 
             subsectionTitle("序数化 – première、deuxième、troisième、…")
             Picker("順序の『め/目』", selection: ordinalSelection) {
@@ -220,7 +220,7 @@ struct EmojiKaomojiCandidateSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SettingsCardHeadline("X.15 emojis & les émoticônes")
+            SettingsCardHeadline("C.1 emojis & les émoticônes")
 
             VStack(spacing: 10) {
                 Toggle("emoji 😀", isOn: $enablesEmojiCandidates)
@@ -244,7 +244,7 @@ struct LatinLexiconSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SettingsCardHeadline("E.8 欧文サジェスチョンの言語")
+            SettingsCardHeadline("C.4 欧文サジェスチョンの言語")
 
             VStack(spacing: 10) {
                 Toggle("français (フランス語・15,000語)", isOn: $enablesFrench)
@@ -274,7 +274,7 @@ struct ScriptVariantSuppressionSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SettingsCardHeadline("X.7 旧字体・異体字の候補")
+            SettingsCardHeadline("X.6 旧字体・異体字の候補")
 
             // 例の括弧の前で必ず改行する(端末幅で中途半端に折り返すと読みにくい。ユーザ指定 3001)
             Toggle(isOn: $kyujitai) {
@@ -341,9 +341,9 @@ struct KanaSpellingSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SettingsCardHeadline("X.8 かなで書く言葉の候補")
+            SettingsCardHeadline("X.7 かなで書く言葉の候補")
 
-            // 例の括弧の前で必ず改行する(X.7 と同じ。ユーザ指定 3001)
+            // 例の括弧の前で必ず改行する(X.6 と同じ。ユーザ指定 3001)
             toggle($adverb, .adverb)
             toggle($conjunction, .conjunction)
             toggle($auxiliary, .auxiliary)
@@ -399,11 +399,11 @@ struct KanjiRewriteSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SettingsCardHeadline("X.9 常用漢字による書きかえ")
+            SettingsCardHeadline("X.8 常用漢字による書きかえ")
 
             KanjiRewriteOptionList(rawValue: $rawValue, subtitle: subtitle(for:))
 
-            Text("表外字を同じ音の常用漢字に置き換えた書き方(1956年 国語審議会報告『同音の漢字による書きかえ』の\(KanjiRewriteTable.switchablePairs.count)語)の扱いを選びます。『醗酵前』『蒸溜所』のような、その語を含む語にも効きます。1字単位の書きかえ(廻→回、智→知 など)は人名・地名を巻き込むので対象外です。報告にある 智慧→知恵 も対象外です(智慧 は仏教の語でもあり、字を替えただけの組ではないため)。報告の後に常用漢字に加わった字の組(臆測⇄憶測、肝腎⇄肝心、研磨⇄研摩 など)は X.10 で選びます。追加語彙に登録した語と、学習した語は対象外です。現代的初期設定は[両方(本来の漢字を先に)]、戦略的初期設定は[本来の漢字だけ]、保守的初期設定は[両方(常用漢字を先に)]です。この設定ができる前から使っている端末は、以前から本来の漢字を先頭にしていた語(醗酵・日蝕・棲息)を変えないよう[両方(本来の漢字を先に)]にしてあります。")
+            Text("表外字を同じ音の常用漢字に置き換えた書き方(1956年 国語審議会報告『同音の漢字による書きかえ』の\(KanjiRewriteTable.switchablePairs.count)語)の扱いを選びます。『醗酵前』『蒸溜所』のような、その語を含む語にも効きます。1字単位の書きかえ(廻→回、智→知 など)は人名・地名を巻き込むので対象外です。報告にある 智慧→知恵 も対象外です(智慧 は仏教の語でもあり、字を替えただけの組ではないため)。報告の後に常用漢字に加わった字の組(臆測⇄憶測、肝腎⇄肝心、研磨⇄研摩 など)は X.9 で選びます。追加語彙に登録した語と、学習した語は対象外です。現代的初期設定は[両方(本来の漢字を先に)]、戦略的初期設定は[本来の漢字だけ]、保守的初期設定は[両方(常用漢字を先に)]です。この設定ができる前から使っている端末は、以前から本来の漢字を先頭にしていた語(醗酵・日蝕・棲息)を変えないよう[両方(本来の漢字を先に)]にしてあります。")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -421,7 +421,7 @@ struct KanjiRewriteSettingsSection: View {
 }
 
 // 報告の後に書きかえ前の字が常用漢字に加わった組(臆測⇄憶測、肝腎⇄肝心。KanjiRewriteTable.lateStandardizedPairs)の書きかえ(3570)。
-// 選択肢は X.9 と同じ 4 択
+// 選択肢は X.8 と同じ 4 択
 struct LateStandardizedRewriteSettingsSection: View {
     @Binding var rawValue: String
 
@@ -450,7 +450,7 @@ struct LateStandardizedRewriteSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SettingsCardHeadline("X.10 常用漢字による書きかえ(後に追加)")
+            SettingsCardHeadline("X.9 常用漢字による書きかえ(後に追加)")
 
             KanjiRewriteOptionList(rawValue: $rawValue, subtitle: subtitle(for:))
 
@@ -463,7 +463,7 @@ struct LateStandardizedRewriteSettingsSection: View {
     }
 }
 
-// 書きかえの 4 択(X.9 と X.10 で共通。3570 で KanjiRewriteSettingsSection から切り出し)。選択肢はラジオボタン式で全部見せる
+// 書きかえの 4 択(X.8 と X.9 で共通。3570 で KanjiRewriteSettingsSection から切り出し)。選択肢はラジオボタン式で全部見せる
 struct KanjiRewriteOptionList: View {
     @Binding var rawValue: String
     let subtitle: (KanjiRewritePreference) -> String
@@ -487,7 +487,7 @@ struct KanjiRewriteOptionList: View {
     }
 }
 
-// ラジオボタン式の 1 行(見出し・説明・丸印、選択中は 1.2pt の枠)。X.16 と書きかえの 4 択の写しを 1 つに(3829)
+// ラジオボタン式の 1 行(見出し・説明・丸印、選択中は 1.2pt の枠)。C.2 と書きかえの 4 択の写しを 1 つに(3829)
 private struct RadioOptionRow: View {
     let title: String
     let subtitle: String
@@ -550,7 +550,7 @@ struct HistoricalKanaCandidatesSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SettingsCardHeadline("X.3 旧仮名遣い候補")
+            SettingsCardHeadline("X.2 旧仮名遣い候補")
 
             Toggle("旧仮名遣いの候補を含める", isOn: $isEnabled)
                 .toggleStyle(.switch)
@@ -568,7 +568,7 @@ struct IterationMarkCandidatesSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SettingsCardHeadline("X.4 仮名の踊り字候補")
+            SettingsCardHeadline("X.3 仮名の踊り字候補")
 
             Toggle("仮名の踊り字の候補を含める", isOn: $isEnabled)
                 .toggleStyle(.switch)
@@ -625,7 +625,7 @@ struct KaCounterVariantSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SettingsCardTitle(title: "X.12 助数詞型suffixe / 数詞類別suffixe – ka", subtitle: "un endroit, deux endroits, …")
+            SettingsCardTitle(title: "X.10 助数詞型suffixe / 数詞類別suffixe – ka", subtitle: "un endroit, deux endroits, …")
 
             VStack(spacing: 8) {
                 ForEach(preference.order) { variant in
@@ -710,7 +710,7 @@ struct InflectionalKanaVariantSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SettingsCardTitle(title: "X.13 送り仮名の許容形 – orthographe", subtitle: "送り仮名の付け方(1973 年内閣告示)の許容")
+            SettingsCardTitle(title: "X.11 送り仮名の許容形 – orthographe", subtitle: "送り仮名の付け方(1973 年内閣告示)の許容")
 
             VStack(alignment: .leading, spacing: 12) {
                 ForEach(InflectionalKanaVariantGroup.allCases) { group in
@@ -751,13 +751,13 @@ struct InflectionalKanaVariantSettingsSection: View {
     }
 }
 
-// 数詞+助数詞の表記(X.18。3702): アラビア数字(2枚)と漢数字(二枚)のどちらを先に出すか、片方だけにするか
+// 数詞+助数詞の表記(X.13。3702): アラビア数字(2枚)と漢数字(二枚)のどちらを先に出すか、片方だけにするか
 struct NumeralStyleSettingsSection: View {
     @Binding var selection: NumeralStylePreference
 
     var body: some View {
         SegmentedSettingsCard(
-            title: "X.18 数詞の表記 – chiffres",
+            title: "X.13 数詞の表記 – chiffres",
             subtitle: "2枚 / 二枚",
             pickerTitle: "数詞の表記",
             selection: $selection,
@@ -766,7 +766,7 @@ struct NumeralStyleSettingsSection: View {
             footnote: """
             にまい・ひとけた・だいにかい のように数と助数詞を続けて打ったとき、アラビア数字の表記(2枚・1桁・第2回)と漢数字の表記(二枚・一桁・第二回)をどの順で出すか、片方だけにするかを決めます。辞書に語としてある 一枚・三本 はこの設定に関わらず出ます。
 
-            助数詞の『か』の字(1か所 / 1箇所 / 1ヶ所)は X.12 で選びます。現代的初期設定は アラビア数字が先、戦略的初期設定は アラビア数字だけ、保守的初期設定は 漢数字が先 です。
+            助数詞の『か』の字(1か所 / 1箇所 / 1ヶ所)は X.10 で選びます。現代的初期設定は アラビア数字が先、戦略的初期設定は アラビア数字だけ、保守的初期設定は 漢数字が先 です。
             """
         )
     }

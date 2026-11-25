@@ -55,7 +55,7 @@ extension KeyboardViewController {
         }
         kanaKanjiConverter.setKanaSpellingSuppressedCategories(kanaSpellingSuppressed)
 
-        // 国旗・学習した絵文字も emoji 候補(X.15)に従う(3423)
+        // 国旗・学習した絵文字も emoji 候補(C.1)に従う(3423)
         kanaKanjiConverter.setEmojiCandidatesEnabled(currentEmojiCandidateDisplayEnabled(from: sharedDefaults))
 
         // 同音の漢字による書きかえ(3422)。値が無い(アプリを開く前の更新直後)ときは 両方(前を先に。KanjiRewritePreference.existingInstallDefault)
@@ -70,7 +70,7 @@ extension KeyboardViewController {
                 fallback: true
             )
         )
-        // 報告の後に常用漢字に加わった字の組(臆測/肝腎。X.10、3570)。値が無い端末は 両方(本来の漢字を先に)
+        // 報告の後に常用漢字に加わった字の組(臆測/肝腎。X.9、3570)。値が無い端末は 両方(本来の漢字を先に)
         kanaKanjiConverter.setLateStandardizedRewritePreference(
             KanjiRewritePreference.decode(sharedDefaults?.string(forKey: SharedDefaultsKeys.lateStandardizedRewritePreference))
         )
@@ -98,7 +98,7 @@ extension KeyboardViewController {
                 fallback: false
             )
         )
-        // 形式名詞の 目 に め の候補も出す(X.14 のサブ項目。3790)。値が無い端末は組み込みの値(オン)
+        // 形式名詞の 目 に め の候補も出す(X.12 のサブ項目。3790)。値が無い端末は組み込みの値(オン)
         kanaKanjiConverter.setFormalNounMeKanaCandidatesEnabled(
             sharedBoolValue(
                 from: sharedDefaults,

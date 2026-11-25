@@ -939,7 +939,7 @@ extension KanaKanjiConverter {
             return candidates
         }
 
-        // 踊り字を含む追加語彙・学習語彙(祇園 さゝ木 等)は設定に関わらず出す(3364、ユーザ指定)。旧字体の設定(X.7)が
+        // 踊り字を含む追加語彙・学習語彙(祇園 さゝ木 等)は設定に関わらず出す(3364、ユーザ指定)。旧字体の設定(X.6)が
         // 追加語彙を常に対象外にしているのと揃える。踊り字を含む候補が来たときだけ語彙を見る(普段の変換の速度に響かない)
         var userIterationSurfaces: [String]? = nil
         func isUserIterationMarkWord(_ candidate: String) -> Bool {

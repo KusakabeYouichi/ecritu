@@ -37,7 +37,7 @@ iPad 監査(docs/ipad-layout-separation-plan.md)で挙げた「ビュー側の c
 
 ## 3. 問題点(影響の大きい順)
 
-1. **設定の型と鍵が二重定義**。App/SettingsModels.swift の enum(KanaLayoutOption 等 20 個)と拡張側の enum(KanaLayoutMode 等 20 個)が同じ rawValue を別々に持ち、鍵の文字列も App(SettingsKeys)と拡張(SharedDefaultsKeys、99 本)で別々に書いてある。一致はコメントと目視だけ。3618 の E.5 で初期値のずれ(🌐 上フリック)が実機で露見したのはこの構造のため。macOS 版が加わると三重になる。
+1. **設定の型と鍵が二重定義**。App/SettingsModels.swift の enum(KanaLayoutOption 等 20 個)と拡張側の enum(KanaLayoutMode 等 20 個)が同じ rawValue を別々に持ち、鍵の文字列も App(SettingsKeys)と拡張(SharedDefaultsKeys、99 本)で別々に書いてある。一致はコメントと目視だけ。3618 の T.4 で初期値のずれ(🌐 上フリック)が実機で露見したのはこの構造のため。macOS 版が加わると三重になる。
 2. **入力セッションが iOS のコントローラーに埋まっている**(上記)。textDocumentProxy への参照 66 か所。
 3. **変換中核に module の境界が無い**。ポータビリティーは検査スクリプト頼み。Mac ターゲットを足すと、約 60 本のファイルの pbxproj 手動登録が 3 ターゲット分になる(xcodeproj gem は é の scheme を壊す。project_pbxproj_xcodeproj_gem)。
 4. **資源の複製がビルドフェーズ script に依存**。Mac ターゲットにも同じ資源(81MB の辞書を含む)が要る。共有のリソースバンドルが無い。

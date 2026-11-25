@@ -16,7 +16,7 @@ extension KeyboardViewController {
         let isSystemDictionaryFallback: Bool
         let hasFullAccess: Bool
         let keyboardBackgroundThemeRawValue: String
-        // 候補の文字(V.5)。tokushima 方式で apple を選んでいたら 16pt に落としたあとの値
+        // 候補の文字(V.3)。tokushima 方式で apple を選んでいたら 16pt に落としたあとの値
         let candidateFontStyle: CandidateFontStyle
         let reservesCandidateCompositionRow: Bool
         let basicSymbolOrderRawValue: String
@@ -268,7 +268,7 @@ extension KeyboardViewController {
             fallback: 0.1,
             range: 0.05...0.2
         )
-        // 左端のモード切り替え列の割り当て(E.5)。fallback は組み込みの初期値(App の builtInDefaultValues と同じ)
+        // 左端のモード切り替え列の割り当て(T.4)。fallback は組み込みの初期値(App の builtInDefaultValues と同じ)
         let leftModeSwitchNumberKeyRightFlickActionRawValue = sharedStringValue(
             from: sharedDefaults,
             key: SharedDefaultsKeys.leftModeSwitchNumberKeyRightFlickAction,

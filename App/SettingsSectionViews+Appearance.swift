@@ -23,7 +23,7 @@ struct AccentColorSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SettingsCardHeadline("V.3 アクセントカラー")
+            SettingsCardHeadline("V.1 アクセントカラー")
 
             HStack(spacing: 8) {
                 ForEach(AccentColorOption.allCases) { option in
@@ -78,7 +78,7 @@ struct ThemeColorSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SettingsCardHeadline("V.4 テーマカラー")
+            SettingsCardHeadline("V.2 テーマカラー")
 
             VStack(spacing: 8) {
                 ForEach(KeyboardBackgroundThemeOption.allCases) { option in
@@ -172,7 +172,7 @@ struct FlickGuideDisplaySettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SettingsCardHeadline("G.1 ガイド文字表示")
+            SettingsCardHeadline("V.4 ガイド文字表示")
 
             VStack(alignment: .leading, spacing: 10) {
                 Text("かな入力")
@@ -227,7 +227,7 @@ struct FlickGuideDisplaySettingsSection: View {
     }
 }
 
-// V.5 候補の文字(3644、ユーザ指定)。tokushima式のときは 17.5pt と Apple と同じ を灰色にして選べなくする(3649)
+// V.3 候補の文字(3644、ユーザ指定)。tokushima式のときは 17.5pt と Apple と同じ を灰色にして選べなくする(3649)
 struct CandidateFontStyleSettingsSection: View {
     @Binding var rawValue: String
     let composingTextStyleRawValue: String
@@ -242,7 +242,7 @@ struct CandidateFontStyleSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SettingsCardHeadline("V.5 候補の文字")
+            SettingsCardHeadline("V.3 候補の文字")
 
             HStack(spacing: 8) {
                 ForEach(CandidateFontStyleOption.allCases) { option in

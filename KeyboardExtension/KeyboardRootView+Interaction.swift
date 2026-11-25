@@ -307,7 +307,7 @@ extension KeyboardRootView {
         openModeSwitcherPanel(target, triggerLabel: triggerLabel ?? "🌐 キー \(direction)")
     }
 
-    // 左端上段[123]・中段[abc]・下段[あい] の右フリック(3618)。割り当ては設定 E.5
+    // 左端上段[123]・中段[abc]・下段[あい] の右フリック(3618)。割り当ては設定 T.4
     func selectLeftModeSwitchKeyRightFlick(_ action: KanaModeSwitcherAction, keyTitle: String) {
         openModeSwitcherPanel(
             KeyboardPanelRouting.panelTarget(for: action),
@@ -356,7 +356,7 @@ extension KeyboardRootView {
         return true
     }
 
-    // 左端最下段のキーのタップ(.milieu)と右フリック(.droite)。割り当ては設定 E.5、上・下・左は何もしない
+    // 左端最下段のキーのタップ(.milieu)と右フリック(.droite)。割り当ては設定 T.4、上・下・左は何もしない
     func selectKanaModeSwitcher(direction: FlickDirection, triggerLabel: String? = nil) {
         guard !rejectsModeSwitchForShortTouch(direction: direction) else {
             return

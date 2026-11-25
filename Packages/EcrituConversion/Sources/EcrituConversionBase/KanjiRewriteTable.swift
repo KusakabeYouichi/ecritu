@@ -1,8 +1,8 @@
 import Foundation
 
 // 生成ファイル。tools/build_kakikae_table.py が references/kakikae.plist から作る。手で直さない(3422)
-// 同音の漢字による書きかえ(1956 年 国語審議会報告)の語の組。コンテナー設定 X.9 で 書きかえ前だけ/後だけ/両方 を選ぶ。
-// 報告の後に書きかえ前の字が常用漢字に加わった組は X.10 で別に選ぶ(3570)
+// 同音の漢字による書きかえ(1956 年 国語審議会報告)の語の組。コンテナー設定 X.8 で 書きかえ前だけ/後だけ/両方 を選ぶ。
+// 報告の後に書きかえ前の字が常用漢字に加わった組は X.9 で別に選ぶ(3570)
 public enum KanjiRewriteTable {
     // (書きかえ前, 書きかえ後, 報告の後に常用漢字に加わった字の組か)。plist の順
     static let pairs: [(before: String, after: String, isLateStandardized: Bool)] = [
@@ -316,13 +316,13 @@ public enum KanjiRewriteTable {
         ("生薑", "生姜", false),
     ]
 
-    // X.9 で選ぶ組(isLateStandardized を除く)
+    // X.8 で選ぶ組(isLateStandardized を除く)
     public static let switchablePairs: [(before: String, after: String)] = pairs.filter { !$0.isLateStandardized }.map { ($0.before, $0.after) }
 
-    // X.10 で選ぶ組(報告の後に常用漢字に加わった字の組。3570)
+    // X.9 で選ぶ組(報告の後に常用漢字に加わった字の組。3570)
     public static let lateStandardizedPairs: [(before: String, after: String)] = pairs.filter { $0.isLateStandardized }.map { ($0.before, $0.after) }
 
-    // 書きかえ前 → 書きかえ後 / 書きかえ後 → 書きかえ前(X.9 の組だけ)
+    // 書きかえ前 → 書きかえ後 / 書きかえ後 → 書きかえ前(X.8 の組だけ)
     public static let afterByBefore: [String: String] = Dictionary(switchablePairs.map { ($0.before, $0.after) }, uniquingKeysWith: { first, _ in first })
     static let beforeByAfter: [String: String] = Dictionary(switchablePairs.map { ($0.after, $0.before) }, uniquingKeysWith: { first, _ in first })
 

@@ -1358,7 +1358,7 @@ extension KanaKanjiConverter {
         }
     }
 
-    // X.14 のサブ項目 形式名詞化(3790、ユーザ指定)。経験や境遇を表す形式名詞の 目(ひどい目に遭う/痛い目を見る/憂き目)。
+    // X.12 のサブ項目 形式名詞化(3790、ユーザ指定)。経験や境遇を表す形式名詞の 目(ひどい目に遭う/痛い目を見る/憂き目)。
     // オン: 目 の形の直後に、目 を め にした形(ひどいめに遭う)を足す(目 が先。上位 2 つの 目 の形まで)。
     // オフ: 目 の形と対になっている め の形を出さない(読みそのままの全部かなは残す)。
     // 体の 目(そんな目で見る/悲しい目をして)と 語が続く 目(目つき)、めでたい の め を巻き込まないよう、
@@ -1428,7 +1428,7 @@ extension KanaKanjiConverter {
         return output
     }
 
-    // X.14(序数の め)が『ひらがなが先』のとき、連文節の 助数詞+目(10日目の)を 日め に差し替え、目 の形をその後ろに並べる(3750)。
+    // X.12(序数の め)が『ひらがなが先』のとき、連文節の 助数詞+目(10日目の)を 日め に差し替え、目 の形をその後ろに並べる(3750)。
     // 単文節は applyMeSuffixPreferences が並べるが、連文節の結果には効いておらず 10+にちめのきょう が 日目の… だった(ユーザ報告)。
     // 人目/役目 のような語を巻き込まないよう、数字の直後(文頭)か、候補の中で数字の後ろにある 助数詞+目 だけ。
     // 序数として定着した語(番目/代目/丁目 等。ordinalMeEstablishedStemTailCharacters)は触らない
@@ -1522,7 +1522,7 @@ extension KanaKanjiConverter {
     // 変わる(颱風 は語コストが高く、台風 を禁止すると たいふうのぜんちょう が 大風の全長 になる)ので、区切りは
     // そのままにして表記だけ差し替える。書きかえ前→後(醗酵→発酵)はどこでも、後→前(回転→廻転)は語の終わり
     // (直後が漢字でない)ときだけ(一丁目→一挺目 のような語の中を巻き込まない)。両方を出すときは好む側を先に並べる。
-    // X.9 の組は preference、X.10 の組(臆測/憶測)は lateStandardized で選ぶ(nil のグループは触らない。3570)。
+    // X.8 の組は preference、X.9 の組(臆測/憶測)は lateStandardized で選ぶ(nil のグループは触らない。3570)。
     // 先に『だけ』のグループを全部書きかえ、その結果を基準に『両方』のグループの好む形→他方を並べる(出さない表記を漏らさない)
     static func applyKanjiRewrite(
         _ preference: KanjiRewritePreference?,
@@ -1542,7 +1542,7 @@ extension KanaKanjiConverter {
                     let from = toBefore ? pair.after : pair.before
                     let to = toBefore ? pair.before : pair.after
                     let following = rest.dropFirst(from.count).first
-                    // X.10 の組は前→後も語の終わりだけ(肝腎症候群→肝心症候群 にしない。3570)。
+                    // X.9 の組は前→後も語の終わりだけ(肝腎症候群→肝心症候群 にしない。3570)。
                     // 決まった複合語の後ろの字(蒸留酒/蒸留所)だけは語の途中でも戻す(定数コメント参照。3695)
                     if (!toBefore && !late) || following.map({ !isKanjiCharacter($0) }) ?? true
                         || (toBefore && !late && following.map({ kanjiRewriteCompoundTailsAllowingRewrite[from]?.contains($0) ?? false }) ?? false) {
@@ -1564,7 +1564,7 @@ extension KanaKanjiConverter {
             }
         }
         for candidate in candidates {
-            // 日常語の例外(了解/回復)。X.10 の組も例外の表に載る語(理屈/理窟。3739)だけ同じに扱う
+            // 日常語の例外(了解/回復)。X.9 の組も例外の表に載る語(理屈/理窟。3739)だけ同じに扱う
             let groups = [
                 (preference: preference?.demotingEverydayPair(for: candidate, enabled: everydayException), late: false),
                 (preference: lateStandardized?.demotingEverydayPair(for: candidate, enabled: everydayException), late: true),

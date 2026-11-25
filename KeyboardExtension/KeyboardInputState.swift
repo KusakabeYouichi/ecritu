@@ -301,7 +301,7 @@ enum KeyboardPanelRouting {
         }
     }
 
-    // 設定の割り当て(E.5)→ 開く面。1 対 1
+    // 設定の割り当て(T.4)→ 開く面。1 対 1
     static func panelTarget(for action: KeyboardRootView.KanaModeSwitcherAction) -> KeyboardPanelTarget {
         switch action {
         case .emoji:

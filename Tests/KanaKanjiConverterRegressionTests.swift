@@ -1716,7 +1716,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("ぱんをつくる").first, "パンを作る")
         XCTAssertEqual(multi("ぎゅうにゅうでぷりんをつくる").first, "牛乳でプリンを作る")
         XCTAssertEqual(multi("ちーずけーきをつくる").first, "チーズケーキを作る")
-        // X.9 を 本来の漢字を先に にしたとき、蒸留酒/蒸留所 のような決まった複合語も 蒸溜 に
+        // X.8 を 本来の漢字を先に にしたとき、蒸留酒/蒸留所 のような決まった複合語も 蒸溜 に
         converter.setKanjiRewritePreference(.bothAfterFirst)
         XCTAssertEqual(multi("ぶどうしぼりかすのじょうりゅうしゅ").first, "ぶどう絞りかすの蒸留酒")
         // 以降は実機の設定(両方・本来の漢字を先に)のまま見る
@@ -2107,7 +2107,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(single("かれは").prefix(2)), ["彼は", "かれは"], "\(single("かれは").prefix(4))")
         XCTAssertEqual(multi("あるでしょ").first, "あるでしょ", "\(multi("あるでしょ").prefix(3))")
         XCTAssertEqual(multi("かれはがっこうにいった").first, "彼は学校に行った")
-        // 書きかえの日常語の例外に 理屈/画期的(本来の漢字を先に でも常用漢字を先に)。理窟 は X.10 の組(ユーザ指定)
+        // 書きかえの日常語の例外に 理屈/画期的(本来の漢字を先に でも常用漢字を先に)。理窟 は X.9 の組(ユーザ指定)
         converter.setKanjiRewriteEverydayException(true)
         converter.setKanjiRewritePreference(.bothBeforeFirst)
         converter.setLateStandardizedRewritePreference(.bothBeforeFirst)
@@ -2115,7 +2115,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(single("りくつ").contains("理窟"), "\(single("りくつ").prefix(4))")
         XCTAssertEqual(single("かっきてき").first, "画期的", "\(single("かっきてき").prefix(4))")
         XCTAssertTrue(multi("りくつをこねる").first?.hasPrefix("理屈を") ?? false, "\(multi("りくつをこねる").prefix(3))")
-        // 例外の表に無い X.10 の語(臆測)は設定どおり
+        // 例外の表に無い X.9 の語(臆測)は設定どおり
         XCTAssertEqual(single("おくそく").first, "臆測", "\(single("おくそく").prefix(4))")
     }
 
@@ -3118,7 +3118,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.multiClauseCandidates(for: "こせきのある", systemCandidateMode: .surface).first, "戸籍のある")
     }
 
-    // 数字の後の れつめを も X.14 の め に従う(列 が助数詞の表に無かった。ユーザ報告 3655)
+    // 数字の後の れつめを も X.12 の め に従う(列 が助数詞の表に無かった。ユーザ報告 3655)
     func testRegressionRealLMDigitRetsumeWo() throws {
         try prepareRealLMDictionary()
         converter.setOrdinalMeKanjiPreferred(false)
@@ -3990,7 +3990,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(kaishime.first, "買い占めよね", "multi=\(kaishime.prefix(4))")
 
         // せんじつはじめて: じつ 読みの 日 助数詞合成(1000日)を作らない
-        // 3633: はじめて は 副詞(漢字も残す)(X.8)で、かな はじめて が漢字 初めて の bigram(文末)を代用するようになり、
+        // 3633: はじめて は 副詞(漢字も残す)(X.7)で、かな はじめて が漢字 初めて の bigram(文末)を代用するようになり、
         // かなが漢字のすぐ上に(はじめての/はじめてあった と同じ並び)
         let senjitsu = converter.multiClauseCandidates(for: "せんじつはじめて", systemCandidateMode: .surface)
         XCTAssertEqual(Array(senjitsu.prefix(2)), ["先日はじめて", "先日初めて"], "multi=\(senjitsu.prefix(4))")
@@ -17312,7 +17312,7 @@ extension KanaKanjiConverterRegressionTests {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
         let single = converter.candidates(for: "なのか", limit: 6, systemCandidateMode: .surface)
-        // 3804 から 日付の 2 つの形は X.18 の順(7日、七日)
+        // 3804 から 日付の 2 つの形は X.13 の順(7日、七日)
         XCTAssertEqual(Array(single.prefix(3)), ["なのか", "7日", "七日"], "single=\(single)")
     }
 }
@@ -23215,7 +23215,7 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("おせわになりました").first, "お世話になりました")
         // 人名でない名詞+ください は減点しない(水ください)
         XCTAssertEqual(multi("みずください").first, "水ください", "\(multi("みずください"))")
-        // にんじん: かな→カタカナ→人参→人蔘(ユーザ指定 3632)。人参/人蔘 は書きかえ(X.9)の組
+        // にんじん: かな→カタカナ→人参→人蔘(ユーザ指定 3632)。人参/人蔘 は書きかえ(X.8)の組
         XCTAssertEqual(Array(single("にんじん").prefix(4)), ["にんじん", "ニンジン", "人参", "人蔘"], "\(single("にんじん"))")
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "にんじん"))
         XCTAssertEqual(multi("にんじんを").first, "にんじんを", "\(multi("にんじんを"))")
@@ -23269,9 +23269,9 @@ extension KanaKanjiConverterRegressionTests {
             return converter.candidates(for: reading, limit: limit, systemCandidateMode: .surface)
         }
         for (reading, top) in [
-            // 日付は 3793 から X.18(アラビア数字が先)の順: 2日、二日
+            // 日付は 3793 から X.13(アラビア数字が先)の順: 2日、二日
             ("ふつか", "2日"), ("みっか", "3日"), ("よっか", "4日"), ("ようか", "8日"), ("ここのか", "9日"), ("とおか", "10日"),
-            // 月名も 3804 から X.18 の順: 2月、二月
+            // 月名も 3804 から X.13 の順: 2月、二月
             ("はつか", "20日"), ("にがつ", "2月"), ("さんがつ", "3月"), ("しがつ", "4月"), ("しちがつ", "7月"),
             ("はちがつ", "8月"), ("くがつ", "9月"), ("じゅういちがつ", "11月"), ("じゅうにがつ", "12月")
         ] {
@@ -23282,7 +23282,7 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertNotEqual(single("いつか").first, "五日")
         XCTAssertTrue(single("いつか", limit: 40).contains("五日"))
         converter.invalidateCandidateCache()
-        // 3793 から 日付は X.18 の順(四月8日、四月八日)
+        // 3793 から 日付は X.13 の順(四月8日、四月八日)
         // 3805 から 月名+日付の和語 は 1 語として単文節の生成で出る(連文節は空)
         XCTAssertEqual(Array(single("しがつようか").prefix(2)), ["4月8日", "四月八日"])
         converter.invalidateCandidateCache()
@@ -23437,7 +23437,7 @@ extension KanaKanjiConverterRegressionTests {
     }
 
     // 3422: 同音の漢字による書きかえ(廻転⇄回転)の 4 択。単文節・連文節・複合語(醗酵前)と、後から常用漢字に
-    // 加わった字の組(肝腎⇄肝心)は X.9 では動かない(X.10 の設定が nil なので両方。3570)
+    // 加わった字の組(肝腎⇄肝心)は X.8 では動かない(X.9 の設定が nil なので両方。3570)
     func testKanjiRewritePreferenceModes() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
@@ -23489,7 +23489,7 @@ extension KanaKanjiConverterRegressionTests {
         list = single("はっこうまえ")
         XCTAssertFalse(list.contains("醗酵前"), "\(list)")
 
-        // 後から常用漢字に加わった字の組は X.9 の設定に関わらず両方(X.10 が nil。3570)
+        // 後から常用漢字に加わった字の組は X.8 の設定に関わらず両方(X.9 が nil。3570)
         converter.setKanjiRewritePreference(.afterOnly)
         list = single("かんじん")
         XCTAssertNotNil(index(list, "肝腎"), "\(list)")
@@ -23555,7 +23555,7 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
-    // 3427: 初期投入の misc の語(交叉点/氷醋酸)も X.9 に従う。実機と同じく misc は初期投入(バンドル)から読み、
+    // 3427: 初期投入の misc の語(交叉点/氷醋酸)も X.8 に従う。実機と同じく misc は初期投入(バンドル)から読み、
     // 手動の追加語彙には入れない(手動の追加語彙は対象外)
     func testKanjiRewriteAppliesToInitialMiscVocabulary() throws {
         try prepareRealLMDictionary()
@@ -23980,7 +23980,7 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(list.prefix(5)), ["1人", "ひとり", "一人", "火取り", "独り"], "\(list)")
     }
 
-    // 3835: X.8 の補助用言をオフにしても 下さい/御座います/御免なさい が出なかった(辞書にも活用の生成にも無い。ユーザ報告)。
+    // 3835: X.7 の補助用言をオフにしても 下さい/御座います/御免なさい が出なかった(辞書にも活用の生成にも無い。ユーザ報告)。
     // seed で供給する。オフなら かな の次、オン(初期設定)なら出さない
     func testKanaSpellingAuxiliaryKanjiSuppliedWhenUnsuppressed() throws {
         try prepareRealLMDictionary()
@@ -24076,7 +24076,7 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(kaini.first, "回に", "\(kaini)")
     }
 
-    // 3454: あるいは/もしくは で 或いは/若しくは が出る(Sudachi は あるいわ/もしくわ 読みのみ)。X.8 の接続詞に従う
+    // 3454: あるいは/もしくは で 或いは/若しくは が出る(Sudachi は あるいわ/もしくわ 読みのみ)。X.7 の接続詞に従う
     func testAruiwaMoshikuwaSupplied() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
@@ -24092,7 +24092,7 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
-    // 3452: 歴史的仮名遣いの書き方(なほ更/言ひ分/考へる/自づと)は X.3 がオフなら出さない。人名・固有名詞は残す
+    // 3452: 歴史的仮名遣いの書き方(なほ更/言ひ分/考へる/自づと)は X.2 がオフなら出さない。人名・固有名詞は残す
     func testHistoricalKanaSpellingFiltered() {
         typealias C = KanaKanjiConverter
         XCTAssertTrue(C.isHistoricalKanaSpelling("なほ更", reading: "なおさら"))
@@ -24118,7 +24118,7 @@ extension KanaKanjiConverterRegressionTests {
         }
         let multi = converter.multiClauseCandidates(for: "なおさらだ", systemCandidateMode: .surface)
         XCTAssertFalse(multi.contains(where: { $0.contains("なほ") }), "multi=\(multi.prefix(4))")
-        // X.3 を入れれば出る
+        // X.2 を入れれば出る
         converter.setHistoricalKanaSurfaceAllowed(true)
         XCTAssertTrue(converter.candidates(for: "なおさら", limit: 20, systemCandidateMode: .surface).contains("なほ更"))
         converter.setHistoricalKanaSurfaceAllowed(false)
@@ -25165,7 +25165,7 @@ extension KanaKanjiConverterRegressionTests {
             ("たべもの", ["食べもの", "食べ物"], ["喰べもの", "食べモノ", "たべ物"]),
             ("ごとう", ["後藤", "五島", "語頭", "誤答", "五藤"], ["五灯", "誤倒"]),
             ("ほうしん", ["方針", "放心", "疱疹", "砲身"], ["放神", "捧心"]),
-            // 即ち は かなで書く言葉(X.8)で初期設定は非表示なので、かなが先頭であることだけ見る
+            // 即ち は かなで書く言葉(X.7)で初期設定は非表示なので、かなが先頭であることだけ見る
             ("すなわち", ["すなわち"], ["乃ち", "即チ", "輒ち", "迺ち"]),
             ("はんきょう", ["反響", "反共", "板橋"], ["半凶", "范彊", "范疆"]),
             ("かんちょう", ["官庁", "館長", "干潮", "艦長", "浣腸", "管長"], ["勧懲", "灌腸", "官廰"]),
@@ -27024,7 +27024,7 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "じかんがたって", systemCandidateMode: .surface).first, "時間が経って")
         // 時間語でなければ 経って にしない。家 は 建つ(3893、ユーザ指定。それまでは 家が立って)
         XCTAssertEqual(converter.multiClauseCandidates(for: "いえがたって", systemCandidateMode: .surface).first, "家が建って")
-        // 恢復→回復 は書きかえ(X.9。恢 は表外字)。本来の漢字を先にする設定でも 回復 を先頭(了解 と同じ例外)
+        // 恢復→回復 は書きかえ(X.8。恢 は表外字)。本来の漢字を先にする設定でも 回復 を先頭(了解 と同じ例外)
         converter.setKanjiRewritePreference(.bothBeforeFirst)
         let kaifuku = converter.candidates(for: "かいふくしました", limit: 8, systemCandidateMode: .surface)
         XCTAssertEqual(kaifuku.first, "回復しました", "\(kaifuku)")
@@ -27204,7 +27204,7 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(single("ごはんと").prefix(3)), ["ご飯と", "御飯と", "午飯と"], "\(single("ごはんと"))")
         XCTAssertEqual(multi("ごはんとみそしる").first, "ご飯と味噌汁")
 
-        // 和語数詞も X.18 の設定(テストの既定は アラビア数字が先)に従う(3702)
+        // 和語数詞も X.13 の設定(テストの既定は アラビア数字が先)に従う(3702)
         for (reading, expected) in [("ひとけた", ["1桁", "一桁"]), ("ふたけた", ["2桁", "二桁"]), ("みけた", ["3桁", "三桁"]),
                                     ("ひとくみ", ["1組", "一組"]), ("いつつぶ", ["5粒", "五粒"])] {
             XCTAssertEqual(Array(single(reading).prefix(2)), expected, reading)
@@ -27256,7 +27256,7 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(KanaKanjiConverter.kanjiNumeralString(10), "十")
     }
 
-    // 3702: 数詞の表記(X.18)。漢語数詞(にまい)も和語数詞(ひとけた)も序数(だいにかい)も、単文節・連文節とも設定どおりの順と有無
+    // 3702: 数詞の表記(X.13)。漢語数詞(にまい)も和語数詞(ひとけた)も序数(だいにかい)も、単文節・連文節とも設定どおりの順と有無
     func testRegressionNumeralStylePreferenceOrdersAndFilters() throws {
         try prepareRealLMDictionary()
         defer { converter.setNumeralStylePreference(.arabicFirst) }
@@ -27347,7 +27347,7 @@ extension KanaKanjiConverterRegressionTests {
             let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
             XCTAssertEqual(multi.first, expected, "\(reading): \(multi.prefix(4))")
         }
-        // curated の 二つ/2つ も X.18 の順(3708)。単文節・連文節とも
+        // curated の 二つ/2つ も X.13 の順(3708)。単文節・連文節とも
         defer { converter.setNumeralStylePreference(.arabicFirst) }
         for (style, single, multi) in [(NumeralStylePreference.arabicFirst, ["2つ", "二つ"], "2つ買って"),
                                        (.kanjiFirst, ["二つ", "2つ"], "二つ買って")] {
@@ -27522,7 +27522,7 @@ extension KanaKanjiConverterRegressionTests {
         // 3732: 火+が+強/弱
         XCTAssertEqual(shown("ひがつよすぎた"), "火が強すぎた")
         XCTAssertEqual(shown("ひざしがつよい"), "日差しが強い")
-        // 3734: いぜん はかなを末尾(依然 を X.8 から外す)、いぜんとは は単文節の先頭そろえ(複合助詞)
+        // 3734: いぜん はかなを末尾(依然 を X.7 から外す)、いぜんとは は単文節の先頭そろえ(複合助詞)
         let izen = single("いぜん")
         XCTAssertEqual(Array(izen.prefix(2)), ["以前", "依然"], "\(izen)")
         XCTAssertEqual(Array(multi("いぜんとは").prefix(2)), ["以前とは", "依然とは"])
@@ -27578,7 +27578,7 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(sunda.prefix(2)), ["済んだ", "住んだ"], "\(sunda)")
         XCTAssertLessThan(sunda.firstIndex(of: "スンダ") ?? 99, sunda.firstIndex(of: "すんだ") ?? 0, "\(sunda)")
         XCTAssertEqual(shown("かんたんにすんだ"), "簡単に済んだ")
-        // 3750: 序数の め(X.14 ひらがなが先)を連文節にも、目/め+の+今日
+        // 3750: 序数の め(X.12 ひらがなが先)を連文節にも、目/め+の+今日
         converter.setOrdinalMeKanjiPreferred(false)
         let nichime = converter.multiClauseCandidates(for: "にちめのきょう", systemCandidateMode: .surface, precedingCharacter: "0")
         XCTAssertEqual(Array(nichime.prefix(2)), ["日めの今日", "日目の今日"], "\(nichime)")
@@ -28377,8 +28377,8 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(list.prefix(2)), ["土星の輪", "土星の環"], "\(list)")
     }
 
-    // 3570: 報告の後に常用漢字に加わった字の組(肝腎⇄肝心、臆測⇄憶測。X.10)は X.9 と別の 4 択で選ぶ。
-    // X.9(kanjiRewritePreference)は nil のまま、X.10 だけを設定する(独立性は IsIndependentOfKakikaePreference)
+    // 3570: 報告の後に常用漢字に加わった字の組(肝腎⇄肝心、臆測⇄憶測。X.9)は X.8 と別の 4 択で選ぶ。
+    // X.8(kanjiRewritePreference)は nil のまま、X.9 だけを設定する(独立性は IsIndependentOfKakikaePreference)
     private func lateStandardizedSingle(_ reading: String) -> [String] {
         converter.candidates(for: reading, limit: 20, systemCandidateMode: .surface)
     }
@@ -28435,7 +28435,7 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
-    // X.10 の組の語を含む別の語(肝腎症候群=肝臓と腎臓、研磨材)は 常用漢字だけ でも書きかえない。
+    // X.9 の組の語を含む別の語(肝腎症候群=肝臓と腎臓、研磨材)は 常用漢字だけ でも書きかえない。
     // 書きかえた表記(肝心症候群/研摩材)は辞書に無く、作ると別の意味になる(ユーザー指摘 3570)
     func testLateStandardizedRewriteDoesNotMakeCompoundForms() throws {
         try prepareRealLMDictionary()
@@ -28466,7 +28466,7 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertFalse(list.contains { $0.contains("憶測") }, "\(list)")
     }
 
-    // X.9 と X.10 はそれぞれの組にだけ効く
+    // X.8 と X.9 はそれぞれの組にだけ効く
     func testLateStandardizedRewriteIsIndependentOfKanjiRewritePreference() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
@@ -28485,7 +28485,7 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(okusoku.contains("憶測") && !okusoku.contains("臆測"), "\(okusoku)")
     }
 
-    // X.10 を入れる前(nil)は、X.9 が 常用漢字だけ でも 肝腎/肝心 の両方を出す(この設定より前の動作)
+    // X.9 を入れる前(nil)は、X.8 が 常用漢字だけ でも 肝腎/肝心 の両方を出す(この設定より前の動作)
     func testLateStandardizedRewriteNilKeepsBothForms() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
@@ -28508,20 +28508,20 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(list.firstIndex(of: "広範"), beforeIndex + 1, "\(list)")
     }
 
-    // X.9 が両方・X.10 が 常用漢字だけ のとき、連文節の変種に X.10 の本来の漢字(臆測)を漏らさない。X.9 の組は両方出る
+    // X.8 が両方・X.9 が 常用漢字だけ のとき、連文節の変種に X.9 の本来の漢字(臆測)を漏らさない。X.8 の組は両方出る
     func testLateStandardizedRewriteMultiClauseMixedGroupsHidesExcludedForm() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
         converter.setKanjiRewritePreference(.bothBeforeFirst)
         converter.setLateStandardizedRewritePreference(.afterOnly)
-        // かいてん は格子が 回転 を選ぶので、X.9 の両方(廻転 → 回転)が並ぶ
+        // かいてん は格子が 回転 を選ぶので、X.8 の両方(廻転 → 回転)が並ぶ
         let list = converter.multiClauseCandidates(for: "おくそくでかいてんする", systemCandidateMode: .surface)
         XCTAssertFalse(list.contains { $0.contains("臆測") }, "\(list)")
         XCTAssertTrue(list.contains { $0.contains("憶測") && $0.contains("廻転") }, "\(list)")
         XCTAssertTrue(list.contains { $0.contains("憶測") && $0.contains("回転") }, "\(list)")
     }
 
-    // 表: X.10 の組は 17 組、X.9 の組は 292 組(3632 で 人蔘/人参 を追加)。2 つのグループは語を共有せず、X.10 の語で日常語の例外に入るのは
+    // 表: X.9 の組は 17 組、X.8 の組は 292 組(3632 で 人蔘/人参 を追加)。2 つのグループは語を共有せず、X.9 の語で日常語の例外に入るのは
     // 理屈/理窟 だけ(ユーザ指定 3739)
     func testLateStandardizedTableSeparatesGroups() {
         XCTAssertEqual(KanjiRewriteTable.lateStandardizedPairs.count, 17)
@@ -28584,7 +28584,7 @@ extension KanaKanjiConverterRegressionTests {
         }
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
-        // AUDIT_KAKIKAE=afterOnly 等で X.9 の設定を変えて検査する(3683)
+        // AUDIT_KAKIKAE=afterOnly 等で X.8 の設定を変えて検査する(3683)
         if let raw = ProcessInfo.processInfo.environment["AUDIT_KAKIKAE"], let preference = KanjiRewritePreference(rawValue: raw) {
             converter.setKanjiRewritePreference(preference)
         }
@@ -28601,7 +28601,7 @@ extension KanaKanjiConverterRegressionTests {
             }
             converter.setInflectionalKanaVariantPreference(InflectionalKanaVariantPreference(modes: modes))
         }
-        // AUDIT_ADJME=1 で X.14 の 目(形状名詞化 め の漢字)をオンにする(実機の adjectiveMeKanjiCandidatesEnabled。3740)
+        // AUDIT_ADJME=1 で X.12 の 目(形状名詞化 め の漢字)をオンにする(実機の adjectiveMeKanjiCandidatesEnabled。3740)
         if ProcessInfo.processInfo.environment["AUDIT_ADJME"] != nil {
             converter.setAdjectiveMeKanjiCandidatesEnabled(true)
         }
@@ -28618,7 +28618,7 @@ extension KanaKanjiConverterRegressionTests {
                 if parts.count == 2 { _ = converter.learn(reading: parts[0], candidate: parts[1]) }
             }
         }
-        // AUDIT_KANAGAKI=adverb,conjunction,… で X.8 かなで書く言葉 の分類を実機と揃える(3688)
+        // AUDIT_KANAGAKI=adverb,conjunction,… で X.7 かなで書く言葉 の分類を実機と揃える(3688)
         if let raw = ProcessInfo.processInfo.environment["AUDIT_KANAGAKI"] {
             converter.setKanaSpellingSuppressedCategories(Set(raw.split(separator: ",").compactMap { KanaSpellingCategory(rawValue: String($0)) }))
         }
@@ -30052,7 +30052,7 @@ extension KanaKanjiConverterRegressionTests {
     }
 
     // 数字の直後の つめにしか の先頭が つ目にしか だった(3789、ユーザ報告)。数字の直後の つ+動詞 の供給(4つ買うか)が
-    // めにしか を 目にしか に変換して つ目にしか を先頭に足していた。X.14 が『め(ひらがな)が先』なら つめにしか を先に
+    // めにしか を 目にしか に変換して つ目にしか を先頭に足していた。X.12 が『め(ひらがな)が先』なら つめにしか を先に
     func testRegressionTsuMeAfterDigit3789() throws {
         let candidates = ["つめにしか", "爪にしか", "詰めにしか"]
         let tail: (String) -> String? = { $0 == "めにしか" ? "目にしか" : nil }
@@ -30072,7 +30072,7 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(kau.first, "つ買うか", "\(kau)")
     }
 
-    // X.14 のサブ項目 形式名詞化(3790、ユーザ指定)。形式名詞の 目(ひどい目に遭う/痛い目を見る)は、オンなら 目 の次に め の形も出し、
+    // X.12 のサブ項目 形式名詞化(3790、ユーザ指定)。形式名詞の 目(ひどい目に遭う/痛い目を見る)は、オンなら 目 の次に め の形も出し、
     // オフなら め の形を出さない。体の 目(そんな目で見る/悲しい目をして)、目つき、めでたい の め は対象外
     func testRegressionFormalNounMeKana3790() throws {
         try prepareRealLMDictionary()
@@ -30174,7 +30174,7 @@ extension KanaKanjiConverterRegressionTests {
     }
 
     // ついたち/ふつか/みっか… から アラビア数字の形(1日/2日/3日)も出す(3793、ユーザ指定。単語は登録せず、和語数詞の処理に日付の読みを足す)。
-    // 並びは X.18(数詞の表記)に従う
+    // 並びは X.13(数詞の表記)に従う
     func testRegressionNativeWordDayArabic3793() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
@@ -30211,7 +30211,7 @@ extension KanaKanjiConverterRegressionTests {
             XCTAssertEqual(shown(reading).first, expected, reading)
         }
         XCTAssertFalse(shown("いつかごいっしょに").contains(where: { $0.contains("5日") }))
-        // 文の中の登録語の日付(二日)は X.18 の順でアラビア数字の形と並ぶ。目/間/前/後 が続く形も
+        // 文の中の登録語の日付(二日)は X.13 の順でアラビア数字の形と並ぶ。目/間/前/後 が続く形も
         for (reading, first, second) in [
             ("ふつかにいく", "2日に行く", "二日に行く"), ("ごがつふつか", "5月2日", "五月二日"), ("みっかにいちど", "3日に一度", "三日に一度"),
             ("ふつかかん", "2日間", "二日間"), ("ふつかかんのりょこう", "2日間の旅行", "二日間の旅行"),
@@ -30231,7 +30231,7 @@ extension KanaKanjiConverterRegressionTests {
         try loadDeviceAddedVocabulary(includeSuppression: true)
         converter.invalidateCandidateCache()
         let list = converter.candidates(for: "いつか", limit: 48, systemCandidateMode: .surface)
-        // 日付の形はかなのすぐ次(X.18 の順)。人名(伊津佳/一香…)はその後ろ
+        // 日付の形はかなのすぐ次(X.13 の順)。人名(伊津佳/一香…)はその後ろ
         XCTAssertEqual(Array(list.prefix(3)), ["いつか", "5日", "五日"], "\(list.prefix(6))")
         converter.setNumeralStylePreference(.kanjiFirst)
         defer { converter.setNumeralStylePreference(.arabicFirst) }
@@ -31801,8 +31801,8 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(shown("だいがくにふぞくしている").first, "大学に附属している")
     }
 
-    // 3854: 智慧/知恵 は 同音の漢字による書きかえ(X.9)の対象から外す(ユーザ指定)。智慧 は 知恵 の意味に加えて仏教の語でも
-    // あり、字を替えただけの組でない。X.9 が 両方(本来の漢字を先に)のとき ちえ の先頭が 智慧 になり、3853 の並びが崩れていた
+    // 3854: 智慧/知恵 は 同音の漢字による書きかえ(X.8)の対象から外す(ユーザ指定)。智慧 は 知恵 の意味に加えて仏教の語でも
+    // あり、字を替えただけの組でない。X.8 が 両方(本来の漢字を先に)のとき ちえ の先頭が 智慧 になり、3853 の並びが崩れていた
     func testChieIsNotAKanjiRewritePair3854() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
@@ -31954,7 +31954,7 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
-    // 3840: だんの は 段の(ワイン用語優先がオンでも。Dãoの が先頭だった)。数字の直後の だんめ は X.14 に従い、
+    // 3840: だんの は 段の(ワイン用語優先がオンでも。Dãoの が先頭だった)。数字の直後の だんめ は X.12 に従い、
     // 『ひらがなが先』なら 段め、『漢字が先』なら 段目(段め が 6 番めだった)。ユーザ指定
     func testDanNoAndOrdinalDanMe3840() throws {
         try prepareRealLMDictionary()

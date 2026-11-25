@@ -341,7 +341,7 @@ extension KanaKanjiConverter {
         candidates = Self.liquorCategoryOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.brewingTsukuruOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.contextCuedHomophoneOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
-        // 形式名詞の 目/め(X.14 のサブ項目。3790)。読みの手掛かりの差し替え(酷い目→ひどい目)の後に置き、先頭の 目 の直後に め の形を足す
+        // 形式名詞の 目/め(X.12 のサブ項目。3790)。読みの手掛かりの差し替え(酷い目→ひどい目)の後に置き、先頭の 目 の直後に め の形を足す
         candidates = Self.applyFormalNounMeKana(
             to: candidates, reading: KanaTextNormalizer.normalizedReading(reading),
             enabled: withStateLock { formalNounMeKanaCandidatesEnabled }
@@ -400,7 +400,7 @@ extension KanaKanjiConverter {
             }
             candidates = candidates.filter { !isNounPpanashi($0) } + candidates.filter(isNounPpanashi)
         }
-        // 日付の和語の登録語(二日)は、X.18 の順でアラビア数字の形(2日)と並べる(3793)
+        // 日付の和語の登録語(二日)は、X.13 の順でアラビア数字の形(2日)と並べる(3793)
         candidates = Self.nativeWordDayNumeralStyleOrdered(
             reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates,
             style: withStateLock { numeralStylePreference },
@@ -409,7 +409,7 @@ extension KanaKanjiConverter {
             })
         // 月と日の表記は揃える(五月2日 は出さず、5月2日 か 五月二日。3804、ユーザ指定)
         candidates = Self.monthDayNumeralStyleUnified(candidates, style: withStateLock { numeralStylePreference })
-        // X.10 の組(臆測/憶測)はその設定で(3570)
+        // X.9 の組(臆測/憶測)はその設定で(3570)
         let (preference, lateStandardized) = withStateLock { (kanjiRewritePreference, lateStandardizedRewritePreference) }
         guard preference != nil || lateStandardized != nil, !candidates.isEmpty else {
             return candidates
@@ -466,7 +466,7 @@ extension KanaKanjiConverter {
         let learnedDictionary = store.learnedDictionary()
         let hasLearnedKaiNiHomophone = learnedDictionary["かいに"]?.contains(where: { $0 != "買いに" && $0 != "かいに" }) ?? false
         let manualAjoutVocabulary = store.ajoutVocabulary()
-        // 数詞の表記(X.18)。curated の 二つ/2つ の順に使う(3708)
+        // 数詞の表記(X.13)。curated の 二つ/2つ の順に使う(3708)
         let numeralStyleForLattice = withStateLock { numeralStylePreference }
         // 1 区間の上限(12 字)を超える追加語彙の読みの長さ(3505。定義コメント参照)
         let curatedLongReadingLengths = n > Self.multiClauseMaxSegmentReadingCount ? store.curatedLongReadingLengths() : []
@@ -1513,7 +1513,7 @@ extension KanaKanjiConverter {
                         let first = numeric.first(where: { $0.hasPrefix("数") }) {
                         seedOrderNounNodeBonuses[spanKeyByStart[start][end] + "-" + first] = Self.multiClauseSuuCounterCompoundBonus
                     }
-                    // curated の数量語(二つ/2つ)が両方あるとき、X.18 の順の表記に加点(定数コメント参照。3708)
+                    // curated の数量語(二つ/2つ)が両方あるとき、X.13 の順の表記に加点(定数コメント参照。3708)
                     let curatedNumeric = Self.curatedNumeralStylePairs(surfaces.filter { $0.isCurated }.map { $0.surface })
                     for surface in curatedNumeric
                     where Self.startsWithArabicDigit(surface) != numeralStyleForLattice.kanjiBeforeArabic {
@@ -7351,7 +7351,7 @@ extension KanaKanjiConverter {
                 // 除外され、変種上限4000も超えるため、この読みだけ両方の制限を外す。
                 // 無条件に許すと などという→等という/にほんビール が復活する
                 // 述語+ように(出るようになった)の 様 は、かな先頭のまま 2 番目に出す(3598、ユーザ指定)。形式名詞の 様 は
-                // かなで書く言葉(X.8)で述語直後だと禁止級に下げられ変種から落ちるが、〜様に は書き言葉の正しい表記。
+                // かなで書く言葉(X.7)で述語直後だと禁止級に下げられ変種から落ちるが、〜様に は書き言葉の正しい表記。
                 // よう を全般に KanaLead へ入れると ひつよう/りよう 等の語尾で keepKana が誤発火するので、この区間だけ許す
                 let isYouNiAfterPredicate: Bool = {
                     guard alt.surface == "様", chosen.surface == "よう", pos > 0,

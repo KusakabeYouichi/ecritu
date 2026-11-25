@@ -313,7 +313,7 @@ extension ContentView {
         SettingsKeys.idleCommitEnabled: IdleCommitSettings.enabledDefault,
         SettingsKeys.idleCommitInterval: IdleCommitSettings.intervalDefault,
         SettingsKeys.composingTextStyle: ComposingTextStyleOption.ecritu.rawValue,
-        // E.5(3618): 上 3 段の右フリックと最下段の右フリックは 3 つの初期設定で共通。最下段のタップと 🌐 の上は初期設定ごと
+        // T.4(3618): 上 3 段の右フリックと最下段の右フリックは 3 つの初期設定で共通。最下段のタップと 🌐 の上は初期設定ごと
         SettingsKeys.leftModeSwitchNumberKeyRightFlickAction: KanaModeSwitcherActionOption.formattedNumber.rawValue,
         SettingsKeys.leftModeSwitchLatinKeyRightFlickAction: KanaModeSwitcherActionOption.emoji.rawValue,
         SettingsKeys.leftModeSwitchKanaKeyRightFlickAction: KanaModeSwitcherActionOption.kanjiRadical.rawValue,
@@ -383,7 +383,7 @@ extension ContentView {
         // 同音の漢字による書きかえは 本来の漢字だけ(ユーザ指定 3422)
         SettingsKeys.kanjiRewritePreference: KanjiRewritePreference.strategicDefault.rawValue,
         SettingsKeys.kanjiRewriteEverydayException: false,   // 戦略的=オフ(設定どおり。ユーザ指定 3644)
-        SettingsKeys.lateStandardizedRewritePreference: KanjiRewritePreference.strategicDefault.rawValue,  // X.10 も 本来の漢字だけ(ユーザ指定 3570)
+        SettingsKeys.lateStandardizedRewritePreference: KanjiRewritePreference.strategicDefault.rawValue,  // X.9 も 本来の漢字だけ(ユーザ指定 3570)
         SettingsKeys.suspendMemorySlimmingEnabled: true,
         SettingsKeys.shortcutVocabularyRecentsFirst: true,
         SettingsKeys.kaomojiCandidateDisplayEnabled: true,
@@ -473,7 +473,7 @@ extension ContentView {
         SettingsKeys.inflectionalKanaVariantPreference: InflectionalKanaVariantPreference.conservative.encoded,  // 保守的=本則を先に許容も出す(標準は本則だけ)
         SettingsKeys.kanjiRewritePreference: KanjiRewritePreference.bothAfterFirst.rawValue,  // 保守的=常用漢字を先に前も出す(ユーザ指定 3422)
         SettingsKeys.kanjiRewriteEverydayException: true,   // 保守的=オン(ユーザ指定 3644)
-        SettingsKeys.lateStandardizedRewritePreference: KanjiRewritePreference.bothAfterFirst.rawValue,  // 保守的=X.9 と同じ(ユーザ指定 3570)
+        SettingsKeys.lateStandardizedRewritePreference: KanjiRewritePreference.bothAfterFirst.rawValue,  // 保守的=X.8 と同じ(ユーザ指定 3570)
         SettingsKeys.adjectiveMeKanjiCandidatesEnabled: true,
         SettingsKeys.formalNounMeKanaCandidatesEnabled: false,   // 保守的=オフ(目 だけ。ユーザ指定 3790)
         SettingsKeys.suspendMemorySlimmingEnabled: true,
@@ -550,7 +550,7 @@ extension ContentView {
         SettingsKeys.scriptVariantSuppressConfusable: true,
         SettingsKeys.scriptVariantSuppressLookalike: true,
         SettingsKeys.scriptVariantSuppressPersonNameVariant: false,
-        // かなで書く言葉(X.8): 現代的はすべて抑制(ひらがな側に寄せる。副詞のかな先頭だけオフ。ユーザ指定 3406)
+        // かなで書く言葉(X.7): 現代的はすべて抑制(ひらがな側に寄せる。副詞のかな先頭だけオフ。ユーザ指定 3406)
         SettingsKeys.kanaSpellingSuppressAdverb: true,
         SettingsKeys.kanaSpellingSuppressConjunction: true,
         SettingsKeys.kanaSpellingSuppressAuxiliary: true,
@@ -565,7 +565,7 @@ extension ContentView {
         SettingsKeys.inflectionalKanaVariantPreference: InflectionalKanaVariantPreference.contemporary.encoded,  // 現代的=語幹の中だけ本則だけ、ほかは本則を先に(ユーザ指定 3737)
         SettingsKeys.kanjiRewritePreference: KanjiRewritePreference.bothBeforeFirst.rawValue,  // 現代的=本来の漢字を先に前も出す(3422、3431 で変更)
         SettingsKeys.kanjiRewriteEverydayException: true,   // 現代的=オン(ユーザ指定 3644)
-        SettingsKeys.lateStandardizedRewritePreference: KanjiRewritePreference.bothBeforeFirst.rawValue,  // 現代的=X.9 と同じ(ユーザ指定 3570)
+        SettingsKeys.lateStandardizedRewritePreference: KanjiRewritePreference.bothBeforeFirst.rawValue,  // 現代的=X.8 と同じ(ユーザ指定 3570)
         SettingsKeys.adjectiveMeKanjiCandidatesEnabled: true,
         SettingsKeys.formalNounMeKanaCandidatesEnabled: true,   // 現代的=オン(め も出す。ユーザ指定 3790)
         SettingsKeys.suspendMemorySlimmingEnabled: true,
@@ -841,7 +841,7 @@ extension ContentView {
     // 同音の漢字による書きかえ(3422)の値がまだ無い端末(この設定より前から使っている人)に 1 回だけ 両方(本来の漢字を先に)を書く。
     // 組み込みの標準値(戦略的初期設定)は 本来の漢字だけ なので、書かないとアップデートした途端に 回転→廻転 等になる。
     // 初めてインストールした端末は直前の applyInitialPresetIfFreshInstall が 両方(本来の漢字を先に) を書いているので素通り
-    // 数詞の表記(X.18。3702)の値が無い端末は、基準の初期設定ごとの値を書く(戦略的=アラビア数字だけ、保守的=漢数字が先、現代的=アラビア数字が先)
+    // 数詞の表記(X.13。3702)の値が無い端末は、基準の初期設定ごとの値を書く(戦略的=アラビア数字だけ、保守的=漢数字が先、現代的=アラビア数字が先)
     func applyNumeralStyleDefaultForExistingInstallIfNeeded() {
         guard let defaults = Self.sharedDefaults,
             defaults.object(forKey: SettingsKeys.numeralStylePreference) == nil else {
@@ -857,8 +857,8 @@ extension ContentView {
         SettingsSyncNotification.postSettingsDidChange()
     }
 
-    // 形式名詞の め(X.14 のサブ項目。3790)の値が無い端末は、基準の初期設定ごとの値を書く(保守的=オフ、戦略的・現代的=オン)。
-    // 書かないと、保守的初期設定の端末がアップデートでオン(組み込みの値)になり、触っていないのに X.14 に『変更あり』の印が付く
+    // 形式名詞の め(X.12 のサブ項目。3790)の値が無い端末は、基準の初期設定ごとの値を書く(保守的=オフ、戦略的・現代的=オン)。
+    // 書かないと、保守的初期設定の端末がアップデートでオン(組み込みの値)になり、触っていないのに X.12 に『変更あり』の印が付く
     func applyFormalNounMeDefaultForExistingInstallIfNeeded() {
         guard let defaults = Self.sharedDefaults,
             defaults.object(forKey: SettingsKeys.formalNounMeKanaCandidatesEnabled) == nil else {
@@ -917,7 +917,7 @@ extension ContentView {
         SettingsSyncNotification.postSettingsDidChange()
     }
 
-    // 報告の後に常用漢字に加わった字の組(X.10。3570)の値がまだ無い端末は 両方(本来の漢字を先に)。
+    // 報告の後に常用漢字に加わった字の組(X.9。3570)の値がまだ無い端末は 両方(本来の漢字を先に)。
     // この設定より前は常に両方を出していたので、組み込みの標準値(本来の漢字だけ)にすると 肝心/憶測 が消える
     func applyLateStandardizedRewriteDefaultForExistingInstallIfNeeded() {
         guard let defaults = Self.sharedDefaults,
@@ -1045,7 +1045,7 @@ extension ContentView {
 }
 
 // ──── 題字(écritu)のメニュー(3699、ユーザ指定) ────
-// 題字に触れた途端に、設定の各項目(L.1〜X.18)へ飛ぶだけのメニューを題字の真下に出す。操作はアイコンのメニューと同じで、
+// 題字に触れた途端に、設定の各項目(L.1〜X.13)へ飛ぶだけのメニューを題字の真下に出す。操作はアイコンのメニューと同じで、
 // 指を項目まで滑らせて離すとその項目へスクロールする。項目の外で離せば何もしない。題字の上で離したとき(ふつうのタップ)は
 // 従来どおり一番上へ戻る(3205)。項目は 41 あるので、1 行の高さは画面に収まるよう縮め、それでも入らない横画面は 2〜3 列にする。
 // 開発ビルド(#if DEBUG。TestFlight の版も Debug 構成でアーカイブしているので含む)では先頭に[学習リセット+変換キャッシュクリア]を置く。
@@ -1099,28 +1099,31 @@ enum SettingsJumpMenu {
     static let showsResetItem = false
     #endif
 
-    // 画面の並び(キー配列 L → 入力 E → キー表示 G → 表示 V → 書式 F → 変換 X)。見出しの文言と同じ
+    // 画面の並び(キー配列 L → 見た目 V → キーの割り当て T → 入力の動作 E → 変換 X → 候補に足すもの C → 書式 F → 部首 R。
+    // 3899 の分類替え)。見出しの文言と同じ
     static let items: [SettingsJumpMenuItem] = rawItems.map { SettingsJumpMenuItem(cardID: $0.0, title: $0.1) }
     private static let rawItems: [(String, String)] = [
-        ("L.1", "かな配列"), ("L.2", "ラテン文字配列"), ("L.3", "数字配列"), ("L.4", "基本記号の並び順"), ("L.5", "かな修飾"),
-        ("E.1", "フリック方向"), ("E.2", "削除キーリピート"), ("E.3", "自動確定(アイドル)"), ("E.4", "未確定の方式"),
-        ("E.5", "モード切り替えキーの割り当て"), ("E.6", "修飾キーのタップ (後置修飾、未確定なし)"),
-        ("E.7", "後置修飾キーのフリックで濁点・半濁点"), ("E.8", "欧文サジェスチョンの言語"), ("E.9", "『や』キーの左右フリックの括弧"),
-        ("G.1", "ガイド文字表示"),
-        ("V.1", "ラテン文字候補ペイン (horizontal)"), ("V.2", "数字ペイン配列 (horizontal)"), ("V.3", "アクセントカラー"),
-        ("V.4", "テーマカラー"), ("V.5", "候補の文字"),
+        ("L.1", "かな配列"), ("L.2", "ラテン文字配列"), ("L.3", "数字配列"), ("L.4", "基本記号の並び順"),
+        ("L.5", "ラテン文字候補ペイン (horizontal)"), ("L.6", "数字ペイン配列 (horizontal)"),
+        ("V.1", "アクセントカラー"), ("V.2", "テーマカラー"), ("V.3", "候補の文字"), ("V.4", "ガイド文字表示"),
+        ("T.1", "かな修飾"), ("T.2", "修飾キーのタップ (後置修飾、未確定なし)"), ("T.3", "後置修飾キーのフリックで濁点・半濁点"),
+        ("T.4", "モード切り替えキーの割り当て"), ("T.5", "『や』キーの左右フリックの括弧"),
+        ("E.1", "フリック方向"), ("E.2", "削除キーリピート"), ("E.3", "自動確定(アイドル)"), ("E.4", "句読点入力時の自動確定候補"),
+        ("E.5", "未確定の方式"),
+        ("X.1", "かな漢字候補モード"), ("X.2", "旧仮名遣い候補"), ("X.3", "仮名の踊り字候補"),
+        ("X.4", "カタカナ強調表記の候補"), ("X.5", "交ぜ書きの候補"), ("X.6", "旧字体・異体字の候補"), ("X.7", "かなで書く言葉の候補"),
+        ("X.8", "常用漢字による書きかえ"), ("X.9", "常用漢字による書きかえ(後に追加)"),
+        ("X.10", "助数詞型suffixe / 数詞類別suffixe – ka"), ("X.11", "送り仮名の許容形 – orthographe"), ("X.12", "suffixe – me (め/目)"),
+        ("X.13", "数詞の表記 – chiffres"),
+        ("C.1", "emojis & les émoticônes"), ("C.2", "iOSの連絡先の姓、名、会社名"), ("C.3", "iOSのユーザ辞書の単語"),
+        ("C.4", "欧文サジェスチョンの言語"),
         ("F.1", "format numérique"), ("F.2", "degré"), ("F.3", "カレンダー"),
-        ("X.1", "句読点入力時の自動確定候補"), ("X.2", "かな漢字候補モード"), ("X.3", "旧仮名遣い候補"), ("X.4", "仮名の踊り字候補"),
-        ("X.5", "カタカナ強調表記の候補"), ("X.6", "交ぜ書きの候補"), ("X.7", "旧字体・異体字の候補"), ("X.8", "かなで書く言葉の候補"),
-        ("X.9", "常用漢字による書きかえ"), ("X.10", "常用漢字による書きかえ(後に追加)"), ("X.11", "部首の画数の数え方"),
-        ("X.12", "助数詞型suffixe / 数詞類別suffixe – ka"), ("X.13", "送り仮名の許容形 – orthographe"), ("X.14", "suffixe – me (め/目)"),
-        ("X.15", "emojis & les émoticônes"),
-        ("X.16", "iOSの連絡先の姓、名、会社名"), ("X.17", "iOSのユーザ辞書の単語"), ("X.18", "数詞の表記 – chiffres")
+        ("R.1", "部首の画数の数え方")
     ]
 
     // 群の名前(設定の一覧の区分と同じ)
     static let groupNames: [Character: String] = [
-        "L": "キー配列", "E": "入力", "G": "キー表示", "V": "表示", "F": "書式", "X": "変換"
+        "L": "キー配列", "V": "見た目", "T": "キーの割り当て", "E": "入力の動作", "X": "変換", "C": "候補に足すもの", "F": "書式", "R": "部首"
     ]
 
     static let entries: [SettingsJumpMenuEntry] = {
@@ -1350,7 +1353,7 @@ extension ContentView {
     // 一覧を作り終える前(起動直後)に選ばれたら、残りの塊を一度に作ってから飛ぶ。作るのは次の描画なので、
     // すぐに飛ぶとまだ無いカードへの scrollTo が空振りする。0.05 秒おく(描画で主スレッドが埋まっている間は待たされる)
     // 起動して間もないうちは、飛んでいる間に手前のカードの高さが伸びて(中身が後から入る)、1 つ手前のカードに着くことが
-    // あった(X.15 を選んで X.14、X.18 を選んで X.17。何度か試すと正しく着く。3779、ユーザ報告。高さが伸びる、は推定)。
+    // あった(C.1 を選んで X.12、X.13 を選んで C.3。何度か試すと正しく着く。3779、ユーザ報告。高さが伸びる、は推定)。
     // 着いたあとにもう一度同じ目印へ合わせる。高さが落ち着いていれば 2 回目は動かない(全部のカードを作る VStack なので
     // 位置は正確。LazyVStack のころの「着いたあとに上下へ動く」は起きない)
     func startSettingsJump(_ request: SettingsJumpRequest, proxy: ScrollViewProxy) {
@@ -1603,7 +1606,7 @@ struct SettingsJumpMenuOverlayView: View {
         let isModified = entry.number.map(modifiedNumbers.contains) ?? false
         return HStack(spacing: 6) {
             if let number = entry.number {
-                // 番号は右寄せで ● のすぐ左に付け、欄の幅は X.18 が収まる分だけ(番号と ● と見出しの間を詰めて、見出しの
+                // 番号は右寄せで ● のすぐ左に付け、欄の幅は X.13 が収まる分だけ(番号と ● と見出しの間を詰めて、見出しの
                 // 末尾が … になるのを減らす。3740、ユーザ指定)。印の無い行も ● の幅を取り、見出しの頭をそろえる
                 HStack(spacing: 1) {
                     Text(number)

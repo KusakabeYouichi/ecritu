@@ -33,7 +33,7 @@ struct KanaYaBracketSettingsSection: View {
 
     var body: some View {
         SegmentedSettingsCard(
-            title: "E.9 『や』キーの左右フリックの括弧",
+            title: "T.5 『や』キーの左右フリックの括弧",
             pickerTitle: "『や』キーの左右フリックの括弧",
             selection: $selection,
             options: Array(KanaYaBracketOption.allCases),
@@ -54,7 +54,7 @@ struct KanaModifierSettingsSection: View {
 
     var body: some View {
         SegmentedSettingsCard(
-            title: "L.5 かな修飾",
+            title: "T.1 かな修飾",
             pickerTitle: "かな修飾",
             selection: $selection,
             options: Array(KanaModifierPlacementOption.allCases),
@@ -101,7 +101,7 @@ struct LandscapeCandidateSideSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SettingsCardHeadline("V.1 ラテン文字候補ペイン (horizontal)")
+            SettingsCardHeadline("L.5 ラテン文字候補ペイン (horizontal)")
 
             Button {
                 latinSuggestionMode = usesLandscapeLatinSuggestionPane ? .off : .sidebar
@@ -161,7 +161,7 @@ struct LandscapeNumberPaneSideSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SettingsCardHeadline("V.2 数字ペイン配列 (horizontal)")
+            SettingsCardHeadline("L.6 数字ペイン配列 (horizontal)")
 
             DraggablePanePairRow(
                 items: paneOrder,
