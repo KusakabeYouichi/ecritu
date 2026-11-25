@@ -1,25 +1,27 @@
 #!/bin/bash
 # pkg のインストール後に走る。入れ先はインストーラーで選べる:
-#   すべてのユーザ用 … /Library/Input Methods(root で走る。$3 は /)
-#   自分専用         … ~/Library/Input Methods(本人の権限で走る。$3 はホーム)
-# 2026-11-25 に実測: /Library 側は、登録を呼んでも OS の読み直しで捨てられ、ログインし直すと認められる。
-# ホーム側は、登録を呼べば入れてすぐ使える
-target_volume="${3:-/}"
-if [[ "$target_volume" == "/" ]]; then
-  # すべてのユーザ用。入れ替えた古いプロセスだけを終了する(先頭を固定した正規表現)。登録はしない(ログインし直しで認められる)
+#   すべてのユーザ用 … /Library/Input Methods(root で走る)
+#   自分専用         … ~/Library/Input Methods(本人の権限で走る)
+# どちらに入ったかは $2(入れ先の絶対パス)で見分ける。$3 は自分専用でも / だった(2026-11-25 に実測)。
+# 同日の実測: /Library 側は、登録を呼んでも OS の読み直しで捨てられ、ログインし直すと認められる。
+# ホーム側は、登録を呼べば入れてすぐ一覧に出る
+install_dir="${2%/}"
+if [[ "$install_dir" == "/Library/Input Methods" ]]; then
+  # すべてのユーザ用。入れ替えた古いプロセスだけを終了する(先頭を固定した正規表現)。
+  # 古いプロセスを残すと、入れ替え前の辞書を開いたままになり変換できない。登録はしない(ログインし直しで認められる)
   /usr/bin/pkill -f '^/Library/Input Methods/ecritu\.app/Contents/MacOS/' || true
   other_glob="/Users/*/Library/Input Methods/ecritu.app"
 else
   # 自分専用
-  home="${target_volume%/}"
-  executable="$home/Library/Input Methods/ecritu.app/Contents/MacOS/ecritu"
-  /usr/bin/pkill -f "^$home/Library/Input Methods/ecritu\\.app/Contents/MacOS/" || true
+  app="$install_dir/ecritu.app"
+  executable="$app/Contents/MacOS/ecritu"
+  /usr/bin/pkill -f "^$install_dir/ecritu\\.app/Contents/MacOS/" || true
   # 入力ソースの台帳へ登録する。失敗してもインストールは成功にする(ログインし直せば一覧に出る)
   if [[ -x "$executable" ]]; then
     "$executable" --register-input-source || echo "警告: 入力ソースの登録に失敗しました。ログインし直すと一覧に出ます"
-    # 起動もしておく。同じログインの間に入れ先が変わると、OS が入力メソッドを起動できないことがあった
+    # 起動もしておく。入れた直後は OS が入力メソッドを起動できないことがあった
     # (imklaunchagent の LaunchInputMethod() が status=-50。2026-11-25 に実測)。動いていれば接続名でつながる
-    /usr/bin/open -g "$home/Library/Input Methods/ecritu.app" || echo "警告: ecritu を起動できませんでした"
+    /usr/bin/open -g "$app" || echo "警告: ecritu を起動できませんでした"
   else
     echo "警告: $executable が見つかりません"
   fi
