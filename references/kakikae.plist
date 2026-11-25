@@ -208,7 +208,7 @@
 	<dict><key>before</key><string>短篇</string><key>after</key><string>短編</string></dict>
 	<dict><key>before</key><string>煖房</string><key>after</key><string>暖房</string></dict>	<!-- (建) -->
 	<dict><key>before</key><string>煖炉</string><key>after</key><string>暖炉</string></dict>	<!-- (建) -->
-<!--	<dict><key>before</key><string>智慧</string><key>after</key><string>知恵</string></dict>-->	<!-- 智慧/知恵 は対象から外す(ユーザ指定 3854): 字を替えただけの 1 対 1 の組でなく、智慧 は 知恵 の意味に加えて仏教の 真理を悟る力(般若)も指す。X.9 が 本来の漢字を先に のとき ちえ の先頭が 智慧 になり、指定の並び(知恵、千恵、智恵、千絵、智慧…)が崩れていた -->
+<!--	<dict><key>before</key><string>智慧</string><key>after</key><string>知恵</string></dict>-->	<!-- 智慧/知恵 は対象から外す(ユーザ指定 3854): 字を替えただけの 1 対 1 の組でなく、智慧 は 知恵 の意味に加えて仏教の 真理を悟る力(般若)も指す。X.8 が 本来の漢字を先に のとき ちえ の先頭が 智慧 になり、指定の並び(知恵、千恵、智恵、千絵、智慧…)が崩れていた -->
 	<dict><key>before</key><string>智能</string><key>after</key><string>知能</string></dict>
 	<dict><key>before</key><string>智謀</string><key>after</key><string>知謀</string></dict>
 	<dict><key>before</key><string>註解</string><key>after</key><string>注解</string></dict>
@@ -297,7 +297,7 @@
 	<dict><key>before</key><string>彎曲</string><key>after</key><string>湾曲</string></dict>	<!-- (法) -->
 	<dict><key>before</key><string>彎入</string><key>after</key><string>湾入</string></dict>
 	<!-- ■ lateStandardized 報告の後に常用漢字に加わった字の組(甚・磨・妄 は 1981 年、闇・臆・潰・毀・窟・腎・汎 は 2010 年)。原典も「書きかえないのが普通」
-	     「法令の表記を使う」と注記している。normal とは別に、コンテナー X.10 で選ぶ(3570) -->
+	     「法令の表記を使う」と注記している。normal とは別に、コンテナー X.9 で選ぶ(3570) -->
 	<dict><key>before</key><string>闇夜</string><key>after</key><string>暗夜</string></dict>
 	<dict><key>before</key><string>臆説</string><key>after</key><string>憶説</string></dict>
 	<dict><key>before</key><string>臆測</string><key>after</key><string>憶測</string></dict>
