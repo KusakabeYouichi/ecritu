@@ -7,23 +7,26 @@
 import AppKit
 
 let glyph = "é"
+/// 画像の大きさ(ポイント)。純正の枠は OS が文字のラベルから描く横長の形なので、それに寄せて横長にする
+/// 幅 24 では、一覧で左にはみ出し、メニューでは OS に縮められて小さくなった(2026-11-25 に実機で確認)
+let pointSize = NSSize(width: 22, height: 16)
 
-func bitmap(pixels: Int) -> NSBitmapImageRep {
+func bitmap(scale: Int) -> NSBitmapImageRep {
     let rep = NSBitmapImageRep(
-        bitmapDataPlanes: nil, pixelsWide: pixels, pixelsHigh: pixels,
+        bitmapDataPlanes: nil, pixelsWide: Int(pointSize.width) * scale, pixelsHigh: Int(pointSize.height) * scale,
         bitsPerSample: 8, samplesPerPixel: 4, hasAlpha: true, isPlanar: false,
         colorSpaceName: .deviceRGB, bytesPerRow: 0, bitsPerPixel: 0
     )!
-    // どちらも 16 ポイントの画像として扱わせる(32 ピクセルは 2 倍の解像度)
-    rep.size = NSSize(width: 16, height: 16)
+    // どちらの解像度も、同じポイントの大きさの画像として扱わせる
+    rep.size = pointSize
 
     NSGraphicsContext.saveGraphicsState()
     let context = NSGraphicsContext(bitmapImageRep: rep)!
     NSGraphicsContext.current = context
-    // 座標は 16 ポイントの升目のまま描ける(rep.size から、ピクセルへの拡大は文脈が行なう)
+    // 座標はポイントの升目のまま描ける(rep.size から、ピクセルへの拡大は文脈が行なう)
 
-    // 角丸の四角(純正と同じく、端に 1 ポイント足らずの余白)
-    let box = NSRect(x: 0.5, y: 0.5, width: 15, height: 15)
+    // 角丸の四角(余白なし。余白を置くと、純正の枠より低く見えた)
+    let box = NSRect(origin: .zero, size: pointSize)
     NSColor.black.setFill()
     NSBezierPath(roundedRect: box, xRadius: 3.5, yRadius: 3.5).fill()
 
@@ -45,9 +48,9 @@ guard CommandLine.arguments.count == 2 else {
     FileHandle.standardError.write("使い方: swift tools/generate_mac_icon.swift <出力先の .tiff>\n".data(using: .utf8)!)
     exit(2)
 }
-let image = NSImage(size: NSSize(width: 16, height: 16))
-image.addRepresentation(bitmap(pixels: 32))
-image.addRepresentation(bitmap(pixels: 16))
+let image = NSImage(size: pointSize)
+image.addRepresentation(bitmap(scale: 2))
+image.addRepresentation(bitmap(scale: 1))
 guard let data = image.tiffRepresentation(using: .lzw, factor: 0) else {
     FileHandle.standardError.write("TIFF を作れませんでした\n".data(using: .utf8)!)
     exit(1)
