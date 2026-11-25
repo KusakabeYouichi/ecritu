@@ -20,6 +20,7 @@
 	<dict><key>phrase</key><string>おおお</string><key>shortcut</key><string>おお</string></dict>	<!-- Sudachi の伸ばし表記(おおお)を おお の読みで持つ項目(rank8)。おおさかさん に おお+おさかさん の おおおさかさん が出ていた(ユーザ報告 3661) -->
 	<dict><key>phrase</key><string>不・思・議</string><key>shortcut</key><string>ふしぎ</string></dict>	<!-- Sudachi small_lex の中黒入り装飾表記(不思議)。合成(不・思・議だね)に出ていた(ユーザ報告 3715) -->
 	<dict><key>phrase</key><string>北</string><key>shortcut</key><string>きたの</string><key>pos</key><string>名詞</string></dict>	<!-- 北(きたの): 読みと表記が合わない(北野 の揺れ)。きたのみさいる が 北ミサイル になり の が消えた(一括検査 3640b、ユーザ指定 3641) -->
+	<dict><key>phrase</key><string>入れ換る</string><key>shortcut</key><string>いれかえる</string></dict>	<!-- 入れ換る: 誤エントリ。入れ換える の え が落ちた表記(Sudachi に行がある。換える の え は活用語尾で省けない)。文の途中の いれかえた が 入れ換た、いれかえて が 入れ換て になっていた(ユーザ指摘 3901)。活用形まで抑制するので pos は付けない -->
 	<dict><key>phrase</key><string>喰る</string><key>shortcut</key><string>くえる</string><key>pos</key><string>名詞</string></dict>	<!-- 喰る(くえる): Sudachi の誤エントリ(読みと表記が合わない)。くえる の先頭に出ていた。食る はその字形の置き換え(ユーザ報告 3741) -->
 	<dict><key>phrase</key><string>食る</string><key>shortcut</key><string>くえる</string><key>pos</key><string>名詞</string></dict>
 	<dict><key>phrase</key><string>忙がしい</string><key>shortcut</key><string>いそがしい</string><key>pos</key><string>名詞</string></dict>	<!-- 忙しい の非標準送り仮名。急がしい/多忙がしい は誤表記(ユーザ指定 3711)。活用の語幹まで抑制すると お忙しい が消えるので この語だけ(pos=名詞) -->
