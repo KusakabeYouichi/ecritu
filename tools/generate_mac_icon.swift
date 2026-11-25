@@ -1,14 +1,19 @@
 // Mac 版の入力メニュー用のアイコン(MacInputMethod/Resources/ecritu.tiff)を作る。
 // 使い方: swift tools/generate_mac_icon.swift <出力先の .tiff>
 //
-// 形は純正の入力メソッド(Hiragana.tiff など)に合わせる: 黒く塗った角丸の四角から、文字の形を透明に抜く。
-// OS は不透明の部分を状態の色(選択中は青)で塗るので、文字だけを黒で描いた画像だと、
-// 選択中の表示で文字が背景と同じ色になって見えなくなる(2026-11-25 に実機で確認)
+// 形は、透明の地に文字だけを黒で描いたもの(枠なし)。2026-11-25 にユーザが実機で見比べて決めた。
+// 第三者製の入力メソッドでは、OS がこの 1 枚をメニューバー・メニュー・[入力ソース] の一覧・
+// 切り替えのときの吹き出しの全部に使い、不透明の部分を状態の色で塗る(Info.plist の TISIconIsTemplate)。
+//   文字だけ(この形)… 吹き出しは純正と揃う(選択中は青い丸に白い文字)。メニューと一覧は écritu だけ枠が無い
+//   枠つき(黒い角丸の四角から文字を透明に抜く。純正の Hiragana.tiff の形)… メニューと一覧は揃うが、吹き出しで écritu だけ枠が付く
+// 両方を揃える方法は見つかっていない。同日に試して使えなかった手:
+//   - 画像の指定を外して TISIconLabels だけにする → 汎用のアプリのアイコンになる
+//   - tsInputModeAlternateMenuIconFileKey を足す → 状態の色で塗られなくなる(メニューバーで黒いまま、選択中に見えない)
+//   - tsInputModePaletteIconFileKey を足す → どこにも使われない
+// 幅は 22 ポイントまで。24 にすると、メニューで OS に縮められた
 import AppKit
 
 let glyph = "é"
-/// 画像の大きさ(ポイント)。純正の枠は OS が文字のラベルから描く横長の形なので、それに寄せて横長にする
-/// 幅 24 では、一覧で左にはみ出し、メニューでは OS に縮められて小さくなった(2026-11-25 に実機で確認)
 let pointSize = NSSize(width: 22, height: 16)
 
 func bitmap(scale: Int) -> NSBitmapImageRep {
@@ -24,22 +29,15 @@ func bitmap(scale: Int) -> NSBitmapImageRep {
     let context = NSGraphicsContext(bitmapImageRep: rep)!
     NSGraphicsContext.current = context
     // 座標はポイントの升目のまま描ける(rep.size から、ピクセルへの拡大は文脈が行なう)
-
-    // 角丸の四角(余白なし。余白を置くと、純正の枠より低く見えた)
-    let box = NSRect(origin: .zero, size: pointSize)
-    NSColor.black.setFill()
-    NSBezierPath(roundedRect: box, xRadius: 3.5, yRadius: 3.5).fill()
-
-    // 文字の形を透明に抜く
-    let font = NSFont.systemFont(ofSize: 12.5, weight: .semibold)
+    let font = NSFont.systemFont(ofSize: 13.5, weight: .semibold)
     let text = NSAttributedString(string: glyph, attributes: [.font: font, .foregroundColor: NSColor.black])
     let line = CTLineCreateWithAttributedString(text)
     let bounds = CTLineGetBoundsWithOptions(line, .useGlyphPathBounds)
-    let origin = CGPoint(x: box.midX - bounds.midX, y: box.midY - bounds.midY)
-    context.cgContext.setBlendMode(.destinationOut)
-    context.cgContext.textPosition = origin
+    context.cgContext.textPosition = CGPoint(
+        x: pointSize.width / 2 - bounds.midX,
+        y: pointSize.height / 2 - bounds.midY
+    )
     CTLineDraw(line, context.cgContext)
-
     NSGraphicsContext.restoreGraphicsState()
     return rep
 }
