@@ -17,6 +17,9 @@ else
   # 入力ソースの台帳へ登録する。失敗してもインストールは成功にする(ログインし直せば一覧に出る)
   if [[ -x "$executable" ]]; then
     "$executable" --register-input-source || echo "警告: 入力ソースの登録に失敗しました。ログインし直すと一覧に出ます"
+    # 起動もしておく。同じログインの間に入れ先が変わると、OS が入力メソッドを起動できないことがあった
+    # (imklaunchagent の LaunchInputMethod() が status=-50。2026-11-25 に実測)。動いていれば接続名でつながる
+    /usr/bin/open -g "$home/Library/Input Methods/ecritu.app" || echo "警告: ecritu を起動できませんでした"
   else
     echo "警告: $executable が見つかりません"
   fi
