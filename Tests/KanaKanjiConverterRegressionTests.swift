@@ -31695,6 +31695,26 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3899(ユーザ指定): ねんのため が 年のため だった。数字や漢字の直後の 〜年のため(三年のため/来年のため)と、
+    // 数字+年+の(毎年のこと/四年の間)はそのまま
+    func testJustInCase3899() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("ねんのため", "念のため"), ("ねんのためかくにんする", "念のため確認する"), ("ねんのためにかくにん", "念のために確認"),
+            ("ねんのためのかくにん", "念のための確認"), ("でもねんのため", "でも念のため"), ("それではねんのため", "それでは念のため"),
+            ("またねんのため", "また念のため"), ("すみませんねんのためかくにんです", "すみません念のため確認です"),
+            ("ねんのためねんのためといわれた", "念のため念のためと言われた"),
+            ("さんねんのため", "三年のため"), ("なんねんのため", "何年のため"), ("すうねんのため", "数年のため"), ("らいねんのため", "来年のため"),
+            ("さくねんのため", "昨年のため"), ("ことしいちねんのため", "今年一年のため"), ("まいねんのこと", "毎年のこと"), ("よねんのあいだ", "四年の間"),
+            ("ねんにいちど", "年に一度"), ("ねんをおす", "念を押す")
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+        XCTAssertEqual(Array(leadingCandidates3879("ねんのため").prefix(2)), ["念のため", "年のため"])
+    }
+
     // 3883(ユーザ指定): かみをきるはさみ が 髪を切る挟み、ひにひに が 日に火に、よんだり が 呼んだり(読んだり は 6 番め)だった。
     // 髪を切る の次の かみを切る は出さない。友達を呼んだり はそのまま
     func testScissorsDayByDayAndYondari3883() throws {

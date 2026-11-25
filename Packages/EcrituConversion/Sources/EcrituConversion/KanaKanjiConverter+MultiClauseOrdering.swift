@@ -465,6 +465,11 @@ extension KanaKanjiConverter {
         ("いけいのねん", "いけいのねん", "異形の念", "畏敬の念"), ("こうかいのねん", "こうかいのねん", "公開の念", "後悔の念"),
         ("けいいのねん", "けいいのねん", "経緯の念", "敬意の念"), ("ふしんのねん", "ふしんのねん", "不振の念", "不信の念"),
         ("けいぼのねん", "けいぼのねん", "継母の念", "敬慕の念"),
+        // 念のため(ねんのため が 年のため だった。ユーザ指定 3899)。語の頭の 年 だけ(| の説明は適用箇所)。misc に 念のため を 1 語で
+        // 登録すると さんねんのため が 三念のため に、念+の の組の加点は まいねんのこと が 毎念のこと になったので、ここで扱う
+        ("ねんのため", "ねんのため", "|年のため", "念のため"),
+        // でもねんのため は でも寝んのため(寝る の ん 形)が先頭だった
+        ("ねんのため", "ねんのため", "寝んのため", "念のため"),
         // 年号の 天明 は戻す(てんめい の先頭を 店名 にしたので、天明の飢饉/天明年間/天明時代/天明3年 が 店名〜 になる。ユーザ指定 3898 の手当て)
         ("てんめいのききん", "てんめい", "店名", "天明"), ("てんめいのだいききん", "てんめい", "店名", "天明"), ("てんめいねんかん", "てんめい", "店名", "天明"),
         ("てんめいじだい", "てんめい", "店名", "天明"), ("てんめいがんねん", "てんめい", "店名", "天明"),
@@ -964,6 +969,23 @@ extension KanaKanjiConverter {
                 let tail = rule.from.dropLast()
                 if rewritten.hasSuffix(tail) {
                     rewritten = rewritten.dropLast(tail.count) + rule.to
+                }
+            } else if rule.from.hasPrefix("|") {
+                // 語の頭だけを差し替える(| で始まる from。3899)。文頭か、ひらがなの直後にあるときだけ。
+                // 数字や漢字の直後(三年のため/昨年のため)は別の語の一部なので変えない
+                let body = String(rule.from.dropFirst())
+                var searchStart = rewritten.startIndex
+                while let range = rewritten.range(of: body, range: searchStart..<rewritten.endIndex) {
+                    let isWordStart = range.lowerBound == rewritten.startIndex
+                        || rewritten[rewritten.index(before: range.lowerBound)].unicodeScalars.allSatisfy { (0x3041...0x309F).contains($0.value) }
+                    guard isWordStart else {
+                        searchStart = range.upperBound
+                        continue
+                    }
+                    // 置き換えた後ろから続ける(同じ言い回しが 2 回あれば両方)
+                    let offset = rewritten.distance(from: rewritten.startIndex, to: range.lowerBound) + rule.to.count
+                    rewritten.replaceSubrange(range, with: rule.to)
+                    searchStart = rewritten.index(rewritten.startIndex, offsetBy: offset)
                 }
             } else if let range = rewritten.range(of: rule.from) {
                 rewritten.replaceSubrange(range, with: rule.to)
