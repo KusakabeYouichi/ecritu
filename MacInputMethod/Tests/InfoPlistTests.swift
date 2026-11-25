@@ -56,11 +56,13 @@ final class InfoPlistTests: XCTestCase {
     func testIconKeysPointToFilesInResources() {
         var iconNames = [plist["tsInputMethodIconFileKey"] as? String ?? ""]
         for mode in modes.values {
-            for key in ["tsInputModeMenuIconFileKey", "tsInputModeAlternateMenuIconFileKey", "tsInputModePaletteIconFileKey"] {
-                iconNames.append(mode[key] as? String ?? "")
-            }
+            iconNames.append(mode["tsInputModeMenuIconFileKey"] as? String ?? "")
+            // 純正の日本語入力と同じく、モードには通常の画像だけを指定する。
+            // 選択中用(Alternate)やパレット用を指定すると、OS が文字のラベルでなく画像の組で描く
+            XCTAssertNil(mode["tsInputModeAlternateMenuIconFileKey"])
+            XCTAssertNil(mode["tsInputModePaletteIconFileKey"])
         }
-        XCTAssertEqual(iconNames.count, 7)
+        XCTAssertEqual(iconNames.count, 3)
         for name in iconNames {
             XCTAssertFalse(name.isEmpty)
             let path = Self.resourcesDirectory.appendingPathComponent(name).path

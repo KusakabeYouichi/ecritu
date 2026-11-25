@@ -69,10 +69,6 @@
 				<true/>
 				<key>tsInputModeMenuIconFileKey</key>
 				<string>ecritu.tiff</string>
-				<key>tsInputModeAlternateMenuIconFileKey</key>
-				<string>ecritu.tiff</string>
-				<key>tsInputModePaletteIconFileKey</key>
-				<string>ecritu.tiff</string>
 			</dict>
 			<key>com.apple.inputmethod.Roman</key>
 			<dict>
@@ -94,10 +90,6 @@
 				<key>tsInputModeIsVisibleKey</key>
 				<true/>
 				<key>tsInputModeMenuIconFileKey</key>
-				<string>ecritu.tiff</string>
-				<key>tsInputModeAlternateMenuIconFileKey</key>
-				<string>ecritu.tiff</string>
-				<key>tsInputModePaletteIconFileKey</key>
 				<string>ecritu.tiff</string>
 			</dict>
 		</dict>
