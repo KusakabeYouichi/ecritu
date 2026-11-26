@@ -117,6 +117,7 @@ struct HakoiriDuckBoardOverlay: View {
     var body: some View {
         if trackpadDisplay.isActive {
             Canvas { context, size in
+                trackpadDisplay.noteBoardDrawn(size: size)
                 let layout = HakoiriDuckBoardLayout(
                     size: size,
                     leftColumnWidth: leftColumnWidth,

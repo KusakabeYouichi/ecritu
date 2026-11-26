@@ -104,6 +104,9 @@ extension KeyboardViewController {
             now: CACurrentMediaTime()
         )
         SpaceTrackpadDisplayState.shared.setActive(true)
+        appendKeyboardDiagnosticsLog(
+            "トラックパッド開始 かな配列=\(sharedEnumValue(from: sharedDefaults, key: SharedDefaultsKeys.kanaLayoutMode, fallback: KanaLayoutMode.fiveByTwo)) 横画面=\(view.bounds.width > view.bounds.height ? 1 : 0)"
+        )
         if spaceTrackpadTouchShield == nil {
             let shield = SpaceTrackpadTouchShieldView(frame: view.bounds)
             shield.onTouch = { [weak self] in
@@ -138,6 +141,13 @@ extension KeyboardViewController {
 
     // 何度呼んでもよい。表示は VC の状態に関わらず解く(解除漏れでキーの文字が消えたままにならないように)
     func endSpaceTrackpad() {
+        if spaceTrackpadSession != nil {
+            // かなで盤が出ず枠だけのことがある件の切り分け(3909)。盤を描いた回数が 0 なら、重ねる側に届いていない
+            let display = SpaceTrackpadDisplayState.shared
+            appendKeyboardDiagnosticsLog(
+                "トラックパッド終了 盤の描画=\(display.boardDrawCount)回 大きさ=\(Int(display.lastBoardSize.width))x\(Int(display.lastBoardSize.height))"
+            )
+        }
         spaceTrackpadSession = nil
         SpaceTrackpadDisplayState.shared.setActive(false)
         spaceTrackpadTouchShield?.removeFromSuperview()

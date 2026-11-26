@@ -190,13 +190,24 @@ final class SpaceTrackpadDisplayState: ObservableObject {
     static let shared = SpaceTrackpadDisplayState()
 
     @Published private(set) var isActive = false
+    // 盤の絵を描いた回数と大きさ(診断ログ用。かなで盤が出ず枠だけのことがある件の切り分け。3909)。描画の中で書くので発行しない
+    private(set) var boardDrawCount = 0
+    private(set) var lastBoardSize: CGSize = .zero
 
     func setActive(_ active: Bool) {
+        if active {
+            boardDrawCount = 0
+            lastBoardSize = .zero
+        }
         if isActive != active {
             isActive = active
         }
     }
 
+    func noteBoardDrawn(size: CGSize) {
+        boardDrawCount += 1
+        lastBoardSize = size
+    }
 }
 
 // トラックパッド中はキーの文字・アイコンを消す(枠と面の色は残す)。キーの型に格納プロパティを足すと
