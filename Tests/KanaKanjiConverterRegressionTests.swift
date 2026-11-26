@@ -31740,6 +31740,8 @@ extension KanaKanjiConverterRegressionTests {
             XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
             XCTAssertFalse(list.contains { $0.contains("アン肝") || $0.contains("鮟気") }, "\(reading): \(list)")
         }
+        // あん肝 は出してよい(ユーザ指定 3904)
+        XCTAssertTrue(leadingCandidates3879("あんきも").contains("あん肝"))
     }
 
     // 3901(ユーザ指摘): ずいぶんいれかえた が ずいぶん入れ換た(辞書の誤エントリ 入れ換る からの活用形)で、入れ換えた が無かった。
