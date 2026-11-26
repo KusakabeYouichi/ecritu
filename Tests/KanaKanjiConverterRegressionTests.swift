@@ -31744,6 +31744,20 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(leadingCandidates3879("あんきも").contains("あん肝"))
     }
 
+    // 3905(ユーザ指摘): おいきれてない が お生きれてない。追い切る/追い切れる が辞書に無かった
+    func testChaseThrough3905() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("おいきれてない", "追い切れてない"), ("おいきれない", "追い切れない"), ("おいきれなかった", "追い切れなかった"),
+            ("おいきる", "追い切る"), ("おいきった", "追い切った"),
+            ("いきれてない", "生きれてない"), ("みきれてない", "見切れてない")
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
     // 3901(ユーザ指摘): ずいぶんいれかえた が ずいぶん入れ換た(辞書の誤エントリ 入れ換る からの活用形)で、入れ換えた が無かった。
     // え の落ちた形は出さず、文の途中でも 入れ替え〜、入れ換え〜 の順にする
     func testSwappedOkurigana3901() throws {
