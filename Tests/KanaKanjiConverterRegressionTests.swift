@@ -31758,6 +31758,21 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3906(ユーザ指定): 編集/編輯 は日常語の例外。本来の漢字を先に でも 編集 が先、例外をオフにすると 編輯 が先
+    func testEditingEverydayException3906() throws {
+        try prepareRealLMDictionary()
+        converter.setKanjiRewritePreference(.bothBeforeFirst)
+        converter.setKanjiRewriteEverydayException(true)
+        let on = converter.candidates(for: "へんしゅう", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(on.first, "編集", "\(on)")
+        XCTAssertTrue(on.contains("編輯"), "\(on)")
+        let onMulti = converter.multiClauseCandidates(for: "どうがをへんしゅうする", systemCandidateMode: .surface)
+        XCTAssertEqual(onMulti.first, "動画を編集する", "\(onMulti.prefix(3))")
+        converter.setKanjiRewriteEverydayException(false)
+        let off = converter.candidates(for: "へんしゅう", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(off.first, "編輯", "\(off)")
+    }
+
     // 3906(ユーザ指摘): かいきれない が 会切れない。買い切る/買い切れる が辞書に無かった
     func testBuyOut3906() throws {
         try prepareRealLMDictionary()
