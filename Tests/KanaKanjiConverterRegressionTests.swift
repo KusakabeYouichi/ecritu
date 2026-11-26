@@ -31726,6 +31726,22 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3903(ユーザ指定): あんきもします が アン肝します で、暗記もします が無かった。アン肝 は出さず 暗記も+する を先頭に。
+    // 肝す→気もす の書きかえが 鮟肝します を 鮟気もします にしていたので、肝 は語の頭だけにする
+    func testMemorizingToo3903() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("あんきもします", "暗記もします"), ("あんきもする", "暗記もする"), ("あんきもしない", "暗記もしない"),
+            ("えいたんごのあんきもした", "英単語の暗記もした"), ("あんきも", "鮟肝"), ("あんきはする", "暗記はする"),
+            ("きもします", "気もします"), ("そんなきもする", "そんな気もする")
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+            XCTAssertFalse(list.contains { $0.contains("アン肝") || $0.contains("鮟気") }, "\(reading): \(list)")
+        }
+    }
+
     // 3901(ユーザ指摘): ずいぶんいれかえた が ずいぶん入れ換た(辞書の誤エントリ 入れ換る からの活用形)で、入れ換えた が無かった。
     // え の落ちた形は出さず、文の途中でも 入れ替え〜、入れ換え〜 の順にする
     func testSwappedOkurigana3901() throws {
