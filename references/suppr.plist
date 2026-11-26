@@ -1023,7 +1023,7 @@
 	<dict><key>phrase</key><string>あん玉</string><key>shortcut</key><string>あんだま</string><key>pos</key><string>名詞</string></dict>	<!-- 餡玉 -->
 	<dict><key>phrase</key><string>ばち先</string><key>shortcut</key><string>ばちさき</string><key>pos</key><string>名詞</string></dict>	<!-- 撥先 -->
 	<dict><key>phrase</key><string>りん安</string><key>shortcut</key><string>りんあん</string><key>pos</key><string>名詞</string></dict>	<!-- 燐安 -->
-	<dict><key>phrase</key><string>あん肝</string><key>shortcut</key><string>あんきも</string><key>pos</key><string>名詞</string></dict>	<!-- 鮟肝 -->
+<!--<dict><key>phrase</key><string>あん肝</string><key>shortcut</key><string>あんきも</string><key>pos</key><string>名詞</string></dict>-->	<!-- 鮟肝。あん肝 は出してよい(ユーザ指定 3904) -->
 	<dict><key>phrase</key><string>がん首</string><key>shortcut</key><string>がんくび</string><key>pos</key><string>名詞</string></dict>	<!-- 雁首 -->
 	<dict><key>phrase</key><string>ちゅう木</string><key>shortcut</key><string>ちゅうぎ</string><key>pos</key><string>名詞</string></dict>	<!-- 籌木 -->
 	<dict><key>phrase</key><string>ひょう柄</string><key>shortcut</key><string>ひょうがら</string><key>pos</key><string>名詞</string></dict>	<!-- 豹柄 -->
