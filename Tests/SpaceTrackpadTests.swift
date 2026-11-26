@@ -228,40 +228,60 @@ final class SpaceTrackpadTests: XCTestCase {
         XCTAssertEqual(session.utf16Offset(forSteps: -1, now: 0.2) { ("", nil) }, 0)
     }
 
-    // MARK: - 盤の位置(格子と同じ寸法値から)
+    // MARK: - 盤(箱入り娘の初期配置を 90 度回し、出口を左に)
 
-    func testHeroDuckSpansFirstTwoKanaColumnsAndTopTwoRows() {
-        // 幅 360・高さ 218(段 50×4+間隔 6×3)、左右の列 60、間隔 6 → かなキーの幅 72
-        let layout = HakoiriDuckBoardLayout(
-            size: CGSize(width: 360, height: 218),
-            leftColumnWidth: 60,
-            rightColumnWidth: 60,
-            spacing: 6
-        )
-        XCTAssertEqual(layout.rect(columns: 1...2, rows: 0...1), CGRect(x: 66, y: 0, width: 150, height: 106))
+    // 幅 360・高さ 218(段 50×4+間隔 6×3)、左の列 42(狭い)、右の列 60、間隔 6 → かなキーの幅 78
+    private let boardLayout = HakoiriDuckBoardLayout(
+        size: CGSize(width: 360, height: 218),
+        leftColumnWidth: 42,
+        rightColumnWidth: 60,
+        spacing: 6
+    )
+
+    func testNarrowLeftColumnCellUsesItsOwnWidth() {
+        XCTAssertEqual(boardLayout.rect(columns: 0...0, rows: 0...0), CGRect(x: 0, y: 0, width: 42, height: 50))
     }
 
-    func testRightColumnReturnKeySpansBottomTwoRows() {
-        let layout = HakoiriDuckBoardLayout(
-            size: CGSize(width: 360, height: 218),
-            leftColumnWidth: 60,
-            rightColumnWidth: 60,
-            spacing: 6
-        )
-        XCTAssertEqual(layout.rect(columns: 4...4, rows: 2...3), CGRect(x: 300, y: 112, width: 60, height: 106))
+    func testKanaColumnsStartAfterNarrowLeftColumn() {
+        XCTAssertEqual(boardLayout.rect(columns: 1...2, rows: 0...0), CGRect(x: 48, y: 0, width: 162, height: 50))
     }
 
-    func testRightColumnWithoutGlobeHasChickAndMirroredParentDuck() {
-        let pieces = HakoiriDuckBoardLayout.pieces(showsNextKeyboardKey: false)
-        let rightColumn = pieces.filter { $0.columns == 4...4 }
-        XCTAssertEqual(rightColumn.map(\.rows), [0...0, 2...3])
-        XCTAssertEqual(rightColumn.map(\.motif), [.chick, .parentDuck(mirrored: true)])
+    func testHeroDuckPieceCoversRightTwoColumnsOfMiddleRows() {
+        let hero = HakoiriDuckBoardLayout.pieces.first { $0.motif == .heroDuck }
+        XCTAssertEqual(hero?.columns, 3...4)
+        XCTAssertEqual(hero?.rows, 1...2)
+        XCTAssertEqual(boardLayout.rect(columns: 3...4, rows: 1...2), CGRect(x: 216, y: 56, width: 144, height: 106))
     }
 
-    func testNextKeyboardKeyModelTurnsReturnPieceIntoChickAndLeavesGlobeEmpty() {
-        let pieces = HakoiriDuckBoardLayout.pieces(showsNextKeyboardKey: true)
-        let rightColumn = pieces.filter { $0.columns == 4...4 }
-        XCTAssertEqual(rightColumn.map(\.rows), [0...0, 2...2])
-        XCTAssertEqual(rightColumn.map(\.motif), [.chick, .chick])
+    func testVerticalFeatherPieceIsInMiddleKanaColumn() {
+        let feather = HakoiriDuckBoardLayout.pieces.first { $0.motif == .feather }
+        XCTAssertEqual(feather?.columns, 2...2)
+        XCTAssertEqual(feather?.rows, 1...2)
+        XCTAssertEqual(boardLayout.rect(columns: 2...2, rows: 1...2), CGRect(x: 132, y: 56, width: 78, height: 106))
+    }
+
+    func testExitIsOnLeftEdgeAcrossMiddleRows() {
+        XCTAssertEqual(HakoiriDuckBoardLayout.exitRows, 1...2)
+        XCTAssertEqual(boardLayout.exitOpening, 53...165)
+    }
+
+    func testPiecesCoverEveryCellOnceExceptTwoExitCells() {
+        var covered: [String] = []
+        for piece in HakoiriDuckBoardLayout.pieces {
+            for column in piece.columns {
+                for row in piece.rows {
+                    covered.append("c\(column)r\(row)")
+                }
+            }
+        }
+        XCTAssertEqual(covered.count, 18)
+        XCTAssertEqual(Set(covered).count, 18)
+        let all = Set((0...4).flatMap { column in (0...3).map { "c\(column)r\($0)" } })
+        XCTAssertEqual(all.subtracting(covered), ["c0r1", "c0r2"])
+    }
+
+    func testChicksAreAtStartPositions() {
+        let chicks = HakoiriDuckBoardLayout.pieces.filter { $0.motif == .chick }
+        XCTAssertEqual(Set(chicks.map { "c\($0.columns.lowerBound)r\($0.rows.lowerBound)" }), ["c0r0", "c1r1", "c1r2", "c0r3"])
     }
 }

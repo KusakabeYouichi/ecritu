@@ -2,13 +2,15 @@ import SwiftUI
 import UIKit
 
 // トラックパッド中に かな 3×3+わ(縦画面)へ重ねる『箱入りあひる』の盤(c10)。
-// キーの枠どおりの 横 5 列(c0=左のモード列、c1〜c3=かな、c4=右列)× 縦 4 段を『箱入り娘』パズルに見立てる。
+// 横 5 列(c0=左のモード列、c1〜c3=かな、c4=右列)× 縦 4 段を、『箱入り娘』の初期配置を 90 度回して
+// 出口(2 ます)を左に置いた盤に見立てる(ユーザ指定 3909)。出口は左の列の [abc][あいう](c0 の r1〜r2)。
+// 駒はキーの枠でなく ます の格子で置く(⏎ の 2 段の枠や 🌐 の有無で配置は変わらない)。
 // 主役のあひる(2×2)は濁点のあひると同じ線画。すべて線画で、色は薄く、画像ファイルは使わない
 struct HakoiriDuckBoardLayout {
     enum Motif: Equatable {
         // 主役(娘の役)。濁点のあひるの線画
         case heroDuck
-        // 親鳥(縦長の駒)。mirrored は左右反転
+        // 親鳥(横長の駒)。主役と同じあひるの線画を縦横比を保って収める。mirrored は左右反転
         case parentDuck(mirrored: Bool)
         case feather
         case waterWithMaple
@@ -74,26 +76,33 @@ struct HakoiriDuckBoardLayout {
         }
     }
 
-    // 駒の配置。右列は r0=⌫、r1=空白(空きのます)、r2〜r3=⏎。🌐 のある機種は ⏎ が 1 段で r3c4 が 🌐(改訂 2 の R5):
-    // r2c4 はひよこ、r3c4 は空き。空きのますには何も描かない
-    static func pieces(showsNextKeyboardKey: Bool) -> [Piece] {
-        var pieces: [Piece] = [
-            Piece(columns: 0...0, rows: 0...1, motif: .parentDuck(mirrored: false)),
-            Piece(columns: 0...0, rows: 2...3, motif: .feather),
-            Piece(columns: 1...2, rows: 0...1, motif: .heroDuck),
-            Piece(columns: 1...2, rows: 2...2, motif: .waterWithMaple),
-            Piece(columns: 1...2, rows: 3...3, motif: .eggs),
-            Piece(columns: 3...3, rows: 0...0, motif: .chick),
-            Piece(columns: 4...4, rows: 0...0, motif: .chick),
-            Piece(columns: 3...3, rows: 1...1, motif: .chick),
-            Piece(columns: 3...3, rows: 2...2, motif: .chick),
-        ]
-        if showsNextKeyboardKey {
-            pieces.append(Piece(columns: 4...4, rows: 2...2, motif: .chick))
-        } else {
-            pieces.append(Piece(columns: 4...4, rows: 2...3, motif: .parentDuck(mirrored: true)))
-        }
-        return pieces
+    // 出口の段(左の端の r1〜r2)。盤の外枠はここだけ開ける
+    static let exitRows: ClosedRange<Int> = 1...2
+
+    // 『箱入り娘』の初期配置を 90 度回したもの。空き 2 ます(c0 の r1・r2)は出口の前で、何も描かない
+    //      c0     c1     c2     c3     c4
+    // r0   ひよこ [ 水面+もみじ ] [ 親鳥       ]
+    // r1   空き   ひよこ 羽根   [ 主役のあひる ]
+    // r2   空き   ひよこ 羽根   [             ]
+    // r3   ひよこ [ 卵 2 つ    ] [ 親鳥(反転) ]
+    static let pieces: [Piece] = [
+        Piece(columns: 3...4, rows: 1...2, motif: .heroDuck),
+        Piece(columns: 1...2, rows: 0...0, motif: .waterWithMaple),
+        Piece(columns: 3...4, rows: 0...0, motif: .parentDuck(mirrored: false)),
+        Piece(columns: 2...2, rows: 1...2, motif: .feather),
+        Piece(columns: 1...2, rows: 3...3, motif: .eggs),
+        Piece(columns: 3...4, rows: 3...3, motif: .parentDuck(mirrored: true)),
+        Piece(columns: 0...0, rows: 0...0, motif: .chick),
+        Piece(columns: 1...1, rows: 1...1, motif: .chick),
+        Piece(columns: 1...1, rows: 2...2, motif: .chick),
+        Piece(columns: 0...0, rows: 3...3, motif: .chick),
+    ]
+
+    // 盤の外枠の縦の開き(出口)。上下の段との間隔の真ん中から真ん中まで
+    var exitOpening: ClosedRange<CGFloat> {
+        let top = CGFloat(Self.exitRows.lowerBound) * (rowHeight + spacing) - spacing / 2
+        let bottom = CGFloat(Self.exitRows.upperBound) * (rowHeight + spacing) + rowHeight + spacing / 2
+        return top...bottom
     }
 }
 
@@ -102,7 +111,6 @@ struct HakoiriDuckBoardOverlay: View {
     let leftColumnWidth: CGFloat
     let rightColumnWidth: CGFloat
     let spacing: CGFloat
-    let showsNextKeyboardKey: Bool
 
     @ObservedObject private var trackpadDisplay = SpaceTrackpadDisplayState.shared
 
@@ -118,7 +126,7 @@ struct HakoiriDuckBoardOverlay: View {
                 HakoiriDuckBoardDrawing.draw(
                     in: &context,
                     layout: layout,
-                    pieces: HakoiriDuckBoardLayout.pieces(showsNextKeyboardKey: showsNextKeyboardKey),
+                    pieces: HakoiriDuckBoardLayout.pieces,
                     color: KeyboardThemePalette.trackpadBoardLine
                 )
             }
@@ -136,6 +144,8 @@ enum HakoiriDuckBoardDrawing {
     static let pieceInset: CGFloat = 3
     static let motifInset: CGFloat = 8
     static let pieceCornerRadius: CGFloat = 10
+    // 盤の外枠(細め)
+    static let boardLineWidth: CGFloat = 1.5
 
     static func draw(
         in context: inout GraphicsContext,
@@ -147,6 +157,7 @@ enum HakoiriDuckBoardDrawing {
         guard scale > 0 else {
             return
         }
+        drawBoardOutline(in: &context, layout: layout, color: color, scale: scale)
         for piece in pieces {
             let isHero = piece.motif == .heroDuck
             let lineWidth = (isHero ? heroLineWidth : pieceLineWidth) * scale
@@ -178,6 +189,40 @@ enum HakoiriDuckBoardDrawing {
                 context.stroke(chickPath(in: motifRect), with: .color(color), style: style)
             }
         }
+    }
+
+    // 盤の外枠(角の丸い長方形)。左の端の出口の段だけ開け、出口のますに小さな ← を置く
+    private static func drawBoardOutline(
+        in context: inout GraphicsContext,
+        layout: HakoiriDuckBoardLayout,
+        color: Color,
+        scale: CGFloat
+    ) {
+        let lineWidth = boardLineWidth * scale
+        let style = StrokeStyle(lineWidth: lineWidth, lineCap: .round, lineJoin: .round)
+        let board = CGRect(origin: .zero, size: layout.size).insetBy(dx: lineWidth / 2, dy: lineWidth / 2)
+        let radius = pieceCornerRadius * scale
+        let opening = layout.exitOpening
+        var outline = Path()
+        outline.move(to: CGPoint(x: board.minX, y: opening.lowerBound))
+        outline.addArc(tangent1End: CGPoint(x: board.minX, y: board.minY), tangent2End: CGPoint(x: board.maxX, y: board.minY), radius: radius)
+        outline.addArc(tangent1End: CGPoint(x: board.maxX, y: board.minY), tangent2End: CGPoint(x: board.maxX, y: board.maxY), radius: radius)
+        outline.addArc(tangent1End: CGPoint(x: board.maxX, y: board.maxY), tangent2End: CGPoint(x: board.minX, y: board.maxY), radius: radius)
+        outline.addArc(tangent1End: CGPoint(x: board.minX, y: board.maxY), tangent2End: CGPoint(x: board.minX, y: board.minY), radius: radius)
+        outline.addLine(to: CGPoint(x: board.minX, y: opening.upperBound))
+        context.stroke(outline, with: .color(color), style: style)
+
+        let exitRect = layout.rect(columns: 0...0, rows: HakoiriDuckBoardLayout.exitRows)
+        let arrowLength = min(exitRect.width * 0.5, 18 * scale)
+        let head = arrowLength * 0.35
+        let tip = CGPoint(x: exitRect.midX - arrowLength / 2, y: exitRect.midY)
+        var arrow = Path()
+        arrow.move(to: CGPoint(x: tip.x + arrowLength, y: tip.y))
+        arrow.addLine(to: tip)
+        arrow.move(to: CGPoint(x: tip.x + head, y: tip.y - head))
+        arrow.addLine(to: tip)
+        arrow.addLine(to: CGPoint(x: tip.x + head, y: tip.y + head))
+        context.stroke(arrow, with: .color(color), style: style)
     }
 
     // 濁点のあひる(duckOuter+くちばし+目)を rect に収める。目は輪と瞳
