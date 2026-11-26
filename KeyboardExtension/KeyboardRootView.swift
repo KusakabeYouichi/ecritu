@@ -33,6 +33,9 @@ struct KeyboardRootView: View {
     var onSpaceTrackpadBegan: () -> Void = {}
     var onSpaceTrackpadMoved: (Int) -> Void = { _ in }
     var onSpaceTrackpadEnded: () -> Void = {}
+    // 盤を描いた個体の印(診断ログの [セッション ID] の先頭 8 字。3910)。トラックパッド中かはプロセスで 1 つなので、
+    // 生きている個体のどれが描いたかを終了の行で見分ける
+    var trackpadBoardOwnerTag = ""
     let showsNextKeyboardKey: Bool
     // キーボードビューのウィンドウ座標の枠(KeyboardViewController が view.convert で測る)。
     // width が盤面の幅見積もり、minX/maxX が吹き出しのクランプに使われる。zero=未レイアウト

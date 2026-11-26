@@ -575,6 +575,7 @@ extension KeyboardViewController {
             guard shortcutVocabularyRecentsFirst else { return }
             self?.kanaKanjiStore.prependShortcutCandidate(text)
         }
+        rootView.trackpadBoardOwnerTag = String(diagnosticsState.diagnosticsSessionID.prefix(8))
         rootView.onMoveCursorBy = { [weak self] offset in
             self?.moveCursorAfterShortcutInsertion(by: offset)
         }

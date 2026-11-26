@@ -148,7 +148,7 @@ extension KeyboardViewController {
             // かなで盤が出ず枠だけのことがある件の切り分け(3909)。盤を描いた回数が 0 なら、重ねる側に届いていない
             let display = SpaceTrackpadDisplayState.shared
             appendKeyboardDiagnosticsLog(
-                "トラックパッド終了 盤の描画=\(display.boardDrawCount)回 大きさ=\(Int(display.lastBoardSize.width))x\(Int(display.lastBoardSize.height))",
+                "トラックパッド終了 盤の描画=\(display.boardDrawCount)回 大きさ=\(Int(display.lastBoardSize.width))x\(Int(display.lastBoardSize.height)) 描いた個体=\(display.boardDrawOwnersSummary) 自分=\(diagnosticsState.diagnosticsSessionID.prefix(8))",
                 critical: true
             )
         }

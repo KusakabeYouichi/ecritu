@@ -111,13 +111,14 @@ struct HakoiriDuckBoardOverlay: View {
     let leftColumnWidth: CGFloat
     let rightColumnWidth: CGFloat
     let spacing: CGFloat
+    let ownerTag: String
 
     @ObservedObject private var trackpadDisplay = SpaceTrackpadDisplayState.shared
 
     var body: some View {
         if trackpadDisplay.isActive {
             Canvas { context, size in
-                trackpadDisplay.noteBoardDrawn(size: size)
+                trackpadDisplay.noteBoardDrawn(size: size, ownerTag: ownerTag)
                 let layout = HakoiriDuckBoardLayout(
                     size: size,
                     leftColumnWidth: leftColumnWidth,

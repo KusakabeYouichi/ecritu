@@ -193,20 +193,31 @@ final class SpaceTrackpadDisplayState: ObservableObject {
     // 盤の絵を描いた回数と大きさ(診断ログ用。かなで盤が出ず枠だけのことがある件の切り分け。3909)。描画の中で書くので発行しない
     private(set) var boardDrawCount = 0
     private(set) var lastBoardSize: CGSize = .zero
+    // 描いた個体ごとの回数(個体の印 → 回数。3910)。見えている個体でなく裏に残った個体だけが描いていないかを見る
+    private(set) var boardDrawCountByOwner: [String: Int] = [:]
 
     func setActive(_ active: Bool) {
         if active {
             boardDrawCount = 0
             lastBoardSize = .zero
+            boardDrawCountByOwner = [:]
         }
         if isActive != active {
             isActive = active
         }
     }
 
-    func noteBoardDrawn(size: CGSize) {
+    func noteBoardDrawn(size: CGSize, ownerTag: String) {
         boardDrawCount += 1
         lastBoardSize = size
+        boardDrawCountByOwner[ownerTag, default: 0] += 1
+    }
+
+    // 終了の行に書く形。例: D06ED979×1 7E303189×2(印の順)
+    var boardDrawOwnersSummary: String {
+        boardDrawCountByOwner.isEmpty
+            ? "なし"
+            : boardDrawCountByOwner.sorted { $0.key < $1.key }.map { "\($0.key)×\($0.value)" }.joined(separator: " ")
     }
 }
 

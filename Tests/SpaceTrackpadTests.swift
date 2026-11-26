@@ -284,4 +284,19 @@ final class SpaceTrackpadTests: XCTestCase {
         let chicks = HakoiriDuckBoardLayout.pieces.filter { $0.motif == .chick }
         XCTAssertEqual(Set(chicks.map { "c\($0.columns.lowerBound)r\($0.rows.lowerBound)" }), ["c0r0", "c1r1", "c1r2", "c0r3"])
     }
+
+    // 盤を描いた個体を見分ける(3911)。始めるたびに数え直し、個体ごとに印の順で並べる
+    func testBoardDrawOwnersAreCountedPerOwnerAndResetOnActivation() {
+        let display = SpaceTrackpadDisplayState()
+        display.setActive(true)
+        XCTAssertEqual(display.boardDrawOwnersSummary, "なし")
+        display.noteBoardDrawn(size: CGSize(width: 377, height: 203), ownerTag: "D06ED979")
+        display.noteBoardDrawn(size: CGSize(width: 377, height: 203), ownerTag: "7E303189")
+        display.noteBoardDrawn(size: CGSize(width: 377, height: 203), ownerTag: "D06ED979")
+        XCTAssertEqual(display.boardDrawOwnersSummary, "7E303189×1 D06ED979×2")
+        XCTAssertEqual(display.boardDrawCount, 3)
+        display.setActive(false)
+        display.setActive(true)
+        XCTAssertEqual(display.boardDrawOwnersSummary, "なし")
+    }
 }

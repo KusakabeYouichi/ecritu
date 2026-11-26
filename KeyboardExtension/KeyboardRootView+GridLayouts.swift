@@ -340,7 +340,8 @@ extension KeyboardRootView {
                 HakoiriDuckBoardOverlay(
                     leftColumnWidth: leftModeSwitchButtonWidth,
                     rightColumnWidth: rightEdgeUtilityColumnWidth,
-                    spacing: rowSpacing
+                    spacing: rowSpacing,
+                    ownerTag: trackpadBoardOwnerTag
                 )
             }
         }
