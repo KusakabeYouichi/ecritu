@@ -31773,6 +31773,16 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(off.first, "編輯", "\(off)")
     }
 
+    // 3907(ユーザ指摘): くぎりいち が 区切り一。区切り位置 が辞書に無かった
+    func testDelimiterPosition3907() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("くぎりいち", "区切り位置"), ("くぎりいちをかえる", "区切り位置を変える")] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
     // 3906(ユーザ指摘): かいきれない が 会切れない。買い切る/買い切れる が辞書に無かった
     func testBuyOut3906() throws {
         try prepareRealLMDictionary()
