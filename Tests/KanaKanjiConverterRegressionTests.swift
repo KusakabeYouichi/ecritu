@@ -31758,6 +31758,19 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3906(ユーザ指摘): かいきれない が 会切れない。買い切る/買い切れる が辞書に無かった
+    func testBuyOut3906() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("かいきれない", "買い切れない"), ("かいきれなかった", "買い切れなかった"), ("かいきる", "買い切る"),
+            ("かいきった", "買い切った"), ("ぜんぶかいきれない", "全部買い切れない")
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
     // 3901(ユーザ指摘): ずいぶんいれかえた が ずいぶん入れ換た(辞書の誤エントリ 入れ換る からの活用形)で、入れ換えた が無かった。
     // え の落ちた形は出さず、文の途中でも 入れ替え〜、入れ換え〜 の順にする
     func testSwappedOkurigana3901() throws {
