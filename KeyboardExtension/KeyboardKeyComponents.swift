@@ -1673,10 +1673,7 @@ struct ModeSwitchColumnKey: View {
             .foregroundStyle(labelColor)
             .hiddenDuringSpaceTrackpad()
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(
-                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .fill(backgroundColor)
-            )
+            .spaceTrackpadNeutralFace(normal: backgroundColor, cornerRadius: 10)
             .overlay(
                 RoundedRectangle(cornerRadius: 10, style: .continuous)
                     .stroke(KeyboardThemePalette.keyBorder, lineWidth: 1)

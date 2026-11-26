@@ -196,6 +196,7 @@ final class SpaceTrackpadDisplayState: ObservableObject {
             isActive = active
         }
     }
+
 }
 
 // トラックパッド中はキーの文字・アイコンを消す(枠と面の色は残す)。キーの型に格納プロパティを足すと
@@ -208,9 +209,28 @@ private struct SpaceTrackpadHidesKeyLabelModifier: ViewModifier {
     }
 }
 
+// トラックパッド中は左の列のキーの面を普通の色にそろえる。今いる面のキー(押せない印で濃い)だけ色が違うと、
+// 盤の出口の 2 ます([abc][あいう])の片方だけが塞がって見えた(ユーザ指定 3909)
+private struct SpaceTrackpadNeutralFaceModifier: ViewModifier {
+    let normal: Color
+    let cornerRadius: CGFloat
+    @ObservedObject private var trackpadDisplay = SpaceTrackpadDisplayState.shared
+
+    func body(content: Content) -> some View {
+        content.background(
+            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                .fill(trackpadDisplay.isActive ? KeyboardThemePalette.keyBackground : normal)
+        )
+    }
+}
+
 extension View {
     func hiddenDuringSpaceTrackpad() -> some View {
         modifier(SpaceTrackpadHidesKeyLabelModifier())
+    }
+
+    func spaceTrackpadNeutralFace(normal: Color, cornerRadius: CGFloat) -> some View {
+        modifier(SpaceTrackpadNeutralFaceModifier(normal: normal, cornerRadius: cornerRadius))
     }
 }
 
