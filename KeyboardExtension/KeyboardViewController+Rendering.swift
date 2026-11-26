@@ -578,6 +578,23 @@ extension KeyboardViewController {
         rootView.onMoveCursorBy = { [weak self] offset in
             self?.moveCursorAfterShortcutInsertion(by: offset)
         }
+        // 空白キーの長押しのトラックパッド(c10)。VC が既に無くても表示だけは必ず解く
+        rootView.canBeginSpaceTrackpad = { [weak self] in
+            self?.canBeginSpaceTrackpad() ?? false
+        }
+        rootView.onSpaceTrackpadBegan = { [weak self] in
+            self?.beginSpaceTrackpad()
+        }
+        rootView.onSpaceTrackpadMoved = { [weak self] steps in
+            self?.moveSpaceTrackpad(by: steps)
+        }
+        rootView.onSpaceTrackpadEnded = { [weak self] in
+            if let self {
+                self.endSpaceTrackpad()
+            } else {
+                SpaceTrackpadDisplayState.shared.setActive(false)
+            }
+        }
         return rootView
     }
 

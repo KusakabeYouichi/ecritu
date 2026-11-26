@@ -93,6 +93,13 @@ enum KeyboardThemePalette {
         }
     )
     static let thinDivider = Color(uiColor: .separator).opacity(0.5)
+    // トラックパッド中の『箱入りあひる』の盤の線(c10)。キーの文字の色を薄くしたもの
+    static let trackpadBoardLine = Color(
+        uiColor: UIColor { trait in
+            UIColor.label.resolvedColor(with: trait)
+                .withAlphaComponent(trait.userInterfaceStyle == .dark ? 0.24 : 0.18)
+        }
+    )
 }
 
 // 面の中身を、与えられた高さに収める(3170)。横画面では ホストが枠を広げてくれず

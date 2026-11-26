@@ -83,6 +83,75 @@ extension KeyboardViewController {
         textDocumentProxy.adjustTextPosition(byCharacterOffset: offset)
     }
 
+    // 空白キーの長押しのトラックパッド(c10)。文脈はこの時点で 1 回だけ読み、以後はその上でカーソル位置を持つ
+    // (カーソルを動かした直後に読み直すと古い値のことがある)。端に着いたときだけ少し待って読み直す
+    // 始めてよいか: キーボードが出ていて、空白キーを押している間(発動までの 0.4 秒)にほかのキーの編集が無いこと
+    // (押したままの削除キーなど。かな・ラテン文字・数字のキーの押下はルート側の activeLayerIndex で見る)
+    func canBeginSpaceTrackpad() -> Bool {
+        viewIfLoaded?.window != nil
+            && CFAbsoluteTimeGetCurrent() - lastTextProxyEditAt >= SpaceTrackpad.activationDelay
+    }
+
+    func beginSpaceTrackpad() {
+        guard viewIfLoaded?.window != nil else {
+            return
+        }
+        let proxy = textDocumentProxy
+        spaceTrackpadEditSerial = textProxyEditSerial
+        spaceTrackpadSession = SpaceTrackpadCursorSession(
+            before: proxy.documentContextBeforeInput,
+            after: proxy.documentContextAfterInput,
+            now: CACurrentMediaTime()
+        )
+        SpaceTrackpadDisplayState.shared.setActive(true)
+        if spaceTrackpadTouchShield == nil {
+            let shield = SpaceTrackpadTouchShieldView(frame: view.bounds)
+            shield.onTouch = { [weak self] in
+                self?.endSpaceTrackpad()
+            }
+            view.addSubview(shield)
+            spaceTrackpadTouchShield = shield
+        }
+    }
+
+    func moveSpaceTrackpad(by steps: Int) {
+        guard var session = spaceTrackpadSession else {
+            return
+        }
+        // ほかの自前の編集が挟まった(押したままの削除キー等)。スナップショットが古いので終える
+        guard textProxyEditSerial == spaceTrackpadEditSerial else {
+            endSpaceTrackpad()
+            return
+        }
+        let proxy = textDocumentProxy
+        let offset = session.utf16Offset(forSteps: steps, now: CACurrentMediaTime()) {
+            (proxy.documentContextBeforeInput, proxy.documentContextAfterInput)
+        }
+        spaceTrackpadSession = session
+        guard offset != 0 else {
+            return
+        }
+        markTextProxyEdit()
+        spaceTrackpadEditSerial = textProxyEditSerial
+        proxy.adjustTextPosition(byCharacterOffset: offset)
+    }
+
+    // 何度呼んでもよい。表示は VC の状態に関わらず解く(解除漏れでキーの文字が消えたままにならないように)
+    func endSpaceTrackpad() {
+        spaceTrackpadSession = nil
+        SpaceTrackpadDisplayState.shared.setActive(false)
+        spaceTrackpadTouchShield?.removeFromSuperview()
+        spaceTrackpadTouchShield = nil
+    }
+
+    // トラックパッド自身の移動以外でテキスト・選択が変わったら終える(改訂 2 の R2)。自前の編集は 0.35 秒の窓で除く
+    func endSpaceTrackpadOnExternalChangeIfNeeded() {
+        guard spaceTrackpadSession != nil, shouldTreatAsExternalTextChange() else {
+            return
+        }
+        endSpaceTrackpad()
+    }
+
     func shouldAutoCommitConversion(beforeInserting text: String) -> Bool {
         guard !text.isEmpty else {
             return false

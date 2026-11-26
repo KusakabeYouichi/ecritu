@@ -27,6 +27,12 @@ struct KeyboardRootView: View {
     var onShortcutCandidateCommitted: (String) -> Void = { _ in }
     // 確定した後にカーソルを動かす(負で左。ショートカットのカーソル位置の印 ‸。3735)
     var onMoveCursorBy: (Int) -> Void = { _ in }
+    // 空白キーの長押しのトラックパッド(c10)。始め(文脈のスナップショット)・動かす文字数(左が負)・終わり
+    // 可否のうち VC が知る分(キーボードが出ている・発動までの間にほかのキーの編集が無い)
+    var canBeginSpaceTrackpad: () -> Bool = { true }
+    var onSpaceTrackpadBegan: () -> Void = {}
+    var onSpaceTrackpadMoved: (Int) -> Void = { _ in }
+    var onSpaceTrackpadEnded: () -> Void = {}
     let showsNextKeyboardKey: Bool
     // キーボードビューのウィンドウ座標の枠(KeyboardViewController が view.convert で測る)。
     // width が盤面の幅見積もり、minX/maxX が吹き出しのクランプに使われる。zero=未レイアウト

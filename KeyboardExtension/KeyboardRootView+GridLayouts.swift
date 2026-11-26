@@ -334,6 +334,17 @@ extension KeyboardRootView {
             // 段の束の重なり順(定義箇所のコメント参照。3168)
             .zIndex(kanaMainClusterZIndex)
         }
+        // 空白キーのトラックパッド中だけ『箱入りあひる』の盤を重ねる(c10)。ますの位置は格子と同じ寸法値から求める
+        .overlay {
+            if !isLandscapeLayout {
+                HakoiriDuckBoardOverlay(
+                    leftColumnWidth: leftModeSwitchButtonWidth,
+                    rightColumnWidth: rightEdgeUtilityColumnWidth,
+                    spacing: rowSpacing,
+                    showsNextKeyboardKey: showsNextKeyboardKey
+                )
+            }
+        }
     }
 
     @ViewBuilder
