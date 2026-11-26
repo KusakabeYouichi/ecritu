@@ -31773,6 +31773,20 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(off.first, "編輯", "\(off)")
     }
 
+    // 3907(ユーザ指摘): なりますよー が 成増よー。読みが ます で終わる地名が述語扱いで長音の終助詞のクランプを受けていた
+    func testPoliteMasuBeforeLongVowelParticle3907() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("なりますよー", "なりますよー"), ("なりますねー", "なりますねー"), ("そうなりますよー", "そうなりますよー"),
+            ("なりますよ", "なりますよ"), ("ありますよー", "ありますよー"), ("しますよー", "しますよー"), ("いきますよー", "行きますよー")
+        ] {
+            let list = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+        XCTAssertFalse(converter.multiClauseCandidates(for: "なりますよー", systemCandidateMode: .surface).prefix(3).contains("成増よー"))
+    }
+
     // 3907(ユーザ指摘): くぎりいち が 区切り一。区切り位置 が辞書に無かった
     func testDelimiterPosition3907() throws {
         try prepareRealLMDictionary()

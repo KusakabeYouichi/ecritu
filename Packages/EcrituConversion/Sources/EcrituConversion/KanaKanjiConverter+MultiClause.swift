@@ -3952,6 +3952,9 @@ extension KanaKanjiConverter {
                 // 名詞+けど は非文(名詞には だけど)なのに述語扱いでクランプされ、300えんだけどな の変種に
                 // 円田けどな/遠田けどな が並んでいた(3555)
                 !Self.isAllKanjiNounWithTaDaReadingTail(surface: prev, reading: prevReading),
+                // 読みが ます で終わる全漢字の語(成増/有桝 の地名・人名)も名詞で、読みの ます は丁寧の助動詞でない。
+                // 述語扱いでクランプされ、なりますよー が 成増よー(なります と同点の 1200 で語コストの 75 差)だった(3907、ユーザ報告)
+                !(!prevIsInflectionDerived && (prevReading?.hasSuffix("ます") ?? false) && Self.isAllKanjiSurface(prev)),
                 // 接続助詞 から/ので/けど は終止形・た形に付く。連用形の し(サ変の派生 糊塗し)の後ろは非文なのに
                 // 述語扱いでクランプされ、ことしから が 糊塗しから(7200+1200)になって 今年から(6847+3348)を跨いでいた(3723)
                 !(prevIsInflectionDerived && prev.hasSuffix("し")
