@@ -31787,6 +31787,21 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertFalse(converter.multiClauseCandidates(for: "なりますよー", systemCandidateMode: .surface).prefix(3).contains("成増よー"))
     }
 
+    // 3908(ユーザ指摘): Facebookにはれる で 貼れる が 腫れる より後ろ(Mac では候補に無い)。〜に晴れ〜 の 2 番めを 〜に貼れ〜 に
+    func testPasteableAfterNi3908() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, second) in [("ふぇいすぶっくにはれる", "Facebookに貼れる"), ("かべにはれる", "壁に貼れる"), ("ここにはれる", "ここに貼れる")] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.dropFirst().first, second, "\(reading): \(list.prefix(5))")
+        }
+        // 晴れる/腫れる の文はそのまま
+        XCTAssertEqual(leadingCandidates3879("きれいにはれた").first, "きれいに晴れた")
+        XCTAssertEqual(leadingCandidates3879("そらがはれる").first, "空が晴れる")
+        XCTAssertEqual(leadingCandidates3879("あしがはれる").first, "足が腫れる")
+        XCTAssertEqual(leadingCandidates3879("かおにはれもの").first, "顔に腫れ物")
+    }
+
     // 3907(ユーザ指摘): くぎりいち が 区切り一。区切り位置 が辞書に無かった
     func testDelimiterPosition3907() throws {
         try prepareRealLMDictionary()
