@@ -96,6 +96,8 @@
 	<dict><key>phrase</key><string>堪えきれる</string><key>shortcut</key><string>たえきれる</string><key>pos</key><string>一段</string></dict>
 	<dict><key>phrase</key><string>追い切る</string><key>shortcut</key><string>おいきる</string><key>pos</key><string>五段</string></dict>	<!-- 追い切る/追い切れる: Sudachi に無く、おいきれてない が お生きれてない、おいきる が お生きる だった。可能の 追い切れる も一段で登録(耐えきれる と同じ。ユーザ指定 3905) -->
 	<dict><key>phrase</key><string>追い切れる</string><key>shortcut</key><string>おいきれる</string><key>pos</key><string>一段</string></dict>
+	<dict><key>phrase</key><string>買い切る</string><key>shortcut</key><string>かいきる</string><key>pos</key><string>五段</string></dict>	<!-- 買い切る/買い切れる: 追い切る と同じ。かいきれない が 会切れない だった(ユーザ指定 3906) -->
+	<dict><key>phrase</key><string>買い切れる</string><key>shortcut</key><string>かいきれる</string><key>pos</key><string>一段</string></dict>
 	<dict><key>phrase</key><string>描く</string><key>shortcut</key><string>かく</string><key>pos</key><string>五段</string></dict>	<!-- 描く は Sudachi に えがく 読みのみで かく 読みが未収録。かけば→描けば 等の活用に必要 -->
 	<dict><key>phrase</key><string>耐え抜く</string><key>shortcut</key><string>たえぬく</string><key>pos</key><string>五段</string></dict>	<!-- 複合動詞「V連用+抜く」は Sudachi にほぼ収録が無く(たえぬく/やりぬく/かちぬく/いきぬく 全滅)、たえぬいた が た江縫た 等の断片になる。pos五段で活用一括網羅 -->
 	<dict><key>phrase</key><string>やり抜く</string><key>shortcut</key><string>やりぬく</string><key>pos</key><string>五段</string></dict>
