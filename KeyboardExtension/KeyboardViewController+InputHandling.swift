@@ -105,7 +105,10 @@ extension KeyboardViewController {
         )
         SpaceTrackpadDisplayState.shared.setActive(true)
         appendKeyboardDiagnosticsLog(
-            "トラックパッド開始 かな配列=\(sharedEnumValue(from: sharedDefaults, key: SharedDefaultsKeys.kanaLayoutMode, fallback: KanaLayoutMode.fiveByTwo)) 横画面=\(view.bounds.width > view.bounds.height ? 1 : 0)"
+            "トラックパッド開始 かな配列=\(sharedEnumValue(from: sharedDefaults, key: SharedDefaultsKeys.kanaLayoutMode, fallback: KanaLayoutMode.fiveByTwo)) 横画面=\(traitCollection.verticalSizeClass == .compact ? 1 : 0)",
+            // 個体が複数生きていると、ふつうの行は後から書いた個体のバッファーで上書きされて消える(3909 の報告の回が残らなかった)。
+            // critical は別の帳簿にも積まれるので残る
+            critical: true
         )
         if spaceTrackpadTouchShield == nil {
             let shield = SpaceTrackpadTouchShieldView(frame: view.bounds)
@@ -145,7 +148,8 @@ extension KeyboardViewController {
             // かなで盤が出ず枠だけのことがある件の切り分け(3909)。盤を描いた回数が 0 なら、重ねる側に届いていない
             let display = SpaceTrackpadDisplayState.shared
             appendKeyboardDiagnosticsLog(
-                "トラックパッド終了 盤の描画=\(display.boardDrawCount)回 大きさ=\(Int(display.lastBoardSize.width))x\(Int(display.lastBoardSize.height))"
+                "トラックパッド終了 盤の描画=\(display.boardDrawCount)回 大きさ=\(Int(display.lastBoardSize.width))x\(Int(display.lastBoardSize.height))",
+                critical: true
             )
         }
         spaceTrackpadSession = nil
