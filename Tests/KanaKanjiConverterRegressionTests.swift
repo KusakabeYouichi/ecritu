@@ -31860,6 +31860,20 @@ extension KanaKanjiConverterRegressionTests {
         )
     }
 
+    // 3931(ユーザ指定): ぼうさん だけを打ったときの先頭は 坊さん(表示の並びだけ。語彙に登録すると びんぼうさん が崩れる)
+    func testMonkAloneIsFirstInPresentationOrder3931() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let single = converter.candidates(for: "ぼうさん", limit: 12, systemCandidateMode: .surface)
+        let shown = SupplementaryCandidateMerger.promotingPresentationOrderSeed(single, reading: "ぼうさん")
+        XCTAssertEqual(shown.first, "坊さん", "\(shown.prefix(6))")
+        XCTAssertEqual(shown.filter { $0 == "坊さん" }.count, 1, "先頭へ動かすだけで、2 つ並べない")
+        XCTAssertTrue(shown.contains("望山"))
+        // 文の中と、ほかの語は変わらない
+        XCTAssertEqual(leadingCandidates3879("びんぼうさん").first, "貧乏さん")
+        XCTAssertEqual(leadingCandidates3879("あのぼうさんは").first, "あの坊さんは")
+    }
+
     // 3930(ユーザ指定): おぼうさん が 御坊さん(御坊+さん)。お坊さん を登録。坊さん(ぼうさん)は登録しない
     // (登録すると びんぼうさん が 便坊さん、しょうぼうさん が 章坊さん になった)。お母さん(かなが先頭)は変えない
     func testBuddhistMonk3930() throws {
