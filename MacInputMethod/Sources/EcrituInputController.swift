@@ -80,6 +80,20 @@ final class EcrituInputController: IMKInputController {
         commitAndClose(sender)
     }
 
+    // MARK: - 入力メニュー
+
+    /// 入力メニューに足す項目。IMK は項目の action をこのコントローラーへ送る(sender は項目を入れた辞書)ので target は置かない
+    override func menu() -> NSMenu! {
+        let menu = NSMenu()
+        menu.addItem(NSMenuItem(title: "設定…", action: #selector(showPreferences(_:)), keyEquivalent: ""))
+        return menu
+    }
+
+    /// 入力メニューの [設定…] と、IMK の環境設定の呼び出しの両方がここに来る
+    override func showPreferences(_ sender: Any!) {
+        SettingsWindowController.shared.show()
+    }
+
     private func commitAndClose(_ sender: Any!) {
         if let client = sender as? IMKTextInput {
             apply(session.commitAll(), to: client)

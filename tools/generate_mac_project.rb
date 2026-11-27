@@ -25,14 +25,19 @@ APP_SOURCES = %w[
   KeyEventTranslator.swift
   CandidateWindow.swift
   ConversionService.swift
+  ConversionSettings.swift
+  ConversionSettingsView.swift
+  SettingsWindowController.swift
 ].freeze
 # テスト束にも直接コンパイルする本体のファイル(アプリは main.swift を持つので @testable import しない)
 SOURCES_SHARED_WITH_TESTS = %w[
   KeyEventTranslator.swift
   ConversionService.swift
+  ConversionSettings.swift
 ].freeze
 TEST_SOURCES = %w[
   ConversionServiceTests.swift
+  ConversionSettingsTests.swift
   KeyEventTranslatorTests.swift
   InfoPlistTests.swift
 ].freeze

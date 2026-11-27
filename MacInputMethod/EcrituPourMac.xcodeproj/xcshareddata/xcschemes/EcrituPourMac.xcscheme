@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "561C3626EDD864E888D3C63AC550DE14"
+               BlueprintIdentifier = "1963D2D86CC0FE7F77B354DE3347D2F2"
                BuildableName = "ecritu.app"
                BlueprintName = "EcrituPourMac"
                ReferencedContainer = "container:EcrituPourMac.xcodeproj">
@@ -30,7 +30,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "561C3626EDD864E888D3C63AC550DE14"
+            BlueprintIdentifier = "1963D2D86CC0FE7F77B354DE3347D2F2"
             BuildableName = "ecritu.app"
             BlueprintName = "EcrituPourMac"
             ReferencedContainer = "container:EcrituPourMac.xcodeproj">
@@ -41,7 +41,7 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "088B2A9A60DCF872C117FD626C9C9859"
+               BlueprintIdentifier = "175DAE57B3313E0A73C321867F4877C8"
                BuildableName = "EcrituPourMacTests.xctest"
                BlueprintName = "EcrituPourMacTests"
                ReferencedContainer = "container:EcrituPourMac.xcodeproj">
@@ -63,7 +63,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "561C3626EDD864E888D3C63AC550DE14"
+            BlueprintIdentifier = "1963D2D86CC0FE7F77B354DE3347D2F2"
             BuildableName = "ecritu.app"
             BlueprintName = "EcrituPourMac"
             ReferencedContainer = "container:EcrituPourMac.xcodeproj">
@@ -80,7 +80,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "561C3626EDD864E888D3C63AC550DE14"
+            BlueprintIdentifier = "1963D2D86CC0FE7F77B354DE3347D2F2"
             BuildableName = "ecritu.app"
             BlueprintName = "EcrituPourMac"
             ReferencedContainer = "container:EcrituPourMac.xcodeproj">

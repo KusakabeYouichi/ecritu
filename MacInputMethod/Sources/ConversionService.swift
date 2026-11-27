@@ -22,24 +22,48 @@ final class ConversionService: ConversionProviding {
     }
 
     private let converter: KanaKanjiConverter
-    /// 結果の覚え書き。Backspace・選択中の伸縮・自動確定の判定で同じ読みを引き直すときの重複を省く。learn で全部捨てる
+    /// 結果の覚え書き。Backspace・選択中の伸縮・自動確定の判定で同じ読みを引き直すときの重複を省く。learn と設定の変更で全部捨てる
     private var memo: [MemoKey: [String]] = [:]
     /// memo を守る。短い間だけ取る
     private let memoLock = NSLock()
     /// converter(エンジン)を守る。変換 1 回の間ずっと取る
     private let converterLock = NSLock()
+    /// 変換の設定の置き場(学習と同じ suite)。suite 名が使えないときは nil で、設定は保存しない
+    private let defaults: UserDefaults?
+    /// 今の変換の設定。書くときは converterLock と memoLock の両方を取る。読むときはどちらか一方を取っていればよい
+    /// (変換の最中は converterLock、設定画面などは memoLock)
+    private var currentSettings: ConversionSettings
 
-    /// appGroupID は UserDefaults の suite 名(学習の置き場)。containerDirectory はエンジンが同名の辞書を探す場所
+    /// appGroupID は UserDefaults の suite 名(学習と変換の設定の置き場)。containerDirectory はエンジンが同名の辞書を探す場所
     init(appGroupID: String, containerDirectory: URL) {
         KanaKanjiStore.sharedContainerURLOverride = containerDirectory
         converter = KanaKanjiConverter(store: KanaKanjiStore(appGroupID: appGroupID))
-        // 新規インストールの iOS(現代的初期設定)がエンジンに入れる値のうち、エンジンの初期値と違うもの
-        converter.setKanjiRewritePreference(.bothBeforeFirst)
-        converter.setLateStandardizedRewritePreference(.bothBeforeFirst)
-        converter.setOrdinalMeKanjiPreferred(false)
-        converter.setKaCounterVariantPreference(.conservative)
-        converter.setInflectionalKanaVariantPreference(.contemporary)
-        converter.setAdjectiveMeKanjiCandidatesEnabled(true)
+        defaults = UserDefaults(suiteName: appGroupID)
+        // 値の無い Mac は現代的初期設定(新規インストールの iOS と同じ値)
+        currentSettings = defaults.map(ConversionSettings.init(defaults:)) ?? .contemporary
+        currentSettings.apply(to: converter)
+    }
+
+    /// 今の変換の設定(どのスレッドからでも読める)
+    var settings: ConversionSettings {
+        memoLock.lock()
+        defer { memoLock.unlock() }
+        return currentSettings
+    }
+
+    /// 設定を変えてエンジンへ入れ、保存する。覚え書きは前の設定の結果なので捨てる。
+    /// 裏で変換している最中なら、それが終わるのを待ってから入れる
+    func updateSettings(_ newSettings: ConversionSettings) {
+        converterLock.lock()
+        defer { converterLock.unlock() }
+        newSettings.apply(to: converter)
+        memoLock.lock()
+        currentSettings = newSettings
+        memo.removeAll()
+        memoLock.unlock()
+        if let defaults {
+            newSettings.save(to: defaults)
+        }
     }
 
     func preload() {
@@ -122,21 +146,23 @@ final class ConversionService: ConversionProviding {
         reading: String,
         precedingCharacter: Character?
     ) -> (candidates: [String], multiClauseLeadingKana: Bool) {
+        // X.1 かな漢字候補モード。converterLock の中なので、memoLock を取らずに読める
+        let sourceMode = currentSettings.candidateSourceMode
         let single = converter.candidates(
             for: reading,
             limit: Self.singleCandidateLimit,
-            systemCandidateMode: .surface
+            systemCandidateMode: sourceMode
         )
         var multiClause = converter.multiClauseCandidates(
             for: reading,
-            systemCandidateMode: .surface,
+            systemCandidateMode: sourceMode,
             precedingCharacter: precedingCharacter
         )
         // 単文節も連文節も空の短い読み(助詞始まりの断片)は、連文節を短い読みで取り直す
         if multiClause.isEmpty, single.isEmpty, reading.count >= 2 {
             multiClause = converter.multiClauseCandidates(
                 for: reading,
-                systemCandidateMode: .surface,
+                systemCandidateMode: sourceMode,
                 minReadingCountOverride: 2
             )
         }
