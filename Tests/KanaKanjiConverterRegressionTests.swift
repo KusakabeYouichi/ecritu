@@ -31860,6 +31860,18 @@ extension KanaKanjiConverterRegressionTests {
         )
     }
 
+    // 3929(ユーザ指定): そーだわりだけ が ソーダ割竹(1 語の 割竹 が 割り+だけ に勝っていた)。水割りだけ/お湯割りだけ はそのまま
+    func testSodaWariDake3929() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("そーだわりだけ", "ソーダ割りだけ"), ("みずわりだけ", "水割りだけ"), ("おゆわりだけ", "お湯割りだけ"), ("そーだわりで", "ソーダ割りで"),
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
     // 3927(ユーザ指定): りえきでたぶんをかえす が 利益出た文を返す。利益 の言い回しだけ 分 に。テストに出た文を読む は 文 のまま
     func testProfitThatCameOutBeforeObjectParticle3927() throws {
         try prepareRealLMDictionary()
