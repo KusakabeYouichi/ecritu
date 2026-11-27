@@ -31860,6 +31860,20 @@ extension KanaKanjiConverterRegressionTests {
         )
     }
 
+    // 3930(ユーザ指定): おぼうさん が 御坊さん(御坊+さん)。お坊さん を登録。坊さん(ぼうさん)は登録しない
+    // (登録すると びんぼうさん が 便坊さん、しょうぼうさん が 章坊さん になった)。お母さん(かなが先頭)は変えない
+    func testBuddhistMonk3930() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("おぼうさん", "お坊さん"), ("おぼうさんがきた", "お坊さんが来た"), ("おてらのおぼうさん", "お寺のお坊さん"),
+            ("おぼうさんに", "お坊さんに"), ("おかあさん", "おかあさん"), ("びんぼうさん", "貧乏さん"),
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
     // 3929(ユーザ指定): そーだわりだけ が ソーダ割竹(1 語の 割竹 が 割り+だけ に勝っていた)。水割りだけ/お湯割りだけ はそのまま
     func testSodaWariDake3929() throws {
         try prepareRealLMDictionary()

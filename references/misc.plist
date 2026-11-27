@@ -543,6 +543,7 @@
 	<dict><key>phrase</key><string>大圏航路</string><key>shortcut</key><string>たいけんこうろ</string><key>pos</key><string>名詞</string></dict>
 	<dict><key>phrase</key><string>区切り位置</string><key>shortcut</key><string>くぎりいち</string><key>pos</key><string>名詞</string></dict>	<!-- 区切り位置: 辞書に 1 語で無く、くぎりいち が 区切り+一 だった(ユーザ指定 3907) -->
 	<dict><key>phrase</key><string>一斤</string><key>shortcut</key><string>いっきん</string><key>pos</key><string>名詞</string></dict>	<!-- 一斤: 辞書に 1 語で無く、斤 は数字の直後だけの助数詞(1+きん→1斤)なので かな数詞の いっきん から組めなかった(ユーザ指定 3913) -->
+	<dict><key>phrase</key><string>お坊さん</string><key>shortcut</key><string>おぼうさん</string><key>pos</key><string>名詞</string></dict>	<!-- お坊さん: 辞書に 1 語で無く、おぼうさん が 御坊+さん だった(ユーザ指定 3930) -->
 	<dict><key>phrase</key><string>体験コース</string><key>shortcut</key><string>たいけんこーす</string><key>pos</key><string>名詞</string></dict>	<!-- 辞書の 大圏コース が 1 語で、たいけんこーす の候補が 大圏コース だけだった(むりょうたいけんこーす も 無料大圏コース。ユーザ指定 3898) -->
 
 	<!-- □ 年忌・法要(ユーザ指定 3887: いっしゅうき が 1周木、にじゅうごかいき が 25回木 だった。辞書にあって出る語も形だけ置いてコメントアウト。
