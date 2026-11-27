@@ -31849,6 +31849,17 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3925(ユーザ指定): 利益出た分 を先頭にしたら、前の先頭の 利益でたぶん/利益で多分 が候補から消えた。2・3 番めに残す
+    func testProfitThatCameOutKeepsParticleReading3925() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(Array(leadingCandidates3879("りえきでたぶん").prefix(3)), ["利益出た分", "利益でたぶん", "利益で多分"])
+        XCTAssertEqual(
+            Array(leadingCandidates3879("りえきでたぶんだいじょうぶ").prefix(3)),
+            ["利益出た分大丈夫", "利益でたぶん大丈夫", "利益で多分大丈夫"]
+        )
+    }
+
     // 3924(ユーザ指定): きほんてきにかくれが が 基本的に隠れが(に+隠れ+が)。隠れ家 を先頭に。隠れがち(がち の語)は変えない
     func testHideoutAfterNi3924() throws {
         try prepareRealLMDictionary()
