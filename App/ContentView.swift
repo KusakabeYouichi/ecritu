@@ -6,7 +6,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20261127145701"
+    private static let editionUpdatedAtRaw: String = "20261127151640"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -611,6 +611,11 @@ struct ContentView: View {
     // 他の日本語他社製キーボードだけが有効なときも真になるが、有効化手順カードの位置決めだけの用途なので許容。
     // 「一度表示された印」は App Group がアプリ削除後も残るため外した(2792〜2793)。効かない環境は「手順を隠す」
     @State var isKeyboardCurrentlyEnabled: Bool = ContentView.detectKeyboardEnabled()
+    // 初めて開いたときの 初期設定を選ぶ画面 を出しているか(3926)。最初の値は予測(設定の一覧が一瞬見えてから重ならないように)。
+    // 起動処理の applyInitialPresetIfFreshInstall の後で、印(initialPresetChoicePending)に合わせ直す
+    @State var showsInitialPresetChooser: Bool = ContentView.shouldShowInitialPresetChooserAtLaunch()
+    // デバッグ版の「選ぶ画面を出す」から出しているか(保存しない。[やめる]を出し、印が無くても当てられる)
+    @State var initialPresetChooserIsDebugPreview = false
     @AppStorage(SettingsKeys.setupStepsDismissed)
     var setupStepsDismissed: Bool = false
 
@@ -1500,6 +1505,8 @@ struct ContentView: View {
         #if DEBUG
         // ワイン用語優先(デバッグ版専用。3805)。メニューには出さない
         WineTermPrioritySettingsSection()
+        // 初期設定を選ぶ画面をもう一度出す(デバッグ版専用。既存の端末には出ない画面なので、確かめる手段。3926)
+        InitialPresetChooserDebugRow(onShow: showInitialPresetChooserForDebug)
         KeyboardDiagnosticsSection(
             isSessionActive: keyboardDiagnosticsSessionActive,
             failSafeProfile: keyboardDiagnosticsFailSafeProfile,
@@ -1798,6 +1805,9 @@ struct ContentView: View {
         }
         .overlay {
             titleMenuOverlay
+        }
+        .overlay {
+            initialPresetChooserOverlay
         }
         .alert(
             pendingLogoMenuAction?.title ?? "",

@@ -132,6 +132,9 @@ enum SettingsKeys {
     static let kanaKanjiInitialAjoutVocabularyAppliedSeed = "kanaKanjiInitialUserDictionaryAppliedSeed"
     // 初回インストールの初期設定(現代的初期設定)を当てたかの印(3406)。userSettingsKeys には入れない(戦略的初期設定で消さない)
     static let initialPresetApplied = "initialPresetApplied"
+    // 初めてのインストールで、初期設定を選ぶ画面をまだ終えていない印(3926)。立っている間は開くたびに選ぶ画面を出す。
+    // userSettingsKeys には入れない(初期設定を当てるときに消さない)
+    static let initialPresetChoicePending = "initialPresetChoicePending"
     // 最後に当てた初期設定(SettingsBasePreset の rawValue。3432)。ロゴメニューの下線と、各項目の「変更済み」の印の
     // 比べる相手。userSettingsKeys には入れない(初期設定を当てるときに消さない)。退避・復元では一緒に保存・復元する
     static let settingsBasePreset = "settingsBasePreset"
