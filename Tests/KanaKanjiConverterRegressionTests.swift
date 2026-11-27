@@ -13068,7 +13068,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let ka = converter.candidates(for: "か", limit: 16, systemCandidateMode: .surface)
         XCTAssertEqual(
             Array(ka.prefix(15)),
-            ["蚊", "科", "化", "下", "家", "過", "加", "仮", "鹿", "花", "華", "夏", "貨", "柯", "佳"],
+            // 課 は 科 の次(ユーザ指定 3919)
+            ["蚊", "科", "課", "化", "下", "家", "過", "加", "仮", "鹿", "花", "華", "夏", "貨", "柯"],
             "ka=\(ka)"
         )
         let node = converter.candidates(for: "ので", limit: 4, systemCandidateMode: .surface)
@@ -31842,6 +31843,16 @@ extension KanaKanjiConverterRegressionTests {
             XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
         }
         XCTAssertFalse(leadingCandidates3879("なんかきた").contains("何課来た"))
+    }
+
+    // 3919(ユーザ指定): か の 4 番め(表示の先頭は かな の か)に 課。科学/課長/彼女 の先頭は変わらない
+    func testKaSection3919() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(Array(leadingCandidates3879("か").prefix(4)), ["蚊", "科", "課", "化"])
+        for (reading, expected) in [("かちょう", "課長"), ("かがく", "科学"), ("かのじょ", "彼女")] {
+            XCTAssertEqual(leadingCandidates3879(reading).first, expected, reading)
+        }
     }
 
     // 3914(ユーザ指定): にきん/さんきん から 2斤/3斤 を出す(斤 を かな数詞からも組む表へ)。辞書語の先頭は動かさない
