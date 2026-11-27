@@ -4,6 +4,8 @@ import EcrituInput
 /// 自前の候補ウインドウ。InputSession.candidatePageSize 件ごとのページを番号つきで出し、選択行を強調する
 final class CandidateWindow {
     private static let font = NSFont.systemFont(ofSize: 15)
+    /// 番号の書体。候補より小さくして、候補のほうを目立たせる(ユーザ指定 2026-11-27)
+    private static let numberFont = NSFont.systemFont(ofSize: 11)
     private static let rowPadding: CGFloat = 4
     private static let horizontalPadding: CGFloat = 8
 
@@ -69,7 +71,7 @@ final class CandidateWindow {
     /// 番号の列の幅。1〜9 のうち一番幅の広い数字に合わせる(数字ごとに幅が違う書体でも、候補の頭がそろう)
     private static let numberColumnWidth: CGFloat = {
         let widths = (1...InputSession.candidatePageSize).map { number in
-            ("\(number)" as NSString).size(withAttributes: [.font: font]).width
+            ("\(number)" as NSString).size(withAttributes: [.font: numberFont]).width
         }
         // ラベルは文字の左右に 2 ポイントずつ余白を持つ。その分を足さないと数字が欠ける
         return ceil(widths.max() ?? 0) + 4
@@ -82,7 +84,7 @@ final class CandidateWindow {
         let textColor: NSColor = isSelected ? .selectedMenuItemTextColor : .labelColor
 
         let numberLabel = NSTextField(labelWithString: "\(number)")
-        numberLabel.font = font
+        numberLabel.font = numberFont
         numberLabel.textColor = textColor
         numberLabel.alignment = .center
         numberLabel.translatesAutoresizingMaskIntoConstraints = false
