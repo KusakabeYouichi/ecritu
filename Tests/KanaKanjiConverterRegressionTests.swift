@@ -31820,6 +31820,19 @@ extension KanaKanjiConverterRegressionTests {
     }
 
     // 3907(ユーザ指摘): くぎりいち が 区切り一。区切り位置 が辞書に無かった
+    // 3913(ユーザ指摘): いっきん で 一斤 が出ない。斤 は数字の直後だけの助数詞で、かな数詞からは組めなかった。
+    // 数字の直後(1+きん→1斤)と、辞書語の 白金/資金 の先頭は変わらない
+    func testOneLoafCounter3913() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("いっきん", "一斤"), ("しょくぱんいっきん", "食パン一斤"), ("はっきん", "白金"), ("しきん", "資金"),
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
     func testDelimiterPosition3907() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
