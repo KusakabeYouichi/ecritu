@@ -1129,6 +1129,7 @@
 	        <dict><key>phrase</key><string>ケイス</string><key>shortcut</key><string>けいす</string></dict>	<!-- Sudachiにもある -->
 	        <dict><key>phrase</key><string>テイプ</string><key>shortcut</key><string>ていぷ</string></dict>
 	        <dict><key>phrase</key><string>テイブル</string><key>shortcut</key><string>ていぶる</string></dict>
+	        <dict><key>phrase</key><string>プレイト</string><key>shortcut</key><string>ぷれいと</string></dict>
 	        <dict><key>phrase</key><string>ペイス</string><key>shortcut</key><string>ぺいす</string></dict>
 	        <dict><key>phrase</key><string>ペイパー</string><key>shortcut</key><string>ぺいぱー</string></dict>
 	        <dict><key>phrase</key><string>ベイキング</string><key>shortcut</key><string>ベイキング</string></dict>

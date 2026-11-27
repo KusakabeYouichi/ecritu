@@ -201,7 +201,7 @@ extension KeyboardRootView {
                         .frame(height: rowHeight)
                 }
 
-                deleteActionKey(showsMemoryPressure: true)
+                deleteActionKey(showsMemoryPressure: true, isBelowCandidateHeader: true)
                     .frame(width: rightEdgeUtilityColumnWidth, height: rowHeight)
             }
             .zIndex(zIndex(for: 0))
@@ -421,7 +421,7 @@ extension KeyboardRootView {
     func threeByThreeRightColumnButton(rowIndex: Int, rowHeight: CGFloat, rowSpacing: CGFloat) -> some View {
         switch rowIndex {
         case 0:
-            deleteActionKey(showsMemoryPressure: true)
+            deleteActionKey(showsMemoryPressure: true, isBelowCandidateHeader: true)
                 .frame(width: rightEdgeUtilityColumnWidth, height: rowHeight)
         case 1:
             spaceActionKeyButton(title: "")

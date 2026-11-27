@@ -13068,7 +13068,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let ka = converter.candidates(for: "か", limit: 16, systemCandidateMode: .surface)
         XCTAssertEqual(
             Array(ka.prefix(15)),
-            ["蚊", "科", "化", "下", "家", "過", "加", "仮", "鹿", "花", "華", "夏", "貨", "柯", "佳"],
+            // 課 は 科 の次(ユーザ指定 3919)
+            ["蚊", "科", "課", "化", "下", "家", "過", "加", "仮", "鹿", "花", "華", "夏", "貨", "柯"],
             "ka=\(ka)"
         )
         let node = converter.candidates(for: "ので", limit: 4, systemCandidateMode: .surface)
@@ -31831,6 +31832,101 @@ extension KanaKanjiConverterRegressionTests {
             let list = leadingCandidates3879(reading)
             XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
         }
+    }
+
+    // 3924(ユーザ指定): りえきでたぶん が 利益でたぶん(で+たぶん)。利益+出る の助詞なしの組(連語表)で 利益出た分 を先頭に。
+    // これで/それで/明日で+たぶん、助詞のある 利益が出た分、利益で+ほかの動詞 は変えない
+    func testProfitThatCameOut3924() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("りえきでたぶん", "利益出た分"), ("りえきがでたぶん", "利益が出た分"), ("りえきでた", "利益出た"),
+            ("これでたぶんだいじょうぶ", "これでたぶん大丈夫"), ("それでたぶん", "それでたぶん"), ("あしたでたぶん", "明日でたぶん"),
+            ("りえきでたりない", "利益で足りない"), ("りえきでたべる", "利益で食べる"), ("りえきでてにいれた", "利益で手に入れた"),
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
+    // 3924(ユーザ指定): きほんてきにかくれが が 基本的に隠れが(に+隠れ+が)。隠れ家 を先頭に。隠れがち(がち の語)は変えない
+    func testHideoutAfterNi3924() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("きほんてきにかくれが", "基本的に隠れ家"), ("やまにかくれが", "山に隠れ家"), ("きほんてきにかくれがすき", "基本的に隠れ家好き"),
+            ("かくれが", "隠れ家"), ("くもがくれが", "雲隠れが"),
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+        XCTAssertTrue(leadingCandidates3879("つきがくもにかくれがちだ").prefix(4).contains { $0.hasSuffix("雲に隠れがちだ") })
+    }
+
+    // 3924(ユーザ指定): りぴーとがきかない が リピートが聞かない。リピート+効く を連語表に。保険が効かない/話を聞かなく はそのまま
+    func testKeyRepeatWorks3924() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("りぴーとがきかない", "リピートが効かない"), ("りぴーとがきく", "リピートが効く"), ("きーりぴーとがきかない", "キーリピートが効かない"),
+            ("ほけんがきかない", "保険が効かない"), ("はなしをきかなく", "話を聞かなく"),
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
+    // 3924(ユーザ指定): とばなく が 鳥羽なく(名詞+なく の合成が活用の 飛ばなく より前)。語幹が五段の未然形と同じ読みなら
+    // 名詞+なく を作らない。動詞の無い読み(問題なく/仕方なく/暇なく)と、一段の連用形と同じ読み(声なく)は残す
+    func testNegativeContinuativeOverNounNaku3924() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("とばなく", "飛ばなく"), ("とばなくなる", "飛ばなくなる"), ("のまなく", "飲まなく"), ("かかなく", "書かなく"),
+            ("あそばなく", "遊ばなく"), ("かわなく", "買わなく"),
+            ("もんだいなく", "問題なく"), ("まちがいなく", "間違いなく"), ("しかたなく", "仕方なく"), ("おかねなく", "お金なく"),
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+        // 名詞+なく の合成は単文節の候補に並ぶ
+        let hima = converter.candidates(for: "ひまなく", limit: 12, systemCandidateMode: .surface)
+        XCTAssertTrue(hima.contains("暇なく"), "\(hima)")
+        let koe = converter.candidates(for: "こえなく", limit: 12, systemCandidateMode: .surface)
+        XCTAssertTrue(koe.contains("声なく"), "\(koe)")
+        XCTAssertFalse(leadingCandidates3879("とばなく").prefix(8).contains("鳥羽なく"))
+    }
+
+    // 3919(ユーザ指定): なんかきた が 何課来た。何 に付く助数詞の機械洗い出しに か(課)があった
+    func testNankaNotCounterKa3919() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("なんかきた", "何か来た"), ("なんかいった", "何か言った"), ("なんかい", "何回"), ("なんかげつ", "何か月")] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+        XCTAssertFalse(leadingCandidates3879("なんかきた").contains("何課来た"))
+    }
+
+    // 3919(ユーザ指定): か の 4 番め(表示の先頭は かな の か)に 課。科学/課長/彼女 の先頭は変わらない
+    func testKaSection3919() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(Array(leadingCandidates3879("か").prefix(4)), ["蚊", "科", "課", "化"])
+        for (reading, expected) in [("かちょう", "課長"), ("かがく", "科学"), ("かのじょ", "彼女")] {
+            XCTAssertEqual(leadingCandidates3879(reading).first, expected, reading)
+        }
+    }
+
+    // 3919(ユーザ指定): のしか の先頭は 野鹿 でなく かな(Apple のしか)
+    func testNoShikaKana3919() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("のしか", "のしか"), ("あっぷるのしかきどうしない", "Appleのしか起動しない"), ("ほんのしかたない", "ほんの仕方ない")] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+        XCTAssertTrue(leadingCandidates3879("のしか").contains("野鹿"))
     }
 
     // 3914(ユーザ指定): にきん/さんきん から 2斤/3斤 を出す(斤 を かな数詞からも組む表へ)。辞書語の先頭は動かさない

@@ -106,7 +106,7 @@ final class SpaceTrackpadTests: XCTestCase {
         _ = gesture.move(to: CGSize(width: 15, height: 0))
         _ = gesture.activateIfDue(at: 0.4, isAvailable: true)
         // 起点は 15。+20 で 2 文字(端数 2 を持ち越す)
-        XCTAssertEqual(gesture.move(to: CGSize(width: 35, height: 0)), 2)
+        XCTAssertEqual(gesture.move(to: CGSize(width: 35, height: 0)), SpaceTrackpadStep(characters: 2, lines: 0))
     }
 
     func testAccumulatorCarriesRemainderAcrossUpdates() {
@@ -117,11 +117,131 @@ final class SpaceTrackpadTests: XCTestCase {
         XCTAssertEqual(accumulator.update(translationX: 41), 0)  // +8 では足りない
     }
 
-    func testVerticalMovementDoesNotMoveCursor() {
+    // 3916: 縦は 20pt で 1 行(上が負)。発動前の縦のずれは捨てる
+    func testVerticalMovementMovesLines() {
+        var gesture = SpaceTrackpadGesture()
+        gesture.begin(at: 0)
+        _ = gesture.move(to: CGSize(width: 0, height: 5))
+        _ = gesture.activateIfDue(at: 0.4, isAvailable: true)
+        XCTAssertEqual(gesture.move(to: CGSize(width: 0, height: 45)), SpaceTrackpadStep(characters: 0, lines: 2))
+        XCTAssertEqual(gesture.move(to: CGSize(width: 0, height: 20)), SpaceTrackpadStep(characters: 0, lines: -1))
+        XCTAssertEqual(gesture.move(to: CGSize(width: 0, height: 10)), .zero)
+    }
+
+    func testDiagonalMovementMovesBoth() {
         var gesture = SpaceTrackpadGesture()
         gesture.begin(at: 0)
         _ = gesture.activateIfDue(at: 0.4, isAvailable: true)
-        XCTAssertEqual(gesture.move(to: CGSize(width: 0, height: 40)), 0)
+        XCTAssertEqual(gesture.move(to: CGSize(width: -18, height: -20)), SpaceTrackpadStep(characters: -2, lines: -1))
+    }
+
+    // MARK: - 行の移動(3916)
+
+    func testMovingUpKeepsColumn() {
+        var cursor = SpaceTrackpadCursor(before: "abcd\nef", after: "gh")
+        // 2 行めの ef| → 1 行めの ab|: cd(2) + 改行 + ef(2) = 5 戻る
+        XCTAssertEqual(cursor.moveLines(by: -1), -5)
+        XCTAssertEqual(cursor.position, 2)
+    }
+
+    func testMovingDownClampsToShortLineAndRestoresColumn() {
+        var cursor = SpaceTrackpadCursor(before: "abcd", after: "\nx\nwxyz")
+        // 1 行めの 4 桁め → 短い 2 行め(x)の行末 → 3 行めの 4 桁め
+        XCTAssertEqual(cursor.moveLines(by: 1), 2)
+        XCTAssertEqual(cursor.position, 6)
+        XCTAssertEqual(cursor.moveLines(by: 1), 5)
+        XCTAssertEqual(cursor.position, 11)
+    }
+
+    func testMovingTwoLinesAtOnceAndThroughEmptyLine() {
+        var cursor = SpaceTrackpadCursor(before: "ab\n\ncd", after: nil)
+        XCTAssertEqual(cursor.moveLines(by: -1), -3)
+        XCTAssertEqual(cursor.position, 3)
+        var twoUp = SpaceTrackpadCursor(before: "ab\n\ncd", after: nil)
+        XCTAssertEqual(twoUp.moveLines(by: -2), -4)
+        XCTAssertEqual(twoUp.position, 2)
+    }
+
+    func testLineMoveStopsAtContextEdges() {
+        var top = SpaceTrackpadCursor(before: "abc", after: "\nd")
+        XCTAssertEqual(top.moveLines(by: -1), 0)
+        var bottom = SpaceTrackpadCursor(before: "a\nbc", after: "de")
+        XCTAssertEqual(bottom.moveLines(by: 1), 0)
+    }
+
+    func testLineMoveCountsUtf16OfEmojiAndCrlf() {
+        // 👍 は utf16 で 2、\r\n は 1 文字で utf16 2
+        var cursor = SpaceTrackpadCursor(before: "👍x\r\ny", after: nil)
+        XCTAssertEqual(cursor.moveLines(by: -1), -4)
+        XCTAssertEqual(cursor.position, 1)
+    }
+
+    func testHorizontalMoveForgetsPreferredColumn() {
+        var cursor = SpaceTrackpadCursor(before: "abcd", after: "\nx\nwxyz")
+        _ = cursor.moveLines(by: 1)  // x の行末(桁 1)、覚えている桁は 4
+        _ = cursor.move(by: -1)  // 桁 0
+        _ = cursor.moveLines(by: 1)
+        XCTAssertEqual(cursor.position, 7)  // 3 行めの 桁 0
+    }
+
+    func testSessionRereadsContextAtLineEdge() {
+        var session = SpaceTrackpadCursorSession(before: "b", after: nil, now: 0)
+        let offset = session.utf16Offset(forLines: -1, now: 0.2) { ("a\nb", nil) }
+        XCTAssertEqual(offset, -2)
+    }
+
+    // 3920: ホストが後ろの文脈を今の行の終わりまでしか渡さない(メモ)。読み直しても下の行が見えなければ、改行をまたいで 1 行進め、
+    // 次の動きで読み直して同じ桁に合わせる
+    func testDownCrossesUnseenNewlineThenRestoresColumn() {
+        var session = SpaceTrackpadCursorSession(before: "ab", after: "cd", now: 0)
+        // 桁 2。cd(2) + 改行 1
+        XCTAssertEqual(session.utf16Offset(forLines: 1, now: 0.2) { ("ab", "cd") }, 3)
+        // ホストに届くまでの指の動きは捨てる
+        XCTAssertEqual(session.utf16Offset(forSteps: 1, now: 0.25) { XCTFail("読まない"); return (nil, nil) }, 0)
+        // 次の行の頭にいる。桁 2 へ合わせてから 1 文字右
+        XCTAssertEqual(session.utf16Offset(forSteps: 1, now: 0.4) { ("abcd\n", "wxyz") }, 3)
+    }
+
+    func testUpCrossesUnseenNewline() {
+        var session = SpaceTrackpadCursorSession(before: "ab", after: nil, now: 0)
+        XCTAssertEqual(session.utf16Offset(forLines: -1, now: 0.2) { ("ab", nil) }, -3)
+        // 前の行 xyz の行末にいる。桁 2 へ(-1)合わせてから 1 文字左(-1)
+        XCTAssertEqual(session.utf16Offset(forSteps: -1, now: 0.4) { ("xyz", "\nab") }, -2)
+    }
+
+    func testCrossingWaitsForRereadBeforeCrossingAgain() {
+        var session = SpaceTrackpadCursorSession(before: "ab", after: nil, now: 0)
+        // 下に見える行が無い(文章の終わりかもしれない)。改行 1 ぶんだけ送る(終わりならホストが止める)
+        XCTAssertEqual(session.utf16Offset(forLines: 1, now: 0.2) { ("ab", nil) }, 1)
+        // 終わりだった: 読み直すと同じ位置。桁 2 のまま動かない
+        XCTAssertEqual(session.utf16Offset(forSteps: -1, now: 0.4) { ("ab", nil) }, -1)
+    }
+
+    // 3921: 待つ間の下の動きをためて、読み直したらその場で次の改行もまたぐ(下だけ遅かった)
+    func testQueuedDownLinesCrossAgainRightAfterReread() {
+        var session = SpaceTrackpadCursorSession(before: "ab", after: "cd", now: 0)
+        XCTAssertEqual(session.utf16Offset(forLines: 1, now: 0.2) { ("ab", "cd") }, 3)
+        XCTAssertEqual(session.utf16Offset(forLines: 1, now: 0.25) { XCTFail("読まない"); return (nil, nil) }, 0)
+        // 次の行 ef の頭: 桁 2 へ(+2)、ためた 1 行と今の 1 行のうち 1 行ぶん ef の後の改行をまたぐ(+1)
+        XCTAssertEqual(session.utf16Offset(forLines: 1, now: 0.4) { ("abcd\n", "ef") }, 3)
+        // 残りの 1 行: さらに次の行 gh の頭 → 桁 2(+2)、その先は見えないのでまたぐ(+1)
+        XCTAssertEqual(session.utf16Offset(forLines: 0 + 1, now: 0.6) { ("abcd\nef\n", "gh") }, 3)
+    }
+
+    // 3921: 文章の終わりで下へ動かし続けても、ためた行を捨てるので すぐ上へ動ける
+    func testDownAtDocumentEndDoesNotBlockUp() {
+        var session = SpaceTrackpadCursorSession(before: "a\nb", after: nil, now: 0)
+        XCTAssertEqual(session.utf16Offset(forLines: 1, now: 0.2) { ("a\nb", nil) }, 1)
+        XCTAssertEqual(session.utf16Offset(forLines: 1, now: 0.25) { ("a\nb", nil) }, 0)
+        XCTAssertEqual(session.utf16Offset(forLines: 1, now: 0.3) { ("a\nb", nil) }, 0)
+        // ホストが止めていた(行頭でない)。ためた 2 行は捨て、上へ 1 行: b の桁 1 → a の桁 1 = -2
+        XCTAssertEqual(session.utf16Offset(forLines: -1, now: 0.4) { ("a\nb", nil) }, -2)
+    }
+
+    func testVerticalMovementDoesNotMoveCursorBeforeActivation() {
+        var gesture = SpaceTrackpadGesture()
+        gesture.begin(at: 0)
+        XCTAssertEqual(gesture.move(to: CGSize(width: 0, height: 4)), .zero)
     }
 
     // MARK: - 移動量(utf16)

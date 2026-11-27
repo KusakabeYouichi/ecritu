@@ -470,6 +470,8 @@ extension KeyboardViewController {
                 self?.handleReturnInput()
             },
             onAdvanceKeyboard: { [weak self] in
+                // 勝手に Apple のキーボードへ替わる件の切り分け(ユーザ報告 3915)。この行が無ければ、自前の地球儀キーでは替えていない
+                self?.appendKeyboardDiagnosticsLog("地球儀キーで次のキーボードへ", critical: true)
                 self?.advanceToNextInputMode()
             },
             onApplyKanaPostModifier: { [weak self] buttonState, preferLatestContext in

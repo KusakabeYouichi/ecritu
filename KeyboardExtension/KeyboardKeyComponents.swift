@@ -156,11 +156,47 @@ struct LatinShiftKeyButton: View {
     }
 }
 
+// 触れた瞬間のキー(削除キー)を、枠の外側のどこまで同じキーとして拾うか(3923)。
+// SwiftUI は枠の少し外の接触もいちばん近いキーへ届けるので、生タッチ側も同じ範囲を拾わないと、縁の外の打鍵だけ遅い経路になる
+enum RawTouchDownReach {
+    // 隣にキーがある側。キーどうしの隙間(4pt 以上)の半分まで。それより先は隣のキーのほうが近い
+    static let neighborSide: CGFloat = 2
+    // 面の端までの残りがこの幅以下なら、端まで拾う(右端の削除キーの外側の余白)
+    static let edgeSnapLimit: CGFloat = 16
+    // 上が候補欄で、そこに押せるものが無いときに上へ拾う幅の上限(実機ログでは枠の上 20pt までが削除キーへ届いていた)
+    static let freeHeaderTopReachLimit: CGFloat = 22
+
+    static func outsets(frame: CGRect, topReach: CGFloat, surfaceWidth: CGFloat) -> UIEdgeInsets {
+        let rightGap = surfaceWidth - frame.maxX
+        return UIEdgeInsets(
+            top: max(topReach, 0),
+            left: frame.minX > 0 && frame.minX <= edgeSnapLimit ? frame.minX : neighborSide,
+            bottom: neighborSide,
+            right: rightGap > 0 && rightGap <= edgeSnapLimit ? rightGap : neighborSide
+        )
+    }
+}
+
 // 生タッチ駆動の対象キーだけ、枠の登録(onGeometryChange)と合図の購読を付ける(3525)。keyID が nil なら何も足さない
 private struct RawTouchDownKeyModifier: ViewModifier {
     let keyID: String?
+    // 枠の上へ拾う幅(3923)。上が候補欄で、そこに押せるものが無いときは広い
+    var topReach: CGFloat = RawTouchDownReach.neighborSide
     let handler: (RawTouchLongPress.Event) -> Void
     @State private var frameInGlobal: CGRect = .zero
+
+    private func register(keyID: String, frame: CGRect) {
+        RawTouchLongPress.register(
+            keyID: keyID,
+            frame: frame,
+            firesOnTouchDown: true,
+            outsets: RawTouchDownReach.outsets(
+                frame: frame,
+                topReach: topReach,
+                surfaceWidth: RawTouchLongPress.coordinateView?.bounds.width ?? 0
+            )
+        )
+    }
 
     func body(content: Content) -> some View {
         if let keyID {
@@ -169,7 +205,11 @@ private struct RawTouchDownKeyModifier: ViewModifier {
                     proxy.frame(in: .global)
                 } action: { newValue in
                     frameInGlobal = newValue
-                    RawTouchLongPress.register(keyID: keyID, frame: newValue, firesOnTouchDown: true)
+                    register(keyID: keyID, frame: newValue)
+                }
+                // 枠は同じでも、候補が出る・消えるで上へ拾う幅が変わる
+                .onChange(of: topReach) { _, _ in
+                    register(keyID: keyID, frame: frameInGlobal)
                 }
                 .onReceive(RawTouchLongPress.events) { event in
                     if event.keyID == keyID {
@@ -211,6 +251,8 @@ struct ActionKeyButton: View {
     // 待たず面の認識器が見た touch から始める。縦画面の下半分ではシステム操作の門番が touch を約 0.75 秒
     // 握るので、AZERTY の削除キーだけ 1 文字めと連続削除の出だしが遅れていた(実測 3524)。nil なら従来どおり
     var rawTouchKeyID: String? = nil
+    // 生タッチで枠の上へ拾う幅(3923。RawTouchDownReach 参照)
+    var rawTouchTopReach: CGFloat = RawTouchDownReach.neighborSide
     let action: () -> Void
     // 生タッチ側で 1 回めを実行した時刻。遅れて届く SwiftUI のドラッグ判定はこの時刻から 1 秒以内なら同じ接触とみなす
     @State private var lastRawPressAt: CFAbsoluteTime = 0
@@ -371,7 +413,11 @@ struct ActionKeyButton: View {
                     stopRepeatingAction()
                 }
         )
-        .modifier(RawTouchDownKeyModifier(keyID: repeatsWhileHolding ? rawTouchKeyID : nil, handler: handleRawTouch))
+        .modifier(RawTouchDownKeyModifier(
+            keyID: repeatsWhileHolding ? rawTouchKeyID : nil,
+            topReach: rawTouchTopReach,
+            handler: handleRawTouch
+        ))
         .onChange(of: isRepeatTouchActive) { _, active in
             guard !active, repeatsWhileHolding else {
                 return
@@ -679,7 +725,7 @@ struct SpaceFlickActionKeyButton: View {
                     let steps = trackpadGesture.move(to: value.translation)
                     if trackpadGesture.phase == .active {
                         activeDirection = .milieu
-                        if steps != 0 {
+                        if !steps.isZero {
                             trackpad?.onMove(steps)
                         }
                         return
@@ -829,11 +875,11 @@ struct SpaceFlickActionKeyButton: View {
     }
 }
 
-// 空白キーのトラックパッドの配線(c10)。可否は発動判定の時点で聞く。動かす量は文字数(左が負)
+// 空白キーのトラックパッドの配線(c10)。可否は発動判定の時点で聞く。動かす量は文字数(左が負)と行数(上が負。3916)
 struct SpaceTrackpadCallbacks {
     let isAvailable: () -> Bool
     let onBegin: () -> Void
-    let onMove: (Int) -> Void
+    let onMove: (SpaceTrackpadStep) -> Void
     let onEnd: () -> Void
 }
 

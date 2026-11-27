@@ -11,12 +11,26 @@ enum SpaceTrackpad {
     static let activationDelay: TimeInterval = 0.4
     // 指の横移動この量ごとに 1 文字
     static let pointsPerCharacter: CGFloat = 9
+    // 指の縦移動この量ごとに 1 行(ユーザ指定 3916: Apple のと同じく上下にも動かす)。文字より粗くして、横へ滑らせているときに行が跳ねないようにする
+    static let pointsPerLine: CGFloat = 20
     // スナップショットの端に着いたとき、最後のカーソル移動からこの時間たっていれば文脈を読み直す(改訂 2 の R1)
     static let edgeRereadInterval: TimeInterval = 0.1
 
     // 変換前の文字がある(空白キーが[変換])ときは効かせない。従来の候補送りの連打のまま
     static func isAvailable(composingEmpty: Bool) -> Bool {
         composingEmpty
+    }
+}
+
+// 1 回の指の動きで動かす量。文字は左が負、行は上が負
+struct SpaceTrackpadStep: Equatable {
+    var characters: Int
+    var lines: Int
+
+    static let zero = SpaceTrackpadStep(characters: 0, lines: 0)
+
+    var isZero: Bool {
+        characters == 0 && lines == 0
     }
 }
 
@@ -40,6 +54,7 @@ struct SpaceTrackpadGesture {
     private var beganAt: TimeInterval = 0
     private var lastTranslation: CGSize = .zero
     private var accumulator = SpaceTrackpadAccumulator(anchorX: 0)
+    private var lineAccumulator = SpaceTrackpadAccumulator(anchorX: 0, unit: SpaceTrackpad.pointsPerLine)
     // 直前の接触の結果。片づけ(取り消しの通知)が指を離した通知より先に来ても、同じ接触の結果を返すために次の begin まで持つ
     private var lastRelease: Release = .space
 
@@ -53,19 +68,22 @@ struct SpaceTrackpadGesture {
         lastRelease = .space
     }
 
-    // 指が動いた。トラックパッド中なら動かす文字数(左が負)を返す。それ以外は 0
-    mutating func move(to translation: CGSize) -> Int {
+    // 指が動いた。トラックパッド中なら動かす文字数(左が負)と行数(上が負)を返す。それ以外は 0
+    mutating func move(to translation: CGSize) -> SpaceTrackpadStep {
         lastTranslation = translation
         switch phase {
         case .pending:
             if FlickGestureResolver.resolve(translation: translation) != .milieu {
                 phase = .flick
             }
-            return 0
+            return .zero
         case .active:
-            return accumulator.update(translationX: translation.width)
+            return SpaceTrackpadStep(
+                characters: accumulator.update(translationX: translation.width),
+                lines: lineAccumulator.update(translationX: translation.height)
+            )
         case .idle, .flick:
-            return 0
+            return .zero
         }
     }
 
@@ -78,6 +96,7 @@ struct SpaceTrackpadGesture {
         }
         phase = .active
         accumulator = SpaceTrackpadAccumulator(anchorX: lastTranslation.width)
+        lineAccumulator = SpaceTrackpadAccumulator(anchorX: lastTranslation.height, unit: SpaceTrackpad.pointsPerLine)
         return true
     }
 
@@ -104,20 +123,22 @@ struct SpaceTrackpadGesture {
     }
 }
 
-// 指の横移動を文字数へ直す。端数は持ち越す。縦の移動は見ない(上下は今回なし)
+// 指の 1 方向の移動を、unit ごとの段数へ直す。端数は持ち越す。横(文字)と縦(行)で 1 つずつ持つ
 struct SpaceTrackpadAccumulator {
     private var lastX: CGFloat
     private var remainder: CGFloat = 0
+    private let unit: CGFloat
 
-    init(anchorX: CGFloat) {
+    init(anchorX: CGFloat, unit: CGFloat = SpaceTrackpad.pointsPerCharacter) {
         lastX = anchorX
+        self.unit = unit
     }
 
     mutating func update(translationX: CGFloat) -> Int {
         remainder += translationX - lastX
         lastX = translationX
-        let steps = Int((remainder / SpaceTrackpad.pointsPerCharacter).rounded(.towardZero))
-        remainder -= CGFloat(steps) * SpaceTrackpad.pointsPerCharacter
+        let steps = Int((remainder / unit).rounded(.towardZero))
+        remainder -= CGFloat(steps) * unit
         return steps
     }
 }
@@ -127,6 +148,8 @@ struct SpaceTrackpadAccumulator {
 struct SpaceTrackpadCursor {
     private let characters: [Character]
     private(set) var position: Int
+    // 行を続けて動かすときの桁(行頭からの Character 数)。短い行を通っても元の桁へ戻る(Apple のと同じ)。横に動かしたら忘れる
+    private var preferredColumn: Int?
 
     init(before: String?, after: String?) {
         let beforeCharacters = Array(before ?? "")
@@ -136,7 +159,91 @@ struct SpaceTrackpadCursor {
 
     // steps 文字ぶん動かす(左が負)。端で止まる。戻り値はホストへ送る utf16 の量(動かなければ 0)
     mutating func move(by steps: Int) -> Int {
-        let target = min(max(position + steps, 0), characters.count)
+        preferredColumn = nil
+        return moveTo(min(max(position + steps, 0), characters.count))
+    }
+
+    // lines 行ぶん動かす(上が負)。行は改行で区切った行(折り返しの見た目の行はキーボードからは分からない)。
+    // 読めた文脈の最初の行・最後の行より先へは動かない(0 を返し、端の読み直しに任せる)
+    mutating func moveLines(by lines: Int) -> Int {
+        guard lines != 0 else {
+            return 0
+        }
+        let currentStart = lineStart(containing: position)
+        let column = preferredColumn ?? (position - currentStart)
+        var start = currentStart
+        for _ in 0..<abs(lines) {
+            if lines < 0 {
+                guard start > 0 else { break }
+                // start - 1 は前の行の終わりの改行
+                start = lineStart(containing: start - 1)
+            } else {
+                guard let end = lineEnd(from: start), end < characters.count else { break }
+                start = end + 1
+            }
+        }
+        guard start != currentStart else {
+            return 0
+        }
+        let target = min(start + column, lineEnd(from: start) ?? characters.count)
+        let offset = moveTo(target)
+        preferredColumn = column
+        return offset
+    }
+
+    // 行頭にいる(直前が改行)/行末の改行の手前にいる。改行をまたげたかの判定に使う
+    var isAtLineStart: Bool {
+        position > 0 && characters[position - 1].isNewline
+    }
+
+    var isAtLineEnd: Bool {
+        position < characters.count && characters[position].isNewline
+    }
+
+    // 今の桁(覚えている桁があればそれ)
+    var column: Int {
+        preferredColumn ?? (position - lineStart(containing: position))
+    }
+
+    // 今の行の中で桁 column へ(行が短ければ行末)。以後の上下はこの桁を覚える
+    mutating func moveToColumn(_ column: Int) -> Int {
+        let start = lineStart(containing: position)
+        let offset = moveTo(min(start + column, lineEnd(from: start) ?? characters.count))
+        preferredColumn = column
+        return offset
+    }
+
+    // 読めた文脈の端の改行をまたぐ量(下=後ろの文脈の終わり+改行 1、上=前の文脈の頭−改行 1)。
+    // 見えない改行は "\n" の 1 とみなす。文章の端ならホストが止めるので害は無い。位置は端へ移す(読み直すまでの仮)
+    mutating func offsetCrossingLineEdge(down: Bool) -> Int {
+        let keptColumn = column
+        let offset = moveTo(down ? characters.count : 0)
+        preferredColumn = keptColumn
+        return offset + (down ? 1 : -1)
+    }
+
+    // index の文字を含む行の頭(index が行末の改行なら、その改行で終わる行の頭)
+    private func lineStart(containing index: Int) -> Int {
+        var i = index
+        while i > 0, !characters[i - 1].isNewline {
+            i -= 1
+        }
+        return i
+    }
+
+    // start から始まる行の終わりの改行の位置。最後の行(改行が無い)は nil
+    private func lineEnd(from start: Int) -> Int? {
+        var i = start
+        while i < characters.count {
+            if characters[i].isNewline {
+                return i
+            }
+            i += 1
+        }
+        return nil
+    }
+
+    private mutating func moveTo(_ target: Int) -> Int {
         guard target != position else {
             return 0
         }
@@ -155,6 +262,11 @@ struct SpaceTrackpadCursorSession {
     private var cursor: SpaceTrackpadCursor
     // 最後にカーソルを動かした時刻か、文脈を読んだ時刻(読み直しも 0.1 秒に 1 回まで)
     private var lastAdjustAt: TimeInterval
+    // 見えない改行をまたいで、読み直し待ちの桁(nil=待っていない。3920)
+    private var pendingColumn: Int?
+    private var pendingCrossingDown = true
+    // 待つ間にたまった上下の行数(上が負)。捨てると下だけ遅かった(ユーザ報告 3921)
+    private var queuedLines = 0
 
     init(before: String?, after: String?, now: TimeInterval) {
         cursor = SpaceTrackpadCursor(before: before, after: after)
@@ -170,12 +282,88 @@ struct SpaceTrackpadCursorSession {
         guard steps != 0 else {
             return 0
         }
-        var offset = cursor.move(by: steps)
+        // 改行をまたいだ直後の待ちの間の横の動きは捨てる(短い)
+        guard let resolved = resolvePendingCrossing(now: now, rereadContext: rereadContext) else {
+            return 0
+        }
+        var reread = resolved.justReread
+        return resolved.prefix + move(now: now, rereadContext: rereadContext, didReread: &reread) { $0.move(by: steps) }
+    }
+
+    // lines 行ぶん動かすためにホストへ送る utf16 の量(上が負。3916)。端の読み直しは文字と同じ。
+    // 読み直しても先の行が見えないときは、行の端の改行をまたいで 1 行ぶんだけ進め、次の指の動きで読み直して同じ桁に合わせる(3920)。
+    // ホスト(メモ等)は後ろの文脈を今の行の終わりまでしか渡さず、始めた位置より下へ行けなかった(実機ログ 3919: 後ろはいつも改行 0)
+    mutating func utf16Offset(
+        forLines lines: Int,
+        now: TimeInterval,
+        rereadContext: () -> (before: String?, after: String?)
+    ) -> Int {
+        guard lines != 0 else {
+            return 0
+        }
+        guard let resolved = resolvePendingCrossing(now: now, rereadContext: rereadContext) else {
+            queuedLines += lines
+            return 0
+        }
+        let total = lines + queuedLines
+        queuedLines = 0
+        guard total != 0 else {
+            return resolved.prefix
+        }
+        var reread = resolved.justReread
+        let offset = move(now: now, rereadContext: rereadContext, didReread: &reread) { $0.moveLines(by: total) }
+        guard offset == 0, reread else {
+            return resolved.prefix + offset
+        }
+        // 読み直した直後でも先の行が見えない。1 行ぶん改行をまたぎ、残りは次に回す
+        let crossing = cursor.offsetCrossingLineEdge(down: total > 0)
+        pendingColumn = cursor.column
+        pendingCrossingDown = total > 0
+        queuedLines = total - total.signum()
+        lastAdjustAt = now
+        return resolved.prefix + crossing
+    }
+
+    // 改行をまたいだ後なら、ホストに届くまで待ってから読み直し、覚えた桁へ合わせる。
+    // nil=まだ待つ。prefix=桁合わせでホストへ送る量、justReread=いま読み直した(先が見えなければすぐ次をまたいでよい)
+    private mutating func resolvePendingCrossing(
+        now: TimeInterval,
+        rereadContext: () -> (before: String?, after: String?)
+    ) -> (prefix: Int, justReread: Bool)? {
+        guard let column = pendingColumn else {
+            return (0, false)
+        }
+        guard now - lastAdjustAt >= SpaceTrackpad.edgeRereadInterval else {
+            return nil
+        }
+        let context = rereadContext()
+        cursor = SpaceTrackpadCursor(before: context.before, after: context.after)
+        // またげたか(下=行頭にいる、上=行末の改行の手前にいる)。文章の端でホストが止めたなら、ためた行は捨てる
+        // (捨てないと、端で下へ動かし続けたぶんを上へ戻すまで上に動かなくなる)
+        let crossed = pendingCrossingDown ? cursor.isAtLineStart : cursor.isAtLineEnd
+        let prefix = cursor.moveToColumn(column)
+        pendingColumn = nil
+        lastAdjustAt = now
+        if !crossed {
+            queuedLines = 0
+        }
+        return (prefix, crossed)
+    }
+
+    // 今の文脈で動かし、動かなければ(0.1 秒たっていれば)読み直してもう一度
+    private mutating func move(
+        now: TimeInterval,
+        rereadContext: () -> (before: String?, after: String?),
+        didReread: inout Bool,
+        move: (inout SpaceTrackpadCursor) -> Int
+    ) -> Int {
+        var offset = move(&cursor)
         if offset == 0, now - lastAdjustAt >= SpaceTrackpad.edgeRereadInterval {
             let context = rereadContext()
             cursor = SpaceTrackpadCursor(before: context.before, after: context.after)
-            offset = cursor.move(by: steps)
+            offset = move(&cursor)
             lastAdjustAt = now
+            didReread = true
         }
         if offset != 0 {
             lastAdjustAt = now
@@ -207,10 +395,14 @@ final class SpaceTrackpadDisplayState: ObservableObject {
         }
     }
 
-    func noteBoardDrawn(size: CGSize, ownerTag: String) {
+    // 最後に描いたときの外観と線の色(診断ログ用。描いているのに見えない件の切り分け 3918)。例: 外観=light 線=0.00,0.00,0.00,0.18
+    private(set) var lastBoardAppearance = ""
+
+    func noteBoardDrawn(size: CGSize, ownerTag: String, appearance: String = "") {
         boardDrawCount += 1
         lastBoardSize = size
         boardDrawCountByOwner[ownerTag, default: 0] += 1
+        lastBoardAppearance = appearance
     }
 
     // 終了の行に書く形。例: D06ED979×1 7E303189×2(印の順)
