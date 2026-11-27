@@ -22679,6 +22679,23 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(converter.candidates(for: "さんか", limit: 40, systemCandidateMode: .surface).contains("讚歌"))
     }
 
+    // かききれない で 掻き切れない と 搔き切れない が並んだ(ユーザ報告 2026-11-27)。搔→掻 を見分けにくい字形の表へ
+    func testLookalikeSouIsHiddenWhenSimplifiedFormExists() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        defer { converter.setScriptVariantSuppressionCategories(ScriptVariantSuppressionCategory.defaultEnabled) }
+        for reading in ["かききれない", "かききる", "かいた", "かく"] {
+            let single = converter.candidates(for: reading, limit: 40, systemCandidateMode: .surface)
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertFalse((single + multi).contains { $0.contains("搔") }, "\(reading) single=\(single.prefix(10)) multi=\(multi.prefix(6))")
+        }
+        // 略した字体のほうは残る
+        XCTAssertTrue(converter.candidates(for: "かききる", limit: 40, systemCandidateMode: .surface).contains("掻き切る"))
+        // 見分けにくい字形をオフにすれば 搔 も出る
+        converter.setScriptVariantSuppressionCategories([])
+        XCTAssertTrue(converter.candidates(for: "かききる", limit: 40, systemCandidateMode: .surface).contains("搔き切る"))
+    }
+
     // 3366: あじあのなのか が アジアの名のか 先頭だった(ユーザ報告)。の→名(な)が安い。のなのか を misc に 1 語で登録
     // (なのか 単独で登録すると 七日 を押しのける)
     func testRegressionRealLMAjiaNoNanoka() throws {
