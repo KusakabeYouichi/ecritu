@@ -1386,9 +1386,11 @@ struct KeyboardRootView: View {
 
     // 削除キー(⌫、長押しリピート)。各レイアウトで同じ引数列を 10 か所に書いていたのを集約(2805)。
     // showsMemoryPressure はかな配列(5x2/3x3)だけ true(DEBUG のメモリ圧迫可視化: 黄/橙の背景と回数バッジ)
+    // isBelowCandidateHeader は最上段の削除キー(真上が候補欄)だけ true。生タッチで枠の上へ拾う幅が決まる(3923)
     func deleteActionKey(
         fixedWidth: CGFloat? = nil,
         showsMemoryPressure: Bool = false,
+        isBelowCandidateHeader: Bool = false,
         action: (() -> Void)? = nil
     ) -> ActionKeyButton {
         ActionKeyButton(
@@ -1403,8 +1405,20 @@ struct KeyboardRootView: View {
             cornerBadgeText: showsMemoryPressure ? memoryPressureDeleteKeyBadge : nil,
             touchProbeLabel: deleteKeyTouchProbeLabel,
             rawTouchKeyID: deleteKeyRawTouchID,
+            rawTouchTopReach: isBelowCandidateHeader ? deleteKeyRawTouchTopReachBelowHeader : RawTouchDownReach.neighborSide,
             action: action ?? onDeleteBackward
         )
+    }
+
+    // 最上段の削除キーの、生タッチで枠の上へ拾う幅(3923)。候補欄に押せるもの(候補・案内)があるときは、候補欄の枠の
+    // 下端までの隙間だけ。何も無いとき(入力していない)は、候補欄の中まで(SwiftUI もそこの接触を削除キーへ届ける)
+    var deleteKeyRawTouchTopReachBelowHeader: CGFloat {
+        let headerIsFree = !showsKanaConversionCandidates && !showsLatinSuggestionCandidates
+            && !isSystemDictionaryFallback && !showsFullAccessNotice && inputMode != .emoji
+        guard headerIsFree else {
+            return max(keyboardRowSpacing - 1, 0)
+        }
+        return min(keyboardRowSpacing + candidateHeaderHeight, RawTouchDownReach.freeHeaderTopReachLimit)
     }
 
     // 生タッチ駆動(3525)の枠の名前。面ごとに分けるのは、面の切り替えで新旧の削除キーが同時に存在し、

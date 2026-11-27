@@ -465,6 +465,56 @@ extension KeyboardLayoutMetricsTests {
         XCTAssertEqual(RawTouchLongPress.registeredKeyCount, 1)
     }
 
+    // 3923: 削除キーは枠の少し外の接触も触れた瞬間に拾う。実機ログの値(枠 {{301,53},{84,47}}、面の幅 393)。
+    // 枠の上 20pt(指 y=33)も .press、枠の外側の幅より先と、ほかのキーの枠の中は拾わない
+    @MainActor
+    func testRawTouchPressReachesOutsideDeleteKeyFrame() {
+        RawTouchLongPress.resetForTesting()
+        defer { RawTouchLongPress.resetForTesting() }
+        let frame = CGRect(x: 301, y: 53, width: 84, height: 47)
+        let outsets = RawTouchDownReach.outsets(frame: frame, topReach: 22, surfaceWidth: 393)
+        XCTAssertEqual(outsets, UIEdgeInsets(top: 22, left: 2, bottom: 2, right: 8), "右は面の端まで、隣にキーがある左と下は隙間の半分")
+        RawTouchLongPress.register(keyID: "⌫", frame: frame, firesOnTouchDown: true, outsets: outsets)
+        RawTouchLongPress.register(keyID: "は", frame: CGRect(x: 212, y: 53, width: 84, height: 47))
+
+        for point in [CGPoint(x: 328, y: 33), CGPoint(x: 342, y: 52), CGPoint(x: 390, y: 60), CGPoint(x: 300, y: 70)] {
+            let touch = ObjectIdentifier(NSObject())
+            let events = collectRawLongPressEvents(timeout: 0.15) {
+                RawTouchLongPress.touchBegan(id: touch, at: point)
+                RawTouchLongPress.touchEnded(id: touch, at: point, cancelled: false)
+            }
+            XCTAssertEqual(events.map(\.kind), [.press, .end], "\(point)")
+            XCTAssertEqual(RawTouchLongPress.lastBeganSkipReason, "")
+        }
+        for point in [CGPoint(x: 328, y: 28), CGPoint(x: 297, y: 70), CGPoint(x: 328, y: 104)] {
+            let touch = ObjectIdentifier(NSObject())
+            let events = collectRawLongPressEvents(timeout: 0.15) {
+                RawTouchLongPress.touchBegan(id: touch, at: point)
+                RawTouchLongPress.touchEnded(id: touch, at: point, cancelled: false)
+            }
+            XCTAssertTrue(events.filter { $0.kind == .press }.isEmpty, "\(point)")
+        }
+        // 隣のキーの枠の中は、外側の幅に入っていても隣のキー
+        XCTAssertEqual(
+            RawTouchLongPress.keyID(
+                at: CGPoint(x: 295, y: 70),
+                frames: ["⌫": frame, "は": CGRect(x: 212, y: 53, width: 84, height: 47)],
+                touchDownOutsets: ["⌫": UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 0)]
+            ),
+            "は"
+        )
+    }
+
+    // 3923: 隣にキーがある削除キー(QWERTY の 3 段め)は、上へも隙間の半分だけ。端から遠ければ左右も同じ
+    func testRawTouchDownReachDefaultsToHalfGap() {
+        let outsets = RawTouchDownReach.outsets(
+            frame: CGRect(x: 150, y: 160, width: 50, height: 44),
+            topReach: RawTouchDownReach.neighborSide,
+            surfaceWidth: 393
+        )
+        XCTAssertEqual(outsets, UIEdgeInsets(top: 2, left: 2, bottom: 2, right: 2))
+    }
+
     // 3923(ユーザ指定): 候補チップの下の当たり判定は、真下が削除キーの所(最上段の右端)には広げない
     func testCandidateChipTapExtensionStopsAtDeleteKey() {
         let header = CGRect(x: 4, y: 0, width: 385, height: 49)

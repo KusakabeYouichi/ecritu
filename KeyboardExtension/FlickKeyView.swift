@@ -85,6 +85,7 @@ enum RawTouchLongPress {
     private static var frames: [String: CGRect] = [:]
     // 触れた瞬間に .press を流すキー(削除キー 3525)。それ以外は delay 後に .activate
     private static var touchDownKeyIDs: Set<String> = []
+    private static var touchDownOutsets: [String: UIEdgeInsets] = [:]
     private static var trackedTouchID: ObjectIdentifier?
     private static var pendingKeyID: String?
     private static var pendingWorkItem: DispatchWorkItem?
@@ -103,7 +104,10 @@ enum RawTouchLongPress {
         Double(DispatchTime.now().uptimeNanoseconds) / 1_000_000_000
     }
 
-    static func register(keyID: String, frame: CGRect, firesOnTouchDown: Bool = false) {
+    // outsets: 触れた瞬間のキー(削除キー)だけ、枠の外側でも同じキーとして拾う幅(3923)。SwiftUI は枠の少し外の接触も
+    // いちばん近いキーへ届けるが、生タッチは枠の中しか見ず、枠の縁より外の削除は約 0.1 秒遅い SwiftUI 経由になっていた
+    // (実機ログ: 削除 64 回のうち 13 回。どれも枠の上端から 1〜20pt 上)
+    static func register(keyID: String, frame: CGRect, firesOnTouchDown: Bool = false, outsets: UIEdgeInsets = .zero) {
         if frame.isEmpty {
             frames[keyID] = nil
         } else {
@@ -111,9 +115,44 @@ enum RawTouchLongPress {
         }
         if firesOnTouchDown {
             touchDownKeyIDs.insert(keyID)
+            touchDownOutsets[keyID] = outsets == .zero ? nil : outsets
         } else {
             touchDownKeyIDs.remove(keyID)
+            touchDownOutsets[keyID] = nil
         }
+    }
+
+    // 接触の位置のキー。枠の中が先。どの枠にも入らなければ、触れた瞬間のキーの外側の幅まで広げて探す(いちばん近い枠)
+    static func keyID(
+        at point: CGPoint,
+        frames: [String: CGRect],
+        touchDownOutsets: [String: UIEdgeInsets]
+    ) -> String? {
+        if let keyID = frames.first(where: { $0.value.contains(point) })?.key {
+            return keyID
+        }
+        var best: (keyID: String, distance: CGFloat)?
+        for (keyID, outsets) in touchDownOutsets {
+            guard let frame = frames[keyID] else {
+                continue
+            }
+            let reach = CGRect(
+                x: frame.minX - outsets.left,
+                y: frame.minY - outsets.top,
+                width: frame.width + outsets.left + outsets.right,
+                height: frame.height + outsets.top + outsets.bottom
+            )
+            guard reach.contains(point) else {
+                continue
+            }
+            let dx = max(frame.minX - point.x, 0, point.x - frame.maxX)
+            let dy = max(frame.minY - point.y, 0, point.y - frame.maxY)
+            let distance = max(dx, dy)
+            if best == nil || distance < best!.distance {
+                best = (keyID, distance)
+            }
+        }
+        return best?.keyID
     }
 
     // frame を渡したときは、その枠で登録されているときだけ外す。面の切り替えで同じ keyID の新しいキーが先に
@@ -124,6 +163,7 @@ enum RawTouchLongPress {
         }
         frames[keyID] = nil
         touchDownKeyIDs.remove(keyID)
+        touchDownOutsets[keyID] = nil
     }
 
     // 調査用: 登録してある枠(削除キーの空振りの切り分け。3794)
@@ -161,7 +201,7 @@ enum RawTouchLongPress {
         trackedTouchID = id
         lastGlobalX = point.x
         cancelPending()
-        guard let keyID = frames.first(where: { $0.value.contains(point) })?.key else {
+        guard let keyID = keyID(at: point, frames: frames, touchDownOutsets: touchDownOutsets) else {
             lastBeganSkipReason = "枠外"
             return
         }
@@ -274,6 +314,7 @@ enum RawTouchLongPress {
     static func resetForTesting() {
         frames = [:]
         touchDownKeyIDs = []
+        touchDownOutsets = [:]
         trackedTouchID = nil
         cancelPending()
         activeKeyID = nil
