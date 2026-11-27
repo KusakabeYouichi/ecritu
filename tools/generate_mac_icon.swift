@@ -46,6 +46,7 @@ guard CommandLine.arguments.count == 2 else {
     FileHandle.standardError.write("使い方: swift tools/generate_mac_icon.swift <出力先の .tiff>\n".data(using: .utf8)!)
     exit(2)
 }
+
 let image = NSImage(size: pointSize)
 image.addRepresentation(bitmap(scale: 2))
 image.addRepresentation(bitmap(scale: 1))
@@ -53,5 +54,6 @@ guard let data = image.tiffRepresentation(using: .lzw, factor: 0) else {
     FileHandle.standardError.write("TIFF を作れませんでした\n".data(using: .utf8)!)
     exit(1)
 }
+
 try data.write(to: URL(fileURLWithPath: CommandLine.arguments[1]))
 print("書き出しました: \(CommandLine.arguments[1])")
