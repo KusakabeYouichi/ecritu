@@ -31849,6 +31849,20 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3924(ユーザ指定): きほんてきにかくれが が 基本的に隠れが(に+隠れ+が)。隠れ家 を先頭に。隠れがち(がち の語)は変えない
+    func testHideoutAfterNi3924() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("きほんてきにかくれが", "基本的に隠れ家"), ("やまにかくれが", "山に隠れ家"), ("きほんてきにかくれがすき", "基本的に隠れ家好き"),
+            ("かくれが", "隠れ家"), ("くもがくれが", "雲隠れが"),
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+        XCTAssertTrue(leadingCandidates3879("つきがくもにかくれがちだ").prefix(4).contains { $0.hasSuffix("雲に隠れがちだ") })
+    }
+
     // 3924(ユーザ指定): りぴーとがきかない が リピートが聞かない。リピート+効く を連語表に。保険が効かない/話を聞かなく はそのまま
     func testKeyRepeatWorks3924() throws {
         try prepareRealLMDictionary()
