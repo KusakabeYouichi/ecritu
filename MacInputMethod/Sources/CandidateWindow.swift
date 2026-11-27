@@ -32,7 +32,7 @@ final class CandidateWindow {
         panel.contentView = stack
     }
 
-    /// 候補を出す。anchor は未確定の行の矩形(スクリーン座標)。その下に出す
+    /// 候補を出す。anchor は未確定の行の矩形(スクリーン座標)。その下に出し、下に入りきらなければ上に出す
     func show(_ list: CandidateList, below anchor: NSRect) {
         let pageSize = InputSession.candidatePageSize
         let pageStart = (list.selectedIndex / pageSize) * pageSize
@@ -50,7 +50,14 @@ final class CandidateWindow {
         }
 
         let size = stack.fittingSize
-        let origin = NSPoint(x: anchor.minX, y: anchor.minY - size.height)
+        // 行がある画面の、メニューバーと Dock を除いた範囲に収める
+        let screen = NSScreen.screens.first { $0.frame.contains(anchor.origin) } ?? NSScreen.main
+        let origin: NSPoint
+        if let visibleFrame = screen?.visibleFrame {
+            origin = CandidatePlacement.origin(size: size, anchor: anchor, visibleFrame: visibleFrame)
+        } else {
+            origin = NSPoint(x: anchor.minX, y: anchor.minY - size.height)
+        }
         panel.setFrame(NSRect(origin: origin, size: size), display: true)
         panel.orderFront(nil)
     }
