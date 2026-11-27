@@ -31833,6 +31833,17 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3919(ユーザ指定): なんかきた が 何課来た。何 に付く助数詞の機械洗い出しに か(課)があった
+    func testNankaNotCounterKa3919() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("なんかきた", "何か来た"), ("なんかいった", "何か言った"), ("なんかい", "何回"), ("なんかげつ", "何か月")] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+        XCTAssertFalse(leadingCandidates3879("なんかきた").contains("何課来た"))
+    }
+
     // 3914(ユーザ指定): にきん/さんきん から 2斤/3斤 を出す(斤 を かな数詞からも組む表へ)。辞書語の先頭は動かさない
     func testLoafCounterFromKanaNumerals3914() throws {
         try prepareRealLMDictionary()
