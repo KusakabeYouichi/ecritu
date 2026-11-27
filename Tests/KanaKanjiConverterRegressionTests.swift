@@ -31872,6 +31872,24 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3929(ユーザ指定): おんざろっく は オンザロック → オン・ザ・ロック → On The Rock の順(前は かなの おんざろっく が先頭で、
+    // 中黒つきとラテン文字は候補に無かった)。文の中でも同じ順。単語だけのときは表示の最後の並び(presentationOrderSeed)でそろえる
+    func testOnTheRockOrder3929() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let order = ["オンザロック", "オン・ザ・ロック", "On The Rock"]
+        let single = converter.candidates(for: "おんざろっく", limit: 12, systemCandidateMode: .surface)
+        XCTAssertEqual(Set(single.prefix(4)), Set(order + ["おんざろっく"]), "\(single)")
+        XCTAssertEqual(
+            Array(SupplementaryCandidateMerger.promotingPresentationOrderSeed(single, reading: "おんざろっく").prefix(4)),
+            order + ["おんざろっく"]
+        )
+        for (reading, tail) in [("おんざろっくがすき", "が好き"), ("おんざろっくをのむ", "を飲む"), ("おんざろっくで", "で")] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(Array(list.prefix(3)), order.map { $0 + tail }, "\(reading): \(list.prefix(5))")
+        }
+    }
+
     // 3927(ユーザ指定): りえきでたぶんをかえす が 利益出た文を返す。利益 の言い回しだけ 分 に。テストに出た文を読む は 文 のまま
     func testProfitThatCameOutBeforeObjectParticle3927() throws {
         try prepareRealLMDictionary()
