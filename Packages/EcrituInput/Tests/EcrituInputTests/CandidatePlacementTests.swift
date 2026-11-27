@@ -10,24 +10,24 @@ final class CandidatePlacementTests: XCTestCase {
         CandidatePlacement.origin(size: size, anchor: anchor, visibleFrame: visible)
     }
 
-    // W1: 下に入るときは、行のすぐ下・行の左端に出す
+    // W1: 下に入るときは、行の下に 2 ポイントあけて・行の左端に出す
     func testW1FitsBelowTheLine() {
-        XCTAssertEqual(origin(anchor: CGRect(x: 300, y: 500, width: 2, height: 20)), CGPoint(x: 300, y: 260))
+        XCTAssertEqual(origin(anchor: CGRect(x: 300, y: 500, width: 2, height: 20)), CGPoint(x: 300, y: 258))
     }
 
-    // W2: 画面の下端に近くて下に入りきらないときは、行のすぐ上に出す(行を隠さない)
+    // W2: 画面の下端に近くて下に入りきらないときは、行の上に 2 ポイントあけて出す(行を隠さない)
     func testW2NearBottomGoesAboveTheLine() {
-        XCTAssertEqual(origin(anchor: CGRect(x: 300, y: 80, width: 2, height: 20)), CGPoint(x: 300, y: 100))
+        XCTAssertEqual(origin(anchor: CGRect(x: 300, y: 80, width: 2, height: 20)), CGPoint(x: 300, y: 102))
     }
 
     // W3: ちょうど下に入る境目(下端が使える範囲の下端と同じ)は下のまま
     func testW3ExactlyFitsBelow() {
-        XCTAssertEqual(origin(anchor: CGRect(x: 300, y: 290, width: 2, height: 20)), CGPoint(x: 300, y: 50))
+        XCTAssertEqual(origin(anchor: CGRect(x: 300, y: 292, width: 2, height: 20)), CGPoint(x: 300, y: 50))
     }
 
     // W4: 右端に近いときは、右へはみ出さないように左へ寄せる
     func testW4NearRightEdgeIsShiftedLeft() {
-        XCTAssertEqual(origin(anchor: CGRect(x: 950, y: 500, width: 2, height: 20)), CGPoint(x: 850, y: 260))
+        XCTAssertEqual(origin(anchor: CGRect(x: 950, y: 500, width: 2, height: 20)), CGPoint(x: 850, y: 258))
     }
 
     // W5: 行の矩形が取れなかったとき(全部 0)でも、使える範囲の中に出す
