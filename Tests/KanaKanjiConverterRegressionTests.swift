@@ -31876,6 +31876,27 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3924(ユーザ指定): とばなく が 鳥羽なく(名詞+なく の合成が活用の 飛ばなく より前)。語幹が五段の未然形と同じ読みなら
+    // 名詞+なく を作らない。動詞の無い読み(問題なく/仕方なく/暇なく)と、一段の連用形と同じ読み(声なく)は残す
+    func testNegativeContinuativeOverNounNaku3924() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("とばなく", "飛ばなく"), ("とばなくなる", "飛ばなくなる"), ("のまなく", "飲まなく"), ("かかなく", "書かなく"),
+            ("あそばなく", "遊ばなく"), ("かわなく", "買わなく"),
+            ("もんだいなく", "問題なく"), ("まちがいなく", "間違いなく"), ("しかたなく", "仕方なく"), ("おかねなく", "お金なく"),
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+        // 名詞+なく の合成は単文節の候補に並ぶ
+        let hima = converter.candidates(for: "ひまなく", limit: 12, systemCandidateMode: .surface)
+        XCTAssertTrue(hima.contains("暇なく"), "\(hima)")
+        let koe = converter.candidates(for: "こえなく", limit: 12, systemCandidateMode: .surface)
+        XCTAssertTrue(koe.contains("声なく"), "\(koe)")
+        XCTAssertFalse(leadingCandidates3879("とばなく").prefix(8).contains("鳥羽なく"))
+    }
+
     // 3919(ユーザ指定): なんかきた が 何課来た。何 に付く助数詞の機械洗い出しに か(課)があった
     func testNankaNotCounterKa3919() throws {
         try prepareRealLMDictionary()

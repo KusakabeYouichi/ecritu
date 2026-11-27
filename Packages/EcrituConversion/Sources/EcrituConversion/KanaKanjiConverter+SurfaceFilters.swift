@@ -445,12 +445,31 @@ extension KanaKanjiConverter {
         return candidates.filter { $0 == stemReading }
     }
 
+    // 否定の連用 なく(なく/なくなる/なくする…)の前の語幹が、五段動詞の未然形と同じ読み(とば=飛ば/のま=飲ま/かか=書か)のとき、
+    // 名詞+なく の合成(鳥羽なく/野間なく/呵々なく)は作らない。活用の 飛ばなく より前に並び、とばなく の先頭が 鳥羽なく、
+    // とばなくなる が 鳥羽なくなる だった(ユーザ報告 3924)。五段の未然形はあ段で終わるので、あ段で終わる語幹だけ見る
+    // (一段の かね=兼ね/こえ=越え は連用形の名詞と同じ読みで、金なく/声なく を残す)。動詞が無い読み(もんだい/しかた)は今までどおり
+    // 動詞があるかは、未然形の末尾を終止形に戻した読み(とば→とぶ)に、辞書が五段の印を付けた語があるかで見る
+    // (脱活用できるかだけで見ると、ひま→ひまる=日丸、しかた→しかつ=死活 のように名詞の読みまで拾い、暇なく が消えた)
+    static let godanBaseEndingByIrrealisEnding: [Character: String] = [
+        "わ": "う", "か": "く", "が": "ぐ", "さ": "す", "た": "つ", "な": "ぬ", "ば": "ぶ", "ま": "む", "ら": "る",
+    ]
+    func negativeNakuPostfixCollidesWithGodanVerb(stemReading: String, nextSuffix: String) -> Bool {
+        guard nextSuffix.hasPrefix("なく"), stemReading.count >= 2,
+            let last = stemReading.last, let baseEnding = Self.godanBaseEndingByIrrealisEnding[last] else {
+            return false
+        }
+        let baseReading = String(stemReading.dropLast()) + baseEnding
+        return inflectionMetadata(for: baseReading).classMap.values.contains { $0.hasPrefix("godan") }
+    }
+
     func filterNonVerbalCandidatesForVerbalPostfix(
         _ candidates: [String],
         stemReading: String,
         nextSuffix: String
     ) -> [String] {
-        guard Self.postfixSuffixRequiresVerbalStem(nextSuffix, stemReading: stemReading) else {
+        guard Self.postfixSuffixRequiresVerbalStem(nextSuffix, stemReading: stemReading)
+            || negativeNakuPostfixCollidesWithGodanVerb(stemReading: stemReading, nextSuffix: nextSuffix) else {
             return candidates
         }
 
