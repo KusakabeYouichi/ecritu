@@ -66,22 +66,46 @@ final class CandidateWindow {
         panel.orderOut(nil)
     }
 
+    /// 番号の列の幅。1〜9 のうち一番幅の広い数字に合わせる(数字ごとに幅が違う書体でも、候補の頭がそろう)
+    private static let numberColumnWidth: CGFloat = {
+        let widths = (1...InputSession.candidatePageSize).map { number in
+            ("\(number)" as NSString).size(withAttributes: [.font: font]).width
+        }
+        // ラベルは文字の左右に 2 ポイントずつ余白を持つ。その分を足さないと数字が欠ける
+        return ceil(widths.max() ?? 0) + 4
+    }()
+    /// 番号の列と候補の間
+    private static let numberGap: CGFloat = 4
+
+    /// 1 行: 番号の列(幅は一定、数字は列の中央)+ 候補(頭の位置は全部の行で同じ)
     private static func makeRow(number: Int, text: String, isSelected: Bool) -> NSView {
-        let label = NSTextField(labelWithString: "\(number)  \(text)")
-        label.font = font
-        label.textColor = isSelected ? .selectedMenuItemTextColor : .labelColor
-        label.translatesAutoresizingMaskIntoConstraints = false
+        let textColor: NSColor = isSelected ? .selectedMenuItemTextColor : .labelColor
+
+        let numberLabel = NSTextField(labelWithString: "\(number)")
+        numberLabel.font = font
+        numberLabel.textColor = textColor
+        numberLabel.alignment = .center
+        numberLabel.translatesAutoresizingMaskIntoConstraints = false
+
+        let candidateLabel = NSTextField(labelWithString: text)
+        candidateLabel.font = font
+        candidateLabel.textColor = textColor
+        candidateLabel.translatesAutoresizingMaskIntoConstraints = false
 
         let row = NSView()
         row.wantsLayer = true
         row.layer?.backgroundColor = isSelected ? NSColor.selectedContentBackgroundColor.cgColor : NSColor.clear.cgColor
         row.translatesAutoresizingMaskIntoConstraints = false
-        row.addSubview(label)
+        row.addSubview(numberLabel)
+        row.addSubview(candidateLabel)
         NSLayoutConstraint.activate([
-            label.leadingAnchor.constraint(equalTo: row.leadingAnchor, constant: horizontalPadding),
-            label.trailingAnchor.constraint(lessThanOrEqualTo: row.trailingAnchor, constant: -horizontalPadding),
-            label.topAnchor.constraint(equalTo: row.topAnchor, constant: rowPadding),
-            label.bottomAnchor.constraint(equalTo: row.bottomAnchor, constant: -rowPadding),
+            numberLabel.leadingAnchor.constraint(equalTo: row.leadingAnchor, constant: horizontalPadding),
+            numberLabel.widthAnchor.constraint(equalToConstant: numberColumnWidth),
+            numberLabel.firstBaselineAnchor.constraint(equalTo: candidateLabel.firstBaselineAnchor),
+            candidateLabel.leadingAnchor.constraint(equalTo: numberLabel.trailingAnchor, constant: numberGap),
+            candidateLabel.trailingAnchor.constraint(lessThanOrEqualTo: row.trailingAnchor, constant: -horizontalPadding),
+            candidateLabel.topAnchor.constraint(equalTo: row.topAnchor, constant: rowPadding),
+            candidateLabel.bottomAnchor.constraint(equalTo: row.bottomAnchor, constant: -rowPadding),
         ])
         return row
     }
