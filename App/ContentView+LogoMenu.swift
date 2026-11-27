@@ -805,10 +805,15 @@ extension ContentView {
         }
     }
 
+    // 戦略的初期設定は組み込みの値そのものだが、値を消すだけにせず、全部の値を明示して書く(3928)。
+    // 3927 までは消すだけだった。値が無いと、(1) 次にアプリを開いたとき「値が無い端末=この設定より前から使っている人」向けの
+    // 処理(applyKanjiRewriteDefaultForExistingInstallIfNeeded ほか)が X.8 書きかえ・その例外グループ・X.9 に
+    // 両方(本来の漢字を先に)・オン・両方 を書き、戦略的の値(本来の漢字だけ・オフ・本来の漢字だけ)でなくなる、
+    // (2) キーボードは X.8/X.9 の値を読めないとき 両方(本来の漢字を先に)として動く(KanjiRewritePreference.decode)ので、
+    // 当てた直後からアプリの表示と食い違う。ほかの 2 つの初期設定と同じく、値のあるキーの集合にそろえる
     func applyStrategicDefaults() {
-        removeAllUserSettings()
+        applyPreset(Self.builtInDefaultValues)
         Self.recordBasePreset(.strategic)
-        SettingsSyncNotification.postSettingsDidChange()
     }
 
     func applyConservativePreset() {
@@ -1111,8 +1116,19 @@ extension ContentView {
             defaults.set(value.anyValue, forKey: key)
         }
         // 基準の初期設定も戻す(3432)。これより前の退避には無いので、そのときは今の記録のまま
-        if let base = stash.basePreset.flatMap(SettingsBasePreset.init(rawValue:)) {
+        let stashedBase = stash.basePreset.flatMap(SettingsBasePreset.init(rawValue:))
+        if let base = stashedBase {
             Self.recordBasePreset(base, contactsStartedOff: stash.basePresetContactsStartedOff ?? false)
+        }
+        // 戦略的初期設定を基準に退避した設定で値の無いキーは、組み込みの値を明示して書く(3928)。3927 までの戦略的初期設定は
+        // 値を消すだけで、値が無い=組み込みの値 だった。無いままにすると applyStrategicDefaults のコメントの (1)(2) が起きる。
+        // ほかの初期設定を基準にした退避は今までどおり(値の無いキーは、その設定より前に退避したもの。起動時の処理が値を入れる)
+        if stashedBase == .strategic {
+            for key in Self.userSettingsKeys where defaults.object(forKey: key) == nil {
+                if let value = Self.builtInDefaultValues[key] {
+                    defaults.set(value, forKey: key)
+                }
+            }
         }
         normalizeLegacyKanaYaBracketValueIfNeeded()   // 3656 より前に退避した設定の括弧の値
         SettingsSyncNotification.postSettingsDidChange()

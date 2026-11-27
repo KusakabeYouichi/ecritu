@@ -119,4 +119,49 @@ final class SettingsKeyTableConsistencyTests: XCTestCase {
         // 3837 で、入っていなかった 8 項目(放置で確定、未確定の方式、後置修飾の空タップなど)を足した
         XCTAssertEqual(missing.sorted(), [], "settingsSyncSignature に入っていない設定(変えてもキーボードへ知らせが飛ばない)")
     }
+
+    // 関数 1 つぶんの本文(次の「\n    }\n」まで)
+    private func functionBody(_ signature: String) throws -> String {
+        try slice(try source("App/ContentView+LogoMenu.swift"), from: signature, to: "\n    }\n")
+    }
+
+    // 戦略的初期設定は、値を消すだけにせず 組み込みの値を全部明示して書く(3928)。値の無いキーが残ると、次の起動で
+    // 「値が無い端末=前から使っている人」向けの処理が 書きかえ(X.8)・例外グループ・X.9 に別の値を書き、戦略的の値でなくなる
+    func testStrategicPresetWritesEveryValueExplicitly() throws {
+        let body = try functionBody("func applyStrategicDefaults()")
+        XCTAssertTrue(body.contains("applyPreset(Self.builtInDefaultValues)"))
+        XCTAssertFalse(body.contains("removeAllUserSettings()"), "値を消すだけにしない")
+        XCTAssertTrue(body.contains("Self.recordBasePreset(.strategic)"))
+    }
+
+    // 値を全部消す処理(removeAllUserSettings)を呼ぶのは、消した直後に値を書く 2 つ(初期設定の適用、退避の復元)だけ
+    func testOnlyPresetApplicationAndRestoreClearAllSettings() throws {
+        let logoMenu = try source("App/ContentView+LogoMenu.swift")
+        XCTAssertEqual(logoMenu.components(separatedBy: "removeAllUserSettings()").count - 1, 3, "定義 1 つと呼び出し 2 つ")
+        XCTAssertTrue(try functionBody("func applyPreset(_ preset: [String: Any])").contains("removeAllUserSettings()"))
+        XCTAssertTrue(try functionBody("func restoreStashedSettings() -> Bool").contains("removeAllUserSettings()"))
+    }
+
+    // 起動時に「値が無ければ、前から使っている人向けの値を書く」処理のキーは、3 つの初期設定の表すべてに値がある。
+    // 初期設定を当てた直後に値が無いキーが残らないので、その処理が初期設定の値を書き換えない
+    func testExistingInstallDefaultKeysHaveValuesInEveryPresetTable() throws {
+        let logoMenu = try source("App/ContentView+LogoMenu.swift")
+        let pattern = #"defaults\.object\(forKey: SettingsKeys\.(\w+)\) == nil else \{\s*return\s*\}"#
+        let guardedKeys = Set(try captures(pattern, in: logoMenu).map { $0[0] })
+        for expected in ["kanjiRewritePreference", "kanjiRewriteEverydayException", "lateStandardizedRewritePreference"] {
+            XCTAssertTrue(guardedKeys.contains(expected), "\(expected) の処理が見つからない(書き方が変わったら、このテストの拾い方も直す)")
+        }
+        for table in ["builtInDefaultValues", "conservativePresetValues", "contemporaryPresetValues"] {
+            let names = Set(try keyNames(inTable: table))
+            XCTAssertEqual(guardedKeys.subtracting(names).sorted(), [], "\(table) に値が無いキー")
+        }
+    }
+
+    // 戦略的初期設定を基準に退避した設定の復元は、値の無いキーに組み込みの値を明示して書く(3928)
+    func testRestoreFillsMissingKeysOfStrategicStash() throws {
+        let body = try functionBody("func restoreStashedSettings() -> Bool")
+        let fill = try slice(body, from: "if stashedBase == .strategic {", to: "\n        }\n")
+        XCTAssertTrue(fill.contains("for key in Self.userSettingsKeys where defaults.object(forKey: key) == nil"))
+        XCTAssertTrue(fill.contains("Self.builtInDefaultValues[key]"))
+    }
 }
