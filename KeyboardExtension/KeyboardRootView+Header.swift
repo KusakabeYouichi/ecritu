@@ -94,6 +94,7 @@ extension KeyboardRootView {
             selectedConversionCandidateIndex: selectedConversionCandidateIndex,
             kanaCandidateHeaderTopPadding: kanaCandidateHeaderTopPadding,
             tapExtension: candidateChipTapExtension,
+            tapExtensionBlockedKeyFrame: candidateChipTapExtensionBlockedKeyFrame,
             onSelectConversionCandidate: onSelectConversionCandidate,
             onComposingTextCommitTap: handleComposingTextCommitTap,
             onComposingTextCommitLongPress: handleComposingTextCommitLongPress
@@ -109,6 +110,7 @@ extension KeyboardRootView {
             keyLabelColor: keyLabelColor,
             kanaCandidateHeaderTopPadding: kanaCandidateHeaderTopPadding,
             tapExtension: candidateChipTapExtension,
+            tapExtensionBlockedKeyFrame: candidateChipTapExtensionBlockedKeyFrame,
             onSelectConversionCandidate: onSelectConversionCandidate
         )
     }
@@ -126,6 +128,13 @@ extension KeyboardRootView {
             return 0
         }
         return keyboardRowSpacing + Self.candidateChipTapIntoKeyHeight
+    }
+
+    // チップの当たり判定を重ねないキーの枠(今の面の削除キー。ユーザ指定 3923)。削除キーが最上段(候補欄の真下)にある面でだけ効く
+    // (効くかどうかは枠の位置で CandidateChipTapExtensionStrip が決める)。枠は生タッチ用に登録してあるものを読む。
+    // 候補が出るのは打った後で、削除キーの枠はキーボードが出た時点で登録済み
+    var candidateChipTapExtensionBlockedKeyFrame: CGRect {
+        RawTouchLongPress.registeredFrame(for: deleteKeyRawTouchID) ?? .null
     }
 
     // 候補欄の重なり順。チップの当たり判定をキーに重ねているとき(candidateChipTapExtension > 0)だけキーより手前に出し、

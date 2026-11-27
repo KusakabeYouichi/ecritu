@@ -465,6 +465,17 @@ extension KeyboardLayoutMetricsTests {
         XCTAssertEqual(RawTouchLongPress.registeredKeyCount, 1)
     }
 
+    // 3923(ユーザ指定): 候補チップの下の当たり判定は、真下が削除キーの所(最上段の右端)には広げない
+    func testCandidateChipTapExtensionStopsAtDeleteKey() {
+        let header = CGRect(x: 4, y: 0, width: 385, height: 49)
+        let delete = CGRect(x: 301, y: 53, width: 84, height: 47)
+        XCTAssertEqual(CandidateChipTapExtensionStrip.extensionMaxX(headerFrame: header, extent: 7, blockedKeyFrame: delete), 301)
+        // 削除キーが下の段(QWERTY)・枠が未登録なら今までどおり候補欄の右端まで
+        let lower = CGRect(x: 330, y: 160, width: 55, height: 44)
+        XCTAssertEqual(CandidateChipTapExtensionStrip.extensionMaxX(headerFrame: header, extent: 7, blockedKeyFrame: lower), 389)
+        XCTAssertEqual(CandidateChipTapExtensionStrip.extensionMaxX(headerFrame: header, extent: 7, blockedKeyFrame: .null), 389)
+    }
+
     // MARK: - 広い横画面(iPhone Duo の内画面。3570)
 
     func testWideLandscapeSixItemsStayInOneColumn() {

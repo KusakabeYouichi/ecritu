@@ -1035,6 +1035,8 @@ extension KeyboardRootView {
         let kanaCandidateHeaderTopPadding: CGFloat
         // チップの当たり判定を見た目の下へ広げる幅(定数コメント参照。3818)
         var tapExtension: CGFloat = 0
+        // 当たり判定を重ねないキーの枠(削除キー。CandidateChipTapExtensionStrip 参照。3923)
+        var tapExtensionBlockedKeyFrame: CGRect = .null
         let onSelectConversionCandidate: (Int) -> Void
         let onComposingTextCommitTap: () -> Void
         let onComposingTextCommitLongPress: () -> Void
@@ -1226,7 +1228,8 @@ extension KeyboardRootView {
                 if tapExtension > 0 {
                     CandidateChipTapExtensionStrip(
                         chipFrames: chipFrames.filter { $0.key < conversionCandidates.count },
-                        headerFrame: headerFrame, extent: tapExtension, onSelect: onSelectConversionCandidate)
+                        headerFrame: headerFrame, extent: tapExtension, blockedKeyFrame: tapExtensionBlockedKeyFrame,
+                        onSelect: onSelectConversionCandidate)
                 }
             }
         }
@@ -1244,6 +1247,7 @@ extension KeyboardRootView {
         let keyLabelColor: Color
         let kanaCandidateHeaderTopPadding: CGFloat
         var tapExtension: CGFloat = 0
+        var tapExtensionBlockedKeyFrame: CGRect = .null
         let onSelectConversionCandidate: (Int) -> Void
 
         var body: some View {
@@ -1284,7 +1288,8 @@ extension KeyboardRootView {
                 if tapExtension > 0 {
                     CandidateChipTapExtensionStrip(
                         chipFrames: chipFrames.filter { $0.key < latinSuggestions.count },
-                        headerFrame: headerFrame, extent: tapExtension, onSelect: onSelectConversionCandidate)
+                        headerFrame: headerFrame, extent: tapExtension, blockedKeyFrame: tapExtensionBlockedKeyFrame,
+                        onSelect: onSelectConversionCandidate)
                 }
             }
         }
@@ -1390,14 +1395,28 @@ struct CandidateChipTapExtensionStrip: View {
     let chipFrames: [Int: CGRect]
     let headerFrame: CGRect
     let extent: CGFloat
+    // 真下に来ると当たり判定を重ねないキーの枠(.global。削除キー。ユーザ指定 3923)。無ければ .null
+    var blockedKeyFrame: CGRect = .null
     let onSelect: (Int) -> Void
 
+    // 当たり判定を広げてよい右端(.global の x)。削除キーが候補欄の真下にあるとき(最上段の右端)は、その左端まで。
+    // 削除キーを押したつもりで、上に重なった候補の当たり判定を選ばないようにする
+    static func extensionMaxX(headerFrame: CGRect, extent: CGFloat, blockedKeyFrame: CGRect) -> CGFloat {
+        guard !blockedKeyFrame.isNull, !blockedKeyFrame.isEmpty,
+            blockedKeyFrame.minY < headerFrame.maxY + extent,
+            blockedKeyFrame.maxY > headerFrame.maxY else {
+            return headerFrame.maxX
+        }
+        return min(headerFrame.maxX, blockedKeyFrame.minX)
+    }
+
     var body: some View {
+        let limitX = Self.extensionMaxX(headerFrame: headerFrame, extent: extent, blockedKeyFrame: blockedKeyFrame)
         ZStack(alignment: .topLeading) {
             ForEach(chipFrames.keys.sorted(), id: \.self) { index in
                 if let chip = chipFrames[index] {
                     let minX = max(chip.minX, headerFrame.minX)
-                    let maxX = min(chip.maxX, headerFrame.maxX)
+                    let maxX = min(chip.maxX, limitX)
                     let top = min(max(chip.maxY - headerFrame.minY, 0), headerFrame.height)
                     if maxX - minX > 1 {
                         Color.clear

@@ -1409,7 +1409,7 @@ struct KeyboardRootView: View {
 
     // 生タッチ駆動(3525)の枠の名前。面ごとに分けるのは、面の切り替えで新旧の削除キーが同時に存在し、
     // 同じ名前だと古いキーの片づけが新しい枠を消しうるため
-    private var deleteKeyRawTouchID: String {
+    var deleteKeyRawTouchID: String {
         "⌫ \(inputMode) \(kanaLayoutMode.rawValue) \(latinLayoutMode.rawValue)"
     }
 
