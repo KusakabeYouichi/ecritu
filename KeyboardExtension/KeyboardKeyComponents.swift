@@ -95,6 +95,7 @@ struct LatinShiftKeyButton: View {
                 .fill(shiftForegroundColor.opacity(isLocked ? 0.95 : 0))
                 .frame(width: 16, height: 2)
         }
+        .hiddenDuringSpaceTrackpad()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(
             RoundedRectangle(cornerRadius: 10, style: .continuous)
@@ -290,6 +291,7 @@ struct ActionKeyButton: View {
                 }
             }
             .foregroundStyle(isEnabled ? keyLabelColor : KeyboardThemePalette.keyLabelSecondary)
+            .hiddenDuringSpaceTrackpad()
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(
                 RoundedRectangle(cornerRadius: 10, style: .continuous)
@@ -582,6 +584,8 @@ struct SpaceFlickActionKeyButton: View {
     var repeatsWhileHolding = false
     var repeatInitialDelay: TimeInterval = 0.5
     var repeatInterval: TimeInterval = 0.2
+    // 長押しのトラックパッド(c10)。nil なら従来どおり
+    var trackpad: SpaceTrackpadCallbacks? = nil
 
     @Environment(\.keyboardAccentColor) private var accentColor
     @GestureState private var isGestureInProgress = false
@@ -591,6 +595,8 @@ struct SpaceFlickActionKeyButton: View {
     @State private var repeatStartWorkItem: DispatchWorkItem?
     @State private var repeatTimer: Timer?
     @State private var didRepeatDuringTouch = false
+    @State private var trackpadGesture = SpaceTrackpadGesture()
+    @State private var trackpadActivationWorkItem: DispatchWorkItem?
 
     private let keyLabelColor = KeyboardThemePalette.keyLabel
     private let tabPreviewText = "⇥"
@@ -599,12 +605,17 @@ struct SpaceFlickActionKeyButton: View {
         activeDirection == .haut ? tabPreviewText : title
     }
 
+    // トラックパッドの接触中は強調色を出さない
+    private var showsTouchHighlight: Bool {
+        isTouching && trackpadGesture.phase != .active
+    }
+
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 10, style: .continuous)
                 .fill(
                     isEnabled
-                        ? (isTouching ? accentColor.opacity(0.85) : KeyboardThemePalette.keyBackground)
+                        ? (showsTouchHighlight ? accentColor.opacity(0.85) : KeyboardThemePalette.keyBackground)
                         : KeyboardThemePalette.keyBackgroundDisabled
                 )
 
@@ -615,8 +626,9 @@ struct SpaceFlickActionKeyButton: View {
                 .font(.system(size: 16, weight: .semibold, design: .rounded))
                 .foregroundStyle(isEnabled ? keyLabelColor : KeyboardThemePalette.keyLabelSecondary)
                 .opacity(activeDirection == .haut ? 0 : titleOpacity)
+                .hiddenDuringSpaceTrackpad()
 
-            if isTouching {
+            if showsTouchHighlight {
                 Text(displayText)
                     .font(
                         .system(
@@ -656,13 +668,26 @@ struct SpaceFlickActionKeyButton: View {
 
                     if !isTouching {
                         scheduleStuckTouchWatchdog()
+                        trackpadGesture.begin(at: CACurrentMediaTime())
                         if repeatsWhileHolding {
                             scheduleRepeatStart()
+                        } else {
+                            scheduleTrackpadActivation()
                         }
                     }
                     isTouching = true
-                    let direction = FlickGestureResolver.resolve(translation: value.translation)
-                    activeDirection = direction == .haut ? .haut : .milieu
+                    let steps = trackpadGesture.move(to: value.translation)
+                    if trackpadGesture.phase == .active {
+                        activeDirection = .milieu
+                        if steps != 0 {
+                            trackpad?.onMove(steps)
+                        }
+                        return
+                    }
+                    if trackpadGesture.phase == .flick {
+                        cancelTrackpadActivation()
+                    }
+                    activeDirection = trackpadGesture.feedbackDirection
                     // 上フリック(タブ)に転じたら候補送りは止める
                     if activeDirection == .haut {
                         cancelRepeatStart()
@@ -671,16 +696,26 @@ struct SpaceFlickActionKeyButton: View {
                 }
                 .onEnded { _ in
                     let repeated = didRepeatDuringTouch
+                    let wasTrackpad = trackpadGesture.phase == .active
+                    let release = trackpadGesture.end()
+                    if wasTrackpad {
+                        trackpad?.onEnd()
+                    }
                     defer {
                         finalizeTouchInteractionState()
                     }
 
                     guard isEnabled else { return }
 
-                    if activeDirection == .haut {
+                    switch release {
+                    case .tab:
                         onTab()
-                    } else if !repeated {
-                        onSpace()
+                    case .space:
+                        if !repeated {
+                            onSpace()
+                        }
+                    case .nothing:
+                        break
                     }
                 }
         )
@@ -694,8 +729,33 @@ struct SpaceFlickActionKeyButton: View {
         }
         .zIndex(isTouching ? KeyboardLayerZIndex.touchingKey : 0)
         .accessibilityLabel(accessibilityLabelText)
-        .accessibilityHint("上フリックでタブ")
+        .accessibilityHint(trackpad == nil ? "上フリックでタブ" : "上フリックでタブ、長押しでカーソル移動")
         .frame(width: fixedWidth)
+    }
+
+    // 押して 0.4 秒たったときに、まだフリックでなく・発動できればトラックパッドにする
+    private func scheduleTrackpadActivation() {
+        cancelTrackpadActivation()
+        guard trackpad != nil else {
+            return
+        }
+        let work = DispatchWorkItem {
+            trackpadActivationWorkItem = nil
+            guard isTouching, let trackpad else {
+                return
+            }
+            if trackpadGesture.activateIfDue(at: CACurrentMediaTime(), isAvailable: trackpad.isAvailable()) {
+                activeDirection = .milieu
+                trackpad.onBegin()
+            }
+        }
+        trackpadActivationWorkItem = work
+        DispatchQueue.main.asyncAfter(deadline: .now() + SpaceTrackpad.activationDelay, execute: work)
+    }
+
+    private func cancelTrackpadActivation() {
+        trackpadActivationWorkItem?.cancel()
+        trackpadActivationWorkItem = nil
     }
 
     private func scheduleStuckTouchWatchdog() {
@@ -753,12 +813,28 @@ struct SpaceFlickActionKeyButton: View {
         cancelStuckTouchWatchdog()
         cancelRepeatStart()
         stopRepeating()
+        cancelTrackpadActivation()
+        // 離す・取り消し・消える・見張りのどれで来ても、トラックパッドの表示を必ず解く
+        if trackpadGesture.phase == .active {
+            trackpad?.onEnd()
+        }
+        if trackpadGesture.phase != .idle {
+            _ = trackpadGesture.end()
+        }
         didRepeatDuringTouch = false
         activeDirection = .milieu
         if isTouching {
             isTouching = false
         }
     }
+}
+
+// 空白キーのトラックパッドの配線(c10)。可否は発動判定の時点で聞く。動かす量は文字数(左が負)
+struct SpaceTrackpadCallbacks {
+    let isAvailable: () -> Bool
+    let onBegin: () -> Void
+    let onMove: (Int) -> Void
+    let onEnd: () -> Void
 }
 
 struct SymbolKeyButton: View {
@@ -1494,7 +1570,7 @@ struct ReturnToKanaPaletteKey: View {
 }
 
 // 左端のモード切り替え列の上 3 段([123][abc][あい])のキー(3618)。タップで面を切り替え、右フリックで
-// 設定 E.5 に割り当てた面を開く。今いる面のキーはタップが効かない(灰色)が、右フリックは効く。
+// 設定 T.4 に割り当てた面を開く。今いる面のキーはタップが効かない(灰色)が、右フリックは効く。
 // ActionKeyButton に方向の判定を足すと、あのキーは盤面のあちこちで使われていて型が膨らむ(本体の注記参照)
 // ため、ReturnToKanaPaletteKey と同じく見た目だけ合わせた専用のキーにしている
 struct ModeSwitchColumnKey: View {
@@ -1595,11 +1671,9 @@ struct ModeSwitchColumnKey: View {
             .minimumScaleFactor(0.6)
             .padding(.horizontal, 2)
             .foregroundStyle(labelColor)
+            .hiddenDuringSpaceTrackpad()
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(
-                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .fill(backgroundColor)
-            )
+            .spaceTrackpadNeutralFace(normal: backgroundColor, cornerRadius: 10)
             .overlay(
                 RoundedRectangle(cornerRadius: 10, style: .continuous)
                     .stroke(KeyboardThemePalette.keyBorder, lineWidth: 1)

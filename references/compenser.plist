@@ -932,6 +932,7 @@
 	        <dict><key>phrase</key><string>ピカール</string><key>shortcut</key><string>ぴかーる</string></dict>
 	        <dict><key>phrase</key><string>NASDAQ</string><key>shortcut</key><string>なすだっく</string></dict>
 	        <dict><key>phrase</key><string>JASDAQ</string><key>shortcut</key><string>じゃすだっく</string></dict>
+	        <dict><key>phrase</key><string>富士屋ホテル</string><key>shortcut</key><string>ふじやほてる</string></dict>
 	<!-- 仏教 -->
 	        <dict><key>phrase</key><string>盧舎那仏</string><key>shortcut</key><string>るしゃなぶつ</string></dict>
 	        <dict><key>phrase</key><string>毘盧遮那仏</string><key>shortcut</key><string>びるしゃなぶつ</string></dict>

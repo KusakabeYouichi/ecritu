@@ -27,6 +27,15 @@ struct KeyboardRootView: View {
     var onShortcutCandidateCommitted: (String) -> Void = { _ in }
     // 確定した後にカーソルを動かす(負で左。ショートカットのカーソル位置の印 ‸。3735)
     var onMoveCursorBy: (Int) -> Void = { _ in }
+    // 空白キーの長押しのトラックパッド(c10)。始め(文脈のスナップショット)・動かす文字数(左が負)・終わり
+    // 可否のうち VC が知る分(キーボードが出ている・発動までの間にほかのキーの編集が無い)
+    var canBeginSpaceTrackpad: () -> Bool = { true }
+    var onSpaceTrackpadBegan: () -> Void = {}
+    var onSpaceTrackpadMoved: (Int) -> Void = { _ in }
+    var onSpaceTrackpadEnded: () -> Void = {}
+    // 盤を描いた個体の印(診断ログの [セッション ID] の先頭 8 字。3910)。トラックパッド中かはプロセスで 1 つなので、
+    // 生きている個体のどれが描いたかを終了の行で見分ける
+    var trackpadBoardOwnerTag = ""
     let showsNextKeyboardKey: Bool
     // キーボードビューのウィンドウ座標の枠(KeyboardViewController が view.convert で測る)。
     // width が盤面の幅見積もり、minX/maxX が吹き出しのクランプに使われる。zero=未レイアウト
@@ -60,7 +69,7 @@ struct KeyboardRootView: View {
     let modifierFlickGuideDisplayMode: FlickGuideDisplayMode
     let keyRepeatInitialDelay: TimeInterval
     let keyRepeatInterval: TimeInterval
-    // 左端のモード切り替え列の割り当て(設定 E.5。3618 で右フリックを復活)。上 3 段は右フリックだけ、
+    // 左端のモード切り替え列の割り当て(設定 T.4。3618 で右フリックを復活)。上 3 段は右フリックだけ、
     // 最下段はタップと右フリック、🌐 キー(ホームボタンのある画面の狭い iPhone の かな 5×2 縦画面)は右と上
     let leftModeSwitchNumberKeyRightFlickActionRawValue: String
     let leftModeSwitchLatinKeyRightFlickActionRawValue: String
@@ -273,7 +282,7 @@ struct KeyboardRootView: View {
     // 3228 で 7→5: 純正より 2pt 高かったぶん(動画の画素比較)をここから出す
     static let portraitBottomGapOverHomeIndicator: CGFloat = 5
     let candidateStateFontSize: CGFloat = 15
-    // 候補の文字(V.5。3644)。生成後に代入する
+    // 候補の文字(V.3。3644)。生成後に代入する
     var candidateFontStyle: CandidateFontStyle = .semibold16
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     var candidateTextFontSize: CGFloat { candidateFontStyle.pointSize(for: dynamicTypeSize) }
@@ -1770,7 +1779,7 @@ extension KeyboardRootView {
     }
 }
 
-// 候補の文字の大きさと太さ(V.5。3644、ユーザ指定)。
+// 候補の文字の大きさと太さ(V.3。3644、ユーザ指定)。
 // apple: 純正のかなキーボードと同じ regular。iOS の文字サイズに追従し、標準 19pt・最大 25pt(純正の実測。2026-11-02、iPhone 15)。
 //        縦画面の候補欄の未確定の行(8pt)を取らずに、35pt(ホームインジケーターの機種は 31pt)を全部チップに使う。
 //        tokushima 方式では未確定の行が要るので使えない(16pt に落とす。アプリ側の設定は灰色)

@@ -93,6 +93,13 @@ enum KeyboardThemePalette {
         }
     )
     static let thinDivider = Color(uiColor: .separator).opacity(0.5)
+    // トラックパッド中の『箱入りあひる』の盤の線(c10)。キーの文字の色を薄くしたもの
+    static let trackpadBoardLine = Color(
+        uiColor: UIColor { trait in
+            UIColor.label.resolvedColor(with: trait)
+                .withAlphaComponent(trait.userInterfaceStyle == .dark ? 0.24 : 0.18)
+        }
+    )
 }
 
 // 面の中身を、与えられた高さに収める(3170)。横画面では ホストが枠を広げてくれず
@@ -511,7 +518,7 @@ extension KeyboardRootView {
         ]
     }
 
-    // 面を切り替えるキーに割り当てられる行き先(設定 E.5)。値はコンテナーアプリの KanaModeSwitcherActionOption と同じ。
+    // 面を切り替えるキーに割り当てられる行き先(設定 T.4)。値はコンテナーアプリの KanaModeSwitcherActionOption と同じ。
     // 単漢字・書式化は 3618 で追加(左端列の右フリックに割り当てられるようにした)
     enum KanaModeSwitcherAction: String, CaseIterable {
         case emoji
@@ -1016,7 +1023,7 @@ extension KeyboardRootView {
         let conversionStateColor: Color
         let candidateStateFontSize: CGFloat
         let candidateTextFontSize: CGFloat
-        // 候補の文字の太さと、未確定の行を取るか(V.5。3644)
+        // 候補の文字の太さと、未確定の行を取るか(V.3。3644)
         var candidateTextFontWeight: Font.Weight = .semibold
         var reservesCompositionRow: Bool = true
         let canTapComposingTextToCommit: Bool
@@ -1131,7 +1138,7 @@ extension KeyboardRootView {
             ScrollViewReader { proxy in
             VStack(alignment: .leading, spacing: 0) {
             // 未確定の行は方式に関わらず常に確保する(定数コメント参照。3216)。tokushima だけ文字を出す。
-            // 候補の文字が apple/17.5pt で tokushima でないときは取らず、候補欄の高さを全部チップに使う(V.5。3644)
+            // 候補の文字が apple/17.5pt で tokushima でないときは取らず、候補欄の高さを全部チップに使う(V.3。3644)
             if reservesCompositionRow {
             HStack(spacing: 6) {
                 Color.clear
@@ -1199,7 +1206,7 @@ extension KeyboardRootView {
                 .padding(.horizontal, 2)
                 .padding(.top, reservesCompositionRow ? kanaCandidateHeaderTopPadding : 0)
                 .padding(.bottom, 0)
-                // 未確定の行を取らないとき(V.5)は大きな文字のチップを候補欄の上下中央に置く
+                // 未確定の行を取らないとき(V.3)は大きな文字のチップを候補欄の上下中央に置く
                 .frame(maxHeight: .infinity, alignment: reservesCompositionRow ? .top : .center)
             }
             }

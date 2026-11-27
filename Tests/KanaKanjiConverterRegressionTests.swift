@@ -1716,7 +1716,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi("ぱんをつくる").first, "パンを作る")
         XCTAssertEqual(multi("ぎゅうにゅうでぷりんをつくる").first, "牛乳でプリンを作る")
         XCTAssertEqual(multi("ちーずけーきをつくる").first, "チーズケーキを作る")
-        // X.9 を 本来の漢字を先に にしたとき、蒸留酒/蒸留所 のような決まった複合語も 蒸溜 に
+        // X.8 を 本来の漢字を先に にしたとき、蒸留酒/蒸留所 のような決まった複合語も 蒸溜 に
         converter.setKanjiRewritePreference(.bothAfterFirst)
         XCTAssertEqual(multi("ぶどうしぼりかすのじょうりゅうしゅ").first, "ぶどう絞りかすの蒸留酒")
         // 以降は実機の設定(両方・本来の漢字を先に)のまま見る
@@ -2107,7 +2107,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(single("かれは").prefix(2)), ["彼は", "かれは"], "\(single("かれは").prefix(4))")
         XCTAssertEqual(multi("あるでしょ").first, "あるでしょ", "\(multi("あるでしょ").prefix(3))")
         XCTAssertEqual(multi("かれはがっこうにいった").first, "彼は学校に行った")
-        // 書きかえの日常語の例外に 理屈/画期的(本来の漢字を先に でも常用漢字を先に)。理窟 は X.10 の組(ユーザ指定)
+        // 書きかえの日常語の例外に 理屈/画期的(本来の漢字を先に でも常用漢字を先に)。理窟 は X.9 の組(ユーザ指定)
         converter.setKanjiRewriteEverydayException(true)
         converter.setKanjiRewritePreference(.bothBeforeFirst)
         converter.setLateStandardizedRewritePreference(.bothBeforeFirst)
@@ -2115,7 +2115,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(single("りくつ").contains("理窟"), "\(single("りくつ").prefix(4))")
         XCTAssertEqual(single("かっきてき").first, "画期的", "\(single("かっきてき").prefix(4))")
         XCTAssertTrue(multi("りくつをこねる").first?.hasPrefix("理屈を") ?? false, "\(multi("りくつをこねる").prefix(3))")
-        // 例外の表に無い X.10 の語(臆測)は設定どおり
+        // 例外の表に無い X.9 の語(臆測)は設定どおり
         XCTAssertEqual(single("おくそく").first, "臆測", "\(single("おくそく").prefix(4))")
     }
 
@@ -3118,7 +3118,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.multiClauseCandidates(for: "こせきのある", systemCandidateMode: .surface).first, "戸籍のある")
     }
 
-    // 数字の後の れつめを も X.14 の め に従う(列 が助数詞の表に無かった。ユーザ報告 3655)
+    // 数字の後の れつめを も X.12 の め に従う(列 が助数詞の表に無かった。ユーザ報告 3655)
     func testRegressionRealLMDigitRetsumeWo() throws {
         try prepareRealLMDictionary()
         converter.setOrdinalMeKanjiPreferred(false)
@@ -3990,7 +3990,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(kaishime.first, "買い占めよね", "multi=\(kaishime.prefix(4))")
 
         // せんじつはじめて: じつ 読みの 日 助数詞合成(1000日)を作らない
-        // 3633: はじめて は 副詞(漢字も残す)(X.8)で、かな はじめて が漢字 初めて の bigram(文末)を代用するようになり、
+        // 3633: はじめて は 副詞(漢字も残す)(X.7)で、かな はじめて が漢字 初めて の bigram(文末)を代用するようになり、
         // かなが漢字のすぐ上に(はじめての/はじめてあった と同じ並び)
         let senjitsu = converter.multiClauseCandidates(for: "せんじつはじめて", systemCandidateMode: .surface)
         XCTAssertEqual(Array(senjitsu.prefix(2)), ["先日はじめて", "先日初めて"], "multi=\(senjitsu.prefix(4))")
@@ -17312,7 +17312,7 @@ extension KanaKanjiConverterRegressionTests {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
         let single = converter.candidates(for: "なのか", limit: 6, systemCandidateMode: .surface)
-        // 3804 から 日付の 2 つの形は X.18 の順(7日、七日)
+        // 3804 から 日付の 2 つの形は X.13 の順(7日、七日)
         XCTAssertEqual(Array(single.prefix(3)), ["なのか", "7日", "七日"], "single=\(single)")
     }
 }
@@ -23232,7 +23232,7 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi("おせわになりました").first, "お世話になりました")
         // 人名でない名詞+ください は減点しない(水ください)
         XCTAssertEqual(multi("みずください").first, "水ください", "\(multi("みずください"))")
-        // にんじん: かな→カタカナ→人参→人蔘(ユーザ指定 3632)。人参/人蔘 は書きかえ(X.9)の組
+        // にんじん: かな→カタカナ→人参→人蔘(ユーザ指定 3632)。人参/人蔘 は書きかえ(X.8)の組
         XCTAssertEqual(Array(single("にんじん").prefix(4)), ["にんじん", "ニンジン", "人参", "人蔘"], "\(single("にんじん"))")
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "にんじん"))
         XCTAssertEqual(multi("にんじんを").first, "にんじんを", "\(multi("にんじんを"))")
@@ -23286,9 +23286,9 @@ extension KanaKanjiConverterRegressionTests {
             return converter.candidates(for: reading, limit: limit, systemCandidateMode: .surface)
         }
         for (reading, top) in [
-            // 日付は 3793 から X.18(アラビア数字が先)の順: 2日、二日
+            // 日付は 3793 から X.13(アラビア数字が先)の順: 2日、二日
             ("ふつか", "2日"), ("みっか", "3日"), ("よっか", "4日"), ("ようか", "8日"), ("ここのか", "9日"), ("とおか", "10日"),
-            // 月名も 3804 から X.18 の順: 2月、二月
+            // 月名も 3804 から X.13 の順: 2月、二月
             ("はつか", "20日"), ("にがつ", "2月"), ("さんがつ", "3月"), ("しがつ", "4月"), ("しちがつ", "7月"),
             ("はちがつ", "8月"), ("くがつ", "9月"), ("じゅういちがつ", "11月"), ("じゅうにがつ", "12月")
         ] {
@@ -23299,7 +23299,7 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertNotEqual(single("いつか").first, "五日")
         XCTAssertTrue(single("いつか", limit: 40).contains("五日"))
         converter.invalidateCandidateCache()
-        // 3793 から 日付は X.18 の順(四月8日、四月八日)
+        // 3793 から 日付は X.13 の順(四月8日、四月八日)
         // 3805 から 月名+日付の和語 は 1 語として単文節の生成で出る(連文節は空)
         XCTAssertEqual(Array(single("しがつようか").prefix(2)), ["4月8日", "四月八日"])
         converter.invalidateCandidateCache()
@@ -23454,7 +23454,7 @@ extension KanaKanjiConverterRegressionTests {
     }
 
     // 3422: 同音の漢字による書きかえ(廻転⇄回転)の 4 択。単文節・連文節・複合語(醗酵前)と、後から常用漢字に
-    // 加わった字の組(肝腎⇄肝心)は X.9 では動かない(X.10 の設定が nil なので両方。3570)
+    // 加わった字の組(肝腎⇄肝心)は X.8 では動かない(X.9 の設定が nil なので両方。3570)
     func testKanjiRewritePreferenceModes() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
@@ -23506,7 +23506,7 @@ extension KanaKanjiConverterRegressionTests {
         list = single("はっこうまえ")
         XCTAssertFalse(list.contains("醗酵前"), "\(list)")
 
-        // 後から常用漢字に加わった字の組は X.9 の設定に関わらず両方(X.10 が nil。3570)
+        // 後から常用漢字に加わった字の組は X.8 の設定に関わらず両方(X.9 が nil。3570)
         converter.setKanjiRewritePreference(.afterOnly)
         list = single("かんじん")
         XCTAssertNotNil(index(list, "肝腎"), "\(list)")
@@ -23572,7 +23572,7 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
-    // 3427: 初期投入の misc の語(交叉点/氷醋酸)も X.9 に従う。実機と同じく misc は初期投入(バンドル)から読み、
+    // 3427: 初期投入の misc の語(交叉点/氷醋酸)も X.8 に従う。実機と同じく misc は初期投入(バンドル)から読み、
     // 手動の追加語彙には入れない(手動の追加語彙は対象外)
     func testKanjiRewriteAppliesToInitialMiscVocabulary() throws {
         try prepareRealLMDictionary()
@@ -23997,7 +23997,7 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(list.prefix(5)), ["1人", "ひとり", "一人", "火取り", "独り"], "\(list)")
     }
 
-    // 3835: X.8 の補助用言をオフにしても 下さい/御座います/御免なさい が出なかった(辞書にも活用の生成にも無い。ユーザ報告)。
+    // 3835: X.7 の補助用言をオフにしても 下さい/御座います/御免なさい が出なかった(辞書にも活用の生成にも無い。ユーザ報告)。
     // seed で供給する。オフなら かな の次、オン(初期設定)なら出さない
     func testKanaSpellingAuxiliaryKanjiSuppliedWhenUnsuppressed() throws {
         try prepareRealLMDictionary()
@@ -24093,7 +24093,7 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(kaini.first, "回に", "\(kaini)")
     }
 
-    // 3454: あるいは/もしくは で 或いは/若しくは が出る(Sudachi は あるいわ/もしくわ 読みのみ)。X.8 の接続詞に従う
+    // 3454: あるいは/もしくは で 或いは/若しくは が出る(Sudachi は あるいわ/もしくわ 読みのみ)。X.7 の接続詞に従う
     func testAruiwaMoshikuwaSupplied() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
@@ -24109,7 +24109,7 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
-    // 3452: 歴史的仮名遣いの書き方(なほ更/言ひ分/考へる/自づと)は X.3 がオフなら出さない。人名・固有名詞は残す
+    // 3452: 歴史的仮名遣いの書き方(なほ更/言ひ分/考へる/自づと)は X.2 がオフなら出さない。人名・固有名詞は残す
     func testHistoricalKanaSpellingFiltered() {
         typealias C = KanaKanjiConverter
         XCTAssertTrue(C.isHistoricalKanaSpelling("なほ更", reading: "なおさら"))
@@ -24135,7 +24135,7 @@ extension KanaKanjiConverterRegressionTests {
         }
         let multi = converter.multiClauseCandidates(for: "なおさらだ", systemCandidateMode: .surface)
         XCTAssertFalse(multi.contains(where: { $0.contains("なほ") }), "multi=\(multi.prefix(4))")
-        // X.3 を入れれば出る
+        // X.2 を入れれば出る
         converter.setHistoricalKanaSurfaceAllowed(true)
         XCTAssertTrue(converter.candidates(for: "なおさら", limit: 20, systemCandidateMode: .surface).contains("なほ更"))
         converter.setHistoricalKanaSurfaceAllowed(false)
@@ -25182,7 +25182,7 @@ extension KanaKanjiConverterRegressionTests {
             ("たべもの", ["食べもの", "食べ物"], ["喰べもの", "食べモノ", "たべ物"]),
             ("ごとう", ["後藤", "五島", "語頭", "誤答", "五藤"], ["五灯", "誤倒"]),
             ("ほうしん", ["方針", "放心", "疱疹", "砲身"], ["放神", "捧心"]),
-            // 即ち は かなで書く言葉(X.8)で初期設定は非表示なので、かなが先頭であることだけ見る
+            // 即ち は かなで書く言葉(X.7)で初期設定は非表示なので、かなが先頭であることだけ見る
             ("すなわち", ["すなわち"], ["乃ち", "即チ", "輒ち", "迺ち"]),
             ("はんきょう", ["反響", "反共", "板橋"], ["半凶", "范彊", "范疆"]),
             ("かんちょう", ["官庁", "館長", "干潮", "艦長", "浣腸", "管長"], ["勧懲", "灌腸", "官廰"]),
@@ -27041,7 +27041,7 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "じかんがたって", systemCandidateMode: .surface).first, "時間が経って")
         // 時間語でなければ 経って にしない。家 は 建つ(3893、ユーザ指定。それまでは 家が立って)
         XCTAssertEqual(converter.multiClauseCandidates(for: "いえがたって", systemCandidateMode: .surface).first, "家が建って")
-        // 恢復→回復 は書きかえ(X.9。恢 は表外字)。本来の漢字を先にする設定でも 回復 を先頭(了解 と同じ例外)
+        // 恢復→回復 は書きかえ(X.8。恢 は表外字)。本来の漢字を先にする設定でも 回復 を先頭(了解 と同じ例外)
         converter.setKanjiRewritePreference(.bothBeforeFirst)
         let kaifuku = converter.candidates(for: "かいふくしました", limit: 8, systemCandidateMode: .surface)
         XCTAssertEqual(kaifuku.first, "回復しました", "\(kaifuku)")
@@ -27221,7 +27221,7 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(single("ごはんと").prefix(3)), ["ご飯と", "御飯と", "午飯と"], "\(single("ごはんと"))")
         XCTAssertEqual(multi("ごはんとみそしる").first, "ご飯と味噌汁")
 
-        // 和語数詞も X.18 の設定(テストの既定は アラビア数字が先)に従う(3702)
+        // 和語数詞も X.13 の設定(テストの既定は アラビア数字が先)に従う(3702)
         for (reading, expected) in [("ひとけた", ["1桁", "一桁"]), ("ふたけた", ["2桁", "二桁"]), ("みけた", ["3桁", "三桁"]),
                                     ("ひとくみ", ["1組", "一組"]), ("いつつぶ", ["5粒", "五粒"])] {
             XCTAssertEqual(Array(single(reading).prefix(2)), expected, reading)
@@ -27273,7 +27273,7 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(KanaKanjiConverter.kanjiNumeralString(10), "十")
     }
 
-    // 3702: 数詞の表記(X.18)。漢語数詞(にまい)も和語数詞(ひとけた)も序数(だいにかい)も、単文節・連文節とも設定どおりの順と有無
+    // 3702: 数詞の表記(X.13)。漢語数詞(にまい)も和語数詞(ひとけた)も序数(だいにかい)も、単文節・連文節とも設定どおりの順と有無
     func testRegressionNumeralStylePreferenceOrdersAndFilters() throws {
         try prepareRealLMDictionary()
         defer { converter.setNumeralStylePreference(.arabicFirst) }
@@ -27364,7 +27364,7 @@ extension KanaKanjiConverterRegressionTests {
             let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
             XCTAssertEqual(multi.first, expected, "\(reading): \(multi.prefix(4))")
         }
-        // curated の 二つ/2つ も X.18 の順(3708)。単文節・連文節とも
+        // curated の 二つ/2つ も X.13 の順(3708)。単文節・連文節とも
         defer { converter.setNumeralStylePreference(.arabicFirst) }
         for (style, single, multi) in [(NumeralStylePreference.arabicFirst, ["2つ", "二つ"], "2つ買って"),
                                        (.kanjiFirst, ["二つ", "2つ"], "二つ買って")] {
@@ -27539,7 +27539,7 @@ extension KanaKanjiConverterRegressionTests {
         // 3732: 火+が+強/弱
         XCTAssertEqual(shown("ひがつよすぎた"), "火が強すぎた")
         XCTAssertEqual(shown("ひざしがつよい"), "日差しが強い")
-        // 3734: いぜん はかなを末尾(依然 を X.8 から外す)、いぜんとは は単文節の先頭そろえ(複合助詞)
+        // 3734: いぜん はかなを末尾(依然 を X.7 から外す)、いぜんとは は単文節の先頭そろえ(複合助詞)
         let izen = single("いぜん")
         XCTAssertEqual(Array(izen.prefix(2)), ["以前", "依然"], "\(izen)")
         XCTAssertEqual(Array(multi("いぜんとは").prefix(2)), ["以前とは", "依然とは"])
@@ -27595,7 +27595,7 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(sunda.prefix(2)), ["済んだ", "住んだ"], "\(sunda)")
         XCTAssertLessThan(sunda.firstIndex(of: "スンダ") ?? 99, sunda.firstIndex(of: "すんだ") ?? 0, "\(sunda)")
         XCTAssertEqual(shown("かんたんにすんだ"), "簡単に済んだ")
-        // 3750: 序数の め(X.14 ひらがなが先)を連文節にも、目/め+の+今日
+        // 3750: 序数の め(X.12 ひらがなが先)を連文節にも、目/め+の+今日
         converter.setOrdinalMeKanjiPreferred(false)
         let nichime = converter.multiClauseCandidates(for: "にちめのきょう", systemCandidateMode: .surface, precedingCharacter: "0")
         XCTAssertEqual(Array(nichime.prefix(2)), ["日めの今日", "日目の今日"], "\(nichime)")
@@ -28394,8 +28394,8 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(list.prefix(2)), ["土星の輪", "土星の環"], "\(list)")
     }
 
-    // 3570: 報告の後に常用漢字に加わった字の組(肝腎⇄肝心、臆測⇄憶測。X.10)は X.9 と別の 4 択で選ぶ。
-    // X.9(kanjiRewritePreference)は nil のまま、X.10 だけを設定する(独立性は IsIndependentOfKakikaePreference)
+    // 3570: 報告の後に常用漢字に加わった字の組(肝腎⇄肝心、臆測⇄憶測。X.9)は X.8 と別の 4 択で選ぶ。
+    // X.8(kanjiRewritePreference)は nil のまま、X.9 だけを設定する(独立性は IsIndependentOfKakikaePreference)
     private func lateStandardizedSingle(_ reading: String) -> [String] {
         converter.candidates(for: reading, limit: 20, systemCandidateMode: .surface)
     }
@@ -28452,7 +28452,7 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
-    // X.10 の組の語を含む別の語(肝腎症候群=肝臓と腎臓、研磨材)は 常用漢字だけ でも書きかえない。
+    // X.9 の組の語を含む別の語(肝腎症候群=肝臓と腎臓、研磨材)は 常用漢字だけ でも書きかえない。
     // 書きかえた表記(肝心症候群/研摩材)は辞書に無く、作ると別の意味になる(ユーザー指摘 3570)
     func testLateStandardizedRewriteDoesNotMakeCompoundForms() throws {
         try prepareRealLMDictionary()
@@ -28483,7 +28483,7 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertFalse(list.contains { $0.contains("憶測") }, "\(list)")
     }
 
-    // X.9 と X.10 はそれぞれの組にだけ効く
+    // X.8 と X.9 はそれぞれの組にだけ効く
     func testLateStandardizedRewriteIsIndependentOfKanjiRewritePreference() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
@@ -28502,7 +28502,7 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(okusoku.contains("憶測") && !okusoku.contains("臆測"), "\(okusoku)")
     }
 
-    // X.10 を入れる前(nil)は、X.9 が 常用漢字だけ でも 肝腎/肝心 の両方を出す(この設定より前の動作)
+    // X.9 を入れる前(nil)は、X.8 が 常用漢字だけ でも 肝腎/肝心 の両方を出す(この設定より前の動作)
     func testLateStandardizedRewriteNilKeepsBothForms() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
@@ -28525,20 +28525,20 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(list.firstIndex(of: "広範"), beforeIndex + 1, "\(list)")
     }
 
-    // X.9 が両方・X.10 が 常用漢字だけ のとき、連文節の変種に X.10 の本来の漢字(臆測)を漏らさない。X.9 の組は両方出る
+    // X.8 が両方・X.9 が 常用漢字だけ のとき、連文節の変種に X.9 の本来の漢字(臆測)を漏らさない。X.8 の組は両方出る
     func testLateStandardizedRewriteMultiClauseMixedGroupsHidesExcludedForm() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
         converter.setKanjiRewritePreference(.bothBeforeFirst)
         converter.setLateStandardizedRewritePreference(.afterOnly)
-        // かいてん は格子が 回転 を選ぶので、X.9 の両方(廻転 → 回転)が並ぶ
+        // かいてん は格子が 回転 を選ぶので、X.8 の両方(廻転 → 回転)が並ぶ
         let list = converter.multiClauseCandidates(for: "おくそくでかいてんする", systemCandidateMode: .surface)
         XCTAssertFalse(list.contains { $0.contains("臆測") }, "\(list)")
         XCTAssertTrue(list.contains { $0.contains("憶測") && $0.contains("廻転") }, "\(list)")
         XCTAssertTrue(list.contains { $0.contains("憶測") && $0.contains("回転") }, "\(list)")
     }
 
-    // 表: X.10 の組は 17 組、X.9 の組は 292 組(3632 で 人蔘/人参 を追加)。2 つのグループは語を共有せず、X.10 の語で日常語の例外に入るのは
+    // 表: X.9 の組は 17 組、X.8 の組は 292 組(3632 で 人蔘/人参 を追加)。2 つのグループは語を共有せず、X.9 の語で日常語の例外に入るのは
     // 理屈/理窟 だけ(ユーザ指定 3739)
     func testLateStandardizedTableSeparatesGroups() {
         XCTAssertEqual(KanjiRewriteTable.lateStandardizedPairs.count, 17)
@@ -28601,7 +28601,7 @@ extension KanaKanjiConverterRegressionTests {
         }
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
-        // AUDIT_KAKIKAE=afterOnly 等で X.9 の設定を変えて検査する(3683)
+        // AUDIT_KAKIKAE=afterOnly 等で X.8 の設定を変えて検査する(3683)
         if let raw = ProcessInfo.processInfo.environment["AUDIT_KAKIKAE"], let preference = KanjiRewritePreference(rawValue: raw) {
             converter.setKanjiRewritePreference(preference)
         }
@@ -28618,7 +28618,7 @@ extension KanaKanjiConverterRegressionTests {
             }
             converter.setInflectionalKanaVariantPreference(InflectionalKanaVariantPreference(modes: modes))
         }
-        // AUDIT_ADJME=1 で X.14 の 目(形状名詞化 め の漢字)をオンにする(実機の adjectiveMeKanjiCandidatesEnabled。3740)
+        // AUDIT_ADJME=1 で X.12 の 目(形状名詞化 め の漢字)をオンにする(実機の adjectiveMeKanjiCandidatesEnabled。3740)
         if ProcessInfo.processInfo.environment["AUDIT_ADJME"] != nil {
             converter.setAdjectiveMeKanjiCandidatesEnabled(true)
         }
@@ -28635,7 +28635,7 @@ extension KanaKanjiConverterRegressionTests {
                 if parts.count == 2 { _ = converter.learn(reading: parts[0], candidate: parts[1]) }
             }
         }
-        // AUDIT_KANAGAKI=adverb,conjunction,… で X.8 かなで書く言葉 の分類を実機と揃える(3688)
+        // AUDIT_KANAGAKI=adverb,conjunction,… で X.7 かなで書く言葉 の分類を実機と揃える(3688)
         if let raw = ProcessInfo.processInfo.environment["AUDIT_KANAGAKI"] {
             converter.setKanaSpellingSuppressedCategories(Set(raw.split(separator: ",").compactMap { KanaSpellingCategory(rawValue: String($0)) }))
         }
@@ -30069,7 +30069,7 @@ extension KanaKanjiConverterRegressionTests {
     }
 
     // 数字の直後の つめにしか の先頭が つ目にしか だった(3789、ユーザ報告)。数字の直後の つ+動詞 の供給(4つ買うか)が
-    // めにしか を 目にしか に変換して つ目にしか を先頭に足していた。X.14 が『め(ひらがな)が先』なら つめにしか を先に
+    // めにしか を 目にしか に変換して つ目にしか を先頭に足していた。X.12 が『め(ひらがな)が先』なら つめにしか を先に
     func testRegressionTsuMeAfterDigit3789() throws {
         let candidates = ["つめにしか", "爪にしか", "詰めにしか"]
         let tail: (String) -> String? = { $0 == "めにしか" ? "目にしか" : nil }
@@ -30089,7 +30089,7 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(kau.first, "つ買うか", "\(kau)")
     }
 
-    // X.14 のサブ項目 形式名詞化(3790、ユーザ指定)。形式名詞の 目(ひどい目に遭う/痛い目を見る)は、オンなら 目 の次に め の形も出し、
+    // X.12 のサブ項目 形式名詞化(3790、ユーザ指定)。形式名詞の 目(ひどい目に遭う/痛い目を見る)は、オンなら 目 の次に め の形も出し、
     // オフなら め の形を出さない。体の 目(そんな目で見る/悲しい目をして)、目つき、めでたい の め は対象外
     func testRegressionFormalNounMeKana3790() throws {
         try prepareRealLMDictionary()
@@ -30191,7 +30191,7 @@ extension KanaKanjiConverterRegressionTests {
     }
 
     // ついたち/ふつか/みっか… から アラビア数字の形(1日/2日/3日)も出す(3793、ユーザ指定。単語は登録せず、和語数詞の処理に日付の読みを足す)。
-    // 並びは X.18(数詞の表記)に従う
+    // 並びは X.13(数詞の表記)に従う
     func testRegressionNativeWordDayArabic3793() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
@@ -30228,7 +30228,7 @@ extension KanaKanjiConverterRegressionTests {
             XCTAssertEqual(shown(reading).first, expected, reading)
         }
         XCTAssertFalse(shown("いつかごいっしょに").contains(where: { $0.contains("5日") }))
-        // 文の中の登録語の日付(二日)は X.18 の順でアラビア数字の形と並ぶ。目/間/前/後 が続く形も
+        // 文の中の登録語の日付(二日)は X.13 の順でアラビア数字の形と並ぶ。目/間/前/後 が続く形も
         for (reading, first, second) in [
             ("ふつかにいく", "2日に行く", "二日に行く"), ("ごがつふつか", "5月2日", "五月二日"), ("みっかにいちど", "3日に一度", "三日に一度"),
             ("ふつかかん", "2日間", "二日間"), ("ふつかかんのりょこう", "2日間の旅行", "二日間の旅行"),
@@ -30248,7 +30248,7 @@ extension KanaKanjiConverterRegressionTests {
         try loadDeviceAddedVocabulary(includeSuppression: true)
         converter.invalidateCandidateCache()
         let list = converter.candidates(for: "いつか", limit: 48, systemCandidateMode: .surface)
-        // 日付の形はかなのすぐ次(X.18 の順)。人名(伊津佳/一香…)はその後ろ
+        // 日付の形はかなのすぐ次(X.13 の順)。人名(伊津佳/一香…)はその後ろ
         XCTAssertEqual(Array(list.prefix(3)), ["いつか", "5日", "五日"], "\(list.prefix(6))")
         converter.setNumeralStylePreference(.kanjiFirst)
         defer { converter.setNumeralStylePreference(.arabicFirst) }
@@ -31625,6 +31625,292 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(leadingCandidates3879("やくばらい").prefix(2)), ["厄祓い", "厄払い"])
     }
 
+    // 3897(ユーザ指定): じぶんがまぬけなこといった が 自分が間抜けな湖といった だった。定義の ことをいう はかなのまま(3713)。
+    // どふぃのわ は 度フィの和 だった(dauphinois、ドフィノワ の順)。琵琶湖といった/男といった はそのまま
+    func testSaidSuchThingAndDauphinois3897() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("じぶんがまぬけなこといった", "自分が間抜けなこと言った"), ("へんなこといった", "変なこと言った"), ("おなじこといった", "同じこと言った"),
+            ("へんなこといって", "変なこと言って"), ("ことをいう", "ことをいう"), ("そんなこといっても", "そんなこと言っても"),
+            ("びわこといった", "琵琶湖といった"), ("おとこといった", "男といった"), ("みずうみといった", "湖といった"),
+            ("どふぃのわ", "dauphinois"), ("ぐらたんどふぃのわ", "gratin dauphinois")
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+        XCTAssertEqual(Array(leadingCandidates3879("じぶんがまぬけなこといった").prefix(2)), ["自分が間抜けなこと言った", "自分がマヌケなこと言った"])
+        XCTAssertEqual(Array(leadingCandidates3879("どふぃのわ").prefix(2)), ["dauphinois", "ドフィノワ"])
+        XCTAssertEqual(leadingCandidates3879("どふぃのわをつくる").dropFirst().first, "ドフィノワを作る")
+    }
+
+    // 3897(ユーザ指定): おなかにつめて が 小中に詰めて(名字の 小中 が 小中学校 の頻度を借りていた)、
+    // ちょっとおそいね が ちょっとお添い寝 だけで 遅いね が無かった。おそいねする(お添い寝する)と地理の語はそのまま
+    func testBellyStuffedSlowAndAntipodes3897() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("おなかにつめて", "お腹に詰めて"), ("おなかに", "お腹に"), ("おなかにいれる", "お腹に入れる"), ("とりのおなかにつめて", "鳥のお腹に詰めて"),
+            ("おなかのなか", "お腹の中"), ("おなかをこわした", "お腹を壊した"),
+            ("ちょっとおそいね", "ちょっと遅いね"), ("かえりがおそいね", "帰りが遅いね"), ("おそいねえ", "遅いねえ"), ("おそいねする", "お添い寝する"),
+            ("たいせきてん", "対蹠点"), ("たいしょてん", "対蹠点"), ("たいせきち", "対蹠地"), ("たいけんこうろ", "大圏航路"),
+            ("だいえんこーす", "大円コース"), ("ほんしょしごせん", "本初子午線")
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+        XCTAssertEqual(Array(leadingCandidates3879("おなかにつめて").prefix(3)), ["お腹に詰めて", "小中に詰めて", "おなかに詰めて"])
+    }
+
+    // 3898(ユーザ指定): たいけんこーす の候補が辞書の 1 語 大圏コース だけで 体験コース が出なかった。
+    // てんめいも が 天明も(年号)で、店名も は 3 番めだった。年号の 天明 と 天命を待つ はそのまま
+    func testTrialCourseAndShopName3898() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("むりょうたいけんこーす", "無料体験コース"), ("たいけんこーすにもうしこむ", "体験コースに申し込む"), ("たいけんこうろ", "大圏航路"),
+            ("てんめいも", "店名も"), ("てんめい", "店名"), ("てんめいが", "店名が"), ("みせのてんめいも", "店の店名も"),
+            ("おみせのてんめいがかわった", "お店の店名が変わった"), ("あたらしいてんめい", "新しい店名"), ("てんめいとじゅうしょ", "店名と住所"),
+            ("てんめいのききん", "天明の飢饉"), ("てんめいのだいききん", "天明の大飢饉"), ("てんめいねんかん", "天明年間"), ("てんめいじだい", "天明時代"),
+            ("てんめいがんねん", "天明元年"), ("てんめいさんねん", "天明3年"),
+            ("じんじをつくしててんめいをまつ", "人事を尽くして天命を待つ"), ("てんめいにしたがう", "天命に従う")
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+        XCTAssertEqual(Array(leadingCandidates3879("たいけんこーす").prefix(2)), ["体験コース", "大圏コース"])
+        XCTAssertEqual(Array(leadingCandidates3879("てんめい").prefix(3)), ["店名", "天明", "天命"])
+    }
+
+    // 3899(ユーザ指定): ごいけい が ご異形、ご畏敬 だけで 語彙系 が無かった。ご意見 はそのまま
+    func testVocabularyRelated3899() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("ごいけい", "語彙系"), ("ごいけいのさぶん", "語彙系の差分"), ("ごいけいのへんこう", "語彙系の変更"), ("ごいけいは", "語彙系は"),
+            ("ごいけんをください", "ご意見をください"), ("ぶんぽうけい", "文法系"), ("ふじやほてる", "富士屋ホテル")
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
+    // 3899(ユーザ指定): いけいのねん が 異形の年 だった(畏敬の念 は候補に無し)。の の後ろの ねん は 念(感謝の念/自責の念 も 〜の年 だった)。
+    // 年 で始まる語(年末/年金/年齢)と その年 はそのまま
+    func testFeelingOfAwe3899() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("いけいのねん", "畏敬の念"), ("いけいのねんをいだく", "畏敬の念を抱く"), ("しぜんへのいけいのねん", "自然への畏敬の念"),
+            ("ふかいいけいのねん", "深い畏敬の念"), ("かんしゃのねん", "感謝の念"), ("そんけいのねん", "尊敬の念"), ("じせきのねん", "自責の念"),
+            ("こうかいのねん", "後悔の念"), ("けいいのねん", "敬意の念"), ("ふしんのねん", "不信の念"), ("あいとうのねん", "哀悼の念"),
+            ("いけい", "異形"), ("そのねんのうちに", "その年のうちに"), ("そのねんにうまれた", "その年に生まれた"), ("ことしのねんまつ", "今年の年末"),
+            ("にほんのねんきん", "日本の年金"), ("わたしのねんれい", "私の年齢"), ("このねんど", "この年度"), ("きのねんりん", "木の年輪")
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
+    // 3901(ユーザ指定): おまえがしらない が お前頭ない(敬語の お+前頭)で、お前が知らない が候補に無かった。前頭 に お は付かない
+    func testYouDoNotKnow3901() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("おまえがしらない", "お前が知らない"), ("おまえがしらないだけ", "お前が知らないだけ"), ("おまえがしらないうちに", "お前が知らないうちに"),
+            ("おまえがしらなくても", "お前が知らなくても"), ("おまえがしらん", "お前が知らん"), ("おまえがしった", "お前が知った"),
+            ("まえがしらになる", "前頭になる"), ("まえがしらひっとう", "前頭筆頭"), ("おおぜきとまえがしら", "大関と前頭")
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+        XCTAssertFalse(leadingCandidates3879("おまえがしらない").contains { $0.contains("前頭") })
+    }
+
+    // 3902(ユーザ指定): きもする が 肝する、胆する で 気もする が無かった(きはする も 木はする)。肝を冷やす/気持ち/天気もする はそのまま
+    func testFeelsLikeItToo3902() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("きもする", "気もする"), ("きもします", "気もします"), ("きもした", "気もした"), ("きもするけど", "気もするけど"),
+            ("きもしない", "気もしない"), ("きもして", "気もして"), ("きもしてきた", "気もしてきた"), ("そんなきもする", "そんな気もする"),
+            ("いいようなきもする", "いいような気もする"), ("きはする", "気はする"), ("わるいきはしない", "悪い気はしない"), ("きがする", "気がする"),
+            ("きもをひやす", "肝を冷やす"), ("きもち", "気持ち"), ("きもの", "着物"), ("きもだめし", "肝試し"),
+            ("てんきもする", "天気もする"), ("げんきもする", "元気もする"), ("そうじきもする", "掃除機もする")
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
+    // 3903(ユーザ指定): あんきもします が アン肝します で、暗記もします が無かった。アン肝 は出さず 暗記も+する を先頭に。
+    // 肝す→気もす の書きかえが 鮟肝します を 鮟気もします にしていたので、肝 は語の頭だけにする
+    func testMemorizingToo3903() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("あんきもします", "暗記もします"), ("あんきもする", "暗記もする"), ("あんきもしない", "暗記もしない"),
+            ("えいたんごのあんきもした", "英単語の暗記もした"), ("あんきも", "鮟肝"), ("あんきはする", "暗記はする"),
+            ("きもします", "気もします"), ("そんなきもする", "そんな気もする")
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+            XCTAssertFalse(list.contains { $0.contains("アン肝") || $0.contains("鮟気") }, "\(reading): \(list)")
+        }
+        // あん肝 は出してよい(ユーザ指定 3904)
+        XCTAssertTrue(leadingCandidates3879("あんきも").contains("あん肝"))
+    }
+
+    // 3905(ユーザ指摘): おいきれてない が お生きれてない。追い切る/追い切れる が辞書に無かった
+    func testChaseThrough3905() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("おいきれてない", "追い切れてない"), ("おいきれない", "追い切れない"), ("おいきれなかった", "追い切れなかった"),
+            ("おいきる", "追い切る"), ("おいきった", "追い切った"),
+            ("いきれてない", "生きれてない"), ("みきれてない", "見切れてない")
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
+    // 3906(ユーザ指定): 編集/編輯 は日常語の例外。本来の漢字を先に でも 編集 が先、例外をオフにすると 編輯 が先
+    func testEditingEverydayException3906() throws {
+        try prepareRealLMDictionary()
+        converter.setKanjiRewritePreference(.bothBeforeFirst)
+        converter.setKanjiRewriteEverydayException(true)
+        let on = converter.candidates(for: "へんしゅう", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(on.first, "編集", "\(on)")
+        XCTAssertTrue(on.contains("編輯"), "\(on)")
+        let onMulti = converter.multiClauseCandidates(for: "どうがをへんしゅうする", systemCandidateMode: .surface)
+        XCTAssertEqual(onMulti.first, "動画を編集する", "\(onMulti.prefix(3))")
+        converter.setKanjiRewriteEverydayException(false)
+        let off = converter.candidates(for: "へんしゅう", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(off.first, "編輯", "\(off)")
+    }
+
+    // 3907(ユーザ指摘): なりますよー が 成増よー。読みが ます で終わる地名が述語扱いで長音の終助詞のクランプを受けていた
+    func testPoliteMasuBeforeLongVowelParticle3907() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("なりますよー", "なりますよー"), ("なりますねー", "なりますねー"), ("そうなりますよー", "そうなりますよー"),
+            ("なりますよ", "なりますよ"), ("ありますよー", "ありますよー"), ("しますよー", "しますよー"), ("いきますよー", "行きますよー")
+        ] {
+            let list = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+        XCTAssertFalse(converter.multiClauseCandidates(for: "なりますよー", systemCandidateMode: .surface).prefix(3).contains("成増よー"))
+    }
+
+    // 3908(ユーザ指摘): Facebookにはれる で 貼れる が 腫れる より後ろ(Mac では候補に無い)。〜に晴れ〜 の 2 番めを 〜に貼れ〜 に
+    func testPasteableAfterNi3908() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, second) in [("ふぇいすぶっくにはれる", "Facebookに貼れる"), ("かべにはれる", "壁に貼れる"), ("ここにはれる", "ここに貼れる")] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.dropFirst().first, second, "\(reading): \(list.prefix(5))")
+        }
+        // 晴れる/腫れる の文はそのまま
+        XCTAssertEqual(leadingCandidates3879("きれいにはれた").first, "きれいに晴れた")
+        XCTAssertEqual(leadingCandidates3879("そらがはれる").first, "空が晴れる")
+        XCTAssertEqual(leadingCandidates3879("あしがはれる").first, "足が腫れる")
+        XCTAssertEqual(leadingCandidates3879("かおにはれもの").first, "顔に腫れ物")
+    }
+
+    // 3907(ユーザ指摘): くぎりいち が 区切り一。区切り位置 が辞書に無かった
+    // 3913(ユーザ指摘): いっきん で 一斤 が出ない。斤 は数字の直後だけの助数詞で、かな数詞からは組めなかった。
+    // 数字の直後(1+きん→1斤)と、辞書語の 白金/資金 の先頭は変わらない
+    func testOneLoafCounter3913() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("いっきん", "一斤"), ("しょくぱんいっきん", "食パン一斤"), ("はっきん", "白金"), ("しきん", "資金"),
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
+    // 3914(ユーザ指定): にきん/さんきん から 2斤/3斤 を出す(斤 を かな数詞からも組む表へ)。辞書語の先頭は動かさない
+    func testLoafCounterFromKanaNumerals3914() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("にきん", "2斤"), ("ごきん", "5斤")] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertTrue(list.prefix(3).contains(expected), "\(reading): \(list.prefix(5))")
+        }
+        for (reading, expected) in [("さんきん", "3斤"), ("よんきん", "4斤")] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertTrue(list.contains(expected), "\(reading): \(list.prefix(8))")
+        }
+        for (reading, expected) in [
+            ("さんきんこうたい", "参勤交代"), ("はっきん", "白金"), ("しきん", "資金"), ("いっきん", "一斤"), ("きゅうきん", "球菌"),
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
+    func testDelimiterPosition3907() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("くぎりいち", "区切り位置"), ("くぎりいちをかえる", "区切り位置を変える")] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
+    // 3906(ユーザ指摘): かいきれない が 会切れない。買い切る/買い切れる が辞書に無かった
+    func testBuyOut3906() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("かいきれない", "買い切れない"), ("かいきれなかった", "買い切れなかった"), ("かいきる", "買い切る"),
+            ("かいきった", "買い切った"), ("ぜんぶかいきれない", "全部買い切れない")
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
+    // 3901(ユーザ指摘): ずいぶんいれかえた が ずいぶん入れ換た(辞書の誤エントリ 入れ換る からの活用形)で、入れ換えた が無かった。
+    // え の落ちた形は出さず、文の途中でも 入れ替え〜、入れ換え〜 の順にする
+    func testSwappedOkurigana3901() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, first, second) in [
+            ("ずいぶんいれかえた", "ずいぶん入れ替えた", "ずいぶん入れ換えた"), ("じゅんばんをいれかえた", "順番を入れ替えた", "順番を入れ換えた"),
+            ("ずいぶんいれかえて", "ずいぶん入れ替えて", "ずいぶん入れ換えて"), ("くうきをいれかえて", "空気を入れ替えて", "空気を入れ換えて"),
+            ("いれかえた", "入れ替えた", "入れ換えた"), ("いれかえる", "入れ替える", "入れ換える")
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(Array(list.prefix(2)), [first, second], "\(reading): \(list.prefix(5))")
+            XCTAssertFalse(list.contains { $0.contains("入れ換た") || $0.contains("入れ換て") || $0.contains("入れ換る") }, "\(reading): \(list)")
+        }
+    }
+
+    // 3899(ユーザ指定): ねんのため が 年のため だった。数字や漢字の直後の 〜年のため(三年のため/来年のため)と、
+    // 数字+年+の(毎年のこと/四年の間)はそのまま
+    func testJustInCase3899() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("ねんのため", "念のため"), ("ねんのためかくにんする", "念のため確認する"), ("ねんのためにかくにん", "念のために確認"),
+            ("ねんのためのかくにん", "念のための確認"), ("でもねんのため", "でも念のため"), ("それではねんのため", "それでは念のため"),
+            ("またねんのため", "また念のため"), ("すみませんねんのためかくにんです", "すみません念のため確認です"),
+            ("ねんのためねんのためといわれた", "念のため念のためと言われた"),
+            ("さんねんのため", "三年のため"), ("なんねんのため", "何年のため"), ("すうねんのため", "数年のため"), ("らいねんのため", "来年のため"),
+            ("さくねんのため", "昨年のため"), ("ことしいちねんのため", "今年一年のため"), ("まいねんのこと", "毎年のこと"), ("よねんのあいだ", "四年の間"),
+            ("ねんにいちど", "年に一度"), ("ねんをおす", "念を押す")
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+        XCTAssertEqual(Array(leadingCandidates3879("ねんのため").prefix(2)), ["念のため", "年のため"])
+    }
+
     // 3883(ユーザ指定): かみをきるはさみ が 髪を切る挟み、ひにひに が 日に火に、よんだり が 呼んだり(読んだり は 6 番め)だった。
     // 髪を切る の次の かみを切る は出さない。友達を呼んだり はそのまま
     func testScissorsDayByDayAndYondari3883() throws {
@@ -31761,8 +32047,8 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(shown("だいがくにふぞくしている").first, "大学に附属している")
     }
 
-    // 3854: 智慧/知恵 は 同音の漢字による書きかえ(X.9)の対象から外す(ユーザ指定)。智慧 は 知恵 の意味に加えて仏教の語でも
-    // あり、字を替えただけの組でない。X.9 が 両方(本来の漢字を先に)のとき ちえ の先頭が 智慧 になり、3853 の並びが崩れていた
+    // 3854: 智慧/知恵 は 同音の漢字による書きかえ(X.8)の対象から外す(ユーザ指定)。智慧 は 知恵 の意味に加えて仏教の語でも
+    // あり、字を替えただけの組でない。X.8 が 両方(本来の漢字を先に)のとき ちえ の先頭が 智慧 になり、3853 の並びが崩れていた
     func testChieIsNotAKanjiRewritePair3854() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
@@ -31914,7 +32200,7 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
-    // 3840: だんの は 段の(ワイン用語優先がオンでも。Dãoの が先頭だった)。数字の直後の だんめ は X.14 に従い、
+    // 3840: だんの は 段の(ワイン用語優先がオンでも。Dãoの が先頭だった)。数字の直後の だんめ は X.12 に従い、
     // 『ひらがなが先』なら 段め、『漢字が先』なら 段目(段め が 6 番めだった)。ユーザ指定
     func testDanNoAndOrdinalDanMe3840() throws {
         try prepareRealLMDictionary()

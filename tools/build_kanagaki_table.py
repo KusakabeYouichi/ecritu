@@ -39,7 +39,7 @@ def main() -> int:
         "import Foundation",
         "",
         "// 生成ファイル。tools/build_kanagaki_table.py が references/kanagaki.plist から作る。手で直さない(3404)",
-        "// かなで書く言葉: 漢字で書けるが、今の文章ではかなで書くことが多い語。コンテナー設定 X.8 で仲間ごとに",
+        "// かなで書く言葉: 漢字で書けるが、今の文章ではかなで書くことが多い語。コンテナー設定 X.7 で仲間ごとに",
         "// 抑制(漢字を出さない)/抑制しない(かなを先頭にして漢字はその後ろ)を選ぶ",
         "public enum KanaSpellingCategory: String, CaseIterable {",
     ]

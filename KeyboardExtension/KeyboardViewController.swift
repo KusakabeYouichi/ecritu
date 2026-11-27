@@ -275,6 +275,12 @@ final class KeyboardViewController: UIInputViewController {
     // 追跡中の表示の時刻。出し直された後に、前の表示ぶんの記録を残さないための照合用(scheduleAttachStateFollowUp)
     var attachStateFollowUpAppearedAt: CFAbsoluteTime = 0
     let externalTextChangeDetectionWindow: CFTimeInterval = 0.35
+    // 空白キーの長押しのトラックパッド(c10)。始めた時点の文脈の上でカーソル位置を持つ。nil=トラックパッドでない
+    var spaceTrackpadSession: SpaceTrackpadCursorSession?
+    // トラックパッド自身が最後に編集した直後の textProxyEditSerial。ずれていればほかの自前の編集(押したままの削除キー等)が挟まった
+    var spaceTrackpadEditSerial = 0
+    // トラックパッド中だけ面の最前面に置く受け板(ほかのキーへの打鍵を捨てて終える。改訂 2 の R3)
+    var spaceTrackpadTouchShield: SpaceTrackpadTouchShieldView?
     // メモリ警告を1イベント(バースト)にまとめる窓(定義は Diagnostics の memoryWarningBurstCountThisSession 参照)
     static let memoryWarningBurstWindow: CFTimeInterval = 2.0
     var lastSynchronizedContextBeforeInputTail = ""
@@ -463,9 +469,9 @@ final class KeyboardViewController: UIInputViewController {
         static let idleCommitInterval = "idleCommitInterval"
         // 未確定の方式(3209)。値は écritu / mountain view / tokushima。拡張側の分岐は方式の実装時に足す
         static let composingTextStyle = "composingTextStyle"
-        // 候補の文字(V.5。3644)。値は CandidateFontStyle の rawValue
+        // 候補の文字(V.3。3644)。値は CandidateFontStyle の rawValue
         static let candidateFontStyle = "candidateFontStyle"
-        // 左端のモード切り替え列の割り当て(E.5。3618)。値は KanaModeSwitcherAction の rawValue
+        // 左端のモード切り替え列の割り当て(T.4。3618)。値は KanaModeSwitcherAction の rawValue
         static let leftModeSwitchNumberKeyRightFlickAction = "leftModeSwitchNumberKeyRightFlickAction"
         static let leftModeSwitchLatinKeyRightFlickAction = "leftModeSwitchLatinKeyRightFlickAction"
         static let leftModeSwitchKanaKeyRightFlickAction = "leftModeSwitchKanaKeyRightFlickAction"
@@ -824,6 +830,7 @@ final class KeyboardViewController: UIInputViewController {
     // 外部変更の直前通知。完了ボタンでは textDidChange(文脈空)の 8ms 前に文脈そのままで届く(2684 実機)
     override func textWillChange(_ textInput: UITextInput?) {
         super.textWillChange(textInput)
+        endSpaceTrackpadOnExternalChangeIfNeeded()
         commitComposingTextOnExternalTextWillChangeIfNeeded(trigger: "textWillChange")
     }
 
@@ -834,6 +841,7 @@ final class KeyboardViewController: UIInputViewController {
     // 消失は確定に置き換えられる(2979、ユーザ報告)
     override func selectionWillChange(_ textInput: UITextInput?) {
         super.selectionWillChange(textInput)
+        endSpaceTrackpadOnExternalChangeIfNeeded()
         commitComposingTextOnExternalTextWillChangeIfNeeded(trigger: "selectionWillChange")
     }
 
@@ -964,6 +972,7 @@ final class KeyboardViewController: UIInputViewController {
 
     override func textDidChange(_ textInput: UITextInput?) {
         super.textDidChange(textInput)
+        endSpaceTrackpadOnExternalChangeIfNeeded()
         updateKeyboardDiagnosticsHeartbeat(event: "textDidChange")
         publishMemoryFootprintPeakForDebugDisplay()
 
@@ -989,6 +998,7 @@ final class KeyboardViewController: UIInputViewController {
 
     override func selectionDidChange(_ textInput: UITextInput?) {
         super.selectionDidChange(textInput)
+        endSpaceTrackpadOnExternalChangeIfNeeded()
         updateKeyboardDiagnosticsHeartbeat(event: "selectionDidChange")
 
         // 多重生存の非アクティブインスタンスでも、未確定の確定/クリアと下線残留クリアは
@@ -1130,6 +1140,10 @@ final class KeyboardViewController: UIInputViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        // 空白キーのトラックパッド中に閉じた・隠れた(c10)
+        if spaceTrackpadSession != nil {
+            endSpaceTrackpad()
+        }
         recentLearnedCommit = nil
         attachStateFollowUpAppearedAt = 0
         recordDisappearanceKindIfNeeded(animated: animated)

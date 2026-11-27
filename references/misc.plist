@@ -94,6 +94,10 @@
 	<dict><key>phrase</key><string>あり得る</string><key>shortcut</key><string>ありえる</string><key>pos</key><string>一段</string></dict>	<!-- あり得る: Sudachi に無く(ありえる はアリエルのみ)、ありえない が 有江ない 等の名前合成に落ちる。一段登録で あり得ない/あり得なかった 等の活用を供給 -->
 	<dict><key>phrase</key><string>耐えきれる</string><key>shortcut</key><string>たえきれる</string><key>pos</key><string>一段</string></dict>	<!-- 耐えきれる/堪えきれる: Sudachi に無く、たえきれなくなって が 栲切れ/多恵きれ 等の名前合成に落ちる。一段登録で活用を供給 -->
 	<dict><key>phrase</key><string>堪えきれる</string><key>shortcut</key><string>たえきれる</string><key>pos</key><string>一段</string></dict>
+	<dict><key>phrase</key><string>追い切る</string><key>shortcut</key><string>おいきる</string><key>pos</key><string>五段</string></dict>	<!-- 追い切る/追い切れる: Sudachi に無く、おいきれてない が お生きれてない、おいきる が お生きる だった。可能の 追い切れる も一段で登録(耐えきれる と同じ。ユーザ指定 3905) -->
+	<dict><key>phrase</key><string>追い切れる</string><key>shortcut</key><string>おいきれる</string><key>pos</key><string>一段</string></dict>
+	<dict><key>phrase</key><string>買い切る</string><key>shortcut</key><string>かいきる</string><key>pos</key><string>五段</string></dict>	<!-- 買い切る/買い切れる: 追い切る と同じ。かいきれない が 会切れない だった(ユーザ指定 3906) -->
+	<dict><key>phrase</key><string>買い切れる</string><key>shortcut</key><string>かいきれる</string><key>pos</key><string>一段</string></dict>
 	<dict><key>phrase</key><string>描く</string><key>shortcut</key><string>かく</string><key>pos</key><string>五段</string></dict>	<!-- 描く は Sudachi に えがく 読みのみで かく 読みが未収録。かけば→描けば 等の活用に必要 -->
 	<dict><key>phrase</key><string>耐え抜く</string><key>shortcut</key><string>たえぬく</string><key>pos</key><string>五段</string></dict>	<!-- 複合動詞「V連用+抜く」は Sudachi にほぼ収録が無く(たえぬく/やりぬく/かちぬく/いきぬく 全滅)、たえぬいた が た江縫た 等の断片になる。pos五段で活用一括網羅 -->
 	<dict><key>phrase</key><string>やり抜く</string><key>shortcut</key><string>やりぬく</string><key>pos</key><string>五段</string></dict>
@@ -105,7 +109,7 @@
 	<dict><key>phrase</key><string>寝落ち</string><key>shortcut</key><string>ねおち</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>魔改造</string><key>shortcut</key><string>まかいぞう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>氷酢酸</string><key>shortcut</key><string>ひょうさくさん</string><key>pos</key><string>名詞</string></dict>	<!-- 氷酢酸(ひょうさくさん、高純度の酢酸): 辞書は さくさん→酢酸 のみで未登録 -->
-	<dict><key>phrase</key><string>氷醋酸</string><key>shortcut</key><string>ひょうさくさん</string><key>pos</key><string>名詞</string></dict>	<!-- 氷酢酸 の書きかえ前の表記(醋酸→酢酸)。どちらを出すかは X.9 に従う(ユーザ指定 3427) -->
+	<dict><key>phrase</key><string>氷醋酸</string><key>shortcut</key><string>ひょうさくさん</string><key>pos</key><string>名詞</string></dict>	<!-- 氷酢酸 の書きかえ前の表記(醋酸→酢酸)。どちらを出すかは X.8 に従う(ユーザ指定 3427) -->
 	<dict><key>phrase</key><string>一昨日</string><key>shortcut</key><string>いっさくじつ</string><key>pos</key><string>名詞</string></dict>	<!-- 一昨日(いっさくじつ、改まった言い方): 辞書は おととい/おとつい 読みのみで、連文節が 一昨+実 を組んでいた(3448) -->
 	<dict><key>phrase</key><string>煉瓦蔵</string><key>shortcut</key><string>れんがぐら</string><key>pos</key><string>名詞</string></dict>	<!-- 煉瓦蔵(れんがぐら): 辞書に無く レンガぐら、煉瓦ぐら、連歌ぐら の順だった。煉瓦蔵 → レンガ蔵 → 煉瓦倉 → レンガ倉 の順(ユーザ指定 3869) -->
 	<dict><key>phrase</key><string>レンガ蔵</string><key>shortcut</key><string>れんがぐら</string><key>pos</key><string>名詞</string></dict>
@@ -533,6 +537,13 @@
 	<dict><key>phrase</key><string>熟語訓</string><key>shortcut</key><string>じゅくごくん</string><key>pos</key><string>名詞</string></dict>	<!-- 熟語訓: 辞書に無く、じゅくごくん が 熟語君、熟語勲、熟語くん だった(ユーザ指定 3890) -->
 	<dict><key>phrase</key><string>厄払い</string><key>shortcut</key><string>やくばらい</string><key>pos</key><string>名詞</string></dict>	<!-- 辞書に無く、やくばらい が 役払い、訳払い だった(ユーザ指定 3896)。先頭は seed で 厄祓い -->
 	<dict><key>phrase</key><string>厄祓い</string><key>shortcut</key><string>やくばらい</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>対蹠点</string><key>shortcut</key><string>たいせきてん</string><key>pos</key><string>名詞</string></dict>	<!-- 地理の語。辞書に無く、たいせきてん が 体積店、たいせきち が 体積地、たいけんこうろ が 体験航路 だった(ユーザ指定 3897)。対蹠地 は たいしょち だけ辞書にあった -->
+	<dict><key>phrase</key><string>対蹠点</string><key>shortcut</key><string>たいしょてん</string><key>pos</key><string>名詞</string></dict>	<!-- 慣用の読み -->
+	<dict><key>phrase</key><string>対蹠地</string><key>shortcut</key><string>たいせきち</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>大圏航路</string><key>shortcut</key><string>たいけんこうろ</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>区切り位置</string><key>shortcut</key><string>くぎりいち</string><key>pos</key><string>名詞</string></dict>	<!-- 区切り位置: 辞書に 1 語で無く、くぎりいち が 区切り+一 だった(ユーザ指定 3907) -->
+	<dict><key>phrase</key><string>一斤</string><key>shortcut</key><string>いっきん</string><key>pos</key><string>名詞</string></dict>	<!-- 一斤: 辞書に 1 語で無く、斤 は数字の直後だけの助数詞(1+きん→1斤)なので かな数詞の いっきん から組めなかった(ユーザ指定 3913) -->
+	<dict><key>phrase</key><string>体験コース</string><key>shortcut</key><string>たいけんこーす</string><key>pos</key><string>名詞</string></dict>	<!-- 辞書の 大圏コース が 1 語で、たいけんこーす の候補が 大圏コース だけだった(むりょうたいけんこーす も 無料大圏コース。ユーザ指定 3898) -->
 
 	<!-- □ 年忌・法要(ユーザ指定 3887: いっしゅうき が 1周木、にじゅうごかいき が 25回木 だった。辞書にあって出る語も形だけ置いてコメントアウト。
 	     算用数字の形(3回忌)は周忌・回忌だけ、漢数字の後ろに出す。二七日〜七七日 はかなが先頭(いつなのか の疑問文とぶつかる。並びは seed)) -->
@@ -1156,7 +1167,7 @@
 	     自前の語彙の同種の誤記: ryukyu.plist の グスクロ−ド → グスクロード(3426 で直した)
 	     読みが発音の形(は→わ)になっているもの(2026-10-08、3454):
 	       或いは/或は/或ひは/或るいは は あるいわ、若しくは/若くは は もしくわ の読みでしか無く、あるいは/もしくは と打っても漢字が出なかった。
-	       ここ(misc)に登録すると X.8(かなで書く言葉 接続詞)の抑制の対象外になってしまうので、KanaKanjiSeedDictionary の seed で
+	       ここ(misc)に登録すると X.7(かなで書く言葉 接続詞)の抑制の対象外になってしまうので、KanaKanjiSeedDictionary の seed で
 	       あるいは→或いは、もしくは→若しくは を供給している -->
 	<!-- 火にかける(鍋を火にかける)。ひにかけない が 日に欠けない/日に掛けない/火に欠けない… で、単文節は空だった(ユーザ報告 3661)。かな書きを先に -->
 	<dict><key>phrase</key><string>火にかける</string><key>shortcut</key><string>ひにかける</string></dict>

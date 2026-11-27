@@ -87,12 +87,12 @@ public final class KanaKanjiConverter {
     // 同音の漢字による書きかえ(臆測⇄憶測。KanjiRewriteTable、3422)。キーボードが設定を読んで入れる。
     // nil(設定を入れる前)は並びに触らない。キーボードは値の無い端末でも 両方(前を先に) を入れる
     var kanjiRewritePreference: KanjiRewritePreference?
-    // 報告の後に常用漢字に加わった字の組(臆測⇄憶測、肝腎⇄肝心。KanjiRewriteTable.lateStandardizedPairs、X.10。3570)。
+    // 報告の後に常用漢字に加わった字の組(臆測⇄憶測、肝腎⇄肝心。KanjiRewriteTable.lateStandardizedPairs、X.9。3570)。
     // kanjiRewritePreference とは別に選ぶ。nil は並びに触らない(テストの既定)
     var lateStandardizedRewritePreference: KanjiRewritePreference?
     // 書きかえの例外グループ(KanjiRewritePreference.everydayAfterFirstPairs)を設定にかかわらず常用漢字先にする(3644)
     var kanjiRewriteEverydayException = true
-    // 変換候補に絵文字を出すか。コンテナーの emoji 候補(X.15)に従う(3423)。読みからの絵文字(ねこ→🐱)はキーボード側で
+    // 変換候補に絵文字を出すか。コンテナーの emoji 候補(C.1)に従う(3423)。読みからの絵文字(ねこ→🐱)はキーボード側で
     // 止めているが、国旗(drapeaux の 🇫🇷 等は辞書に入っている)と学習した絵文字はここで止める。
     // 追加語彙(ショートカット)の絵文字はこの設定に関わらず出す
     var emojiCandidatesEnabled = true
@@ -102,12 +102,12 @@ public final class KanaKanjiConverter {
     public var ordinalMeKanjiPreferred: Bool = true
     // 助数詞「か」の表記(1か所/数か月)の表示順とオン/オフ(コンテナー設定。2816)
     var kaCounterVariantPreference: KaCounterVariantPreference = .default
-    // 数詞+助数詞の表記(アラビア数字/漢数字の順と有無。コンテナー設定 X.18。3702)。テスト(設定なし)は両方・アラビア数字が先
+    // 数詞+助数詞の表記(アラビア数字/漢数字の順と有無。コンテナー設定 X.13。3702)。テスト(設定なし)は両方・アラビア数字が先
     var numeralStylePreference: NumeralStylePreference = .arabicFirst
     // 送り仮名の許容形(終る/取扱う/届)の扱い(コンテナー設定。2820)
     var inflectionalKanaVariantPreference: InflectionalKanaVariantPreference = .default
     var adjectiveMeKanjiCandidatesEnabled: Bool = false
-    // 形式名詞の 目(ひどい目に遭う/痛い目を見る)に ひらがなの め の候補も出す(コンテナー設定 X.14 のサブ項目。3790)。
+    // 形式名詞の 目(ひどい目に遭う/痛い目を見る)に ひらがなの め の候補も出す(コンテナー設定 X.12 のサブ項目。3790)。
     // true=目 の次に め の形も出す(組み込みの値)。false=め の形は出さない(applyFormalNounMeKana 参照)
     var formalNounMeKanaCandidatesEnabled: Bool = true
     // ワイン用語優先(デバッグ版専用。3805、ユーザ指定)。true のとき WineTermPriority の表の語を、同じ読みの一般語より先にする
@@ -453,7 +453,7 @@ public final class KanaKanjiConverter {
         finalCandidates = Self.applyFormalNounMeKana(
             to: finalCandidates, reading: normalizedReading, enabled: withStateLock { formalNounMeKanaCandidatesEnabled }
         )
-        // 月名・日付の 2 つの形(四月/4月)は、seed の並び(しがつ は 四月 が seed 先頭)より X.18 の順を優先する(3804)
+        // 月名・日付の 2 つの形(四月/4月)は、seed の並び(しがつ は 四月 が seed 先頭)より X.13 の順を優先する(3804)
         if let day = Self.nativeWordDayComposition(for: normalizedReading) {
             let style = withStateLock { numeralStylePreference }
             let kanjiForm = "\(Self.kanjiNumeralString(day.value))\(day.unit)\(day.tail)"
@@ -487,7 +487,7 @@ public final class KanaKanjiConverter {
         // カタカナだけ/ラテン文字だけの先頭には、もう一方の文字の候補を 2 番目に(ユーザ指定 3677: Ice/アイス、Kona/コナ)
         finalCandidates = Self.scriptCounterpartSecond(finalCandidates)
         // 同音の漢字による書きかえの組(聯想/連想)は、両方を出す設定のとき隣り合わせに並べる(間の語を割り込ませない。3644)
-        // X.10 の組(臆測/憶測)はその設定で(3570)
+        // X.9 の組(臆測/憶測)はその設定で(3570)
         let (kanjiRewrite, lateStandardized) = withStateLock { (kanjiRewritePreference, lateStandardizedRewritePreference) }
         if kanjiRewrite != nil || lateStandardized != nil {
             finalCandidates = Self.kanjiRewritePairsAdjacent(
@@ -790,7 +790,7 @@ public final class KanaKanjiConverter {
         )
         addCandidates(numericUnitFallback, baseScore: CandidateScore.numericUnitFallback, to: &scores)
 
-        // 数詞+助数詞の表記の設定(X.18。3702): アラビア数字/漢数字のどちらを先の帯(400)に置くか、片方だけにするか
+        // 数詞+助数詞の表記の設定(X.13。3702): アラビア数字/漢数字のどちらを先の帯(400)に置くか、片方だけにするか
         let numeralStyle = withStateLock { numeralStylePreference }
         let arabicBand = numeralStyle.kanjiBeforeArabic ? CandidateScore.numericCounterCompound : CandidateScore.numericArabicCompound
         let kanjiBand = numeralStyle.kanjiBeforeArabic ? CandidateScore.numericArabicCompound : CandidateScore.numericCounterCompound
@@ -811,7 +811,7 @@ public final class KanaKanjiConverter {
         let kanjiNumeralCompound = numeralStyle.includesKanji
             ? kanjiNumeralCompoundCandidates(for: reading).filter { scores[$0] == nil }
             : []
-        // curated の数量語(misc の 二つ/2つ)が両方あるときは、生成と同じ帯を足して X.18 の順にする(3708)
+        // curated の数量語(misc の 二つ/2つ)が両方あるときは、生成と同じ帯を足して X.13 の順にする(3708)
         let curatedNumeric = Self.curatedNumeralStylePairs(context.userCandidates)
         if !curatedNumeric.isEmpty {
             let generated = Set(arabicNumericCompound + numericCounterCompound + kanjiNumeralCompound)
@@ -821,7 +821,7 @@ public final class KanaKanjiConverter {
         }
         addCandidates(kanjiNumeralCompound, baseScore: kanjiBand, to: &scores)
         // 日付・日数の和語の読み(ふつか。3793): 漢数字の形(二日)は misc の登録語や辞書の語として高い点で入っているので、
-        // 生成したアラビア数字の形(2日)をその点に揃え、X.18 の順の分(帯の差)だけ前後させる
+        // 生成したアラビア数字の形(2日)をその点に揃え、X.13 の順の分(帯の差)だけ前後させる
         if numeralStyle.includesArabic, let day = Self.nativeWordDayComposition(for: reading) {
             let kanjiForm = "\(Self.kanjiNumeralString(day.value))\(day.unit)\(day.tail)"
             let arabicForm = "\(day.value)\(day.unit)\(day.tail)"
@@ -1127,7 +1127,7 @@ public final class KanaKanjiConverter {
     }
 
     // 両方を出す設定で、書きかえの組(好む側→他方)を隣り合わせにする。好む側の直後へ他方を移す(聯想、連想、連奏… の順)。
-    // X.9 の組は preference、X.10 の組(臆測/憶測。3570)は lateStandardized で判定する。nil のグループの組は触らない
+    // X.8 の組は preference、X.9 の組(臆測/憶測。3570)は lateStandardized で判定する。nil のグループの組は触らない
     static func kanjiRewritePairsAdjacent(
         _ candidates: [String],
         preference basePreference: KanjiRewritePreference?,
@@ -1178,7 +1178,7 @@ public final class KanaKanjiConverter {
     // 書きかえ後の語(憶測/回転寿司)は書きかえ前の表記を作って、設定どおりに片方を落とすか、好む側を上に並べる。
     // 書きかえ後の語は普通の語の一部になりやすい(一丁→一丁目)ので、前の表記を作るのは候補が語そのものか、
     // 作った表記が同じ読みの候補に既にあるときだけ。追加語彙・学習語彙の語は対象外
-    // 候補の rest の先頭から始まる書きかえの組。switchable=X.9 の組、lateStandardized=X.10 の組(3570)を探すか
+    // 候補の rest の先頭から始まる書きかえの組。switchable=X.8 の組、lateStandardized=X.9 の組(3570)を探すか
     static func kanjiRewritePair(
         at rest: Substring,
         matchingBefore: Bool,
@@ -1206,14 +1206,14 @@ public final class KanaKanjiConverter {
         _ context: CandidateGenerationContext,
         to scores: inout [String: Int]
     ) {
-        // X.9 の組は kanjiRewritePreference、X.10 の組は lateStandardizedRewritePreference で判定する。nil のグループの組は触らない(3570)
+        // X.8 の組は kanjiRewritePreference、X.9 の組は lateStandardizedRewritePreference で判定する。nil のグループの組は触らない(3570)
         let (switchablePreference, latePreference) = withStateLock { (kanjiRewritePreference, lateStandardizedRewritePreference) }
         guard switchablePreference != nil || latePreference != nil else {
             return
         }
         let everydayException = withStateLock { kanjiRewriteEverydayException }
         // 対象外は利用者が自分で入れた語(追加語彙=ショートカット、学習語彙)だけ。初期投入の misc/compenser
-        // (交叉点/氷酢酸 等の変換対策語)は X.9 に従わせる(ユーザ指定 3427)
+        // (交叉点/氷酢酸 等の変換対策語)は X.8 に従わせる(ユーザ指定 3427)
         let exempt = Set(context.ajoutVocabulary[context.reading] ?? []).union(context.learnedCandidates)
         let original = scores
         func occurrence(in candidate: String, matchingBefore: Bool) -> (before: String, after: String, isLateStandardized: Bool)? {
@@ -1233,7 +1233,7 @@ public final class KanaKanjiConverter {
             let isLateStandardized: Bool
             if let pair = occurrence(in: candidate, matchingBefore: true) {
                 let made = candidate.replacingOccurrences(of: pair.before, with: pair.after)
-                // X.10 の組の字(腎・潰・磨)は今は常用漢字で、その字で書く複合語が多い(肝腎症候群)。
+                // X.9 の組の字(腎・潰・磨)は今は常用漢字で、その字で書く複合語が多い(肝腎症候群)。
                 // 語そのものか、作った表記が同じ読みの候補に既にあるときだけ(3570)
                 guard !pair.isLateStandardized || candidate == pair.before || original[made] != nil else {
                     continue
@@ -1253,7 +1253,7 @@ public final class KanaKanjiConverter {
                 continue
             }
             let top = max(score, original[beforeForm] ?? Int.min, original[afterForm] ?? Int.min)
-            // 日常語の例外(了解/回復)。X.10 の組も例外の表に載る語(理屈/理窟。3739、ユーザ指定)だけ同じに扱う
+            // 日常語の例外(了解/回復)。X.9 の組も例外の表に載る語(理屈/理窟。3739、ユーザ指定)だけ同じに扱う
             guard let effective = isLateStandardized
                 ? latePreference?.demotingEverydayPair(for: candidate, enabled: everydayException)
                 : switchablePreference?.demotingEverydayPair(for: candidate, enabled: everydayException) else {

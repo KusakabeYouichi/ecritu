@@ -18,69 +18,69 @@ final class SettingsChangeTracker: ObservableObject {
     }
 }
 
-// 項目番号(X.9 等)→ その項目が表示・編集する設定キー(3432。ContentView のカード群と照合済み)
+// 項目番号(X.8 等)→ その項目が表示・編集する設定キー(3432。ContentView のカード群と照合済み)
 enum SettingsCardKeys {
     static let keysByCardID: [String: [String]] = [
         "E.1": [SettingsKeys.directionProfile],
         "E.2": [SettingsKeys.keyRepeatInitialDelay, SettingsKeys.keyRepeatInterval],
         "E.3": [SettingsKeys.idleCommitEnabled, SettingsKeys.idleCommitInterval],
-        "E.4": [SettingsKeys.composingTextStyle],
-        "E.5": [SettingsKeys.leftModeSwitchNumberKeyRightFlickAction, SettingsKeys.leftModeSwitchLatinKeyRightFlickAction,
+        "E.5": [SettingsKeys.composingTextStyle],
+        "T.4": [SettingsKeys.leftModeSwitchNumberKeyRightFlickAction, SettingsKeys.leftModeSwitchLatinKeyRightFlickAction,
                 SettingsKeys.leftModeSwitchKanaKeyRightFlickAction,
                 SettingsKeys.kanaModeSwitcherTapAction, SettingsKeys.kanaModeSwitcherRightFlickAction,
                 SettingsKeys.compactKeyboardSwitchKeyRightFlickAction, SettingsKeys.compactKeyboardSwitchKeyUpFlickAction],
-        "E.6": [SettingsKeys.kanaPostModifierEmptyTapAction, SettingsKeys.kanaPostModifierEmptyTapKaomojiCategory,
+        "T.2": [SettingsKeys.kanaPostModifierEmptyTapAction, SettingsKeys.kanaPostModifierEmptyTapKaomojiCategory,
                 SettingsKeys.kanaPostModifierEmptyTapEmojiCategory, SettingsKeys.kanaPostModifierEmptyTapSymbolCategory],
-        "E.7": [SettingsKeys.kanaPostModifierFlickDakutenEnabled],
-        "E.8": [SettingsKeys.latinLexiconEnglishEnabled, SettingsKeys.latinLexiconFrenchEnabled,
+        "T.3": [SettingsKeys.kanaPostModifierFlickDakutenEnabled],
+        "C.4": [SettingsKeys.latinLexiconEnglishEnabled, SettingsKeys.latinLexiconFrenchEnabled,
                 SettingsKeys.latinLexiconGermanEnabled, SettingsKeys.latinLexiconItalianEnabled],
-        "E.9": [SettingsKeys.kanaYaBracketStyle],
+        "T.5": [SettingsKeys.kanaYaBracketStyle],
         "F.1": [SettingsKeys.numberThousandsSeparator, SettingsKeys.numberGroupFourDigits, SettingsKeys.numberDecimalSeparator,
                 SettingsKeys.numberUnitProductSeparator, SettingsKeys.numberLitreSymbol],
         "F.2": [SettingsKeys.degreeSymbol],
         "F.3": [SettingsKeys.calendarWeekStart, SettingsKeys.calendarWeekdayLanguage, SettingsKeys.calendarSundayColor,
                 SettingsKeys.calendarFridayColor, SettingsKeys.calendarSaturdayColor, SettingsKeys.dateFormatStyle],
-        "G.1": [SettingsKeys.kanaFlickGuideDisplayMode, SettingsKeys.latinFlickGuideDisplayMode,
+        "V.4": [SettingsKeys.kanaFlickGuideDisplayMode, SettingsKeys.latinFlickGuideDisplayMode,
                 SettingsKeys.numberFlickGuideDisplayMode, SettingsKeys.modifierFlickGuideDisplayMode],
         "L.1": [SettingsKeys.kanaLayoutMode],
         "L.2": [SettingsKeys.latinLayoutMode],
         "L.3": [SettingsKeys.numberLayoutMode, SettingsKeys.formattedNumberKeypadLayout],
         "L.4": [SettingsKeys.basicSymbolOrder],
-        "L.5": [SettingsKeys.kanaModifierPlacement],
-        "V.1": [SettingsKeys.landscapeCandidateSide, SettingsKeys.landscapeLatinSuggestionMode],
-        "V.2": [SettingsKeys.landscapeNumberPaneSide],
-        "V.3": [SettingsKeys.accentPalette],
-        "V.4": [SettingsKeys.keyboardBackgroundTheme],
-        "V.5": [SettingsKeys.candidateFontStyle],
-        "X.1": [SettingsKeys.delimiterAutoCommitCandidate],
-        "X.2": [SettingsKeys.kanaKanjiCandidateSourceMode],
-        "X.3": [SettingsKeys.historicalKanaCandidatesEnabled],
-        "X.4": [SettingsKeys.iterationMarkCandidatesEnabled],
-        "X.5": [SettingsKeys.katakanaEmphasisCandidateMode],
-        "X.6": [SettingsKeys.mixedScriptCandidateMode],
-        "X.7": [SettingsKeys.scriptVariantSuppressKyujitai, SettingsKeys.scriptVariantSuppressItaiji, SettingsKeys.scriptVariantSuppressRyakuji,
+        "T.1": [SettingsKeys.kanaModifierPlacement],
+        "L.5": [SettingsKeys.landscapeCandidateSide, SettingsKeys.landscapeLatinSuggestionMode],
+        "L.6": [SettingsKeys.landscapeNumberPaneSide],
+        "V.1": [SettingsKeys.accentPalette],
+        "V.2": [SettingsKeys.keyboardBackgroundTheme],
+        "V.3": [SettingsKeys.candidateFontStyle],
+        "E.4": [SettingsKeys.delimiterAutoCommitCandidate],
+        "X.1": [SettingsKeys.kanaKanjiCandidateSourceMode],
+        "X.2": [SettingsKeys.historicalKanaCandidatesEnabled],
+        "X.3": [SettingsKeys.iterationMarkCandidatesEnabled],
+        "X.4": [SettingsKeys.katakanaEmphasisCandidateMode],
+        "X.5": [SettingsKeys.mixedScriptCandidateMode],
+        "X.6": [SettingsKeys.scriptVariantSuppressKyujitai, SettingsKeys.scriptVariantSuppressItaiji, SettingsKeys.scriptVariantSuppressRyakuji,
                 SettingsKeys.scriptVariantSuppressConfusable, SettingsKeys.scriptVariantSuppressLookalike, SettingsKeys.scriptVariantSuppressPersonNameVariant],
-        "X.8": [SettingsKeys.kanaSpellingSuppressAdverb, SettingsKeys.kanaSpellingSuppressConjunction, SettingsKeys.kanaSpellingSuppressAuxiliary,
+        "X.7": [SettingsKeys.kanaSpellingSuppressAdverb, SettingsKeys.kanaSpellingSuppressConjunction, SettingsKeys.kanaSpellingSuppressAuxiliary,
                 SettingsKeys.kanaSpellingSuppressFormalNoun, SettingsKeys.kanaSpellingSuppressDemonstrative, SettingsKeys.kanaSpellingSuppressAdverbKanaFirst],
-        "X.9": [SettingsKeys.kanjiRewritePreference, SettingsKeys.kanjiRewriteEverydayException],
-        "X.10": [SettingsKeys.lateStandardizedRewritePreference],
-        "X.11": [SettingsKeys.radicalStrokeCountStyle],
-        "X.12": [SettingsKeys.kaCounterVariantPreference],
-        "X.13": [SettingsKeys.inflectionalKanaVariantPreference],
-        // X.14 は め/目 の 3 つのサブ項目(3790。それまでの X.15 形状名詞化 を取り込み、後ろの番号を 1 つずつ繰り上げた)
-        "X.14": [SettingsKeys.ordinalMeKanjiPreferred, SettingsKeys.formalNounMeKanaCandidatesEnabled,
+        "X.8": [SettingsKeys.kanjiRewritePreference, SettingsKeys.kanjiRewriteEverydayException],
+        "X.9": [SettingsKeys.lateStandardizedRewritePreference],
+        "R.1": [SettingsKeys.radicalStrokeCountStyle],
+        "X.10": [SettingsKeys.kaCounterVariantPreference],
+        "X.11": [SettingsKeys.inflectionalKanaVariantPreference],
+        // X.12 は め/目 の 3 つのサブ項目(3790。それまで別の項目だった 形状名詞化 を取り込んだ)
+        "X.12": [SettingsKeys.ordinalMeKanjiPreferred, SettingsKeys.formalNounMeKanaCandidatesEnabled,
                  SettingsKeys.adjectiveMeKanjiCandidatesEnabled],
-        "X.15": [SettingsKeys.emojiCandidateDisplayEnabled, SettingsKeys.kaomojiCandidateDisplayEnabled],
-        "X.16": [SettingsKeys.contactCandidateDisplayMode],
-        "X.17": [SettingsKeys.userDictionaryCandidateDisplayMode],
-        "X.18": [SettingsKeys.numeralStylePreference]
+        "C.1": [SettingsKeys.emojiCandidateDisplayEnabled, SettingsKeys.kaomojiCandidateDisplayEnabled],
+        "C.2": [SettingsKeys.contactCandidateDisplayMode],
+        "C.3": [SettingsKeys.userDictionaryCandidateDisplayMode],
+        "X.13": [SettingsKeys.numeralStylePreference]
     ]
 
-    // 見出しの先頭の番号(「X.9 常用漢字による書きかえ」→ X.9)
-    // 変更済みの印で比べるキー。E.6 は今の動作のカテゴリーだけを見る。一時的に絵文字・記号へ切り替えて選んだ
+    // 見出しの先頭の番号(「X.8 常用漢字による書きかえ」→ X.8)
+    // 変更済みの印で比べるキー。T.2 は今の動作のカテゴリーだけを見る。一時的に絵文字・記号へ切り替えて選んだ
     // カテゴリーが、顔文字に戻したあとも隠れて残り、印が消えなかった(3593、ユーザ報告)
     static func keysForModifiedMark(cardID: String, action: KanaPostModifierEmptyTapActionOption) -> [String]? {
-        guard cardID == "E.6" else {
+        guard cardID == "T.2" else {
             return keysByCardID[cardID]
         }
         let categoryKey: String
@@ -522,7 +522,7 @@ struct LoadingCapsule: View {
     }
 }
 
-// 横並びの選択肢の札(角丸 8、選択中は accent 0.18 の塗りと枠)。E.4 と V.5 の写しを 1 つに(3829)。
+// 横並びの選択肢の札(角丸 8、選択中は accent 0.18 の塗りと枠)。E.5 と V.3 の写しを 1 つに(3829)。
 // ボタン側の色・押せなさ・読み上げ名は呼ぶ側で付ける
 struct ChipOptionLabel: View {
     let title: String

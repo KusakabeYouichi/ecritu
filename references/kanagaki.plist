@@ -3,7 +3,7 @@
 <plist version="1.0">
 <array>
 
-	<!-- かなで書く言葉(3404)。漢字で書けるが、今の文章ではかなで書くことが多い語。コンテナーの X.8 で仲間ごとに「抑制」(漢字を出さない)/
+	<!-- かなで書く言葉(3404)。漢字で書けるが、今の文章ではかなで書くことが多い語。コンテナーの X.7 で仲間ごとに「抑制」(漢字を出さない)/
 	     しない(かなを先頭にして漢字はその後ろ)を選ぶ。節の見出しは「■ 仲間の英名 日本語名」の形で、tools/build_kanagaki_table.py が
 	     Packages/EcrituConversion/Sources/EcrituConversionBase/KanaGakiTable.swift を作る(plist を直したら道具を流してコミット)。設定画面の例は各節の先頭から順に並ぶ -->
 	<!-- ■ adverb 副詞 -->

@@ -22,15 +22,15 @@
 消えない。帯が出ると 05 では数字面の上に「般 › キーボード …」の切れ端が写る。(2) `simctl get_app_container` は
 起動中にしか引けない(停止中に呼ぶとパスが空になり PlistBuddy が / に書こうとする)。先に起動して引いてから停止して書く。
 (3) 06 は 戦略的初期設定 を基準にし(`settingsBasePreset=stratégique`)、ユーザ設定キーを全部消してから起動すると
-● が付かず V.4 は bleu になる(scratchpad user_keys.txt = ContentView+LogoMenu の userSettingsKeys)。
+● が付かず V.2 は bleu になる(scratchpad user_keys.txt = ContentView+LogoMenu の userSettingsKeys)。
 (4) 余白付き(キーボード上端 y=1770)は回によって出続けるので、上端が 1821 になるまで最大 6〜8 回撮り直す
 (check.py)。ダイナミックアイランドが写った回は島の無い方(_1)を使う。
 
 ## 撮影状態(take 8 2026-10-04。全 6 枚とマニュアルの hero・目次画像を撮り直し)
 
 **take 8(2026-10-04、edition 3322)**: 01〜05 と hero-kana は take 7 とピクセル単位で同じ(キーボードの見た目は 10-02 から
-変わっていない)ことを確かめて差し替え。06 は設定カードの付番(V.2/V.3/V.4/F.1、2026-10-02)を反映して撮り直し。
-06 の一時フックは ContentView の V.2 カードに `.id("screenshot-anchor")`、ScrollViewReader に環境変数
+変わっていない)ことを確かめて差し替え。06 は設定カードの付番(L.6/V.1/V.2/F.1、2026-10-02)を反映して撮り直し。
+06 の一時フックは ContentView の L.6 カードに `.id("screenshot-anchor")`、ScrollViewReader に環境変数
 `ECRITU_SCREENSHOT_SCROLL_TO` で 1.5/2.5/3.5/4.5 秒後に scrollTo(撮影後 `git checkout -- App/ContentView.swift`)。
 `accentPalette=emeraude` を停止中に書いて起動。hero-kana は iPhone 17 Pro(EAA1651A、web クリップ無し)で
 Safari に capture-page を開いて撮り、`(0,1624)-(1206,2446)` を切り抜き。目次画像は同じ切り抜き範囲で再生成
@@ -49,7 +49,7 @@ Safari のドメイン表示ピルもツールバーも写っていない。音�
 | 03 | 03-flags.png | 本文に🇭🇺を入れた状態で🇸🇰を長押し(Slovaquie バブル) |
 | 04 | 04-kaomoji-search.png | 顔文字検索 よみ「わーい」の候補 |
 | 05 | 05-number-unit.png | 書式化数値の単位 `36 200 000 hℓ`(sep mil + espace + 接頭辞 h + ℓ) |
-| 06 | 06-settings.png | 設定アプリの V.2 数字ペイン配列/V.3 アクセントカラー/V.4 テーマカラー/F.1(take 8、2026-10-04: カードの付番を反映) |
+| 06 | 06-settings.png | 設定アプリの L.6 数字ペイン配列/V.1 アクセントカラー/V.2 テーマカラー/F.1(take 8、2026-10-04: カードの付番を反映) |
 
 01〜05 は 2026-10-02(edition 3292 相当)に撮り直した。9/25 の 3216 で縦の高さを純正のかなキーボードに揃え、
 候補欄の上に未確定の行を常設したため、9/24 の take 5 とは高さと候補欄が違っていた。

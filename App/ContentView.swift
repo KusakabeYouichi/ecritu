@@ -6,7 +6,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20261124121007"
+    private static let editionUpdatedAtRaw: String = "20261127100147"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -180,7 +180,7 @@ struct ContentView: View {
     )
     private var keyboardBackgroundThemeRawValue: String = KeyboardBackgroundThemeOption.bleu.rawValue
 
-    // 候補の文字(V.5。3644)。組み込みの標準値は 16pt(戦略的と同じ。この設定より前の見た目)
+    // 候補の文字(V.3。3644)。組み込みの標準値は 16pt(戦略的と同じ。この設定より前の見た目)
     @AppStorage(SettingsKeys.candidateFontStyle, store: Self.sharedDefaults)
     private var candidateFontStyleRawValue: String = CandidateFontStyleOption.semibold16.rawValue
 
@@ -238,7 +238,7 @@ struct ContentView: View {
     )
     private var composingTextStyleRawValue: String = ComposingTextStyleOption.ecritu.rawValue
 
-    // E.5 モード切り替えキーの割り当て。初期値は builtInDefaultValues と同じ式にする(3242)
+    // T.4 モード切り替えキーの割り当て。初期値は builtInDefaultValues と同じ式にする(3242)
     @AppStorage(
         SettingsKeys.leftModeSwitchNumberKeyRightFlickAction,
         store: Self.sharedDefaults
@@ -392,7 +392,7 @@ struct ContentView: View {
     @AppStorage(SettingsKeys.kanjiRewriteEverydayException, store: Self.sharedDefaults)
     private var kanjiRewriteEverydayException: Bool = false
 
-    // 報告の後に常用漢字に加わった字の組(臆測/肝腎。X.10、3570)
+    // 報告の後に常用漢字に加わった字の組(臆測/肝腎。X.9、3570)
     @AppStorage(SettingsKeys.lateStandardizedRewritePreference, store: Self.sharedDefaults)
     private var lateStandardizedRewritePreferenceRawValue: String = KanjiRewritePreference.strategicDefault.rawValue
 
@@ -402,7 +402,7 @@ struct ContentView: View {
     )
     private var adjectiveMeKanjiCandidatesEnabled = false
 
-    // 形式名詞の 目 に ひらがなの め の候補も出す(X.14 のサブ項目。3790)。組み込みの値(戦略的)はオン
+    // 形式名詞の 目 に ひらがなの め の候補も出す(X.12 のサブ項目。3790)。組み込みの値(戦略的)はオン
     @AppStorage(
         SettingsKeys.formalNounMeKanaCandidatesEnabled,
         store: Self.sharedDefaults
@@ -782,15 +782,27 @@ struct ContentView: View {
         str(SettingsKeys.numberLayoutMode, numberLayoutModeRawValue, "数字配列: 数字入力")
         str(SettingsKeys.formattedNumberKeypadLayout, formattedNumberKeypadLayoutRawValue, "数字配列: 書式化数値入力")
         str(SettingsKeys.basicSymbolOrder, basicSymbolOrderRawValue, "基本記号の並び順")
-        str(SettingsKeys.kanaModifierPlacement, kanaModifierPlacementRawValue, "かな修飾")
+        str(SettingsKeys.landscapeLatinSuggestionMode, landscapeLatinSuggestionModeRawValue, "ラテン文字候補ペイン (horizontal): 横向きラテン文字入力で候補ペインを使う")
+        str(SettingsKeys.landscapeCandidateSide, landscapeCandidateSideRawValue, "ラテン文字候補ペイン (horizontal): 並び順")
+        str(SettingsKeys.landscapeNumberPaneSide, landscapeNumberPaneSideRawValue, "数字ペイン配列 (horizontal)")
 
-        group("入力")
-        str(SettingsKeys.directionProfile, directionProfileRawValue, "フリック方向")
-        num(SettingsKeys.keyRepeatInitialDelay, keyRepeatInitialDelay, "削除キーリピート: リピート開始までの時間(秒)")
-        num(SettingsKeys.keyRepeatInterval, keyRepeatInterval, "削除キーリピート: リピート速度(間隔)(秒)")
-        bool(SettingsKeys.idleCommitEnabled, idleCommitEnabled, "自動確定(アイドル): 入力が止まったら未確定を自動確定")
-        num(SettingsKeys.idleCommitInterval, idleCommitInterval, "自動確定(アイドル): 確定までの待ち時間(秒)")
-        str(SettingsKeys.composingTextStyle, composingTextStyleRawValue, "未確定の方式")
+        group("見た目")
+        str(SettingsKeys.accentPalette, accentPaletteRawValue, "アクセントカラー")
+        str(SettingsKeys.keyboardBackgroundTheme, keyboardBackgroundThemeRawValue, "テーマカラー")
+        str(SettingsKeys.candidateFontStyle, candidateFontStyleRawValue, "候補の文字: apple(Apple と同じ)/semibold17_5(17.5pt)/semibold16(16pt)")
+        str(SettingsKeys.kanaFlickGuideDisplayMode, kanaFlickGuideDisplayModeRawValue, "ガイド文字表示: かな入力")
+        str(SettingsKeys.latinFlickGuideDisplayMode, latinFlickGuideDisplayModeRawValue, "ガイド文字表示: ラテン文字入力")
+        str(SettingsKeys.numberFlickGuideDisplayMode, numberFlickGuideDisplayModeRawValue, "ガイド文字表示: 数字入力")
+        str(SettingsKeys.modifierFlickGuideDisplayMode, modifierFlickGuideDisplayModeRawValue, "ガイド文字表示: 濁点・半濁点・小文字キー")
+
+        group("キーの割り当て")
+        str(SettingsKeys.kanaModifierPlacement, kanaModifierPlacementRawValue, "かな修飾")
+        str(SettingsKeys.kanaPostModifierEmptyTapAction, kanaPostModifierEmptyTapActionRawValue, "修飾キーのタップ (後置修飾、未確定なし)")
+        // カテゴリーは内部ID(0/1/shortcut等)ではなく、キーボードのヘッダーに表示されるタイトルで書き出す(YAMLは書き出し専用)
+        str(SettingsKeys.kanaPostModifierEmptyTapKaomojiCategory, KaomojiCategoryChoice.displayTitle(forID: kanaPostModifierEmptyTapKaomojiCategoryID), "修飾キーのタップ (後置修飾、未確定なし): 切替時に開くカテゴリー(顔文字)")
+        str(SettingsKeys.kanaPostModifierEmptyTapEmojiCategory, EmojiCategoryChoice.displayTitle(forID: kanaPostModifierEmptyTapEmojiCategoryID), "修飾キーのタップ (後置修飾、未確定なし): 切替時に開くカテゴリー(絵文字)")
+        str(SettingsKeys.kanaPostModifierEmptyTapSymbolCategory, SymbolCategoryChoice.displayTitle(forID: kanaPostModifierEmptyTapSymbolCategoryID), "修飾キーのタップ (後置修飾、未確定なし): 切替時に開くカテゴリー(記号)")
+        bool(SettingsKeys.kanaPostModifierFlickDakutenEnabled, kanaPostModifierFlickDakutenEnabled, "後置修飾キーのフリックで濁点・半濁点")
         str(SettingsKeys.leftModeSwitchNumberKeyRightFlickAction, leftModeSwitchNumberKeyRightFlickActionRawValue, "モード切り替えキーの割り当て: 左端列 上段[123] 右フリック")
         str(SettingsKeys.leftModeSwitchLatinKeyRightFlickAction, leftModeSwitchLatinKeyRightFlickActionRawValue, "モード切り替えキーの割り当て: 左端列 中段[abc] 右フリック")
         str(SettingsKeys.leftModeSwitchKanaKeyRightFlickAction, leftModeSwitchKanaKeyRightFlickActionRawValue, "モード切り替えキーの割り当て: 左端列 下段[あい] 右フリック")
@@ -798,49 +810,18 @@ struct ContentView: View {
         str(SettingsKeys.kanaModeSwitcherRightFlickAction, kanaModeSwitcherRightFlickActionRawValue, "モード切り替えキーの割り当て: 左端列 最下段 右フリック")
         str(SettingsKeys.compactKeyboardSwitchKeyRightFlickAction, compactKeyboardSwitchKeyRightFlickActionRawValue, "モード切り替えキーの割り当て: ホームボタンのある機種 🌐 キー 右フリック")
         str(SettingsKeys.compactKeyboardSwitchKeyUpFlickAction, compactKeyboardSwitchKeyUpFlickActionRawValue, "モード切り替えキーの割り当て: ホームボタンのある機種 🌐 キー 上フリック")
-        str(SettingsKeys.kanaPostModifierEmptyTapAction, kanaPostModifierEmptyTapActionRawValue, "修飾キーのタップ (後置修飾、未確定なし)")
-        // カテゴリーは内部ID(0/1/shortcut等)ではなく、キーボードのヘッダーに表示されるタイトルで書き出す(YAMLは書き出し専用)
-        str(SettingsKeys.kanaPostModifierEmptyTapKaomojiCategory, KaomojiCategoryChoice.displayTitle(forID: kanaPostModifierEmptyTapKaomojiCategoryID), "修飾キーのタップ (後置修飾、未確定なし): 切替時に開くカテゴリー(顔文字)")
-        str(SettingsKeys.kanaPostModifierEmptyTapEmojiCategory, EmojiCategoryChoice.displayTitle(forID: kanaPostModifierEmptyTapEmojiCategoryID), "修飾キーのタップ (後置修飾、未確定なし): 切替時に開くカテゴリー(絵文字)")
-        str(SettingsKeys.kanaPostModifierEmptyTapSymbolCategory, SymbolCategoryChoice.displayTitle(forID: kanaPostModifierEmptyTapSymbolCategoryID), "修飾キーのタップ (後置修飾、未確定なし): 切替時に開くカテゴリー(記号)")
-        bool(SettingsKeys.kanaPostModifierFlickDakutenEnabled, kanaPostModifierFlickDakutenEnabled, "後置修飾キーのフリックで濁点・半濁点")
-        bool(SettingsKeys.latinLexiconFrenchEnabled, latinLexiconFrenchEnabled, "欧文サジェスチョンの言語: français (フランス語)")
-        bool(SettingsKeys.latinLexiconItalianEnabled, latinLexiconItalianEnabled, "欧文サジェスチョンの言語: italiano (イタリア語)")
-        bool(SettingsKeys.latinLexiconGermanEnabled, latinLexiconGermanEnabled, "欧文サジェスチョンの言語: Deutsch (ドイツ語)")
-        bool(SettingsKeys.latinLexiconEnglishEnabled, latinLexiconEnglishEnabled, "欧文サジェスチョンの言語: anglais (英語)")
         str(SettingsKeys.kanaYaBracketStyle, kanaYaBracketStyleRawValue, "『や』キーの左右フリックの括弧")
 
-        group("キー表示")
-        str(SettingsKeys.kanaFlickGuideDisplayMode, kanaFlickGuideDisplayModeRawValue, "ガイド文字表示: かな入力")
-        str(SettingsKeys.latinFlickGuideDisplayMode, latinFlickGuideDisplayModeRawValue, "ガイド文字表示: ラテン文字入力")
-        str(SettingsKeys.numberFlickGuideDisplayMode, numberFlickGuideDisplayModeRawValue, "ガイド文字表示: 数字入力")
-        str(SettingsKeys.modifierFlickGuideDisplayMode, modifierFlickGuideDisplayModeRawValue, "ガイド文字表示: 濁点・半濁点・小文字キー")
-
-        group("表示")
-        str(SettingsKeys.landscapeLatinSuggestionMode, landscapeLatinSuggestionModeRawValue, "ラテン文字候補ペイン (horizontal): 横向きラテン文字入力で候補ペインを使う")
-        str(SettingsKeys.landscapeCandidateSide, landscapeCandidateSideRawValue, "ラテン文字候補ペイン (horizontal): 並び順")
-        str(SettingsKeys.landscapeNumberPaneSide, landscapeNumberPaneSideRawValue, "数字ペイン配列 (horizontal)")
-        str(SettingsKeys.accentPalette, accentPaletteRawValue, "アクセントカラー")
-        str(SettingsKeys.keyboardBackgroundTheme, keyboardBackgroundThemeRawValue, "テーマカラー")
-        str(SettingsKeys.candidateFontStyle, candidateFontStyleRawValue, "候補の文字: apple(Apple と同じ)/semibold17_5(17.5pt)/semibold16(16pt)")
-
-        // 書式(F.1〜F.3)。3837 までは 入力 の群に混ざっていた
-        group("書式")
-        str(SettingsKeys.numberThousandsSeparator, numberThousandsSeparatorRawValue, "format numérique: Séparateur de milliers")
-        bool(SettingsKeys.numberGroupFourDigits, numberGroupFourDigits, "format numérique: que quatre")
-        str(SettingsKeys.numberDecimalSeparator, numberDecimalSeparatorRawValue, "format numérique: Séparateur décimal")
-        str(SettingsKeys.numberUnitProductSeparator, numberUnitProductSeparatorRawValue, "format numérique: 単位の積の記号")
-        str(SettingsKeys.numberLitreSymbol, numberLitreSymbolRawValue, "format numérique: リットルの記号")
-        str(SettingsKeys.degreeSymbol, degreeSymbolRawValue, "degré: 温度の度記号(composed=°C・°F / compat=℃・℉)")
-        str(SettingsKeys.calendarWeekStart, calendarWeekStartRawValue, "カレンダー: 週開始")
-        str(SettingsKeys.calendarWeekdayLanguage, calendarWeekdayLanguageRawValue, "カレンダー: 曜日表記")
-        str(SettingsKeys.calendarSundayColor, calendarSundayColorRawValue, "カレンダー: 日曜列の色")
-        str(SettingsKeys.calendarSaturdayColor, calendarSaturdayColorRawValue, "カレンダー: 土曜列の色")
-        str(SettingsKeys.calendarFridayColor, calendarFridayColorRawValue, "カレンダー: 金曜列の色")
-        str(SettingsKeys.dateFormatStyle, dateFormatStyleRawValue, "カレンダー: 日付書式")
+        group("入力の動作")
+        str(SettingsKeys.directionProfile, directionProfileRawValue, "フリック方向")
+        num(SettingsKeys.keyRepeatInitialDelay, keyRepeatInitialDelay, "削除キーリピート: リピート開始までの時間(秒)")
+        num(SettingsKeys.keyRepeatInterval, keyRepeatInterval, "削除キーリピート: リピート速度(間隔)(秒)")
+        bool(SettingsKeys.idleCommitEnabled, idleCommitEnabled, "自動確定(アイドル): 入力が止まったら未確定を自動確定")
+        num(SettingsKeys.idleCommitInterval, idleCommitInterval, "自動確定(アイドル): 確定までの待ち時間(秒)")
+        str(SettingsKeys.delimiterAutoCommitCandidate, delimiterAutoCommitCandidateRawValue, "句読点入力時の自動確定候補")
+        str(SettingsKeys.composingTextStyle, composingTextStyleRawValue, "未確定の方式")
 
         group("変換")
-        str(SettingsKeys.delimiterAutoCommitCandidate, delimiterAutoCommitCandidateRawValue, "句読点入力時の自動確定候補")
         str(SettingsKeys.kanaKanjiCandidateSourceMode, kanaKanjiCandidateSourceModeRawValue, "かな漢字候補モード")
         bool(SettingsKeys.historicalKanaCandidatesEnabled, historicalKanaCandidatesEnabled, "旧仮名遣い候補")
         bool(SettingsKeys.iterationMarkCandidatesEnabled, iterationMarkCandidatesEnabled, "仮名の踊り字候補")
@@ -861,18 +842,43 @@ struct ContentView: View {
         str(SettingsKeys.kanjiRewritePreference, kanjiRewritePreferenceRawValue, "常用漢字による書きかえ: beforeOnly(本来の漢字だけ)/afterOnly(常用漢字だけ)/bothBeforeFirst(両方、前を先に)/bothAfterFirst(両方、後を先に)")
         bool(SettingsKeys.kanjiRewriteEverydayException, kanjiRewriteEverydayException, "常用漢字による書きかえ: 日常語(了解・回復・連想 等)は常用漢字を先に")
         str(SettingsKeys.lateStandardizedRewritePreference, lateStandardizedRewritePreferenceRawValue, "常用漢字による書きかえ(後に追加): beforeOnly(本来の漢字だけ)/afterOnly(常用漢字だけ)/bothBeforeFirst(両方、前を先に)/bothAfterFirst(両方、後を先に)")
-        bool(SettingsKeys.emojiCandidateDisplayEnabled, emojiCandidateDisplayEnabled, "emojis & les émoticônes: emoji 😀")
-        str(SettingsKeys.radicalStrokeCountStyle, radicalStrokeCountStyleRawValue, "部首の画数の数え方")
-        bool(SettingsKeys.ordinalMeKanjiPreferred, ordinalMeKanjiPreferred, "suffixe – me(め/目)の 序数化(première…): 順序の『目』を漢字で先に")
         str(SettingsKeys.kaCounterVariantPreference, kaCounterVariantPreferenceRawValue, "助数詞型suffixe / 数詞類別suffixe – ka(un endroit…): か の表記(出す表記と順。- は出さない)")
-        str(SettingsKeys.numeralStylePreference, numeralStylePreferenceRawValue, "数詞の表記 – chiffres: arabicFirst(アラビア数字が先)/kanjiFirst(漢数字が先)/arabicOnly(アラビア数字だけ)/kanjiOnly(漢数字だけ)")
         str(SettingsKeys.inflectionalKanaVariantPreference, inflectionalKanaVariantPreferenceRawValue, "送り仮名の許容形 – orthographe: 語幹の中(stem)/複合語の前部要素(compound)/名詞化(noun)ごとに standardOnly(本則だけ)/standardFirst(本則を先に)/permittedFirst(許容を先に)")
-        bool(SettingsKeys.adjectiveMeKanjiCandidatesEnabled, adjectiveMeKanjiCandidatesEnabled, "suffixe – me(め/目)の 形状名詞化 / 傾向派生(un peu …): 形容詞語幹の『目』候補も出す")
+        bool(SettingsKeys.ordinalMeKanjiPreferred, ordinalMeKanjiPreferred, "suffixe – me(め/目)の 序数化(première…): 順序の『目』を漢字で先に")
         bool(SettingsKeys.formalNounMeKanaCandidatesEnabled, formalNounMeKanaCandidatesEnabled, "suffixe – me(め/目)の 形式名詞化(nom vide): 形式名詞の『目』に『め』の候補も出す")
-        bool(SettingsKeys.suspendMemorySlimmingEnabled, suspendMemorySlimmingEnabled, "キーボードが閉じたときにメモリを整理")
+        bool(SettingsKeys.adjectiveMeKanjiCandidatesEnabled, adjectiveMeKanjiCandidatesEnabled, "suffixe – me(め/目)の 形状名詞化 / 傾向派生(un peu …): 形容詞語幹の『目』候補も出す")
+        str(SettingsKeys.numeralStylePreference, numeralStylePreferenceRawValue, "数詞の表記 – chiffres: arabicFirst(アラビア数字が先)/kanjiFirst(漢数字が先)/arabicOnly(アラビア数字だけ)/kanjiOnly(漢数字だけ)")
+
+        group("候補の追加")
+        bool(SettingsKeys.emojiCandidateDisplayEnabled, emojiCandidateDisplayEnabled, "emojis & les émoticônes: emoji 😀")
         bool(SettingsKeys.kaomojiCandidateDisplayEnabled, kaomojiCandidateDisplayEnabled, "emojis & les émoticônes: émoticône (^_^)")
         str(SettingsKeys.contactCandidateDisplayMode, contactCandidateDisplayModeRawValue, "iOSの連絡先の姓、名、会社名")
         str(SettingsKeys.userDictionaryCandidateDisplayMode, userDictionaryCandidateDisplayModeRawValue, "iOSのユーザ辞書の単語")
+        bool(SettingsKeys.latinLexiconFrenchEnabled, latinLexiconFrenchEnabled, "欧文サジェスチョンの言語: français (フランス語)")
+        bool(SettingsKeys.latinLexiconItalianEnabled, latinLexiconItalianEnabled, "欧文サジェスチョンの言語: italiano (イタリア語)")
+        bool(SettingsKeys.latinLexiconGermanEnabled, latinLexiconGermanEnabled, "欧文サジェスチョンの言語: Deutsch (ドイツ語)")
+        bool(SettingsKeys.latinLexiconEnglishEnabled, latinLexiconEnglishEnabled, "欧文サジェスチョンの言語: anglais (英語)")
+
+        group("書式")
+        str(SettingsKeys.numberThousandsSeparator, numberThousandsSeparatorRawValue, "format numérique: Séparateur de milliers")
+        bool(SettingsKeys.numberGroupFourDigits, numberGroupFourDigits, "format numérique: que quatre")
+        str(SettingsKeys.numberDecimalSeparator, numberDecimalSeparatorRawValue, "format numérique: Séparateur décimal")
+        str(SettingsKeys.numberUnitProductSeparator, numberUnitProductSeparatorRawValue, "format numérique: 単位の積の記号")
+        str(SettingsKeys.numberLitreSymbol, numberLitreSymbolRawValue, "format numérique: リットルの記号")
+        str(SettingsKeys.degreeSymbol, degreeSymbolRawValue, "degré: 温度の度記号(composed=°C・°F / compat=℃・℉)")
+        str(SettingsKeys.calendarWeekStart, calendarWeekStartRawValue, "カレンダー: 週開始")
+        str(SettingsKeys.calendarWeekdayLanguage, calendarWeekdayLanguageRawValue, "カレンダー: 曜日表記")
+        str(SettingsKeys.calendarSundayColor, calendarSundayColorRawValue, "カレンダー: 日曜列の色")
+        str(SettingsKeys.calendarSaturdayColor, calendarSaturdayColorRawValue, "カレンダー: 土曜列の色")
+        str(SettingsKeys.calendarFridayColor, calendarFridayColorRawValue, "カレンダー: 金曜列の色")
+        str(SettingsKeys.dateFormatStyle, dateFormatStyleRawValue, "カレンダー: 日付書式")
+
+        group("部首")
+        str(SettingsKeys.radicalStrokeCountStyle, radicalStrokeCountStyleRawValue, "部首の画数の数え方")
+
+        // 項目番号の無い設定(3899 までは 変換 の群の末尾に混ざっていた)
+        group("その他")
+        bool(SettingsKeys.suspendMemorySlimmingEnabled, suspendMemorySlimmingEnabled, "キーボードが閉じたときにメモリを整理")
         bool(SettingsKeys.shortcutVocabularyRecentsFirst, shortcutVocabularyRecentsFirst, "ショートカット語彙: récents en premier")
 
         return lines.joined(separator: "\n") + "\n"
@@ -1118,8 +1124,73 @@ struct ContentView: View {
         BasicSymbolOrderSettingsSection(selection: rawValueSelection($basicSymbolOrderRawValue, default: .ascii))
             .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("L.4"))
 
+        LandscapeCandidateSideSettingsSection(
+            selection: rawValueSelection($landscapeCandidateSideRawValue, default: .left),
+            latinSuggestionMode: rawValueSelection($landscapeLatinSuggestionModeRawValue, default: .sidebar)
+        )
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("L.5"))
+
+        LandscapeNumberPaneSideSettingsSection(selection: rawValueSelection($landscapeNumberPaneSideRawValue, default: .left))
+            .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("L.6"))
+    }
+
+    // 見た目(色・候補の文字・ガイド文字)。横画面のペインの左右は配列(L)へ、ガイド文字表示は G からここへ移した(3899 の分類替え)
+    @ViewBuilder
+    private var displaySettingsCards: some View {
+        AccentColorSettingsSection(selection: rawValueSelection($accentPaletteRawValue, default: .emeraude))
+            .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("V.1"))
+
+        ThemeColorSettingsSection(selection: rawValueSelection($keyboardBackgroundThemeRawValue, default: .bleu))
+            .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("V.2"))
+
+        CandidateFontStyleSettingsSection(
+            rawValue: $candidateFontStyleRawValue,
+            composingTextStyleRawValue: composingTextStyleRawValue
+        )
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("V.3"))
+
+        FlickGuideDisplaySettingsSection(
+            kanaSelection: rawValueSelection($kanaFlickGuideDisplayModeRawValue, default: .fourDirections),
+            latinSelection: rawValueSelection($latinFlickGuideDisplayModeRawValue, default: .fourDirections),
+            numberSelection: rawValueSelection($numberFlickGuideDisplayModeRawValue, default: .fourDirections),
+            modifierSelection: rawValueSelection($modifierFlickGuideDisplayModeRawValue, default: .fourDirections),
+            isLatinGuideAvailable: isLatinFlickLayoutSelected
+        )
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("V.4"))
+    }
+
+    // キーの割り当て(どのキーの、どの操作に、何を割り当てるか。3899 の分類替えで L と E から集めた)
+    @ViewBuilder
+    private var keyAssignmentSettingsCards: some View {
         KanaModifierSettingsSection(selection: rawValueSelection($kanaModifierPlacementRawValue, default: .prefix))
-            .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("L.5"))
+            .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("T.1"))
+
+        KanaPostModifierEmptyTapAssignmentSection(
+            actionSelection: rawValueSelection($kanaPostModifierEmptyTapActionRawValue, default: .default),
+            kaomojiCategoryID: $kanaPostModifierEmptyTapKaomojiCategoryID,
+            emojiCategoryID: $kanaPostModifierEmptyTapEmojiCategoryID,
+            symbolCategoryID: $kanaPostModifierEmptyTapSymbolCategoryID
+        )
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("T.2"))
+
+        KanaPostModifierFlickDakutenSettingsSection(
+            isEnabled: $kanaPostModifierFlickDakutenEnabled
+        )
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("T.3"))
+
+        KanaModeSwitcherAssignmentSection(
+            numberKeyRightFlickSelection: rawValueSelection($leftModeSwitchNumberKeyRightFlickActionRawValue, default: .formattedNumber),
+            latinKeyRightFlickSelection: rawValueSelection($leftModeSwitchLatinKeyRightFlickActionRawValue, default: .emoji),
+            kanaKeyRightFlickSelection: rawValueSelection($leftModeSwitchKanaKeyRightFlickActionRawValue, default: .kanjiRadical),
+            tapSelection: rawValueSelection($kanaModeSwitcherTapActionRawValue, default: .emoji),
+            rightFlickSelection: rawValueSelection($kanaModeSwitcherRightFlickActionRawValue, default: .kaomoji),
+            compactKeyRightFlickSelection: rawValueSelection($compactKeyboardSwitchKeyRightFlickActionRawValue, default: .kaomoji),
+            compactKeyUpFlickSelection: rawValueSelection($compactKeyboardSwitchKeyUpFlickActionRawValue, default: .symbols)
+        )
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("T.4"))
+
+        KanaYaBracketSettingsSection(selection: rawValueSelection($kanaYaBracketStyleRawValue, default: .doubleCorner))
+            .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("T.5"))
     }
 
     @ViewBuilder
@@ -1139,39 +1210,122 @@ struct ContentView: View {
         )
         .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("E.3"))
 
+        // 句読点での自動確定。候補の中身でなく確定の動作を決めるので、変換(X)からここへ移した(3899 の分類替え)
+        DelimiterAutoCommitCandidateSettingsSection(
+            selection: rawValueSelection($delimiterAutoCommitCandidateRawValue, default: .one)
+        )
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("E.4"))
+
         ComposingTextStyleSettingsSection(rawValue: $composingTextStyleRawValue)
-            // tokushima式では V.5 は 16pt しか使えないので、切り替えたら V.5 も 16pt にそろえる(画面と表示を食い違わせない。3650)
+            // tokushima式では V.3 は 16pt しか使えないので、切り替えたら V.3 も 16pt にそろえる(画面と表示を食い違わせない。3650)
             .onChange(of: composingTextStyleRawValue) { _, newValue in
                 if newValue == ComposingTextStyleOption.tokushima.rawValue,
                     candidateFontStyleRawValue != CandidateFontStyleOption.semibold16.rawValue {
                     candidateFontStyleRawValue = CandidateFontStyleOption.semibold16.rawValue
                 }
             }
-            .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("E.4"))
+            .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("E.5"))
+    }
 
-        KanaModeSwitcherAssignmentSection(
-            numberKeyRightFlickSelection: rawValueSelection($leftModeSwitchNumberKeyRightFlickActionRawValue, default: .formattedNumber),
-            latinKeyRightFlickSelection: rawValueSelection($leftModeSwitchLatinKeyRightFlickActionRawValue, default: .emoji),
-            kanaKeyRightFlickSelection: rawValueSelection($leftModeSwitchKanaKeyRightFlickActionRawValue, default: .kanjiRadical),
-            tapSelection: rawValueSelection($kanaModeSwitcherTapActionRawValue, default: .emoji),
-            rightFlickSelection: rawValueSelection($kanaModeSwitcherRightFlickActionRawValue, default: .kaomoji),
-            compactKeyRightFlickSelection: rawValueSelection($compactKeyboardSwitchKeyRightFlickActionRawValue, default: .kaomoji),
-            compactKeyUpFlickSelection: rawValueSelection($compactKeyboardSwitchKeyUpFlickActionRawValue, default: .symbols)
+    // かな漢字変換の候補に何を出すか・出さないか(X)。エンジンに渡すだけで効く設定だけを集めた(3899 の分類替え)
+    @ViewBuilder
+    private var conversionSettingsCards: some View {
+        KanaKanjiCandidateSourceModeSettingsSection(
+            selection: rawValueSelection($kanaKanjiCandidateSourceModeRawValue, default: .surface)
         )
-        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("E.5"))
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.1"))
 
-        KanaPostModifierEmptyTapAssignmentSection(
-            actionSelection: rawValueSelection($kanaPostModifierEmptyTapActionRawValue, default: .default),
-            kaomojiCategoryID: $kanaPostModifierEmptyTapKaomojiCategoryID,
-            emojiCategoryID: $kanaPostModifierEmptyTapEmojiCategoryID,
-            symbolCategoryID: $kanaPostModifierEmptyTapSymbolCategoryID
+        HistoricalKanaCandidatesSettingsSection(
+            isEnabled: $historicalKanaCandidatesEnabled
         )
-        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("E.6"))
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.2"))
 
-        KanaPostModifierFlickDakutenSettingsSection(
-            isEnabled: $kanaPostModifierFlickDakutenEnabled
+        IterationMarkCandidatesSettingsSection(
+            isEnabled: $iterationMarkCandidatesEnabled
         )
-        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("E.7"))
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.3"))
+
+        ScriptVariantModeSettingsSection(
+            title: "X.4 カタカナ強調表記の候補",
+            selectionRawValue: $katakanaEmphasisCandidateModeRawValue,
+            footnote: "辞書が収穫した『ウマイ/コレ/ばかリ』のような読みのカタカナ化表記の扱いです。抑制=候補に出さない(3つの初期設定とも)、リスト後方=候補の末尾に回す、同列に使う=通常の順位。パンやアンケートのような外来語のカタカナは対象外です。"
+        )
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.4"))
+
+        ScriptVariantModeSettingsSection(
+            title: "X.5 交ぜ書きの候補",
+            selectionRawValue: $mixedScriptCandidateModeRawValue,
+            footnote: "『まん延(蔓延)』『作ひん(作品)』のような、漢字の一部をかなに開いた交ぜ書き表記の扱いです。抑制=候補に出さない(3つの初期設定とも)、リスト後方=候補の末尾に回す、同列に使う=通常の順位。『子ども』など定着した表記は対象外です。"
+        )
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.5"))
+
+        ScriptVariantSuppressionSettingsSection(
+            kyujitai: $scriptVariantSuppressKyujitai,
+            itaiji: $scriptVariantSuppressItaiji,
+            ryakuji: $scriptVariantSuppressRyakuji,
+            confusable: $scriptVariantSuppressConfusable,
+            lookalike: $scriptVariantSuppressLookalike,
+            personNameVariant: $scriptVariantSuppressPersonNameVariant
+        )
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.6"))
+
+        KanaSpellingSettingsSection(
+            adverb: $kanaSpellingSuppressAdverb,
+            conjunction: $kanaSpellingSuppressConjunction,
+            auxiliary: $kanaSpellingSuppressAuxiliary,
+            formalNoun: $kanaSpellingSuppressFormalNoun,
+            demonstrative: $kanaSpellingSuppressDemonstrative,
+            adverbKanaFirst: $kanaSpellingSuppressAdverbKanaFirst
+        )
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.7"))
+    }
+
+    // 変換の後半(X.8〜)。一覧は 1 フレームに 1 塊ずつ作るので、カードの多い変換は 2 つの塊に分ける(3712)
+    @ViewBuilder
+    private var conversionLateSettingsCards: some View {
+        KanjiRewriteSettingsSection(rawValue: $kanjiRewritePreferenceRawValue, everydayException: $kanjiRewriteEverydayException)
+            .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.8"))
+
+        LateStandardizedRewriteSettingsSection(rawValue: $lateStandardizedRewritePreferenceRawValue)
+            .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.9"))
+
+        KaCounterVariantSettingsSection(rawValue: $kaCounterVariantPreferenceRawValue)
+            .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.10"))
+
+        InflectionalKanaVariantSettingsSection(rawValue: $inflectionalKanaVariantPreferenceRawValue)
+            .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.11"))
+
+        // X.12 は め/目 の 3 つのサブ項目(序数化・形式名詞化・形状名詞化/傾向派生)を 1 枚にまとめたカード(3790、ユーザ指定)。
+        // 3790 までは 序数化 と 形状名詞化 の 2 枚だった
+        MeSuffixCandidateSettingsSection(
+            ordinalKanjiPreferred: $ordinalMeKanjiPreferred,
+            formalNounKanaEnabled: $formalNounMeKanaCandidatesEnabled,
+            adjectiveKanjiEnabled: $adjectiveMeKanjiCandidatesEnabled
+        )
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.12"))
+
+        NumeralStyleSettingsSection(selection: rawValueSelection($numeralStylePreferenceRawValue, default: .strategicDefault))
+            .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.13"))
+    }
+
+    // 候補の追加(C)。エンジンの辞書の外(絵文字の表・連絡先・iOS のユーザ辞書・欧文の語彙)から来る候補(3899 の分類替え)
+    @ViewBuilder
+    private var candidateSourceSettingsCards: some View {
+        EmojiKaomojiCandidateSettingsSection(
+            enablesEmojiCandidates: $emojiCandidateDisplayEnabled,
+            enablesKaomojiCandidates: $kaomojiCandidateDisplayEnabled
+        )
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("C.1"))
+
+        ContactCandidateDisplaySettingsSection(
+            selection: rawValueSelection($contactCandidateDisplayModeRawValue, default: .off)
+        )
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("C.2"))
+
+        UserDictionaryCandidateDisplaySettingsSection(
+            selection: rawValueSelection($userDictionaryCandidateDisplayModeRawValue, default: .on)
+        )
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("C.3"))
 
         LatinLexiconSettingsSection(
             enablesEnglish: $latinLexiconEnglishEnabled,
@@ -1179,50 +1333,12 @@ struct ContentView: View {
             enablesGerman: $latinLexiconGermanEnabled,
             enablesItalian: $latinLexiconItalianEnabled
         )
-        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("E.8"))
-
-        KanaYaBracketSettingsSection(selection: rawValueSelection($kanaYaBracketStyleRawValue, default: .doubleCorner))
-            .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("E.9"))
-    }
-
-    @ViewBuilder
-    private var keyDisplaySettingsCards: some View {
-        FlickGuideDisplaySettingsSection(
-            kanaSelection: rawValueSelection($kanaFlickGuideDisplayModeRawValue, default: .fourDirections),
-            latinSelection: rawValueSelection($latinFlickGuideDisplayModeRawValue, default: .fourDirections),
-            numberSelection: rawValueSelection($numberFlickGuideDisplayModeRawValue, default: .fourDirections),
-            modifierSelection: rawValueSelection($modifierFlickGuideDisplayModeRawValue, default: .fourDirections),
-            isLatinGuideAvailable: isLatinFlickLayoutSelected
-        )
-        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("G.1"))
-    }
-
-    @ViewBuilder
-    private var displaySettingsCards: some View {
-        LandscapeCandidateSideSettingsSection(
-            selection: rawValueSelection($landscapeCandidateSideRawValue, default: .left),
-            latinSuggestionMode: rawValueSelection($landscapeLatinSuggestionModeRawValue, default: .sidebar)
-        )
-        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("V.1"))
-
-        LandscapeNumberPaneSideSettingsSection(selection: rawValueSelection($landscapeNumberPaneSideRawValue, default: .left))
-            .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("V.2"))
-
-        AccentColorSettingsSection(selection: rawValueSelection($accentPaletteRawValue, default: .emeraude))
-            .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("V.3"))
-
-        ThemeColorSettingsSection(selection: rawValueSelection($keyboardBackgroundThemeRawValue, default: .bleu))
-            .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("V.4"))
-
-        CandidateFontStyleSettingsSection(
-            rawValue: $candidateFontStyleRawValue,
-            composingTextStyleRawValue: composingTextStyleRawValue
-        )
-        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("V.5"))
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("C.4"))
     }
 
     // 書式(数値・温度・カレンダー)。入力の挙動ではなく「出力の書き方」を決める設定なので
-    // 入力カテゴリーから独立させた(ユーザ指定 3002)
+    // 入力カテゴリーから独立させた(ユーザ指定 3002)。
+    // 部首(R)は 1 枚だけなので、一覧を組み立てる塊は書式と同じにする(3899 の分類替え)
     @ViewBuilder
     private var formatSettingsCards: some View {
         FormatNumeriqueSettingsSection(
@@ -1246,112 +1362,11 @@ struct ContentView: View {
             dateFormatStyle: rawValueSelection($dateFormatStyleRawValue, default: .japanese)
         )
         .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("F.3"))
-    }
-
-    @ViewBuilder
-    private var conversionSettingsCards: some View {
-        DelimiterAutoCommitCandidateSettingsSection(
-            selection: rawValueSelection($delimiterAutoCommitCandidateRawValue, default: .one)
-        )
-        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.1"))
-
-        KanaKanjiCandidateSourceModeSettingsSection(
-            selection: rawValueSelection($kanaKanjiCandidateSourceModeRawValue, default: .surface)
-        )
-        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.2"))
-
-        HistoricalKanaCandidatesSettingsSection(
-            isEnabled: $historicalKanaCandidatesEnabled
-        )
-        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.3"))
-
-        IterationMarkCandidatesSettingsSection(
-            isEnabled: $iterationMarkCandidatesEnabled
-        )
-        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.4"))
-
-        ScriptVariantModeSettingsSection(
-            title: "X.5 カタカナ強調表記の候補",
-            selectionRawValue: $katakanaEmphasisCandidateModeRawValue,
-            footnote: "辞書が収穫した『ウマイ/コレ/ばかリ』のような読みのカタカナ化表記の扱いです。抑制=候補に出さない(3つの初期設定とも)、リスト後方=候補の末尾に回す、同列に使う=通常の順位。パンやアンケートのような外来語のカタカナは対象外です。"
-        )
-        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.5"))
-
-        ScriptVariantModeSettingsSection(
-            title: "X.6 交ぜ書きの候補",
-            selectionRawValue: $mixedScriptCandidateModeRawValue,
-            footnote: "『まん延(蔓延)』『作ひん(作品)』のような、漢字の一部をかなに開いた交ぜ書き表記の扱いです。抑制=候補に出さない(3つの初期設定とも)、リスト後方=候補の末尾に回す、同列に使う=通常の順位。『子ども』など定着した表記は対象外です。"
-        )
-        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.6"))
-
-        ScriptVariantSuppressionSettingsSection(
-            kyujitai: $scriptVariantSuppressKyujitai,
-            itaiji: $scriptVariantSuppressItaiji,
-            ryakuji: $scriptVariantSuppressRyakuji,
-            confusable: $scriptVariantSuppressConfusable,
-            lookalike: $scriptVariantSuppressLookalike,
-            personNameVariant: $scriptVariantSuppressPersonNameVariant
-        )
-        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.7"))
-
-        KanaSpellingSettingsSection(
-            adverb: $kanaSpellingSuppressAdverb,
-            conjunction: $kanaSpellingSuppressConjunction,
-            auxiliary: $kanaSpellingSuppressAuxiliary,
-            formalNoun: $kanaSpellingSuppressFormalNoun,
-            demonstrative: $kanaSpellingSuppressDemonstrative,
-            adverbKanaFirst: $kanaSpellingSuppressAdverbKanaFirst
-        )
-        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.8"))
-
-        KanjiRewriteSettingsSection(rawValue: $kanjiRewritePreferenceRawValue, everydayException: $kanjiRewriteEverydayException)
-            .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.9"))
-    }
-
-    // 変換の後半(X.10〜)。一覧は 1 フレームに 1 塊ずつ作るので、カードの多い変換は 2 つの塊に分ける(3712)
-    @ViewBuilder
-    private var conversionLateSettingsCards: some View {
-        LateStandardizedRewriteSettingsSection(rawValue: $lateStandardizedRewritePreferenceRawValue)
-            .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.10"))
 
         RadicalStrokeCountSettingsSection(
             rawValue: $radicalStrokeCountStyleRawValue
         )
-        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.11"))
-
-        KaCounterVariantSettingsSection(rawValue: $kaCounterVariantPreferenceRawValue)
-            .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.12"))
-
-        InflectionalKanaVariantSettingsSection(rawValue: $inflectionalKanaVariantPreferenceRawValue)
-            .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.13"))
-
-        // X.14 は め/目 の 3 つのサブ項目(序数化・形式名詞化・形状名詞化/傾向派生)を 1 枚にまとめたカード(3790、ユーザ指定)。
-        // 3790 までは X.14(序数化)と X.15(形状名詞化)の 2 枚で、後ろの項目の番号も 1 つずつ大きかった
-        MeSuffixCandidateSettingsSection(
-            ordinalKanjiPreferred: $ordinalMeKanjiPreferred,
-            formalNounKanaEnabled: $formalNounMeKanaCandidatesEnabled,
-            adjectiveKanjiEnabled: $adjectiveMeKanjiCandidatesEnabled
-        )
-        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.14"))
-
-        EmojiKaomojiCandidateSettingsSection(
-            enablesEmojiCandidates: $emojiCandidateDisplayEnabled,
-            enablesKaomojiCandidates: $kaomojiCandidateDisplayEnabled
-        )
-        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.15"))
-
-        ContactCandidateDisplaySettingsSection(
-            selection: rawValueSelection($contactCandidateDisplayModeRawValue, default: .off)
-        )
-        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.16"))
-
-        UserDictionaryCandidateDisplaySettingsSection(
-            selection: rawValueSelection($userDictionaryCandidateDisplayModeRawValue, default: .on)
-        )
-        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.17"))
-
-        NumeralStyleSettingsSection(selection: rawValueSelection($numeralStylePreferenceRawValue, default: .strategicDefault))
-            .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("X.18"))
+        .settingsJumpAnchor(SettingsJumpMenu.sectionAnchorID("R.1"))
     }
 
     @ViewBuilder
@@ -1597,39 +1612,40 @@ struct ContentView: View {
                         // 設定カード群は初回フレームの後に、下の .task が 1 フレームに 1 塊ずつ作る
                         // (settingsCardStageCount 塊)。起動直後はロゴ+ヘッダーだけを即描画し、白背景の
                         // Loading 表示が長引かないようにする。
-                        // ──── キー配列 ────
+                        // ──── 配列(L) ────
                         if settingsCardStagesBuilt >= 1 {
                             layoutSettingsCards
                         }
-                        // ──── 入力 ────
+                        // ──── 見た目(V) ────
                         if settingsCardStagesBuilt >= 2 {
-                            inputSettingsCards
-                        }
-                        // ──── キー表示 ────
-                        if settingsCardStagesBuilt >= 3 {
-                            keyDisplaySettingsCards
-                        }
-                        // ──── 表示 ────
-                        if settingsCardStagesBuilt >= 4 {
                             displaySettingsCards
                         }
-                        // ──── 書式 ────
-                        if settingsCardStagesBuilt >= 5 {
-                            formatSettingsCards
+                        // ──── キーの割り当て(T) ────
+                        if settingsCardStagesBuilt >= 3 {
+                            keyAssignmentSettingsCards
                         }
-                        // ──── 変換 ────
-                        if settingsCardStagesBuilt >= 6 {
+                        // ──── 入力の動作(E) ────
+                        if settingsCardStagesBuilt >= 4 {
+                            inputSettingsCards
+                        }
+                        // ──── かな漢字変換の候補(X) ────
+                        if settingsCardStagesBuilt >= 5 {
                             conversionSettingsCards
                         }
-                        if settingsCardStagesBuilt >= 7 {
+                        if settingsCardStagesBuilt >= 6 {
                             conversionLateSettingsCards
                         }
-                        // ──── 語彙管理 ────
-                        if settingsCardStagesBuilt >= 8 {
-                            vocabularySettingsCards
+                        // ──── 候補の追加(C) ────
+                        if settingsCardStagesBuilt >= 7 {
+                            candidateSourceSettingsCards
                         }
-                        // ──── アプリ情報 ────
+                        // ──── 書式(F)、部首(R) ────
+                        if settingsCardStagesBuilt >= 8 {
+                            formatSettingsCards
+                        }
+                        // ──── 語彙管理、アプリ情報(分類が 1 つ増えたので 1 塊にまとめ、body の枝を 10 のままにする。3899) ────
                         if settingsCardStagesBuilt >= 9 {
+                            vocabularySettingsCards
                             appInfoSettingsCards
                         }
                         // ──── 診断 ────

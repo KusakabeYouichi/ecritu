@@ -324,6 +324,11 @@ final class RawTouchLongPressGestureRecognizer: UIGestureRecognizer {
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
         super.touchesBegan(touches, with: event)
+        // 空白キーのトラックパッド中の 2 本目の指は受け板が受けて捨てる(c10)。受け板はこの認識器を付けた view の
+        // 子なので、受け板への touch もここに届く。流すと削除キー(生タッチ駆動)が 1 文字消すので、ここでも止める
+        guard !SpaceTrackpadDisplayState.shared.isActive else {
+            return
+        }
         forward(touches, phase: .began)
     }
 
@@ -576,42 +581,46 @@ struct FlickKeyView: View {
             RoundedRectangle(cornerRadius: Metrics.keyCornerRadius, style: .continuous)
                 .stroke(KeyboardThemePalette.keyBorder, lineWidth: 1)
 
-            if isTouching {
-                Text(displayText)
-                    .font(
-                        .system(
-                            size: resolvedActiveMainLabelFontSize(for: activeDirection),
-                            weight: .bold,
-                            design: .rounded
+            // キーの字とガイド文字。空白キーのトラックパッド中はまとめて消す(c10)。購読をキーごとに 1 つにするため 1 つの束にする
+            ZStack {
+                if isTouching {
+                    Text(displayText)
+                        .font(
+                            .system(
+                                size: resolvedActiveMainLabelFontSize(for: activeDirection),
+                                weight: .bold,
+                                design: .rounded
+                            )
+                            // 書式化の見本 1,000 は 5 字ぶん横に長い。幅の詰まった字面にして、
+                            // それでも入らなければ縮める(ユーザー指摘 3155)。1 字のキーには影響しない
+                            .width(displayTextNeedsCondensedWidth ? .condensed : .standard)
                         )
-                        // 書式化の見本 1,000 は 5 字ぶん横に長い。幅の詰まった字面にして、
-                        // それでも入らなければ縮める(ユーザー指摘 3155)。1 字のキーには影響しない
-                        .width(displayTextNeedsCondensedWidth ? .condensed : .standard)
-                    )
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.6)
-                    .padding(.horizontal, 2)
-                    .foregroundStyle(Color.white)
-            } else if let idleReplacement {
-                idleReplacement
-                    .offset(y: centerLabelOffsetY)
-            } else {
-                Text(kana.center)
-                    .font(.system(size: idleMainLabelFontSize, weight: mainLabelFontWeight, design: .rounded))
-                    .foregroundStyle(keyLabelColor)
-                    .offset(y: centerLabelOffsetY)
-            }
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.6)
+                        .padding(.horizontal, 2)
+                        .foregroundStyle(Color.white)
+                } else if let idleReplacement {
+                    idleReplacement
+                        .offset(y: centerLabelOffsetY)
+                } else {
+                    Text(kana.center)
+                        .font(.system(size: idleMainLabelFontSize, weight: mainLabelFontWeight, design: .rounded))
+                        .foregroundStyle(keyLabelColor)
+                        .offset(y: centerLabelOffsetY)
+                }
 
-            // ガイド文字は「隠す」のではなく「作らない」(2686)。以前は .opacity(0) で
-            // 隠していたため、非表示のキーでも4方向ぶんの Text が常時生成され、
-            // SwiftUI の AttributeGraph(実機実測 7.9MB、PropertyList.Tracker 1446件)を
-            // 押し上げていた。押下中(isTouching)も非表示なので同じ条件で分岐する
-            if showsDirectionalHintTexts {
-                directionalHints
+                // ガイド文字は「隠す」のではなく「作らない」(2686)。以前は .opacity(0) で
+                // 隠していたため、非表示のキーでも4方向ぶんの Text が常時生成され、
+                // SwiftUI の AttributeGraph(実機実測 7.9MB、PropertyList.Tracker 1446件)を
+                // 押し上げていた。押下中(isTouching)も非表示なので同じ条件で分岐する
+                if showsDirectionalHintTexts {
+                    directionalHints
+                }
+                if showsDownDirectionalHintTexts {
+                    downDirectionalHints
+                }
             }
-            if showsDownDirectionalHintTexts {
-                downDirectionalHints
-            }
+            .hiddenDuringSpaceTrackpad()
 
             if isTouching,
                 !longPressIsActive,

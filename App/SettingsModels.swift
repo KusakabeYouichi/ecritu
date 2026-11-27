@@ -92,9 +92,9 @@ enum SettingsKeys {
     static let idleCommitInterval = "idleCommitInterval"
     // 未確定の方式(3209): écritu(下線) / mountain view(本文に確定文字) / tokushima(キーボード内)
     static let composingTextStyle = "composingTextStyle"
-    // 候補の文字(V.5。CandidateFontStyleOption の rawValue。3644)。拡張側の SharedDefaultsKeys と同じ文字列
+    // 候補の文字(V.3。CandidateFontStyleOption の rawValue。3644)。拡張側の SharedDefaultsKeys と同じ文字列
     static let candidateFontStyle = "candidateFontStyle"
-    // E.5 モード切り替えキーの割り当て(3618 で上 3 段の右フリックと最下段の右フリックを追加)。
+    // T.4 モード切り替えキーの割り当て(3618 で上 3 段の右フリックと最下段の右フリックを追加)。
     // 値は KanaModeSwitcherActionOption.rawValue。拡張側の SharedDefaultsKeys と同じ文字列
     static let leftModeSwitchNumberKeyRightFlickAction = "leftModeSwitchNumberKeyRightFlickAction"
     static let leftModeSwitchLatinKeyRightFlickAction = "leftModeSwitchLatinKeyRightFlickAction"
@@ -135,7 +135,7 @@ enum SettingsKeys {
     // 最後に当てた初期設定(SettingsBasePreset の rawValue。3432)。ロゴメニューの下線と、各項目の「変更済み」の印の
     // 比べる相手。userSettingsKeys には入れない(初期設定を当てるときに消さない)。退避・復元では一緒に保存・復元する
     static let settingsBasePreset = "settingsBasePreset"
-    // 初めてのインストールで連絡先の候補を「使わない」で始めた印(3437)。立っている間は「使わない」を X.16 の基準の値にする。
+    // 初めてのインストールで連絡先の候補を「使わない」で始めた印(3437)。立っている間は「使わない」を C.2 の基準の値にする。
     // 初期設定を行なうと消える
     static let settingsBaseContactsStartedOff = "settingsBaseContactsStartedOff"
     // misc 分離以前の Ajout 播種残骸の one-shot 清掃(2390)実行済みフラグ
@@ -184,17 +184,17 @@ enum SettingsKeys {
     static let radicalStrokeCountStyle = "radicalStrokeCountStyle"
     static let ordinalMeKanjiPreferred = "ordinalMeKanjiPreferred"
     static let kaCounterVariantPreference = "kaCounterVariantPreference"
-    // 数詞+助数詞の表記(X.18。3702。3790 までは X.19)
+    // 数詞+助数詞の表記(X.13。3702)
     static let numeralStylePreference = "numeralStylePreference"
     static let inflectionalKanaVariantPreference = "okuriganaVariantPreference"
     // 同音の漢字による書きかえ(KanjiRewritePreference の rawValue。3422)
     static let kanjiRewritePreference = "kakikaePreference"
-    // 書きかえ(X.9)の例外グループ(了解/了承/回復/連想 など日常語)は設定にかかわらず常用漢字を先に(3644)
+    // 書きかえ(X.8)の例外グループ(了解/了承/回復/連想 など日常語)は設定にかかわらず常用漢字を先に(3644)
     static let kanjiRewriteEverydayException = "kakikaeEverydayException"
-    // 報告の後に常用漢字に加わった字の組(臆測/肝腎。X.10)の書きかえ(KanjiRewritePreference の rawValue。3570)
+    // 報告の後に常用漢字に加わった字の組(臆測/肝腎。X.9)の書きかえ(KanjiRewritePreference の rawValue。3570)
     static let lateStandardizedRewritePreference = "lateStandardizedRewritePreference"
     static let adjectiveMeKanjiCandidatesEnabled = "adjectiveMeKanjiCandidatesEnabled"
-    // 形式名詞の 目(ひどい目に遭う/痛い目を見る)に ひらがなの め の候補も出す(X.14 のサブ項目。3790)
+    // 形式名詞の 目(ひどい目に遭う/痛い目を見る)に ひらがなの め の候補も出す(X.12 のサブ項目。3790)
     static let formalNounMeKanaCandidatesEnabled = "formalNounMeKanaCandidatesEnabled"
     static let suspendMemorySlimmingEnabled = "suspendMemorySlimmingEnabled"
     static let mixedScriptCandidateMode = "mazegakiCandidateMode"
@@ -390,7 +390,7 @@ enum ComposingTextStyleOption: String, CaseIterable, Identifiable {
     }
 }
 
-// 候補の文字(V.5。3644、ユーザ指定)。拡張側の CandidateFontStyle と同じ rawValue。
+// 候補の文字(V.3。3644、ユーザ指定)。拡張側の CandidateFontStyle と同じ rawValue。
 // apple は純正のかなキーボードと同じ regular で iOS の文字サイズに追従(標準 19pt、最大 25pt)。tokushima 方式では 16pt 以外は選べない(3649)
 enum CandidateFontStyleOption: String, CaseIterable, Identifiable {
     // 画面の並び(allCases)は 16pt/17.5pt/Apple と同じ(ユーザ指定 3649)。rawValue は保存値なので変えない
@@ -767,7 +767,7 @@ enum ContactCandidateDisplayModeOption: String, CaseIterable, Identifiable {
     }
 }
 
-// E.5 の行き先。並びは面選択のパレットと同じ(記号・絵文字・顔文字・単漢字・書式化)。
+// T.4 の行き先。並びは面選択のパレットと同じ(記号・絵文字・顔文字・単漢字・書式化)。
 // rawValue は拡張側の KeyboardRootView.KanaModeSwitcherAction と同じ
 enum KanaModeSwitcherActionOption: String, CaseIterable, Identifiable {
     case symbols

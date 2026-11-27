@@ -307,7 +307,7 @@ extension KeyboardRootView {
         openModeSwitcherPanel(target, triggerLabel: triggerLabel ?? "🌐 キー \(direction)")
     }
 
-    // 左端上段[123]・中段[abc]・下段[あい] の右フリック(3618)。割り当ては設定 E.5
+    // 左端上段[123]・中段[abc]・下段[あい] の右フリック(3618)。割り当ては設定 T.4
     func selectLeftModeSwitchKeyRightFlick(_ action: KanaModeSwitcherAction, keyTitle: String) {
         openModeSwitcherPanel(
             KeyboardPanelRouting.panelTarget(for: action),
@@ -356,7 +356,7 @@ extension KeyboardRootView {
         return true
     }
 
-    // 左端最下段のキーのタップ(.milieu)と右フリック(.droite)。割り当ては設定 E.5、上・下・左は何もしない
+    // 左端最下段のキーのタップ(.milieu)と右フリック(.droite)。割り当ては設定 T.4、上・下・左は何もしない
     func selectKanaModeSwitcher(direction: FlickDirection, triggerLabel: String? = nil) {
         guard !rejectsModeSwitchForShortTouch(direction: direction) else {
             return
@@ -390,7 +390,24 @@ extension KeyboardRootView {
             onSpace: onSpace,
             onTab: { onTextInput("\t") },
             // 変換キーとして働く間だけ長押しで候補送り(Apple 純正と同じ)。空白入力では連打しない
-            repeatsWhileHolding: isSpaceActsAsConversionKey
+            repeatsWhileHolding: isSpaceActsAsConversionKey,
+            trackpad: spaceTrackpadCallbacks
+        )
+    }
+
+    // 空白キーの長押しのトラックパッド(c10)。可否は発動判定の時点で評価する: 変換前の文字が空で、
+    // ほかのキー(かな・ラテン文字・数字・左の列)を押したままでなく、押している間にほかのキーの編集も無いとき
+    var spaceTrackpadCallbacks: SpaceTrackpadCallbacks {
+        SpaceTrackpadCallbacks(
+            isAvailable: {
+                SpaceTrackpad.isAvailable(composingEmpty: composingText.isEmpty)
+                    && activeLayerIndex == nil
+                    && !isTouchingLeftModeSwitchColumn
+                    && canBeginSpaceTrackpad()
+            },
+            onBegin: onSpaceTrackpadBegan,
+            onMove: onSpaceTrackpadMoved,
+            onEnd: onSpaceTrackpadEnded
         )
     }
 

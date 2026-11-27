@@ -112,7 +112,7 @@ struct ComposingTextStyleSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SettingsCardHeadline("E.4 未確定の方式")
+            SettingsCardHeadline("E.5 未確定の方式")
 
             // 3 方式の並び(選択中は枠付き)。以前は未実装の方式を灰色で押せなくする(isAvailable)ための自前の並びだった
             HStack(spacing: 8) {
@@ -632,7 +632,7 @@ struct KeyboardDiagnosticsSection: View {
 
 #endif
 
-// E.5 モード切り替えキーの割り当て(3618 で上 3 段と最下段の右フリックを追加)。
+// T.4 モード切り替えキーの割り当て(3618 で上 3 段と最下段の右フリックを追加)。
 // 行の名前はキーの位置で呼ぶ(上段[123] 等。ユーザ指定)。🌐 キーの 2 行は地球儀を付けて別物と分かるようにする
 struct KanaModeSwitcherAssignmentSection: View {
     @Binding var numberKeyRightFlickSelection: KanaModeSwitcherActionOption
@@ -645,7 +645,7 @@ struct KanaModeSwitcherAssignmentSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SettingsCardHeadline("E.5 モード切り替えキーの割り当て")
+            SettingsCardHeadline("T.4 モード切り替えキーの割り当て")
 
             // 見出しと項目の間に、中間の大きさの小見出し(左端列 / ホームボタンのある機種。ユーザ指定 3629)
             subheading("左端列")
@@ -748,7 +748,7 @@ struct KanaPostModifierEmptyTapAssignmentSection: View {
             // 見出しはキーの名前で呼び、あひるは括弧の中に添える(3618。修飾キーの表示はガイド表示オフのときだけ
             // あひるで、ふつうは ^_^/小/゛/゜ なので、あひるを見出しの頭に置くと別のキーに見える)
             HStack(alignment: .firstTextBaseline, spacing: 0) {
-                Text("E.6 修飾キー(")
+                Text("T.2 修飾キー(")
                     .font(.headline)
                 DakutenDuckCompositeIconView()
                     .frame(width: 18, height: 18)
@@ -757,7 +757,7 @@ struct KanaPostModifierEmptyTapAssignmentSection: View {
                     }
                 Text(")のタップ (後置修飾、未確定なし)")
                     .font(.headline)
-                SettingsModifiedMark(title: "E.6 修飾キーのタップ (後置修飾、未確定なし)")
+                SettingsModifiedMark(title: "T.2 修飾キーのタップ (後置修飾、未確定なし)")
                     .padding(.leading, 5)
             }
 

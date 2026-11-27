@@ -11,9 +11,9 @@ struct DakutenDuckCompositeIconView: View {
             let layout = DakutenDuckVectorPaths.layout(in: proxy.size)
             let scale = layout.scale
             let transform = layout.transform
-            let eyeRingCenter = CGPoint(x: 497.7, y: 322.1).applying(transform)
-            let eyeRingRadius = 25.2 * scale
-            let pupilRadius = 13.9 * scale
+            let eyeRingCenter = DakutenDuckVectorPaths.eyeCenter.applying(transform)
+            let eyeRingRadius = DakutenDuckVectorPaths.eyeRingRadius * scale
+            let pupilRadius = DakutenDuckVectorPaths.pupilRadius * scale
             let eyeHighlightCenter = CGPoint(x: 491.1, y: 315.0).applying(transform)
             let eyeHighlightRadius = 4.5 * scale
             let shiftKeyBlue = Color(red: 0.38, green: 0.52, blue: 0.88)
@@ -135,6 +135,10 @@ struct DakutenDuckCompositeIconView: View {
 
 enum DakutenDuckVectorPaths {
     static let viewBox = CGSize(width: 1391, height: 1391)
+    // 目(輪と瞳)。濁点のあひると『箱入りあひる』の盤(c10)で共通
+    static let eyeCenter = CGPoint(x: 497.7, y: 322.1)
+    static let eyeRingRadius: CGFloat = 25.2
+    static let pupilRadius: CGFloat = 13.9
 
     static let duckOuter = SVGPathMiniParser.path(
         from: """

@@ -8407,6 +8407,8 @@
 	<dict><key>phrase</key><string>クッキングシート</string><key>shortcut</key><string>くっきんぐしーと</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>クミン</string><key>shortcut</key><string>くみん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>グラタン</string><key>shortcut</key><string>ぐらたん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>gratin dauphinois</string><key>shortcut</key><string>ぐらたんどふぃのわ</string></dict>
+	<dict><key>phrase</key><string>グラタン・ドフィノワ</string><key>shortcut</key><string>ぐらたんどふぃのわ</string></dict>
 	<dict><key>phrase</key><string>クリームソース煮込</string><key>shortcut</key><string>くりーむそーすにこみ</string></dict>
 	<dict><key>phrase</key><string>クリーム煮込</string><key>shortcut</key><string>くりーむにこみ</string></dict>
 	<dict><key>phrase</key><string>グリーンオリーヴ</string><key>shortcut</key><string>ぐりーんおりーゔ</string></dict>
@@ -8448,6 +8450,8 @@
 	<dict><key>phrase</key><string>トマトソース</string><key>shortcut</key><string>とまとそーす</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>トマトベース</string><key>shortcut</key><string>とまとべーす</string></dict>
 	<dict><key>phrase</key><string>トマト煮込</string><key>shortcut</key><string>とまとにこみ</string></dict>
+	<dict><key>phrase</key><string>dauphinois</string><key>shortcut</key><string>どふぃのわ</string></dict>
+	<dict><key>phrase</key><string>ドフィノワ</string><key>shortcut</key><string>どふぃのわ</string></dict>
 	<dict><key>phrase</key><string>ドライ・イチジク</string><key>shortcut</key><string>どらいいちじく</string></dict>
 	<dict><key>phrase</key><string>ドライ・ビーフ</string><key>shortcut</key><string>どらいびーふ</string></dict>
 	<dict><key>phrase</key><string>ドライ・フルーツ</string><key>shortcut</key><string>どらいふるーつ</string></dict>
