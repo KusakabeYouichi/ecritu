@@ -31849,6 +31849,19 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3924(ユーザ指定): りぴーとがきかない が リピートが聞かない。リピート+効く を連語表に。保険が効かない/話を聞かなく はそのまま
+    func testKeyRepeatWorks3924() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("りぴーとがきかない", "リピートが効かない"), ("りぴーとがきく", "リピートが効く"), ("きーりぴーとがきかない", "キーリピートが効かない"),
+            ("ほけんがきかない", "保険が効かない"), ("はなしをきかなく", "話を聞かなく"),
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
     // 3919(ユーザ指定): なんかきた が 何課来た。何 に付く助数詞の機械洗い出しに か(課)があった
     func testNankaNotCounterKa3919() throws {
         try prepareRealLMDictionary()
