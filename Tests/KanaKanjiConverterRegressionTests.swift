@@ -31834,6 +31834,21 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3924(ユーザ指定): りえきでたぶん が 利益でたぶん(で+たぶん)。利益+出る の助詞なしの組(連語表)で 利益出た分 を先頭に。
+    // これで/それで/明日で+たぶん、助詞のある 利益が出た分、利益で+ほかの動詞 は変えない
+    func testProfitThatCameOut3924() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("りえきでたぶん", "利益出た分"), ("りえきがでたぶん", "利益が出た分"), ("りえきでた", "利益出た"),
+            ("これでたぶんだいじょうぶ", "これでたぶん大丈夫"), ("それでたぶん", "それでたぶん"), ("あしたでたぶん", "明日でたぶん"),
+            ("りえきでたりない", "利益で足りない"), ("りえきでたべる", "利益で食べる"), ("りえきでてにいれた", "利益で手に入れた"),
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
     // 3919(ユーザ指定): なんかきた が 何課来た。何 に付く助数詞の機械洗い出しに か(課)があった
     func testNankaNotCounterKa3919() throws {
         try prepareRealLMDictionary()
