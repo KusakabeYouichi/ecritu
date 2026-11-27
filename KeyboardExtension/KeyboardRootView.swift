@@ -31,7 +31,7 @@ struct KeyboardRootView: View {
     // 可否のうち VC が知る分(キーボードが出ている・発動までの間にほかのキーの編集が無い)
     var canBeginSpaceTrackpad: () -> Bool = { true }
     var onSpaceTrackpadBegan: () -> Void = {}
-    var onSpaceTrackpadMoved: (Int) -> Void = { _ in }
+    var onSpaceTrackpadMoved: (SpaceTrackpadStep) -> Void = { _ in }
     var onSpaceTrackpadEnded: () -> Void = {}
     // 盤を描いた個体の印(診断ログの [セッション ID] の先頭 8 字。3910)。トラックパッド中かはプロセスで 1 つなので、
     // 生きている個体のどれが描いたかを終了の行で見分ける

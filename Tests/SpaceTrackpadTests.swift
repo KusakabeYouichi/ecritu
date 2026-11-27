@@ -106,7 +106,7 @@ final class SpaceTrackpadTests: XCTestCase {
         _ = gesture.move(to: CGSize(width: 15, height: 0))
         _ = gesture.activateIfDue(at: 0.4, isAvailable: true)
         // 起点は 15。+20 で 2 文字(端数 2 を持ち越す)
-        XCTAssertEqual(gesture.move(to: CGSize(width: 35, height: 0)), 2)
+        XCTAssertEqual(gesture.move(to: CGSize(width: 35, height: 0)), SpaceTrackpadStep(characters: 2, lines: 0))
     }
 
     func testAccumulatorCarriesRemainderAcrossUpdates() {
@@ -117,11 +117,83 @@ final class SpaceTrackpadTests: XCTestCase {
         XCTAssertEqual(accumulator.update(translationX: 41), 0)  // +8 では足りない
     }
 
-    func testVerticalMovementDoesNotMoveCursor() {
+    // 3916: 縦は 20pt で 1 行(上が負)。発動前の縦のずれは捨てる
+    func testVerticalMovementMovesLines() {
+        var gesture = SpaceTrackpadGesture()
+        gesture.begin(at: 0)
+        _ = gesture.move(to: CGSize(width: 0, height: 5))
+        _ = gesture.activateIfDue(at: 0.4, isAvailable: true)
+        XCTAssertEqual(gesture.move(to: CGSize(width: 0, height: 45)), SpaceTrackpadStep(characters: 0, lines: 2))
+        XCTAssertEqual(gesture.move(to: CGSize(width: 0, height: 20)), SpaceTrackpadStep(characters: 0, lines: -1))
+        XCTAssertEqual(gesture.move(to: CGSize(width: 0, height: 10)), .zero)
+    }
+
+    func testDiagonalMovementMovesBoth() {
         var gesture = SpaceTrackpadGesture()
         gesture.begin(at: 0)
         _ = gesture.activateIfDue(at: 0.4, isAvailable: true)
-        XCTAssertEqual(gesture.move(to: CGSize(width: 0, height: 40)), 0)
+        XCTAssertEqual(gesture.move(to: CGSize(width: -18, height: -20)), SpaceTrackpadStep(characters: -2, lines: -1))
+    }
+
+    // MARK: - 行の移動(3916)
+
+    func testMovingUpKeepsColumn() {
+        var cursor = SpaceTrackpadCursor(before: "abcd\nef", after: "gh")
+        // 2 行めの ef| → 1 行めの ab|: cd(2) + 改行 + ef(2) = 5 戻る
+        XCTAssertEqual(cursor.moveLines(by: -1), -5)
+        XCTAssertEqual(cursor.position, 2)
+    }
+
+    func testMovingDownClampsToShortLineAndRestoresColumn() {
+        var cursor = SpaceTrackpadCursor(before: "abcd", after: "\nx\nwxyz")
+        // 1 行めの 4 桁め → 短い 2 行め(x)の行末 → 3 行めの 4 桁め
+        XCTAssertEqual(cursor.moveLines(by: 1), 2)
+        XCTAssertEqual(cursor.position, 6)
+        XCTAssertEqual(cursor.moveLines(by: 1), 5)
+        XCTAssertEqual(cursor.position, 11)
+    }
+
+    func testMovingTwoLinesAtOnceAndThroughEmptyLine() {
+        var cursor = SpaceTrackpadCursor(before: "ab\n\ncd", after: nil)
+        XCTAssertEqual(cursor.moveLines(by: -1), -3)
+        XCTAssertEqual(cursor.position, 3)
+        var twoUp = SpaceTrackpadCursor(before: "ab\n\ncd", after: nil)
+        XCTAssertEqual(twoUp.moveLines(by: -2), -4)
+        XCTAssertEqual(twoUp.position, 2)
+    }
+
+    func testLineMoveStopsAtContextEdges() {
+        var top = SpaceTrackpadCursor(before: "abc", after: "\nd")
+        XCTAssertEqual(top.moveLines(by: -1), 0)
+        var bottom = SpaceTrackpadCursor(before: "a\nbc", after: "de")
+        XCTAssertEqual(bottom.moveLines(by: 1), 0)
+    }
+
+    func testLineMoveCountsUtf16OfEmojiAndCrlf() {
+        // 👍 は utf16 で 2、\r\n は 1 文字で utf16 2
+        var cursor = SpaceTrackpadCursor(before: "👍x\r\ny", after: nil)
+        XCTAssertEqual(cursor.moveLines(by: -1), -4)
+        XCTAssertEqual(cursor.position, 1)
+    }
+
+    func testHorizontalMoveForgetsPreferredColumn() {
+        var cursor = SpaceTrackpadCursor(before: "abcd", after: "\nx\nwxyz")
+        _ = cursor.moveLines(by: 1)  // x の行末(桁 1)、覚えている桁は 4
+        _ = cursor.move(by: -1)  // 桁 0
+        _ = cursor.moveLines(by: 1)
+        XCTAssertEqual(cursor.position, 7)  // 3 行めの 桁 0
+    }
+
+    func testSessionRereadsContextAtLineEdge() {
+        var session = SpaceTrackpadCursorSession(before: "b", after: nil, now: 0)
+        let offset = session.utf16Offset(forLines: -1, now: 0.2) { ("a\nb", nil) }
+        XCTAssertEqual(offset, -2)
+    }
+
+    func testVerticalMovementDoesNotMoveCursorBeforeActivation() {
+        var gesture = SpaceTrackpadGesture()
+        gesture.begin(at: 0)
+        XCTAssertEqual(gesture.move(to: CGSize(width: 0, height: 4)), .zero)
     }
 
     // MARK: - 移動量(utf16)

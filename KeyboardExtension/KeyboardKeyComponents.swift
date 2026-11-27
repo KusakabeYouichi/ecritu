@@ -679,7 +679,7 @@ struct SpaceFlickActionKeyButton: View {
                     let steps = trackpadGesture.move(to: value.translation)
                     if trackpadGesture.phase == .active {
                         activeDirection = .milieu
-                        if steps != 0 {
+                        if !steps.isZero {
                             trackpad?.onMove(steps)
                         }
                         return
@@ -829,11 +829,11 @@ struct SpaceFlickActionKeyButton: View {
     }
 }
 
-// 空白キーのトラックパッドの配線(c10)。可否は発動判定の時点で聞く。動かす量は文字数(左が負)
+// 空白キーのトラックパッドの配線(c10)。可否は発動判定の時点で聞く。動かす量は文字数(左が負)と行数(上が負。3916)
 struct SpaceTrackpadCallbacks {
     let isAvailable: () -> Bool
     let onBegin: () -> Void
-    let onMove: (Int) -> Void
+    let onMove: (SpaceTrackpadStep) -> Void
     let onEnd: () -> Void
 }
 

@@ -120,7 +120,7 @@ extension KeyboardViewController {
         }
     }
 
-    func moveSpaceTrackpad(by steps: Int) {
+    func moveSpaceTrackpad(by step: SpaceTrackpadStep) {
         guard var session = spaceTrackpadSession else {
             return
         }
@@ -130,9 +130,11 @@ extension KeyboardViewController {
             return
         }
         let proxy = textDocumentProxy
-        let offset = session.utf16Offset(forSteps: steps, now: CACurrentMediaTime()) {
-            (proxy.documentContextBeforeInput, proxy.documentContextAfterInput)
-        }
+        let now = CACurrentMediaTime()
+        let reread = { (proxy.documentContextBeforeInput, proxy.documentContextAfterInput) }
+        // 行を先に動かし、同じ指の動きの横の分はその行の中で動かす(3916)。ホストへは合わせて 1 回で送る
+        let offset = session.utf16Offset(forLines: step.lines, now: now, rereadContext: reread)
+            + session.utf16Offset(forSteps: step.characters, now: now, rereadContext: reread)
         spaceTrackpadSession = session
         guard offset != 0 else {
             return
