@@ -191,6 +191,28 @@ struct SpaceTrackpadCursor {
         return offset
     }
 
+    // 今の桁(覚えている桁があればそれ)
+    var column: Int {
+        preferredColumn ?? (position - lineStart(containing: position))
+    }
+
+    // 今の行の中で桁 column へ(行が短ければ行末)。以後の上下はこの桁を覚える
+    mutating func moveToColumn(_ column: Int) -> Int {
+        let start = lineStart(containing: position)
+        let offset = moveTo(min(start + column, lineEnd(from: start) ?? characters.count))
+        preferredColumn = column
+        return offset
+    }
+
+    // 読めた文脈の端の改行をまたぐ量(下=後ろの文脈の終わり+改行 1、上=前の文脈の頭−改行 1)。
+    // 見えない改行は "\n" の 1 とみなす。文章の端ならホストが止めるので害は無い。位置は端へ移す(読み直すまでの仮)
+    mutating func offsetCrossingLineEdge(down: Bool) -> Int {
+        let keptColumn = column
+        let offset = moveTo(down ? characters.count : 0)
+        preferredColumn = keptColumn
+        return offset + (down ? 1 : -1)
+    }
+
     // index の文字を含む行の頭(index が行末の改行なら、その改行で終わる行の頭)
     private func lineStart(containing index: Int) -> Int {
         var i = index
@@ -249,7 +271,9 @@ struct SpaceTrackpadCursorSession {
         return utf16Offset(now: now, rereadContext: rereadContext) { $0.move(by: steps) }
     }
 
-    // lines 行ぶん動かすためにホストへ送る utf16 の量(上が負。3916)。端の読み直しは文字と同じ
+    // lines 行ぶん動かすためにホストへ送る utf16 の量(上が負。3916)。端の読み直しは文字と同じ。
+    // 読み直しても先の行が見えないときは、行の端の改行をまたいで 1 行ぶんだけ進め、次の指の動きで読み直して同じ桁に合わせる(3920)。
+    // ホスト(メモ等)は後ろの文脈を今の行の終わりまでしか渡さず、始めた位置より下へ行けなかった(実機ログ 3919: 後ろはいつも改行 0)
     mutating func utf16Offset(
         forLines lines: Int,
         now: TimeInterval,
@@ -258,7 +282,15 @@ struct SpaceTrackpadCursorSession {
         guard lines != 0 else {
             return 0
         }
-        return utf16Offset(now: now, rereadContext: rereadContext) { $0.moveLines(by: lines) }
+        var reread = false
+        let offset = utf16Offset(now: now, rereadContext: rereadContext, didReread: &reread) { $0.moveLines(by: lines) }
+        guard offset == 0, reread else {
+            return offset
+        }
+        let crossing = cursor.offsetCrossingLineEdge(down: lines > 0)
+        pendingColumn = cursor.column
+        lastAdjustAt = now
+        return crossing
     }
 
     private mutating func utf16Offset(
@@ -266,18 +298,44 @@ struct SpaceTrackpadCursorSession {
         rereadContext: () -> (before: String?, after: String?),
         move: (inout SpaceTrackpadCursor) -> Int
     ) -> Int {
+        var reread = false
+        return utf16Offset(now: now, rereadContext: rereadContext, didReread: &reread, move: move)
+    }
+
+    private mutating func utf16Offset(
+        now: TimeInterval,
+        rereadContext: () -> (before: String?, after: String?),
+        didReread: inout Bool,
+        move: (inout SpaceTrackpadCursor) -> Int
+    ) -> Int {
+        var prefix = 0
+        // 改行をまたいだ直後。ホストに届くまで待ってから読み直し、覚えた桁へ合わせる。待つ間の指の動きは捨てる
+        if let column = pendingColumn {
+            guard now - lastAdjustAt >= SpaceTrackpad.edgeRereadInterval else {
+                return 0
+            }
+            let context = rereadContext()
+            cursor = SpaceTrackpadCursor(before: context.before, after: context.after)
+            prefix = cursor.moveToColumn(column)
+            pendingColumn = nil
+            lastAdjustAt = now
+        }
         var offset = move(&cursor)
         if offset == 0, now - lastAdjustAt >= SpaceTrackpad.edgeRereadInterval {
             let context = rereadContext()
             cursor = SpaceTrackpadCursor(before: context.before, after: context.after)
             offset = move(&cursor)
             lastAdjustAt = now
+            didReread = true
         }
         if offset != 0 {
             lastAdjustAt = now
         }
-        return offset
+        return prefix + offset
     }
+
+    // 改行をまたいで読み直し待ちの桁(nil=待っていない)
+    private var pendingColumn: Int?
 }
 
 // トラックパッド中か。キーの表示(文字を消す)・3×3+わ の盤の絵・面の生タッチ認識器が読む。

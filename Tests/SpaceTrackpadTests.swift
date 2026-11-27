@@ -190,6 +190,33 @@ final class SpaceTrackpadTests: XCTestCase {
         XCTAssertEqual(offset, -2)
     }
 
+    // 3920: ホストが後ろの文脈を今の行の終わりまでしか渡さない(メモ)。読み直しても下の行が見えなければ、改行をまたいで 1 行進め、
+    // 次の動きで読み直して同じ桁に合わせる
+    func testDownCrossesUnseenNewlineThenRestoresColumn() {
+        var session = SpaceTrackpadCursorSession(before: "ab", after: "cd", now: 0)
+        // 桁 2。cd(2) + 改行 1
+        XCTAssertEqual(session.utf16Offset(forLines: 1, now: 0.2) { ("ab", "cd") }, 3)
+        // ホストに届くまでの指の動きは捨てる
+        XCTAssertEqual(session.utf16Offset(forSteps: 1, now: 0.25) { XCTFail("読まない"); return (nil, nil) }, 0)
+        // 次の行の頭にいる。桁 2 へ合わせてから 1 文字右
+        XCTAssertEqual(session.utf16Offset(forSteps: 1, now: 0.4) { ("abcd\n", "wxyz") }, 3)
+    }
+
+    func testUpCrossesUnseenNewline() {
+        var session = SpaceTrackpadCursorSession(before: "ab", after: nil, now: 0)
+        XCTAssertEqual(session.utf16Offset(forLines: -1, now: 0.2) { ("ab", nil) }, -3)
+        // 前の行 xyz の行末にいる。桁 2 へ(-1)合わせてから 1 文字左(-1)
+        XCTAssertEqual(session.utf16Offset(forSteps: -1, now: 0.4) { ("xyz", "\nab") }, -2)
+    }
+
+    func testCrossingWaitsForRereadBeforeCrossingAgain() {
+        var session = SpaceTrackpadCursorSession(before: "ab", after: nil, now: 0)
+        // 下に見える行が無い(文章の終わりかもしれない)。改行 1 ぶんだけ送る(終わりならホストが止める)
+        XCTAssertEqual(session.utf16Offset(forLines: 1, now: 0.2) { ("ab", nil) }, 1)
+        // 終わりだった: 読み直すと同じ位置。桁 2 のまま動かない
+        XCTAssertEqual(session.utf16Offset(forSteps: -1, now: 0.4) { ("ab", nil) }, -1)
+    }
+
     func testVerticalMovementDoesNotMoveCursorBeforeActivation() {
         var gesture = SpaceTrackpadGesture()
         gesture.begin(at: 0)
