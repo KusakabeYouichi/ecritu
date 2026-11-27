@@ -357,7 +357,8 @@ extension KanaKanjiConverter {
 
     // 漢語数詞+助数詞の漢数字表記(にまい→二枚、だいにかい→第二回、にじゅうさんぼん→二十三本。3694)。
     // 算用(arabicNumericCompoundCandidates)と同じ切り方で、呼び出し側が辞書に無いものだけ漢数字複合の帯に足す
-    // (辞書にある 一枚/三本 は辞書の点数のまま。算用の帯に混ぜると点数が重なって 二百個 が 200個 を抜く)。
+    // (辞書にある 一枚/三本 は辞書の点数のまま。算用の帯に混ぜると点数が重なって 二百個 が 200個 を抜く。
+    // 辞書・seed の語の並びと有無は、整形の段で numeralStyleOrdered が X.13 に揃える)。
     // し(4)/く(9)の 1 音の数詞は除く(しけん→四軒 が 試験 の数字文脈ブーストを奪う)
     func kanjiNumeralCompoundCandidates(for reading: String) -> [String] {
         guard reading.count >= 2 else {
@@ -421,6 +422,155 @@ extension KanaKanjiConverter {
             }
         }
         return results
+    }
+
+    // 数詞+助数詞の 2 つの形の組(1枚/一枚)。X.13 の順と有無を、生成した形だけでなく辞書・seed の語(一枚/三人)にも効かせるのに使う
+    struct NumeralStylePair: Equatable {
+        let arabic: String
+        let kanji: String
+    }
+    // 単文節の生成の段で求めた組と、そのとき読んだ X.13 の設定(整形の段へ渡す)
+    struct NumeralStyleArrangement {
+        let pairs: [NumeralStylePair]
+        let style: NumeralStylePreference
+    }
+    // 数詞+助数詞と同じ字でも、数える意味でない語として使うことが多い漢数字の形(一層 努力する/一杯 ある/一門 の名誉/一文 無し/
+    // 三文 判/一席 設ける/七色/三山・七山/三房/一山 いくら/二山)。組にしない(辞書の点のまま並べ、…だけ の設定でも消さない)。
+    // 紙幣の通称(千円札/二千円札/五千円札)も組にしない(漢数字の通称を seed で先頭に置く方針。testRegressionRealLMEnsatsuCounter)。
+    // 五百万石 は酒米の品種名。一晩/一斤 はユーザ指定(2026-11-27)
+    static let numeralStyleExcludedKanjiForms: Set<String> = [
+        "一層", "一杯", "一門", "一文", "三文", "一席", "七色", "三山", "七山", "三房", "一山", "二山", "千円札", "二千円札", "五千円札",
+        "五百万石", "一晩", "一斤"
+    ]
+    // 生成器が数詞+助数詞と認めた形から、(アラビア数字の形, 漢数字の形)の組を作る。漢数字の形の数詞をアラビア数字に直した形が
+    // アラビア数字の側の生成にあるときだけ組にする(五月五日→5月5日、第二回→第2回)。数詞だけの語(二十/五百)は組にならない
+    static func numeralStylePairs(arabic: [String], kanji: [String]) -> [NumeralStylePair] {
+        guard !arabic.isEmpty, !kanji.isEmpty else {
+            return []
+        }
+        let arabicSet = Set(arabic)
+        var pairs: [NumeralStylePair] = []
+        var seen = Set<String>()
+        for form in kanji where !numeralStyleExcludedKanjiForms.contains(form) && seen.insert(form).inserted {
+            if let rewritten = kanjiNumeralsRewrittenAsArabic(form), arabicSet.contains(rewritten) {
+                pairs.append(NumeralStylePair(arabic: rewritten, kanji: form))
+                // 〜目 の組(2日目/二日目)には め の形の組(2日め/二日め)も添える。生成は 目 の形だけだが、め の形が合成で入ると
+                // 後ろの め/目 の段がその 目 の形を補って、…だけ の設定でも 二日目 が残った(ふつか の後に め を打ったとき)
+                if form.hasSuffix("目"), rewritten.hasSuffix("目") {
+                    pairs.append(NumeralStylePair(arabic: rewritten.dropLast() + "め", kanji: form.dropLast() + "め"))
+                }
+            }
+        }
+        return pairs
+    }
+    // 表記の中の漢数字の並び(二十三/百)をアラビア数字(23/100)に直す。漢数字が無い・数として読めない並び(十百)なら nil
+    static func kanjiNumeralsRewrittenAsArabic(_ text: String) -> String? {
+        var result = ""
+        var run = ""
+        var changed = false
+        func flush() -> Bool {
+            guard !run.isEmpty else {
+                return true
+            }
+            guard let value = kanjiNumeralRunValue(run) else {
+                return false
+            }
+            result += String(value)
+            run = ""
+            changed = true
+            return true
+        }
+        for character in text {
+            if "一二三四五六七八九十百千".contains(character) {
+                run.append(character)
+            } else {
+                guard flush() else {
+                    return nil
+                }
+                result.append(character)
+            }
+        }
+        guard flush(), changed else {
+            return nil
+        }
+        return result
+    }
+    // 漢数字の並び(二十三)の値。kanjiNumeralString で書き戻して同じ並びになるものだけ(十百/一十 は nil)
+    static func kanjiNumeralRunValue(_ run: String) -> Int? {
+        var total = 0
+        var pending = 0
+        for character in run {
+            if let digit = kanjiNumerals.firstIndex(of: String(character)), (1...9).contains(digit) {
+                pending = digit
+            } else {
+                let unit = character == "十" ? 10 : character == "百" ? 100 : 1000
+                total += max(pending, 1) * unit
+                pending = 0
+            }
+        }
+        let value = total + pending
+        return kanjiNumeralString(value) == run ? value : nil
+    }
+    // 読み全体の数詞+助数詞の組(連文節の最後の段で使う。単文節は生成の段で求めた組を使い回す)。
+    // アラビア数字の形が作れない読み(ほとんどの読み)では、ほかの生成を走らせない
+    func numeralStylePairs(forWholeReading reading: String, systemCandidateMode: KanaKanjiCandidateSourceMode) -> [NumeralStylePair] {
+        let arabic = arabicNumericCompoundCandidates(for: reading)
+        guard !arabic.isEmpty else {
+            return []
+        }
+        let counter = numericCounterCompoundCandidates(
+            for: reading,
+            ajoutVocabulary: store.ajoutVocabulary(),
+            initialAjoutVocabulary: store.initialAjoutVocabulary(),
+            systemCandidateMode: systemCandidateMode,
+            // 読み 1 つから作る形は数件(数詞 1 つ×助数詞の表記の数)なので、切らないための上限。単文節は候補数×2 で切るが、
+            // 連文節には候補数が無い。単文節の候補数(8 以上)×2 より大きくし、単文節で組になる形が連文節で欠けないようにする
+            limit: 32
+        )
+        return Self.numeralStylePairs(arabic: arabic, kanji: kanjiNumeralCompoundCandidates(for: reading) + counter)
+    }
+    // 数詞+助数詞の組を X.13 の順と有無に揃える(単文節と連文節で共用)。組ごとに:
+    // 〜が先: 両方あれば、先にしたい形を 2 つのうち前のほうの位置に置き、もう一方をそのすぐ後ろに。片方だけなら、無いほうを隣に足す。
+    // 〜だけ: 出さない形を除き、出す形を 2 つのうち前のほうの位置に置く。出す形が無ければ、出さない形の位置に置き換える。
+    // 組のどちらかを学習していれば、その組は並べ替えない(学習を優先)。無いほうの形は、ある形のすぐ後ろに足す
+    // (連文節で 十年 を学習しても 10年 は出す)。除くのは〜だけ の設定のとき同じ
+    static func numeralStyleOrdered(
+        _ candidates: [String], pairs: [NumeralStylePair], style: NumeralStylePreference, learned: Set<String>
+    ) -> [String] {
+        var result = candidates
+        for pair in pairs {
+            let arabicIndex = result.firstIndex(of: pair.arabic)
+            let kanjiIndex = result.firstIndex(of: pair.kanji)
+            guard arabicIndex != nil || kanjiIndex != nil else {
+                continue
+            }
+            if !style.includesKanji || !style.includesArabic {
+                let (kept, dropped) = style.includesArabic ? (pair.arabic, pair.kanji) : (pair.kanji, pair.arabic)
+                if let droppedIndex = result.firstIndex(of: dropped) {
+                    if let keptIndex = result.firstIndex(of: kept) {
+                        // 残す形は 2 つのうち前のほうの位置に
+                        result.removeAll { $0 == kept || $0 == dropped }
+                        result.insert(kept, at: min(keptIndex, droppedIndex))
+                    } else {
+                        result[droppedIndex] = kept
+                    }
+                }
+                continue
+            }
+            if learned.contains(pair.arabic) || learned.contains(pair.kanji) {
+                if let arabicIndex, kanjiIndex == nil {
+                    result.insert(pair.kanji, at: arabicIndex + 1)
+                } else if let kanjiIndex, arabicIndex == nil {
+                    result.insert(pair.arabic, at: kanjiIndex + 1)
+                }
+                continue
+            }
+            let ordered = style.kanjiBeforeArabic ? [pair.kanji, pair.arabic] : [pair.arabic, pair.kanji]
+            let position = min(arabicIndex ?? .max, kanjiIndex ?? .max)
+            result.removeAll { ordered.contains($0) }
+            result.insert(contentsOf: ordered, at: position)
+        }
+        return result
     }
 
     // 連文節の格子に載せる数詞+助数詞(設定 X.13 に従い、アラビア数字と漢数字を先の方から。3702)

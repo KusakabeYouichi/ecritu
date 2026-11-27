@@ -409,7 +409,8 @@ public final class KanaKanjiConverter {
 
         var scores: [String: Int] = [:]
         collectDirectCandidates(context, into: &scores)
-        let inflectionDerivedCandidates = collectDerivedCandidates(context, into: &scores)
+        var numeralStyleArrangement = NumeralStyleArrangement(pairs: [], style: .arabicFirst)
+        let inflectionDerivedCandidates = collectDerivedCandidates(context, into: &scores, numeralStyleArrangement: &numeralStyleArrangement)
         supplyLongVowelKanaIfMissing(context, into: &scores)
         applyRankingAdjustments(
             context,
@@ -446,6 +447,25 @@ public final class KanaKanjiConverter {
             if let index = finalCandidates.firstIndex(of: kanji) {
                 finalCandidates.remove(at: index)
                 finalCandidates.insert(kanji, at: 0)
+            }
+        }
+        // 数詞+助数詞の 2 つの形(1枚/一枚)は、辞書・seed の語でも X.13 の順と有無に揃える(生成した形は帯の点で並んでいる)。
+        // め/目 の組(2日目/2日め)を隣り合わせる次の段より前に置く(後ろに置くと 2日目、二日目、2日め の順に割れる)。
+        // 抑制した形を含む組は触らない(足し戻さない)。足して limit を超えたら末尾を落とす。
+        // 前段のフィルター(装飾表記・旧字体)が落とした形を足し戻しうるが、数詞+助数詞の形で当たるのは『か』の字(1ヶ所/1カ月)だけで、
+        // それは後ろの X.10 の段が設定どおりに除く(2026-11-27 に確かめた)。
+        // 読みが数字で始まるとき(2いちまい)は掛けない(数字の後ろに 1枚 を足すと 21枚 になる。並びも今までどおり)。
+        // このとき …だけ の設定でも、もう一方の形を除くことはしない(変更前と同じ)
+        if !numeralStyleArrangement.pairs.isEmpty, !hasDigitPrefix {
+            let suppressed = context.suppressedCandidatesByReading[normalizedReading] ?? []
+            finalCandidates = Self.numeralStyleOrdered(
+                finalCandidates,
+                pairs: numeralStyleArrangement.pairs.filter { !suppressed.contains($0.arabic) && !suppressed.contains($0.kanji) },
+                style: numeralStyleArrangement.style,
+                learned: Set(context.learnedCandidates)
+            )
+            if finalCandidates.count > limit {
+                finalCandidates.removeLast(finalCandidates.count - limit)
             }
         }
         // め終わり読みの『め/目』選好(序数/形容詞語幹。設定に応じたペア整列・補生成・除去)。
@@ -693,9 +713,12 @@ public final class KanaKanjiConverter {
 
     // ステージ2: 派生候補(活用/ガル形/丁寧接頭辞/序数/数値/名詞接辞/postfix)を登録する。
     // 戻り値は活用派生の集合(ランキング補正で正規活用形を優遇するために使う)。
+    // numeralStyleArrangement には数詞+助数詞の組(1枚/一枚)と、この段で読んだ X.13 の設定を返す
+    // (整形の段で並べ替えに使う。生成を 2 度走らせず、設定も読み直さない)
     private func collectDerivedCandidates(
         _ context: CandidateGenerationContext,
-        into scores: inout [String: Int]
+        into scores: inout [String: Int],
+        numeralStyleArrangement: inout NumeralStyleArrangement
     ) -> [String] {
         let reading = context.reading
         let limit = context.limit
@@ -790,26 +813,36 @@ public final class KanaKanjiConverter {
         )
         addCandidates(numericUnitFallback, baseScore: CandidateScore.numericUnitFallback, to: &scores)
 
-        // 数詞+助数詞の表記の設定(X.13。3702): アラビア数字/漢数字のどちらを先の帯(400)に置くか、片方だけにするか
+        // 数詞+助数詞の表記の設定(X.13。3702): アラビア数字/漢数字のどちらを先の帯(400)に置くか、片方だけにするか。
+        // 生成は設定に関わらず両方とも走らせ、組(1枚/一枚)を整形の段の並べ替えに渡す(辞書・seed の 一枚/三人 にも設定を効かせる)。
+        // 帯に足すのは設定で出す側だけ
         let numeralStyle = withStateLock { numeralStylePreference }
         let arabicBand = numeralStyle.kanjiBeforeArabic ? CandidateScore.numericCounterCompound : CandidateScore.numericArabicCompound
         let kanjiBand = numeralStyle.kanjiBeforeArabic ? CandidateScore.numericArabicCompound : CandidateScore.numericCounterCompound
-        let arabicNumericCompound = numeralStyle.includesArabic ? arabicNumericCompoundCandidates(for: reading) : []
+        let generatedArabicNumericCompound = arabicNumericCompoundCandidates(for: reading)
+        let arabicNumericCompound = numeralStyle.includesArabic ? generatedArabicNumericCompound : []
         addCandidates(arabicNumericCompound, baseScore: arabicBand, to: &scores)
 
-        let numericCounterCompound = numeralStyle.includesKanji
-            ? numericCounterCompoundCandidates(
-                for: reading,
-                ajoutVocabulary: context.ajoutVocabulary,
-                initialAjoutVocabulary: context.initialAjoutVocabulary,
-                systemCandidateMode: context.mode,
-                limit: limit * 2
-            )
-            : []
+        let generatedNumericCounterCompound = numericCounterCompoundCandidates(
+            for: reading,
+            ajoutVocabulary: context.ajoutVocabulary,
+            initialAjoutVocabulary: context.initialAjoutVocabulary,
+            systemCandidateMode: context.mode,
+            limit: limit * 2
+        )
+        let numericCounterCompound = numeralStyle.includesKanji ? generatedNumericCounterCompound : []
         addCandidates(numericCounterCompound, baseScore: kanjiBand, to: &scores)
         // 漢語・和語数詞の漢数字表記(二枚/第二回/一桁)。辞書にも他の生成にも無いものだけ足す(3694)
+        let generatedKanjiNumeralCompound = kanjiNumeralCompoundCandidates(for: reading)
+        numeralStyleArrangement = NumeralStyleArrangement(
+            pairs: Self.numeralStylePairs(
+                arabic: generatedArabicNumericCompound,
+                kanji: generatedKanjiNumeralCompound + generatedNumericCounterCompound
+            ),
+            style: numeralStyle
+        )
         let kanjiNumeralCompound = numeralStyle.includesKanji
-            ? kanjiNumeralCompoundCandidates(for: reading).filter { scores[$0] == nil }
+            ? generatedKanjiNumeralCompound.filter { scores[$0] == nil }
             : []
         // curated の数量語(misc の 二つ/2つ)が両方あるときは、生成と同じ帯を足して X.13 の順にする(3708)
         let curatedNumeric = Self.curatedNumeralStylePairs(context.userCandidates)
