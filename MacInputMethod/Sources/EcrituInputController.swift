@@ -15,6 +15,13 @@ final class EcrituInputController: IMKInputController {
     /// 直前の反映で未確定があったか(nil になったときに空の未確定で消すため)
     private var hasMarkedText = false
 
+    /// 裏で変換を求める列。打鍵は待たせず、求め終わったら表示を差し替える
+    private static let liveConversionQueue = DispatchQueue(
+        label: "jp.or.pleiades.merope.inputmethod.ecritu.live-conversion", qos: .userInitiated
+    )
+    /// 反映のたびに進む番号。裏の仕事は、自分の番号が古くなっていたら何もしない(速く打ったときに古い変換をためない)
+    private let liveGeneration = GenerationCounter()
+
     override func recognizedEvents(_ sender: Any!) -> Int {
         let mask: NSEvent.EventTypeMask = [.keyDown, .leftMouseDown, .rightMouseDown]
         return Int(mask.rawValue)
@@ -103,6 +110,32 @@ final class EcrituInputController: IMKInputController {
         } else {
             candidateWindow.close()
         }
+        scheduleLiveConversion(result.pendingConversion)
+    }
+
+    /// 表示に要る変換がまだ求まっていなければ、裏で求めてから表示を作り直す。
+    /// 反映のたびに番号を進める。列で順番を待っている間に別の反映(次の打鍵など)があった仕事は、始めずに捨てる
+    /// (速く打ったときに古い変換をためない)。始めた仕事の結果は捨てない: 読みがその後に伸びていても、
+    /// 自動確定の判定には使える(使えるかどうかは InputSession.refresh が決める)
+    private func scheduleLiveConversion(_ request: LiveConversionRequest?) {
+        let generation = liveGeneration.advance()
+        guard let request else {
+            return
+        }
+        // 裏のスレッドではコントローラーを強くつかまない(裏で最後の参照になると、ウインドウがメイン以外で解放される)
+        Self.liveConversionQueue.async { [liveGeneration, weak self] in
+            guard liveGeneration.isCurrent(generation) else {
+                return
+            }
+            InputSession.prewarm(request, conversion: conversionService)
+            DispatchQueue.main.async {
+                guard let self, let client = self.client(),
+                      let result = self.session.refresh(delivered: request) else {
+                    return
+                }
+                self.apply(result, to: client)
+            }
+        }
     }
 
     /// 区切りごとの下線: 選択中の対象は太い下線、ほかは細い下線
@@ -116,5 +149,24 @@ final class EcrituInputController: IMKInputController {
             ]))
         }
         return text
+    }
+}
+
+/// スレッドをまたいで読める番号。メインスレッドが進め、裏の列が「まだ最新か」を見る
+private final class GenerationCounter: @unchecked Sendable {
+    private let lock = NSLock()
+    private var value = 0
+
+    func advance() -> Int {
+        lock.lock()
+        defer { lock.unlock() }
+        value += 1
+        return value
+    }
+
+    func isCurrent(_ generation: Int) -> Bool {
+        lock.lock()
+        defer { lock.unlock() }
+        return value == generation
     }
 }

@@ -24,6 +24,10 @@ final class ConversionService: ConversionProviding {
     private let converter: KanaKanjiConverter
     /// 結果の覚え書き。Backspace・選択中の伸縮・自動確定の判定で同じ読みを引き直すときの重複を省く。learn で全部捨てる
     private var memo: [MemoKey: [String]] = [:]
+    /// memo を守る。短い間だけ取る
+    private let memoLock = NSLock()
+    /// converter(エンジン)を守る。変換 1 回の間ずっと取る
+    private let converterLock = NSLock()
 
     /// appGroupID は UserDefaults の suite 名(学習の置き場)。containerDirectory はエンジンが同名の辞書を探す場所
     init(appGroupID: String, containerDirectory: URL) {
@@ -39,6 +43,8 @@ final class ConversionService: ConversionProviding {
     }
 
     func preload() {
+        converterLock.lock()
+        defer { converterLock.unlock() }
         converter.preloadSystemDictionaryIfNeeded()
         converter.preloadSharedDataCachesIfNeeded()
     }
@@ -48,23 +54,46 @@ final class ConversionService: ConversionProviding {
         !converter.store.isSystemDictionaryFallback()
     }
 
+    /// 求め終わるまで待つ。メインスレッド(確定・候補の選択)と裏のスレッド(打鍵のたびのライヴ変換)の両方から呼ばれる
     func candidates(reading: String, precedingText: String) -> [String] {
-        let precedingCharacter = precedingText.last
-        let key = MemoKey(reading: reading, precedingCharacter: precedingCharacter)
-        if let memorized = memo[key] {
+        let key = MemoKey(reading: reading, precedingCharacter: precedingText.last)
+        if let memorized = memorized(key) {
             return memorized
         }
-        let result = convert(reading: reading, precedingCharacter: precedingCharacter)
+        // エンジンは 1 度に 1 つの変換だけ。裏で同じ読みを求めている最中なら、それを待って覚え書きから返す
+        converterLock.lock()
+        defer { converterLock.unlock() }
+        if let memorized = memorized(key) {
+            return memorized
+        }
+        let result = convert(reading: reading, precedingCharacter: key.precedingCharacter)
+        memoLock.lock()
         if memo.count >= Self.memoLimit {
             memo.removeAll()
         }
         memo[key] = result
+        memoLock.unlock()
         return result
     }
 
+    /// 覚え書きにあるときだけ返す。エンジンを待たない(打鍵を待たせないため、converterLock は取らない)
+    func cachedCandidates(reading: String, precedingText: String) -> [String]? {
+        memorized(MemoKey(reading: reading, precedingCharacter: precedingText.last))
+    }
+
     func learn(reading: String, candidate: String) {
+        converterLock.lock()
+        defer { converterLock.unlock() }
         _ = converter.learn(reading: reading, candidate: candidate)
+        memoLock.lock()
         memo.removeAll()
+        memoLock.unlock()
+    }
+
+    private func memorized(_ key: MemoKey) -> [String]? {
+        memoLock.lock()
+        defer { memoLock.unlock() }
+        return memo[key]
     }
 
     private func convert(reading: String, precedingCharacter: Character?) -> [String] {

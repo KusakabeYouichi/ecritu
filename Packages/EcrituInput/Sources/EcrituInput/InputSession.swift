@@ -27,7 +27,8 @@ public final class InputSession {
         case latinRun(count: Int)
     }
 
-    /// 自動確定: text がこの文字数を超えたら、打鍵ごとに 1 回だけ判定する(同期のライヴ変換を短く保つ)
+    /// 自動確定: text がこの文字数を超えたら判定する。要る変換が求まっていなければ打鍵では待たず、
+    /// 裏で求め終わった後の refresh で判定する
     private static let readingLengthLimit = 20
     /// 自動確定で未確定に残す文字数
     private static let autoCommitKeepLength = 8
@@ -52,6 +53,10 @@ public final class InputSession {
     private var committedInCall = ""
     /// 1 回の handle で自動確定の判定が求めた、読みとその 1 位。表示で同じ変換を取り直さないために使う
     private var knownBestInCall: (reading: String, candidate: String)?
+    /// 1 回の handle / refresh で、表示か自動確定の判定に要るのにまだ求まっていなかった変換
+    private var pendingLiveInCall: LiveConversionRequest?
+    /// 入力中に最後に見せたライヴ変換(読み・そのときの直前の文字列・変換後)。入力を終えたら捨てる
+    private var lastShownLive: (reading: String, precedingText: String, candidate: String)?
 
     public init(conversion: ConversionProviding) {
         self.conversion = conversion
@@ -60,6 +65,7 @@ public final class InputSession {
     public func handle(_ key: KeyInput) -> InputResult {
         committedInCall = ""
         knownBestInCall = nil
+        pendingLiveInCall = nil
         let handled: Bool
         switch mode {
         case .latin:
@@ -74,8 +80,46 @@ public final class InputSession {
     public func commitAll() -> InputResult {
         committedInCall = ""
         knownBestInCall = nil
+        pendingLiveInCall = nil
         commitAllInternal()
         return makeResult(handled: true)
+    }
+
+    /// 裏で求めていた変換(delivered)が求まった後に呼ぶ。反映するものが無ければ nil。
+    /// - 読みが delivered のままなら、表示を作り直す(先送りにしていた自動確定の判定もここで行なう)
+    /// - 読みが delivered に続けて伸びていたら(速く打ったとき)、自動確定の判定だけを delivered の読みで行なう。
+    ///   先頭は今の読みの先頭でもあるので、確定してよい。確定しなかったら nil(今の読みの変換は別に求めている)
+    /// - 入力中でない、直前の文字列が違う、読みが別物になった、のどれかなら nil
+    public func refresh(delivered: LiveConversionRequest) -> InputResult? {
+        guard case .composing = state, delivered.precedingText == precedingText,
+              composer.text.hasPrefix(delivered.reading) else {
+            return nil
+        }
+        committedInCall = ""
+        knownBestInCall = nil
+        pendingLiveInCall = nil
+        if delivered.wantsAutoCommit, displayOverride == .none {
+            autoCommitIfLong(judging: delivered.reading)
+        }
+        if composer.text != delivered.reading, committedInCall.isEmpty {
+            return nil
+        }
+        return makeResult(handled: true)
+    }
+
+    /// request の変換を求めておく(求め終わるまで待つ)。裏のスレッドから呼ぶ。
+    /// 自動確定の判定を先送りにした要求なら、判定に要る変換(先頭と残り)も一緒に求める
+    public static func prewarm(_ request: LiveConversionRequest, conversion: ConversionProviding) {
+        let text = request.reading
+        _ = filtered(conversion.candidates(reading: text, precedingText: request.precedingText), reading: text)
+        guard request.wantsAutoCommit, text.count > readingLengthLimit else { return }
+        let headLength = text.count - autoCommitKeepLength
+        let headReading = String(text.prefix(headLength))
+        let head = filtered(
+            conversion.candidates(reading: headReading, precedingText: request.precedingText), reading: headReading
+        )[0]
+        let rest = String(text.dropFirst(headLength))
+        _ = conversion.candidates(reading: rest, precedingText: String(head.suffix(precedingTextLength)))
     }
 
     /// カーソルが動いた可能性があるとき。直前の文字列と連なりを捨てる。未確定には触れない
@@ -374,6 +418,12 @@ public final class InputSession {
         composer = RomajiComposer()
         displayOverride = .none
         state = .empty
+        lastShownLive = nil
+    }
+
+    /// 入力中に見せたライヴ変換を覚える(次の打鍵で変換がまだ求まっていないときの表示に使う)
+    private func rememberShownLive(_ candidate: String) {
+        lastShownLive = (composer.text, precedingText, candidate)
     }
 
     private func commit(_ text: String) {
@@ -386,30 +436,49 @@ public final class InputSession {
     }
 
     /// 読みの長さの上限による自動確定(学習しない)
-    private func autoCommitIfLong() {
+    ///
+    /// judging は判定に使う読み。nil なら今の読み。裏の変換が届いたとき(refresh)は、求めた時点の読みを渡す。
+    /// それは今の読みの先頭なので、その先頭を確定してよい
+    private func autoCommitIfLong(judging judged: String? = nil) {
         guard composer.isConvertible else { return }
-        let text = composer.text
+        let text = judged ?? composer.text
         let length = text.count
         guard length > Self.readingLengthLimit else { return }
-        let whole = bestCandidate(reading: text, precedingText: precedingText)
         let headLength = length - Self.autoCommitKeepLength
-        let head = bestCandidate(reading: String(text.prefix(headLength)), precedingText: precedingText)
         let rest = String(text.dropFirst(headLength))
-        let tail = bestCandidate(reading: rest, precedingText: String(head.suffix(Self.precedingTextLength)))
+        // 判定に要る 3 つの変換のどれかがまだ求まっていなければ、打鍵を待たせずに先送りにする(refresh で判定し直す)
+        guard let whole = cachedBest(reading: text, precedingText: precedingText),
+              let head = cachedBest(reading: String(text.prefix(headLength)), precedingText: precedingText),
+              let tail = cachedBest(reading: rest, precedingText: String(head.suffix(Self.precedingTextLength)))
+        else {
+            if text == composer.text {
+                pendingLiveInCall = LiveConversionRequest(
+                    reading: text, precedingText: precedingText, wantsAutoCommit: true
+                )
+            }
+            return
+        }
         // 先頭の 1 位 P と残りの 1 位 Q をつないだものが全体の 1 位 T と一致したら P を確定する。
-        // 一致しなくても上限を超えていれば P を確定する。確定の後の表示は求めた Q をそのまま使う
-        if whole == head + tail || length > Self.readingHardLimit {
+        // 一致しなくても、今の読みが上限を超えていれば P を確定する。確定の後の表示は、残りが Q の読みのままなら Q を使う
+        if whole == head + tail || composer.text.count > Self.readingHardLimit {
             commit(head)
             composer.removePrefix(headLength)
-            knownBestInCall = (rest, tail)
-        } else {
+            if composer.text == rest {
+                knownBestInCall = (rest, tail)
+            }
+            // 確定で読みと直前の文字列が変わった。残りの変換 Q を「見せていた変換」にしておく
+            // (読みがその後に伸びていたら、Q に続けて伸びた分をかなで見せる)
+            lastShownLive = (rest, precedingText, tail)
+        } else if text == composer.text {
             knownBestInCall = (text, whole)
         }
     }
 
     // MARK: - 表示
 
-    private func currentMarked() -> MarkedText? {
+    /// deferrable = true は打鍵の結果として返す表示: ライヴ変換がまだ求まっていなければ、待たずにかなを出して
+    /// pendingLiveInCall に要る変換を残す。false は確定に使う表示: 求め終わるまで待つ
+    private func currentMarked(deferrable: Bool = false) -> MarkedText? {
         var segments: [MarkedText.Segment] = []
         func add(_ text: String, _ style: MarkedText.Style) {
             if !text.isEmpty {
@@ -424,8 +493,30 @@ public final class InputSession {
             case .none:
                 if let known = knownBestInCall, known.reading == composer.text {
                     add(known.candidate, .converted)
+                    rememberShownLive(known.candidate)
                 } else if composer.isConvertible {
-                    add(bestCandidate(reading: composer.text, precedingText: precedingText), .converted)
+                    if !deferrable {
+                        add(bestCandidate(reading: composer.text, precedingText: precedingText), .converted)
+                    } else if let best = cachedBest(reading: composer.text, precedingText: precedingText) {
+                        add(best, .converted)
+                        rememberShownLive(best)
+                    } else {
+                        // まだ求まっていない。直前に見せていた変換が今の読みの先頭に当たるなら、それを残して
+                        // 打ち足した分だけをかなで続ける(全体をかなへ戻すと、打つたびに全体がちらつく)
+                        if let shown = lastShownLive, shown.precedingText == precedingText,
+                           composer.text.hasPrefix(shown.reading) {
+                            add(shown.candidate, .converted)
+                            add(String(composer.text.dropFirst(shown.reading.count)), .raw)
+                        } else {
+                            add(composer.text, .raw)
+                        }
+                        // 自動確定の判定を先送りにした要求が同じ読みで残っていれば、それを保つ(判定の印を落とさない)
+                        if pendingLiveInCall?.reading != composer.text {
+                            pendingLiveInCall = LiveConversionRequest(
+                                reading: composer.text, precedingText: precedingText, wantsAutoCommit: false
+                            )
+                        }
+                    }
                 } else {
                     add(composer.text, .raw)
                 }
@@ -463,20 +554,38 @@ public final class InputSession {
             assertionFailure("確定した文字列に U+FF00...U+FFFD の文字が残っている")
         }
         #endif
-        return InputResult(handled: handled, committed: committedInCall, marked: currentMarked(), candidates: currentCandidates())
+        let marked = currentMarked(deferrable: true)
+        // 要る変換が残るのは入力中だけ(確定や選択へ移った後は要らない)
+        var pending: LiveConversionRequest?
+        if case .composing = state {
+            pending = pendingLiveInCall
+        }
+        return InputResult(
+            handled: handled, committed: committedInCall, marked: marked, candidates: currentCandidates(),
+            pendingConversion: pending
+        )
     }
 
     // MARK: - 変換
 
     /// 空の文字列と、U+FF00...U+FFFD の文字を含む候補を落とす。空になったら読みそのものを唯一の候補にする
+    private static func filtered(_ candidates: [String], reading: String) -> [String] {
+        let kept = candidates.filter { !$0.isEmpty && !containsForbiddenCharacter($0) }
+        return kept.isEmpty ? [reading] : kept
+    }
+
     private func fetchCandidates(reading: String, precedingText: String) -> [String] {
-        let candidates = conversion.candidates(reading: reading, precedingText: precedingText)
-            .filter { !$0.isEmpty && !Self.containsForbiddenCharacter($0) }
-        return candidates.isEmpty ? [reading] : candidates
+        Self.filtered(conversion.candidates(reading: reading, precedingText: precedingText), reading: reading)
     }
 
     private func bestCandidate(reading: String, precedingText: String) -> String {
         fetchCandidates(reading: reading, precedingText: precedingText)[0]
+    }
+
+    /// 待たずに答えられるときだけ 1 位を返す
+    private func cachedBest(reading: String, precedingText: String) -> String? {
+        conversion.cachedCandidates(reading: reading, precedingText: precedingText)
+            .map { Self.filtered($0, reading: reading)[0] }
     }
 
     private func mappedSymbol(for character: Character, passAfterDigit: Bool) -> String? {
