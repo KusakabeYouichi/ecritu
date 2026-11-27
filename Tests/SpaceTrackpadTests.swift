@@ -217,6 +217,27 @@ final class SpaceTrackpadTests: XCTestCase {
         XCTAssertEqual(session.utf16Offset(forSteps: -1, now: 0.4) { ("ab", nil) }, -1)
     }
 
+    // 3921: 待つ間の下の動きをためて、読み直したらその場で次の改行もまたぐ(下だけ遅かった)
+    func testQueuedDownLinesCrossAgainRightAfterReread() {
+        var session = SpaceTrackpadCursorSession(before: "ab", after: "cd", now: 0)
+        XCTAssertEqual(session.utf16Offset(forLines: 1, now: 0.2) { ("ab", "cd") }, 3)
+        XCTAssertEqual(session.utf16Offset(forLines: 1, now: 0.25) { XCTFail("読まない"); return (nil, nil) }, 0)
+        // 次の行 ef の頭: 桁 2 へ(+2)、ためた 1 行と今の 1 行のうち 1 行ぶん ef の後の改行をまたぐ(+1)
+        XCTAssertEqual(session.utf16Offset(forLines: 1, now: 0.4) { ("abcd\n", "ef") }, 3)
+        // 残りの 1 行: さらに次の行 gh の頭 → 桁 2(+2)、その先は見えないのでまたぐ(+1)
+        XCTAssertEqual(session.utf16Offset(forLines: 0 + 1, now: 0.6) { ("abcd\nef\n", "gh") }, 3)
+    }
+
+    // 3921: 文章の終わりで下へ動かし続けても、ためた行を捨てるので すぐ上へ動ける
+    func testDownAtDocumentEndDoesNotBlockUp() {
+        var session = SpaceTrackpadCursorSession(before: "a\nb", after: nil, now: 0)
+        XCTAssertEqual(session.utf16Offset(forLines: 1, now: 0.2) { ("a\nb", nil) }, 1)
+        XCTAssertEqual(session.utf16Offset(forLines: 1, now: 0.25) { ("a\nb", nil) }, 0)
+        XCTAssertEqual(session.utf16Offset(forLines: 1, now: 0.3) { ("a\nb", nil) }, 0)
+        // ホストが止めていた(行頭でない)。ためた 2 行は捨て、上へ 1 行: b の桁 1 → a の桁 1 = -2
+        XCTAssertEqual(session.utf16Offset(forLines: -1, now: 0.4) { ("a\nb", nil) }, -2)
+    }
+
     func testVerticalMovementDoesNotMoveCursorBeforeActivation() {
         var gesture = SpaceTrackpadGesture()
         gesture.begin(at: 0)
