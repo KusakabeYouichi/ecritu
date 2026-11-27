@@ -98,14 +98,18 @@ extension KeyboardViewController {
         }
         let proxy = textDocumentProxy
         spaceTrackpadEditSerial = textProxyEditSerial
-        spaceTrackpadSession = SpaceTrackpadCursorSession(
-            before: proxy.documentContextBeforeInput,
-            after: proxy.documentContextAfterInput,
-            now: CACurrentMediaTime()
-        )
+        spaceTrackpadLineEdgeLogged = false
+        let before = proxy.documentContextBeforeInput
+        let after = proxy.documentContextAfterInput
+        spaceTrackpadSession = SpaceTrackpadCursorSession(before: before, after: after, now: CACurrentMediaTime())
         SpaceTrackpadDisplayState.shared.setActive(true)
+        // 文脈は長さと改行の数だけ(中身は残さない。上下が止まる件の切り分け 3917)
+        let shape: (String?) -> String = { text in
+            guard let text else { return "nil" }
+            return "\(text.count)字(改行\(text.filter(\.isNewline).count))"
+        }
         appendKeyboardDiagnosticsLog(
-            "トラックパッド開始 かな配列=\(sharedEnumValue(from: sharedDefaults, key: SharedDefaultsKeys.kanaLayoutMode, fallback: KanaLayoutMode.fiveByTwo)) 横画面=\(traitCollection.verticalSizeClass == .compact ? 1 : 0)",
+            "トラックパッド開始 かな配列=\(sharedEnumValue(from: sharedDefaults, key: SharedDefaultsKeys.kanaLayoutMode, fallback: KanaLayoutMode.fiveByTwo)) 横画面=\(traitCollection.verticalSizeClass == .compact ? 1 : 0) 文脈 前=\(shape(before)) 後=\(shape(after))",
             // 個体が複数生きていると、ふつうの行は後から書いた個体のバッファーで上書きされて消える(3909 の報告の回が残らなかった)。
             // critical は別の帳簿にも積まれるので残る
             critical: true
@@ -131,10 +135,28 @@ extension KeyboardViewController {
         }
         let proxy = textDocumentProxy
         let now = CACurrentMediaTime()
-        let reread = { (proxy.documentContextBeforeInput, proxy.documentContextAfterInput) }
+        // 読み直した文脈の形(長さと改行の数だけ。中身は残さない)。上下が止まる件の切り分け(3917)
+        var rereadShape: String?
+        let reread = { () -> (before: String?, after: String?) in
+            let before = proxy.documentContextBeforeInput
+            let after = proxy.documentContextAfterInput
+            let shape: (String?) -> String = { text in
+                guard let text else { return "nil" }
+                return "\(text.count)字(改行\(text.filter(\.isNewline).count))"
+            }
+            rereadShape = "前=\(shape(before)) 後=\(shape(after))"
+            return (before, after)
+        }
         // 行を先に動かし、同じ指の動きの横の分はその行の中で動かす(3916)。ホストへは合わせて 1 回で送る
-        let offset = session.utf16Offset(forLines: step.lines, now: now, rereadContext: reread)
-            + session.utf16Offset(forSteps: step.characters, now: now, rereadContext: reread)
+        let lineOffset = session.utf16Offset(forLines: step.lines, now: now, rereadContext: reread)
+        if step.lines != 0, lineOffset == 0, let shape = rereadShape, !spaceTrackpadLineEdgeLogged {
+            spaceTrackpadLineEdgeLogged = true
+            appendKeyboardDiagnosticsLog(
+                "トラックパッド 上下が端で止まった 向き=\(step.lines < 0 ? "上" : "下") 読み直した文脈 \(shape)",
+                critical: true
+            )
+        }
+        let offset = lineOffset + session.utf16Offset(forSteps: step.characters, now: now, rereadContext: reread)
         spaceTrackpadSession = session
         guard offset != 0 else {
             return

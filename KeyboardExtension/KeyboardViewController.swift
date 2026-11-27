@@ -279,6 +279,8 @@ final class KeyboardViewController: UIInputViewController {
     var spaceTrackpadSession: SpaceTrackpadCursorSession?
     // トラックパッド自身が最後に編集した直後の textProxyEditSerial。ずれていればほかの自前の編集(押したままの削除キー等)が挟まった
     var spaceTrackpadEditSerial = 0
+    // 上下が端で止まったことを、このトラックパッドの間に記録したか(1 回だけ残す。3917 の切り分け)
+    var spaceTrackpadLineEdgeLogged = false
     // トラックパッド中だけ面の最前面に置く受け板(ほかのキーへの打鍵を捨てて終える。改訂 2 の R3)
     var spaceTrackpadTouchShield: SpaceTrackpadTouchShieldView?
     // メモリ警告を1イベント(バースト)にまとめる窓(定義は Diagnostics の memoryWarningBurstCountThisSession 参照)
