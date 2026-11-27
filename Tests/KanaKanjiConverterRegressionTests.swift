@@ -31860,6 +31860,19 @@ extension KanaKanjiConverterRegressionTests {
         )
     }
 
+    // 3927(ユーザ指定): りえきでたぶんをかえす が 利益出た文を返す。利益 の言い回しだけ 分 に。テストに出た文を読む は 文 のまま
+    func testProfitThatCameOutBeforeObjectParticle3927() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("りえきでたぶんをかえす", "利益出た分を返す"), ("りえきでたぶんをはらう", "利益出た分を払う"),
+            ("てすとにでたぶんをよむ", "テストに出た文を読む"), ("もんだいにでたぶんをやくす", "問題に出た文を訳す"),
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
     // 3924(ユーザ指定): きほんてきにかくれが が 基本的に隠れが(に+隠れ+が)。隠れ家 を先頭に。隠れがち(がち の語)は変えない
     func testHideoutAfterNi3924() throws {
         try prepareRealLMDictionary()
