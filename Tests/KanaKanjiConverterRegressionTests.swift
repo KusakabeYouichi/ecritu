@@ -31855,6 +31855,17 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3919(ユーザ指定): のしか の先頭は 野鹿 でなく かな(Apple のしか)
+    func testNoShikaKana3919() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("のしか", "のしか"), ("あっぷるのしかきどうしない", "Appleのしか起動しない"), ("ほんのしかたない", "ほんの仕方ない")] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+        XCTAssertTrue(leadingCandidates3879("のしか").contains("野鹿"))
+    }
+
     // 3914(ユーザ指定): にきん/さんきん から 2斤/3斤 を出す(斤 を かな数詞からも組む表へ)。辞書語の先頭は動かさない
     func testLoafCounterFromKanaNumerals3914() throws {
         try prepareRealLMDictionary()
