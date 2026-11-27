@@ -268,6 +268,7 @@ struct InitialPresetChooserDebugRow: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
+
 #endif
 
 // 選ぶ画面のカードの文。事実は確認ダイアログの文(logoMenuConfirmationMessage)とマニュアルの[初期設定]の章に合わせる。
