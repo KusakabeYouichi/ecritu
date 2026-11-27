@@ -894,6 +894,8 @@ extension KanaKanjiConverter {
         "麵": .init("麺", .lookalike), "嚙": .init("噛", .lookalike), "吞": .init("呑", .lookalike), "讚": .init("讃", .lookalike),
         "麴": .init("麹", .lookalike), "曵": .init("曳", .lookalike), "瘦": .init("痩", .lookalike), "繫": .init("繋", .lookalike),
         "黑": .init("黒", .lookalike), "鰺": .init("鯵", .lookalike), "纍": .init("累", .lookalike), "醱": .init("醗", .lookalike),
+        // かききれない で 掻き切れない と 搔き切れない が並んだ(ユーザ報告 2026-11-27)。搔 は印刷標準字体、掻 は JIS の略した字体
+        "搔": .init("掻", .lookalike),
         // 人名で生きている異体字(初期設定はオフ)
         "邊": .init("辺", .personNameVariant), "邉": .init("辺", .personNameVariant), "龍": .init("竜", .personNameVariant), "瀧": .init("滝", .personNameVariant), "嶋": .init("島", .personNameVariant), "嶌": .init("島", .personNameVariant), "曾": .init("曽", .personNameVariant), "彌": .init("弥", .personNameVariant),
         "髙": .init("高", .personNameVariant), "﨑": .init("崎", .personNameVariant), "栁": .init("柳", .personNameVariant), "濵": .init("浜", .personNameVariant), "桒": .init("桑", .personNameVariant), "槇": .init("槙", .personNameVariant), "籔": .init("藪", .personNameVariant)
