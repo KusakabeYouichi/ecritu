@@ -303,10 +303,14 @@ final class SpaceTrackpadDisplayState: ObservableObject {
         }
     }
 
-    func noteBoardDrawn(size: CGSize, ownerTag: String) {
+    // 最後に描いたときの外観と線の色(診断ログ用。描いているのに見えない件の切り分け 3918)。例: 外観=light 線=0.00,0.00,0.00,0.18
+    private(set) var lastBoardAppearance = ""
+
+    func noteBoardDrawn(size: CGSize, ownerTag: String, appearance: String = "") {
         boardDrawCount += 1
         lastBoardSize = size
         boardDrawCountByOwner[ownerTag, default: 0] += 1
+        lastBoardAppearance = appearance
     }
 
     // 終了の行に書く形。例: D06ED979×1 7E303189×2(印の順)

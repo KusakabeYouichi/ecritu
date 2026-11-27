@@ -118,7 +118,13 @@ struct HakoiriDuckBoardOverlay: View {
     var body: some View {
         if trackpadDisplay.isActive {
             Canvas { context, size in
-                trackpadDisplay.noteBoardDrawn(size: size, ownerTag: ownerTag)
+                let line = KeyboardThemePalette.trackpadBoardLine.resolve(in: context.environment)
+                trackpadDisplay.noteBoardDrawn(
+                    size: size,
+                    ownerTag: ownerTag,
+                    appearance: "外観=\(context.environment.colorScheme == .dark ? "dark" : "light") 線="
+                        + String(format: "%.2f,%.2f,%.2f,%.2f", line.red, line.green, line.blue, line.opacity)
+                )
                 let layout = HakoiriDuckBoardLayout(
                     size: size,
                     leftColumnWidth: leftColumnWidth,

@@ -98,7 +98,8 @@ extension KeyboardViewController {
         }
         let proxy = textDocumentProxy
         spaceTrackpadEditSerial = textProxyEditSerial
-        spaceTrackpadLineEdgeLogged = false
+        spaceTrackpadLineEdgeLogged = []
+        spaceTrackpadLineCounts = [0, 0, 0, 0]
         let before = proxy.documentContextBeforeInput
         let after = proxy.documentContextAfterInput
         spaceTrackpadSession = SpaceTrackpadCursorSession(before: before, after: after, now: CACurrentMediaTime())
@@ -149,8 +150,15 @@ extension KeyboardViewController {
         }
         // 行を先に動かし、同じ指の動きの横の分はその行の中で動かす(3916)。ホストへは合わせて 1 回で送る
         let lineOffset = session.utf16Offset(forLines: step.lines, now: now, rereadContext: reread)
-        if step.lines != 0, lineOffset == 0, let shape = rereadShape, !spaceTrackpadLineEdgeLogged {
-            spaceTrackpadLineEdgeLogged = true
+        if step.lines != 0 {
+            let base = step.lines < 0 ? 0 : 2
+            spaceTrackpadLineCounts[base] += 1
+            if lineOffset != 0 {
+                spaceTrackpadLineCounts[base + 1] += 1
+            }
+        }
+        if step.lines != 0, lineOffset == 0, let shape = rereadShape,
+            spaceTrackpadLineEdgeLogged.insert(step.lines < 0 ? -1 : 1).inserted {
             appendKeyboardDiagnosticsLog(
                 "トラックパッド 上下が端で止まった 向き=\(step.lines < 0 ? "上" : "下") 読み直した文脈 \(shape)",
                 critical: true
@@ -172,7 +180,7 @@ extension KeyboardViewController {
             // かなで盤が出ず枠だけのことがある件の切り分け(3909)。盤を描いた回数が 0 なら、重ねる側に届いていない
             let display = SpaceTrackpadDisplayState.shared
             appendKeyboardDiagnosticsLog(
-                "トラックパッド終了 盤の描画=\(display.boardDrawCount)回 大きさ=\(Int(display.lastBoardSize.width))x\(Int(display.lastBoardSize.height)) 描いた個体=\(display.boardDrawOwnersSummary) 自分=\(diagnosticsState.diagnosticsSessionID.prefix(8))",
+                "トラックパッド終了 盤の描画=\(display.boardDrawCount)回 大きさ=\(Int(display.lastBoardSize.width))x\(Int(display.lastBoardSize.height)) 描いた個体=\(display.boardDrawOwnersSummary) 自分=\(diagnosticsState.diagnosticsSessionID.prefix(8)) \(display.lastBoardAppearance) 上下 上=試\(spaceTrackpadLineCounts[0])/動\(spaceTrackpadLineCounts[1]) 下=試\(spaceTrackpadLineCounts[2])/動\(spaceTrackpadLineCounts[3])",
                 critical: true
             )
         }
