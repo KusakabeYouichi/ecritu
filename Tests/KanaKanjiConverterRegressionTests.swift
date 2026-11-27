@@ -31833,6 +31833,26 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3914(ユーザ指定): にきん/さんきん から 2斤/3斤 を出す(斤 を かな数詞からも組む表へ)。辞書語の先頭は動かさない
+    func testLoafCounterFromKanaNumerals3914() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("にきん", "2斤"), ("ごきん", "5斤")] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertTrue(list.prefix(3).contains(expected), "\(reading): \(list.prefix(5))")
+        }
+        for (reading, expected) in [("さんきん", "3斤"), ("よんきん", "4斤")] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertTrue(list.contains(expected), "\(reading): \(list.prefix(8))")
+        }
+        for (reading, expected) in [
+            ("さんきんこうたい", "参勤交代"), ("はっきん", "白金"), ("しきん", "資金"), ("いっきん", "一斤"), ("きゅうきん", "球菌"),
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
     func testDelimiterPosition3907() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
