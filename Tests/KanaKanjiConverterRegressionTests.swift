@@ -31907,6 +31907,23 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3935(ユーザ指定): ついでくれます が 次いでくれます(注いで が候補に無かった)。て形+くれる/あげる/いただく は 注いで。
+    // 清酒/赤ワイン+を も 注ぐ。後を継いでくれます/家業を継いでくれた は 継いで のまま。ついでに はかな
+    func testPourForMe3935() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("ついでくれます", "注いでくれます"), ("ついでくれた", "注いでくれた"), ("ついであげる", "注いであげる"), ("ついでいただく", "注いでいただく"),
+            ("わいんをついでくれます", "ワインを注いでくれます"), ("せいしゅをついでくれます", "清酒を注いでくれます"),
+            ("あかわいんをついでくれた", "赤ワインを注いでくれた"), ("ぐらすについでくれます", "グラスに注いでくれます"),
+            ("あとをついでくれます", "後を継いでくれます"), ("かぎょうをついでくれた", "家業を継いでくれた"), ("ついでに", "ついでに"),
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+        XCTAssertEqual(leadingCandidates3879("ついでください").dropFirst().first, "注いでください")
+    }
+
     // 3931(ユーザ指定): ぼうさん だけを打ったときの先頭は 坊さん(表示の並びだけ。語彙に登録すると びんぼうさん が崩れる)
     func testMonkAloneIsFirstInPresentationOrder3931() throws {
         try prepareRealLMDictionary()
