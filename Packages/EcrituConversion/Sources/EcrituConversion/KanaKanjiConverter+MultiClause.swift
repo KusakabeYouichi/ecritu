@@ -341,6 +341,7 @@ extension KanaKanjiConverter {
         candidates = Self.liquorCategoryOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.brewingTsukuruOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.contextCuedHomophoneOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
+        candidates = Self.upperLowerFloorOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         // 形式名詞の 目/め(X.12 のサブ項目。3790)。読みの手掛かりの差し替え(酷い目→ひどい目)の後に置き、先頭の 目 の直後に め の形を足す
         candidates = Self.applyFormalNounMeKana(
             to: candidates, reading: KanaTextNormalizer.normalizedReading(reading),

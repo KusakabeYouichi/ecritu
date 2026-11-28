@@ -31860,6 +31860,23 @@ extension KanaKanjiConverterRegressionTests {
         )
     }
 
+    // 3936(ユーザ指定): したのかい+助詞(の/で/では/に…)は 下の階+助詞(したの会に だった)。したのかい で終わるときは かな
+    // (〜したのかい? の問いかけ)。うえのかい は 上の階。下の階層/したの買い物/下の貝殻 は巻き込まない
+    func testLowerFloorBeforeParticle3936() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("したのかいの", "下の階の"), ("したのかいで", "下の階で"), ("したのかいでは", "下の階では"), ("したのかいに", "下の階に"),
+            ("したのかいが", "下の階が"), ("したのかいのへや", "下の階の部屋"), ("したのかいにいく", "下の階に行く"),
+            ("ひとつしたのかいに", "1つ下の階に"), ("うえのかいに", "上の階に"), ("うえのかい", "上の階"),
+            ("したのかい", "したのかい"), ("なにをしたのかい", "何をしたのかい"), ("したのかいそう", "下の階層"),
+            ("したのかいもの", "したの買い物"), ("したのかいがら", "したの貝殻"),
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
     // 3932(ユーザ指定): がりあじんの が ガリア仁乃(人名の じんの)。辞書に 1 語で無い X人+の も 人の に。民族の名(ゲルマン/ノルマン)は
     // 地名と同じ扱い。酒の ジン(クラフトジン)と、文の頭の 神野さん は変えない
     func testPeopleSuffixBeforeNo3932() throws {

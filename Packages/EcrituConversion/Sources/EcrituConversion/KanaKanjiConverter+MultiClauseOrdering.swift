@@ -969,6 +969,50 @@ extension KanaKanjiConverter {
         return [kana, top] + candidates.filter { $0 != kana && $0 != top }
     }
 
+    // 上の階/下の階(3936、ユーザ指定)。したのかい+助詞(の/で/では/に…)は 下の階+助詞、うえのかい は 上の階。
+    // の の後ろの かい は 会/海/回 が安く、階 は候補の語にも入らない(したのかいに が したの会に、うえのかいに が 上の会に)。
+    // 文の頭の した は する の過去のかなが安く 下 も負けるので、点数でなく、候補の かな の した+の/上+の の後ろを差し替える。
+    // したのかい で終わるとき(〜したのかい? の問いかけ)は かな の かい を先頭にする(ユーザ指定: 区切られるときはひらがなでよい)
+    static let floorFollowingParticles: [String] = [
+        "では", "には", "から", "まで", "へは", "とは", "の", "で", "に", "へ", "を", "が", "は", "も", "と",
+    ]
+    static func upperLowerFloorOrdered(reading: String, candidates: [String]) -> [String] {
+        // (読み, 候補の中の頭の表記, 差し替える表記, 助詞が続かないときも 階 にするか)
+        let rules: [(reading: String, head: String, floor: String, alsoWhenBare: Bool)] = [
+            ("したのかい", "したの", "下の階", false), ("うえのかい", "上の", "上の階", true),
+        ]
+        for rule in rules {
+            guard let readingRange = reading.range(of: rule.reading) else { continue }
+            let rest = reading[readingRange.upperBound...]
+            let particle = floorFollowingParticles.first { rest.hasPrefix($0) }
+            // 見るのは先頭の候補だけ(後ろの候補まで見ると、したのかいもの=したの買い物 の かな の候補 したのかいもの の も を
+            // 助詞と取り違え、下の階もの を作った)
+            guard particle != nil || rest.isEmpty, let candidate = candidates.first,
+                let headRange = candidate.range(of: rule.head), headRange.upperBound < candidate.endIndex else { continue }
+            let lead = candidate[..<headRange.lowerBound]
+            let after = candidate[headRange.upperBound...]
+            var replaced: String?
+            if let particle {
+                // かい の表記(1 字以上)の後ろの助詞を探し、そこから後ろは候補のまま使う
+                let searchStart = after.index(after: after.startIndex)
+                if let particleRange = after.range(of: particle, range: searchStart..<after.endIndex) {
+                    replaced = lead + rule.floor + after[particleRange.lowerBound...]
+                } else if rest == Substring(particle) {
+                    // かいが=絵画 のように助詞ごと 1 語になっている
+                    replaced = lead + rule.floor + particle
+                }
+            } else if rule.alsoWhenBare {
+                replaced = lead + rule.floor
+            } else {
+                replaced = lead + rule.head + "かい"
+            }
+            if let replaced {
+                return [replaced] + candidates.filter { $0 != replaced }
+            }
+        }
+        return candidates
+    }
+
     static func leadingSurfaceOrdered(reading: String, candidates: [String]) -> [String] {
         // 手がかりは、頭が表の表記の最初の候補(単文節は 橋野ほうがいいね が先頭で、表の表記で始まる候補はその後ろにある。
         // 画面は単文節の先頭を連文節の 2 番めに差し込むので、単文節の先頭も揃えておく)
