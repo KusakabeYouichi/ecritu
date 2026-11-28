@@ -32193,6 +32193,20 @@ extension KanaKanjiConverterRegressionTests {
         )
     }
 
+    // 3940(ユーザ指定): かいだんへのきたい が 会談へ退きたい(へ+退きたい)。〜への期待 を先頭に。そこを退きたい/退きたい は変えない
+    func testExpectationToward3940() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("かいだんへのきたい", "会談への期待"), ("しょうらいへのきたい", "将来への期待"), ("こどもへのきたい", "子供への期待"),
+            ("しんせいひんへのきたいがたかまる", "新製品への期待が高まる"), ("だいとうりょうとのかいだんへのきたい", "大統領との会談への期待"),
+            ("そこをのきたい", "そこを退きたい"), ("のきたい", "退きたい"), ("かれへのきたいち", "彼への期待値"),
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
     // 3938(ユーザ指定): てんごくへのかいだん が 天国への会談。行き先の へ+の の後ろの かいだん は 階段。首脳との会談 は変えない
     func testStairwayToHeaven3938() throws {
         try prepareRealLMDictionary()
