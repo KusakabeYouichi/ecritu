@@ -32234,6 +32234,16 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3941: 火気厳禁/私語厳禁/口外厳禁 は語彙に登録(かき は 火器、しご はかな、こうがい は 郊外 が先で、組の加点では届かない)
+    func testStrictlyProhibitedRegisteredWords3941() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("かきげんきん", "火気厳禁"), ("しごげんきん", "私語厳禁"), ("こうがいげんきん", "口外厳禁"), ("かきげんきんです", "火気厳禁です")] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
     // 3940(ユーザ指定): かいだんへのきたい が 会談へ退きたい(へ+退きたい)。〜への期待 を先頭に。そこを退きたい/退きたい は変えない
     func testExpectationToward3940() throws {
         try prepareRealLMDictionary()
