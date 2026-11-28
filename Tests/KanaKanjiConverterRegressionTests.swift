@@ -32221,6 +32221,19 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(leadingCandidates3879("のみかい").first, "飲み会")
     }
 
+    // 3941: 〜厳禁 の決まった組。げんきん は 現金 が先なので、土足厳禁/飲食厳禁/駐車厳禁 は組で上げる。手持ち現金/売上現金 は 現金 のまま
+    func testStrictlyProhibitedPairs3941() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("どそくげんきん", "土足厳禁"), ("いんしょくげんきん", "飲食厳禁"), ("ちゅうしゃげんきん", "駐車厳禁"), ("さつえいげんきん", "撮影厳禁"),
+            ("たちいりげんきん", "立ち入り厳禁"), ("てもちげんきん", "手持ち現金"), ("うりあげげんきん", "売上現金"), ("こぐちげんきん", "小口現金"),
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
     // 3940(ユーザ指定): かいだんへのきたい が 会談へ退きたい(へ+退きたい)。〜への期待 を先頭に。そこを退きたい/退きたい は変えない
     func testExpectationToward3940() throws {
         try prepareRealLMDictionary()
