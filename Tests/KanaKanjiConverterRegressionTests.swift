@@ -31877,6 +31877,21 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3933(ユーザ指定): たいていできる が 退廷できる(サ変名詞+できる の 1 語)。副詞の たいてい を先頭に、退廷できる は後ろに残す。
+    // たいていする は 退廷する のまま
+    func testUsuallyCanDo3933() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("たいていできる", "たいていできる"), ("たいていできた", "たいていできた"), ("たいていできない", "たいていできない"),
+            ("えくせるでできることはたいていできる", "Excelでできることはたいていできる"), ("たいていする", "退廷する"), ("たいてい", "たいてい"),
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+        XCTAssertTrue(leadingCandidates3879("たいていできる").contains("退廷できる"))
+    }
+
     // 3931(ユーザ指定): ぼうさん だけを打ったときの先頭は 坊さん(表示の並びだけ。語彙に登録すると びんぼうさん が崩れる)
     func testMonkAloneIsFirstInPresentationOrder3931() throws {
         try prepareRealLMDictionary()
