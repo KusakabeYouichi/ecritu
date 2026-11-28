@@ -31892,6 +31892,21 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(leadingCandidates3879("たいていできる").contains("退廷できる"))
     }
 
+    // 3934(ユーザ指定): したのかいそう が したのかいそう(し+た+のか+いそう)。下の階層/下のフォルダ/上の階層 を先頭に。
+    // 何をしたのか と、文の途中の したのかいそう は替えない
+    func testLowerHierarchy3934() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("したのかいそう", "下の階層"), ("したのかいそうにある", "下の階層にある"), ("ひとつしたのかいそう", "1つ下の階層"),
+            ("うえのかいそう", "上の階層"), ("したのふぉるだ", "下のフォルダ"), ("なにをしたのか", "何をしたのか"),
+            ("そうしたのかいそうでないのか", "そうしたのかいそうでないのか"),
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
     // 3931(ユーザ指定): ぼうさん だけを打ったときの先頭は 坊さん(表示の並びだけ。語彙に登録すると びんぼうさん が崩れる)
     func testMonkAloneIsFirstInPresentationOrder3931() throws {
         try prepareRealLMDictionary()
