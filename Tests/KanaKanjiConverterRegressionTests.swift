@@ -3195,8 +3195,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
 
-        XCTAssertEqual(Array(converter.candidates(for: "いっとう", limit: 6, systemCandidateMode: .surface).prefix(3)),
-                       ["一頭", "一棟", "一等"])
+        // seed の 一頭 も X.13 の組(1頭/一頭)として設定の順(初期の アラビア数字が先。2026-11-27)。棟/等 は組の後ろ
+        XCTAssertEqual(Array(converter.candidates(for: "いっとう", limit: 6, systemCandidateMode: .surface).prefix(4)),
+                       ["1頭", "一頭", "一棟", "一等"])
         let boosted = KanaKanjiConverter.digitContextCounterBoostedCandidates([], reading: "とう", precedingCharacter: "3")
         // 灯 を追加(ユーザ指定 3810)、島 を 棟 の次に(ユーザ指定 3816)。等 は最後のまま
         XCTAssertEqual(Array(boosted.prefix(5)), ["頭", "棟", "島", "灯", "等"], "\(boosted)")
@@ -27268,8 +27269,8 @@ extension KanaKanjiConverterRegressionTests {
             let list = converter.candidates(for: reading, limit: 6, systemCandidateMode: .surface)
             XCTAssertEqual(Array(list.prefix(2)), expected, "\(reading): \(list)")
         }
-        // 辞書にある 一枚/三本 は辞書側が残る
-        XCTAssertEqual(Array(converter.candidates(for: "いちまい", limit: 3, systemCandidateMode: .surface).prefix(2)), ["一枚", "1枚"])
+        // 辞書にある 一枚 も組として X.13 の順(初期の アラビア数字が先)
+        XCTAssertEqual(Array(converter.candidates(for: "いちまい", limit: 3, systemCandidateMode: .surface).prefix(2)), ["1枚", "一枚"])
         XCTAssertEqual(KanaKanjiConverter.kanjiNumeralString(2026), "二千二十六")
         XCTAssertEqual(KanaKanjiConverter.kanjiNumeralString(10), "十")
     }
@@ -27302,10 +27303,342 @@ extension KanaKanjiConverterRegressionTests {
             let m = multi("にまいください")
             XCTAssertTrue(m.first?.hasPrefix(nimai[0]) == true, "\(style) \(m.prefix(4))")
         }
-        // 辞書にある 一枚/三本 は設定に関わらず残る
+        // 辞書にある 一枚 も設定に従う(アラビア数字だけ では出さない)
         converter.setNumeralStylePreference(.arabicOnly)
-        XCTAssertTrue(single("いちまい").contains("一枚"), "\(single("いちまい"))")
-        XCTAssertEqual(single("いちまい").first, "一枚")
+        XCTAssertFalse(single("いちまい").contains("一枚"), "\(single("いちまい"))")
+        XCTAssertEqual(single("いちまい").first, "1枚")
+    }
+
+    // X.13 は辞書・seed の語(一枚/三人/一回)にも効く。表は 4 設定ごとの、単文節の先頭からの並び(ユーザ指定、2026-11-27)
+    private func assertNumeralStyleSingle(
+        _ reading: String, _ expected: [NumeralStylePreference: [String]], absent: [NumeralStylePreference: [String]] = [:],
+        file: StaticString = #filePath, line: UInt = #line
+    ) {
+        for style in NumeralStylePreference.allCases {
+            converter.setNumeralStylePreference(style)
+            let list = converter.candidates(for: reading, limit: 12, systemCandidateMode: .surface)
+            guard let prefix = expected[style] else {
+                XCTFail("\(reading) \(style) の期待が表に無い", file: file, line: line)
+                continue
+            }
+            XCTAssertEqual(Array(list.prefix(prefix.count)), prefix, "\(reading) \(style) \(list)", file: file, line: line)
+            for surface in absent[style] ?? [] {
+                XCTAssertFalse(list.contains(surface), "\(reading) \(style) \(surface) \(list)", file: file, line: line)
+            }
+        }
+    }
+
+    func testNumeralStyleAppliesToDictionaryCounterWords() throws {
+        try prepareRealLMDictionary()
+        defer { converter.setNumeralStylePreference(.arabicFirst) }
+        assertNumeralStyleSingle("いちまい", [.arabicFirst: ["1枚", "一枚"], .kanjiFirst: ["一枚", "1枚"], .arabicOnly: ["1枚"], .kanjiOnly: ["一枚"]],
+                                 absent: [.arabicOnly: ["一枚"], .kanjiOnly: ["1枚"]])
+        assertNumeralStyleSingle("いっぽん", [.arabicFirst: ["1本", "一本", "いっぽん"], .kanjiFirst: ["一本", "1本", "いっぽん"],
+                                          .arabicOnly: ["1本", "いっぽん"], .kanjiOnly: ["一本", "いっぽん"]],
+                                 absent: [.arabicOnly: ["一本"], .kanjiOnly: ["1本"]])
+        // かなや他の語(いちえん/一圓)は組の後ろのまま。アラビア数字だけ では 1円 が 一円 の位置(先頭)に
+        assertNumeralStyleSingle("いちえん", [.arabicFirst: ["1円", "一円", "いちえん", "一圓"], .kanjiFirst: ["一円", "1円", "いちえん", "一圓"],
+                                          .arabicOnly: ["1円", "いちえん", "一圓"], .kanjiOnly: ["一円", "いちえん", "一圓"]],
+                                 absent: [.arabicOnly: ["一円"], .kanjiOnly: ["1円"]])
+        // 誤認 は先頭のまま、5人/五人 が設定の順
+        assertNumeralStyleSingle("ごにん", [.arabicFirst: ["誤認", "5人", "五人"], .kanjiFirst: ["誤認", "五人", "5人"],
+                                        .arabicOnly: ["誤認", "5人"], .kanjiOnly: ["誤認", "五人"]],
+                                 absent: [.arabicOnly: ["五人"], .kanjiOnly: ["5人"]])
+    }
+
+    func testNumeralStyleAppliesToSeedCounterWords() throws {
+        try prepareRealLMDictionary()
+        defer { converter.setNumeralStylePreference(.arabicFirst) }
+        // seed は 3人, 三人, 月桃
+        assertNumeralStyleSingle("さんにん", [.arabicFirst: ["3人", "三人", "月桃"], .kanjiFirst: ["三人", "3人", "月桃"],
+                                          .arabicOnly: ["3人", "月桃"], .kanjiOnly: ["三人", "月桃"]],
+                                 absent: [.arabicOnly: ["三人"], .kanjiOnly: ["3人"]])
+        // seed は 1回, 一回, 1階, 一階, …。回 の組が設定に従う(階 は数字の直後だけの助数詞で、生成器が組と認めない)
+        assertNumeralStyleSingle("いっかい", [.arabicFirst: ["1回", "一回"], .kanjiFirst: ["一回", "1回"], .arabicOnly: ["1回"], .kanjiOnly: ["一回"]],
+                                 absent: [.arabicOnly: ["一回"], .kanjiOnly: ["1回"]])
+    }
+
+    // 連文節は読みの全体が数詞+助数詞のときだけ、格子が返した 十年/百円/一枚 を X.13 に揃える
+    func testNumeralStyleAppliesToWholeReadingMultiClause() throws {
+        try prepareRealLMDictionary()
+        defer { converter.setNumeralStylePreference(.arabicFirst) }
+        let cases: [(String, [NumeralStylePreference: [String]])] = [
+            ("じゅうねん", [.arabicFirst: ["10年", "十年", "中年"], .kanjiFirst: ["十年", "10年", "中年"], .arabicOnly: ["10年", "中年"], .kanjiOnly: ["十年", "中年"]]),
+            ("ひゃくえん", [.arabicFirst: ["100円", "百円"], .kanjiFirst: ["百円", "100円"], .arabicOnly: ["100円"], .kanjiOnly: ["百円"]]),
+            ("いちまい", [.arabicFirst: ["1枚", "一枚"], .kanjiFirst: ["一枚", "1枚"], .arabicOnly: ["1枚"], .kanjiOnly: ["一枚"]]),
+        ]
+        for (reading, expected) in cases {
+            for style in NumeralStylePreference.allCases {
+                converter.setNumeralStylePreference(style)
+                let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+                XCTAssertEqual(Array(multi.prefix(expected[style]!.count)), expected[style]!, "\(reading) \(style) \(multi)")
+            }
+        }
+        converter.setNumeralStylePreference(.arabicOnly)
+        XCTAssertFalse(converter.multiClauseCandidates(for: "じゅうねん", systemCandidateMode: .surface).contains("十年"))
+        converter.setNumeralStylePreference(.kanjiOnly)
+        XCTAssertFalse(converter.multiClauseCandidates(for: "じゅうねん", systemCandidateMode: .surface).contains("10年"))
+    }
+
+    // 数える意味でない語(一杯/一層/一門/一文)は組にしない: 4 設定とも辞書の並びのまま。一問/1問 は設定に従う
+    func testNumeralStyleLeavesNonCountingWordsInPlace() throws {
+        try prepareRealLMDictionary()
+        defer { converter.setNumeralStylePreference(.arabicFirst) }
+        for style in NumeralStylePreference.allCases {
+            converter.setNumeralStylePreference(style)
+            let cupful = converter.candidates(for: "いっぱい", limit: 12, systemCandidateMode: .surface)
+            XCTAssertEqual(Array(cupful.prefix(2)), ["いっぱい", "一杯"], "\(style) \(cupful)")
+            let layer = converter.candidates(for: "いっそう", limit: 12, systemCandidateMode: .surface)
+            XCTAssertEqual(Array(layer.prefix(2)), ["いっそう", "一層"], "\(style) \(layer)")
+        }
+        assertNumeralStyleSingle("いちもん", [.arabicFirst: ["一門", "1問", "一問", "一文"], .kanjiFirst: ["一門", "一問", "1問", "一文"],
+                                          .arabicOnly: ["一門", "1問", "一文"], .kanjiOnly: ["一門", "一問", "一文"]],
+                                 absent: [.arabicOnly: ["一問"], .kanjiOnly: ["1問"]])
+    }
+
+    // 数詞の字を含むが組にならない語は、4 設定とも先頭が同じ
+    func testNumeralStyleKeepsLexicalNumeralWordsFirst() throws {
+        try prepareRealLMDictionary()
+        defer { converter.setNumeralStylePreference(.arabicFirst) }
+        let expected = [("いったい", "一体"), ("いっぽう", "一方"), ("じゅうぶん", "充分"), ("いちばん", "一番"), ("いっしょ", "一緒"),
+                        ("ひとり", "1人"), ("さんかく", "三角"), ("まんいち", "万一")]
+        for style in NumeralStylePreference.allCases {
+            converter.setNumeralStylePreference(style)
+            for (reading, first) in expected {
+                XCTAssertEqual(converter.candidates(for: reading, limit: 12, systemCandidateMode: .surface).first, first, "\(reading) \(style)")
+            }
+            // じゅうぶん は 2 番めまで(十分 は 10分 の組にならない)
+            XCTAssertEqual(Array(converter.candidates(for: "じゅうぶん", limit: 12, systemCandidateMode: .surface).prefix(2)), ["充分", "十分"], "\(style)")
+        }
+    }
+
+    // 除外表の語(一晩/一斤/五百万石)は 4 設定とも先頭が変わらない(ユーザ指定 2026-11-27、五百万石 は酒米の品種名)
+    func testNumeralStyleLeavesExcludedWordsFirst() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        defer { converter.setNumeralStylePreference(.arabicFirst) }
+        for style in NumeralStylePreference.allCases {
+            converter.setNumeralStylePreference(style)
+            for (reading, first) in [("ひとばん", "一晩"), ("いっきん", "一斤"), ("ごひゃくまんごく", "五百万石")] {
+                let list = converter.candidates(for: reading, limit: 12, systemCandidateMode: .surface)
+                XCTAssertEqual(list.first, first, "\(reading) \(style) \(list)")
+            }
+        }
+    }
+
+    // 抑制した形を含む組は並べ替えない(足し戻さない)。単文節
+    func testNumeralStyleDoesNotRestoreSuppressedFormSingle() throws {
+        try prepareRealLMDictionary()
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: defaultsSuiteName))
+        defaults.set(try JSONEncoder().encode(["いちまい": ["1枚"]]), forKey: "ÉcrituSuppr_Vocab")
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        defer { converter.setNumeralStylePreference(.arabicFirst) }
+        for style in [NumeralStylePreference.arabicFirst, .kanjiFirst] {
+            converter.setNumeralStylePreference(style)
+            let list = converter.candidates(for: "いちまい", limit: 12, systemCandidateMode: .surface)
+            XCTAssertEqual(list.first, "一枚", "\(style) \(list)")
+            XCTAssertFalse(list.contains("1枚"), "\(style) \(list)")
+        }
+    }
+
+    // 抑制した形を含む組は並べ替えない(足し戻さない)。連文節
+    func testNumeralStyleDoesNotRestoreSuppressedFormMultiClause() throws {
+        try prepareRealLMDictionary()
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: defaultsSuiteName))
+        defaults.set(try JSONEncoder().encode(["じゅうねん": ["10年"]]), forKey: "ÉcrituSuppr_Vocab")
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        defer { converter.setNumeralStylePreference(.arabicFirst) }
+        for style in [NumeralStylePreference.arabicFirst, .kanjiFirst] {
+            converter.setNumeralStylePreference(style)
+            let multi = converter.multiClauseCandidates(for: "じゅうねん", systemCandidateMode: .surface)
+            XCTAssertTrue(multi.contains("十年"), "\(style) \(multi)")
+            XCTAssertFalse(multi.contains("10年"), "\(style) \(multi)")
+        }
+    }
+
+    // 足して limit を超えたら末尾を落とす(じゅうねん は 揉捻, 十念, 10年, 十年 の順で、小さい limit だと 十年 を足す)
+    func testNumeralStyleKeepsCandidateCountWithinLimit() throws {
+        try prepareRealLMDictionary()
+        defer { converter.setNumeralStylePreference(.arabicFirst) }
+        for style in NumeralStylePreference.allCases {
+            converter.setNumeralStylePreference(style)
+            for limit in 1...4 {
+                let list = converter.candidates(for: "じゅうねん", limit: limit, systemCandidateMode: .surface)
+                XCTAssertLessThanOrEqual(list.count, limit, "\(style) \(limit) \(list)")
+            }
+        }
+    }
+
+    // 読みが数字で始まるとき(2+いちまい)は単文節でも掛けない(並びは辞書の 一枚, 1枚 のまま)。数字で始まらない読みには掛かる
+    func testNumeralStyleSkipsSingleClauseWithDigitPrefix() throws {
+        try prepareRealLMDictionary()
+        defer { converter.setNumeralStylePreference(.arabicFirst) }
+        converter.setNumeralStylePreference(.arabicFirst)
+        let withDigit = converter.candidates(for: "2いちまい", limit: 12, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(withDigit.prefix(2)), ["一枚", "1枚"], "\(withDigit)")
+        let plain = converter.candidates(for: "いちまい", limit: 12, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(plain.prefix(2)), ["1枚", "一枚"], "\(plain)")
+    }
+
+    // 連文節の ふつかめ は、め/目 の組(2日め/二日め)を足しても X.12 に反して め の形を足したり 2日目、二日目、2日め と割ったりしない。
+    // 連文節の候補が空(単文節に委ねる)か、日付の 4 つの形が X.12 と X.13 の順に並ぶ
+    func testNumeralStyleMultiClauseFutsukaMeFollowsOrdinalMePreference() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        defer { converter.setNumeralStylePreference(.arabicFirst); converter.setOrdinalMeKanjiPreferred(true) }
+        let dayForms: Set<String> = ["2日目", "2日め", "二日目", "二日め"]
+        let expected: [Bool: [NumeralStylePreference: [String]]] = [
+            true: [.arabicFirst: ["2日目", "2日め", "二日目", "二日め"], .kanjiFirst: ["二日目", "二日め", "2日目", "2日め"],
+                   .arabicOnly: ["2日目", "2日め"], .kanjiOnly: ["二日目", "二日め"]],
+            false: [.arabicFirst: ["2日め", "2日目", "二日め", "二日目"], .kanjiFirst: ["二日め", "二日目", "2日め", "2日目"],
+                    .arabicOnly: ["2日め", "2日目"], .kanjiOnly: ["二日め", "二日目"]],
+        ]
+        for kanjiMePreferred in [true, false] {
+            converter.setOrdinalMeKanjiPreferred(kanjiMePreferred)
+            for style in NumeralStylePreference.allCases {
+                converter.setNumeralStylePreference(style)
+                converter.invalidateCandidateCache()
+                let multi = converter.multiClauseCandidates(for: "ふつかめ", systemCandidateMode: .surface)
+                let shown = multi.filter { dayForms.contains($0) }
+                XCTAssertTrue(shown.isEmpty || shown == expected[kanjiMePreferred]?[style], "\(kanjiMePreferred) \(style) \(multi)")
+            }
+        }
+    }
+
+    // 日付・月名(3793/3804)の並びは今までどおり。…だけ の設定では、seed・辞書にあった もう一方の形も出さない
+    func testNumeralStyleKeepsDateOrdering() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        defer { converter.setNumeralStylePreference(.arabicFirst) }
+        // ふつか は合成(仏貨/二か)との前後が打鍵の経路で変わるので、日付の 2 つの形の順と有無だけを見る
+        for (style, expected) in [(NumeralStylePreference.arabicFirst, ["2日", "二日"]), (.kanjiFirst, ["二日", "2日"]), (.arabicOnly, ["2日"]),
+                                  (.kanjiOnly, ["二日"])] {
+            converter.setNumeralStylePreference(style)
+            let list = converter.candidates(for: "ふつか", limit: 12, systemCandidateMode: .surface)
+            XCTAssertEqual(list.filter { $0 == "2日" || $0 == "二日" }, expected, "\(style) \(list)")
+        }
+        // ふつかめ も 日付の 4 つの形の順と有無だけを見る(ふつか の後では合成の 二日め が入り、め/目 の段が 二日目 を補う)
+        let dayForms: Set<String> = ["2日目", "2日め", "二日目", "二日め"]
+        for (style, expected) in [(NumeralStylePreference.arabicFirst, ["2日目", "2日め", "二日目", "二日め"]),
+                                  (.kanjiFirst, ["二日目", "二日め", "2日目", "2日め"]), (.arabicOnly, ["2日目", "2日め"]), (.kanjiOnly, ["二日目", "二日め"])] {
+            converter.setNumeralStylePreference(style)
+            let list = converter.candidates(for: "ふつかめ", limit: 12, systemCandidateMode: .surface)
+            XCTAssertEqual(list.filter { dayForms.contains($0) }, expected, "\(style) \(list)")
+        }
+        assertNumeralStyleSingle("なのか", [.arabicFirst: ["なのか", "7日", "七日", "七夏"], .kanjiFirst: ["なのか", "七日", "7日", "七夏"],
+                                        .arabicOnly: ["なのか", "7日", "七夏"], .kanjiOnly: ["なのか", "七日", "七夏"]],
+                               absent: [.arabicOnly: ["七日"], .kanjiOnly: ["7日"]])
+        assertNumeralStyleSingle("ごがつ", [.arabicFirst: ["5月", "五月"], .kanjiFirst: ["五月", "5月"], .arabicOnly: ["5月"], .kanjiOnly: ["五月"]],
+                               absent: [.arabicOnly: ["五月"], .kanjiOnly: ["5月"]])
+    }
+
+    // 組のどちらかを学習していれば、その組は並べ替えない(学習を優先)
+    func testNumeralStyleKeepsLearnedFormFirst() throws {
+        try prepareRealLMDictionary()
+        defer { converter.setNumeralStylePreference(.arabicFirst) }
+        converter.setNumeralStylePreference(.arabicFirst)
+        converter.store.addLearnedEntry(reading: "いちまい", candidate: "一枚")
+        converter.invalidateCandidateCache()
+        XCTAssertEqual(Array(converter.candidates(for: "いちまい", limit: 12, systemCandidateMode: .surface).prefix(2)), ["一枚", "1枚"])
+    }
+
+    func testNumeralStyleOrderedPlacesPreferredFormAtEarlierPosition() {
+        let pairs = [KanaKanjiConverter.NumeralStylePair(arabic: "1枚", kanji: "一枚")]
+        let candidates = ["一枚", "いちまい", "1枚"]
+        XCTAssertEqual(KanaKanjiConverter.numeralStyleOrdered(candidates, pairs: pairs, style: .arabicFirst, learned: []), ["1枚", "一枚", "いちまい"])
+        XCTAssertEqual(KanaKanjiConverter.numeralStyleOrdered(candidates, pairs: pairs, style: .kanjiFirst, learned: []), ["一枚", "1枚", "いちまい"])
+    }
+
+    func testNumeralStyleOrderedAddsMissingFormNextToPresentOne() {
+        let pairs = [KanaKanjiConverter.NumeralStylePair(arabic: "10年", kanji: "十年")]
+        XCTAssertEqual(KanaKanjiConverter.numeralStyleOrdered(["十年", "中年"], pairs: pairs, style: .arabicFirst, learned: []), ["10年", "十年", "中年"])
+        XCTAssertEqual(KanaKanjiConverter.numeralStyleOrdered(["十年", "中年"], pairs: pairs, style: .kanjiFirst, learned: []), ["十年", "10年", "中年"])
+    }
+
+    func testNumeralStyleOrderedAddsMissingKanjiFormNextToArabicOne() {
+        let pairs = [KanaKanjiConverter.NumeralStylePair(arabic: "1枚", kanji: "一枚")]
+        XCTAssertEqual(KanaKanjiConverter.numeralStyleOrdered(["いちまい", "1枚"], pairs: pairs, style: .arabicFirst, learned: []), ["いちまい", "1枚", "一枚"])
+        XCTAssertEqual(KanaKanjiConverter.numeralStyleOrdered(["いちまい", "1枚"], pairs: pairs, style: .kanjiFirst, learned: []), ["いちまい", "一枚", "1枚"])
+    }
+
+    // 学習した組は並べ替えないが、無いほうの形は学習した形のすぐ後ろに足す(十年 を学習しても 10年 は出る)
+    func testNumeralStyleOrderedAddsMissingFormAfterLearnedOne() {
+        let pairs = [KanaKanjiConverter.NumeralStylePair(arabic: "10年", kanji: "十年")]
+        XCTAssertEqual(KanaKanjiConverter.numeralStyleOrdered(["中年", "十年", "揉捻"], pairs: pairs, style: .arabicFirst, learned: ["十年"]),
+                       ["中年", "十年", "10年", "揉捻"])
+        XCTAssertEqual(KanaKanjiConverter.numeralStyleOrdered(["10年", "中年"], pairs: pairs, style: .kanjiFirst, learned: ["10年"]),
+                       ["10年", "十年", "中年"])
+    }
+
+    func testNumeralStyleOrderedLeavesCandidatesWithoutPairMembers() {
+        let pairs = [KanaKanjiConverter.NumeralStylePair(arabic: "1枚", kanji: "一枚")]
+        for style in NumeralStylePreference.allCases {
+            XCTAssertEqual(KanaKanjiConverter.numeralStyleOrdered(["一枚岩", "いちまい"], pairs: pairs, style: style, learned: []), ["一枚岩", "いちまい"])
+        }
+    }
+
+    func testNumeralStyleOrderedOnlyStylesRemoveOrReplaceTheOtherForm() {
+        let pairs = [KanaKanjiConverter.NumeralStylePair(arabic: "3人", kanji: "三人")]
+        XCTAssertEqual(KanaKanjiConverter.numeralStyleOrdered(["3人", "三人", "月桃"], pairs: pairs, style: .arabicOnly, learned: []), ["3人", "月桃"])
+        XCTAssertEqual(KanaKanjiConverter.numeralStyleOrdered(["3人", "三人", "月桃"], pairs: pairs, style: .kanjiOnly, learned: []), ["三人", "月桃"])
+        // 出す形が無ければ、出さない形の位置に置き換える
+        XCTAssertEqual(KanaKanjiConverter.numeralStyleOrdered(["月桃", "三人"], pairs: pairs, style: .arabicOnly, learned: []), ["月桃", "3人"])
+        XCTAssertEqual(KanaKanjiConverter.numeralStyleOrdered(["3人", "月桃"], pairs: pairs, style: .kanjiOnly, learned: []), ["三人", "月桃"])
+        // 学習していても除く
+        XCTAssertEqual(KanaKanjiConverter.numeralStyleOrdered(["三人", "3人"], pairs: pairs, style: .arabicOnly, learned: ["三人"]), ["3人"])
+    }
+
+    // …だけ の設定で両方あれば、残す形は 2 つのうち前のほうの位置に
+    func testNumeralStyleOrderedOnlyStylesMoveKeptFormToEarlierPosition() {
+        let pairs = [KanaKanjiConverter.NumeralStylePair(arabic: "1円", kanji: "一円")]
+        XCTAssertEqual(KanaKanjiConverter.numeralStyleOrdered(["一円", "いちえん", "一圓", "1円"], pairs: pairs, style: .arabicOnly, learned: []),
+                       ["1円", "いちえん", "一圓"])
+        XCTAssertEqual(KanaKanjiConverter.numeralStyleOrdered(["1円", "いちえん", "一円"], pairs: pairs, style: .kanjiOnly, learned: []),
+                       ["一円", "いちえん"])
+    }
+
+    // 前の文字が数字のとき(2+ひゃくえん)は、連文節で アラビア数字の形を足さない(2100円 になる)
+    func testNumeralStyleSkipsMultiClauseAfterDigit() throws {
+        try prepareRealLMDictionary()
+        defer { converter.setNumeralStylePreference(.arabicFirst) }
+        converter.setNumeralStylePreference(.arabicFirst)
+        let multi = converter.multiClauseCandidates(for: "ひゃくえん", systemCandidateMode: .surface, precedingCharacter: "2")
+        XCTAssertEqual(multi, ["百円"])
+        // 前が数字でなければ掛かる
+        XCTAssertEqual(converter.multiClauseCandidates(for: "ひゃくえん", systemCandidateMode: .surface), ["100円", "百円"])
+    }
+
+    func testNumeralStyleOrderedSkipsReorderingLearnedPair() {
+        let pairs = [KanaKanjiConverter.NumeralStylePair(arabic: "1枚", kanji: "一枚")]
+        XCTAssertEqual(KanaKanjiConverter.numeralStyleOrdered(["一枚", "1枚"], pairs: pairs, style: .arabicFirst, learned: ["一枚"]), ["一枚", "1枚"])
+    }
+
+    // 組は 漢数字の形の数をアラビア数字に直した形が生成にあるものだけ。数える意味でない語(一杯)と数詞だけの語(二十)は組にしない
+    func testNumeralStylePairsMatchesGeneratedForms() {
+        XCTAssertEqual(
+            KanaKanjiConverter.numeralStylePairs(arabic: ["1回", "1階"], kanji: ["一回", "一階"]),
+            [.init(arabic: "1回", kanji: "一回"), .init(arabic: "1階", kanji: "一階")]
+        )
+        XCTAssertEqual(
+            KanaKanjiConverter.numeralStylePairs(arabic: ["23本", "第2回", "5月5日", "300万円"], kanji: ["二十三本", "第二回", "五月五日", "三百万円"]),
+            [.init(arabic: "23本", kanji: "二十三本"), .init(arabic: "第2回", kanji: "第二回"), .init(arabic: "5月5日", kanji: "五月五日"),
+             .init(arabic: "300万円", kanji: "三百万円")]
+        )
+        XCTAssertEqual(KanaKanjiConverter.numeralStylePairs(arabic: ["1杯"], kanji: ["一杯"]), [])
+        // 〜目 の組には め の形の組も添える
+        XCTAssertEqual(KanaKanjiConverter.numeralStylePairs(arabic: ["2日目"], kanji: ["二日目"]),
+                       [.init(arabic: "2日目", kanji: "二日目"), .init(arabic: "2日め", kanji: "二日め")])
+        // 紙幣の通称、酒米の品種名、ユーザ指定の 一晩/一斤 も組にしない
+        XCTAssertEqual(KanaKanjiConverter.numeralStylePairs(arabic: ["1000円札", "2000円札", "5000円札"], kanji: ["千円札", "二千円札", "五千円札"]), [])
+        XCTAssertEqual(KanaKanjiConverter.numeralStylePairs(arabic: ["500万石", "1晩", "1斤"], kanji: ["五百万石", "一晩", "一斤"]), [])
+        XCTAssertEqual(KanaKanjiConverter.numeralStylePairs(
+            arabic: ["1層", "1門", "1文", "3文", "1席", "7色", "3山", "7山", "3房", "1山", "2山"],
+            kanji: ["一層", "一門", "一文", "三文", "一席", "七色", "三山", "七山", "三房", "一山", "二山"]), [])
+        XCTAssertEqual(KanaKanjiConverter.numeralStylePairs(arabic: ["2つ"], kanji: ["二十"]), [])
+        // 何/数 の形は数に直せないので組にならない
+        XCTAssertEqual(KanaKanjiConverter.numeralStylePairs(arabic: ["1年"], kanji: ["何年", "数年"]), [])
     }
 
     // 3695: はっそう は 発送 を先頭、交ぜ書き 発そう/發そう は抑制。宅急便+発送 の隣接

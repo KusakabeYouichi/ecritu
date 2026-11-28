@@ -2,7 +2,8 @@ import Foundation
 
 // 数詞+助数詞(にまい/ひとけた/だいにかい)の表記の出し方(コンテナー設定 X.13。3702)。
 // アラビア数字(2枚)と漢数字(二枚)のどちらを先に出すか、片方だけにするか。
-// 辞書に語としてある 一枚/三本 は設定に関わらず出る(生成でなく辞書語)
+// 辞書・seed に語としてある 一枚/三人 も同じ組(1枚/3人)として設定に従う。数える意味でない語(一杯/一層/一門 など)は対象外
+// (KanaKanjiConverter.numeralStyleExcludedKanjiForms)
 public enum NumeralStylePreference: String, CaseIterable {
     case arabicFirst
     case kanjiFirst

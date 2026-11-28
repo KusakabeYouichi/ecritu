@@ -410,6 +410,22 @@ extension KanaKanjiConverter {
             })
         // 月と日の表記は揃える(五月2日 は出さず、5月2日 か 五月二日。3804、ユーザ指定)
         candidates = Self.monthDayNumeralStyleUnified(candidates, style: withStateLock { numeralStylePreference })
+        // 読みの全体が数詞+助数詞(じゅうねん/ひゃくえん/いちまい)なら、格子が返した 十年 も X.13 の順と有無に揃える(単文節と同じ関数)。
+        // 文の中の数詞(じゅうねんまえに…)には広げない(一本気/三人称 を崩さない)。前の文字が数字のとき(2+ひゃくえん)は、
+        // アラビア数字の形を足すと 2100円 になるので掛けない
+        if !candidates.isEmpty, !(precedingCharacter.map(Self.isCounterBoostDigit) ?? false) {
+            let normalized = KanaTextNormalizer.normalizedReading(reading)
+            let pairs = numeralStylePairs(forWholeReading: normalized, systemCandidateMode: systemCandidateMode)
+            if !pairs.isEmpty {
+                let suppressed = store.suppressedCandidatesByReading()[normalized] ?? []
+                candidates = Self.numeralStyleOrdered(
+                    candidates,
+                    pairs: pairs.filter { !suppressed.contains($0.arabic) && !suppressed.contains($0.kanji) },
+                    style: withStateLock { numeralStylePreference },
+                    learned: Set(store.learnedDictionary()[normalized] ?? [])
+                )
+            }
+        }
         // X.9 の組(臆測/憶測)はその設定で(3570)
         let (preference, lateStandardized) = withStateLock { (kanjiRewritePreference, lateStandardizedRewritePreference) }
         guard preference != nil || lateStandardized != nil, !candidates.isEmpty else {
