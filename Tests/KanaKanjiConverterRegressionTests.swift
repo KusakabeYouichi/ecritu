@@ -31860,6 +31860,21 @@ extension KanaKanjiConverterRegressionTests {
         )
     }
 
+    // 3938(ユーザ指定): てんごくへのかいだん が 天国への会談。行き先の へ+の の後ろの かいだん は 階段。首脳との会談 は変えない
+    func testStairwayToHeaven3938() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("てんごくへのかいだん", "天国への階段"), ("おくじょうへのかいだん", "屋上への階段"), ("おとなへのかいだん", "大人への階段"),
+            ("ちかへのかいだん", "地下への階段"), ("てんごくへのかいだんをのぼる", "天国への階段を上る"),
+            ("しゅのうとのかいだん", "首脳との会談"),
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+        XCTAssertTrue(leadingCandidates3879("てんごくへのかいだん").contains("天国への会談"))
+    }
+
     // 3937(ユーザ指定): したのかいだん が したの会談。下の階段/上の階段 を先頭に。首脳との会談 と 階段(単独)は変えない
     func testLowerStairs3937() throws {
         try prepareRealLMDictionary()
