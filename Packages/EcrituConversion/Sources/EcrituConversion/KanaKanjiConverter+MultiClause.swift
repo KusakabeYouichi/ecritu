@@ -4860,9 +4860,18 @@ extension KanaKanjiConverter {
                         let placeSuffixPreferred = Self.multiClausePlaceNameSuffixPreferredSurfacesID.contains(node.surfaceID)
                             && (node.surfaceID != SID.人 || node.readingID == SID.じん)
                             && (node.surface != "型" || node.reading.first != "け")   // 型(けい)は ボルドー系 を巻き込む
+                        // 民族の名(ゲルマン/サクソン。定数コメント参照。3932)は地名の表に無いので、名指しの表でも同じ扱いにする
                         if placeSuffixPreferred || Self.multiClausePlaceNameSuffixDemotedSurfacesID.contains(node.surfaceID),
-                            prevNode.surface.count >= 2, placeNameKindByNodeKey[prevNode.key] != nil {
+                            prevNode.surface.count >= 2,
+                            placeNameKindByNodeKey[prevNode.key] != nil || Self.multiClauseEthnonymSurfacesID.contains(prevNode.surfaceID) {
                             cost += placeSuffixPreferred ? -Self.multiClausePlaceNameSuffixPreferenceBonus : Self.multiClausePlaceNameSuffixPreferenceBonus
+                        }
+                        // 名詞の直後の 人名 じんの(定数コメント参照。3932)。整数 ID の判定を先に
+                        if node.readingID == SID.じんの, personNameKindByNodeKey[node.key] != nil,
+                            prevNode.surfaceID != SID.BOS, prevNode.surface.count >= 2,
+                            !prevNode.isKanaIdentity, !prevNode.isInflectionDerived,
+                            Self.isKatakanaString(prevNode.surface) || Self.isAllKanjiSurface(prevNode.surface) {
+                            cost += Self.multiClausePersonNameJinnoAfterNounPenalty
                         }
                         // 名詞の前の 誤った(定数コメント参照。3667)。整数 ID を先に見る
                         if Self.multiClauseErroneousAttributiveSurfacesID.contains(prevNode.surfaceID),

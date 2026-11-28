@@ -3563,6 +3563,22 @@ extension KanaKanjiConverter {
         "まで", "でおり", "でのり", "でまち", "ゆき", "いき", "ほうめん"
     ].map(Array.init)
     static let multiClausePlaceNameSuffixPreferenceBonus = 2000
+    // 名詞の直後の 人名 じんの(仁乃/神乃/陣野/神野)の減点(3932、ユーザ報告: がりあじんの が ガリア仁乃、とうきょうじんの が 東京仁乃)。
+    // フランス人/ローマ人 は辞書に 1 語であるので フランス人+の になるが、1 語で無い X人(ガリア/ゲルマン/フェニキア/東京)は
+    // X+人+の に分かれ、LM に無い人名(定額 8700)の X+仁乃 に 1000〜2000 負けていた。カタカナか漢字の語の直後に
+    // 助詞を挟まずに じんの の人名が来ることはまず無い(文の頭の 神野さん、助詞の後ろの 陣野 は変えない)
+    static let multiClausePersonNameJinnoAfterNounPenalty = 3000
+    // 民族・古い国の名(3932、ユーザ指定: ほかの X人 もうまくいくように)。地名の表に無いカタカナの語で、後ろの じん は 人。
+    // 地名の直後の 人/族 の加点と ジン/Gin/陣 の減点(multiClausePlaceNameSuffix…)を、この語の直後にも当てる。
+    // カタカナ語+じん は、表に無ければ ジン が先(クラフトジン/ヘンドリックスジン。酒の ジン を崩さないよう、語を名指しする)
+    static let multiClauseEthnonymSurfaces: Set<String> = [
+        "ゲルマン", "サクソン", "アングロサクソン", "アングル", "ジュート", "ノルマン", "ノルド", "デーン",
+        "フランク", "ゴート", "東ゴート", "西ゴート", "ヴァンダル", "バンダル", "ブルグント", "ランゴバルド", "フン", "スラブ", "スラヴ",
+        "ケルト", "ゲール", "ブリトン", "ブルトン", "ピクト", "バスク", "ラテン", "サビニ", "サムニウム", "イリュリア", "ダキア",
+        "スキタイ", "サルマタイ", "タタール", "チュルク", "テュルク", "クルド", "アーリア", "セム", "ヘブライ", "ユダヤ", "アラブ",
+        "ベルベル", "ムーア", "バンツー", "マヤ", "アステカ", "インカ", "マオリ", "アイヌ", "ロマ", "ジプシー", "コサック", "ボーア",
+    ]
+    static let multiClauseEthnonymSurfacesID = MultiClauseIDSet(multiClauseEthnonymSurfaces)
     // 県/語 は 3774 で追加(正解はシエナ県です が シエナ件、ドイツ語 が ドイツ後 だった。一括検査の退行)
     // 店 は 3806 で追加(ユーザ指定: かいなんてん は 開南店。会+難点/海+難点 だった)
     static let multiClausePlaceNameSuffixPreferredSurfaces: Set<String> = ["人", "族", "型", "西部", "東部", "南部", "北部", "県", "語", "店"]
@@ -5230,6 +5246,9 @@ extension KanaKanjiConverter {
             for s in KanaKanjiConverter.multiClauseKoiFollowedByNounSurfaces.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseKoiReadings.sorted() { add(s) }
             add("から")
+            // 名詞の直後の 人名 じんの の減点(3932)
+            add("じんの")
+            for s in KanaKanjiConverter.multiClauseEthnonymSurfaces.sorted() { add(s) }
             // 指示語(その/この/あの/どの)の直後の 間(ま)・助詞の減点(3739)
             for s in ["その", "この", "あの", "どの"] { add(s) }
             // 意向形 しよう の直後の する の活用の減点(3739)
@@ -5360,6 +5379,7 @@ extension KanaKanjiConverter {
         static let して = MultiClauseSymbols.id("して")
         static let します = MultiClauseSymbols.id("します")
         static let じん = MultiClauseSymbols.id("じん")
+        static let じんの = MultiClauseSymbols.id("じんの")
         static let すぎ = MultiClauseSymbols.id("すぎ")
         static let する = MultiClauseSymbols.id("する")
         static let そい = MultiClauseSymbols.id("そい")

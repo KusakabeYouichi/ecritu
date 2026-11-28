@@ -31860,6 +31860,23 @@ extension KanaKanjiConverterRegressionTests {
         )
     }
 
+    // 3932(ユーザ指定): がりあじんの が ガリア仁乃(人名の じんの)。辞書に 1 語で無い X人+の も 人の に。民族の名(ゲルマン/ノルマン)は
+    // 地名と同じ扱い。酒の ジン(クラフトジン)と、文の頭の 神野さん は変えない
+    func testPeopleSuffixBeforeNo3932() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("がりあじんの", "ガリア人の"), ("とうきょうじんの", "東京人の"), ("ふぇにきあじんの", "フェニキア人の"),
+            ("げるまんじんの", "ゲルマン人の"), ("のるまんじんの", "ノルマン人の"), ("げるまんじん", "ゲルマン人"), ("まやじんの", "マヤ人の"),
+            ("ふらんすじんの", "フランス人の"), ("がりあじんのむら", "ガリア人の村"), ("うちゅうじんの", "宇宙人の"), ("うちゅうじん", "宇宙人"),
+            ("くらふとじん", "クラフトジン"), ("くらふとじんの", "クラフトジンの"), ("へんどりっくすじん", "ヘンドリックスジン"),
+            ("じんのさん", "神野さん"), ("らてんごの", "ラテン語の"),
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
     // 3931(ユーザ指定): ぼうさん だけを打ったときの先頭は 坊さん(表示の並びだけ。語彙に登録すると びんぼうさん が崩れる)
     func testMonkAloneIsFirstInPresentationOrder3931() throws {
         try prepareRealLMDictionary()
