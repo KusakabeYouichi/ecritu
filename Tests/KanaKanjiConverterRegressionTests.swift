@@ -32182,6 +32182,220 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3925(ユーザ指定): 利益出た分 を先頭にしたら、前の先頭の 利益でたぶん/利益で多分 が候補から消えた。2・3 番めに残す
+    func testProfitThatCameOutKeepsParticleReading3925() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(Array(leadingCandidates3879("りえきでたぶん").prefix(3)), ["利益出た分", "利益でたぶん", "利益で多分"])
+        XCTAssertEqual(
+            Array(leadingCandidates3879("りえきでたぶんだいじょうぶ").prefix(3)),
+            ["利益出た分大丈夫", "利益でたぶん大丈夫", "利益で多分大丈夫"]
+        )
+    }
+
+    // 3938(ユーザ指定): てんごくへのかいだん が 天国への会談。行き先の へ+の の後ろの かいだん は 階段。首脳との会談 は変えない
+    func testStairwayToHeaven3938() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("てんごくへのかいだん", "天国への階段"), ("おくじょうへのかいだん", "屋上への階段"), ("おとなへのかいだん", "大人への階段"),
+            ("ちかへのかいだん", "地下への階段"), ("てんごくへのかいだんをのぼる", "天国への階段を上る"),
+            ("しゅのうとのかいだん", "首脳との会談"),
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+        XCTAssertTrue(leadingCandidates3879("てんごくへのかいだん").contains("天国への会談"))
+    }
+
+    // 3937(ユーザ指定): したのかいだん が したの会談。下の階段/上の階段 を先頭に。首脳との会談 と 階段(単独)は変えない
+    func testLowerStairs3937() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("したのかいだん", "下の階段"), ("したのかいだんで", "下の階段で"), ("したのかいだんをおりる", "下の階段を降りる"),
+            ("ひとつしたのかいだん", "1つ下の階段"), ("うえのかいだん", "上の階段"), ("うえのかいだんに", "上の階段に"),
+            ("しゅのうとのかいだん", "首脳との会談"), ("かいだん", "階段"), ("したのかいに", "下の階に"),
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
+    // 3936(ユーザ指定): したのかい+助詞(の/で/では/に…)は 下の階+助詞(したの会に だった)。したのかい で終わるときは かな
+    // (〜したのかい? の問いかけ)。うえのかい は 上の階。下の階層/したの買い物/下の貝殻 は巻き込まない
+    func testLowerFloorBeforeParticle3936() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("したのかいの", "下の階の"), ("したのかいで", "下の階で"), ("したのかいでは", "下の階では"), ("したのかいに", "下の階に"),
+            ("したのかいが", "下の階が"), ("したのかいのへや", "下の階の部屋"), ("したのかいにいく", "下の階に行く"),
+            ("ひとつしたのかいに", "1つ下の階に"), ("うえのかいに", "上の階に"), ("うえのかい", "上の階"),
+            ("したのかい", "したのかい"), ("なにをしたのかい", "何をしたのかい"), ("したのかいそう", "下の階層"),
+            ("したのかいもの", "したの買い物"), ("したのかいがら", "したの貝殻"),
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
+    // 3936(ユーザ指定): さくそんじんの/ばすくじんの が出なかった(サクソン/バスク人 が連文節の語に無い)。語彙に登録。
+    // バスク だけを登録すると ばすくる(バス来る)が バスクる になるので バスク人/バスク語 の形で入れる
+    func testSaxonAndBasquePeople3936() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("さくそんじんの", "サクソン人の"), ("ばすくじんの", "バスク人の"), ("ばすくごをはなす", "バスク語を話す"),
+            ("ばすくる", "バス来る"), ("ばすくちほう", "バスク地方"),
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
+    // 3936: 中黒つきのカタカナ語(アングロ・サクソン)の直後の じんの も 人の(アングロ・サクソン仁乃 だった)
+    func testPeopleSuffixAfterMiddleDotKatakana3936() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let list = leadingCandidates3879("あんぐろさくそんじんの")
+        XCTAssertTrue(["アングロサクソン人の", "アングロ・サクソン人の"].contains(list.first ?? ""), "\(list.prefix(5))")
+    }
+
+    // 3932(ユーザ指定): がりあじんの が ガリア仁乃(人名の じんの)。辞書に 1 語で無い X人+の も 人の に。民族の名(ゲルマン/ノルマン)は
+    // 地名と同じ扱い。酒の ジン(クラフトジン)と、文の頭の 神野さん は変えない
+    func testPeopleSuffixBeforeNo3932() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("がりあじんの", "ガリア人の"), ("とうきょうじんの", "東京人の"), ("ふぇにきあじんの", "フェニキア人の"),
+            ("げるまんじんの", "ゲルマン人の"), ("のるまんじんの", "ノルマン人の"), ("げるまんじん", "ゲルマン人"), ("まやじんの", "マヤ人の"),
+            ("ふらんすじんの", "フランス人の"), ("がりあじんのむら", "ガリア人の村"), ("うちゅうじんの", "宇宙人の"), ("うちゅうじん", "宇宙人"),
+            ("くらふとじん", "クラフトジン"), ("くらふとじんの", "クラフトジンの"), ("へんどりっくすじん", "ヘンドリックスジン"),
+            ("じんのさん", "神野さん"), ("らてんごの", "ラテン語の"),
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
+    // 3933(ユーザ指定): たいていできる が 退廷できる(サ変名詞+できる の 1 語)。副詞の たいてい を先頭に、退廷できる は後ろに残す。
+    // たいていする は 退廷する のまま
+    func testUsuallyCanDo3933() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("たいていできる", "たいていできる"), ("たいていできた", "たいていできた"), ("たいていできない", "たいていできない"),
+            ("えくせるでできることはたいていできる", "Excelでできることはたいていできる"), ("たいていする", "退廷する"), ("たいてい", "たいてい"),
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+        XCTAssertTrue(leadingCandidates3879("たいていできる").contains("退廷できる"))
+    }
+
+    // 3934(ユーザ指定): したのかいそう が したのかいそう(し+た+のか+いそう)。下の階層/下のフォルダ/上の階層 を先頭に。
+    // 何をしたのか と、文の途中の したのかいそう は替えない
+    func testLowerHierarchy3934() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("したのかいそう", "下の階層"), ("したのかいそうにある", "下の階層にある"), ("ひとつしたのかいそう", "1つ下の階層"),
+            ("うえのかいそう", "上の階層"), ("したのふぉるだ", "下のフォルダ"), ("なにをしたのか", "何をしたのか"),
+            ("そうしたのかいそうでないのか", "そうしたのかいそうでないのか"),
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
+    // 3935(ユーザ指定): ついでくれます が 次いでくれます(注いで が候補に無かった)。て形+くれる/あげる/いただく は 注いで。
+    // 清酒/赤ワイン+を も 注ぐ。後を継いでくれます/家業を継いでくれた は 継いで のまま。ついでに はかな
+    func testPourForMe3935() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("ついでくれます", "注いでくれます"), ("ついでくれた", "注いでくれた"), ("ついであげる", "注いであげる"), ("ついでいただく", "注いでいただく"),
+            ("わいんをついでくれます", "ワインを注いでくれます"), ("せいしゅをついでくれます", "清酒を注いでくれます"),
+            ("あかわいんをついでくれた", "赤ワインを注いでくれた"), ("ぐらすについでくれます", "グラスに注いでくれます"),
+            ("あとをついでくれます", "後を継いでくれます"), ("かぎょうをついでくれた", "家業を継いでくれた"), ("ついでに", "ついでに"),
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+        XCTAssertEqual(leadingCandidates3879("ついでください").dropFirst().first, "注いでください")
+    }
+
+    // 3931(ユーザ指定): ぼうさん だけを打ったときの先頭は 坊さん(表示の並びだけ。語彙に登録すると びんぼうさん が崩れる)
+    func testMonkAloneIsFirstInPresentationOrder3931() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let single = converter.candidates(for: "ぼうさん", limit: 12, systemCandidateMode: .surface)
+        let shown = SupplementaryCandidateMerger.promotingPresentationOrderSeed(single, reading: "ぼうさん")
+        XCTAssertEqual(shown.first, "坊さん", "\(shown.prefix(6))")
+        XCTAssertEqual(shown.filter { $0 == "坊さん" }.count, 1, "先頭へ動かすだけで、2 つ並べない")
+        XCTAssertTrue(shown.contains("望山"))
+        // 文の中と、ほかの語は変わらない
+        XCTAssertEqual(leadingCandidates3879("びんぼうさん").first, "貧乏さん")
+        XCTAssertEqual(leadingCandidates3879("あのぼうさんは").first, "あの坊さんは")
+    }
+
+    // 3930(ユーザ指定): おぼうさん が 御坊さん(御坊+さん)。お坊さん を登録。坊さん(ぼうさん)は登録しない
+    // (登録すると びんぼうさん が 便坊さん、しょうぼうさん が 章坊さん になった)。お母さん(かなが先頭)は変えない
+    func testBuddhistMonk3930() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("おぼうさん", "お坊さん"), ("おぼうさんがきた", "お坊さんが来た"), ("おてらのおぼうさん", "お寺のお坊さん"),
+            ("おぼうさんに", "お坊さんに"), ("おかあさん", "おかあさん"), ("びんぼうさん", "貧乏さん"),
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
+    // 3929(ユーザ指定): そーだわりだけ が ソーダ割竹(1 語の 割竹 が 割り+だけ に勝っていた)。水割りだけ/お湯割りだけ はそのまま
+    func testSodaWariDake3929() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("そーだわりだけ", "ソーダ割りだけ"), ("みずわりだけ", "水割りだけ"), ("おゆわりだけ", "お湯割りだけ"), ("そーだわりで", "ソーダ割りで"),
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
+    // 3929(ユーザ指定): おんざろっく は オンザロック → オン・ザ・ロック → On The Rock の順(前は かなの おんざろっく が先頭で、
+    // 中黒つきとラテン文字は候補に無かった)。文の中でも同じ順。単語だけのときは表示の最後の並び(presentationOrderSeed)でそろえる
+    func testOnTheRockOrder3929() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let order = ["オンザロック", "オン・ザ・ロック", "On The Rock"]
+        let single = converter.candidates(for: "おんざろっく", limit: 12, systemCandidateMode: .surface)
+        XCTAssertEqual(Set(single.prefix(4)), Set(order + ["おんざろっく"]), "\(single)")
+        XCTAssertEqual(
+            Array(SupplementaryCandidateMerger.promotingPresentationOrderSeed(single, reading: "おんざろっく").prefix(4)),
+            order + ["おんざろっく"]
+        )
+        for (reading, tail) in [("おんざろっくがすき", "が好き"), ("おんざろっくをのむ", "を飲む"), ("おんざろっくで", "で")] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(Array(list.prefix(3)), order.map { $0 + tail }, "\(reading): \(list.prefix(5))")
+        }
+    }
+
+    // 3927(ユーザ指定): りえきでたぶんをかえす が 利益出た文を返す。利益 の言い回しだけ 分 に。テストに出た文を読む は 文 のまま
+    func testProfitThatCameOutBeforeObjectParticle3927() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("りえきでたぶんをかえす", "利益出た分を返す"), ("りえきでたぶんをはらう", "利益出た分を払う"),
+            ("てすとにでたぶんをよむ", "テストに出た文を読む"), ("もんだいにでたぶんをやくす", "問題に出た文を訳す"),
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
     // 3924(ユーザ指定): きほんてきにかくれが が 基本的に隠れが(に+隠れ+が)。隠れ家 を先頭に。隠れがち(がち の語)は変えない
     func testHideoutAfterNi3924() throws {
         try prepareRealLMDictionary()

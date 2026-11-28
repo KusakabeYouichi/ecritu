@@ -341,6 +341,7 @@ extension KanaKanjiConverter {
         candidates = Self.liquorCategoryOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.brewingTsukuruOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         candidates = Self.contextCuedHomophoneOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
+        candidates = Self.upperLowerFloorOrdered(reading: KanaTextNormalizer.normalizedReading(reading), candidates: candidates)
         // 形式名詞の 目/め(X.12 のサブ項目。3790)。読みの手掛かりの差し替え(酷い目→ひどい目)の後に置き、先頭の 目 の直後に め の形を足す
         candidates = Self.applyFormalNounMeKana(
             to: candidates, reading: KanaTextNormalizer.normalizedReading(reading),
@@ -4876,9 +4877,20 @@ extension KanaKanjiConverter {
                         let placeSuffixPreferred = Self.multiClausePlaceNameSuffixPreferredSurfacesID.contains(node.surfaceID)
                             && (node.surfaceID != SID.人 || node.readingID == SID.じん)
                             && (node.surface != "型" || node.reading.first != "け")   // 型(けい)は ボルドー系 を巻き込む
+                        // 民族の名(ゲルマン/サクソン。定数コメント参照。3932)は地名の表に無いので、名指しの表でも同じ扱いにする
                         if placeSuffixPreferred || Self.multiClausePlaceNameSuffixDemotedSurfacesID.contains(node.surfaceID),
-                            prevNode.surface.count >= 2, placeNameKindByNodeKey[prevNode.key] != nil {
+                            prevNode.surface.count >= 2,
+                            placeNameKindByNodeKey[prevNode.key] != nil || Self.multiClauseEthnonymSurfacesID.contains(prevNode.surfaceID) {
                             cost += placeSuffixPreferred ? -Self.multiClausePlaceNameSuffixPreferenceBonus : Self.multiClausePlaceNameSuffixPreferenceBonus
+                        }
+                        // 名詞の直後の 人名 じんの(定数コメント参照。3932)。整数 ID の判定を先に
+                        if node.readingID == SID.じんの, personNameKindByNodeKey[node.key] != nil,
+                            prevNode.surfaceID != SID.BOS, prevNode.surface.count >= 2,
+                            !prevNode.isKanaIdentity, !prevNode.isInflectionDerived,
+                            // 中黒つきのカタカナ語(アングロ・サクソン)も同じ
+                            Self.isKatakanaString(prevNode.surface.replacingOccurrences(of: "・", with: ""))
+                                || Self.isAllKanjiSurface(prevNode.surface) {
+                            cost += Self.multiClausePersonNameJinnoAfterNounPenalty
                         }
                         // 名詞の前の 誤った(定数コメント参照。3667)。整数 ID を先に見る
                         if Self.multiClauseErroneousAttributiveSurfacesID.contains(prevNode.surfaceID),

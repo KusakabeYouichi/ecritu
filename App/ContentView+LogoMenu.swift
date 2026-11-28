@@ -805,10 +805,15 @@ extension ContentView {
         }
     }
 
+    // 戦略的初期設定は組み込みの値そのものだが、値を消すだけにせず、全部の値を明示して書く(3928)。
+    // 3927 までは消すだけだった。値が無いと、(1) 次にアプリを開いたとき「値が無い端末=この設定より前から使っている人」向けの
+    // 処理(applyKanjiRewriteDefaultForExistingInstallIfNeeded ほか)が X.8 書きかえ・その例外グループ・X.9 に
+    // 両方(本来の漢字を先に)・オン・両方 を書き、戦略的の値(本来の漢字だけ・オフ・本来の漢字だけ)でなくなる、
+    // (2) キーボードは X.8/X.9 の値を読めないとき 両方(本来の漢字を先に)として動く(KanjiRewritePreference.decode)ので、
+    // 当てた直後からアプリの表示と食い違う。ほかの 2 つの初期設定と同じく、値のあるキーの集合にそろえる
     func applyStrategicDefaults() {
-        removeAllUserSettings()
+        applyPreset(Self.builtInDefaultValues)
         Self.recordBasePreset(.strategic)
-        SettingsSyncNotification.postSettingsDidChange()
     }
 
     func applyConservativePreset() {
@@ -826,17 +831,113 @@ extension ContentView {
             return
         }
         defaults.set(true, forKey: SettingsKeys.initialPresetApplied)
-        let isExistingInstall = defaults.object(forKey: SettingsKeys.kanaKanjiInitialAjoutVocabularyAppliedSeed) != nil
-            || defaults.object(forKey: SettingsKeys.kanaKanjiInitialAjoutVocabularyMigrated) != nil
-            || Self.userSettingsKeys.contains { defaults.object(forKey: $0) != nil }
-        guard !isExistingInstall else {
+        guard !Self.isExistingInstall(defaults) else {
             return
         }
-        var preset = Self.contemporaryPresetValues
-        preset[SettingsKeys.contactCandidateDisplayMode] = ContactCandidateDisplayModeOption.off.rawValue
-        applyPreset(preset)
-        Self.recordBasePreset(.contemporary, contactsStartedOff: true)
+        // 先に現代的初期設定を当てておく(選ぶ画面で選ぶ前にアプリを閉じても、今までと同じ設定で使える)。
+        // 選ぶ画面は、この印が立っている間、開くたびに出す(3926)
+        applyInitialChoice(.contemporary)
+        defaults.set(true, forKey: SettingsKeys.initialPresetChoicePending)
     }
+
+    // 既存の端末か(語彙の初期投入の記録か、設定の保存がある)。初めてのインストールの判定(3406)と、選ぶ画面を出す予測(3926)で使う
+    static func isExistingInstall(_ defaults: UserDefaults) -> Bool {
+        defaults.object(forKey: SettingsKeys.kanaKanjiInitialAjoutVocabularyAppliedSeed) != nil
+            || defaults.object(forKey: SettingsKeys.kanaKanjiInitialAjoutVocabularyMigrated) != nil
+            || userSettingsKeys.contains { defaults.object(forKey: $0) != nil }
+    }
+
+    // 初めてのインストールで当てる値(3406、3926)。初期設定の値を 1 つ残らず明示して書く。戦略的初期設定も「値を消すだけ」に
+    // しない: 値が無いと、次の起動で「値が無い端末=この設定より前から使っている人」向けの処理(書きかえ・例外グループ・X.9)が
+    // 組み込みの値と違う値を書き、戦略的初期設定の値でなくなる。連絡先の候補だけは、どれを選んでも「使わない」で始める
+    // (本人が設定をオンにしたときだけ許可を求める。App Store 審査ガイドライン 5.1.1)
+    static func initialChoiceValues(for preset: SettingsBasePreset) -> [String: Any] {
+        var values = builtInDefaultValues.merging(presetValues(for: preset)) { _, presetValue in presetValue }
+        values[SettingsKeys.contactCandidateDisplayMode] = ContactCandidateDisplayModeOption.off.rawValue
+        return values
+    }
+
+    func applyInitialChoice(_ preset: SettingsBasePreset) {
+        applyPreset(Self.initialChoiceValues(for: preset))
+        Self.recordBasePreset(preset, contactsStartedOff: true)
+    }
+
+    // ──── 初めて開いたときの 初期設定を選ぶ画面(3926) ────
+
+    // 開いた時点で選ぶ画面を出すかの予測。印が立っている(前に選ばずに閉じた)か、これから 初めてのインストール と判定される端末
+    static func shouldShowInitialPresetChooserAtLaunch() -> Bool {
+        guard let defaults = sharedDefaults else {
+            return false
+        }
+        if defaults.bool(forKey: SettingsKeys.initialPresetChoicePending) {
+            return true
+        }
+        return !defaults.bool(forKey: SettingsKeys.initialPresetApplied) && !isExistingInstall(defaults)
+    }
+
+    // 起動処理の判定(applyInitialPresetIfFreshInstall)が済んだら、予測でなく印に合わせる
+    func syncInitialPresetChooserWithPendingMark() {
+        showsInitialPresetChooser = Self.sharedDefaults?.bool(forKey: SettingsKeys.initialPresetChoicePending) ?? false
+    }
+
+    // 選ぶ画面の[この設定で始める]。印が立っているとき(と、デバッグ版の「選ぶ画面を出す」から出したとき)だけ当てる。
+    // どちらでもなければ閉じるだけ
+    func completeInitialPresetChoice(_ preset: SettingsBasePreset) {
+        defer {
+            initialPresetChooserIsDebugPreview = false
+            withAnimation(.easeOut(duration: 0.25)) {
+                showsInitialPresetChooser = false
+            }
+        }
+        guard let defaults = Self.sharedDefaults,
+            initialPresetChooserIsDebugPreview || defaults.bool(forKey: SettingsKeys.initialPresetChoicePending) else {
+            return
+        }
+        applyInitialChoice(preset)
+        defaults.set(false, forKey: SettingsKeys.initialPresetChoicePending)
+        showSettingsToast("\(preset.title)にしました")
+    }
+
+    // 初期設定ごとのテーマカラー(選ぶ画面のカードの面)。初期設定の値から引く
+    static func themeColorOption(for preset: SettingsBasePreset) -> KeyboardBackgroundThemeOption {
+        let rawValue = (presetValues(for: preset)[SettingsKeys.keyboardBackgroundTheme]
+            ?? builtInDefaultValues[SettingsKeys.keyboardBackgroundTheme]) as? String
+        return rawValue.flatMap(KeyboardBackgroundThemeOption.init(rawValue:)) ?? .bleu
+    }
+
+    @ViewBuilder
+    var initialPresetChooserOverlay: some View {
+        if showsInitialPresetChooser {
+            // 起動処理(語彙の初期投入など)が終わるまでは始められない。設定を書き換える処理と重ねない
+            InitialPresetChooserView(
+                isStartEnabled: !isBootstrappingInitialData,
+                onCancel: initialPresetChooserIsDebugPreview ? cancelInitialPresetChooserDebugPreview : nil,
+                onChoose: completeInitialPresetChoice
+            )
+                // パステルの面に濃い文字の画面なので、ダークモードでもライトの見た目にする
+                .environment(\.colorScheme, .light)
+                .transition(.opacity)
+                // VoiceOver も下の設定の一覧へ行かせない
+                .accessibilityAddTraits(.isModal)
+        }
+    }
+
+    // デバッグ版の「選ぶ画面を出す」から出した画面を、何も変えずに閉じる
+    func cancelInitialPresetChooserDebugPreview() {
+        initialPresetChooserIsDebugPreview = false
+        withAnimation(.easeOut(duration: 0.25)) {
+            showsInitialPresetChooser = false
+        }
+    }
+
+    #if DEBUG
+    // デバッグ版専用: 選ぶ画面をもう一度出す。[この設定で始める]で今の設定はすべて置き換わる(初めてのインストールと同じ処理)。
+    // 印は立てない(アプリを閉じれば元に戻る)。[やめる]で何も変えずに閉じられる
+    func showInitialPresetChooserForDebug() {
+        initialPresetChooserIsDebugPreview = true
+        showsInitialPresetChooser = true
+    }
+    #endif
 
     // 同音の漢字による書きかえ(3422)の値がまだ無い端末(この設定より前から使っている人)に 1 回だけ 両方(本来の漢字を先に)を書く。
     // 組み込みの標準値(戦略的初期設定)は 本来の漢字だけ なので、書かないとアップデートした途端に 回転→廻転 等になる。
@@ -1015,8 +1116,19 @@ extension ContentView {
             defaults.set(value.anyValue, forKey: key)
         }
         // 基準の初期設定も戻す(3432)。これより前の退避には無いので、そのときは今の記録のまま
-        if let base = stash.basePreset.flatMap(SettingsBasePreset.init(rawValue:)) {
+        let stashedBase = stash.basePreset.flatMap(SettingsBasePreset.init(rawValue:))
+        if let base = stashedBase {
             Self.recordBasePreset(base, contactsStartedOff: stash.basePresetContactsStartedOff ?? false)
+        }
+        // 戦略的初期設定を基準に退避した設定で値の無いキーは、組み込みの値を明示して書く(3928)。3927 までの戦略的初期設定は
+        // 値を消すだけで、値が無い=組み込みの値 だった。無いままにすると applyStrategicDefaults のコメントの (1)(2) が起きる。
+        // ほかの初期設定を基準にした退避は今までどおり(値の無いキーは、その設定より前に退避したもの。起動時の処理が値を入れる)
+        if stashedBase == .strategic {
+            for key in Self.userSettingsKeys where defaults.object(forKey: key) == nil {
+                if let value = Self.builtInDefaultValues[key] {
+                    defaults.set(value, forKey: key)
+                }
+            }
         }
         normalizeLegacyKanaYaBracketValueIfNeeded()   // 3656 より前に退避した設定の括弧の値
         SettingsSyncNotification.postSettingsDidChange()

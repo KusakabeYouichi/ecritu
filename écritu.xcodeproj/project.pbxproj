@@ -85,6 +85,7 @@
 		AB0000000000000000002618 /* MemoryForensicsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000002617 /* MemoryForensicsTests.swift */; };
 		130C6584F19009210CFBA757 /* ConversionTimingProbeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BC4ACAB7FA54E057F738DE9 /* ConversionTimingProbeTests.swift */; };
 		3BB9044EDA615DFB207ED30E /* SettingsKeyTableConsistencyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12DF4E54F24D6CACE261CC31 /* SettingsKeyTableConsistencyTests.swift */; };
+		9718B1F0A39A8CC00AD687F3 /* InitialPresetChooserConsistencyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD2DB92626875E37B8C01FF /* InitialPresetChooserConsistencyTests.swift */; };
 		E477DC610F262272485792C2 /* KeyboardControllerLifecycleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E49C5D3BAEA4CD47BE5FC20 /* KeyboardControllerLifecycleTests.swift */; };
 		C9521F0CE9D3F61A234D0D97 /* PlainTextCompositionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8063BC27BE3E71CDA0CC5E56 /* PlainTextCompositionTests.swift */; };
 		B2F96E4FACF872E0C99909F7 /* TestSupport+StoreHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = D47DAE19C6007C33FE1974E9 /* TestSupport+StoreHelpers.swift */; };
@@ -143,6 +144,7 @@
 		B03E6564B72E74C154837470 /* SettingsModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 105353784C776E1A40C7A8AE /* SettingsModels.swift */; };
 		B22E76DC1B5D975F1DC62A62 /* KeyboardViewController+SupplementaryCandidates.swift in Sources */ = {isa = PBXBuildFile; fileRef = F17E916A7D82944FB7C4BAE9 /* KeyboardViewController+SupplementaryCandidates.swift */; };
 		B81FC3000865E20CAEE4D4E9 /* SettingsComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D815BB97FDB1F3F743DACDD /* SettingsComponents.swift */; };
+		49CADBC8DAC4E98225AFE3E1 /* InitialPresetChooserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7AEE98EED3F5F205D9C9F7C /* InitialPresetChooserView.swift */; };
 		C62F944FB8A8DE4CE9BF51FF /* KeyboardViewController+Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFBF1A2F721846F282B160F1 /* KeyboardViewController+Settings.swift */; };
 		A1B2C3D4E5F600000000CC01 /* KeyboardViewController+Rendering.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000CC02 /* KeyboardViewController+Rendering.swift */; };
 		C848B966372EB6D1820CD43E /* KeyboardRootView+LandscapeLayouts.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1D8903DCA2E8999598CB053 /* KeyboardRootView+LandscapeLayouts.swift */; };
@@ -220,6 +222,7 @@
 		2626823DE41575D1188F5DEA /* KeyboardCandidateMergingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardCandidateMergingTests.swift; sourceTree = "<group>"; };
 		2D2A68C12E9937EB406DC707 /* kana_kanji_dictionary.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = kana_kanji_dictionary.sqlite; sourceTree = "<group>"; };
 		2D815BB97FDB1F3F743DACDD /* SettingsComponents.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SettingsComponents.swift; sourceTree = "<group>"; };
+		E7AEE98EED3F5F205D9C9F7C /* InitialPresetChooserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InitialPresetChooserView.swift; sourceTree = "<group>"; };
 		31B98B9E42E4E93025B51ECB /* KeyboardKeyComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardKeyComponents.swift; sourceTree = "<group>"; };
 		39716214A902EFE0258ECF45 /* DakutenDuckIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DakutenDuckIcon.swift; sourceTree = "<group>"; };
 		2B70228F070A1B08A805E031 /* ContactCacheCipher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactCacheCipher.swift; sourceTree = "<group>"; };
@@ -229,6 +232,7 @@
 		AB0000000000000000002617 /* MemoryForensicsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryForensicsTests.swift; sourceTree = "<group>"; };
 		7BC4ACAB7FA54E057F738DE9 /* ConversionTimingProbeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversionTimingProbeTests.swift; sourceTree = "<group>"; };
 		12DF4E54F24D6CACE261CC31 /* SettingsKeyTableConsistencyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsKeyTableConsistencyTests.swift; sourceTree = "<group>"; };
+		0CD2DB92626875E37B8C01FF /* InitialPresetChooserConsistencyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InitialPresetChooserConsistencyTests.swift; sourceTree = "<group>"; };
 		5E49C5D3BAEA4CD47BE5FC20 /* KeyboardControllerLifecycleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardControllerLifecycleTests.swift; sourceTree = "<group>"; };
 		8063BC27BE3E71CDA0CC5E56 /* PlainTextCompositionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlainTextCompositionTests.swift; sourceTree = "<group>"; };
 		D47DAE19C6007C33FE1974E9 /* TestSupport+StoreHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TestSupport+StoreHelpers.swift"; sourceTree = "<group>"; };
@@ -359,6 +363,7 @@
 				22A343B2F9E4EEF9CDFB1A26 /* SettingsSectionViews+Conversion.swift */,
 				1101C5F140F04B38C98D298F /* ThirdPartyLicensesView.swift */,
 				2D815BB97FDB1F3F743DACDD /* SettingsComponents.swift */,
+				E7AEE98EED3F5F205D9C9F7C /* InitialPresetChooserView.swift */,
 				CB1CCE234EAA56677B307285 /* DictionarySettingsSections.swift */,
 				1350C355909AB4D0F84C48DF /* IndexedVocabularyList.swift */,
 				7ADCEB866223BD3028FABD48 /* ContentView+DictionaryStore.swift */,
@@ -513,6 +518,7 @@
 				AB0000000000000000002617 /* MemoryForensicsTests.swift */,
 				7BC4ACAB7FA54E057F738DE9 /* ConversionTimingProbeTests.swift */,
 				12DF4E54F24D6CACE261CC31 /* SettingsKeyTableConsistencyTests.swift */,
+				0CD2DB92626875E37B8C01FF /* InitialPresetChooserConsistencyTests.swift */,
 				5E49C5D3BAEA4CD47BE5FC20 /* KeyboardControllerLifecycleTests.swift */,
 				8063BC27BE3E71CDA0CC5E56 /* PlainTextCompositionTests.swift */,
 				D47DAE19C6007C33FE1974E9 /* TestSupport+StoreHelpers.swift */,
@@ -893,6 +899,7 @@
 				AB0000000000000000002618 /* MemoryForensicsTests.swift in Sources */,
 				130C6584F19009210CFBA757 /* ConversionTimingProbeTests.swift in Sources */,
 				3BB9044EDA615DFB207ED30E /* SettingsKeyTableConsistencyTests.swift in Sources */,
+				9718B1F0A39A8CC00AD687F3 /* InitialPresetChooserConsistencyTests.swift in Sources */,
 				E477DC610F262272485792C2 /* KeyboardControllerLifecycleTests.swift in Sources */,
 				C9521F0CE9D3F61A234D0D97 /* PlainTextCompositionTests.swift in Sources */,
 				B2F96E4FACF872E0C99909F7 /* TestSupport+StoreHelpers.swift in Sources */,
@@ -918,6 +925,7 @@
 				70DEE994ABC1B2843608C0FD /* SettingsSectionViews+Conversion.swift in Sources */,
 				AA96FF3BF4C2394ED6E45AA9 /* ThirdPartyLicensesView.swift in Sources */,
 				B81FC3000865E20CAEE4D4E9 /* SettingsComponents.swift in Sources */,
+				49CADBC8DAC4E98225AFE3E1 /* InitialPresetChooserView.swift in Sources */,
 				CBAC06FB9B0379B8CDDE4F94 /* DictionarySettingsSections.swift in Sources */,
 				285326EF479921408BB11307 /* IndexedVocabularyList.swift in Sources */,
 				524BCC76C91E62075115AF3A /* ContentView+DictionaryStore.swift in Sources */,
