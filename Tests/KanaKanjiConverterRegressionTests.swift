@@ -31877,6 +31877,14 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3936: 中黒つきのカタカナ語(アングロ・サクソン)の直後の じんの も 人の(アングロ・サクソン仁乃 だった)
+    func testPeopleSuffixAfterMiddleDotKatakana3936() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let list = leadingCandidates3879("あんぐろさくそんじんの")
+        XCTAssertTrue(["アングロサクソン人の", "アングロ・サクソン人の"].contains(list.first ?? ""), "\(list.prefix(5))")
+    }
+
     // 3932(ユーザ指定): がりあじんの が ガリア仁乃(人名の じんの)。辞書に 1 語で無い X人+の も 人の に。民族の名(ゲルマン/ノルマン)は
     // 地名と同じ扱い。酒の ジン(クラフトジン)と、文の頭の 神野さん は変えない
     func testPeopleSuffixBeforeNo3932() throws {

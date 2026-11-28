@@ -4871,7 +4871,9 @@ extension KanaKanjiConverter {
                         if node.readingID == SID.じんの, personNameKindByNodeKey[node.key] != nil,
                             prevNode.surfaceID != SID.BOS, prevNode.surface.count >= 2,
                             !prevNode.isKanaIdentity, !prevNode.isInflectionDerived,
-                            Self.isKatakanaString(prevNode.surface) || Self.isAllKanjiSurface(prevNode.surface) {
+                            // 中黒つきのカタカナ語(アングロ・サクソン)も同じ
+                            Self.isKatakanaString(prevNode.surface.replacingOccurrences(of: "・", with: ""))
+                                || Self.isAllKanjiSurface(prevNode.surface) {
                             cost += Self.multiClausePersonNameJinnoAfterNounPenalty
                         }
                         // 名詞の前の 誤った(定数コメント参照。3667)。整数 ID を先に見る
