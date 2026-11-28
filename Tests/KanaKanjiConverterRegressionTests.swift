@@ -31860,6 +31860,20 @@ extension KanaKanjiConverterRegressionTests {
         )
     }
 
+    // 3937(ユーザ指定): したのかいだん が したの会談。下の階段/上の階段 を先頭に。首脳との会談 と 階段(単独)は変えない
+    func testLowerStairs3937() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("したのかいだん", "下の階段"), ("したのかいだんで", "下の階段で"), ("したのかいだんをおりる", "下の階段を降りる"),
+            ("ひとつしたのかいだん", "1つ下の階段"), ("うえのかいだん", "上の階段"), ("うえのかいだんに", "上の階段に"),
+            ("しゅのうとのかいだん", "首脳との会談"), ("かいだん", "階段"), ("したのかいに", "下の階に"),
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
     // 3936(ユーザ指定): したのかい+助詞(の/で/では/に…)は 下の階+助詞(したの会に だった)。したのかい で終わるときは かな
     // (〜したのかい? の問いかけ)。うえのかい は 上の階。下の階層/したの買い物/下の貝殻 は巻き込まない
     func testLowerFloorBeforeParticle3936() throws {
