@@ -33537,4 +33537,27 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(shown("ごがつふつか").prefix(2)), ["五月二日", "5月2日"])
     }
 
+    // 助詞で始まる読みの せんとう が 1000頭/千頭 だった(数量詞のノードが格助詞の直後の割引と文頭の助詞の払い戻しを受けていた。
+    // ユーザ報告 2026-11-27)。せんとう の語の順と、数える意味の読みは変えない
+    func testRegressionRealLMSentouAfterParticleIsNotCounter() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        func multi(_ reading: String) -> [String] {
+            converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+        }
+        XCTAssertEqual(Array(multi("がせんとう").prefix(2)), ["が先頭", "が戦闘"])
+        for (reading, expected) in [
+            ("がせんとうで", "が先頭で"), ("はせんとう", "は先頭"), ("をせんとう", "を先頭"), ("がせんとうにたつ", "が先頭に立つ"),
+            ("いちまいがせんとう", "一枚が先頭"), ("せんとうがはじまる", "戦闘が始まる"), ("ぎんこうのせんとう", "銀行の先頭"),
+            ("せんとうにいく", "先頭に行く"),
+            // 数える意味の読み
+            ("がせんにんいた", "が1000人いた"), ("はさんぼんある", "は三本ある"), ("がひゃくえん", "が100円"), ("がさんにん", "が3人"),
+            ("をさんこかった", "を3個買った"),
+        ] {
+            let list = multi(reading)
+            XCTAssertEqual(list.first, expected, "reading=\(reading) list=\(list.prefix(4))")
+        }
+        XCTAssertEqual(Array(converter.candidates(for: "せんとう", limit: 6, systemCandidateMode: .surface).prefix(3)), ["先頭", "戦闘", "銭湯"])
+    }
+
 }
