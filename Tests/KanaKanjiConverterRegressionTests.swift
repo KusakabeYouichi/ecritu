@@ -32193,6 +32193,26 @@ extension KanaKanjiConverterRegressionTests {
         )
     }
 
+    // 3941(ユーザ指定): げんきん が 厳禁、げんきんのみかな が 厳禁のミカな(ワイン用語優先がオンのとき。語彙の 厳禁 が表に入っていた)。
+    // 表から げんきん を外す。オンでもオフでも 現金 が先頭
+    func testCashFirstEvenWithWineTermPriority3941() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for wine in [false, true] {
+            converter.setWineTermPriorityEnabled(wine)
+            converter.invalidateCandidateCache()
+            for (reading, expected) in [("げんきん", "現金"), ("げんきんのみかな", "現金のみかな"), ("げんきんではらう", "現金で払う")] {
+                let list = leadingCandidates3879(reading)
+                XCTAssertEqual(list.first, expected, "ワイン用語優先=\(wine) \(reading): \(list.prefix(5))")
+            }
+        }
+        converter.setWineTermPriorityEnabled(false)
+        converter.invalidateCandidateCache()
+        #if DEBUG
+        XCTAssertNil(WineTermPriority.entries.first { $0.reading == "げんきん" })
+        #endif
+    }
+
     // 3940(ユーザ指定): かいだんへのきたい が 会談へ退きたい(へ+退きたい)。〜への期待 を先頭に。そこを退きたい/退きたい は変えない
     func testExpectationToward3940() throws {
         try prepareRealLMDictionary()
