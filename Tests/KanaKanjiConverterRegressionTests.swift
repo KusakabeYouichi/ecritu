@@ -32262,6 +32262,20 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3942(ユーザ指定): いまだけやすい が 今抱けやすい(抱ける の活用)。限定の だけ+安い を先頭に。赤ちゃんを抱けない/分かりやすい は変えない
+    func testOnlyNowCheap3942() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("いまだけやすい", "今だけ安い"), ("これだけやすい", "これだけ安い"), ("きょうだけやすい", "今日だけ安い"),
+            ("すこしだけやすい", "少しだけ安い"), ("いまだけやすくなる", "今だけ安くなる"), ("いまだけたかい", "今だけ高い"),
+            ("あかちゃんをだけない", "赤ちゃんを抱けない"), ("わかりやすい", "分かりやすい"), ("つかいやすい", "使いやすい"),
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
     // 3940(ユーザ指定): かいだんへのきたい が 会談へ退きたい(へ+退きたい)。〜への期待 を先頭に。そこを退きたい/退きたい は変えない
     func testExpectationToward3940() throws {
         try prepareRealLMDictionary()
