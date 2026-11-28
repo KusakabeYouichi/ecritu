@@ -31877,6 +31877,20 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3936(ユーザ指定): さくそんじんの/ばすくじんの が出なかった(サクソン/バスク人 が連文節の語に無い)。語彙に登録。
+    // バスク だけを登録すると ばすくる(バス来る)が バスクる になるので バスク人/バスク語 の形で入れる
+    func testSaxonAndBasquePeople3936() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("さくそんじんの", "サクソン人の"), ("ばすくじんの", "バスク人の"), ("ばすくごをはなす", "バスク語を話す"),
+            ("ばすくる", "バス来る"), ("ばすくちほう", "バスク地方"),
+        ] {
+            let list = leadingCandidates3879(reading)
+            XCTAssertEqual(list.first, expected, "\(reading): \(list.prefix(5))")
+        }
+    }
+
     // 3936: 中黒つきのカタカナ語(アングロ・サクソン)の直後の じんの も 人の(アングロ・サクソン仁乃 だった)
     func testPeopleSuffixAfterMiddleDotKatakana3936() throws {
         try prepareRealLMDictionary()
