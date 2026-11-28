@@ -547,6 +547,9 @@
 	<dict><key>phrase</key><string>サクソン</string><key>shortcut</key><string>さくそん</string><key>pos</key><string>名詞</string></dict>	<!-- サクソン: 連文節の語に無く、さくそんじんの が 柵損じんの だった(サクソン人。ユーザ指定 3936) -->
 	<dict><key>phrase</key><string>バスク人</string><key>shortcut</key><string>ばすくじん</string><key>pos</key><string>名詞</string></dict>	<!-- バスク人: ばすくじんの が バス9次んの だった(ユーザ指定 3936)。バスク だけを登録すると ばすくる(バス来る)が バスクる になるので、人 まで入れた 1 語にする -->
 	<dict><key>phrase</key><string>バスク語</string><key>shortcut</key><string>ばすくご</string><key>pos</key><string>名詞</string></dict>	<!-- バスク語: バスク人 と合わせて(3936) -->
+	<dict><key>phrase</key><string>火気厳禁</string><key>shortcut</key><string>かきげんきん</string><key>pos</key><string>名詞</string></dict>	<!-- 火気厳禁: かきげんきん が 火器現金 だった(かき は 火器/柿 が先で 火気 が出ない。3941) -->
+	<dict><key>phrase</key><string>私語厳禁</string><key>shortcut</key><string>しごげんきん</string><key>pos</key><string>名詞</string></dict>	<!-- 私語厳禁: しごげんきん が しご現金 だった(3941) -->
+	<dict><key>phrase</key><string>口外厳禁</string><key>shortcut</key><string>こうがいげんきん</string><key>pos</key><string>名詞</string></dict>	<!-- 口外厳禁: こうがいげんきん が 郊外現金 だった(3941) -->
 	<dict><key>phrase</key><string>体験コース</string><key>shortcut</key><string>たいけんこーす</string><key>pos</key><string>名詞</string></dict>	<!-- 辞書の 大圏コース が 1 語で、たいけんこーす の候補が 大圏コース だけだった(むりょうたいけんこーす も 無料大圏コース。ユーザ指定 3898) -->
 
 	<!-- □ 年忌・法要(ユーザ指定 3887: いっしゅうき が 1周木、にじゅうごかいき が 25回木 だった。辞書にあって出る語も形だけ置いてコメントアウト。

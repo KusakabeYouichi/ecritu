@@ -10025,7 +10025,7 @@
 	<dict><key>phrase</key><string>原価</string><key>shortcut</key><string>げんか</string></dict>	<!-- 6位/21候補 -->
 	<dict><key>phrase</key><string>厳格</string><key>shortcut</key><string>げんかく</string></dict>	<!-- 4位/11候補 -->
 	<dict><key>phrase</key><string>厳寒</string><key>shortcut</key><string>げんかん</string></dict>	<!-- 3位/10候補 -->
-	<dict><key>phrase</key><string>厳禁</string><key>shortcut</key><string>げんきん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/5候補 -->
+<!--	<dict><key>phrase</key><string>厳禁</string><key>shortcut</key><string>げんきん</string><key>pos</key><string>サ変名詞</string></dict>-->	<!-- 3位/5候補。ワインの語ではなく、げんきん の先頭が 現金 でなく 厳禁 になっていたので外す(ユーザ指定 3942) -->
 	<dict><key>phrase</key><string>原型</string><key>shortcut</key><string>げんけい</string></dict>	<!-- 4位/12候補 -->
 	<dict><key>phrase</key><string>厳冬</string><key>shortcut</key><string>げんとう</string></dict>	<!-- 4位/18候補 -->
 	<dict><key>phrase</key><string>梗</string><key>shortcut</key><string>こう</string></dict>	<!-- word_costs に無し -->
