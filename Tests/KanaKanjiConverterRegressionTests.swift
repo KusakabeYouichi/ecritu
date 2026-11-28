@@ -32213,6 +32213,14 @@ extension KanaKanjiConverterRegressionTests {
         #endif
     }
 
+    // 3941(ユーザ指定): のみかな が 野見かな。かなの のみかな を先頭に、2 番めは 飲みかな
+    func testNomiKana3941() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(Array(leadingCandidates3879("のみかな").prefix(2)), ["のみかな", "飲みかな"])
+        XCTAssertEqual(leadingCandidates3879("のみかい").first, "飲み会")
+    }
+
     // 3940(ユーザ指定): かいだんへのきたい が 会談へ退きたい(へ+退きたい)。〜への期待 を先頭に。そこを退きたい/退きたい は変えない
     func testExpectationToward3940() throws {
         try prepareRealLMDictionary()
